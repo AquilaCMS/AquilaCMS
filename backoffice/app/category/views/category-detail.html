@@ -1,0 +1,439 @@
+
+
+<div ng-controller="CategoryIncludeCtrl">
+    <form name="formMenu" ng-submit="save()"> 
+        <div align="right" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
+            <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()"
+                    translate>category.detail.delete
+            </button>
+            <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"
+                    translate>category.detail.save2
+            </button>
+            <br />
+            <br />
+        </div>
+        <ns-translation ng-model="lang" class="pull-right" style="margin-top: 50px;float:right"></ns-translation>
+
+        <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
+        <br/>
+
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="general" class="tab-pane fade in active">
+
+                <table style="clear: both" id="switch">
+                    <tbody>
+                        <tr>
+                            <td width="30%">
+                                <span translate>category.detail.actif</span>
+                                <label class="switch">
+                                    :
+                                    <ns-switch ng-click="changeSwitch()" ng-model="category.active" name="active"></ns-switch>
+                                    <!-- <input type="checkbox" ng-model="category.active" class="switch-input">
+                                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                                    <span class="switch-handle"></span> -->
+                                </label>
+                            </td>
+                            <td width="35%">
+                                <span translate>category.detail.afficher</span>
+                                <label class="switch">
+                                    <ns-switch id="isDisplayed" ng-model="category.isDisplayed" name="isDisplayed"></ns-switch>
+                                    <!-- <input type="checkbox" ng-model="category.isDisplayed" class="switch-input">
+                                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                                    <span class="switch-handle"></span> -->
+                                </label>
+                            </td>
+                            <td width="35%">
+                                <span translate>category.detail.cliquable</span>
+                                <label class="switch">
+                                    <ns-switch id="clickable" ng-model="category.clickable" name="clickable"></ns-switch>
+                                    <!-- <input type="checkbox" ng-model="category.clickable" class="switch-input">
+                                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                                    <span class="switch-handle"></span> -->
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered table-striped ns-table-grey" style="clear: both">
+                    <tbody>
+                        <tr id="type">
+                            <td width="30%" translate>
+                                category.detail.type
+                            </td>
+                            <td width="70%">
+                                <div class="btn-group" style="z-index: 1;">
+                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
+                                           translate>category.detail.catalogue</label>
+                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'page'"
+                                           translate>category.detail.page</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td translate>category.detail.nom</td>
+                            <td>
+                                <input ng-model="category.translation[lang].name" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td ng-if="category.action != 'page'" translate>category.detail.metaDesc</td>
+                            <td ng-if="category.action != 'page'">
+                                <input ng-model="category.translation[lang].metaDescription" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr id="slug" ng-if="category.action != 'page'">
+                            <td translate>category.detail.slugCat</td>
+                            <td>
+                                <input ng-model="category.translation[lang].slug" class="form-control" pattern=".{3,}"
+                                       title="category.detail.t1" required />
+                            </td>
+                        </tr>
+                        <tr ng-if="category.action == 'page'">
+                            <td translate>
+                                category.detail.slugPageCible
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" ng-model="category.translation[lang].pageSlug" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td translate>category.detail.pdsCanonCat</td>
+                            <td>
+                                <input type="number" class="form-control" ng-model="category.canonical_weight" required>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <table class="table table-bordered table-striped ns-table-grey" style="clear: both">
+                    <tbody>
+                        <tr id="createDate">
+                            <td translate>category.detail.creationDate</td>
+                            <td>
+                                {{category.creationDate | date:"dd MMMM yyyy"}}
+                            </td>
+                        </tr>
+                        <tr id="openDate">
+                            <td width="30%" translate>category.detail.dateOpen</td>
+                            <td width="70%">
+                                <ns-datepicker empty="true" name="start_marketing" ng-model="category.openDate"></ns-datepicker>
+                            </td>
+                        </tr>
+                        <tr id="closeDate">
+                            <td translate>category.detail.dateClose</td>
+                            <td>
+                                <ns-datepicker empty="true" name="end_marketing" ng-model="category.closeDate" min-date="category.openDate"></ns-datepicker>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <table class="table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage">
+                    <tbody>
+                        <tr>
+                            <td width="30%" translate>category.detail.nameColor</td>
+                            <td width="70%">
+                                <div style="display: inline-block;">
+                                    <input class="form-control" style="width: 85%;display: inline;vertical-align: middle"
+                                           ng-model="category.colorName" />
+                                    <span class="fa fa-square fa-lg" style="vertical-align: middle" ng-style="{'color': category.colorName}"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td translate>category.detail.headerImg</td>
+                            <td>
+                                <img ng-show="category.img" class="boxShadow" src="{{getImage(category)}}" alt="" />
+
+                                <ns-upload-files accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
+                                   images="category.image" showalt="true" after-function="close(category)"></ns-upload-files>
+                                <button ng-show="category.img" type="button" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
+                                    category.detail.delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <table class="table table-bordered table-striped ns-table-grey" style="clear: both;">
+                    <tbody>
+                        <tr id="text1">
+                            <td translate>
+                                category.detail.textSupp1
+                            </td>
+                            <td>
+                                <ns-tinymce text="category.translation[lang].extraText"></ns-tinymce>
+                                <br />
+                            </td>
+                        </tr>
+                        <tr id="text2">
+                            <td translate>
+                                category.detail.textSupp2
+                            </td>
+                            <td>
+                            <ns-tinymce text="category.translation[lang].extraText2"></ns-tinymce>
+                            </td>
+                        </tr>
+                        <tr id="text3">
+                            <td translate>
+                                category.detail.textSupp3
+                            </td>
+                            <td>
+                                <ns-tinymce text="category.translation[lang].extraText3"></ns-tinymce>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'">
+                <table class="table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
+                       aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                        <tr role="row">
+                            <th role="columnheader" style="width: 7%;"></th>
+                            <!--<th role="columnheader" style="width: 1%;">Position</th>-->
+                            <th role="columnheader" style="width: 1%;">
+                                <a ng-click="local.sortType = 'sortWeight'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.pos
+                                    <span ng-show="local.sortType == 'sortWeight' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == 'sortWeight' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 8%;">
+                                <a ng-click="local.sortType = 'code'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.code
+                                    <span ng-show="local.sortType == 'code' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == 'code' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 8%" translate>category.detail.img</th>
+                            <th role="columnheader" style="width: 38%;">
+                                <a ng-click="local.sortType = 'translation.fr.name'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.nom
+                                    <span ng-show="local.sortType == 'translation.fr.name' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == 'translation.fr.name' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 10%;">
+                                <a ng-click="local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.price
+                                    <span ng-show="local.sortType == 'price.ati.normal' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == 'price.ati.normal' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 4%;">
+                                <a ng-click="local.sortType = 'qty'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.quantity
+                                    <span ng-show="local.sortType == 'qty' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == 'qty' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 8%;" translate>category.detail.typePdt</th>
+                            <th role="columnheader" style="width: 8%;">
+                                <a ng-click="local.sortType = 'active'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.actif
+                                    <span ng-show="local.sortType == 'active' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == 'active' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 8%;">
+                                <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();"
+                                   translate>
+                                    category.detail.visible
+                                    <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == '_visible' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th role="columnheader" style="width: 8%;">
+                                <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                    category.detail.action
+                                    <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
+                                    <span ng-show="local.sortType == '_visible' && local.sortReverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                        </tr>
+                        <tr role="row">
+                            <th>
+                                <select ng-model="searchObj.slugMenus" ng-change="getProducts()" class="form-control">
+                                    <option value="" translate>category.detail.indifferent</option>
+                                    <option value="true" translate>category.detail.oui</option>
+                                    <option value="false" translate>category.detail.non</option>
+                                </select>
+                            </th>
+                            <th></th>
+                            <th></th>
+                            <th>
+                            </th>
+                            <th>
+                                <input type="text" ng-change="getProducts()" ng-model="searchObj.translation.name"
+                                       translate translate-attr-placeholder='category.detail.ph1' class="form-control" />
+                            </th>
+                            <th>
+                                <input ng-model="searchObj['price.ati.normal'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
+                                <input ng-model="searchObj['price.ati.normal'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
+                            </th>
+                            <th>
+                                <input ng-model="searchObj['stock.qty'].$gte" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="min" />
+                                <input ng-model="searchObj['stock.qty'].$lt" ng-change="getProducts()" class="form-control" type="number" style="width: 65px;" placeholder="max" />
+                            </th>
+                            <th>
+                                <select ng-model="searchObj.type" ng-change="getProducts()" class="form-control">
+                                    <option value="" translate>category.detail.indifferent</option>
+                                    <option value="simple" translate>category.detail.simple</option>
+                                    <option value="bundle" translate>category.detail.compose</option>
+                                </select>
+                            </th>
+                            <th>
+                                <select ng-model="searchObj.active" ng-change="getProducts()" class="form-control">
+                                    <option value="" translate>category.detail.indifferent</option>
+                                    <option value="true" translate>category.detail.actif</option>
+                                    <option value="false" translate>category.detail.nonActif</option>
+                                </select>
+                            </th>
+                            <th>
+                                <select ng-model="searchObj._visible" ng-change="getProducts()" class="form-control">
+                                    <option value="" translate>category.detail.indifferent</option>
+                                    <option value="true" translate>category.detail.visible</option>
+                                    <option value="false" translate>category.detail.nonVisible</option>
+                                </select>
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" style="height: 80px;">
+                            <td>
+                                <input type="checkbox" ng-model="product.check" ng-change="checkProduct($index);" ng-click="$event.stopPropagation()">
+                            </td>
+                            <td>
+                                <input type="number" ng-model="product.sortWeight" ng-change="changePosition(product._id, product.sortWeight)"
+                                       style="width: 100%" ng-click="$event.stopPropagation()">
+                            </td>
+                            <td>{{product.code}}</td>
+                            <td>
+                                <img ng-src="/images/products/196x173/{{product.images[0]._id}}/{{product.images[0].url.split('/')[product.images[0].url.split('/').length - 1]}}" height="80" width="120" />
+                            </td>
+                            <td class=" sorting_1" style="line-height: 24px;">
+                                {{product.translation[lang].name}}
+                            </td>
+                            <td style="text-align: right;">{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? (product.price.ati.normal | number:2) + ' €' : 'N/A'}}</td>
+                            <td style="text-align: right;">{{product.stock.qty !== undefined && product.stock.qty != null ? product.stock.qty : 'N/A'}}</td>
+                            <td>{{product.type | nsProductTypeName}}</td>
+                            <td>
+                                <span style="font-size: 16px" ng-bind-html='product.active | checked'></span>
+                            </td>
+                            <td>
+                                <span style="font-size: 16px" ng-bind-html='product._visible | checked'></span>
+                            </td>
+                            <td>
+                                <button type="button" ng-click="goToProductDetails(product.type, product.code)" class="btn btn-default pull-right"
+                                    translate>product.list2.edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <pagination total-items="totalItems" page="currentPage" on-select-page="pageChanged(page)"
+                            items-per-page="itemPerPage" max-size="10" boundary-links="true" rotate="false"></pagination>
+            </div>
+            <div id="filters" class="tab-pane fade">
+                <div class="row col-sm-12">
+                    <ng-form novalidate name="filtersForm">
+                        <!--<div class="col-sm-12 text-right">
+                            hériter les filtres des catégories parentes : <ns-switch name="inherit" ng-model="category.filters.attributes.inherit"></ns-switch> // TODO P4
+                        </div>-->
+
+                        <div class="ol-sm-12">
+                            <h3 class="row col-sm-12" style="margin-bottom: 20px" translate>category.detail.selectAttr</h3>
+
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <select class="form-control" size="20" ng-model="selectedAttributes" multiple
+                                            ng-disabled="category.filters.attributes.inherit" ng-options="attribute.code for attribute in usedInFilters"></select>
+                                </div>
+
+                                <div class="col-sm-2 text-center">
+                                    <div class="row">
+                                        <button type="button" class="btn btn-default btn-block" ng-click="moveItem(selectedAttributes, true)"
+                                                ng-disabled="category.filters.attributes.inherit" translate>
+                                            category.detail.addSelect<span class="fa fa-chevron-right"></span>
+                                        </button>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success btn-block" ng-click="moveAll(usedInFilters, category.filters.attributes)"
+                                                ng-disabled="category.filters.attributes.inherit" translate>
+                                            category.detail.addAll<span class="fa fa-chevron-right"></span>
+                                        </button>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <button type="button" class="btn btn-default btn-block" ng-click="moveItem(selectedFilters, false)"
+                                                ng-disabled="category.filters.attributes.inherit" translate>
+                                            <span class="fa fa-chevron-left"></span>category.detail.supprSelect
+                                        </button>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <button type="button" class="btn btn-danger btn-block" ng-click="moveAll(category.filters.attributes, usedInFilters)"
+                                                ng-disabled="category.filters.attributes.inherit" translate>
+                                            <span class="fa fa-chevron-left"></span>category.detail.supprAll
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <select class="form-control" size="20" ng-model="selectedFilters" multiple
+                                            ng-disabled="category.filters.attributes.inherit" ng-options="filter.code for filter in category.filters.attributes"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-form>
+                </div>
+            </div>
+            <div id="rules" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ng-form novalidate name="ruleForm" ng-submit="">
+                            <ns-rules rule="rule" type="category"></ns-rules>
+                        </ng-form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div align="right ">
+            <button type="button " class="btn btn-danger ng-scope " ng-click="removeMenu() ">Supprimer</button>
+            <button type="button " class="btn btn-success " ng-click="save() ">Sauvegarder</button>
+            <br />
+            <br />
+        </div> -->
+    </form>
+</div>
+
+<!--<div class="modal-footer ">
+<button class="btn btn-default " ng-click="ok() ">OK</button>
+<button class="btn btn-default " ng-click="cancel() ">Annuler</button>
+</div> -->

@@ -1,0 +1,85 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0
+}
+
+#field_quantity_1 {
+    -moz-appearance: textfield;
+}
+
+.list-actions,
+.list-images>li {
+    list-style: none;
+}
+
+.product__entry {
+    margin-top: 10px;
+}
+
+figure>img {
+    display: block;
+    margin: 30px auto;
+}
+
+.popup__body h4 { text-align: center; }
+
+.list-images {
+    display: flex;
+    justify-content: center;
+}
+
+@media (min-width: 767px) {
+    .associated_product_tab, .customer_reviews_tab {
+        display: none;
+    }
+}
+@media (max-width: 767px) {
+    .associated_product_tab, .customer_reviews_tab {
+        display: block;
+    }
+}
+
+.form__body .section .form-group {
+    margin-left: 0;
+}
+
+.form__body .section .flex-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.form__body .section .flex-checkbox input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.form__body .section .custom-control-label {
+    width: 100px;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+}
+
+.form__body .section img {
+    max-width: 95%;
+    max-height: 95%;
+    margin-left: 20px;
+}
+
+.form__body .section span {
+    margin-left: 40px;
+}
+
+.form-footer button {
+    width: 100%;
+}
+
+.modifier-popup__wrap {
+    width: 525px;
+    max-width: 100%;
+    margin: auto;
+    z-index: 1050;
+    padding: 0.75rem 2rem;
+}

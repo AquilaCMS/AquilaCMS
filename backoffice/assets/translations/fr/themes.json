@@ -1,0 +1,18 @@
+{
+    "t1": "Thèmes",
+    "themes": "Thèmes",
+    "defaut": "Défaut :",
+    "use": "Utiliser",
+    "custom": "Personnalisés :",
+    "themeChoice": "Choix du thème",
+    "currentThemeVar":"Modifier les variables du thème courant.",
+    "noThemeVar":"Pas de variables du thème courant",
+    "themePort": "Port du thème",
+    "myTheme": "Mes thèmes",
+    "customisation": "Personnalisation",
+    "newtheme": "Ajout d'un theme",
+    "themeDatas": "Données du thème",
+    "themeDatasLead": "Installer les données du thème",
+    "themeDatasOverride": "Ecraser les données existantes",
+    "remove":"Supprimer le thème"
+}

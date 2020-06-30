@@ -1,0 +1,87 @@
+{
+  "collection": "gallery",
+  "datas": [
+    {
+      "initItemNumber": 9,
+      "maxColumnNumber": 3,
+      "_id": "5da5758bde6bed65e1d2a559",
+      "code": "gallery1",
+      "items": [
+        {
+          "src": "medias/gallery/Fashion_homme.jpg",
+          "srcset": [
+            "medias/gallery/Fashion_homme.jpg"
+          ],
+          "sizes": [],
+          "content": "",
+          "alt": "Fashion homme",
+          "order": 2,
+          "extension": ".jpg",
+          "_id": "5da5759bde6bed65e1d2a55a"
+        },
+        {
+          "src": "medias/gallery/fashion.jpg",
+          "srcset": [
+            "medias/gallery/fashion.jpg"
+          ],
+          "sizes": [],
+          "content": "",
+          "alt": "fashion",
+          "order": 1,
+          "extension": ".jpg",
+          "_id": "5da575a7de6bed65e1d2a55c"
+        },
+        {
+          "src": "medias/gallery/Flotte.jpg",
+          "srcset": [
+            "medias/gallery/Flotte.jpg"
+          ],
+          "sizes": [],
+          "content": "",
+          "alt": "Flotte",
+          "order": 3,
+          "extension": ".jpg",
+          "_id": "5da575afde6bed65e1d2a55d"
+        },
+        {
+          "src": "medias/gallery/Girl.jpg",
+          "srcset": [
+            "medias/gallery/Girl.jpg"
+          ],
+          "sizes": [],
+          "content": "",
+          "alt": "Girl",
+          "order": 4,
+          "extension": ".jpg",
+          "_id": "5da575b3de6bed65e1d2a55e"
+        },
+        {
+          "src": "medias/gallery/Streetwear.jpg",
+          "srcset": [
+            "medias/gallery/Streetwear.jpg"
+          ],
+          "sizes": [],
+          "content": "",
+          "alt": "Streetwear",
+          "order": 5,
+          "extension": ".jpg",
+          "_id": "5da575b6de6bed65e1d2a55f"
+        },
+        {
+          "src": "medias/gallery/Woman.jpg",
+          "srcset": [
+            "medias/gallery/Woman.jpg"
+          ],
+          "sizes": [],
+          "content": "",
+          "alt": "Woman",
+          "order": 6,
+          "extension": ".jpg",
+          "_id": "5da575bade6bed65e1d2a560"
+        }
+      ],
+      "createdAt": "2020-05-15T07:30:19.411Z",
+      "updatedAt": "2020-05-15T07:31:28.453Z"
+    }
+  ]
+}

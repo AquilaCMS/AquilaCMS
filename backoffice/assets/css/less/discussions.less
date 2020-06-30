@@ -1,0 +1,141 @@
+/* Discussions
+=================================================================== */
+.discussions {
+	
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		
+		li {
+			font-size: 12px;
+			border: 1px solid lighten(@grey, 15%);
+			position: relative;
+			background: white;
+			margin: 0 40px 20px 80px;
+			padding: 10px;
+			
+			&:before {
+				content: '';
+				width: 20px;
+				height: 20px;
+				top: 15px;
+				left: -20px;
+				position: absolute;
+				background: url("../img/disc-arrow.png") no-repeat;
+				background-size: 20px 20px;
+			}
+
+			.author {
+				position: absolute;
+				z-index:1;
+				width: 60px;
+				float: left;
+				top: 0px;
+				left: -70px;
+				
+				img {
+					height: 50px;
+					.border-radius(2px);
+				}
+				
+			}
+			
+			.name {
+				position: absolute;
+				top: 10px;
+				left: 10px;
+				width: 100%;
+				background: lighten(@grey, 20%);
+				padding: 5px 10px 5px 10px;
+			}
+			
+			.date {
+				position: absolute;
+				top: 10px;
+				right: -1px;
+				z-index:1;
+				background: lighten(@grey, 15%);
+				padding: 5px 20px 5px 10px;
+			}
+			
+			.delete {
+				position: absolute;
+				background: lighten(@grey, 10%);
+				top: 10px;
+				right: -30px;
+				padding: 5px 10px;
+				display: inline-block;
+				cursor: pointer;
+			}
+			
+			.message {
+				border-bottom: 1px solid lighten(@grey, 20%);
+				margin: 20px -10px 0px -10px;
+				padding: 20px;
+				font-size: 12px;
+			}
+			
+			ul {
+				overflow: hidden;
+				
+				li {
+					.box-shadow;
+					border: none;
+					border-bottom: 1px solid lighten(@grey, 20%);
+					margin: 0 -10px;
+					padding-left: 70px;
+					
+					&:before {
+						display: none;
+					}
+					
+					&:last-child {
+						border-bottom: none;
+						
+					}
+					
+					.author {
+						top: 10px;
+						left: 10px;
+
+						img {
+							height: 40px;
+							.border-radius(2px);
+						}
+
+					}
+					
+					.name {
+						left: 70px;
+					}
+					
+					.date {
+						background: transparent;
+						right: 30px;
+					}
+					
+					.delete {
+						background: transparent;
+						right: 10px;
+					}
+					
+					.message {
+						border-bottom: none;
+					}
+					
+					textarea {
+						.box-shadow;
+						width: 100%;
+						font-size: 12px;
+						padding: 5px;
+					}
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+}

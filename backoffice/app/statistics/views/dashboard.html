@@ -1,0 +1,175 @@
+
+<h3 translate="stats.today">Aujourd'hui</h3>
+
+<div class="row start_stats">
+    <div class="col-md-2" style="background:#c5e1a5;border: 1px solid #aed581">
+        <i class="fa fa-users" style="color: #aed581"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.today.attendance}}</b>
+            <br />
+            <span translate="stats.attendance">
+                Fréquentation
+            </span>
+        </p>
+    </div>
+
+    <div class="col-md-2" style="background:#e57373;border: 1px solid #ef5350">
+        <i class="fa fa-stack-overflow" style="color: #ef5350"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.today.transfo | number:2}}</b>
+            <br />
+            <span translate="stats.transfo">
+                Taux transformation
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#ffd54f;border: 1px solid #ffca28">
+        <i class="fa fa-usd" style="color: #ffca28"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}" style="font-size: 30px;">{{adminStats.today.ca | number:2}}</b><b class="euro">€</b>
+            <br />
+            <span translate="stats.sales">
+                Chiffre d’affaires net
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#a5d6a7;border: 1px solid #81c784">
+        <i class="fa fa-credit-card" style="color: #81c784"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}" style="font-size: 35px;">{{adminStats.today.averageCart | number:2}}</b><b class="euro">€</b>
+            <br />
+            <span translate="stats.basket">
+                Panier moyen net
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#90caf9;border: 1px solid #64b5f6">
+        <i class="fa fa-cart-arrow-down" style="color: #64b5f6"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.today.nbOrder}}</b>
+            <br />
+            <span translate="stats.orders">
+                Nombre commandes
+            </span>
+        </p>
+    </div>
+</div>
+
+
+<br/>
+<h3 translate="stats.yesterday">Hier</h3>
+
+<div class="row start_stats">
+    <div class="col-md-2" style="background:rgb(245, 245, 185);border: 1px solid rgb(245, 245, 185)">
+        <i class="fa fa-users" style="color: #FFFFD1"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.yesterday.attendance}}</b>
+            <br />
+            <span translate="stats.attendance">
+                Fréquentation
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#a5d6a7;border: 1px solid #a5d6a7">
+        <i class="fa fa-stack-overflow" style="color: #81c784"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.yesterday.transfo | number:2}}</b>
+            <br />
+            <span translate="stats.transfo">
+                Taux transformation
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#deecff;border: 1px solid #deecff">
+        <i class="fa fa-usd" style="color: #c6cfff"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}" style="font-size: 30px;">{{adminStats.yesterday.ca | number:2}}</b><b class="euro">€</b>
+            <br />
+            <span translate="stats.sales">
+                Chiffre d’affaires net
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#F5DEB3;border: 1px solid #F5DEB3">
+        <i class="fa fa-credit-card" style="color: #FFE4C4"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}" style="font-size: 35px;">{{adminStats.yesterday.averageCart | number:2}}</b><b class="euro">€</b>
+            <br />
+            <span translate="stats.basket">
+                Panier moyen net
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#FFCCF9;border: 1px solid #FFCCF9">
+        <i class="fa fa-cart-arrow-down" style="color: #FFB5E8"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.yesterday.nbOrder}}</b>
+            <br />
+            <span translate="stats.orders">
+                Nombre commandes
+            </span>
+        </p>
+    </div>
+</div>
+
+
+
+
+<br/>
+<h3 translate="stats.last30">30 derniers jours</h3>
+
+
+<div class="row start_stats">
+    <div class="col-md-2" style="background:#ab47bc;border: 1px solid #9c27b0">
+        <i class="fa fa-users" style="color: #9c27b0"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.month.attendance}}</b>
+            <br />
+            <span translate="stats.attendance">
+                Fréquentation
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#a1887f;border: 1px solid #8f7f79">
+        <i class="fa fa-stack-overflow" style="color: #8f7f79"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.month.transfo | number:2}}</b>
+            <br />
+            <span translate="stats.transfo">
+                Taux transformation
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#ef5350;border: 1px solid #f44336">
+        <i class="fa fa-usd" style="color: #f44336"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}" style="font-size: 30px;">{{adminStats.month.ca | number:2}}</b><b class="euro">€</b>
+            <br />
+            <span translate="stats.sales">
+                Chiffre d’affaires net
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#7986cb;border: 1px solid #5c6bc0">
+        <i class="fa fa-credit-card" style="color: #5c6bc0"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}" style="font-size: 35px;">{{adminStats.month.averageCart | number:2}}</b><b class="euro">€</b>
+            <br />
+            <span translate="stats.basket">
+                Panier moyen net
+            </span>
+        </p>
+    </div>
+    <div class="col-md-2" style="background:#80cbc4;border: 1px solid #4db6ac">
+        <i class="fa fa-cart-arrow-down" style="color: #4db6ac"></i>
+        <p>
+            <b ng-class="{'fa fa-spinner fa-spin': obj.loading}">{{adminStats.month.nbOrder}}</b>
+            <br />
+            <span translate="stats.orders">
+                Nombre commandes
+            </span>
+        </p>
+    </div>
+    <!-- <a class="btn" ng-href="{{ downloadLink }}" download="aquila_stats.json">Export to JSON</a> -->
+</div>
+

@@ -1,0 +1,30 @@
+/*
+    Mise en forme du slider d'images (NSSlider) et du slider de blocs CMS (NSBlockSlider)
+*/
+
+.NSBlockSlider {
+    overflow: hidden;
+}
+
+.NSSlider .slick-prev,
+.NSBlockSlider .slick-prev {
+    left: 10px;
+    z-index: 1;
+}
+.NSSlider .slick-next,
+.NSBlockSlider .slick-next {
+    right: 10px;
+    z-index: 1;
+}
+.NSSlider .slick-dots,
+.NSBlockSlider .slick-dots {
+    bottom: 7px;
+}
+
+.NSBlockSlider .slick-slider {
+    padding: 20px 40px;
+}
+
+.NSBlockSlider .slick-arrow::before {
+    color: black;
+}

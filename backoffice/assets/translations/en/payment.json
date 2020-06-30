@@ -1,0 +1,56 @@
+{
+    "edit": {
+        "payment": "Payment",
+        "order": "Order",
+        "mail": "E-mail",
+        "nom": "Name",
+        "createdBy": "Created by",
+        "creationDate": "Creation date",
+        "opDate": "Transaction date",
+        "status": "Status",
+        "payMode": "Payment mode",
+        "transacNb": "Transaction number",
+        "yves": "Price",
+        "comment": "Comment",
+        "export": "Export",
+        "ok": "OK",
+        "cancel": "Cancel"
+    },
+    "list": {
+        "t1": "Payments",
+        "ph1": "Search...",
+        "ph2": "Your text",
+        "ph3": "ATI Price",
+        "ph4": "Price",
+        "ph5": "Number of days",
+        "debut": "Beginning",
+        "fin": "End",
+        "export": "Export",
+        "advSearch": "Advanced search",
+        "search": "Search",
+        "orderPrice": "Order price",
+        "a": "with a flexibility of",
+        "pres": "€",
+        "orderDate": "Order date",
+        "presJour": "day(s)",
+        "status": "Status",
+        "todo": "To do",
+        "done": "Done",
+        "undone": "Undone",
+        "canceled": "Canceled",
+        "type": "Type",
+        "payment": "Payment",
+        "refund": "Refund",
+        "order": "Order",
+        "customer": "Customer",
+        "date": "Date",
+        "prixTTC": "ATI Price"
+    },
+    "list2": {
+        "priceTotal": {
+            "min": "Min",
+            "max": "Max"
+        },
+        "status": "All"
+    }
+}

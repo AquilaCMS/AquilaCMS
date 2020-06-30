@@ -1,0 +1,64 @@
+/* Support tickets
+=================================================================== */
+ul.tickets {
+    margin:0 0 0 -40px;
+
+    li:last-child {
+        border-bottom: none;
+    }
+
+    li:first-child {
+        border-top: none;
+        border-bottom: 1px solid @borderGrey;
+    }
+
+    li {
+        list-style: none;
+        padding: 5px 0;
+        border-bottom: 1px solid @borderGrey;
+        font-size: 12px;
+		
+		&.ticket {
+			.left {
+				display: inline-block;
+				width: 60%
+			}
+			
+			.right {
+				display: inline-block;
+				width: 39%;
+				text-align: right;
+			}
+
+			.status {
+				width: 100px;
+				display: inline-block;
+				text-align: center;
+			}
+
+			.date {
+				width: 150px;
+				display: inline-block;
+				text-align: center;
+			}
+
+			.title {
+				display: inline-block;
+				font-weight: bold;
+			}
+
+			.name {
+				display: inline-block;
+				
+			}
+
+			.number {
+				display: inline-block;
+				font-weight: bold;
+				margin-left: 20px;
+			}
+
+		}
+    }
+       
+}

@@ -1,0 +1,13 @@
+{
+    "t1": "Configuration composant {{type}}",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "pdtBorderColor": "Couleur du contour des produits",
+    "defCol": "Couleur par defaut",
+    "nbPdtsDisplayed": "Nombre de produits affichés",
+    "defPdtsManu": "Definir les produits manuellement",
+    "idPdt": "ID Produit",
+    "nomPdt": "Nom du produit : ",
+    "qt": "Quantité : ",
+    "infoMsg": "Message d'information"
+}

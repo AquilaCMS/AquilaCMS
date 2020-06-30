@@ -1,0 +1,34 @@
+<div class="modal-header">
+    <ol class="breadcrumb">
+        <li style="font-weight: bold;" translate>bundle.new.addSection</li>
+    </ol>
+</div>
+<form name="form" class="form-horizontal" role="form" ng-submit="validate(bundleSection)">
+<div class="modal-body">
+
+    <div class="row">
+        <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" translate>bundle.new.ref</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="bundleSection.ref" required>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label" translate>bundle.new.type</label>
+                <div class="col-sm-9">
+                    <select class="form-control" ng-model="bundleSection.type" ng-options="type.code as type.name for type in types" required></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()" translate>bundle.new.cancel</button>
+    <button type="submit" class="btn btn-success" translate>bundle.new.valider</button>
+</div>
+</form>

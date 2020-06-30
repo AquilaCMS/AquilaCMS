@@ -1,0 +1,49 @@
+<table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+       id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+    <thead>
+        <tr role="row" class="pointer">
+            <th role="columnheader" tabindex="0" 
+                aria-controls="DataTables_Table_0" 
+                rowspan="1" colspan="1"
+                ng-repeat="column in columns">
+                <a ng-click="sort.type = column.field; sort.reverse = !sort.reverse; onPageChange(1)">
+                    {{column.title}}
+                    <span ng-show="sort.type == column.field && !sort.reverse" class="ico-chevron-down"></span>
+                    <span ng-show="sort.type == column.field && sort.reverse" class="ico-chevron-up"></span>
+                </a>
+            </th>
+            <!-- <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                style="width: 20%" ng-if="hasActions">
+                Actions
+            </th> -->
+        </tr>
+    </thead>
+    <tbody role="alert" aria-live="polite" aria-relevant="all">
+        <tr class="pointer"
+            ng-class-odd="'odd'" ng-class-even="'even'"
+            ng-click="config.edit(item)"
+            ng-repeat="item in items">
+            <td ng-repeat="column in columns">
+                <span ng-switch="checkFormat(item[column.field], column)">
+                    <span ng-switch-when="custom_format">{{executeFormat(item[column.field], column.format)}}</span>
+                    <span ng-switch-when="image"><img ng-src="{{item[column.field]}}" height="80" width="120"/></span><!--TODO: revoir taille image -->
+                    <span ng-switch-when="bool" ng-bind-html="item[column.field] | checked"></span>
+                    <span ng-switch-when="date">{{item[column.field]| date:dd/MM/yyyy}}</span>
+                    <span ng-switch-default>{{item[column.field]}}</span>
+                </span>
+            </td>
+            <!-- <td ng-if="hasActions">
+                <a ng-if="hasEdit" ng-click="config.edit(item)" class="btn btn-blue btn-with-icon">
+                    <i class="ico-magnifier-primary"></i>
+                    <span class="text">Consulter</span>
+                </a>
+                <a ng-if="hasRemove" ng-click="removeElmt(item)" class="btn btn-red btn-with-icon">
+                    <i class="ico-trash"></i>
+                    <span class="text">Supprimer</span>
+                </a>
+            </td> -->
+        </tr>
+    </tbody>
+</table>
+<pagination total-items="totalItems" page="currentPage" on-select-page="onPageChange(page)" items-per-page="itemsPerPage"
+            max-size="maxSize" boundary-links="true" rotate="false"></pagination>

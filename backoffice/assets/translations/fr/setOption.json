@@ -1,0 +1,23 @@
+{
+    "detail": {
+        "t1": "Détail Jeu d'Options",
+        "code": "Code",
+        "nom": "Nom",
+        "createOpt": "CRÉER OPTION",
+        "save": "Enregistrer",
+        "delete": "Supprimer"
+    },
+    "list": {
+        "t1": "Jeux d'options",
+        "code": "Code",
+        "nom": "Nom"
+    },
+    "new": {
+        "t1": "Créer un nouveau jeu d'options",
+        "ph1": "(les espaces, accents et caracteres speciaux seront supprimes)",
+        "ph2": "Nom",
+        "code": "Code",
+        "nom": "Nom",
+        "save": "Enregistrer"
+    }
+}

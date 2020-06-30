@@ -1,0 +1,66 @@
+<ns-box data-title="admin-list.t2" title-icon="fa fa-shield fa-lg" close-href="#/list">
+    <form novalidate class="form-horizontal" role="form">
+        <div class="form-group">
+            <label for="firstname" class="col-sm-2 control-label" translate>admin-list.prenom</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="firstname" placeholder="Prénom" ng-model="user.firstname">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="lastname" class="col-sm-2 control-label" translate>admin-list.nom</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="lastname" placeholder="Nom" ng-model="user.lastname">
+            </div>
+        </div>
+
+        <!-- <div class="form-group">
+            <label for="username" class="col-sm-2 control-label" translate>admin-list.username</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="username" placeholder="Nom d'utilisateur"
+                       ng-model="user.username" required>
+            </div>
+        </div> -->
+
+        <div class="form-group">
+            <label for="email" class="col-sm-2 control-label" translate>admin-list.mail</label>
+            <div class="col-sm-9">
+                <input type="email" class="form-control" id="email" placeholder="E-mail" ng-model="user.email" required>
+            </div>
+        </div>
+
+        <!-- <div class="form-group">
+            <label for="password" class="col-sm-2 control-label" translate>admin-list.mdp</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="password" placeholder="Mot de passe"
+                       ng-model="user.password" required>
+            </div>
+        </div> -->
+        <br/>
+        <div class="form-group">
+            <div class="col-sm-10 col-md-offset-1">
+                <label translate>admin-list.cocher</label>
+                <br /><br/>
+                <br /><br />
+                <div style="display: flex;flex-wrap: wrap;flex-direction: row;">
+
+                    <div ng-repeat="oneItem in accessList" style="width: 300px">
+                        <label>
+                            <input type="checkbox" value="{{oneItem.code}}"
+                                ng-checked="user.accessList.indexOf(oneItem.code) == -1"
+                                ng-click="toggleSelection(oneItem.code)"><span translate>{{oneItem.translate}}</span>
+                        </label><br />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6 col-md-offset-1">
+                <button type="button" class="btn btn-default" ng-click="reset()" translate>admin-list.reset</button>
+                <button type="button" class="btn btn-default" ng-click="save(user)" translate>admin-list.save</button>
+            </div>
+        </div>
+    </form>
+</ns-box>

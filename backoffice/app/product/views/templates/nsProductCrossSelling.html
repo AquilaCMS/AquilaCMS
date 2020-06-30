@@ -1,0 +1,35 @@
+<div>
+    <h3 style="display: inline" translate>product.cross-selling.pdtsAssoc</h3>
+    <button type="button" class="btn btn-default pull-right" style="width: 120px" ng-click="selectProducts()" translate>
+        product.cross-selling.add
+    </button>
+</div>
+
+<div ng-repeat="prd in associatedPrds" class="image-frame" style="margin-top: 15px;">
+    <div class="row">
+        <div class="col-sm-4 img-responsive">
+            <img ng-src="/images/products/300x300-50/{{prd.images[0]._id}}/{{prd.images[0].title+prd.images[0].extension}}" class='no-product-image' style="min-width: 100px;" />
+        </div>
+        <div class="col-sm-8">
+            <div class="row">
+                <label class="col-sm-4" translate>product.cross-selling.nom</label>
+
+                <div class="col-sm-8">
+                    {{prd.translation[lang].name}}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-4" translate>product.cross-selling.desc</label>
+
+                <div class="col-sm-8">
+                    {{prd.translation[lang].description2.title}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12" style="text-align: right">
+        <button type="button" class="btn btn-danger" ng-click="removeElementAssociatedPrds($index)" translate>
+            product.cross-selling.cancel
+        </button>
+    </div>
+</div>

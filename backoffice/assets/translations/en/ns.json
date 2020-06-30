@@ -1,0 +1,59 @@
+{
+    "new": "New",
+
+    "save": "Save",
+    "saveQuit": "Save and quit",
+    "dup": "Duplicate",
+    "delete": "Delete",
+
+    "cmsBlocks": "CMS Blocks",
+    "add": "Add",
+    "title": "Title",
+    "content": "Content",
+
+    "depFile": "Drop your file here",
+
+    "depPic": "Drop your picture here",
+
+    "addr1": "Address 1",
+    "addr2": "Address 2",
+    "addr3": "Address 3",
+    "zipCode": "ZIP Code",
+    "city": "City",
+    "loading": "Loading, please wait...",
+    "pays": "Country",
+
+    "ret": "Back",
+
+    "si": "If",
+    "et": "all",
+    "ou": "one of",
+    "none": "none of",
+    "condition": " those conditions are/is respected:",
+    "selection": "For a selection of products with",
+    "cond": " those conditions:",
+    "fieldInput": "INPUT FIELD",
+    "comp": "COMPARED TO",
+    "value": "VALUE",
+
+    "switch": {
+        "yes": "Yes",
+        "no": "No"
+    },
+
+    "rule": {
+        "qty": "en-Quantité supérieure ou égal à",
+        "type": "en-Type de remise",
+        "value": "en-La valeur"
+    },
+    "contains": "Contient",
+    "ncontains": "Ne contient pas",
+    "eq": "Egal à",
+    "neq": "Différent de",
+    "startswith": "Commence par",
+    "endswith": "Fini par",
+    "gte": "Plus grand ou egal à",
+    "gt": "Plus grand que",
+    "lte": "Plus petit que",
+    "lt": "Plus petit ou egal à"
+}

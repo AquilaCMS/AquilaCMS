@@ -1,0 +1,8 @@
+<span>
+    <select class="form-control" style="width: 60px" ng-model="time.hours" ng-change="onTimeChange()" ng-options="hour for hour in allHours">
+        <option value="">HH</option>
+    </select>
+    <select class="form-control" style="width: 60px" ng-model="time.minutes" ng-change="onTimeChange()" ng-options="minute for minute in allMinutes">
+        <option value="">mm</option>
+    </select>  
+</span>

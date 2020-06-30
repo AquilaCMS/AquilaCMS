@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>AngularUI - TinyMCE Demo</title>
+  <script type="text/javascript" src="../bower_components/tinymce/tinymce.min.js"></script>
+  <script type="text/javascript" src="../bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="../src/tinymce.js"></script>
+  <script type="text/javascript" src="demo.js"></script>
+</head>
+<body ng-app="ui.tinymce" ng-controller="DemoCtrl as demo">
+  <form method="post">
+    <textarea ui-tinymce
+      ng-model="demo.tinymce"
+      ng-change="demo.updateHtml()"></textarea>
+  </form>
+  <div ng-bind-html="demo.tinymceHtml"></div>
+</body>
+</html>

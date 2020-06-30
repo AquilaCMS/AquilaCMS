@@ -1,0 +1,323 @@
+/* Page: Inbox
+=================================================================== */
+.inbox {
+	
+	.inbox-menu {
+		background: lighten(@grey, 20%);
+		border-right: 1px solid lighten(@grey, 15%);
+		padding-top: 30px;
+
+		.btn {
+			width: 100%;
+		}
+
+		ul {
+			margin-top: 30px;
+			padding: 0;
+			list-style: none;
+
+			li {
+				height: 30px;
+				margin: 0 -15px;
+				padding: 5px 15px;
+				position: relative;
+
+				&:hover,
+				&.active {
+					background: lighten(@grey, 15%);
+				}
+
+				&.title {
+					margin: 20px -15px -10px -15px;
+					text-transform: uppercase;
+					font-size: 10px;
+					color: @grey;
+
+					&:hover {
+						background: transparent;
+					}
+				}
+
+				a {
+					display: block;
+					width: 100%;
+					text-decoration: none;
+					color: @darkGrey;
+
+					i {
+						margin-right: 10px;
+					}
+
+					.label {
+						position: absolute;
+						top: 10px;
+						right: 15px;
+						display: block;
+						min-width: 14px;
+						height: 14px;
+						padding: 2px;
+					}
+
+				}
+
+			}
+		}
+
+	}
+
+	.buttons {
+
+		margin: 30px 0;
+
+		.btn,
+		.btn-group .btn {
+			border: 1px solid lighten(@grey, 15%);
+		}
+
+		.btn-group .caret {
+			border-top-color:  darken(@grey,20%);
+			margin-top: -4px;
+			margin-left: 5px;
+		}
+
+	}
+
+	.messages {
+		background: white;
+		margin: 0;
+		border-right: 1px solid lighten(@grey, 15%);
+	}
+
+	ul.messages-list {
+		list-style: none;
+		padding: 0;
+
+		li {
+			.border-radius(2px);
+			cursor: pointer;
+			margin-bottom: 10px;
+			padding: 10px;
+
+			&.unread {
+				.header, .title {
+
+					font-weight: bold;
+
+				}
+			}
+
+			&.active {
+				background: lighten(@grey, 20%);
+				border: 1px solid lighten(@grey, 15%);
+				padding: 9px;
+
+				.action {
+					color: lighten(@grey, 5%);
+				}
+			}
+
+			.header {
+				margin: 0 0 5px 0;
+
+				.from {
+					width: 49.9%;
+					white-space: nowrap;
+					overflow:hidden !important;
+					text-overflow: ellipsis;	
+				}
+
+				.date {
+					width: 50%;
+					text-align: right;
+					float: right;	
+				}
+
+			}
+
+			.title {
+				margin: 0 0 5px 0;
+				white-space: nowrap;
+				overflow:hidden !important;
+				text-overflow: ellipsis;	
+			}
+
+			.description {
+				font-size: 12px;
+				padding-left: 29px;
+			}
+
+			.action {
+				display: inline-block;
+				width: 16px;
+				text-align: center;
+				margin-right: 10px;
+				color: lighten(@grey, 15%);
+
+				.fa-check-square-o {
+					margin: 0 -1px 0 1px;
+				}
+
+				.fa-square {
+					float: left;
+					margin-top: -16px;
+					margin-left: 4px;
+					font-size: 11px;
+					color: white;
+				}
+
+				.fa-star.bg {
+					float: left;
+					margin-top: -16px;
+					margin-left: 3px;
+					font-size: 12px;
+					color: white;
+				}
+
+			}
+
+		}
+
+	}
+
+	.message {
+		margin: 0;
+		background: white;
+		border-right: 1px solid lighten(@grey, 15%);
+
+		textarea {
+			color: @darkGrey !important;
+		}
+
+		.message-title {
+			padding-top: 10px;
+			font-weight: bold;
+			font-size: 14px;
+		}
+
+		.header {
+			margin: 20px 0 30px 0;
+			padding: 10px 0 10px 0;
+			border-top: 1px solid lighten(@grey, 20%);
+			border-bottom: 1px solid lighten(@grey, 20%);
+
+			.avatar {
+				.border-radius(2px);
+				height: 34px;
+				width: 34px;
+				float: left;
+				margin-right: 10px;		
+			}
+
+			i {
+				margin-top: 1px;
+			}
+
+			.from {
+				display: inline-block;
+				width: 50%;
+				font-size: 12px;
+				margin-top: -2px;
+				color: @grey;
+
+				span {
+					display: block;
+					font-size: 14px;
+					font-weight: bold;
+					color: @darkGrey;
+				}
+			}
+
+			.date {
+				display: inline-block;
+				width: 29%;
+				text-align: right;
+				float: right;
+				font-size: 12px;
+				margin-top: 18px;
+			}
+
+		}
+
+		.attachments {
+			border-top: 3px solid #f9f9f9;
+			border-bottom: 3px solid #f9f9f9;
+			padding: 10px 0px;
+			margin-bottom: 20px;
+			font-size: 12px;
+
+			ul {
+				list-style: none;
+				margin: 0 0 0 -40px;
+
+
+				li {
+					margin: 10px 0;
+
+					.label {
+						padding: 2px 4px;
+					}
+
+					span.quickMenu {
+						float: right;
+						text-align: right;
+
+						.glyphicons {
+							padding: 5px 0 5px 25px;
+
+							&:before{
+								font-size: 14px;
+								margin: -2px 0px 0px 5px;
+								color: @grey;
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	.contacts {
+		background: lighten(@grey, 20%);
+		padding-top: 30px;
+
+		.btn {
+			width: 100%;
+			margin-bottom: 30px;
+		}
+
+		ul {
+			padding: 0;
+			list-style: none;
+
+			li {
+				height: 30px;
+				margin: 0 -15px;
+				padding: 5px 15px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis !important;
+				position: relative;
+				cursor: pointer;
+
+				.label {
+					display: inline-block;
+					width: 6px;
+					height: 6px;
+					padding: 0;
+					margin: 0 5px 2px 0px;
+				}
+
+				&:hover {
+					background: lighten(@grey, 15%);
+				}
+
+			}
+		}
+	}	
+}

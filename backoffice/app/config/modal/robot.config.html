@@ -1,0 +1,23 @@
+<form name="formModal" class="form-horizontal" novalidate ng-submit="testMail(formModal)" role="form">
+
+
+    <div class="modal-header">
+        <span translate>config.environment.editRobot</span>
+    </div>
+    <div class="modal-body">
+        <div style="text-align: center">
+            <textarea style="width:95%;height:500px" ng-model="robot.text" required></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a download class="btn btn-success" ng-click="close()" translate>
+            config.environment.back
+        </a>
+        <a download class="btn btn-success" ng-click="save(robot.text)" translate>
+            config.environment.save
+        </a>
+    </div>
+
+
+
+</form>

@@ -1,0 +1,351 @@
+/* Header Section
+=================================================================== */
+.navbar {
+	margin: 0;
+	min-height: 40px;
+	border: none;
+	background: @darkGrey;
+	.border-radius;
+	z-index: 2;
+	
+	a {
+		color: #7b7b7b;
+		
+		i {
+			margin-top: 2px;
+		}
+		
+		&:hover i {
+			opacity: .8;
+			filter: alpha(opacity=80);
+			-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+		}
+		
+	}
+	
+	#search {
+		position: relative;
+		background: darken(@darkGrey, 5%);
+		height: 30px;
+		.border-radius(2px);
+		margin: 5px 0 5px 16%;
+		
+		select {
+			margin: 4px 0 0 -11px;
+			height: 22px;
+			line-height: 22px;
+			background: lighten(@darkGrey, 15%);
+			border: none;
+			color: white;
+			.border-radius(1px);
+			text-align: center;
+			text-align:-moz-center;
+			text-align:-webkit-center;
+			text-align: -khtml-center;
+			font-size: 12px;
+			cursor: pointer;
+			width: 30%;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			text-indent: 0.01px;
+			text-overflow: '';
+			padding: 2px 0px;
+		}
+		
+		@media screen and (-webkit-min-device-pixel-ratio:0) {
+		    select {
+				padding: 0px 15px;
+			}
+		}
+		
+		input {
+			margin-left: 5px;
+			width: 70%;
+			background: transparent;
+			border: none;
+			font-size: 12px;
+			color: white;
+		}
+		
+		i {
+			position: absolute;
+			top: 8px;
+			right: 10px;
+			color: white;
+		}
+	}
+}
+
+a.navbar-brand {
+	background: darken(@darkGrey, 5%);
+	text-align: center;
+	padding: 9px 0 10px 0 !important;
+	
+	span {
+		font-family: 'Kaushan Script', cursive;
+		color: #fff;
+		text-shadow: none;
+	}
+	
+	&.noBg {
+		background: @darkGrey;
+		border-bottom: none;
+	}
+	
+	&:hover {
+		background: darken(@darkGrey, 5%);
+	}
+}
+
+.header-nav {
+	position: relative;
+	padding: 0px;
+	color: #fff !important;
+	background: #000 !important;
+	
+	.btn {
+		
+	  	display: inline-block;
+		margin: 0px;
+	  	font-size: 15px;
+	  	text-align: center;
+	  	background: transparent;
+		border: none;
+	  	.border-radius;
+	  	.box-shadow;
+	
+	}
+	
+	a.btn  {
+		position: relative;
+		height: 30px;
+		width: 40px;
+		background: lighten(@darkGrey, 5%);
+		color: #fff !important;
+		text-shadow: none !important;
+		padding: 5px 0 !important;
+		margin: 5px 3px;
+		.border-radius(2px);
+		font-size: 12px;
+		
+		.number {
+			position: absolute;
+			font-size: 8px;
+			top: -3px;
+			right: 3px;
+		}
+		
+		&.account {
+			background: transparent;
+			height: 40px;
+			width: auto;
+			padding: 8px 0px 5px 10px !important;
+			margin: 0 -15px 0 3px;
+			
+			.avatar {
+
+				width: 60px;
+
+				img {
+					margin: -13px -10px -14px 10px;
+					height: 40px;
+					width: 40px;
+				}
+
+				float: right;
+
+			}
+		}
+		
+		&:hover {
+			background: darken(@darkGrey, 5%);
+		}
+	}
+	
+	.user {
+		display: inline-block;
+		text-align: left;
+		margin-top: -5px;
+		padding: 0px;
+		
+		.hello {
+			display: block;
+			font-size: 11px;
+			font-weight: bold;
+		}
+
+		.name {
+			display: block;
+			margin-top: -6px !important;
+			font-size: 13px;
+		}
+		
+	}
+			
+}
+
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  	color: white;
+  	background-color: darken(@darkGrey, 5%);
+  	outline: 0;
+	.box-shadow;
+}
+
+.dropdown-menu:after,
+.dropdown-menu:before {
+	display: none !important;
+}
+
+.dropdown-menu {
+  	position: absolute;
+  	top: 90%;
+  	left: 0;
+  	z-index: 1000;
+  	display: none;
+  	float: left;
+  	min-width: 166px;
+	max-width: 300px;
+  	padding: 0px;
+  	margin: 0;
+  	list-style: none;
+	text-shadow: none;
+  	background: white;
+  	border: 1px solid lighten(@grey,15%);
+  	.border-radius;
+  	.box-shadow;	
+}
+
+.dropdown-menu.pull-right {
+  	right: 0;
+  	left: auto;
+}
+
+.dropdown-menu .divider {
+  	margin: 0px 1px;
+}
+
+.dropdown-menu li a {
+  	display: block;
+  	padding: 5px 10px !important;
+  	clear: both;
+  	font-weight: normal;
+  	line-height: 20px;
+  	color: @darkGrey;
+  	white-space: normal !important;
+}
+
+.dropdown-menu li {
+	border-bottom: 1px solid lighten(@grey,20%);
+}
+
+.dropdown-menu li:last-child {
+	border-bottom: 0px !important;
+}
+
+.dropdown-menu li > a:hover,
+.dropdown-menu li > a:focus,
+.dropdown-submenu:hover > a {
+  	color: #ffffff;
+  	text-decoration: none;
+  	background: lighten(@mainColor,10%);
+}
+
+.dropdown-menu .active > a,
+.dropdown-menu .active > a:hover {
+  	color: #ffffff;
+  	text-decoration: none;
+  	.gradient(#0088cc, #0077b3);
+}
+
+.dropdown-menu .disabled > a,
+.dropdown-menu .disabled > a:hover {
+  	color: #999999;
+}
+
+.dropdown-menu .disabled > a:hover {
+  	text-decoration: none;
+  	cursor: default;
+  	background-color: transparent;
+}
+
+.dropdown-menu-title {
+	background: lighten(@grey,20%);
+	color: @darkGrey;
+	padding: 5px 10px;
+	display: block;
+}
+
+.dropdown-menu-sub-footer {
+	text-align: center;
+	background: lighten(@grey,20%);
+	cursor: pointer;
+}
+
+.dropdown-menu ul,
+.dropdown-menu ul li  {
+	padding: 0px !important;
+	margin: 0px !important;
+}
+
+ul.notifications li,
+ul.tasks li,
+ul.messages li{
+	min-width: 260px;
+}
+
+ul.notifications li .avatar img,
+ul.tasks li .avatar img,
+ul.messages li .avatar img {
+	float: left !important;
+	height: 40px;
+	width: 40px;
+	margin-top: 5px;
+	margin-right: 10px;
+  	.border-radius(2px);
+}
+
+ul.messages li .header {
+	display: block;
+}
+
+ul.messages li .header .from {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+ul.notifications li .icon {
+	margin: -5px 10px -5px -10px !important;
+	padding: 7px 10px 9px 10px;
+	color: white;
+	width: 40px;
+	display: inline-block;
+	text-align: center;
+	
+	.backgroundColor;
+	
+}
+
+ul.notifications li .time,
+ul.tasks li .header .percent,
+ul.messages li .header .time {
+	font-size: 11px;
+	font-weight: bold;
+	font-style: italic;
+	position: absolute;
+	right: 5px;
+}
+
+ul.tasks li .title,
+ul.notifications li .message {
+	font-size: 12px;
+}
+
+ul.notifications li.warning a {
+	color: @orange;
+}
+ 
+ul.messages li .message {
+	font-size: 11px;
+}

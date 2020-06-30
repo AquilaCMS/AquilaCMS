@@ -1,0 +1,17 @@
+{
+    "detail": {
+        "t1": "Brand Detail",
+        "t2": "Brands",
+        "click": "Click to edit",
+        "id": "ID",
+        "nom": "Name",
+        "code": "Code",
+        "active": "Active",
+        "creaDate": "Creation date"
+    },
+    "new": {
+        "t1": "Create New Brand",
+        "ph1": "Name",
+        "nom": "Name"
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "medias": {
+        "t1": "Médias",
+        "nom": "Nom",
+        "lien": "Lien",
+        "miniature": "Miniature",
+        "cpLien": "Copier le lien",
+        "delete": "Supprimer",
+        "uploadInsert" : "Inserer en base",
+        "uploadButton" : "Ajout en masse *",
+        "uploadInfo" : "* Seul les .zip sont accepté. Les images doivent être à la racine du .zip."
+    },
+    "new": {
+        "t1": "Nouveau Média",
+        "ph1": "Nom du fichier",
+        "nom": "Nom",
+        "lien": "Lien :",
+        "cpLien": "Copier le lien",
+        "media": "Média",
+        "add": "Ajouter"
+    },
+    "uploadMedias": {
+        "queue": "File d'attente :",
+        "dropFiles": "Glissez-déposez ou cliquez ici pour envoyer vos fichiers",
+        "dropImages": "Glissez-déposez ou cliquez ici pour envoyer vos images",
+        "dropVideos": "Glissez-déposez ou cliquez ici pour envoyer vos vidéos",
+        "dropPdfs": "Glissez-déposez ou cliquez ici pour envoyer vos PDFs",
+        "upload": "Envoyer",
+        "uploadnotstarted": "Envoi non commencé",
+        "uploadsuccessful": "Envoi réussi",
+        "name": "Nom",
+        "alt": "Balise alt",
+        "picture": "Image :"
+    }
+}

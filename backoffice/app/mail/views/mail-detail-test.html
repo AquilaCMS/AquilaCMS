@@ -1,0 +1,48 @@
+<form name="formModal" class="form-horizontal" novalidate ng-submit="testMail()" role="form">
+
+
+    <div class="modal-header">
+        
+    </div>
+    <div class="modal-body">
+        <div ng-if="dataMail">
+            <div  style="text-align: center; margin: 30px 30px;" translate>
+                mail.test.titre
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                    <label style="width: 30%" translate>mail.test.expediteur</label>
+                    <span style="width: 10%">:</span>
+                    <input style="display: inline;width: 50%;float: right;" type="text" class="form-control" ng-model="mail.from" ng-required="true">
+            </div>
+
+            <div style="margin-bottom: 50px;">
+                    <label style="width: 30%" translate>mail.test.destinataire</label>
+                    <span style="width: 10%">:</span>
+                    <input style="display: inline;width: 50%;float: right;" type="text" class="form-control" ng-model="mail.to" ng-required="true">
+            </div>
+        
+            <div ng-repeat="data in dataMail">
+                <div ng-if="data.name !== 'name'" style="margin-bottom: 20px; ">
+                        <label  style="width: 30%">{{data.name}}</label>
+                        <span  style="width: 10%">:</span>
+                        <input style="display: inline;width: 50%;float: right;" type="text" class="form-control" ng-model="data.value" ng-required="true">
+                </div>
+            </div>
+            <div  style="text-align: center;">
+                <button ng-disabled="loading" type="submit" class="btn-default" style="padding:0 20px; height: 35px;" translate="">mail.test.envoie</button>
+             
+            </div> 
+
+
+
+
+        </div>
+        <div  style="text-align: center;" ng-if="!dataMail">
+            <p translate>mail.test.null</p>
+        </div>
+    </div>
+    <div class="modal-footer"></div>
+
+
+</form>

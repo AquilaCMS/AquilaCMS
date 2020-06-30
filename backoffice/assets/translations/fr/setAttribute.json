@@ -1,0 +1,30 @@
+{
+    "detail": {
+        "t1": "Détail Jeu d'Attributs",
+        "code": "Code",
+        "nom": "Nom",
+        "createAttr": "CRÉER ATTRIBUT",
+        "type": "Type",
+        "addQuestion": "Ajouter une question",
+        "descriptionQuestion": "Critères pour lesquels un client pourra noter le produit, exemple: Rapport qualité/prix, Fluidité du produit... ",
+        "tab": {
+            "setAttr": "Groupe d'attributes",
+            "question": "Questions"
+        }
+    },
+
+    "list": {
+        "t1": "Jeux d'attributs",
+        "code": "Code",
+        "nom": "Nom"
+    },
+
+    "new": {
+        "t1": "Créer un nouveau jeu d'attributs",
+        "ph1": "(les espaces, accents et caracteres speciaux seront supprimes)",
+        "ph2": "Nom",
+        "code": "Code",
+        "nom": "Nom",
+        "save": "Enregistrer"
+    }
+}

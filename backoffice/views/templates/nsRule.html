@@ -1,0 +1,145 @@
+<div class="rule" style="padding: 15px; width: 100%">
+    <div class="row">
+        <div class="conditions" style="margin-bottom: 20px">
+            <div class="condition row" ng-repeat-start="effect in rule.effects" ng-class="isLast($last)">
+                <div class="col-sm-1" style="margin-top: 20px">
+                    <button type="button" ng-click="removeEffect($index)">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label" for="qty_{{effect.type}}_{{$index}}" translate>ns.rule.qty</label>
+                    <input id="qty_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="qty_{{effect.type}}_{{$index}}" ng-model="effect.qty" required" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label" for="type_{{effect.type}}_{{$index}}" translate>ns.rule.type</label>
+                    <select id="type_{{effect.type}}_{{$index}}" name="type_{{effect.type}}_{{$index}}" class="form-control" ng-model="effect.type" required>
+                        <option value="Aet" translate>promo.detail.amount.et</option>
+                        <option value="Aati" translate>promo.detail.amount.ati</option>
+                        <option value="P" translate>promo.detail.percent</option>
+                        <option value="FVet" translate>promo.detail.finalValue.et</option>
+                        <option value="FVati" translate>promo.detail.finalValue.ati</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label class="control-label" for="value_{{effect.type}}_{{$index}}" translate>ns.rule.value</label>
+                    <input id="value_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="value_{{effect.type}}_{{$index}}" ng-model="effect.value" required />
+                </div>
+            </div>
+            <div class="condition" ng-repeat-end>
+                <button class="btn-add" type="button" ng-click="rule.effects.push({})">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="operand row" style="margin-bottom: 20px">
+        <div class="col-sm-1" ng-show="removable">
+            <!-- On ne peut pas supprimer une other_rules panier, car une condition panier doit obligatoirement avoir une other_rules -->
+            <div style="padding: 0;" ng-show="removable">
+                <button type="button" class="no-move" ng-click="removeRule(indexOtherRule)" style="margin-right: 10px;">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-1" ng-show="isCart === true">
+            <div style="padding: 25px;"></div>
+        </div>
+        <div class="col-sm-11">
+            <div ng-if="!isCart">
+                <span translate>ns.si</span>
+                <select class="form-control" name="operand" ng-model="rule.operand" ng-required="rule.conditions.length > 0" style="display: inline-block; width: 150px;">
+                    <option value="ET" translate>ns.et</option>
+                    <option value="OU" translate>ns.ou</option>
+                    <option value="NONE" translate>ns.none</option>
+                </select><span translate>ns.condition</span>
+            </div>
+            <div ng-if="isCart === true">
+                <span translate>ns.selection</span>
+                <select class="form-control" name="operand" ng-model="rule.operand" ng-required="rule.conditions.length > 0" style="display: inline-block; width: 150px;">
+                    <option value="ET" translate>ns.et</option>
+                    <option value="OU" translate>ns.ou</option>
+                    <option value="NONE" translate>ns.none</option>
+                </select><span translate>ns.condition</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="conditions">
+            <div class="condition row" ng-repeat-start="condition in rule.conditions" ng-class="isLast($last)">
+                <div class="col-sm-1" style="margin-top: 20px">
+                    <button type="button" ng-click="removeCondition($index, condition)">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label" for="field" translate>ns.fieldInput</label>
+                    <select class="form-control" name="field" id="field" ng-model="condition.target" ng-change="select(condition.target, $index, condition )"
+                            ng-options="field.name as field.name for field in attributesClassed | filter:filterAttrClassedByOwnerType(rule)" required></select>
+                </div>
+                <div class="col-sm-3">
+                    <label class="control-label" for="compareTo" translate>ns.comp</label>
+                    <select class="form-control" name="compareTo" id="compareTo" ng-model="condition.operator" required>
+                        <option value="{{operator.value}}" ng-repeat="operator in compare" translate>{{operator.translate}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <label class="control-label" for="field" translate>ns.value</label>
+                    <ns-datepicker ng-if="condition.type === 'date'" name="value_{{condition.target}}_{{$index}}"
+                                   ng-disabled="condition.type === undefined" ng-model="condition.value" required></ns-datepicker>
+                    <ns-switch ng-if="condition.type === 'bool'" name="value_{{condition.target}}_{{$index}}" ng-model="condition.value"
+                               isActive required></ns-switch>
+                    <input ng-if="condition.type === 'text'" class="form-control ng-valid" type="{{condition.type}}" name="value_{{condition.target}}_{{$index}}"
+                           ng-disabled="condition.type === undefined" ng-model="condition.value" ng-required="{{false}}" />
+                    <input ng-if="condition.type === 'number'" class="form-control" type="{{condition.type}}" step="0.01" name="value_{{condition.target}}_{{$index}}"
+                           ng-disabled="condition.type === undefined" ng-init="condition.value = cast(condition.value)" ng-model="condition.value" required />
+                    <select ng-if="condition.type === 'select' && condition.attr === undefined && families[condition.target]"
+                            name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
+                            ng-change="onChangeField(condition.value)" ng-options="family.slug as family.name for family in families[condition.target]"></select>
+                    <select ng-if="condition.type === 'select' && condition.attr === undefined && values[condition.target]"
+                            name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
+                            ng-change="onChangeField(condition.value)" ng-options="value for value in values[condition.target]"></select>
+                    <select ng-if="condition.type === 'select' && condition.attr === 'multi' && values[condition.target]"
+                            name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
+                            ng-change="onChangeField(condition.value)" ng-options="value for value in values[condition.target]" multiple></select>
+                    <!-- TODO
+                            <select ng-if="condition.type === 'select' && condition.attr === 'multi'" name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value" ng-change="onChangeField(condition.value)" ng-options="value for value in values[condition.target]" multiple></select>
+                            TODO -->
+                </div>
+            </div>
+            <!-- si condition.target commence par panier.qte_min alors nous récupérer les sous régles de panier -->
+            <div class="other-rules row" style="padding-left: 40px;" ng-if="isCartRules(condition)">
+                <!-- On itére sur les other_rules ayant owner_type commençant par 'parent_cart_' -->
+                <!-- Ne doit pas pouvoir être supprimé si type panier Impossible a supprimer -->
+                <ns-rule rule="other_rule" type-promo="typePromo" ng-show="rule.other_rules.length >= 1" removable="false" is-cart="true"
+                         ng-repeat="other_rule in rule.other_rules | filter:isCartOtherRules(condition)"></ns-rule>
+
+                <div class="col-sm-12" style="margin-left: -40px;" ng-show="rule.conditions.length < 1">
+                    <button class="btn-add" type="button" ng-click="open()">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="condition" ng-repeat-end>
+                <button class="btn-add" type="button" ng-click="open()">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="other-rules row" style="padding-left: 40px;">
+        <ns-rule rule="other_rule" type-promo="typePromo" ng-show="rule.other_rules.length >= 1" removable="true" ng-repeat="other_rule in rule.other_rules | filter:isNotCartOtherRules"
+                 remove-from-parent="removeOtherRule($index, other_rule)"></ns-rule>
+        <div class="col-sm-12" style="margin-left: -40px;" ng-show="rule.conditions.length < 1">
+            <button class="btn-add" type="button" ng-click="open()">
+                <i class="fa fa-plus"></i>
+            </button>
+        </div>
+    </div>
+    <style>
+        .rule select[name="operand"]
+        {
+            width: 200px;
+        }
+    </style>
+</div>

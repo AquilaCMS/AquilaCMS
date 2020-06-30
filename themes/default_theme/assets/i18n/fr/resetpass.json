@@ -1,0 +1,16 @@
+{
+    "page": {
+        "title": "Récupération du mot de passe",
+        "password_recovery": {
+            "title": "Récupération du mot de passe",
+            "sub_title": "Entrez votre nouveau mot de passe",
+            "button_label": "Envoyer",
+            "password": {
+                "label": "Mot de passe"
+            },
+            "passwordCheck": {
+                "label": "Mot de passe"
+            }
+        }
+    }
+}

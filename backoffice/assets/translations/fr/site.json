@@ -1,0 +1,32 @@
+{
+    "detail": {
+        "t1": "Détail article",
+        "ph1": "Titre",
+        "urlKey": "Slug",
+        "oldUrl": "L'ancienne URL ne fonctionnera plus si ce champ est modifié",
+        "title": "Titre",
+        "visible": "Visible",
+        "img": "Image",
+        "add": "Ajouter",
+        "content": "Contenu"
+    },
+    "new": {
+        "t1": "Nouvel article",
+        "ph1": "Si vous ne remplissez pas ce champ, il sera genere automatiquement",
+        "ph2": "Titre",
+        "urlKey": "Slug",
+        "title": "Titre",
+        "visible": "Visible",
+        "img": "Image",
+        "add": "Ajouter",
+        "content": "Contenu",
+        "saveFirst": "Vous devez d'abord enregistrer l'article avant d'y ajouter une image"
+    },
+    "articles": {
+        "t1": "Saisie d'articles",
+        "urlKey": "Slug",
+        "title": "Titre",
+        "visible": "Visible",
+        "creaDate": "Date de création"
+    }
+}

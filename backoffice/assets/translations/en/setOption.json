@@ -1,0 +1,23 @@
+{
+    "detail": {
+        "t1": "Options Sets Detail",
+        "code": "Code",
+        "nom": "Name",
+        "createOpt": "CREATE OPTION",
+        "save": "Save",
+        "delete": "Delete"
+    },
+    "list": {
+        "t1": "Options Sets",
+        "code": "Code",
+        "nom": "Name"
+    },
+    "new": {
+        "t1": "Create new Options Set",
+        "ph1": "(spaces, accents special characters will be deleted)",
+        "ph2": "Name",
+        "code": "Code",
+        "nom": "Name",
+        "save": "Save"
+    }
+}

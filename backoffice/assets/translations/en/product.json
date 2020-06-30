@@ -1,0 +1,114 @@
+{
+    "select": {
+        "selectPdt": "Select products",
+        "cancel": "Cancel",
+        "valider": "Submit"
+    },
+    "cross-selling": {
+        "pdtsAssoc": "Cross-Selling",
+        "add": "Add",
+        "nom": "Name",
+        "desc": "Description",
+        "cancel": "Cancel"
+    },
+    "general": {
+        "pdtType": "Product type",
+        "infoGen": "General informations",
+        "code": "Code",
+        "fieldReq": "This field is required.",
+        "nom": "Name",
+        "ean13": "EAN13 Code",
+        "slug": "Slug",
+        "downloadLink": "Download link",
+        "downloadInfos": "Download informations",
+        "autoGen": "automatic generation from name if empty",
+        "jeuAttr": "Attributes set",
+        "jeuOpt": "Options set",
+        "selectJeuOpt": "Select Options set",
+        "actif": "Active",
+        "visible": "Visible",
+        "titleDescLg": "Long description title",
+        "descLg": "Long description",
+        "titleDescCt": "Short description title",
+        "descCt": "Short description",
+        "canon": "Canonical"
+    },
+    "marketing": {
+        "fournisseur": "Supplier",
+        "refFourn": "Réf. Supplier",
+        "nomFourn": "Supplier name",
+        "selectFourn": "Select supplier",
+        "marque": "Brand",
+        "selectMarque": "Select Brand",
+        "pds": "Weight ",
+        "enG": "(grams)",
+        "infoMark": "Marketing Informations",
+        "univers": "Universe",
+        "selectUni": "Select Universe",
+        "famille": "Family",
+        "selectFamille": "Select Family",
+        "ssFam": "Subfamily",
+        "selectSsFam": "Select Subfamily",
+        "new": "New"
+    },
+    "price": {
+        "title": "Price",
+        "purchase": "Purchase",
+        "coefficient": "Coefficient",
+        "et": {
+            "normal": "Sale excl tax",
+            "special": "Special excl tax*"
+        },
+        "ati": {
+            "normal": "Sale incl tax",
+            "special": "Special incl tax*"
+        },
+        "ifPrice": "* If a special price is defined, it will have priority on the price sale.",
+        "tax": "VAT (%)",
+        "margin": "Margin"
+    },
+    "photo": {
+        "add": "Add",
+        "nom": "Name",
+        "title": "Title tag",
+        "picturessaved": "Pictures saved :",
+        "alt": "Alt tag",
+        "pos": "Position",
+        "img": "Main Picture"
+    },
+    "list": {
+        "ph1": "Name",
+        "code": "Code",
+        "img": "Picture",
+        "nom": "Name",
+        "fournisseur": "Supplier",
+        "typePdt": "Product type"
+    },
+    "beforeCreate": {
+        "t1": "New product",
+        "typePdt": "Product type",
+        "cancel": "Cancel",
+        "valider": "Submit"
+    },
+    "list2": {
+        "t1": "Products",
+        "ph1": "Code",
+        "code": "Code",
+        "name": "Name",
+        "picture": "Picture",
+        "price": "Base price (tax incl.)",
+        "quantity": "Quantity",
+        "min": "Min",
+        "max": "Max",
+        "typePdt": "Product type",
+        "actif": "Active",
+        "visible": "Visible",
+        "indiff": "Indifferent",
+        "noActif": "Inactive",
+        "noVisible": "Invisible",
+        "creation_date": "en-Date de création",
+        "reset_filters": "en-Réinitialiser les filtres",
+        "edit": "Edit",
+        "action": "Action"
+    }
+}

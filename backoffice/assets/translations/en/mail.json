@@ -1,0 +1,44 @@
+{
+    "detail": {
+        "t1": "Mail detail",
+        "delete": "Delete",
+        "attachment": "Attachment :",
+        "test":"Test", 
+        "type": "Type",
+        "code": "Code*",
+        "champRequis": "This field is required",
+        "senderMail": "Sending e-mail address*",
+        "senderName": "Sender's name",
+        "validMailPls": "Please type a valid e-mail",
+        "sujet": "Subject*",
+        "html": "HTML*",
+        "varDispo": "Available variables:",
+        "deuxAcc": "Enclose it between two curly brackets",
+        "newIencli": "New customer registration:",
+        "newIencliForAdmin": "New customer registration for admin:",
+        "all": "All:",
+        "activateAccount": "Verify account:",
+        "orderSucceed": "Order succeed (customer):",
+        "orderDiff": "Deferred order succeed (customer):",
+        "orderSucceedEnt": "Order succeed (company):",
+        "recupMdp": "Password recovery:",
+        "statusChanged": "Order status changed:",
+        "mailContact": "Contact e-mail:",
+        "receptRetour": "Sent back product receipted:",
+        "envoiColis": "Package sending:"
+    },
+    "list": {
+        "t1": "Mails",
+        "code": "Code",
+        "sujet": "Subject",
+        "action": "Action"
+    },
+    "test": {
+        "t1": "Mail Test Detail",
+        "expediteur": "Sender",
+        "destinataire": "Receiver",
+        "envoie": "Send Test",
+        "titre": "Please fill all the fields to test mail.",
+        "null": "No template exisiting for this mail type."
+    }
+}

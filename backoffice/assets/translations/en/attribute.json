@@ -1,0 +1,46 @@
+{
+    "detail": {
+        "t1": "Detail Attribut",
+        "t2": "Create new attribute",
+        "ph1": "(spaces, accents and special characters will be deletd)",
+        "ph2": "Position",
+        "code": "Code",
+        "nom": "Name",
+        "type": "Type",
+        "choixTypeAttribut": "Choose this attribute's type",
+        "champTexte": "Text field",
+        "zoneTexte": "Text zone",
+        "date": "Date",
+        "booleen": "Boolean (yes/no)",
+        "listeDeroulante": "Drop-down list",
+        "selectionMultiple": "Multiple selection",
+        "intervalle": "Interval",
+        "image": "Image",
+        "video": "Video",
+        "fichierPDF": "PDF File",
+        "nombre": "Number",
+        "posFichePdt": "Product file position",
+        "paramUser": "Configurable by user?",
+        "non": "No",
+        "oui": "Yes",
+        "valeurDefaut": "Default value",
+        "jeuAttrLie": "Attributes set linked :",
+        "presJeuxAttr": "Present in those attributes sets:",
+        "dispoCatAuto": "Available in automatic categorisation:",
+        "dispoFiltresAuto": "Available in automatic filters:",
+        "valeurs": "Values",
+        "addValeur": "Add a value",
+        "color": "Color"
+    },
+
+    "list": {
+        "t1": "Attributes",
+        "attrClasses": "Sorted attributes",
+        "code": "Code",
+        "nom": "Name",
+        "type": "Type",
+        "attrOrph": "Unbinded attributes",
+        "jeuxAttrib": "Attribute sets",
+        "afficher": "Display"
+    }
+}

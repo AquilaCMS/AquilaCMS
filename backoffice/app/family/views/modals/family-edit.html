@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <ol class="breadcrumb">
+        <li class="active" ng-repeat="ancestor in family.ancestors">{{ancestor.name}}</li>
+        <li style="font-weight: bold;">{{family.name}}</li>
+    </ol>
+</div>
+<div class="modal-body">
+
+    <table id="user" class="table table-bordered table-striped" style="clear: both">
+        <tbody>
+            <tr>
+                <td width="35%" translate>family.edit.nom</td>
+                <td width="65%">
+                    <a href="" editable-text="family.name" onbeforesave="updateFamily($data, 'name')">{{ family.name }}</a>
+                </td>
+            </tr>
+            <tr ng-hide="parents.length == 0">
+                <td translate>family.edit.parent</td>
+                <td>
+                    <a href="#" editable-select="family.parent" e-ng-options="p._id as p.name for p in parents" onbeforesave="updateFamily($data, 'parent')">
+                        {{ showParents() }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td translate>family.edit.creationDate</td>
+                <td>
+                    {{family.creationDate | date}}
+                </td>
+            </tr>
+    </table>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="ok()" translate>family.edit.ok</button>
+    <button class="btn btn-default" ng-click="cancel()" translate>family.edit.cancel</button>
+</div>

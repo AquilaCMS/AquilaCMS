@@ -1,0 +1,39 @@
+.product-card-list {
+    position: relative;
+}
+
+.product-card-list .products-grid .product--vertical {
+    width: 20%;
+    min-width: 20%;
+}
+
+.product-card-list .slider__arrows button {
+    border: 0;
+    background: transparent;
+    opacity: .6;
+}
+.product-card-list .slider__arrow--prev {
+    left: 0;
+    position: absolute;
+}
+.product-card-list .slider__arrow--next {
+    right: 0;
+    position: absolute;
+}
+.product-card-list .slider__arrows {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+}
+
+.product-card-list .products-grid .product--vertical {
+    width: 20%;
+    min-width: 20%;
+}
+
+@media (max-width: 1024px) {
+    .product-card-list .products-grid .product--vertical {
+        width: unset;
+        min-width: unset;
+    }
+}

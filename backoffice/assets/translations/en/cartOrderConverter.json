@@ -1,0 +1,14 @@
+{
+    "t1": "Convert cart in order",
+
+    "cartConverted": "Cart converted!",
+    "refOrder": "Order Ref. or customer E-mail:",
+    "search": "Search",
+    "id": "ID",
+    "date": "Date",
+    "prixTTC": "ATI Price",
+    "nom": "Name",
+    "mail": "E-mail",
+    "status": "Status",
+    "convert": "Convert"
+}

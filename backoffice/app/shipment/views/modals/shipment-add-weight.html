@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <span style="font-weight: bold;" translate>shipment.add.addCol</span>
+</div>
+<div class="modal-body">
+    <div style='padding: 20px 20px 40px;'>
+        <div class="form-group">
+            <label for="min" class="col-sm-3 control-label" translate>shipment.add.pdsMin</label>
+            <div class="col-sm-6 col-lg-3">
+                <input type="number" no-float step='1' value="0" min="0" class="form-control" id="min" ng-model="weightMin">
+            </div>
+            <label for="max" class="col-sm-3 control-label" translate>shipment.add.pdsMax</label>
+            <div class="col-sm-6 col-lg-3">
+                <input type="number" no-float step='1' value="1" min="0" class="form-control" id="max" ng-model="weightMax">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type='button' class='btn btn-danger' ng-click='cancel()' translate>shipment.add.cancel</button>
+    <button type='button' class='btn btn-success' ng-click='addWeight(weightMin, weightMax)' translate>shipment.add.add</button>
+</div>

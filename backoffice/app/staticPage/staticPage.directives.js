@@ -1,0 +1,1 @@
+var StaticPageDirectives = angular.module('aq.staticPage.directives', []);

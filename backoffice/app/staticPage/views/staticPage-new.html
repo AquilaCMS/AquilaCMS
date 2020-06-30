@@ -1,0 +1,89 @@
+<form name="form" class="form-horizontal" novalidate ng-submit="save(static)" role="form">
+    <ns-box data-title="static.new.t1" title-icon="fa fa-file-text fa-lg" close-href="#/staticPage">
+        <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+        <ns-buttons save-and-quit="save(static, true)" disable-save="disableSave" return-path="/staticPage" form="form">
+
+            <input type="hidden" value="" name="id" id="template" ng-model="static._id" />
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label" translate>static.new.code</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="code" translate translate-attr-placeholder='static.new.ph1'
+                            ng-model="static.code" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label" translate>static.detail.active</label>
+                    <div class="col-sm-5">
+                        <ns-switch id="active" ng-model="static.active" name="active"></ns-switch>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label" translate>static.detail.title</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" ng-model="static.translation[lang].title" translate translate-attr-placeholder='static.detail.title' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label" translate>static.detail.metaDesc</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" ng-model="static.translation[lang].metaDesc" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label" translate>static.detail.slug</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" ng-model="static.translation[lang].slug" translate translate-attr-placeholder='static.detail.slug' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label" translate>cmsBlocks.detail.content</label>
+                    <div class="col-sm-10">
+                        <ns-tinymce text="static.translation[lang].content"></ns-tinymce>
+                        <button type="button" class="btn btn-default " ng-click="preview()" translate>static.detail.preview</button>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+            <pre style="font-size:12px;margin-top:10px">
+                <b>ns-accordion :</b> container, section, head, classexpand, autoclose
+                <b>ns-block-slider :</b> ns-code, autoplay, arrows, adaptiveHeight, dots, draggable
+                <b>ns-blog-articles</b>
+                <b>ns-breadcrumb</b>
+                <b>ns-btn</b>
+                <b>ns-cart-count</b>
+                <b>ns-cms :</b> ns-code, hide_error
+                <b>ns-contact :</b> button-title, mode <i>(send | store | store&send)</i>
+                <b>ns-product-card-list :</b> value, typenew, type <i>(product_id | product_code | category | list_id | list_code)</i>
+                <b>ns-gallery :</b> ns-code
+                <b>ns-top-button</b>
+                <b>ns-lang</b>
+                <b>ns-link :</b> href
+                <b>ns-login</b>
+                <b>ns-newsletter</b> : button, placeholder
+                <b>ns-menu :</b> ns-code, classbtnmobile, classbtnactivemobile, classnav, classnavactivemobile, classnavul, classnavulli, classnavulliactive, levelmax
+                <b>ns-productcard :</b> type <i>(id | code | datas)</i>, value, gridDisplay
+                <b>ns-search :</b> placeholder
+                <b>ns-slider :</b> ns-code
+            </pre>
+                   
+        </ns-buttons>
+    </ns-box>
+</form>

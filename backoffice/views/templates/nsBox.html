@@ -1,0 +1,33 @@
+<div class="box boxTop">
+    <div class="box-header fsbox" style="border-right: 1px solid #ddd;">
+        <h2>
+            <span class="icon" ng-if="titleIcon">
+                <i class="{{titleIcon}} i-title-style"></i>
+            </span>
+            <span translate translate-values="translateValues">{{title}}</span>
+        </h2>
+        <div class="box-header-actions">
+            <ul class="list-actions">
+                <li ng-if="hasClose">
+                    <a ng-href="{{closeHref}}" ng-click="closeClick()"><i class="ico-close"></i></a>
+                </li>
+                <li ng-if="hasEdit">
+                    <a ng-href="{{editHref}}" ng-click="editClick()"><i class="ico-pen"></i></a>
+                </li>
+                <li ng-if="hasAdd">
+                    <a ng-href="{{addHref}}" ng-click="addClick()"><i class="ico-add"></i></a>
+                </li>
+                <li ng-if="hasNew">
+                    <a class="btn btn-transparent btn-setting" ng-href="{{newHref}}" ng-click="newClick()">
+                        <i class="ico-plus-small"></i>
+                        <span translate>ns.new</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="box-content">
+        <div ng-transclude></div>
+    </div>
+</div>

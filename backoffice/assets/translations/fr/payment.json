@@ -1,0 +1,56 @@
+{
+    "edit": {
+        "payment": "Règlement",
+        "order": "Commande",
+        "mail": "Email",
+        "nom": "Nom",
+        "createdBy": "Créé par",
+        "creationDate": "Date de création",
+        "opDate": "Date d'opération",
+        "status": "Statut",
+        "payMode": "Mode de règlement",
+        "transacNb": "Numéro de transaction",
+        "yves": "Montant",
+        "comment": "Commentaire",
+        "export": "Exporter",
+        "ok": "OK",
+        "cancel": "Annuler"
+    },
+    "list": {
+        "t1": "Paiements",
+        "ph1": "Rechercher...",
+        "ph2": "Votre texte",
+        "ph3": "Montant TTC",
+        "ph4": "Montant",
+        "ph5": "Nombre de jours",
+        "debut": "Début",
+        "fin": "Fin",
+        "export": "Exporter",
+        "advSearch": "Recherche avancée",
+        "search": "Recherche",
+        "orderPrice": "Montant de la commande",
+        "a": "à",
+        "pres": "€ près",
+        "orderDate": "Date de la commande",
+        "presJour": "jour(s) près",
+        "status": "Statut",
+        "todo": "A effectuer",
+        "done": "Effectué",
+        "undone": "Non effectué",
+        "canceled": "Annulé",
+        "type": "Type",
+        "payment": "Règlement",
+        "refund": "Remboursement",
+        "order": "Commande",
+        "customer": "Client",
+        "date": "Date",
+        "prixTTC": "Montant TTC"
+    },
+    "list2": {
+        "priceTotal": {
+            "min": "Min",
+            "max": "Max"
+        },
+        "status": "Tous"
+    }
+}

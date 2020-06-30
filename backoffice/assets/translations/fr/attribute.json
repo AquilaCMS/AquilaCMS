@@ -1,0 +1,46 @@
+{
+    "detail": {
+        "t1": "Détail Attribut",
+        "t2": "Créer un nouvel attribut",
+        "ph1": "(les espaces, accents et caracteres speciaux seront supprimes)",
+        "ph2": "Position",
+        "code": "Code",
+        "nom": "Nom",
+        "type": "Type",
+        "choixTypeAttribut": "Choisissez le type de cet attribut",
+        "champTexte": "Champ texte",
+        "zoneTexte": "Zone de texte",
+        "date": "Date",
+        "booleen": "Booléen (oui/non)",
+        "listeDeroulante": "Liste déroulante",
+        "selectionMultiple": "Sélection multiple",
+        "intervalle": "Intervalle",
+        "image": "Image",
+        "video": "Vidéo",
+        "fichierPDF": "Fichier PDF",
+        "nombre": "Nombre",
+        "posFichePdt": "Position dans la fiche produit",
+        "paramUser": "Paramétrable par l'utilisateur ?",
+        "non": "Non",
+        "oui": "Oui",
+        "valeurDefaut": "Valeur par défaut",
+        "jeuAttrLie": "Jeu d'attribut lié :",
+        "presJeuxAttr": "Présent dans les jeux d'attributs suivants :",
+        "dispoCatAuto": "Disponible dans la catégorisation automatique :",
+        "dispoFiltresAuto": "Disponible dans les filtres automatiques :",
+        "valeurs": "Valeurs",
+        "addValeur": "Ajouter une valeur",
+        "color": "Couleur"
+    },
+
+    "list": {
+        "t1": "Attributs",
+        "attrClasses": "Attributs classés",
+        "code": "Code",
+        "nom": "Nom",
+        "type": "Type",
+        "attrOrph": "Attributs orphelins",
+        "jeuxAttrib": "Jeux d'attributs",
+        "afficher": "Afficher"
+    }
+}

@@ -1,0 +1,272 @@
+<ns-box data-title="config.environment.t1" title-icon="fa fa-cogs fa-lg">
+    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading"
+        role="form">
+        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>config.environment.menu.general</a></li>
+                <li><a data-toggle="tab" href="#path" target="_self" translate>config.environment.menu.path</a></li>
+                <li><a data-toggle="tab" href="#mail" target="_self" translate>config.environment.menu.mail</a></li>
+                <li><a data-toggle="tab" href="#nextjs" target="_self" translate>config.environment.menu.nextjs</a></li>
+                <li><a data-toggle="tab" href="#other" target="_self" translate>config.environment.menu.other</a></li>
+            </ul>
+
+            <div class="tab-content" style="width:50%;margin-left:10%">
+
+                <div id="general" class="tab-pane fade in active">
+                    <h3 translate>config.environment.menu.general</h3>
+                    <br/>
+                    <div class="form-group">
+                        <label translate>config.environment.siteName</label> <br />
+                        <input type="text" class="form-control" ng-model="config.siteName">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.billsPattern</label> <br />
+                        <input type="text" class="form-control" ng-model="config.billsPattern">
+                        <span translate="">config.environment.billsVariables</span>
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.websiteCountry</label> <br />
+                        <select name="countries" id="countries" class="form-control"
+                            ng-options="country.code as country.translation[adminLang].name for country in countries"
+                            ng-model="config.websiteCountry" >
+                            <option value="" translate>config.environment.selectCountry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.websiteTimezone</label> <br />
+                        <select name="timezones" id="timezones" class="form-control"
+                                ng-options="tz as tz for tz in timezones"
+                                ng-model="config.websiteTimezone" >
+                            <option value="" translate>config.environment.selectTimezone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.demoMode</label> <br />
+                        <ns-switch ng-model="config.demoMode" yes-value="true" no-value="false" name="demoMode"></ns-switch>
+                    </div>
+                </div>
+
+                <div id="path" class="tab-pane fade">
+                    <h3 translate>config.environment.menu.path</h3>
+                    <br/>
+                    <div class="form-group">
+                        <label translate>config.environment.baseURL</label>
+                        <input type="url" class="form-control" ng-model="config.appUrl">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.prefixeURL</label>
+                        <input type="text" class="form-control" ng-model="config.adminPrefix" popover-ns type="button"
+                            class="btn btn-default" data-toggle="popover" data-placement="top" data-html="true"
+                            title="config.environment.t2" data-content="Modifier ce champ redémarrera l'application, l'ancienne URL ne sera plus accessible !">
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        <label translate>config.environment.picsPath</label>
+                        <input type="text" class="form-control" ng-model="config.photoPath">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.billsPath</label>
+                        <input type="text" class="form-control" ng-model="config.invoicePath">
+                    </div>
+                </div>
+
+                <div id="mail" class="tab-pane fade">
+                    <h3 translate>config.environment.menu.mail</h3>
+                    <br/>
+
+                    <div class="form-group">
+                        <label translate>config.environment.host</label>
+                        <input type="text" class="form-control" ng-model="config.mailHost" ng-disabled="config.mailIsSendmail" />
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.port</label>
+                        <input type="number" class="form-control" ng-model="config.mailPort" ng-disabled="config.mailIsSendmail" />
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.user <span ng-show="messageMail" style="color: #d2322d;"
+                                ng-bind-html="messageMail"></span></label>
+                        <input type="text" class="form-control" ng-model="config.mailUser" ng-disabled="config.mailIsSendmail" />
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.mdp</label>
+                        <input type="password" class="form-control" ng-model="config.mailPass" ng-disabled="config.mailIsSendmail" />
+                    </div>
+                    <div class="form-group">
+                        <label>Secure (old: {secure: Number(mailPort) !== 587})</label>
+                        <div>
+                            <ns-switch ng-model="config.mailSecure" yes-value="Oui" no-value="Non" name="mailSecure"></ns-switch>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <div>
+                            <ns-switch ng-model="config.mailIsSendmail" yes-value="Sendmail" no-value="SMTP" name="mailIsSendmail"></ns-switch>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <label translate>config.environment.overrideSendTo</label>
+                        <input type="text" class="form-control" ng-model="config.overrideSendTo" />
+                    </div>
+                    <hr />
+                    <label translate>config.environment.sendMailTest</label>
+                    <br />
+                    <label style="color:red;" translate>config.environment.informationsMail</label>
+                    <div style="margin-top:5px">
+                        <a download class="btn btn-success" ng-click="testMail(adminLang)" translate>
+                            config.environment.test
+                        </a>
+                    </div>
+
+                </div>
+
+                <div id="nextjs" class="tab-pane fade">
+                    <p><span translate>config.environment.actualVersion</span>: {{next.actual}}</p>
+                    <div class="input-group">
+                        <select class="form-control" id="nextVersion" ng-options="version for version in next.versions track by version" ng-model="nextVersion" ng-hide="nextVLoader">
+                        </select>
+                        <div ng-show="nextVLoader">
+                            <div class="fa fa-spinner fa-spin" style="font-size: 30px;"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)" ng-hide="nextVLoader" translate>config.environment.changeNextVersion</button>
+                </div>
+
+
+                <!-- <div id="ga" class="tab-pane fade">
+                    <h3 translate>config.environment.menu.ga</h3>
+                    <br/>
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#ganalytics" target="_self" translate>config.environment.ggAnal</a></li>
+                        <li><a data-toggle="tab" href="#gtm" target="_self" translate>config.environment.ggTagMg</a></li>
+                        <li><a data-toggle="tab" href="#chat" target="_self" translate>config.environment.chatScript</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="ganalytics" class="tab-pane fade in active">
+                            <p><span translate>config.environment.ccGgCode</span><b style="color: red;" translate>config.environment.ssBal</b>
+                                <span translate>config.environment.siChampVide</span></p>
+                            <div class="form-group">
+                                <label translate>config.environment.scriptGg
+                                    Anal</label>
+                                <textarea rows="10" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
+                                    class="form-control" ng-model="config.analytics.codeAnalytics"></textarea>
+                            </div>
+                        </div>
+                        <div id="gtm" class="tab-pane fade">
+                            <p><span translate>config.environment.ccGgCode</span><b style="color: red;"><span
+                                        translate>config.environment.ssBal</span>
+                                    <span translate>config.environment.or</span> <span translate>config.environment.bal2</span></b>.
+                                <span translate>config.environment.siUnChampVide</span></p>
+                            <div class="form-group">
+                                <label translate>config.environment.scriptGgTagMg</label>
+                                <textarea rows="6" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
+                                    class="form-control" ng-model="config.analytics.codeGTM_1"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label translate>config.environment.scriptGgTagMg2</label>
+                                <textarea rows="3" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
+                                    class="form-control" ng-model="config.analytics.codeGTM_2"></textarea>
+                            </div>
+                        </div>
+                        <div id="chat" class="tab-pane fade">
+                            <p><span translate>config.environment.ccCodeChat</span><b style="color: red;" translate>config.environment.ssBal</b>
+                                <span translate>config.environment.siChampVide</span></p>
+                            <div class="form-group">
+                                <label translate>config.environment.chatScript</label>
+                                <textarea rows="10" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
+                                    class="form-control" ng-model="config.analytics.codeChat"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            -->
+
+                <div id="other" class="tab-pane fade">
+                    <h3>Robot.txt</h3>
+                    <a download class="btn btn-success"ng-click="editRobot()" translate>
+                        config.environment.editRobot
+                    </a>
+                    <h3 translate>config.environment.cache</h3>
+                    <br />
+                    <div class="form-group">
+                        <label translate>config.environment.ttlCache</label>
+                        <input type="text" class="form-control" ng-model="config.cacheTTL" class="btn btn-default">
+                    </div>
+                    <h3 translate>config.environment.database</h3>
+                    <br />
+                    <div class="form-group">
+                        <label translate>config.environment.connectionString</label>
+                        <input type="text" class="form-control" ng-model="config.databaseConnection"
+                            class="btn btn-default">
+                    </div>
+                    <div class="form-group">
+                        <a download class="btn btn-success" ng-click="dumpDatabase()" ng-disabled="disabledButton" translate>
+                            config.environment.dlDBAnonymized
+                        </a>
+                    </div>
+
+                    <h3 translate>config.environment.dlAllDocumentTitle</h3>
+                    <br />
+                    <div class="form-group">
+                        <a download class="btn btn-success" ng-click="downloadDocuments()" ng-disabled="disabledButton"
+                            translate>
+                            config.environment.dlAllDocument
+                        </a>
+                        <div translate>config.environment.dlAllDocumentInfo</div>
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.environment.uploadAllDocument</label>
+                        <ns-upload-files accepttype=".zip" multiple="false" type="document" before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
+                        <div translate>config.environment.uploadAllDocumentInfo</div>
+                    </div>
+                </div>
+
+                <div id="auth" class="tab-pane fade">
+                    <h3 translate>config.environment.menu.tird-party-auth</h3>
+                    <br/>
+
+                    <h4>Google</h4>
+                    <div class="form-group">
+                        <label translate>config.auth.clientID</label>
+                        <input type="text" class="form-control" ng-model="configAuth.googleAuth.clientID">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.auth.clientSecret</label>
+                        <input type="text" class="form-control" ng-model="configAuth.googleAuth.clientSecret">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.auth.callbackURL</label>
+                        <input type="text" class="form-control" ng-model="configAuth.googleAuth.callbackURL">
+                    </div>
+
+
+                    <h4>Facebook</h4>
+                    <div class="form-group">
+                        <label translate>config.auth.clientID</label>
+                        <input type="text" class="form-control" ng-model="configAuth.facebookAuth.clientID">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.auth.clientSecret</label>
+                        <input type="text" class="form-control" ng-model="configAuth.facebookAuth.clientSecret">
+                    </div>
+                    <div class="form-group">
+                        <label translate>config.auth.callbackURL</label>
+                        <input type="text" class="form-control" ng-model="configAuth.facebookAuth.callbackURL">
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </ns-buttons>
+    </form>
+    <div ng-show="showLoading">
+        <h3 translate>config.environment.redemarrage</h3>
+        <h4 translate>config.environment.redirect</h4><h4><i><a href="{{urlRedirect}}">{{urlRedirect}}</a></i></h4>
+        <progressbar style="width: 50%" class="progress-striped active" animate="true" max="100" value="progressValue"
+            type="success"></progressbar>
+    </div>
+</ns-box>

@@ -1,0 +1,44 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(false)" role="form">
+    <ns-box data-title="site.detail.t1" close-href="#/site/articles" title-icon="fa fa-newspaper-o fa-lg">
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(articles._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/site/articles" form="form">
+            <div class="form-group">
+                <label for="slug" class="col-sm-1 control-label" translate>site.detail.urlKey</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="slug" ng-model="articles.translation[lang].slug" required />
+                    <span style="color: #e34925;" translate>site.detail.oldUrl</span>
+                </div>
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
+            <div class="form-group">
+                <label for="title" class="col-sm-1 control-label" translate>site.detail.title</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="title" translate translate-attr-placeholder='site.detail.ph1' ng-model="articles.translation[lang].title" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" translate>site.detail.visible</label>
+                <div class="col-sm-11">
+                    <ns-switch ng-model="articles.isVisible" name="visible"></ns-switch>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" translate>site.detail.img</label>
+                <div ng-show="articles.img" class="col-sm-5 img-responsive" style="width: fit-content; position: relative;">
+                    <span ng-click="removeImage(articles)" class="upload-delete-image">X</span>
+                    <img ng-if="articles.img" ng-src="{{getImage(articles.img)}}" width="100" height="100" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-4">
+                    <ns-upload-files accepttype="image/*" multiple="false" type="article" id="articles._id" entity="articles"></ns-upload-files>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" translate>site.detail.content</label>
+                <div class="col-sm-11">
+                    <ns-tinymce text="articles.translation[lang].content.text"></ns-tinymce>
+                </div>
+            </div>
+        </ns-buttons>
+    </ns-box>
+</form>

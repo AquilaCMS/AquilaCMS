@@ -1,0 +1,16 @@
+{
+    "list": {
+        "t1": "Blocs CMS",
+        "code": "Code",
+        "desc": "Description"
+    },
+    "detail": {
+        "t1": "Blocs CMS",
+        "code": "Code",
+        "champRequis": "Ce champ est requis.",
+        "desc": "Description",
+        "content": "Contenu",
+        "preview": "Prévisualiser"
+
+    }
+}

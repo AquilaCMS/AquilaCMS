@@ -1,0 +1,29 @@
+{
+    "t1": "Stock & Commandes",
+
+    "cartOrder": "Panier et commande",
+    "delExp": "Délai avant expiration des paniers (en heures)",
+    "fieldReq": "Ce champ est requis.",
+    "delAnn": "Délai avant annulation des commandes en attente de paiement (en heures)",
+    "gestion": "Gestion du stock",
+    "res": "Réservation du stock",
+    "cart": "Panier",
+    "order": "Commande",
+    "payment": "Payment",
+    "none": "Aucune gestion de stock",
+    "dispoLib": "Libellé de disponibilité",
+    "add": "Ajouter",
+    "code": "Code",
+    "vats": "Variables TVA",
+    "vat": "TVA",
+    "edVat": "Créer TVA",
+    "returnStockToFront": "Retourner les informations de stock au client (redemarrage necessaire)",
+    
+    "edLib": "Édition du libellé",
+    "varDispo": "Variable disponible : ",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "valider": "Valider",
+    "additionnalFeesTax": "Frais supplémentaires (Tax)",
+    "additionnalFeesEt": "Frais supplémentaires (HT)"
+}

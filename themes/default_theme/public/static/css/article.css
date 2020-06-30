@@ -1,0 +1,26 @@
+/* === Article === */
+
+.article-date {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ns-article .section__body {
+    margin-top: 5px;
+}
+
+.ns-article {
+    margin-top: 30px;
+}
+
+.ns-article-content {
+    margin-top: 20px;
+}
+
+.blog-cms > div {
+    word-wrap: break-word;
+}
+
+.blog-cms {
+    margin-top: 20px;
+}

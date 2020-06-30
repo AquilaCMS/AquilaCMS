@@ -1,0 +1,91 @@
+<ns-box data-title="order.detail.t2" title-icon="fa fa-opencart fa-lg" close-href="#/cart">
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="box subbox">
+                <div class="box-header"><h2 translate>order.detail.compteCli</h2></div>
+                <div class="box-content">
+                    <div ng-if="!cart.customer">Anonyme</div>
+                    <a target="_blank" ng-href="#/clients/{{cart.customer.id._id}}">{{cart.customer.id.firstname}}&nbsp;{{cart.customer.id.lastname}}</a><br>
+                    {{cart.customer.phone}}<br />
+                    {{cart.customer.email}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box subbox">
+                <div class="box-header"><h2 translate>order.detail.orderDet</h2></div>
+                <div class="box-content">
+                    <table class="table order-cart">
+                        <thead>
+                            <tr class="order-emphase">
+                                <td><strong translate>order.detail.descArt</strong></td>
+                                <td class="text-center"><strong translate>order.detail.qt</strong></td>
+                                <td class="text-center"><strong translate>order.detail.puHT</strong></td>
+                                <td class="text-center"><strong translate>order.detail.puTTC</strong></td>
+                                <td class="text-center"><strong translate>order.detail.tva</strong></td>
+                                <td class="text-right"><strong translate>order.detail.totalTTC</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in cart.items">
+                                <td width="300">
+                                    {{item.name}}
+                                </td>
+                                <td class="text-center order-text-big">
+                                    {{item.quantity}}
+                                </td>
+
+                                <td ng-show="item.price.special.et" class="text-right order-text-big">
+                                    <span class="old-price">{{item.price.unit.et | number:2}} €</span>
+
+                                    {{item.price.special.et | number:2}} €
+                                </td>
+                                <td ng-show="item.price.special.ati" class="text-right order-text-big">
+                                    <span class="old-price">{{item.price.unit.ati | number:2}} €</span>
+
+                                    {{item.price.special.ati | number:2}} €
+                                </td>
+                                <td ng-show="item.price.special.ati && item.price.special.et" class="text-right order-text-big">
+                                    {{item.price.special.ati - item.price.special.et | number:2}} €
+                                </td>
+
+                                <td ng-hide="item.price.special.et" class="text-right order-text-big">
+                                    {{item.price.unit.et | number:2}} €
+                                </td>
+                                <td ng-hide="item.price.special.ati" class="text-right order-text-big">
+                                    {{item.price.unit.ati | number:2}} €
+                                </td>
+                                <td ng-hide="item.price.special.ati && item.price.special.et" class="text-right order-text-big">
+                                    {{item.price.unit.ati - item.price.unit.et | number:2}} €
+                                </td>
+                                <td class="text-right order-text-big">
+                                    {{item.price.total.ati | number:2}} €
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot style="border-top: 2px solid #576fa1;">
+                            <tr>
+                                <td><strong translate>order.detail.total</strong></td>
+                                <td></td>
+                                <td class="text-right order-emphase">{{cart.priceTotal.et | number:2}}€</td>
+                                <td class="text-right order-emphase">{{cart.priceTotal.ati | number:2}}€</td>
+                                <td class="text-right order-emphase">{{(cart.priceTotal.ati - cart.priceTotal.et) | number:2}}€</td>
+                                <td class="text-right order-emphase"><strong>{{cart.priceTotal.ati | number:2}}€</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</ns-box>

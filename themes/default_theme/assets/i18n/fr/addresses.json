@@ -1,0 +1,39 @@
+{
+    "address_title": "Coordonnées",
+    "list": {
+        "adresseLivraison": "Adresse de livraison",
+        "adresseFacturation": "Adresse de facturation",
+        "modifier": "Modifier",
+        "use_as_billing": "Utiliser comme adresse de facturation",
+        "use_as_delivery": "Utiliser comme adresse de livraison",
+        "adresse": "Adresse",
+        "supprimer": "Supprimer",
+        "ajouter": "Ajouter",
+        "valider": "Valider",
+        "both_addresses":"Même adresse pour les deux"
+    },
+    "edit": {
+        "modifierInfos": "Modifier mes coordonnées",
+        "mesInfos": "mes coordonnées",
+        "infosDe": "Coordonnées de",
+        "livraison": "Livraison",
+        "facturation": "Facturation",
+        "mr": "Monsieur",
+        "mme": "Madame",
+        "adresse": "Adresse",
+        "adresse2": "Adresse (complément)",
+        "titre": "Titre",
+        "prenom": "Prénom",
+        "nom": "Nom",
+        "societe": "Société",
+        "codePostal": "Code postal",
+        "ville": "Ville",
+        "pays": "Pays",
+        "telPortable": "Mobile",
+        "telFixe": "Domicile",
+        "retour": "Retour",
+        "confirmer": "Confirmer",
+        "champsObligatoires": "Veuillez saisir les champs obligatoires",
+        "texteTel": "Afin de faciliter nos contacts (ex : annonce de livraison), merci de renseigner au moins un numéro de téléphone"
+    }
+}

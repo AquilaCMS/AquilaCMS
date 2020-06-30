@@ -1,0 +1,61 @@
+<li class="dropdown hidden-xs" data-ng-controller="logimportCtrl">
+    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="" ng-class="statusImport" title="Imports">
+            <span class="number">{{listImports.length}}</span>
+        </i>
+    </a>
+    <ul class="dropdown-menu notifications">
+        <li class="title-dropdown" ng-if="importStatusProduct" style="width: 390px; padding: 0px; background-color: #fff;">
+            <a>
+                <span class="icon green">
+                    <i class="glyphicon glyphicon-ok-circle"></i>
+                </span>
+                <span class="message" translate>logged.pdtsAJour</span>
+            </a>
+        </li>
+        <li class="title-dropdown" ng-if="!importStatusProduct" style="width: 390px; padding: 0px; background-color: #fff;">
+            <a>
+                <span class="icon red">
+                    <i class="fa fa-warning"></i>
+                </span>
+                <span class="message" translate>logged.pdtsPasAJour</span>
+            </a>
+        </li>
+        <li class="title-dropdown" translate>
+            logged.lastFiles
+        </li>
+        <li ng-repeat="(key, value) in listImports" ng-if="listImports" style="width: 390px;">
+            <a>
+                <span ng-bind-html='value[0].insertDate | logInsertDate'></span>
+                <span class="message">
+                    {{key}} : {{value[0].fileName}}
+                </span>
+                <span class="time">
+                    {{value[0].insertDate | date}}
+                </span>
+            </a>
+        </li>
+        <li ng-if="!listImports">
+           <a translate>logged.noImport</a>
+        </li>
+    </ul>
+</li>
+
+<li class="dropdown" data-ng-controller="loggedCtrl">
+    <a class="btn account dropdown-toggle" data-toggle="dropdown" href="">
+        <div class="avatar">
+            <i class="fa fa-user"></i>
+        </div>
+    </a>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="#/clients/{{userIdent}}">
+                <i class="fa fa-user" translate>logged.profil</i>
+            </a>
+        <li>
+            <a href="" ng-click="logout()">
+                <i class="fa fa-off" translate>logged.deco</i>
+            </a>
+        </li>
+    </ul>
+</li>

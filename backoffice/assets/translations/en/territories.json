@@ -1,0 +1,17 @@
+{
+    "listing": {
+        "t1": "Territories",
+        "name": "Name",
+        "code": "Code",
+        "children" : "Children",
+        "type" : "Type",
+        "havetaxes": "not fixed taxe",
+        "delete": "Delete",
+        "info" : "Only country can be added",
+        "country" : "Country"
+    },
+    "details" : {
+        "t1":"Territories details",
+        "taxeFree" : "Taxe free"
+    }
+}

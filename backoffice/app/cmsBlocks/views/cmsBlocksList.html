@@ -1,0 +1,33 @@
+<ns-box data-title="cmsBlocks.list.t1" title-icon="fa fa-file-code-o fa-lg" new-href="#/cmsBlocks/new">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid"></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="dataTables_filter">
+                <input type="search" ng-model="search" class="search-field" name="q" id="q" value=""
+                    placeholder="Search..">
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th translate>
+                    cmsBlocks.list.code
+                </th>
+                <th width="40%" translate>
+                    cmsBlocks.list.desc
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="pointer"
+                ng-class-odd="'odd'" ng-class-even="'even'"
+                ng-repeat="block in cmsBlocks |orderBy:sortType:sortReverse|filter:search"
+                ng-click="goToCmsBlockDetails(block.code)">
+                <td>{{block.code}}</td>
+                <td>{{block.translation[defaultLang].description}}</td>
+            </tr>
+        </tbody>
+    </table>
+</ns-box>

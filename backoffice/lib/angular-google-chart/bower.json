@@ -1,0 +1,37 @@
+{
+    "name": "angular-google-chart",
+    "main": "./ng-google-chart.js",
+    "homepage": "http://angular-google-chart.github.io/angular-google-chart/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/angular-google-chart/angular-google-chart.git"
+    },
+    "description": "Google Chart Tools AngularJS Directive Module",
+    "authors": [
+        "GitHub Contributors <https://github.com/angular-google-chart/angular-google-chart/graphs/contributors>"
+    ],
+    "keywords": [
+        "angular",
+        "angularjs",
+        "google",
+        "chart",
+        "graph"
+    ],
+    "license": "MIT",
+    "ignore": [
+        ".jshintrc",
+        "**/*.txt",
+        "**/.*",
+        "bower_components",
+        "package.json",
+        "partials",
+        "index.html",
+        "sample.js",
+        "style.css",
+        "images"
+    ],
+    "dependencies": {
+        "angular": ">1.2.8"
+    },
+    "devDependencies": {}
+}

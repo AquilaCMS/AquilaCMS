@@ -1,0 +1,1 @@
+var FamilyDirectives = angular.module('aq.family.directives', []);

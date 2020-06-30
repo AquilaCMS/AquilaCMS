@@ -1,0 +1,21 @@
+{
+    "t1": "Online bills",
+    "ph1": "Search...",
+
+    "onlineBills": "Online bills",
+    "bill": "Bill",
+    "iencli": "Customer",
+    "date": "Date",
+    "status": "Status",
+    "prixTTC": "ATI Price",
+    "type": "Type",
+
+    "start": "Start",
+    "end": "End",
+    "export": "Export",
+    "avoir": "Credit",
+    "facture": "Invoice",
+    "orderNumber": "Order number",
+    "orderNumberHtml": "Order number"
+
+}

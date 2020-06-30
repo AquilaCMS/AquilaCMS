@@ -1,0 +1,22 @@
+<!--Module Options-->
+
+<ns-box data-title="setOption.new.t1" title-icon="fa fa-align-left fa-lg" close-href="#/setOptions">
+    <form class="form-horizontal" role="form" ng-submit="save(setOption)">
+        <div class="form-group">
+            <label for="name" class="col-sm-3 control-label" translate>setOption.new.code</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="code" translate translate-attr-placeholder='setOption.new.ph1' ng-model="setOption.code" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-3 control-label" translate>setOption.new.nom</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="name" translate translate-attr-placeholder='setOption.new.ph2' ng-model="setOption.name" required>
+            </div>
+        </div>
+        <div style="text-align: right">
+            <button type="submit" class="btn btn-success" translate>setOption.new.save</button>
+        </div>
+
+    </form>
+</ns-box>

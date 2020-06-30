@@ -1,0 +1,102 @@
+<form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
+    <ns-box data-title="productReviews.filter.t1" title-icon="fa fa-star-half-o fa-lg" close-href="#/reviews">
+        <ns-buttons is-edit-mode="true" remove="removeReviews(local.review._id)" save-and-quit="save(true)" 
+                    disable-save="disableSave" return-path="/reviews" form="form">
+            <div class="tab-content">
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label class="col-sm-2 control-label" translate>productReviews.detail.code_produit</label>
+                        <span class="col-sm-6 paddingTop">
+                            <a ng-href="#/products/{{local.product.type}}/{{local.product.code}}">
+                                {{local.product.code}}
+                            </a>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.nom_produit</label>
+                        <span class="col-sm-6 paddingTop">
+                            <a ng-href="#/products/{{local.product.type}}/{{local.product.code}}">
+                                {{local.product.translation[adminLang].name}}
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.date</label>
+                        <span class="col-sm-6 paddingTop">{{formatMoment(local.review.review_date)}}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.note</label>
+                        <span class="col-sm-6 paddingTop"> {{local.review.rate}}</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.visible</label>
+                        <div class="col-sm-6">
+                            <ns-switch name="visible" ng-model="local.review.visible"></ns-switch>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="description" class="col-sm-2 control-label" translate>productReviews.detail.verifie</label>
+                        <div class="col-sm-6">
+                            <ns-switch name="verify" ng-model="local.review.verify"></ns-switch>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="local.review.id_client">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.client</label>
+                        <span class="col-sm-6 paddingTop">
+                            <a ng-href="#/clients/{{local.review.id_client}}">{{local.review.name}}</a>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.titre</label>
+                        <span class="col-sm-6 paddingTop"> {{local.review.title}}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.ipClient</label>
+                        <span class="col-sm-6 paddingTop"> {{local.review.ip_client}}</span>
+                    </div>
+                </div>
+                <div class="form-group" ng-repeat="question in local.review.questions">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label">{{question.question}}</label>
+                        <span class="col-sm-6 paddingTop">{{question.rate}}/5</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-11">
+                        <label for="name" class="col-sm-2 control-label" translate>productReviews.detail.avis</label>
+                        <textarea class="col-sm-6 paddingTop txtArea" readonly>{{local.review.review}}</textarea>
+                    </div>
+                </div>
+            </div>
+        </ns-buttons>
+        <style>
+            .paddingTop{
+                padding-top: 7px;
+            }
+            .txtArea{
+                height:150px
+            }
+        </style>
+    </ns-box>
+</form>
+    

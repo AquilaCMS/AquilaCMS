@@ -1,0 +1,564 @@
+<form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
+    <ns-box data-title="{{isEditMode ? 'client.detail.t1' : 'client.detail.t2'}}" title-icon="fa fa-users fa-lg"
+            close-href="#/clients">
+
+        <div style="position: absolute;left:500px;" ng-if="isEditMode">
+            <button ng-click="loginAdminAsClient()" class="btn btn-default pull-right" type="button" translate>client.detail.connectAs</button>
+            <button ng-click="submitResetRequest()" class="btn btn-default pull-right" type="button" style="margin:auto 5px"
+                    translate>client.detail.resetMdp
+            </button>
+            <button ng-click="submitActiveAccountRequest()" class="btn btn-default pull-right" type="button"
+                    ng-disabled="client.isActiveAccount" translate>client.detail.activeAccount
+            </button>
+        </div>
+
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(client._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/clients" form="form">
+            
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>client.detail.tab.general</a></li>
+                <li ng-if="isEditMode"><a data-toggle="tab" href="#orders" target="_self" translate>client.detail.tab.orders</a></li>
+                <li ng-if="isEditMode"><a data-toggle="tab" href="#discount" target="_self" translate>client.detail.tab.discount</a></li>
+                <li ng-if="isEditMode"><a data-toggle="tab" href="#attributs" target="_self" translate>client.detail.tab.attributs</a></li>
+                <li ng-if="isEditMode"><a data-toggle="tab" href="#downloadHistory" target="_self" ng-click="getDownloadHistory(downloadHistoryPage)" translate>client.detail.downloadHistory</a></li>
+            </ul>
+            
+            <br />
+
+            <div class="tab-content">
+
+                <div id="general" class="tab-pane fade in active">
+                    <!-- ------------- General & other --------------- -->
+                    <div class="row">
+                        <!-- ------------- General --------------- -->
+                        <div class="col-md-6">
+                            <div class="box subbox">
+                                <div class="box-header">
+                                    <h2 translate="">client.detail.t3</h2>
+                                </div>
+                                <div class="box-content">
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="firstname" class="col-sm-2 control-label" translate>client.detail.prenom</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="firstname" name="firstname"
+                                                    ng-model="client.firstname" required />
+                                                <div class="ns-error-message" ng-show="form.firstname.$touched || form.nsSubmitted">
+                                                    <div ng-show="form.firstname.$error.required" translate>client.detail.champRequis</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="lastname" class="col-sm-2 control-label" translate>client.detail.nom</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="lastname" name="lastname" ng-model="client.lastname"
+                                                    required />
+                                                <div class="ns-error-message" ng-show="form.lastname.$touched || form.nsSubmitted">
+                                                    <div ng-show="form.lastname.$error.required" translate>client.detail.champRequis</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="client.code" class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="code" class="col-sm-2 control-label" translate>client.detail.code</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="code" name="code" ng-model="client.code"
+                                                    disabled />
+                                                <div class="ns-error-message" ng-show="form.lastname.$touched || form.nsSubmitted">
+                                                    <div ng-show="form.lastname.$error.required" translate>client.detail.champRequis</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="lastname" class="col-sm-2 control-label" translate>client.detail.email</label>
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="email" name="email" ng-model="client.email"
+                                                    required />
+                                                <div class="ns-error-message" ng-show="form.email.$touched || form.nsSubmitted">
+                                                    <div ng-show="form.email.$error.required" translate>client.detail.champRequis</div>
+                                                    <div ng-show="form.email.$error.email" translate>client.detail.emailInvalide</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="preferredLanguage" class="col-sm-2 control-label" translate>client.detail.language</label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control" ng-model="client.preferredLanguage">
+                                                    <option ng-repeat="item in languages" value="{{item.code}}">{{item.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="phone" class="col-sm-2 control-label" translate>client.detail.phone</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="phone" name="phone" ng-model="client.phone" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label" translate>client.detail.type</label>
+                                            <div class="col-sm-10">
+                                                <input-dropdown input-name="type" input-class-name="form-control"
+                                                                filter-list-method="filterDropdown(userInput)" selected-item="selectedDropdownItem"
+                                                                default-dropdown-items="dropdownItems" allow-custom-input="true"
+                                                                item-selected-method="itemObjectSelected(item)">
+                                                </input-dropdown>
+                                                <!-- NOTE SI CHANGEMENT : Ligne 80 de inputDropdown.js, il fallait enlever le angular.equals-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ------------- Other --------------- -->
+                        <div class="col-md-6">
+                            <div class="box subbox">
+                                <div class="box-header">
+                                    <h2 translate>client.detail.t4</h2>
+                                </div>
+                                <div class="box-content">
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="companyName" class="col-sm-2 control-label" translate>client.detail.company</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="companyName" name="companyName"
+                                                    ng-model="client.company.name" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="companySiret" class="col-sm-2 control-label" translate>client.detail.siret</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="companySiret" name="companySiret"
+                                                    ng-model="client.company.siret" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label for="companyIntracom" class="col-sm-2 control-label" translate>client.detail.intracom</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="companyIntracom" name="companyIntracom"
+                                                    ng-model="client.company.intracom" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <br /><br />
+
+                                    <div class="form-group" ng-if="isEditMode">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label" translate>client.detail.inscription</label>
+                                            <div class="col-sm-10">
+                                                <span class="input-span">{{client.creationDate | date}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label" translate>client.detail.checkAccount</label>
+                                            <div class="col-sm-10">
+                                                <ns-switch ng-model="client.isActiveAccount" name="isActiveAccount"></ns-switch>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label" translate>client.detail.birthDate</label>
+                                            <div class="col-sm-10">
+                                                <span class="input-span">{{client.birthDate | date}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label" translate>client.detail.taxDisplay</label>
+                                            <div class="col-sm-10">
+                                                <ns-switch ng-model="client.taxDisplay" name="taxDisplay"></ns-switch>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="form-group" ng-if="!isEditMode">
+                                        <div class="col-sm-12">
+                                            <label for="password" class="col-sm-2 control-label" translate>client.detail.mdp</label>
+                                            <div class="col-sm-10">
+                                                <input type="password" class="form-control" id="password" name="password" ng-model="client.password" required />
+                                                <div class="ns-error-message" ng-show="form.password.$touched || form.nsSubmitted">
+                                                    <div ng-show="form.password.$error.required" translate>client.detail.champRequis</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="form-group" ng-repeat="field in fields">
+                                        <div class="col-sm-12">
+                                            <label class="col-sm-2 control-label">{{field.label}}</label>
+                                            <div bind-html-compile="field.component_template"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ------------- Emplacement pour module --------------- -->
+                    <br />
+                    <div class="row" ng-if="isEditMode && blocks.length > 0">
+                        <div class="col-md-12">
+                            <div class="box subbox">
+                                <div class="box-content">
+                                    <table ng-if="isEditMode" class="col-md-12 table table-bordered" style="clear: both" ng-repeat="block in blocks">
+                                        <thead>
+                                            <tr>
+                                                <th>{{block.label}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td bind-html-compile="block.component_template"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ------------- Address --------------- -->
+                    <br />
+                    <div class="row">
+                        <style>
+                            .form-row {
+                                margin-bottom: 5px;
+                            }    
+                        </style>
+                        <div class="col-md-12" ng-if="isEditMode">
+                            <div class="box subbox">
+                                <div class="box-header">
+                                    <h2 translate>client.detail.adresses</h2>
+                                </div>
+                                <div class="box-content">
+
+                                    <span ng-if="client.addresses.length == 0" translate>client.detail.noAddress</span>
+                                    <table style="clear: both" ng-if="client.addresses.length > 0">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="col-lg-4" ng-repeat="address in client.addresses">
+                                                        <address style="background:#eef3f7;padding:10px;border-radius: 10px">
+                                                            <div>
+                                                                <h3 style="margin: 0 0 20px 0;" ng-show="$index === client.billing_address">{{'client.detail.address.billing_address' | translate}}</h3>
+                                                                <h3 style="margin: 0 0 20px 0;" ng-show="$index === client.delivery_address">{{'client.detail.address.shipping_address' | translate}}</h3>
+                                                            </div>
+                                                            <div class="form-row" style="display: flex; flex-flow: row; justify-content: space-between;">
+                                                                <select style="width: 45%;" class="form-control" placeholder="{{ 'client.detail.gender' | translate }}" ng-model="address.civility" ng-options="civility.code as civility.name for civility in civilities">
+                                                                    <!-- <option ng-repeat="civility in civilities" value="{{civility.code}}">{{civility.code}}</option> -->
+                                                                </select>   
+                                                                <!-- <select class="form-control" placeholder="{{ 'client.detail.address.pCountry' | translate }}" ng-model="address.isoCountryCode">
+                                                                    <option ng-repeat="country in countries" value="{{country.code}}">{{country.code}}</option>
+                                                                </select> -->
+
+                                                                <input class="form-control" type="text" ng-model="address.companyName" placeholder="{{ 'client.detail.company_name' | translate }}" style="width: 45%;">
+                                                            </div>
+                                                            <div class="form-row" style="display: flex; flex-flow: row; justify-content: space-between;">
+                                                                <input class="form-control" type="text" ng-model="address.firstname" placeholder="{{ 'client.detail.address.pFirstname' | translate }}" style="width: 45%;">
+                                                                <input class="form-control" type="text" ng-model="address.lastname" placeholder="{{ 'client.detail.address.pLastname' | translate }}" style="width: 45%;">
+                                                            </div>
+                                                            
+                                                            <div class="form-row">
+                                                                <input class="form-control" type="text" ng-model="address.line1" placeholder="{{ 'client.detail.address.pLine1' | translate }}">
+                                                            </div>
+                                                            <div class="form-row">
+                                                                <input class="form-control" type="text" ng-model="address.line2" placeholder="{{ 'client.detail.address.pLine2' | translate }}">
+                                                            </div>
+                                                            <div class="form-row" style="display: flex; flex-flow: row; justify-content: space-between;">
+                                                                <input class="form-control" type="text" ng-model="address.zipcode" placeholder="{{ 'client.detail.address.pZipcode' | translate }}" style="width: 45%;">
+                                                                <input class="form-control" type="text" ng-model="address.city" placeholder="{{ 'client.detail.address.pCity' | translate }}" style="width: 45%;">
+                                                            </div>
+                                                            <div class="form-row">
+                                                                <select class="form-control" placeholder="{{ 'client.detail.address.pCountry' | translate }}" ng-model="address.isoCountryCode">
+                                                                    <option ng-repeat="country in countries.datas" value="{{country.code}}">{{country.translation[adminLang].name}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-row">
+                                                                <input class="form-control" type="text" ng-model="address.phone_mobile" placeholder="{{ 'client.detail.address.pPhone_mobile' | translate }}">
+                                                            </div>
+                                                        </address>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ------------- Newsletter --------------- -->
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12" ng-if="isEditMode">
+                            <div class="box subbox">
+                                <div class="box-header">
+                                    <h2 translate>client.detail.newsletter</h2>
+                                </div>
+                                <div class="box-content">
+                                    <table class="table table-striped table-bordered table-hover bootstrap-datatable dataTable">
+                                        <thead>
+                                            <tr role="row">
+                                                <th role="columnheader" tabindex="0" rowspan="1" colspan="1">
+                                                    <a translate>
+                                                        client.detail.segment
+                                                    </a>
+                                                </th>
+                                                <th role="columnheader" tabindex="0" rowspan="1" colspan="1">
+                                                    <a translate>
+                                                        client.detail.inscrit
+                                                    </a>
+                                                </th>
+                                                <th role="columnheader" tabindex="0" rowspan="1" colspan="1">
+                                                    <a translate>
+                                                        client.detail.inscriptionDate
+                                                    </a>
+                                                </th>
+                                                <th role="columnheader" tabindex="0" rowspan="1" colspan="1">
+                                                    <a translate>
+                                                        client.detail.desinscriptionDate
+                                                    </a>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="segment in newsletter.segment"
+                                                style="height: 45px;">
+                                                <td style="vertical-align: middle;">
+                                                    {{segment.name}}
+                                                </td>
+                                                <td>
+                                                <span style="cursor: pointer" ng-click="setStatus(segment.name, segment.optin)"
+                                                    ng-bind-html='segment.optin | checked' />
+                                                </td>
+                                                <td style="vertical-align: middle;">
+                                                    {{segment.date_subscribe | date}}
+                                                </td>
+                                                <td style="vertical-align: middle;">
+                                                    {{segment.date_unsubscribe | date}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ------------- Orders --------------- -->
+                <div id="orders" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-12" ng-if="isEditMode">
+                            <div class="box subbox">
+                                <div class="box-header">
+                                    <h2 translate>client.detail.commandes</h2>
+                                </div>
+                                <div class="box-content">
+
+                                    <span ng-if="orders.length == 0 && carts.length == 0" translate>client.detail.noOrder</span>
+                                    <div ng-if="orders.length > 0">
+                                        <table class="table table-bordered">
+                                            <tr ng-repeat="cart in carts | orderBy:'-updatedAt'"
+                                            ">
+                                            <td><a href="#/cart/{{cart._id}}"><span translate>client.detail.cart</span>#{{cart._id}}</a></td>
+                                            <td>{{cart.priceTotal.ati | number: 2}} &euro;</td>
+                                            <td>
+                                                <span class="label label-warning" style="background-color:brown" translate>client.detail.cart</span>
+                                            </td>
+                                            <td>{{cart.updatedAt| date:"dd/MM/yyyy '-' hh:mm"}}</td>
+                                            </tr>
+                                            <tr ng-if="orders.length > 0 && carts.length > 0">
+                                                <td colspan="4"></td>
+                                            </tr>
+                                            <tr ng-repeat="order in orders | orderBy:'-creationDate'">
+                                                <td><a href="#/orders/{{order._id}}"><span translate>client.detail.commande</span>#{{order.number}}</a></td>
+                                                <td>{{order.priceTotal.ati| number: 2}} &euro;</td>
+                                                <td>
+                                                    <ns-status-label type="order" status="order.status"></ns-status-label>
+                                                </td>
+                                                <td>{{order.creationDate| date:"dd/MM/yyyy '-' hh:mm"}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="discount" class="tab-pane fade">
+                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                        
+                                <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'name'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.list.nom
+                                                    <span ng-show="sort.type == 'name' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'name' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'type'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.list.type
+                                                    <span ng-show="sort.type == 'type' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'type' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'dateStart'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.list.dateDeb
+                                                    <span ng-show="sort.type == 'dateStart' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'dateStart' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'dateEnd'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.list.dateFin
+                                                    <span ng-show="sort.type == 'dateEnd' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'dateEnd' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.list.dateCre
+                                                    <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'priority'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.detail.priority
+                                                    <span ng-show="sort.type == 'priority' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'priority' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'applyNextRules'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.detail.applyNextRules
+                                                    <span ng-show="sort.type == 'applyNextRules' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'applyNextRules' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                            <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                                                <a ng-click="sort.type = 'actif'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
+                                                    promo.list.actif
+                                                    <span ng-show="sort.type == 'actif' && !sort.reverse" class="ico-chevron-down"></span>
+                                                    <span ng-show="sort.type == 'actif' && sort.reverse" class="ico-chevron-up"></span>
+                                                </a>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                        <tr class="pointer" ng-click="detail(promo)" ng-repeat="promo in rules" ng-class-odd="'odd'" ng-class-even="'even'">
+                                            <td>{{promo.name}}</td>
+                                            <td>{{promo.type === "1" ? "Panier" : "Catalogue"}}</td>
+                                            <td>{{ momentDate(promo.dateStart) }}</td>
+                                            <td>{{ momentDate(promo.dateEnd) }}</td>
+                                            <td>{{ momentDate(promo.createdAt) }}</td>
+                                            <td>{{promo.priority}}</td>
+                                            <td>{{promo.applyNextRules ? "Oui" : "Non"}}</td>
+                                            <td>{{promo.actif ? "Actif" : "Non actif"}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </div>
+
+                <div id="attributs" class="tab-pane fade">
+                    <div class="form-group">
+                        <label for="attrSet" class="col-sm-2 control-label">Set d'attribut</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" ng-model="client.set_attributes" >
+                                <option ng-repeat="item in setAttributes" value="{{item._id}}">{{item.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <ns-attributes class="col-sm-11" ng-if="att.type" ng-repeat="att in client.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
+                    </div>
+                </div>
+                <div id="downloadHistory" class="tab-pane fade">
+                    <h3 style="display: inline" translate>client.detail.downloadHistory</h3>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div>
+                            <input type="text" ng-change="getDownloadHistory()" ng-model="downloadHistoryFilters.$and[0][downloadHistoryQueryKey].$regex" ng-model-options="{debounce: 500}" class="form-control" translate translate-attr-placeholder='client.detail.productName' style="max-width: 500px;">
+                        </div>
+                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
+                                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                                <thead>
+                                    <tr role="row" style="cursor: pointer">
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                            colspan="1"
+                                            style="width: 200px;" aria-sort="ascending"
+                                            aria-label="Username: activate to sort column descending" translate>
+                                            client.detail.productName
+                                        </th>
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                            colspan="1" translate>
+                                            client.detail.firstDownloadDate
+                                        </th>
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                            colspan="1" translate>
+                                            client.detail.lastDownloadDate
+                                        </th>
+                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                            colspan="1">
+                                           <a translate>client.detail.countDownloads</a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody role="alert" aria-live="polite" aria-relevant="all"
+                                       infinite-scroll="scroller.next()" infinite-scroll-distance="1"
+                                       infinite-scroll-immediate-check="true"
+                                       infinite-scroll-disabled='scroller.busy'>
+                                    <tr ng-class-odd="'odd'" ng-class-even="'even'"
+                                        ng-repeat="line in downloadHistory">
+                                        <td class="  sorting_1">{{line.product.translation[adminLang].name}}</td>
+                                        <td class="  sorting_2">{{line.firstDownloadDate | date : 'short'}}</td>
+                                        <td class="  sorting_3">{{line.lastDownloadDate | date : 'short'}}</td>
+                                        <td class="  sorting_4">{{line.countDownloads}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <pagination total-items="downloadHistoryCount" page="downloadHistoryPage" on-select-page="getDownloadHistory(page)" items-per-page="downloadHistoryItemPerPage" max-size="3" boundary-links="true"
+                                        rotate="false"></pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ns-buttons>
+    </ns-box>
+</form>

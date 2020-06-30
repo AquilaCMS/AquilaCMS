@@ -1,0 +1,11 @@
+{
+    "t1": "Statistics",
+    "yesterday" : "Yesterday",
+    "today" : "Today",
+    "last30" : "Last 30 days",
+    "attendance" : "Attendance",
+    "transfo" : "Transformation rate",
+    "sales" : "Net sales",
+    "basket" : "Net average basket",
+    "orders" : "Number of orders"  
+}

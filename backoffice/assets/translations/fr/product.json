@@ -1,0 +1,114 @@
+{
+    "select": {
+        "selectPdt": "Sélectionner des produits",
+        "cancel": "Annuler",
+        "valider": "Valider"
+    },
+    "cross-selling": {
+        "pdtsAssoc": "Produits associés",
+        "add": "Ajouter",
+        "nom": "Nom",
+        "desc": "Description",
+        "cancel": "Annuler"
+    },
+    "general": {
+        "pdtType": "Type du produit",
+        "infoGen": "Informations Générales",
+        "code": "Code",
+        "fieldReq": "Ce champ est requis.",
+        "nom": "Nom",
+        "ean13": "Code EAN13",
+        "slug": "Slug",
+        "downloadLink": "Liens de téléchargement",
+        "downloadInfos": "Informations au téléchargement",
+        "autoGen": "Generation automatique par le nom si vide",
+        "jeuAttr": "Jeu d'attributs",
+        "jeuOpt": "Jeu d'options",
+        "selectJeuOpt": "Sélectionner le jeu d'options",
+        "actif": "Actif",
+        "visible": "Visible",
+        "titleDescLg": "Titre description longue",
+        "descLg": "Description longue",
+        "titleDescCt": "Titre description courte",
+        "descCt": "Description courte",
+        "canon": "Canonical"
+    },
+    "marketing": {
+        "fournisseur": "Fournisseur",
+        "refFourn": "Réf. fournisseur",
+        "nomFourn": "Nom Fournisseur",
+        "selectFourn": "Sélectionner Fournisseur",
+        "marque": "Marque",
+        "selectMarque": "Sélectionner Marque",
+        "pds": "Poids ",
+        "enG": "(en grammes)",
+        "infoMark": "Informations Marketing",
+        "univers": "Univers",
+        "selectUni": "Sélectionner Univers",
+        "famille": "Famille",
+        "selectFamille": "Sélectionner Famille",
+        "ssFam": "Sous-famille",
+        "selectSsFam": "Sélectionner Sous-famille",
+        "new": "Nouveauté"
+    },
+    "price": {
+        "title": "Prix",
+        "purchase": "Achat HT",
+        "coefficient": "Coefficient",
+        "et": {
+            "normal": "Vente HT",
+            "special": "Spécial HT *"
+        },
+        "ati": {
+            "normal": "Vente TTC",
+            "special": "Spécial TTC *"
+        },
+        "ifPrice": "* Si un prix spécial est défini, il sera prioritaire par rapport au prix de vente.",
+        "tax": "TVA (%)",
+        "margin": "Marge"
+    },
+    "photo": {
+        "add": "Ajouter",
+        "nom": "Nom",
+        "title": "Balise Title",
+        "picturessaved": "Images sauvegardées :",
+        "alt": "Balise Alt",
+        "pos": "Position",
+        "img": "Image Principale"
+    },
+    "list": {
+        "ph1": "Nom",
+        "code": "Code",
+        "img": "Image",
+        "nom": "Nom",
+        "fournisseur": "Fournisseur",
+        "typePdt": "Type produit"
+    },
+    "beforeCreate": {
+        "t1": "Nouveau produit",
+        "typePdt": "Type produit",
+        "cancel": "Annuler",
+        "valider": "Valider"
+    },
+    "list2": {
+        "t1": "Produits",
+        "ph1": "Code",
+        "code": "Code",
+        "name": "Nom",
+        "picture": "Image",
+        "price": "Prix base TTC",
+        "quantity": "Quantité",
+        "min": "Min",
+        "max": "Max",
+        "typePdt": "Type produit",
+        "actif": "Actif",
+        "visible": "Visible",
+        "indiff": "Indifférent",
+        "noActif": "Non actif",
+        "noVisible": "Non visible",
+        "creation_date": "Date de création",
+        "reset_filters": "Réinitialiser les filtres",
+        "edit":"Éditer",
+        "action":"Action"
+    }
+}

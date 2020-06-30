@@ -1,0 +1,53 @@
+{
+    "transactions": "Transactions",
+    "commandes": "Commandes",
+    "paiements": "Paiements",
+    "factures": "Factures en ligne",
+    "carts": "Paniers",
+
+    "catalogue": "Catalogue",
+    "produits": "Produits",
+    "avis": "Avis",
+    "marques": "Marques",
+    "fournisseurs": "Fournisseurs",
+    "familles": "Familles",
+    "jeuxAttributs": "Jeux d'Attributs",
+    "attributs": "Attributs",
+    "jeuxOptions": "Jeux d'Options",
+    "options": "Options",
+    "picto": "Picto",
+
+    "clients": "Clients",
+    "site": "Site",
+    "pages": "Pages",
+    "BlocsCMS": "Blocs CMS",
+    "categories": "Catégories",
+    "mails": "Mails",
+    "medias": "Medias",
+    "article": "Blog",
+    "css": "CSS",
+    "translate": "Traduction",
+
+    "galerie": "Galerie",
+    "carousel": "Carrousel",
+    "agenda": "Agenda",
+
+    "promotion": "Promotion",
+    "configuration": "Configuration",
+    "environnement": "Environnement",
+    "stock&commandes": "Param commande",
+    "modesExpedition": "Transporteurs",
+    "territories" : "Territoires",
+    "themes": "Thèmes",
+    "design": "Apparence",
+
+    "langues": "Langues",
+    "tachesPlanifiees": "Tâches Planifiées",
+    "modesPaiement": "Modes paiement",
+    "pointsVente": "Points de vente",
+    "update": "Mise à jour",
+
+    "modules": "Modules",
+
+    "admin": "Administrateurs"
+}

@@ -1,0 +1,86 @@
+{
+    "extends": [
+        "airbnb-base"
+    ],
+    "env": {
+        "es6": true
+    },
+    "rules": {
+        "arrow-body-style": "off",
+        "linebreak-style": 0,
+        "global-require": "off",
+        "lines-between-class-members": "off",
+        "indent": [
+            "error",
+            4
+        ],
+        "max-len": [
+            "error",
+            999
+        ],
+        "key-spacing": [
+            2,
+            {
+                "singleLine": {
+                    "beforeColon": false,
+                    "afterColon": true
+                },
+                "multiLine": {
+                    "beforeColon": true,
+                    "afterColon": true,
+                    "align": "colon"
+                }
+            }
+        ],
+        "no-multi-spaces": [
+            "off"
+        ],
+        "class-methods-use-this": "off",
+        "prefer-destructuring": "off",
+        "func-names": "off",
+        "func-style": [
+            "error",
+            "declaration",
+            {
+                "allowArrowFunctions": true
+            }
+        ],
+        "import/newline-after-import": "off",
+        "import/no-dynamic-require": "off",
+        "import/no-extraneous-dependencies": "off",
+        "no-async-promise-executor": "off",
+        "no-prototype-builtins": "off",
+        "no-bitwise":"off",
+        "no-mixed-operators":"off",
+        "no-duplicate-imports": "error",
+        "no-eval": "off",
+        "no-underscore-dangle": "off",
+        "no-param-reassign": "off",
+        "no-console": "off",
+        "no-use-before-define": "off",
+        "no-plusplus": "off",
+        "no-await-in-loop": "off",
+        "no-shadow": "off",
+        "no-lonely-if": "off",
+        "no-restricted-syntax": "off",
+        "no-throw-literal": "off",
+        "no-continue": "off",
+        "no-return-assign": "off",
+        "no-loop-func": "off",
+        "no-case-declarations": "off",
+        "no-nested-ternary":"warn",
+        "max-classes-per-file": "off",
+        "comma-dangle": ["error", "never"],
+        "camelcase": "off",
+        "eol-last": "off",
+        "consistent-return": "off",
+        "object-curly-newline": "off",
+        "quotes": ["off", "single"],
+        "prefer-promise-reject-errors": "off",
+        "prefer-arrow-callback": "off",
+        "newline-per-chained-call": "off",
+        "block-spacing": "off",
+        "space-in-parens": "off",
+        "object-curly-spacing": ["error", "never"]
+    }
+}

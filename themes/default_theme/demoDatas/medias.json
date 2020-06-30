@@ -1,0 +1,58 @@
+{ 
+  "collection":"medias",
+  "datas":[ 
+     { 
+        "extension":".png",
+        "_id":"5c2ced396fb96b1353dd13b9",
+        "link":"medias/paiement-cheque-logo.png",
+        "name":"paiement-par-cheque"
+     },
+     { 
+        "extension":".png",
+        "_id":"5c2ced6a6fb96b1353dd13ba",
+        "link":"medias/paiement-virement-logo.png",
+        "name":"paiement-par-virement"
+     },
+     { 
+        "extension":".png",
+        "_id":"5c6e88dfa2df781c984d5381",
+        "link":"medias/shipper.png",
+        "name":"Shipper"
+     },
+     { 
+        "extension":".jpg",
+        "_id":"5d248c814aa9c1692db04a34",
+        "link":"medias/Aquila_CMS_horizontal.jpg"
+     },
+     { 
+        "extension":".png",
+        "_id":"5d443d76ede1945f66028313",
+        "link":"medias/logo2.png",
+        "name":"logo aquila blanc"
+     },
+     { 
+        "extension":".jpg",
+        "_id":"5d444efbede1945f660288d7",
+        "link":"medias/banniere2.jpg",
+        "name":"banniere sweat"
+     },
+     { 
+        "extension":".jpg",
+        "_id":"5d444fa2ede1945f6602892f",
+        "link":"medias/banniere1.jpg",
+        "name":"banniere tshirt"
+     },
+     { 
+        "extension":".jpg",
+        "_id":"5d445012ede1945f6602898b",
+        "link":"medias/banniere3.jpg",
+        "name":"banniere chaussettes"
+     },
+     { 
+        "extension":".jpg",
+        "_id":"5d4a5011edd1c15f16018b85",
+        "link":"medias/banniere_1_tshirt.jpg",
+        "name":"banniere produits"
+     }
+  ]
+}

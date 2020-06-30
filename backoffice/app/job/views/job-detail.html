@@ -1,0 +1,184 @@
+<form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
+    <ns-box data-title="job.detail.t1" title-icon="fa fa-tasks fa-lg" close-href="#/jobs">
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(job._id)"
+                    save-and-quit="save(true)" disable-save="disableSave"
+                    hide-remove="job.data.flag == 'system'"
+                    return-path="/jobs" form="form">
+            <h2 ng-show="job.data.flag == 'system'" style="margin-top:30px; margin-bottom:30px; color:red" translate>
+                job.detail.alert
+            </h2>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="name" class="col-sm-2 control-label" translate>job.detail.taskName</label>
+                    <div class="col-sm-6" ng-show="job.data.flag != 'system'">
+                        <input type="text" class="form-control" id="name" name="name" ng-model="job.name" required>
+                        <div class="ns-error-message" ng-show="form.name.$touched || form.nsSubmitted">
+                            <div ng-show="form.name.$error.required" translate>job.detail.fieldRequired</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" ng-show="job.data.flag == 'system'">
+                        {{job.name}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="comment" class="col-sm-2 control-label" translate>job.detail.commentaire</label>
+                    <div class="col-sm-6" ng-show="job.data.flag != 'system'">
+                        <input type="text" class="form-control" id="comment" name="comment" ng-model="job.data.comment" required>
+                        <div class="ns-error-message" ng-show="form.comment.$touched || form.nsSubmitted">
+                            <div ng-show="form.comment.$error.required" translate>job.detail.fieldRequired</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" ng-show="job.data.flag == 'system'">
+                        {{job.data.comment}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.fq</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="repeatInterval" name="repeatInterval" ng-model="job.repeatInterval" required>
+                        <div class="ns-error-message" ng-show="form.repeatInterval.$touched || form.nsSubmitted">
+                            <div ng-show="form.repeatInterval.$error.required" translate>job.detail.fieldRequired</div>
+                        </div>
+                        <div class="ns-error-message" ng-show="job.failReason && job.failReason != ''">
+                            <div translate>job.detail.invalidFq</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="repeatInterval" class="col-sm-2 control-label" translate>job.list.nextExec</label>
+                    <div class="col-sm-6">
+                        <span ng-if="!job.disabled">{{(job.nextRunAt | date:'medium')}}</span>
+                        <span ng-if="job.disabled" translate>job.list.paused</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.httpMeth</label>
+                    <div class="col-sm-6" ng-show="job.data.flag != 'system'">
+                        <select value="{{job.data.method ? job.data.method: 'get'}}" class="form-control" name="method" id="method" ng-model="job.data.method">
+                            <option value="service" translate>job.detail.function</option>
+                            <option value="get" translate>job.detail.get</option>
+                            <option value="post" translate>job.detail.post</option>
+                            <option value="ftp" translate>job.detail.ftp</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6" ng-show="job.data.flag == 'system'">
+                        {{job.data.method}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="api" class="col-sm-2 control-label" translate>job.detail.lancerAPI</label>
+                    <div class="col-sm-6" ng-show="job.data.flag != 'system'">
+                        <input type="text" class="form-control" id="api" name="api" ng-model="job.data.api" required>
+                        <div class="ns-error-message" ng-show="form.api.$touched || form.nsSubmitted">
+                            <div ng-show="form.api.$error.required" translate>job.detail.fieldRequired</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6" ng-show="job.data.flag == 'system'">
+                        {{job.data.api}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.params</label>
+                    <div class="col-sm-6">
+                        <textarea class="form-control" ng-model="job.data.params" name="params" id="params" rows="10"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="isEditMode">
+                <div class="col-sm-11">
+                    <label class="col-sm-2 control-label" translate>job.detail.startStop</label>
+                    <a ng-show="job.disabled == true" class="btn btn-inverse" ng-click="play(job._id)">
+                        <i class="fa fa-play "></i>
+                    </a>
+                    <a ng-show="job.disabled == false" class="btn btn-inverse" ng-click="pause(job._id)">
+                        <i class="fa fa-pause "></i>
+                    </a>
+                </div>
+            </div>
+            <div class="form-group" ng-show="isEditMode">
+                <div ng-show="runImmediate" class="col-sm-11">
+                    <label class="pointer col-sm-2 control-label" translate>job.detail.startNow</label>
+                    <a class="btn btn-inverse" ng-click="playImmediate(job._id)">
+                        <i class="fa fa-play "></i>
+                    </a>
+                </div>
+                <div ng-show="!runImmediate" class="col-sm-11">
+                    <label class="disabled disabledcolor pointer col-sm-2 control-label" translate>job.detail.startNow</label>
+                    <a class="btn">
+                        <i class="fa fa-play " style="color: grey;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div ng-show="job.data.lastExecutionResult" class="form-group">
+                <div class="col-sm-11">
+                    <label for="repeatInterval" class="col-sm-2 control-label" translate>job.detail.lastRes</label>
+                    <pre class="col-sm-6" ng-bind-html="trustHtml(job.data.lastExecutionResult)"></pre>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label class="col-sm-2 control-label" translate>job.detail.fqDoc</label>
+                    <div>
+                        <pre>
+                            <br>
+                            - <b>00 30 08 10 06 * *</b> : le 10 juin à 08:30 du matin
+                                00 – 0ème seconde (début de la minute)
+                                30 – 30ème minute
+                                08 – 8 heures du matin (cron fonctionne en 24 heures)
+                                10 – 10ème jour
+                                06 – 6ème mois (juin)
+                                * – n’importe quel jour de la semaine
+                                * – n’importe quelle année
+                            - <b>00 00 09-18 * * * *</b> : chaque heure de chaque jour, de 9 à 18h
+                                00 – 0ème seconde (début de la minute)
+                                00 – 0ème minute (début de l’heure)
+                                09-18 – 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 heures
+                                * – chaque jour
+                                * – chaque mois
+                                * – n’importe quel jour de la semaine
+                                * – n’importe quelle année
+                            - <b>* */10 * * * *</b> : Lancer le cron toutes les 10 minutes.
+
+                                * * * * * * *
+                                | | | | | | |
+                                | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnel (7 champs)
+                                | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
+                                | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
+                                | | | +-------- Day of the Month  (range: 1-31)
+                                | | +---------- Hour              (range: 0-23)
+                                | +------------ Minute            (range: 0-59)
+                                +-------------- Seconde           (range: 0-59) /!\ Optionnel (6 champs)
+
+                                /!\ L'interval peut être noté sous differents formats:
+                                 - 7 champs: 00 00 08 1-31 * * *  => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine Année
+                                 - 6 champs: 00 00 08 1-31 * *    => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine
+                                 - 5 champs: 00 08 1-31 * *       => Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </ns-buttons>
+    </ns-box>
+</form>

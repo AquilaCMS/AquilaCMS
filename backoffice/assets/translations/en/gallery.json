@@ -1,0 +1,34 @@
+{
+    "list": {
+        "t1": "Gallery",
+        "code": "Code",
+        "img": "Pictures"
+    },
+    "detail": {
+        "t1": "Gallery Detail",
+        "t2": "New Gallery",
+        "code": "Code",
+        "nbItemDisplayed": "Number of items displayed",
+        "nbColMax": "Max number of column",
+        "add": "Add"
+    },
+    "item": {
+        "ph1": "URL",
+        "ph2": "Name",
+        "ph3": "Video YouTube ID",
+        "addMedia": "Add a media",
+        "edit": "Edit",
+        "add": "Add",
+        "uneImg": "a picture",
+        "uneVideo": "a video",
+        "img": "Picture",
+        "url": "URL",
+        "info": "Info",
+        "ytID": "Youtube ID",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "save": "Save",
+        "added": "Item added",
+        "updated": "Item updated"
+    }
+}

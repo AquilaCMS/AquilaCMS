@@ -1,0 +1,8 @@
+node_modules/
+themes/
+
+modules/**
+updates/
+backoffice/
+bo/
+config/dynamic_langs.js

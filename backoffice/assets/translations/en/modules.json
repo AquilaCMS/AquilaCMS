@@ -1,0 +1,17 @@
+{
+    "t1": "Plugins",
+    "addMod": "To add a plugin, drag the .zip file below",
+    "nom": "Name",
+    "desc": "Description",
+    "ver": "Version",
+    "actif": "Active ?",
+    "actions": "ACTIONS",
+    "config": "Configure",
+    "delete": "Delete",
+    "shopping": "Google Shopping",
+    "choosePackageVersions": "Versions are in conflict choose the one you want to keep",
+    "cancel": "Cancel",
+    "save": "Save",
+    "api": "API",
+    "theme": "THEME"
+}

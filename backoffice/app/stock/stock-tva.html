@@ -1,0 +1,23 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="validLabel()" role="form">
+    <div  ng-if="!isEditMode" class="modal-header">
+        <h3 ng-if="!isEditMode" translate>stock.edVat</h3>
+    </div>
+    <div ng-if="isEditMode" class="modal-header" style="height:10px">
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="col-sm-11">
+                <label class="col-sm-5 control-label" translate>stock.vat</label> <label class="control-label">%</label>
+                <div class="col-sm-6">
+                    <input type="number" id="code" class="form-control" ng-model="tva.rate" required ng-disabled="isEditMode"/>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="modal-footer">
+        <button ng-show="isEditMode" class="btn btn-danger" ng-click="delete($event)" translate>stock.delete</button>
+        <button class="btn btn-default" ng-click="cancel($event)" translate>stock.cancel</button>
+        <button ng-if="!isEditMode" type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>stock.valider</button>
+    </div>
+</form>

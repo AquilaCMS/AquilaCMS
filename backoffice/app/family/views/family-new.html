@@ -1,0 +1,44 @@
+<div class="modal-header">
+    <h3><span translate>family.new.t1</span>{{typeName}}</h3>
+</div>
+<div class="modal-body">
+
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="box-content">
+
+                <p></p>
+                <form name="form" novalidate class="form-horizontal" role="form">
+                    <input type="hidden" value="" name="id" id="template" ng-model="family._id">
+                    <div class="form-group" style="margin: 0px 0px 15px 0px;">
+                        <label for="name" class="col-sm-2 control-label" translate>family.new.nom</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="name"  translate translate-attr-placeholder='family.new.ph1' ng-model="family.name" required>
+                        </div>
+                        <br/><br/>
+                        <label for="code" class="col-sm-2 control-label" translate>family.new.code</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="code"  translate translate-attr-placeholder='family.new.ph2' ng-model="family.code" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 0px 0px 15px 0px;" ng-hide="parents.length == 0">
+                        <label for="type" class="col-sm-2 control-label" translate>family.new.parent</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" ng-model="family.parent" ng-options="item._id as item.name for item in parents" disabled>
+                                <option value="" translate>family.new.parent</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="save(family)" ng-disabled="form.$invalid" translate>family.new.save</button>
+    <button class="btn btn-default" ng-click="cancel()" translate>family.new.cancel</button>
+</div>

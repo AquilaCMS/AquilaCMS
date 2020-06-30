@@ -1,0 +1,19 @@
+{
+    "trier": "Sort",
+    "filtrer": "Filter",
+    "results": "result(s)",
+    "trierPar": "Sort by",
+    "filtrerPar": "Filter by",
+    "pertinence": "Relevance",
+    "grid": "Grid",
+    "list": "List",
+    "prix": "Price",
+    "grade": "Grade",
+    "new": "New",
+    "produitsParPage": "Items per page",
+    "affinerPar": "Filters",
+    "confirmer": "CONFIRM",
+    "aucunResultat": "No result",
+    "mostViewed": "Most viewed",
+    "reset_filters": "Reset"
+}

@@ -1,0 +1,51 @@
+/* === DetailOrder === */
+
+.wrapDetailOrder h3 {
+    color: #fdbc58;
+}
+.wrapDetailOrder .btnYellow {
+    color: #fdbc58;
+}
+.wrapDetailOrder {
+    width: 100%;
+}
+.wrapDetailOrder .wrapperFooter {
+    display: flex;
+    justify-content: space-between;
+}
+.wrapDetailOrder table {
+    background: #fdbc58;
+    width: 100%;
+    color: black;
+    margin-top: 75px;
+}
+.wrapDetailOrder table td {
+    width: 20%;
+}
+.wrapDetailOrder thead tr {
+    height: 40px;
+    border-bottom: 2px solid black;
+}
+.wrapDetailOrder tbody tr {
+    height: 40px;
+    border-bottom: 1px solid black;
+    transition: 0.3s;
+}
+.wrapDetailOrder .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.wrapDetailOrder .ttc {
+    color: #fdbc58;
+    font-size: 22px;
+    text-align: end;
+}
+.wrapDetailOrder .tva {
+    text-align: end;
+}
+@media screen and (max-width: 768px) {
+    .wrapDetailOrder {
+        width: 100%;
+    }
+}

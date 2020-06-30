@@ -1,0 +1,20 @@
+{
+    "t1": "Factures en ligne",
+    "ph1": "Rechercher...",
+
+    "onlineBills": "Factures en ligne",
+    "bill": "Facture",
+    "iencli": "Client",
+    "date": "Date",
+    "status": "Statut",
+    "prixTTC": "Montant TTC",
+    "type": "Type",
+
+    "start": "Début",
+    "end": "Fin",
+    "export": "Exporter",
+    "avoir": "Avoir",
+    "facture": "Facture",
+    "orderNumber": "N° de commande",
+    "orderNumberHtml": "Numero de commande"
+}

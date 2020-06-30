@@ -1,0 +1,89 @@
+/* Page: Invoice
+=================================================================== */
+
+.profile-image {
+	width: 100%;
+	border: 5px solid white;
+	outline: 1px solid lighten(@grey, 15%)
+}
+
+.profile h3 {
+	padding: 0 5px;
+}
+
+ul.profile-details {
+	margin-top: 10px;
+	padding: 0 5px;
+	list-style: none;
+	color: darken(@grey, 20%);
+	
+	li {
+		position: relative;
+		margin: 0 0 20px 0;
+		padding-left: 22px;
+		
+		div {
+			color: @grey;
+			
+			i {
+				position: absolute;
+				top: 4px;
+				left: -5px;
+				color: lighten(@grey,10%);
+				width: 20px;
+				text-align: center;
+			}
+			
+			
+			
+		}
+		
+		input[type="text"] {
+			color: black !important;
+		}
+		
+	}
+}
+
+ul.friends-list {
+	padding: 0;
+	list-style: none;
+	
+	li {
+		width: auto;
+		min-width: 170px;
+		margin-bottom: 20px;
+		border: 1px solid lighten(@grey, 20%);
+		background: lighten(@grey, 25%);
+		float: left;
+		padding: 5px;
+		margin: 0px 0px 5px 5px;
+		white-space: nowrap;
+		overflow: hidden;
+		
+		&:last-child {
+			margin-bottom: 0;
+		}
+		
+		.avatar {
+			float: left;
+			margin-right: 10px;
+			width: 40px;
+			
+			img {
+				width: 40px;
+			}
+			
+		}
+
+		a {
+			display: inline-block;
+			font-size: 22px;
+			line-height: 8px;
+			text-decoration: none;
+			color: @grey;
+		}
+		
+	}
+		
+}

@@ -1,0 +1,14 @@
+{
+    "t1": "Convertir un panier en commande",
+
+    "cartConverted": "Panier converti !",
+    "refOrder": "Ref. Commande ou Email client :",
+    "search": "Rechercher",
+    "id": "ID",
+    "date": "Date",
+    "prixTTC": "Montant TTC",
+    "nom": "Nom",
+    "mail": "E-mail",
+    "status": "Statut",
+    "convert": "Convertir"
+}

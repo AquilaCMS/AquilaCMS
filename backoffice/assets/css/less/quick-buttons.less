@@ -1,0 +1,49 @@
+/* Quick Buttons
+=================================================================== */
+.quick-button {
+	border: 1px solid lighten(@grey, 15%);
+	background: lighten(@grey, 20%);
+	margin-bottom: -1px;
+  	padding: 30px 0px 10px 0px;
+	font-size: 14px;
+	display:block;
+	text-align: center;
+	cursor: pointer;
+	position: relative;
+	.transition(all 0.3s ease);
+	color: @grey;
+	.border-radius(2px);
+		
+	&:hover {
+		color: @darkGrey;
+		text-decoration: none;
+		background: lighten(@grey, 15%);
+	}
+	
+	.notification {
+		.border-radius(2px);
+		top: -1px;
+		right: -1px;
+		font-size: 10px;
+	}
+
+	i {
+		font-size: 32px;
+	}
+	
+	&.small {
+		padding: 15px 0px 0px 0px;
+		font-size: 10px;
+		
+		i {
+			font-size: 20px;
+		}
+		
+		.notification {
+			top: -1px;
+			right: -1px;
+			font-size: 7px;
+			padding: 4px 5px;
+		}
+	}
+}

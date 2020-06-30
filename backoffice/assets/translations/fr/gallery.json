@@ -1,0 +1,34 @@
+{
+    "list": {
+        "t1": "Galerie",
+        "code": "Code",
+        "img": "Images"
+    },
+    "detail": {
+        "t1": "Détail Galerie",
+        "t2": "Nouvelle Galerie",
+        "code": "Code",
+        "nbItemDisplayed": "Nombre d'items affichés",
+        "nbColMax": "Nombre de colonnes max",
+        "add": "Ajouter"
+    },
+    "item": {
+        "ph1": "URL",
+        "ph2": "Nom",
+        "ph3": "ID youtube de la video",
+        "addMedia": "Ajout d'un média",
+        "edit": "Edition",
+        "add": "Ajout",
+        "uneImg": "d'une image",
+        "uneVideo": "d'une vidéo",
+        "img": "Image",
+        "url": "URL",
+        "info": "Info",
+        "ytID": "Youtube ID",
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "added": "Ajout réussi",
+        "updated": "Modification réussie"
+    }
+}

@@ -1,0 +1,171 @@
+/* === Login / Register === */
+#tab2 .form-login input::placeholder {
+    font-size: 12px;
+}
+
+.newClient {
+    color: white;
+}
+
+.newClient .title {
+    font-size: 30px;
+    color: #fdbc58;
+    text-align: center;
+}
+
+.client .requireField {
+    color: #fdbc58;
+}
+
+.client button {
+    color: white;
+    background: rgb(253, 188, 88);
+    font-size: 22px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    line-height: 35px;
+    width: fit-content;
+    margin-top: 8px;
+    transition: 0.4s;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.client button:hover {
+    background: rgb(247, 174, 63);
+}
+
+.client input {
+    background: black;
+    border: 1px solid white;
+    width: 100%;
+    height: 40px;
+    border-radius: 0;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    color: white;
+    padding-left: 10px;
+}
+
+.newClient {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 30px;
+}
+
+.client .fieldsNewClient {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.client .labels,
+.client .inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+.client .labels {
+    padding-right: 35px;
+}
+
+.client label {
+    display: block;
+    height: 50px;
+    text-align: right;
+    height: 48px;
+    padding: 0;
+    padding-top: 15px;
+}
+
+.client .passwordConfirm {
+    padding-top: 5px !important;
+}
+
+.client label span {
+    vertical-align: middle;
+}
+
+.client .requiredLabel {
+    font-size: 13px;
+    color: #fdbc58;
+    letter-spacing: 0;
+    text-align: right;
+    line-height: 21px;
+}
+
+@media screen and (max-width: 990px) {
+    .newClient {
+        margin-top: 100px;
+    }
+
+    .client .fieldsNewClient {
+        margin-top: 30px;
+    }
+
+    .client button {
+        align-self: center;
+    }
+
+    .client label {
+        text-align: center;
+    }
+
+    .client label[for='passwordConfirm'] {
+        margin-bottom: 20px;
+    }
+}
+
+.sub input {
+    width: 100%;
+}
+
+.sub .form__col {
+    width: 30%;
+    display: inline-block;
+}
+
+.sub .form__col:first-child {
+    margin-right: 5%;
+}
+
+.sub .form__col:last-child {
+    margin-left: 5%;
+}
+
+.sub form {
+    max-width: 600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sub form>.cols {
+    margin-bottom: 20px;
+}
+
+.box__head {
+    cursor: pointer
+}
+
+.login-section {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+small {
+    color: #fff;
+}
+
+.mdp .box__body {
+    max-width: 500px;
+}
+
+.back-button {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}

@@ -1,0 +1,44 @@
+{
+    "detail": {
+        "t1": "Détail Page",
+        "lastModif": "Date de dernière modification",
+        "active": "Active",
+        "title": "Titre",
+        "metaDesc": "Méta description",
+        "slug": "Slug",
+        "preview": "Prévisualiser",
+        "save": "Enregistrer",
+        "index": "Indexer la page"
+    },
+    "list": {
+        "t1": "Pages statiques",
+        "ph1": "Rechercher...",
+        "code": "Code",
+        "etats": "États"
+    },
+    "new": {
+        "t1": "Créer une Nouvelle Page",
+        "ph1": "Code",
+        "ph2": "Nom",
+        "ph3": "Generation automatique par le nom si vide",
+        "ph4": "Titre",
+        "ph5": "Meta description",
+        "code": "Code",
+        "nom": "Nom",
+        "slug": "Slug",
+        "title": "Titre",
+        "metaDesc": "Méta description",
+        "preview": "Prévisualiser",
+        "save": "Enregistrer"
+    },
+    "modal":{
+        "add":"Ajouter",
+        "addImage":"Ajouter une image",
+        "maxSize":"Taille maximale :",
+        "width":"Largeur :",
+        "height":"Hauteur :",
+        "cancel":"Annuler",
+        "medias": "Médias"
+
+    }
+}

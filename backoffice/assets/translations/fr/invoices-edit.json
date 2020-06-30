@@ -1,0 +1,21 @@
+{
+    "onlineBill": "Facture en ligne",
+    "billNb": "Numéro de facture",
+    "prixTTC": "Montant de la facture TTC",
+    "nbCli": "Numéro de client",
+    "nom": "Nom",
+    "soc": "Société",
+    "coord": "Coordonnées",
+    "mail": "E-mail",
+    "creePar": "Créé par",
+    "creDate": "Date de création",
+    "opDate": "Date d'opération",
+    "status": "Statut",
+    "modePay": "Mode de règlement",
+    "transNb": "Numéro de transaction",
+    "price": "Montant",
+    "comm": "Commentaire",
+    "export": "Exporter",
+    "ok": "OK",
+    "cancel": "Annuler"
+}

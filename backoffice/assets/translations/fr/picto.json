@@ -1,0 +1,32 @@
+{
+    "details": {
+        "t1": "Pictogrammes",
+        "gen": "Général",
+        "rules": "Règles",
+        "saveFirst": "Vous devez d'abord enregistrer le pictogramme avant d'y ajouter une image",
+        "click": "Cliquer sur l'image pour la remplacer",
+        "jpg": "(.jpg, .png)",
+        "code": "Code",
+        "title": "Titre",
+        "place": "Emplacement",
+        "topLeft": "Haut gauche",
+        "topCenter": "Haut centré",
+        "topRight": "Haut droite",
+        "midLeft": "Milieu gauche",
+        "midRight": "Milieu droit",
+        "botLeft": "Bas gauche",
+        "botCenter": "Bas centré",
+        "botRight": "Bas droit",
+        "actif": "Actif",
+        "dispoFiltres": "Disponible dans les filtres automatiques :"
+    },
+    "list": {
+        "t1": "Pictogrammes",
+        "code": "Code",
+        "title": "Titre",
+        "img": "Image",
+        "used": "Utilisé dans les filtres",
+        "actif": "Actif",
+        "noImg": "Pas d'image"
+    }
+}

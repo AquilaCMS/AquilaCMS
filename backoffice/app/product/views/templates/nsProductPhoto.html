@@ -1,0 +1,60 @@
+<h3 style="display: inline" translate>simple.pics</h3>
+<span ng-hide="product.code && product._id" style="color: red;" translate>
+    <br /><br />
+    simple.beforeConfigImages
+</span>
+<div class="row col-sm-12" style="margin-top: 15px" ng-show="product.code && product._id">
+    <ns-upload-files accepttype="image/*" multiple="true" type="product" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
+</div>
+<hr />
+<div class="row col-sm-12" style="margin-top: 10px">
+    <h3 translate>product.photo.picturessaved</h3>
+    <div ng-repeat="image in product.images | orderBy: ['position']" class="col-sm-6 image-frame">
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-danger" ng-click="removeImage($index, product)" style="min-width: 10px; float: right;">
+                    <i class="fa fa-trash"/>
+                </button>
+            </div>
+            <div class="col-sm-3 img-responsive" style="white-space: nowrap; text-align: center;">
+                <span class="helperImg"/>
+                <div ng-show="image.component_template" bind-html-compile="image.component_template"></div>
+                <div ng-hide="image.component_template">
+                    <img ng-src="/{{getImageUrl(image)}}" />
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" translate>product.photo.nom</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="name_{{$index}}" class="form-control" ng-model="image.name" ng-disabled="true" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" translate>product.photo.title</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="title_{{$index}}" class="form-control" ng-model="image.title" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" translate>product.photo.alt</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="alt_{{$index}}" class="form-control" ng-model="image.alt" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="position" class="col-sm-4 control-label" translate>product.photo.pos</label>
+                    <div class="col-sm-8">
+                        <input type="number" class="form-control" ng-model="image.position">
+                    </div>
+                </div>
+                <div class="form-group" ng-hide="product.images.length === 1 && image.default">
+                    <label class="control-label col-sm-4" translate>product.photo.img</label>
+                    <div class="col-sm-8">
+                        <ns-switch disable-switch="{{product.images.length === 1 && image.default}}" ng-model="image.default" name="default_{{$index}}" ng-change="switchDefaultImage(image, product)"></ns-switch>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

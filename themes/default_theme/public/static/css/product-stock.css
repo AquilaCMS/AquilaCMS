@@ -1,0 +1,24 @@
+.ns-label-stock {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.ns-label-liv {
+    background: #7eb620;
+}
+
+.ns-label-dif {
+    background: rgb(255, 193, 7);
+}
+
+.ns-label-epu {
+    background: red;
+}

@@ -1,0 +1,155 @@
+/* Vertical Bar Chart
+=================================================================== */
+.verticalChart {
+	
+	margin: 10px;
+	
+    .singleBar {
+        width: 6%;
+        display:block;
+        margin:0 2% 0% 2%;
+        float: left;
+
+        .bar {
+            position: relative;
+            height: 120px;
+            background: #f9f9f9;
+            overflow: hidden;
+            .border-radius(2px);
+
+            .value {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                background: @green;
+                color: white;
+                .border-radius(2px);
+
+                span {
+                    position: absolute;
+                    font-size: 12px;
+                    bottom: 0;
+                    width: 100%;
+                    height: 20px;
+                    color: white;
+                    text-shadow: 0px -1px 0px @green, 0px 1px 0px @green, 1px 0px 0px @green, -1px 0px 0px @green, -1px -1px 0px @green,-1px 1px 0px @green, 1px 1px 0px @green, 1px -1px 0px @green;
+                    display: none;
+                    text-align: center;
+                }
+            }
+        }
+
+        .title {
+            margin-top: 5px;
+            text-align: center;
+			color: @darkGrey;
+        }
+    }
+}
+
+/* Browsers Stats
+=================================================================== */
+.browserStat.big {
+	display:inline-block;
+	width: 49%;
+	text-align: center;
+	margin-bottom: 20px;
+	padding: 0px;
+}
+
+.browserStat {
+	display:inline-block;
+	width: 32%;
+	text-align: center;
+	margin: 0px;
+	padding: 0px;
+	
+	span {
+		display:block;
+		text-align: center;
+		margin-top: 10px;
+	}	
+}
+
+/* Small Chart
+=================================================================== */
+.smallchart {
+	background: white;
+	text-align: center;
+	
+	.title {
+		padding: 10px;
+		color: white;
+		background: lighten(@grey, 15%);
+	}
+	
+	.content {
+		padding: 40px 0px;
+		background: lighten(@grey, 15%);
+		
+		i {
+			font-size: 40px;
+			color: white;
+		}
+		
+	}
+	
+	.value {
+		color: @darkGrey;
+		padding: 10px;
+	}
+	
+	.backgroundColorTitle;
+
+}
+
+/* Sparkline stats
+=================================================================== */
+.sparkLineStats {
+	position: relative; 
+	margin-bottom: -4px;
+	
+	ul {
+		margin:0 0 0 -40px;
+		list-style: none;
+		
+		li {
+			margin-bottom: 0; 
+			line-height: 32px; 
+			padding-top:3px; 
+			font-size: 12px;
+			
+			div {
+				float: left;
+				
+				&:first-child {
+					margin-right: 5px;
+				}
+			}
+			
+			.number {
+				font-size: 17px;
+				font-weight: 700; 
+				padding:0px 0px 0px 2px; 
+				color: @orange;
+			}
+						
+			h4 {
+				position: relative;
+				border-bottom: 1px solid #c4c4c4; 
+				padding-bottom: 0px; 
+				margin-bottom: 10px; 
+				line-height: 37px;
+				.box-shadow(0 1px 0px rgba(255, 255, 255, 1));
+			}
+		}
+	}
+}
+
+/* Chart.JS responsive fix
+=================================================================== */
+canvas.chartjs {
+            width: 100% !important;
+            max-width: 2000px;
+            height: auto !important;
+}

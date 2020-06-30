@@ -1,0 +1,14 @@
+{
+  "collection": "pictos",
+  "datas": [
+    {
+      "enabled": true,
+      "usedInFilters": true,
+      "_id": "5da09f77db0b3834cf91a506",
+      "location": "TOP_LEFT",
+      "code": "LoveIt",
+      "title": "Love It",
+      "filename": "loveit.png"
+    }
+  ]
+}

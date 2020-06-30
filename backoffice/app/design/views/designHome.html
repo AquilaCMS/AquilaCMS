@@ -1,0 +1,18 @@
+<ns-box data-title="design.t1" title-icon="fa fa-paint-brush fa-lg">
+
+    <form name="form" role="form" ng-submit="saveCss()">
+
+        <div translate>design.customTheme</div>
+        <select class="form-control" ng-model="local.currentCss" style="width:300px;margin-bottom: 20px" ng-change="loadNewCss()">
+            <option ng-repeat="oneItem in local.allCssNames" value="{{oneItem}}">{{oneItem}}</option>
+        </select>
+
+        <ns-buttons disable-save="disableSave" return-path="/" form="form" hide-save-and-quit="true">
+
+            <div style="text-align: center">
+                <textarea style="width:95%;height:500px" ng-model="local.customCSS" required></textarea>
+            </div>
+
+        </ns-buttons>
+    </form>
+</ns-box>

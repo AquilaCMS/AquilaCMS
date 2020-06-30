@@ -1,0 +1,62 @@
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="address1" class="col-sm-2 control-label" translate>ns.addr1</label>
+        <div class="col-sm-10">
+            <input type="text" id="address1" name="address1" class="form-control"
+                   ng-model="product.location.address1">
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="address2" class="col-sm-2 control-label" translate>ns.addr2</label>
+        <div class="col-sm-10">
+            <input type="text" id="address2" name="address2" class="form-control"
+                   ng-model="product.location.address2">
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="address3" class="col-sm-2 control-label" translate>ns.addr3</label>
+        <div class="col-sm-10">
+            <input type="text" id="address3" name="address3" class="form-control"
+                   ng-model="product.location.address3">
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-11">
+        <label class="col-sm-2 control-label" translate>ns.zipCode</label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" ng-model="product.location.postal_code">
+        </div>
+        <label class="col-sm-2 control-label" translate>ns.city</label>
+        <div class="col-sm-2">
+            <input id="townLocation" type="text" ng-change="changeTown(location.town)" ng-model="location.town" typeahead="city as city.name for city in getTerritories($viewValue, 'city')"
+                   typeahead-loading="loading.city" typeahead-on-select="setProductLocation($item, 'town')" class="form-control">
+            <div ng-show="loading.city" translate>
+                <i class="fa fa-spin fa-refresh fa-fw"></i>
+                ns.loading
+            </div>
+            <div ng-show="error.city" class="btn-danger">
+                {{error.city}}
+            </div>
+        </div>
+        <label class="col-sm-2 control-label" translate>ns.pays</label>
+        <div class="col-sm-2">
+            <input id="countryLocation" type="text" ng-change="changeCountry(location.country)" ng-model="location.country" typeahead="country as country.name for country in getTerritories($viewValue, 'country')"
+                   typeahead-loading="loading.country" typeahead-on-select="setProductLocation($item, 'country')" class="form-control">
+            <div ng-show="loading.country" translate>
+                <i class="fa fa-spin fa-refresh fa-fw"></i>
+                ns.loading
+            </div>
+            <div ng-show="error.country" class="btn-danger">
+                {{error.country}}
+            </div>
+        </div>
+    </div>
+    <br /><br /><br />
+    <!--<p style="color: red;" ng-if="townTemp || countryTemp">Sauvegardez pour que <span ng-if="townTemp">la nouvelle ville soit "<b>{{townTemp}}</b>"</span><span ng-if="townTemp && countryTemp"> et que </span><span ng-if="countryTemp">le nouveau pays soit "<b>{{countryTemp}}</b>"</span></p>-->
+</div>

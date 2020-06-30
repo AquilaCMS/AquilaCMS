@@ -1,0 +1,69 @@
+<ns-box data-title="update.t1" title-icon="fa fa-medkit fa-lg">
+
+        <form name="form" ng-submit="validate(tab)" ng-show="!showLoading" role="form">
+            <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
+                <div class="box-content">
+                    <ul class="nav nav-tabs">
+                        <li ng-click="onTabSelect('maj')" class="active"><a data-toggle="tab" href="#maj"
+                                target="_self" translate>update.maj</a></li>
+                        <li ng-click="onTabSelect('maintenance')"><a data-toggle="tab" href="#maintenance" target="_self"
+                                translate>update.maintenance</a></li>
+                        <!-- <li><a data-toggle="tab" href="#auth" target="_self" translate>config.environment.menu.third-party-auth</a></li> -->
+                    </ul>
+                    <div class="tab-content">
+                        Aquila version : {{local.currentVersion}}
+                        <div id="maj" class="tab-pane fade in active" ng-if="tab === 'maj'">
+                            <div ng-hide="local.verifyingUpdate" class="ng-hide">
+                                <div translate ng-hide="local.needUpdate" class="ng-hide">update.noupdate</div>
+                            
+                                <div ng-show="local.needUpdate" class="ng-hide">
+                                    <div style="color:red;font-size:20px">
+                                        <span translate>update.needupdate</span>
+                                        <span style="font-size: 12px">({{local.onlineVersion}})</span>
+                                    </div>
+                                    <br />
+                                    <a download class="btn btn-success" ng-click="local.update()" translate>
+                                        update.download
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div ng-show="local.verifyingUpdate" class="ng-hide" translate>
+                                update.verifying
+                            </div>
+                            
+                            <div ng-show="local.showLoading" id="overlayModule">
+                                <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                            </div>
+                        </div>
+    
+                        <div id="maintenance" class="tab-pane fade in active" ng-if="tab === 'maintenance'">
+                            <div class="form-group">
+                                <label translate>update.automatic</label> <br />
+                                <ns-switch ng-model="config.autoMaintenance" name="autoMaintenance"></ns-switch>
+                            </div>
+                            <div class="form-group">
+                                <label translate>update.maintenance</label> <br />
+                                <ns-switch ng-model="config.maintenance" name="maintenance"></ns-switch>
+                            </div>
+                            <div class="form-group">
+                                <label translate>update.authorizedIPs</label>
+                                <br>
+                                <input type="text" class="form-control" ng-model="config.authorizedIPs">
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+    
+            </ns-buttons>
+        </form>
+        <div ng-show="showLoading">
+            <h3>Redémarrage d'Aquila en cours ...</h3>
+            <h4>Le back-office sera accessible à partir de cette adresse (vous allez être redirigé) :<br /> <i><a
+                        href="{{urlRedirect}}">{{urlRedirect}}</a></i></h4>
+            <progressbar style="width: 50%" class="progress-striped active" animate="true" max="100" value="progressValue"
+                type="success"></progressbar>
+        </div>
+
+</ns-box>

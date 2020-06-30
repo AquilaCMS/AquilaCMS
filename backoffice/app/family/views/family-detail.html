@@ -1,0 +1,41 @@
+<ns-box data-title="family.detail.t1" close-href="#/families">
+    <p translate>family.detail.clickForEdit</p>
+    <table id="user" class="table table-bordered table-striped" style="clear: both">
+        <tbody>
+            <tr>
+                <td width="35%" translate>family.detail.id</td>
+                <td width="65%">{{family._id}}</td>
+            </tr>
+            <tr>
+                <td translate>family.detail.nom</td>
+                <td>
+                    <a href="" editable-text="family.name" onbeforesave="updateName($data)">{{ family.name }}</a>
+                </td>
+            </tr>
+            <tr>
+                <td translate>family.detail.slug</td>
+                <td>
+                    {{ family.slug }}
+                </td>
+            </tr>
+            <tr>
+                <td translate>family.detail.type</td>
+                <td>
+                    <a href="#" editable-select="family.type" e-ng-options="t.value as t.text for t in typeList" onbeforesave="updateType($data)">
+                        {{ showTypes() }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td translate>family.detail.actif</td>
+                <td>
+                    {{ family.active }}
+                </td>
+            </tr>
+            <tr>
+                <td translate>family.detail.creationDate</td>
+                <td>{{family.creationDate | date}}</td>
+            </tr>
+        </tbody>
+    </table>
+</ns-box>

@@ -1,0 +1,248 @@
+<form class="form-horizontal" role="form" name="form" ng-submit="save(false)">
+    <ns-box data-title="{{(isEditMode ? 'shipment.detail.t1' : 'shipment.detail.t2' )}}" title-icon="fa fa-truck fa-lg"
+            close-href="#/shipments">
+        <ns-buttons is-edit-mode="isEditMode" remove="removeShipment(shipment)" save-and-quit="save(true)"
+                    disable-save="disableSave" return-path="/shipments" form="form">
+            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            <br/>
+            <br/>
+
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" target="_self" ng-click="changeTab('general')" translate>shipment.detail.gen</a>
+                </li>
+                <li>
+                    <a data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self"
+                        ng-click="changeTab('country')" translate>shipment.detail.paysDel</a>
+                </li>
+                <li>
+                    <a data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self" ng-click="changeTab('price')" translate>shipment.detail.prix</a>
+                </li>
+            </ul>
+            <br/>
+            <div class="tab-content">
+                <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'">
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>paymentMethod.detail.actif</label>
+                        <div class="col-sm-7 col-lg-5">
+                            <ns-switch ng-model="shipment.active" name="active"></ns-switch>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>shipment.detail.code</label>
+                        <div class="col-sm-7 col-lg-5">
+                            <input type="text" class="form-control" id="code" translate translate-attr-placeholder='shipment.detail.ph1'
+                                ng-model="shipment.code"
+                                name="code"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>shipment.detail.nom</label>
+                        <div class="col-sm-7 col-lg-5">
+                            <input type="text" class="form-control" id="name" translate translate-attr-placeholder='shipment.detail.ph2'
+                                ng-model="shipment.translation[lang].name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="url" class="col-sm-2 control-label" translate>shipment.detail.url</label>
+                        <div class="col-sm-7 col-lg-5">
+                            <input type="text" class="form-control" id="url" translate translate-attr-placeholder='shipment.detail.ph3'
+                                ng-model="shipment.translation[lang].url" name="url">
+                            <span><span translate>shipment.detail.replUrl</span><code ng-non-bindable>{{number}}</code></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="urllogo" class="col-sm-2 control-label" translate>shipment.detail.logoUrl</label>
+                        <div class="col-sm-7 col-lg-5">
+                            <input type="text" class="form-control" id="urllogo" translate translate-attr-placeholder='shipment.detail.ph4'
+                                ng-model="shipment.url_logo" name="logo">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="preparationtime" class="col-sm-2 control-label" translate>shipment.detail.trait</label>
+                        <div class="col-sm-6 col-lg-2">
+                            <input name="delay" type="number" class="form-control" min="0" id="preparationtime" ng-model="shipment.preparation.delay">
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <select name="unit" class="form-control"
+                                ng-model="shipment.preparation.unit">
+                                <option value="day" translate>shipment.detail.days</option>
+                                <option value="week" translate>shipment.detail.weeks</option>
+                                <option value="hour" translate>shipment.detail.hours</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="freePriceLimit" class="col-sm-2 control-label" translate>shipment.detail.minLiv</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="0" class="form-control" id="freePriceLimit"
+                                ng-model="shipment.freePriceLimit" name="freePriceLimit">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vat_rate" class="col-sm-2 control-label" translate>shipment.detail.tva</label>
+                        <div class="col-sm-5">
+                                <select class="form-control" ng-options="tax.rate as tax.rate for tax in taxerate" ng-model="shipment.vat_rate" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="information" class="col-sm-2 control-label" translate>shipment.detail.infoCli</label>
+                        <div class="col-sm-5">
+                        <textarea min="0" class="form-control" id="information" name="information"
+                            ng-model="shipment.translation[lang].information"></textarea>
+                        </div>
+                    </div>
+
+                    <div ng-if="shipment.type === 'RELAY_POINT'">
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label" translate>shipment.detail.adresse</label>
+                            <div class="col-sm-7 col-lg-5">
+                                <input type="text" class="form-control" id="address" translate translate-attr-placeholder='shipment.detail.ph2'
+                                    ng-model="shipment.address.name" name="address.name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label"></label>
+                            <div class="col-sm-7 col-lg-5">
+                                <input type="text" class="form-control" id="address2" translate translate-attr-placeholder='shipment.detail.ph5'
+                                    ng-model="shipment.address.line1" name="address.line1" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label"></label>
+                            <div class="col-sm-7 col-lg-5">
+                                <input type="text" class="form-control" id="address3" translate translate-attr-placeholder='shipment.detail.ph6'
+                                    ng-model="shipment.address.line2" name="address.line2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label"></label>
+                            <div class="col-sm-7 col-lg-5">
+                                <input type="text" class="form-control" id="address4" translate translate-attr-placeholder='shipment.detail.ph7'
+                                    ng-model="shipment.address.zipcode" name="address.zipcode" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label"></label>
+                            <div class="col-sm-7 col-lg-5">
+                                <input type="text" class="form-control" id="address5" translate translate-attr-placeholder='shipment.detail.ph8'
+                                    ng-model="shipment.address.city" name="address.city" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label"></label>
+                            <div class="col-sm-7 col-lg-5">
+                                <select name="pays" id="country1" class="form-control"
+                                    ng-model="shipment.address.isoCountryCode"
+                                    ng-options="country.code as country.name for country in countries"
+                                    ng-change="setCountryName()">
+                                    <option value="" translate>shipment.detail.pays</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div bind-html-compile="shipment.component_template"></div>
+
+                <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label"></label>
+                        <div class="col-sm-6 col-lg-3">
+                            <select name="countries" id="countries" class="form-control"
+                                    ng-options="country.code as country.translation[lang].name for country in countries.datas"
+                                    ng-model="selectedCountry.code"
+                                    ng-change="changeCountry()">
+                                <option value="" translate>shipment.detail.addPays</option>
+                            </select>
+                        </div>
+                        <button class="btn-add" type="button" ng-click="addCountry()">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <br />
+                    <div class="form-group" ng-repeat="country in shipment.countries">
+                        <label for="delay" class="col-sm-2 control-label">{{getCountryByCode(country.country)}}</label>
+                        <div class="col-sm-6 col-lg-1">
+                            <input name="country.delay" type="number" class="form-control" min="0" id="delay" ng-model="shipment.countries[$index].delay">
+                        </div>
+                        <div class="col-sm-6 col-lg-2">
+                            <select name="unit" id="unit" class="form-control"
+                                    ng-model="shipment.countries[$index].unit">
+                                <option value="day" translate>shipment.detail.days</option>
+                                <option value="week" translate>shipment.detail.weeks</option>
+                                <option value="hour" translate>shipment.detail.hours</option>
+                            </select>
+                        </div>
+                        <button class="btn-remove" type="button" ng-click="removeCountry($index)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="price" class="tab-pane fade in active" ng-show="tabActive === 'price'">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th style="width: 250px; border: 1px #ddd solid; vertical-align: middle;" translate>
+                                shipment.detail.paysPds
+                            </th>
+                            <th style="width: 200px; border: 1px #ddd solid; text-transform: none;" ng-repeat="weight in weights">
+                                {{weight.min}} - {{weight.max}} g
+                                <button class="btn-remove" type="button" ng-click="removeColumn($index)">
+                                    <span class="fa fa-trash"></span>
+                                </button>
+                            </th>
+                            <th style="border: none;">
+                                <button class="btn-add" type="button" ng-click="addColumn()">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="country in shipment.countries">
+                            <td>
+                                <strong>{{getCountryByCode(country.country)}}</strong>
+                            </td>
+                            <td ng-repeat="weight in weights">
+                                <input name="price" type="number" step='Any' class="form-control" ng-model="country.prices[$index].price" min="0" style="width: 70px; float: left;" />&nbsp;&nbsp;<span style="vertical-align: sub;">&euro;</span>
+                            </td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <style>
+                .btn-add {
+                    background-color: #04a2ff !important;
+                    border: 0;
+                    padding: 5px 8px;
+                    color: white;
+                    border-radius: 5px;
+                }
+                .btn-remove {
+                    background-color: red !important;
+                    border: 0;
+                    padding: 5px 8px;
+                    color: white;
+                    border-radius: 5px;
+                }
+                .table tr td:last-child {
+                    border: none;
+                    background-color: transparent!important;
+                }
+            </style>
+
+            <!-- <div class="form-group">
+                <div class="pull-right">
+                    <button type="button" class="btn btn-default" ng-click="cancel()">Annuler</button>
+                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                </div>
+            </div> -->
+        </ns-buttons>
+    </ns-box>
+</form>

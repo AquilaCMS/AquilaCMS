@@ -1,0 +1,27 @@
+{
+  "collection": "themeConfig",
+  "datas": [
+    {
+      "_id": "5d512301bb730b3b0140767b",
+      "name": "default_theme",
+      "config": {
+        "translation" : {
+          "fr" : {
+              "showFooter" : true, 
+              "itsstring" : "fr", 
+              "itsnumber" : 321, 
+              "itsboolean" : true, 
+              "itscolor" : "#CCCCCC"
+          }, 
+          "en" : {
+              "showFooter" : true, 
+              "itsstring" : "en", 
+              "itsnumber" : 123, 
+              "itsboolean" : false, 
+              "itscolor" : "#ABCDEF"
+          }
+      }
+      }
+    }
+  ]
+}

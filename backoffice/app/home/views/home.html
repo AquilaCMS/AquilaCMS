@@ -1,0 +1,84 @@
+<div style="margin-top:-70px !important">
+    <ns-box>
+        <ng-include src="'app/statistics/views/dashboard.html'"></ng-include>
+    </ns-box>
+</div>
+
+<div class="main-inner">
+    <div class="row">
+
+        
+        <div class="col-md-12">
+            <div ng-repeat="oneInfo in adminInformation">
+                <div ng-show="oneInfo.translation[adminLang]" class="alert alert-{{oneInfo.type}}">
+                    <i class="fa fa-close" style="float:right;cursor: pointer;" ng-click="closeInfo(oneInfo.code)"></i>
+                    <p>{{oneInfo.date| date : format : timezone}} : <b>{{oneInfo.translation[adminLang].title}}</b></p>
+                    <p ng-bind-html="oneInfo.translation[adminLang].text"></p>
+                </div>
+            </div>
+        </div>
+                
+        <nav class="nav-home" class="col-md-12">
+            <ul>
+                <li>
+                    <a href="#/orders">
+                                    <span class="icon">
+                                        <i class="fa fa-shopping-cart fa-lg i-main-page-style" style="font-size: 105px"></i>
+                                    </span>
+
+                        <small translate="home.orders"></small>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/payments">
+                                    <span class="icon">
+                                        <i class="fa fa-credit-card i-main-page-style" style="font-size: 87px"></i>
+                                    </span>
+                        <small translate="home.payments"></small>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/products">
+                                    <span class="icon">
+                                        <i class="fa fa-cubes i-main-page-style" style="font-size: 83px"></i>
+                                    </span>
+
+                        <small translate="home.pdts"></small>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#/clients">
+                                    <span class="icon">
+                                        <i class="fa fa-users i-main-page-style" style="font-size: 82px"></i>
+                                    </span>
+
+                        <small translate="home.iencli"></small>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#/staticPage">
+                                    <span class="icon">
+                                        <i class="fa fa-folder i-main-page-style" style="font-size: 95px"></i>
+                                    </span>
+
+                        <small translate="home.pages"></small>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#/modules">
+                                    <span class="icon">
+                                        <i class="fa fa-plug i-main-page-style" style="font-size: 83px"></i>
+                                    </span>
+
+                        <small translate="home.modules"></small>
+                    </a>
+                </li>
+
+            </ul>
+        </nav><!-- /.nav -->
+
+    </div>
+</div>

@@ -1,0 +1,11 @@
+{
+    "payedOrder": "Passer la commande en payée",
+    "payMode": "Mode de paiement",
+    "cheque": "Chèque",
+    "vir": "Virement",
+    "fieldReq": "Ce champ est requis.",
+    "det": "Détails",
+    "mailCli": "Mail client",
+    "cancel": "Annuler",
+    "valider": "Valider"
+}

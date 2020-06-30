@@ -1,0 +1,129 @@
+<ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/new/settings">
+
+    <div class="box subbox" ng-show="attribs.length > 0">
+        <div class="box-header" data-toggle="collapse" data-target="#filter" style="cursor:pointer;">
+            <h2>Recherche avancée</h2>
+        </div>
+        <div class="box-content">
+            <form name="form" class="form-horizontal collapse" id="filter">
+                <div class="row settings">
+                    <div class="col-sm-6">
+                        <select name="filterLang" class="form-control" id="filterLang" ng-model="filterLang" style="max-width: 200px; margin-bottom: 30px;">
+                            <option value="{{lang.code}}" ng-repeat="lang in langs track by $index">{{lang.name}}</option>
+                        </select>
+                    </div>
+                </div>
+               <div class="row">
+                    <div class="form-group col-sm-6" ng-repeat="attrib in attribs">
+                        <label for="" class="col-sm-4 control-label">{{attrib.translation[filterLang].name}}</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" ng-change="onChange(attrib.code, filtersAttribs[attrib.code])" ng-model="filtersAttribs[attrib.code]">
+                        </div>
+                    </div>
+               </div>
+    
+                <br>
+                <button type="button" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
+                <br><br>
+            </form>
+        </div>
+    </div>
+
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+        <div class="row">
+                <div class="col-lg-12" style="height: 45px;">
+                        <button class="btn" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button>
+                        <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('products')" style="cursor: pointer" ></i>
+                </div>
+            </div>
+        <table id="DataTables_Table_0" class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+               aria-describedby="DataTables_Table_0_info">
+            <thead>
+                <tr role="row">
+                    <th role="columnheader" style="width: 8%;">
+                        <a ng-click="local.sortType = 'code'; local.sortReverse = !local.sortReverse; getProducts();">
+                            <span translate>product.list2.code</span>
+                            <span ng-show="local.sortType == 'code' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'code' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th ng-repeat="column in columns" bind-html-compile="column.filter.component_template"></th>
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = 'type'; local.sortReverse = !local.sortReverse; getProducts();">
+                            <span translate>product.list2.typePdt</span>
+                            <span ng-show="local.sortType == 'type' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'type' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <!-- <th role="columnheader" style="width: 8%;">
+                        <a ng-click="local.sortType = 'creationDate'; local.sortReverse = !local.sortReverse; getProducts();">
+                            <span translate>product.list2.creation_date</span>
+                            <span ng-show="local.sortType == 'creationDate' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'creationDate' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th> -->
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = 'active'; local.sortReverse = !local.sortReverse; getProducts();">
+                            <span translate>product.list2.actif</span>
+                            <span ng-show="local.sortType == 'active' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'active' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();">
+                            <span translate>product.list2.visible</span>
+                            <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == '_visible' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                </tr>
+                <tr role="row">
+                    <th>
+                        <input type="text" ng-change="getProducts()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='product.list2.ph1' class="form-control">
+                    </th>
+                    <th ng-repeat="column in columns" bind-html-compile="column.inter.component_template"></th>
+                    <th>
+                        <select ng-model="filter.type" class="form-control" ng-change="getProducts()" ng-options="type.code as type.name for type in productTypes">
+                            <option value="" translate>product.list2.indiff</option>
+                        </select>
+                    </th>
+                    <!-- <th>
+                        <ns-datepicker  ng-change="getProducts()" name="date_selling" ng-model="filter.creationDate"></ns-datepicker>
+                    </th> -->
+                    <th>
+                        <select ng-model="searchObj.active" ng-change="getProducts()"
+                                class="form-control" type="boolean">
+                            <option value="" translate>product.list2.indiff</option>
+                            <option value="true" translate>product.list2.actif</option>
+                            <option value="false" translate>product.list2.noActif</option>
+                        </select>
+                    </th>
+                    <th>
+                        <select ng-model="searchObj._visible" ng-change="getProducts()" class="form-control" type="boolean">
+                            <option value="" translate>product.list2.indiff</option>
+                            <option value="true" translate>product.list2.visible</option>
+                            <option value="false" translate>product.list2.noVisible</option>
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" ng-mouseover="setCurrProduct(product._id, product.slugMenus)"
+                ng-click="goToProductDetails(product.type, product.code)" style="height: 80px; cursor: pointer">
+                    <td class="text-center" style="vertical-align: middle">{{product.code}}</td>
+                    <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template" ng-class="column.cell.class" class="text-center" style="vertical-align: middle"></td>
+                    <td class="text-center" style="vertical-align: middle">{{ product.type | nsProductTypeName }}</td>
+                    <!-- <td>{{momentDate(product.creationDate)}}</td> -->
+                    <td class="text-center" style="vertical-align: middle">
+                        <span style="font-size: 16px" ng-bind-html='product.active | checked'></span>
+                    </td>
+                    <td class="text-center" style="vertical-align: middle">
+                        <span style="font-size: 16px" ng-bind-html='product._visible | checked'></span>
+                    </td> 
+                </tr>
+            </tbody>
+        </table>
+        <pagination total-items="totalItems" page="currentPage" on-select-page="getProducts(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
+                    rotate="false"></pagination>
+    </div>
+</ns-box>

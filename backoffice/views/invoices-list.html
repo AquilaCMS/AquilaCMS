@@ -1,0 +1,90 @@
+<ns-box data-title="invoices-list.t1" title-icon="fa fa-usd fa-lg">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
+        <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+            <thead>
+            <tr role="row">
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                    <span translate>
+                        invoices-list.bill
+                    </span>
+                </th>
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                    <span translate>
+                        invoices-list.orderNumber
+                    </span>
+                </th>
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                    <span translate>
+                        invoices-list.iencli
+                    </span>
+                </th>
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                    <span translate>
+                        invoices-list.date
+                    </span>
+                </th>
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                    <span translate>
+                        invoices-list.prixTTC
+                    </span>
+                </th>
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                    <span translate>
+                        invoices-list.type
+                    </span>
+                </th>
+                <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                </th>
+                <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
+            </tr>
+            <tr role="row">
+                    <th style="text-align: center">
+                        <input ng-change="getInvoices(1)" ng-model="filter.facture" ng-model-options="{debounce: 500}" translate
+                            translate-attr-placeholder='invoices-list.bill' class="form-control" />
+                    </th>
+                    <th>
+                        <input class="form-control" ng-model="filter.order_id.number" ng-model-options="{debounce: 500}"
+                            ng-change="getInvoices(1)" translate translate-attr-placeholder='invoices-list.orderNumberHtml' />
+                    </th>
+                    <th>
+                        <input class="form-control" ng-model="filter.nom" ng-model-options="{debounce: 500}"
+                            ng-change="getInvoices(1)" translate translate-attr-placeholder='invoices-list.iencli' />
+                    </th>
+                    <th style="text-align: center">
+                        <ns-datepicker name="min_creationDate" class="fullDatepicker form-datepicker"
+                            style="display: inline-block; width: 45%;" ng-model="filter.min_creationDate" ng-change="getInvoices(1)">
+                        </ns-datepicker>
+                        <ns-datepicker name="max_creationDate" class="fullDatepicker form-datepicker"
+                            style="display: inline-block; width: 45%" ng-model="filter.max_creationDate" ng-change="getInvoices(1)">
+                        </ns-datepicker>
+                    </th>
+                    <th style="text-align: center">
+                        <div style="display: inline-block; vertical-align: middle;">
+                            <input type="number" ng-model="filter.montant" class="form-control" ng-change="getInvoices(1)"
+                                translate translate-attr-placeholder='invoices-list.prixTTC' />
+                        </div>
+                    </th>
+                   
+                    
+                    <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.inter.component_template">
+                    </th>
+                </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr ng-class-odd="'odd'" ng-class-even="'even'"
+                    ng-repeat="invoice in invoices">
+                    <td>{{invoice.facture}}</td>
+                    <td style="cursor: pointer;" ng-click="goToOrder(invoice)">{{invoice.order_id ? invoice.order_id.number : 'N/A'}}</td>
+                    <td>{{invoice.nom}} {{invoice.prenom}}</td>
+                    <td>{{invoice.creationDate | date:'dd/MM/yyyy HH:mm'}}</td>
+                    <td align="right">{{invoice.montant | number:2}} € {{invoice.withTaxes ? "TTC" : "HT"}}</td>
+                    <td align="center" translate>{{invoice.type}}</td>
+                    <td><button class="btn btn-blue" ng-click="generatePDF(invoice)" ng-disabled="disabledButton">PDF</button></td>
+                    <td style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
+                </tr>
+            </tbody>
+        </table>
+        <pagination total-items="totalItems" page="currentPage" on-select-page="getInvoices(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
+                        rotate="false"></pagination>
+    </div>
+</ns-box>

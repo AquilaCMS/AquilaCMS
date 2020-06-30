@@ -1,0 +1,37 @@
+{
+    "t1": "Product Detail",
+    "new": {
+        "addSection": "Add section",
+        "ref": "Section code",
+        "type": "Type",
+        "cancel": "Cancel",
+        "valider": "Submit"
+    },
+    "product": {
+        "gen": "General",
+        "mark": "Marketing",
+        "compo": "Composition",
+        "price": "Price & Stock",
+        "pics": "Pictures",
+        "cs": "Cross-Selling",
+        "promos": "Promos",
+        "specAttr": "Specific attibutes",
+        "linkedCat": "Linked categories",
+        "addSec": "Add section",
+        "delSec": "Delete section",
+        "ref": "Section code",
+        "type": "Type",
+        "title": "Title",
+        "displayMode": "Display mode",
+        "requis": "Is required",
+        "minSel": "Min selections",
+        "maxSel": "Max selections",
+        "addPdt": "Add product",
+        "pdt": "Product",
+        "act": "Actions",
+        "qt": "Quantity",
+        "attrJeux": "Attributes set attributes",
+        "idFirst": "You must type first the product ID before configuring attributes!",
+        "catNom": "Category name"
+    }
+}

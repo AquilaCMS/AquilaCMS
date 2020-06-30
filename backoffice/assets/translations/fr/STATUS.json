@@ -1,0 +1,27 @@
+{
+    "prog": "En cours",
+    "canceled": "Annulé",
+    "waitPay": "Paiement en attente",
+    "ticketUsed": "Ticket utilisé",
+    "paid": "Payé",
+
+    "canceledF": "Annulée",
+    "finished": "Terminée",
+    "prep": "Préparée",
+    "processing": "Traitement en cours",
+    "billed": "Facturée",
+    "paidF": "Payée",
+    "sent": "Expédié",
+    "return": "Retour",
+
+    "done": "Effectué",
+    "todo": "A effectuer",
+    "check": "Chèque",
+    "vir": "Virement",
+
+    
+
+    "waitPayConfirm": "En attente de confirmation de paiement",
+
+    "info": "Config non-trouvée, une nouvelle configuration va etre générée"
+}

@@ -1,0 +1,16 @@
+{
+    "list": {
+        "t1": "CMS Blocks",
+        "code": "Code",
+        "desc": "Description"
+    },
+    "detail": {
+        "t1": "CMS Blocks",
+        "code": "Code",
+        "champRequis": "This field is required.",
+        "desc": "Description",
+        "content": "Content",
+        "preview": "Preview"
+
+    }
+}

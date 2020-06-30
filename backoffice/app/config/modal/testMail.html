@@ -1,0 +1,26 @@
+<form name="formModal" class="form-horizontal" novalidate ng-submit="testMail()" role="form">
+
+
+    <div class="modal-header">
+        <span translate>config.environment.sendMailTest</span>
+    </div>
+    <div class="modal-body">
+        <div class="form-group" style="margin:0 auto">
+            <label translate>config.environment.addressReceipe</label>
+            <input type="email" class="form-control" ng-model="mail.to" required />
+        </div>
+        
+    </div>
+    <div class="modal-footer">
+        <a download class="btn btn-success" ng-click="cancel()" translate>
+            config.environment.back
+        </a>
+        <button ng-disabled="loading" type="submit" class="btn btn-success" translate>config.environment.sendMail</button>
+        <!-- <a download class="btn btn-success" ng-click="testMail()" translate>
+            config.environment.sendMail
+        </a> -->
+    </div>
+
+
+
+</form>

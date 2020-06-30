@@ -1,0 +1,202 @@
+<form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(supplier, false)"> <!--style="padding: 100px;"-->
+    <ns-box data-title="supplier.detail.t1" title-icon="fa fa-industry fa-lg" close-href="#/suppliers">    
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(supplier._id)" save-and-quit="save(supplier, true)"
+                    disable-save="disableSave" return-path="/suppliers" form="form">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#detail" target="_self" translate>supplier.detail.details</a></li>
+                <li><a data-toggle="tab" href="#products" target="_self"  translate>supplier.detail.pdtsLinked</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="detail" class="tab-pane fade in active">
+                    <input type="hidden" value="" name="id" id="template" ng-model="supplier._id">
+                    <div class="form-group">
+                        <label for="code" class="col-sm-2 control-label" translate>supplier.detail.code</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="code" translate translate-attr-placeholder='supplier.detail.ph1'
+                                ng-model="supplier.code" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.nom</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="name" translate translate-attr-placeholder='supplier.detail.ph2'
+                                ng-model="supplier.name"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.contactNom</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="contactNom" translate translate-attr-placeholder='supplier.detail.ph3'
+                                ng-model="supplier.contactNom">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.contactPrenom</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="contactPrenom" translate translate-attr-placeholder='supplier.detail.ph4'
+                                ng-model="supplier.contactPrenom">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.respAchat</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="purchasing_manager" translate translate-attr-placeholder='supplier.detail.ph5'
+                                ng-model="supplier.purchasing_manager">
+                        </div>
+                    </div>                
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.address1</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="addr_1" translate translate-attr-placeholder='supplier.detail.ph6'
+                                ng-model="supplier.addr_1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.address2</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="addr_2" translate translate-attr-placeholder='supplier.detail.ph7'
+                                ng-model="supplier.addr_2">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.zipCode</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="cpostal" translate translate-attr-placeholder='supplier.detail.ph8'
+                                ng-model="supplier.cpostal">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.city</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="city" translate translate-attr-placeholder='supplier.detail.ph9'
+                                ng-model="supplier.city"
+                            >
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.mail</label>
+                        <div class="col-sm-3">
+                            <input type="email" class="form-control" id="mail" translate translate-attr-placeholder='supplier.detail.ph10'
+                                ng-model="supplier.mail" name="mail"
+                            >
+                            <div class="ns-error-message" ng-show="form.mail.$touched || form.nsSubmitted">
+                                <div ng-show="form.mail.$error.required" translate>supplier.detail.champRequis</div>
+                                <div ng-show="form.mail.$error.email" translate>supplier.detail.emailInvalide</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>supplier.detail.phone</label>
+                        <div class="col-sm-3">
+                                <input type="tel"
+                                    pattern="^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$"
+                                    class="form-control" id="phone" translate translate-attr-placeholder='supplier.new.ph11' ng-model="supplier.phone">
+                        </div>
+                    </div>
+
+                    <!--<div style="text-align: right">-->
+                    <!--<button type="button" class="btn btn-default" ng-click="reset()">Annuler</button>-->
+                    <!--<button type="submit" class="btn btn-success">Enregistrer</button>-->
+                    <!--</div>-->
+                </div>
+                <div id="products" class="tab-pane fade in">
+                    <h3 style="display: inline" translate>supplier.detail.pdtsLinked</h3>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+
+                            <table id="DataTables_Table_0" class="table table-striped table-bordered bootstrap-datatable datatable dataTable table-hover"
+                                aria-describedby="DataTables_Table_0_info">
+                                <thead>
+                                <tr role="row">
+                                    <th role="columnheader" style="width: 8%;">
+                                        <a ng-click="local.sortType = 'id'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.code
+                                            <span ng-show="local.sortType == 'id' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'id' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 8%">
+                                        <a ng-click="local.sortType = 'imageUrl'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.img
+                                            <span ng-show="local.sortType == 'imageUrl' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'imageUrl' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 34%;">
+                                        <a ng-click="local.sortType = 'name'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.nom
+                                            <span ng-show="local.sortType == 'name' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'name' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 10%;">
+                                        <a ng-click="local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.prix
+                                            <span ng-show="local.sortType == 'price.ati.normal' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'price.ati.normal' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 10%;">
+                                        <a ng-click="local.sortType = 'qty'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.qt
+                                            <span ng-show="local.sortType == 'qty' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'qty' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 10%;">
+                                        <a ng-click="local.sortType = 'type'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.typePdt
+                                            <span ng-show="local.sortType == 'type' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'type' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 10%;">
+                                        <a ng-click="local.sortType = 'active'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.actif
+                                            <span ng-show="local.sortType == 'active' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == 'active' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" style="width: 10%;">
+                                        <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();" translate>
+                                            supplier.detail.visible
+                                            <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
+                                            <span ng-show="local.sortType == '_visible' && local.sortReverse" class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" ng-click="goToProductDetails(product.type, product.code)" style="height: 80px; cursor: pointer">
+                                    <td>{{product.code}}</td>
+                                    <td><img ng-src="/images/products/196x173/{{product.images[0]._id}}/{{product.images[0].url.split('/')[product.images[0].url.split('/').length - 1]}}" height="80" width="120" /></td>
+                                    <td class=" sorting_1" style="line-height: 24px;">
+                                        {{product.translation[defaultLang].name}}
+                                    </td>
+                                    <td>{{product.price.ati.normal !== undefined && price.ati.normal != null ? price.ati.normal : 'N/A'}}</td>
+                                    <td>{{product.stock.qty !== undefined && product.stock.qty != null ? product.stock.qty : 'N/A'}}</td>
+                                    <td>{{product.type | nsProductTypeName}}</td>
+                                    <td>
+                                        <span style="font-size: 16px" ng-bind-html='product.active | checked'></span>
+                                    </td>
+                                    <td>
+                                        <span style="font-size: 16px" ng-bind-html='product._visible | checked'></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ns-buttons>
+    </ns-box>
+</form>

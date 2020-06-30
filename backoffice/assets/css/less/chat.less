@@ -1,0 +1,197 @@
+/* Chat Widget
+=================================================================== */
+.chat {
+	position: relative;
+	background: white;
+	
+	.contacts {
+		position: absolute;
+		height: 100%;
+		float: left;
+		width:30%;
+		background: lighten(@grey,20%);
+		border-right: 1px solid lighten(@grey,15%);
+		
+		ul.list {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			
+			li {
+				position: relative;
+				padding: 5px 10px;
+				border-bottom: 1px solid lighten(@grey,15%);
+				cursor: pointer;
+				
+				&:hover{
+					background: @grey;
+				}
+				
+				img.avatar {
+					.border-radius(2px);
+					width: 40px;
+					margin-right: 10px;
+				}
+				
+				.status {
+					display: block;
+					position: absolute;
+					top: 42%;
+					right: 20px;
+					width: 8px;
+					height: 8px;
+					.border-radius(2px);
+					
+					&.online {
+						background: @green;
+					}
+					
+					&.offline {
+						background: @grey;
+					}
+					
+					&.busy {
+						background: @orange;
+					}
+				}
+				
+				.important {
+					font-size: 11px;
+					display: inline-block;
+					position: absolute;
+					top: 1px;
+					left: 35px;
+					font-size: 10px;
+		
+					padding: 3px 7px;
+					color: white;
+				  	.border-radius(2px);
+					background: @red;
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	.conversation {
+		width:70%;
+		float: right;
+			
+		.actions {
+			background: @darkGrey;
+			width: 100%;
+			height: 50px;
+			
+			a {
+				display: block;
+				color: white;
+				padding: 16px;
+				font-size: 18px;
+				width: 18px;
+				float: left;
+			}
+			
+			img.avatar {
+				.border-radius(2px);
+				width: 30px;
+				margin: 10px 0px 10px 10px;
+			}
+		}
+		
+		ul {
+			height: 516px;
+			overflow-y: scroll;
+			list-style: none;
+			margin:0;
+			padding:0;
+			
+			li {
+				position: relative;
+				padding: 15px 10px 10px 60px;
+				border-bottom: 1px solid lighten(@grey,15%);
+				
+				img.avatar {
+					top: 10px;
+					left: 10px;
+					position: absolute;
+					.border-radius(2px);
+					width: 40px;
+					margin-right: 10px;
+				}
+				
+				.name {
+					font-weight: bold;
+					text-transform: uppercase;
+				}
+				
+				.time {
+					font-weight: bold;
+					right: 10px;
+					position: absolute;
+					color: @grey;
+					font-size: 11px;
+				}
+				
+				.message {
+					margin-top: 10px;
+					font-size: 12px;
+				}
+			}
+		}
+		
+		.form {
+			border-top: 2px solid lighten(@grey,15%);
+			height: 60px;
+			padding: 10px;
+			
+			input {
+				.border-radius(2px);
+				.box-shadow;
+				.box-sizing;
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+	
+	&.alt {
+		
+		.contacts {
+			width: 60px;
+			
+			ul.list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+
+				li {
+					text-align: center;
+					
+					img.avatar {
+						.border-radius(2px);
+						width: 40px;
+						margin: 0 auto;
+					}
+					
+					.name {
+						display: none;
+					}
+
+					.status {
+						top: 70%;
+						right: 10px;
+					}				
+				}
+			}	
+		}
+		
+		.conversation {
+			width:auto;
+			margin-left: 60px;
+		}
+		
+	}
+	
+}

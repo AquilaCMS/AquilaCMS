@@ -1,0 +1,32 @@
+{
+    "details": {
+        "t1": "Pictograms",
+        "gen": "General",
+        "rules": "Rules",
+        "saveFirst": "You must save the pictogram first, before adding a picture",
+        "click": "Click on the picture to replace it",
+        "jpg": "(.jpg, .png)",
+        "code": "Code",
+        "title": "Title",
+        "place": "Location",
+        "topLeft": "Top left",
+        "topCenter": "Top center",
+        "topRight": "Top right",
+        "midLeft": "Middle left",
+        "midRight": "Middle right",
+        "botLeft": "Bottom left",
+        "botCenter": "Bottom center",
+        "botRight": "Bottom right",
+        "actif": "Active",
+        "dispoFiltres": "Available in automatic filters:"
+    },
+    "list": {
+        "t1": "Pictograms",
+        "code": "Code",
+        "title": "Title",
+        "img": "Picture",
+        "used": "Used in filters",
+        "actif": "Active",
+        "noImg": "No picture"
+    }
+}

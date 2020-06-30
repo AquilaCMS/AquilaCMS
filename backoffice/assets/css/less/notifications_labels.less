@@ -1,0 +1,92 @@
+/* Notifications & Labels
+=================================================================== */
+.notification {
+	position: absolute;
+	top: -12px;
+	right: -12px;
+	line-height: 16px;
+	height: 16px;
+	padding: 6px 10px;
+	color: white !important;
+  	.border-radius(50em);
+	.box-sizing(content-box);
+}
+
+.notification.small {
+	padding: 2px 7px;
+	color: white !important;
+	border-width: 1px;
+	border-style: solid;
+  	.border-radius(50em);
+}
+
+.notification.small.blue,
+.notification.blue {
+	background: @blue;
+}
+
+.notification.small.yellow,
+.notification.yellow {
+	background: @yellow;
+}
+
+.notification.small.red,
+.notification.red {
+	background: @red;
+}
+
+.notification.small.green,
+.notification.green {
+	background: @darkGreen;
+}
+
+.notification.small.orange,
+.notification.orange {
+	background: @lightOrange;
+}
+
+.notification.small.red,
+.notification.red {
+	background: @red;
+}
+
+.label,
+.badge {
+	font-weight: 300;
+	font-size: 10px;
+	padding: 4px 6px;
+	border: none;
+	text-shadow: none;
+}
+
+.label {
+	.border-radius(2px);
+}
+
+.label-important,
+.badge-important,
+.label-important[href],
+.badge-important[href] {
+	background: @red;
+}
+
+.label-warning,
+.badge-warning,
+.label-warning[href],
+.badge-warning[href] {
+	background: @lightOrange;
+}
+
+.label-success,
+.badge-success,
+.label-success[href],
+.badge-success[href] {
+	background: @darkGreen;
+}
+
+.label-info,
+.badge-info,
+.label-info[href],
+.badge-info[href] {
+	background: @lightBlue;
+}

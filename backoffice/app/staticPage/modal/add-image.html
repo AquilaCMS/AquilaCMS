@@ -1,0 +1,87 @@
+<style>
+    .modal-dialog {
+        width: 1200px;
+        padding:30px;
+    }
+
+    .modal {
+    z-index: 30050 !important;
+}
+.modal-backdrop {
+    z-index: 30040 !important;
+}
+    /* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: black; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
+</style>
+
+<div>
+    <div class="modal-header" translate>
+        static.modal.addImage
+    </div>
+    <div class="modal-body">
+        <div class="row" style="margin-bottom:30px;overflow:scroll; height:400px;overflow-x: hidden;padding:15px 20px">
+            <div ng-repeat="media in medias">
+                <div class="col-md-3" style="margin-bottom:20px">
+                    <button ng-if="imageId === media._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"
+                        ng-click="selectImage(media)"><img
+                            ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}"
+                            alt=""></button><br />
+                    <button ng-if="imageId !== media._id" ng-click="selectImage(media)"><img
+                            ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}"
+                            alt=""></button><br/>
+                    <label>{{media.name}}</label>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class='row'>
+            <div  class="col-md-4">
+                <label translate>static.modal.maxSize</label>
+                <ns-switch id="maxSize" ng-model="size.max" name="maxSize"></ns-switch>
+                <!-- <ns-switch id="maxSize" ng-model="false" name="active"></ns-switch> -->
+
+            </div>
+            <div class="col-md-8" ng-if="!size.max">
+
+                <div class="col-md-2">
+                    <label translate>static.modal.width</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" ng-model="size.width" />
+                </div>
+
+                <div class="col-md-2">
+                <label translate>static.modal.height </label>
+                </div>
+                <div class="col-md-2">
+                <input style="float:left" type="number" class="form-control" ng-model="size.height" />
+                </div>
+            </div>
+        </div
+    </div>
+    
+    <div class="modal-footer">
+        <a href="#/medias"><button ng-click="cancel()" style="float:left" class="btn btn-default" translate>static.modal.medias</button></a>
+        <button class="btn btn-default" ng-click="cancel()" translate>static.modal.cancel</button>
+        <button class="btn btn-default" ng-disabled="!imageSelected || (size.max === false && (size.width === undefined || size.width === null || size.height === undefined || size.height === null || size.width < 0 || size.height < 0 )) " ng-click="ok()" translate>static.modal.add</button>
+    </div>
+</div>

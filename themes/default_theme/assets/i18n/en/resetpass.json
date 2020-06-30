@@ -1,0 +1,16 @@
+{
+    "page": {
+        "title": "Password recovery",
+        "password_recovery": {
+            "title": "Password recovery",
+            "sub_title": "Enter a new password",
+            "button_label": "Send",
+            "password": {
+                "label": "Password"
+            },
+            "passwordCheck": {
+                "label": "Confirm password"
+            }
+        }
+    }
+}

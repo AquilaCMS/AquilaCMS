@@ -1,0 +1,51 @@
+<div style="margin-left: 20px; margin-right: 20px;">
+    <div ngf-drop ngf-select ng-model="files" class="drop-box upload-area" ng-style="styleProp"
+     ngf-drag-over-class="'dragover'" ngf-multiple="multiple" ngf-keep="'distinct'" ngf-max-files="10" ng-disabled="disableUpload"
+     accept="{{accepttype || ''}}" ngf-before-model-change="load(true)" ngf-validate-fn="load(false)">
+        <span class="overlay">
+            <span class="overlay-inner">
+                <i ng-hide="type === 'option' || type === 'attribute'" class="ico-plus-secondary"></i>
+
+                <small translate ng-show="accepttype === 'application/pdf'">medias.uploadMedias.dropPdfs</small>
+                <small translate ng-show="accepttype === 'video/*'">medias.uploadMedias.dropVideos</small>
+                <small translate ng-show="accepttype === '.zip' || !accepttype">medias.uploadMedias.dropFiles</small>
+                <small translate ng-show="accepttype === 'image/*'">medias.uploadMedias.dropImages</small>
+            </span>
+        </span>
+    </div>
+    <div class="row form-group">
+        <div class="col-sm-12" ng-show="files">
+            <button class="btn btn-default" type="button" ng-click="upload(files)" ng-disabled="disableUpload" ng-show="files.length > 0" translate>medias.uploadMedias.upload</button>
+        </div>
+    </div>
+    <div ng-repeat="f in files" class="image-frame {{multiple ? 'col-sm-4' : 'col-sm-12'}}">
+        <div class="row">
+            <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
+                <progressbar style="height: 19px" class="active" animate="progress[f.$ngfBlobUrl] > 0 && progress[f.$ngfBlobUrl] < 100" max="100" value="progress[f.$ngfBlobUrl]"
+                             type="success">
+                    <span ng-show="progress[f.$ngfBlobUrl] > 0 && progress[f.$ngfBlobUrl] < 100">{{progress[f.$ngfBlobUrl]}}%</span>
+                    <span ng-show="!progress[f.$ngfBlobUrl]" translate>medias.uploadMedias.uploadnotstarted</span>
+                    <span ng-show="progress[f.$ngfBlobUrl] == 100" translate>medias.uploadMedias.uploadsuccessful</span>
+                </progressbar>
+                <img ngf-src="!f.$error && f" />
+            </div>
+            <div class="col-sm-8">
+                <div class="form-group" ng-show="type !== 'category'">
+                    <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="nameModified_{{$index}}" class="form-control" ng-model="f.nameModified" ng-disabled="disableUpload || type==='module' || type==='theme'" />
+                    </div>
+                </div>
+                <div class="form-group" ng-show="showalt">
+                    <label class="col-sm-3 control-label" translate>medias.uploadMedias.alt</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="alt_{{$index}}" class="form-control" ng-model="f.alt" ng-disabled="disableUpload" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="disableUpload" id="overlayModule">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+{
+    "transactions": "Transactions",
+    "commandes": "Orders",
+    "paiements": "Payments",
+    "factures": "Online bills",
+    "carts": "Carts",
+
+    "catalogue": "Catalog",
+    "produits": "Products",
+    "avis": "Reviews",
+    "marques": "Brands",
+    "fournisseurs": "Suppliers",
+    "familles": "Families",
+    "jeuxAttributs": "Attributes sets",
+    "attributs": "Attributes",
+    "jeuxOptions": "Options sets",
+    "options": "Options",
+    "picto": "Picto",
+
+    "clients": "Customers",
+    "site": "Site",
+    "pages": "Pages",
+    "BlocsCMS": "CMS Blocks",
+    "categories": "Categories",
+    "mails": "Mails",
+    "medias": "Media",
+    "article": "Blog",
+    "css": "CSS",
+    "translate": "Translation",
+
+    "galerie": "Gallery",
+    "carousel": "Carousel",
+    "agenda": "Agenda",
+
+    "promotion": "Discount",
+    "configuration": "Configuration",
+    "environnement": "Environment",
+    "stock&commandes": "Orders param",
+    "modesExpedition": "Shippments",
+    "territories": "Territories",
+    "themes": "Themes",
+    "design": "Design",
+
+    "langues": "Languages",
+    "tachesPlanifiees": "Planned Tasks",
+    "modesPaiement": "Payment modes",
+    "pointsVente": "Points of sale",
+    "update": "Update",
+
+    "modules": "Plugins",
+
+    "admin": "Administrators"
+}

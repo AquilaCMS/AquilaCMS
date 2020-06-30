@@ -1,0 +1,45 @@
+<ns-box data-title="picto.list.t1" title-icon="fa fa-gratipay fa-2x" new-href="#/picto/new">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th translate>
+                    picto.list.img
+                </th>
+                <th translate>
+                    picto.list.code
+                </th>
+                <th width="40%" translate>
+                    picto.list.title
+                </th>
+                <th translate>
+                    picto.list.used
+                </th>
+                <th translate>
+                    picto.list.actif
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="picto in pictos" style="cursor: pointer;" ng-click="detailsPicto(picto._id)" ng-show="pictos.length > 0">
+                <td>
+                    <img style="max-width: 100px;max-height:50px" ng-src="/medias/picto/{{picto.filename}}" ng-if="picto.filename !== ''" alt="{{picto.filename}}">
+                    <p ng-show="picto.filename === ''" translate>picto.list.noImg</p>
+                </td>
+                <td>{{picto.code}}</td>
+                <td>{{picto.title}}</td>
+                <td>
+                    <ns-status-label type="picto" status="picto.usedInFilters"></ns-status-label>
+                </td>
+                <td>
+                    <ns-status-label type="picto" status="picto.enabled"></ns-status-label>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <style>
+        table tr td {
+            vertical-align: middle !important;
+        }
+    </style>
+</ns-box>

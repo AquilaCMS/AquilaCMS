@@ -1,0 +1,21 @@
+{
+    "onlineBill": "Online bill",
+    "billNb": "Bill number",
+    "prixTTC": "Bill ATI price",
+    "nbCli": "Customer number",
+    "nom": "Name",
+    "soc": "Company",
+    "coord": "Contact details",
+    "mail": "E-mail",
+    "creePar": "Created by",
+    "creDate": "Creation date",
+    "opDate": "Operation date",
+    "status": "Status",
+    "modePay": "Payment mode",
+    "transNb": "Transaction number",
+    "price": "Price",
+    "comm": "Comment",
+    "export": "Export",
+    "ok": "OK",
+    "cancel": "Cancel"
+}

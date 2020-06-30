@@ -1,0 +1,44 @@
+<ns-box data-title="{{isEditMode ? 'slider.detail.t1' : 'slider.detail.t2'}}" title-icon="fa fa-film fa-lg" close-href="#/component/slider">
+    <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(false)"> <!--style="padding: 100px"-->
+        <ns-buttons is-edit-mode="isEditMode" return-path="/component/slider" form="form" remove="delete()" save="save()" save-and-quit="save(true)" disable-save="disableSave">
+            <div class="form-group">
+                <label for="code" class="col-sm-3 control-label" translate>slider.detail.code</label>
+                <div class="col-sm-7">
+                    <input id="code" class="form-control" ng-model="slider.code" ng-change="checkValidity()" />
+                    <div class="label label-info">&lt;ns-slider ns-code="{{slider.code}}"&gt;&lt;/ns-slider&gt;</ns-cms></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="auto_play" class="col-sm-3 control-label" translate>slider.detail.lecAuto</label>
+                <div class="col-sm-2">
+                    <ns-switch id="auto_play" ng-model="slider.autoplay" name="auto_play" ng-change="checkValidity()"></ns-switch>
+                </div>
+
+                <label for="pause_hover" class="col-sm-3 control-label" translate>slider.detail.hoverPause</label>
+                <div class="col-sm-2">
+                    <ns-switch id="pause_hover" ng-model="slider.pauseOnHover" name="pause_hover" ng-change="checkValidity()"></ns-switch>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="loop_play" class="col-sm-3 control-label" translate>slider.detail.lecLoop</label>
+                <div class="col-sm-2">
+                    <ns-switch id="loop_play" ng-model="slider.infinite" name="loop_play" ng-change="checkValidity()"></ns-switch>
+                </div>
+
+                <label for="wait_transition" class="col-sm-3 control-label" translate>slider.detail.tps2Defil</label>
+                <div class="col-sm-2">
+                    <input id="wait_transition" type="number" class="form-control" min="500" ng-model="slider.autoplaySpeed" ng-change="checkValidity()" />
+                </div>
+            </div>
+
+            <div ng-show="isEditMode">
+                <ns-upload-files accepttype="image/*" multiple="false" type="slider" id="slider._id" entity="null" images="slider.items" after-function="close()"></ns-upload-files>
+
+                <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in slider.items | orderBy:'order'" ns-drag="item" ns-drop="item">
+                    <div title="{{item.text}}" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px" ng-click="openItemModal(item)"></div>
+                </div>
+            </div>
+        </ns-buttons>
+    </form>

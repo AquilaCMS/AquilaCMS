@@ -1,0 +1,91 @@
+<ns-box data-title="{{shipment.type === 'DELIVERY' ? 'shipment.detailOld.t1' : 'shipment.detailOld.t2'}} : {{shipment.name}}" close-href="#/shipments">
+    <form class="form-horizontal" role="form" ng-submit="save(shipment)" ng-init="shipment.update = true">
+        <div class="form-group">
+            <label for="name" class="col-sm-1 control-label" translate>shipment.detailOld.nom</label>
+            <div class="col-sm-11">
+                <input type="text" class="form-control" id="name" translate translate-attr-placeholder='shipment.detailOld.ph1' ng-model="shipment.name" required >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="url" class="col-sm-1 control-label" translate>shipment.detailOld.url</label>
+            <div class="col-sm-11">
+                <input type="text" class="form-control" id="url" translate translate-attr-placeholder='shipment.detailOld.ph2' ng-model="shipment.url" required >
+            </div>
+        </div>
+        <div class="form-group" ng-if="shipment.type">
+            <label for="delay" class="col-sm-1 control-label" translate>shipment.detailOld.del</label>
+            <div class="col-sm-2">
+                <input type="number" min="0" class="form-control" id="delay" translate translate-attr-placeholder='shipment.detailOld.ph3' ng-model="shipment.delay.value" required >
+            </div>
+            <div class="col-sm-2">
+                <select class="form-control" name="type" id="type" ng-model="shipment.delay.unit" required ng-change="changeType()">
+                    <option value="" translate>shipment.detailOld.chTimeUnit</option>
+                    <option value="HOUR" translate>shipment.detailOld.hour</option>
+                    <option value="DAY" translate>shipment.detailOld.day</option>
+                    <option value="WEEK" translate>shipment.detailOld.week</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="price" class="col-sm-1 control-label" translate>shipment.detailOld.prix</label>
+            <div class="col-sm-11">
+                <input type="number" min="0" step="0.01" class="form-control" id="price" translate translate-attr-placeholder='shipment.detailOld.ph4' ng-model="shipment.price.ati" required >
+            </div>
+        </div>
+
+        <!--display only if Retrait-->
+        <div class="form-group" ng-if="shipment.type === 'RELAY_POINT'">
+            <div>
+                <label for="address" class="col-sm-1 control-label" translate>shipment.detailOld.adresse</label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="address" translate translate-attr-placeholder='shipment.detailOld.ph1' ng-model="shipment.address.name" required >
+                </div>
+                <label for="address" class="col-sm-1 control-label"></label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="address2" translate translate-attr-placeholder='shipment.detailOld.ph5' ng-model="shipment.address.line1" required >
+                </div>
+                <label for="address" class="col-sm-1 control-label"></label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="address3" translate translate-attr-placeholder='shipment.detailOld.ph6' ng-model="shipment.address.line2" >
+                </div>
+                <label for="address" class="col-sm-1 control-label"></label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="address4" translate translate-attr-placeholder='shipment.detailOld.ph7' ng-model="shipment.address.zipcode" required >
+                </div>
+                <label for="address" class="col-sm-1 control-label"></label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="address5" translate translate-attr-placeholder='shipment.detailOld.ph8' ng-model="shipment.address.city" required >
+                </div>
+                <label for="address" class="col-sm-1 control-label"></label>
+                <div class="col-sm-11">
+                    <select name="pays" id="country1" class="form-control" ng-model="shipment.country" ng-init="shipment.country = getValueCountryCollect()">
+                        <option ng-repeat="country in countries" value="{{country.code}} {{country.name}}">{{country.name}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!--display only if Livraison-->
+        <div class="form-group" ng-if="shipment.type === 'DELIVERY'">
+            <label for="country2" class="col-sm-1 control-label" translate>shipment.detailOld.pays</label>
+            <div class="col-sm-5">
+                <select name="pays" id="country2" size="20" class="form-control" ng-model="shipment.country" ng-init="shipment.country = getValueCountriesDelivery()" multiple>
+                    <option ng-repeat="country in countries" value="{{country.code}} {{country.name}}">{{country.name}}</option>
+                </select>
+            </div>
+        </div>
+
+        <!--display only if Retrait-->
+        <div class="form-group" ng-if="shipment.type === 'RELAY_POINT'">
+            <label for="limit" class="col-sm-1 control-label" translate>shipment.detailOld.limHour</label>
+            <div class="col-sm-3">
+                <input type="number" min="0" max="24" class="form-control" id="limit" translate translate-attr-placeholder='shipment.detailOld.ph9' ng-model="shipment.limit.hour" required >
+            </div>
+        </div>
+
+        <div style="text-align: right">
+            <button type="submit" class="btn btn-success" translate>shipment.detailOld.save</button>
+        </div>
+
+    </form>
+</ns-box>

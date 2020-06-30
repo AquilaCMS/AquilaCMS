@@ -1,0 +1,39 @@
+.cross-selling {
+    position: relative;
+}
+
+.cross-selling .products-grid .product--vertical {
+    width: 20%;
+    min-width: 20%;
+}
+
+.cross-selling .slider__arrows button {
+    border: 0;
+    background: transparent;
+    opacity: .6;
+}
+.cross-selling .slider__arrow--prev {
+    left: 0;
+    position: absolute;
+}
+.cross-selling .slider__arrow--next {
+    right: 0;
+    position: absolute;
+}
+.cross-selling .slider__arrows {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+}
+
+.cross-selling .products-grid .product--vertical {
+    width: 20%;
+    min-width: 20%;
+}
+
+@media (max-width: 1024px) {
+    .cross-selling .products-grid .product--vertical {
+        width: unset;
+        min-width: unset;
+    }
+}

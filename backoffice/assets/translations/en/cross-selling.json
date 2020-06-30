@@ -1,0 +1,13 @@
+{
+    "t1": "{{type}} Component configuration",
+    "save": "Save",
+    "delete": "Delete",
+    "pdtBorderColor": "Products border color",
+    "defCol": "Default color",
+    "nbPdtsDisplayed": "Number of products displayed",
+    "defPdtsManu": "Define products manually",
+    "idPdt": "ID Product",
+    "nomPdt": "Product name: ",
+    "qt": "Quantity: ",
+    "infoMsg": "Information message"
+}

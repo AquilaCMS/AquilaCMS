@@ -1,0 +1,23 @@
+<ns-box data-title="translate.t1" title-icon="fa fa-language fa-lg">
+
+    <form name="form" role="form" ng-submit="local.saveTranslate()">
+
+        <div translate>translate.translateFile</div>
+        <ns-translation ng-model="local.lang" class="pull-left"></ns-translation>
+        <select class="form-control" ng-model="local.currentTranslate" style="width:300px;margin-bottom: 20px;margin-left:140px" ng-change="local.loadTranslation()">
+            <option ng-repeat="oneItem in local.allTranslateNames" value="{{oneItem}}">{{oneItem}}</option>
+        </select>
+
+        <ns-buttons disable-save="disableSave" return-path="/" form="form" hide-save-and-quit="true">
+            <button class="btn btn-success" style="position: absolute;right: 40%;top: 216px;" ng-click="local.compileFront()" translate>translate.reboot</button>
+
+
+            <div style="text-align: center">
+                <textarea style="width:95%;height:500px" ng-model="local.customTranslate" required></textarea>
+            </div>
+            <br/>
+            <div style="font-size: 11px" translate>translate.nb</div>
+
+        </ns-buttons>
+    </form>
+</ns-box>

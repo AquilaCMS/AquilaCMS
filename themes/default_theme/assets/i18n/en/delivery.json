@@ -1,0 +1,10 @@
+{
+    "livraison": "Delivery",
+    "livraisonApartir": "Delivery from",
+    "error_input_delivery":"Error while selecting delivery method",
+    "choose_relay_point":"Please select a relay point and save it",
+    "choose_delivery_mode":"Please choose a delivery method",
+    "not_logged_payment":"You must be logged in to continue to the payment",
+    "no_cart":"You do not have a basket",
+    "no_shipment":"No shipment for this country"
+}

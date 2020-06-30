@@ -1,0 +1,35 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(false)" role="form">
+    <ns-box data-title="site.new.t1" close-href="#/site/articles" title-icon="fa fa-newspaper-o fa-lg">
+        <ns-buttons save-and-quit="save(true)" disable-save="disableSave" return-path="/site/articles" form="form">
+            <div class="form-group">
+                <label for="slug" class="col-sm-1 control-label" translate>site.new.urlKey</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="slug" translate translate-attr-placeholder='site.new.ph1' ng-model="articles.translation[lang].slug">
+                </div>
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
+            <div class="form-group">
+                <label for="title" class="col-sm-1 control-label" translate>site.new.title</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="title" translate translate-attr-placeholder='site.new.ph2' ng-model="articles.translation[lang].title" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" translate>site.new.visible</label>
+                <div class="col-sm-11">
+                    <ns-switch ng-model="articles.isVisible" name="visible"></ns-switch>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" translate>site.new.img</label>
+                <p style="color: red;" translate>site.new.saveFirst</p>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" translate>site.new.content</label>
+                <div class="col-sm-11">
+                    <ns-tinymce text="articles.translation[lang].content.text"></ns-tinymce>
+                </div>
+            </div>
+        </ns-buttons>
+    </ns-box>
+</form>

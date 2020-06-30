@@ -1,0 +1,77 @@
+<h3 translate>product.marketing.fournisseur</h3>
+
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="supplier_ref" class="col-sm-2 control-label" translate>product.marketing.refFourn</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="supplier_ref" name="supplier_ref" ng-model="product.supplier_code" ng-disabled="true">
+        </div>
+        <label class="col-sm-2 control-label" translate>product.marketing.nomFourn</label>
+        <div class="col-sm-4">
+            <select class="form-control" ng-options="item._id as item.name for item in supplierList | orderBy: ['name']" ng-model="product.supplier_ref" ng-change="updateSupplierField()">
+                <option value="" translate>product.marketing.selectFourn</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-11">
+        <label class="col-sm-2 control-label" translate>product.marketing.marque</label>
+        <div class="col-sm-4">
+            <select class="form-control" ng-model="product.trademark" ng-options="item as item.name for item in trademarkList track by item.code">
+                <option value="" translate>product.marketing.selectMarque</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label"><span translate>product.marketing.pds</span><sub><span translate>product.marketing.enG</span></sub></label>
+        <div class="col-sm-4">
+            <input type="number" no-float class="form-control" id="weight" name="weight" ng-model="product.weight">
+        </div>
+    </div>
+</div>
+
+<h3 translate>product.marketing.infoMark</h3>
+<div class="form-group">
+    <div class="col-sm-11">
+        <label class="col-sm-2 control-label" translate>product.marketing.univers</label>
+        <div class="col-sm-2">
+            <select class="form-control" ng-model="product.universe"
+                    ng-options="item.slug as item.name for item in universeList"
+                    ng-change="updateListFamily('familyList', 'family', 'universe')">
+                <option value="" translate>product.marketing.selectUni</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label" translate>product.marketing.famille</label>
+        <div class="col-sm-2">
+            <select class="form-control" ng-model="product.family"
+                    ng-options="item.slug as item.name for item in familyList"
+                    ng-change="updateListFamily('subfamilyList', 'subfamily', 'family')">
+                <option value="" translate>product.marketing.selectFamille</option>
+            </select>
+        </div>
+        <label class="col-sm-2 control-label" translate>product.marketing.ssFam</label>
+        <div class="col-sm-2">
+            <select class="form-control" ng-model="product.subfamily"
+                    ng-options="item.slug as item.name for item in subfamilyList">
+                <option value="" translate>product.marketing.selectSsFam</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="is_new" class="col-sm-2 control-label" translate>product.marketing.new</label>
+        <div class="col-sm-2">
+            <ns-switch name="isNew" ng-model="product.is_new"></ns-switch>
+        </div>
+        <!-- Plus utilisé -->
+        <!--<label for="order_qty_min" class="col-sm-2 control-label">Nombre minimum</label>-->
+        <!--<div class="col-sm-2">-->
+            <!--<input type="number" class="form-control" id="order_qty_min" name="order_qty_min" ng-model="product.order_qty.min">-->
+        <!--</div>-->
+
+        <!--<label for="order_qty_max" class="col-sm-2 control-label">Nombre maximum</label>-->
+        <!--<div class="col-sm-2">-->
+            <!--<input type="number" class="form-control" id="order_qty_max" name="order_qty_max" ng-model="product.order_qty.max" min="{{product.order_qty.min}}">-->
+        <!--</div>-->
+    </div>
+</div>

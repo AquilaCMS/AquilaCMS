@@ -1,0 +1,102 @@
+<ns-box data-title="productReviews.filter.t1" title-icon="fa fa-star-half-o fa-lg">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+        <table id="DataTables_Table_0" class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+               aria-describedby="DataTables_Table_0_info">
+            <thead>
+                <tr role="row">
+                    <th role="columnheader" style="width: 8%;">
+                        <a ng-click="local.sortType = 'code'; local.sortReverse = !local.sortReverse; getProductReviews(local.currentPage);" translate>
+                            productReviews.filter.code
+                            <span ng-show="local.sortType == 'code' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'code' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th role="columnheader" style="width: 10%;">
+                        <span translate>productReviews.filter.produit</span>
+                    </th>
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = 'reviews.datas.review_date'; local.sortReverse = !local.sortReverse; getProductReviews(local.currentPage);" translate>
+                            productReviews.filter.date
+                            <span ng-show="local.sortType == 'reviews.datas.review_date' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'reviews.datas.review_date' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = 'reviews.datas.rate'; local.sortReverse = !local.sortReverse; getProductReviews(local.currentPage);" translate>
+                            productReviews.filter.note
+                            <span ng-show="local.sortType == 'reviews.datas.rate' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'reviews.datas.rate' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = 'reviews.datas.visible'; local.sortReverse = !local.sortReverse; getProductReviews(local.currentPage);" translate>
+                            productReviews.filter.visible
+                            <span ng-show="local.sortType == 'reviews.datas.visible' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'reviews.datas.visible' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th role="columnheader" style="width: 10%;">
+                        <a ng-click="local.sortType = 'reviews.datas.verify'; local.sortReverse = !local.sortReverse; getProductReviews(local.currentPage);" translate>
+                            productReviews.filter.verifie
+                            <span ng-show="local.sortType == 'reviews.datas.verify' && !local.sortReverse" class="ico-chevron-down"></span>
+                            <span ng-show="local.sortType == 'reviews.datas.verify' && local.sortReverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                </tr>
+                <tr role="row">
+                    <th>
+                        <input type="text" ng-change="getProductReviews(local.currentPage)" ng-model="local.filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='product.list2.ph1' class="form-control">
+                    </th>
+                    <th>
+                        <input type="text" ng-change="getProductReviews(local.currentPage)" ng-model="local.filter.name" ng-model-options="{debounce: 500}" placeholder="Produit" class="form-control">
+                    </th>
+                    <th>
+
+                    </th>
+                    <th>
+                        <input type="number" ng-change="getProductReviews(local.currentPage)" ng-model="local.filter.rate" ng-model-options="{debounce: 500}" placeholder="Note" class="form-control">
+                    </th>
+                    <th>
+                        <select ng-model="local.filter.visible" ng-change="getProductReviews(local.currentPage)"
+                                class="form-control" type="boolean">
+                            <option value="" translate>productReviews.filter.indiff</option>
+                            <option value="true" translate>productReviews.filter.visible</option>
+                            <option value="false" translate>productReviews.filter.noVisible</option>
+                        </select>
+                    </th>
+                    <th>
+                        <select ng-model="local.filter.verify" ng-change="getProductReviews(local.currentPage)"
+                                class="form-control" type="boolean">
+                            <option value="" translate>productReviews.filter.indiff</option>
+                            <option value="true" translate>productReviews.filter.verifie</option>
+                            <option value="false" translate>productReviews.filter.noVerifie</option>
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="review in local.reviews"
+                    ng-click="detail(review)" style="height: 80px; cursor: pointer">
+                    <td>{{review.code}}</td>
+                    <td class="text-center">{{review.translation[adminLang].name}}</td>
+                    <td class="text-center">{{getMomentDate(review.reviews.datas.review_date)}}</td>
+                    <td class="text-center">{{review.reviews.datas.rate}}</td>
+                    <td class=" ">
+                        <span style="font-size: 16px" ng-bind-html="review.reviews.datas.visible | checked"></span>
+                    </td>
+                    <td>
+                        <span style="font-size: 16px" ng-bind-html="review.reviews.datas.verify | checked"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <pagination total-items="local.totalItems" page="local.currentPage" on-select-page="getProductReviews(page)" items-per-page="local.nbItemsPerPage"
+                    max-size="local.maxSize"
+                    boundary-links="true"
+                    rotate="false"></pagination>
+
+        <div style="float:right">
+            <strong><a href="#/products/setAttributes" translate>productReviews.detail.gererQuestions</a></strong>
+        </div>
+    </div>
+</ns-box>

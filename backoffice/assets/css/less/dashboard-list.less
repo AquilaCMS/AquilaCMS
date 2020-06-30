@@ -1,0 +1,55 @@
+/* Dashboard Lists
+=================================================================== */
+ul.dashboard-list {
+    padding: 0;
+
+    a:hover {
+        text-decoration:none;
+    }
+
+    li:last-child {
+        border-bottom: none;
+    }
+
+    li:first-child {
+        border-top: none;
+        border-bottom: 1px solid lighten(@grey,20%);
+    }
+
+    li {
+        padding: 5px 0;
+        list-style:none;
+        border-bottom: 1px solid lighten(@grey,20%);
+        font-size: 12px;
+
+        a {
+	
+            span {
+                display: inline-block;
+                font-size: 18px;
+                font-weight: bold;
+                margin-right: 10px;
+                text-align: right;
+                width: 50px;
+                zoom: 1;
+            }
+
+			img.avatar {
+				height: 50px;
+	            width: 50px;
+	            float: left;
+	            margin-top: 3px;
+	            margin-right: 15px;
+				.border-radius(2px);
+			}
+        }
+
+
+        i {
+            font-size: 18px;
+            opacity: .7;
+            filter: alpha(opacity=70);
+            -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+        }
+    }
+}

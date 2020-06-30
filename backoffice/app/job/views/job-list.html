@@ -1,0 +1,57 @@
+<ns-box data-title="job.list.t1" title-icon="fa fa-tasks fa-lg" new-href="#/jobs/new">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+        <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
+            aria-describedby="DataTables_Table_0_info">
+            <thead>
+                <tr role="row">
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                        <a ng-click="sortPlay.type = 'name'; sortPlay.reverse = !sortPlay.reverse" translate>
+                            job.list.nom
+                            <span ng-show="sortPlay.type == 'name' && !sortPlay.reverse" class="ico-chevron-down"></span>
+                            <span ng-show="sortPlay.type == 'name' && sortPlay.reverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" translate>
+                        job.list.commentaire
+                    </th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                        <a ng-click="sortPlay.type = 'repeatInterval'; sortPlay.reverse = !sortPlay.reverse" translate>
+                            job.list.fq
+                            <span ng-show="sortPlay.type == 'repeatInterval' && !sortPlay.reverse" class="ico-chevron-down"></span>
+                            <span ng-show="sortPlay.type == 'repeatInterval' && sortPlay.reverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                        <a ng-click="sortPlay.type = 'nextRunAt'; sortPlay.reverse = !sortPlay.reverse" translate>
+                            job.list.nextExec
+                            <span ng-show="sortPlay.type == 'nextRunAt' && !sortPlay.reverse" class="ico-chevron-down"></span>
+                            <span ng-show="sortPlay.type == 'nextRunAt' && sortPlay.reverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                        <a ng-click="sortPlay.type = 'lastRunAt'; sortPlay.reverse = !sortPlay.reverse" translate>
+                            job.list.lastExec
+                            <span ng-show="sortPlay.type == 'lastRunAt' && !sortPlay.reverse" class="ico-chevron-down"></span>
+                            <span ng-show="sortPlay.type == 'lastRunAt' && sortPlay.reverse" class="ico-chevron-up"></span>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()" infinite-scroll-distance="1"
+                infinite-scroll-immediate-check="true" infinite-scroll-disabled='scroller.busy'>
+
+                <tr class="{{job.disabled == true ? 'disabled disabledcolor pointer' : 'pointer' }}" ng-class-odd="'odd'" ng-class-even="'even'"
+                    ng-click="detail(job)" ng-repeat="job in activeJobs|orderBy:sortPlay.type:sortPlay.reverse">
+                    <td class=" ">{{job.name}}</td>
+                    <td class=" ">{{job.data.comment}}</td>
+                    <td class=" ">{{job.repeatInterval}}</td>
+                    <td class=" ">
+                        <span ng-if="!job.disabled">{{(job.nextRunAt | date:'medium')}}</span>
+                        <span ng-if="job.disabled" translate>job.list.paused</span>
+                    </td>
+                    <td class=" ">{{job.lastRunAt | date:'medium'}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ns-box>

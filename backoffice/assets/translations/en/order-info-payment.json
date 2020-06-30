@@ -1,0 +1,11 @@
+{
+    "payedOrder": "Set the order payed",
+    "payMode": "Payment mode",
+    "cheque": "Check",
+    "vir": "Transfer",
+    "fieldReq": "This field is required.",
+    "det": "Details",
+    "mailCli": "Customer e-mail",
+    "cancel": "Cancel",
+    "valider": "Submit"
+}

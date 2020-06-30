@@ -1,0 +1,31 @@
+{
+    "list": {
+        "t1": "Tâches planifiées",
+        "nom": "Nom",
+        "commentaire": "Commentaire",
+        "fq": "Fréquence",
+        "nextExec": "Prochaine Exécution",
+        "lastExec": "Dernière Exécution",
+        "paused": "En pause"
+    },
+    "detail": {
+        "t1": "Détail tâche planifiée",
+        "alert": "Attention, vous allez modifier une tâche planifiée système !",
+        "taskName": "Nom de tâche*",
+        "fieldRequired": "Ce champ est requis.",
+        "commentaire": "Commentaire*",
+        "lancerAPI": "Tache à lancer*",
+        "fq": "Fréquence*",
+        "invalidFq": "Format de fréquence invalide",
+        "httpMeth": "Type",
+        "get": "GET",
+        "post": "POST",
+        "ftp": "FTP",
+        "function": "Fonction",
+        "startStop": "Lancer/Arrêter la tâche",
+        "startNow": "Lancer Immédiatement",
+        "lastRes": "Dernier résultat de la tâche planifiée",
+        "fqDoc": "Documentation fréquence",
+        "params": "Paramètres"
+    }
+}

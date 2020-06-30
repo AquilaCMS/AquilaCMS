@@ -1,0 +1,37 @@
+{
+    "edit": {
+        "nom": "Nom",
+        "slug": "Slug",
+        "parent": "Parent",
+        "actif": "Actif",
+        "creationDate": "Date de création",
+        "ok": "OK",
+        "cancel": "Annuler"
+    },
+    "detail": {
+        "t1": "Détail Famille",
+        "clickForEdit": "Cliquez pour éditer",
+        "id": "ID",
+        "nom": "Nom",
+        "slug": "Slug",
+        "type": "Type",
+        "actif": "Actif",
+        "creationDate": "Date de création"
+    },
+    "list": {
+        "t1": "Familles",
+        "univers": "Ajout univers",
+        "famille": "Famille",
+        "ssFamille": "Sous-famille"
+    },
+    "new": {
+        "t1": "Créer une nouvelle famille : ",
+        "ph1": "Nom",
+        "ph2": "Code",
+        "nom": "Nom",
+        "parent": "Parent",
+        "code": "Code",
+        "save": "Enregistrer",
+        "cancel": "Annuler"
+    }
+}

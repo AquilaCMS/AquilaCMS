@@ -1,0 +1,59 @@
+{
+    "new": "Nouveau",
+
+    "save": "Sauvegarder",
+    "saveQuit": "Sauvegarder et quitter",
+    "dup": "Dupliquer",
+    "delete": "Supprimer",
+
+    "cmsBlocks": "Blocs CMS",
+    "add": "Ajouter",
+    "title": "Titre",
+    "content": "Contenu",
+
+    "depFile": "Déposez votre fichier ici",
+
+    "depPic": "Déposez votre photo ici",
+
+    "addr1": "Adresse Ligne 1",
+    "addr2": "Adresse Ligne 2",
+    "addr3": "Adresse Ligne 3",
+    "zipCode": "Code postal",
+    "city": "Ville",
+    "loading": "Chargement en cours...",
+    "pays": "Pays",
+
+    "ret": "Retour",
+
+    "si": "Si",
+    "et": "chacune",
+    "ou": "l'une",
+    "none": "aucune",
+    "condition": " de ces conditions est respectée :",
+    "selection": "Pour une sous-sélection de produits correspondant à",
+    "cond": " de ces conditions :",
+    "fieldInput": "CHAMP D'ENTRÉE",
+    "comp": "COMPARÉ À",
+    "value": "LA VALEUR",
+
+    "switch": {
+        "yes": "Oui",
+        "no": "Non"
+    },
+
+    "rule": {
+        "qty": "Quantité supérieure ou égal à",
+        "type": "Type de remise",
+        "value": "La valeur"
+    },
+    "contains": "Contient",
+    "ncontains": "Ne contient pas",
+    "eq": "Egal à",
+    "neq": "Différent de",
+    "startswith": "Commence par",
+    "endswith": "Fini par",
+    "gte": "Plus grand ou egal à",
+    "gt": "Plus grand que",
+    "lte": "Plus petit que",
+    "lt": "Plus petit ou egal à"
+}

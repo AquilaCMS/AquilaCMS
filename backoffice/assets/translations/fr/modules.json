@@ -1,0 +1,17 @@
+{
+    "t1": "Modules",
+    "addMod": "Pour ajouter un module, glissez le fichier .zip fourni dans la zone ci-dessous",
+    "nom": "Nom",
+    "desc": "Description",
+    "ver": "Version",
+    "actif": "Actif ?",
+    "actions": "ACTIONS",
+    "config": "Configurer",
+    "delete": "Supprimer",
+    "shopping": "Google Shopping",
+    "choosePackageVersions": "Des versions sont en conflits choisissez celle que vous souhaitez gardez",
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "api": "API",
+    "theme": "THEME"
+}

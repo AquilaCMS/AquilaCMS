@@ -1,0 +1,119 @@
+/* Activity Feed
+=================================================================== */
+
+#feed {
+	background: lighten(@grey, 20%);
+	top: 0px;
+	right: 0px;
+	position:absolute;
+	height: 100%;
+	border-left: 1px solid lighten(@grey, 15%);
+	
+	h2 {
+		background: lighten(@grey, 15%);
+		padding: 12px;
+		margin: 0px -15px 10px -15px;
+		
+		a {
+			float: right;
+			color: @grey;
+			text-decoration: none;
+			cursor: pointer;
+			
+			&:hover {
+				color: @darkGrey;
+			}
+		}
+	}
+		
+	ul#filter {
+		margin: 0 0 10px -40px;
+		list-style: none;
+		.clearfix;
+		
+		li {
+			float: left;
+			margin-right: 20px;
+			cursor: pointer;
+			
+			a {
+				text-decoration: none;
+				
+				&.active {
+					font-weight: bold;
+				}
+				
+				&:hover {
+					color: inherit;
+				}
+			}
+			
+		}
+		
+	}
+	
+	ul#timeline {
+		margin: 0 0 0 10px;
+		list-style: none;
+		border-left: 1px solid lighten(@grey, 15%);
+		
+		li {
+			position: relative;
+			margin: 0 0 20px -20px;
+			font-size: 12px;
+			
+			i {
+				position: absolute;
+				top: -4px;
+				left: -36px;
+				background: lighten(@grey, 20%);
+				padding: 5px 0px;
+				font-size: 15px;
+				width: 30px;
+				text-align: center;
+			}
+			
+			&.tasks i {
+				color: @green;
+			}
+			
+			&.comments i {
+				color: @red;
+			}
+			
+			&.messages i {
+				color: @blue;
+			}
+			
+			.title {
+				font-weight: bold;
+			}
+			
+			.desc {
+				margin: 5px 0;
+			}
+			
+			.date, .separator, .name {
+				color: @grey;
+			}
+			
+			.separator {
+				margin: 0 5px;
+			}
+			
+		}
+	}
+	
+	#load-more {
+		color: lighten(@grey, 15%);
+		margin: 0 auto;
+		display: block;
+		text-align: center;
+		text-decoration: none;
+		
+		&:hover {
+			color: @darkGrey;
+		}
+	}
+	
+}

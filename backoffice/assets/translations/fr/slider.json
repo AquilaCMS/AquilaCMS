@@ -1,0 +1,31 @@
+{
+    "item": {
+        "ph1": "URL",
+        "ph2": "Nom",
+        "ph3": "Description",
+        "ph4": "Lien de redirection",
+        "addImg": "Ajout d'une image",
+        "url": "URL",
+        "nom": "Nom",
+        "txt": "Texte",
+        "link": "Lien",
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "valider": "Valider"
+    },
+    "detail": {
+        "t1": "Détail Carrousel",
+        "t2": "Nouveau Carrousel",
+        "code": "Code",
+        "lecAuto": "Lecture auto",
+        "hoverPause": "Pause au survol",
+        "lecLoop": "Lecture en boucle",
+        "tps2Defil": "Temps entre 2 défilements",
+        "add": "Ajouter"
+    },
+    "list": {
+        "t1": "Carrousel",
+        "code": "Code",
+        "imgs": "Images"
+    }
+}

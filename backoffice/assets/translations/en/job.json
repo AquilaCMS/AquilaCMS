@@ -1,0 +1,31 @@
+{
+    "list": {
+        "t1": "Planned Tasks",
+        "nom": "Name",
+        "commentaire": "Comment",
+        "fq": "Frequency",
+        "nextExec": "Next run",
+        "lastExec": "Last run",
+        "paused": "Paused"
+    },
+    "detail": {
+        "t1": "Planned Task Detail",
+        "alert": "Watch out, you will edit a system planned task!",
+        "taskName": "Task name*",
+        "fieldRequired": "This field is required.",
+        "commentaire": "Comment*",
+        "lancerAPI": "Task to run*",
+        "fq": "Frequency*",
+        "invalidFq": "Invalid frequency format",
+        "httpMeth": "Type",
+        "get": "GET",
+        "post": "POST",
+        "ftp": "FTP",
+        "function": "Function",
+        "startStop": "Start/Stop Task",
+        "startNow": "Start Now",
+        "lastRes": "Last planned task result",
+        "fqDoc": "Frequency documentation",
+        "params": "Parameters"
+    }
+}

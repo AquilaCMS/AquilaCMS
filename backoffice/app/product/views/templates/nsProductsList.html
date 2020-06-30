@@ -1,0 +1,51 @@
+<pagination total-items="totalItems" page="currentPage" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
+            max-size="maxSize" boundary-links="true" rotate="false"></pagination>
+<table class="table table-striped table-bordered bootstrap-datatable datatable dataTable table-hover"
+       id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+    <thead>
+        <tr role="row">
+            <th role="columnheader" style="width: 2%" translate>
+                product.list.code
+            </th>
+            <th role="columnheader" style="width: 20%" translate>
+                product.list.img
+            </th>
+            <th role="columnheader" style="width: 33%" translate>
+                product.list.nom
+            </th>
+            <th role="columnheader" style="width: 35%" translate>
+                product.list.fournisseur
+            </th>
+        </tr>
+        <tr role="row">
+            <th>
+                <input type="text" class="form-control" ng-change="search()" ng-model="f.codeFilter" ng-model-options="{debounce: 500}"translate translate-attr-placeholder='product.list.code'>
+            </th>
+            <th>
+            </th>
+            <th>
+                <input type="text" class="form-control" ng-change="search()" ng-model="f.nameFilter" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='product.list.ph1'>
+            </th>
+            <th>
+                <select class="form-control" ng-change="search()" ng-model="queryFilter.supplier_ref" ng-options="id as name for (id, name) in suppliers"></select>
+            </th>
+        </tr>
+    </thead>
+    <tbody role="alert" aria-live="polite" aria-relevant="all">
+        <tr ng-class-odd="'odd'" ng-class-even="'even'"
+            ng-repeat="product in products | orderBy:sortType:sortReverse | filter:display"
+            ng-click="onSelect(product, $event)"
+            style="height: 80px;cursor:pointer;">
+            <td style="{{getSelectStyle(product)}};vertical-align: middle">{{product.code}}</td>
+            <td style="{{getSelectStyle(product)}};vertical-align: middle"><img ng-src="/images/products/300x300-50/{{product.images[0]._id}}/{{product.images[0].title+product.images[0].extension}}" height="80" width="120" class='no-product-image' /></td>
+            <td style="{{getSelectStyle(product)}};vertical-align: middle" class="sorting_1" style="line-height: 24px;">
+                {{product.translation[defaultLang].name}}
+                <!--<br />
+                {{product._trademark}} <span ng-if="product._supplier.length > 0">/ {{product._supplier}}</span>-->
+            </td>
+            <td style="{{getSelectStyle(product)}};vertical-align: middle">{{suppliers[product.supplier_ref]}}</td>
+        </tr>
+    </tbody>
+</table>
+<pagination total-items="totalItems" page="currentPage" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
+            max-size="maxSize" boundary-links="true" rotate="false"></pagination>

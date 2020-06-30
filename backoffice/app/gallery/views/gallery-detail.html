@@ -1,0 +1,42 @@
+<ns-box data-title="{{isEditMode ? 'gallery.detail.t1' : 'gallery.detail.t2'}}" title-icon="fa fa-picture-o fa-lg" close-href="#/component/gallery">    
+    <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(false)"> <!--style="padding: 100px"-->
+        <ns-buttons is-edit-mode="isEditMode" return-path="/component/gallery" form="form" remove="delete()" save="save()" save-and-quit="save(true)" disable-save="disableSave">
+            <div class="form-group">
+                <label for="code" class="col-sm-3 control-label" translate>gallery.detail.code</label>
+                <div class="col-sm-7">
+                    <input id="code" class="form-control" ng-model="gallery.code" ng-change="checkValidity()" />
+                    <div class="label label-info">&lt;ns-gallery ns-code="{{gallery.code}}"&gt;&lt;/ns-gallery&gt;</ns-cms></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="item_show" class="col-sm-3 control-label" translate>gallery.detail.nbItemDisplayed</label>
+                <div class="col-sm-2">
+                    <input id="item_show" type="number" class="form-control" min="1" ng-model="gallery.initItemNumber" ng-change="checkValidity()" />
+                </div>
+
+                <label for="max_col" class="col-sm-3 control-label" translate>gallery.detail.nbColMax</label>
+                <div class="col-sm-2">
+                    <input id="max_col" type="number" class="form-control" min="1" ng-model="gallery.maxColumnNumber" ng-change="checkValidity()" />
+                </div>
+            </div>
+
+            <div ng-show="isEditMode" class="row">
+                <div class="col-sm-2 text-center" style="margin-bottom: 30px">
+                    <div class="pointer boxShadow" style="padding-top: 100%; background: #ffffff; border-radius: 4px;" ng-click="openItemModal()">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <i class="ico-plus-secondary"></i>
+                            <h4 style="text-transform: uppercase" translate>gallery.detail.add</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in gallery.items | orderBy:'order'" ns-drag="item" ns-drop="item">
+                    <div ng-show="item.src" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius: 4px;" ng-click="openItemModal(item)"></div>
+                    <div ng-show="item.content" class="video pointer boxShadow"
+                        style="padding-top: 100%; background: url(https://img.youtube.com/vi/{{item.content}}/0.jpg) no-repeat center; background-size: cover; border-radius: 4px;" ng-click="openItemModal(item)"></div>
+                </div>
+            </div>
+        </ns-buttons>
+    </form>
+</ns-box>

@@ -1,0 +1,27 @@
+{
+    "filter": {
+        "t1": "Avis Produits",
+        "code": "Code",
+        "produit": "Produit",
+        "date" : "Date",
+        "note": "Note",
+        "visible": "Visible",
+        "noVisible": "Invisible",
+        "verifie": "Verifié",
+        "noVerifie": "Non Verifié",
+        "indiff": "Indifferent"
+    },
+    "detail":{
+        "code_produit":"Code produit",
+        "nom_produit":"Nom produit",
+        "date":"Date",
+        "note":"Note",
+        "visible":"Visible",
+        "verifie":"Vérifié",
+        "client": "Client",
+        "titre": "Titre",
+        "avis": "Avis",
+        "gererQuestions": "Vous pouvez gérer vos questionnaires dans les jeux d'attributs",
+        "ipClient": "Client's IP"
+    }
+}

@@ -1,0 +1,48 @@
+<ns-box data-title="contact.list.t1" title-icon="fa fa-id-card">
+    <div class="box-content" style="overflow-x:scroll">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
+            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
+                aria-describedby="DataTables_Table_0_info">
+                <thead>
+                    <tr role="row">
+                        <th>
+                            <a ng-click="local._sort = '_id'; local.sortReverse = !local.sortReverse; getContacts(1);">
+                                <span>ID</span>
+                                <span ng-show="local._sort == '_id' && !local.sortReverse" class="ico-chevron-down"></span>
+                                <span ng-show="local._sort == '_id' && local.sortReverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th ng-repeat="col in cols">
+                            <a ng-click="local._sort = 'data.' + col; local.sortReverse = !local.sortReverse; getContacts(1);">
+                                <span>{{col}}</span>
+                                <span ng-show="local._sort == 'data.' + col && !local.sortReverse" class="ico-chevron-down"></span>
+                                <span ng-show="local._sort == 'data.' + col && local.sortReverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                    </tr>
+                    <tr role="row">
+                        <th>
+                        </th>
+                        <th ng-repeat="col in cols">
+                            <input class="form-control" type="text" name="data.{{col}}" ng-click="event = $event" ng-change="filterChange(event)" ng-model="filter['data.'+ col].$regex" ng-model-options="{debounce: 500}">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                    <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="contact in contacts" class="pointer" ng-click="details(contact._id)">
+                        <td>{{contact._id}}</td>
+                        <td ng-repeat="col in cols">
+                            {{contact.data[col]}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="box-content" ng-show="contacts.length == 0">
+                <p>Aucune demande de contact</p>
+            </div>
+            <pagination page="page" total-items="totalItems" on-select-page="getContacts(page)" items-per-page="nbItemsPerPage" boundary-links="true" rotate="false" maxSize="7"></pagination>
+        </div>
+    </div>
+
+    
+</ns-box>

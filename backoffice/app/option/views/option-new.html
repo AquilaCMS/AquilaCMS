@@ -1,0 +1,106 @@
+<!--Module Options-->
+
+<ns-box data-title="option.new.t1" title-icon="fa fa-align-right fa-lg" close-href="#/options">
+    <form class="form-horizontal" role="form" ng-submit="save(opt)">
+        <div style="text-align: right">
+            <button type="submit" class="btn btn-success" translate>option.new.saveOpt</button>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-3 control-label" translate>option.new.code</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="code"
+                    translate translate-attr-placeholder='option.new.ph1' ng-model="opt.code"
+                       required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-3 control-label" translate>option.new.nom</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="name" translate translate-attr-placeholder='option.new.ph2' ng-model="opt.name" required>
+            </div>
+        </div>
+        <br/>
+        <label ng-show="!display" class="col-sm-3 control-label"><span translate>option.new.jeuOptLie</span> {{ setName }}</label>
+        <div class="form-group" ng-show="display">
+            <label for="set_options" class="col-sm-3 control-label" translate>option.new.jeuOptCont</label>
+            <div class="col-sm-6">
+                <select id="set_options" name="set_options" class="form-control" ng-model="opt.set_options" multiple>
+                    <option ng-repeat="setOpt in set_options" value="{{setOpt._id}}"
+                            ng-selected="setOpt._id == selectedSet">{{setOpt.name}} (Code : {{setOpt.code}})
+                    </option>
+                </select>
+            </div>
+        </div>
+        <!--<div class="row">-->
+            <!--<div class="col-md-10 col-md-offset-2">-->
+
+                <!--<div style="margin-top:50px;">-->
+                    <!--<h3 translate>option.new.col</h3>-->
+                <!--</div>-->
+
+                <!--<div data-ng-repeat="choiceC in choicesC">-->
+                    <!--<div class="col-sm-4" style="margin-top:10px;">-->
+                        <!--<label translate>option.new.type</label>-->
+                        <!--<select class="form-control" ng-model="choiceC.type" ng-init="choiceC.type='Texte Court'" ng-disabled="disableColumns || choiceC.id == 'C1'">-->
+                            <!--<option value="Texte Court" translate>option.new.sTxt</option>-->
+                            <!--<option value="Texte Long" translate>option.new.lTxt</option>-->
+                            <!--<option value="Nombre" translate>option.new.nb</option>-->
+                            <!--<option value="Image" translate>option.new.img</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+
+                    <!--<div class="col-sm-6" style="margin-top:10px;">-->
+                        <!--<label translate>option.new.denom</label>-->
+                        <!--<input class="form-control" type="text" ng-model="choiceC.name" name="choiceC.name" required ng-disabled="disableColumns || choiceC.id == 'C1'" ng-change="checkEmpty()">-->
+                    <!--</div>-->
+
+                    <!--<div class="col-sm-2" style="margin-top:33px;" ng-show="!disableColumns">-->
+                        <!--<button style="background: #e34925; color: #FFF; font-weight: bold; font-size: 21px; border: 0; cursor: pointer; display: inline-block; padding: 4px 9px; vertical-align: top; line-height: 100%;"-->
+                                <!--ng-show="$last" ng-click="removeChoiceC()">- -->
+                        <!--</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div style="text-align: right;">-->
+            <!--<button class="btn btn-default" type="button" style="margin: 10px 0;" ng-click="addNewChoiceC()" ng-show="!disableColumns" translate>-->
+                <!--option.new.addCol-->
+            <!--</button>-->
+            <!--<button class="btn btn-default" type="button" style="margin: 10px 0; color: red;" disabled ng-show="disableColumns" translate>-->
+                <!--option.new.modifCol-->
+            <!--</button>-->
+        <!--</div>-->
+    <!--</form>-->
+    <!--<span style="color: red;" ng-show="opt.code == null" translate>option.new.avantConfig</span>-->
+    <!--<form ng-submit="addNew()" ng-show="opt.code != null">-->
+        <!--<table class="table table-striped table-bordered" style="margin-top: 10px;">-->
+            <!--<thead>-->
+            <!--<tr>-->
+                <!--<th style="width: 10px;">-->
+                    <!--<input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/>-->
+                <!--</th>-->
+                <!--<th ng-repeat="col in opt.columns">-->
+                    <!--{{ col.name }} ({{ col.type }})-->
+                <!--</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody>-->
+            <!--<tr ng-repeat="value in opt.values">-->
+                <!--<td>-->
+                    <!--<input type="checkbox" ng-model="value.selected"/>-->
+                <!--</td>-->
+                <!--<td ng-repeat="line in opt.columns">-->
+                    <!--<ns-options></ns-options>-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+        <!--<div class="form-group">-->
+            <!--<input type="submit" class="btn btn-default addnew" ng-show="!disableLines" value="Ajouter une ligne">-->
+            <!--<input type="submit" class="btn btn-default addnew" style="color:red;" ng-show="disableLines" disabled value="Nom de colonne incorrect (vide ou doublons)">-->
+            <!--<input ng-hide="!opt.values.length" type="button" class="btn btn-danger" ng-click="removeLine()"-->
+                   <!--value="Supprimer">-->
+        <!--</div>-->
+    <!--</form>-->
+</ns-box>

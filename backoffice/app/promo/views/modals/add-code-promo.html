@@ -1,0 +1,44 @@
+<form name="local.form" class="form-horizontal" novalidate ng-submit="save()" role="form">
+    <div class="modal-body">
+        <div class="row" style="margin-bottom: 30px;">
+            <p class="h2 text-center align-top" translate>promo.code.createCode</p>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-11">
+                <label for="code" class="col-sm-4 control-label" translate>promo.code.code</label>
+                <div class="col-sm-6">
+                    <input  type="text" class="form-control" id="code" name="code" ng-model="codePromo.code" autocomplete="off" 
+                            ng-model-options="{debounce: 500}" ng-change="checkCodeExists()" translate translate-attr-placeholder='promo.code.ph1' required>
+                    <div class="ns-error-message" ng-show="local.form.code.$touched || local.form.nsSubmitted">
+                        <div ng-show="local.form.code.$error.required" translate>promo.code.fieldReq</div>
+                    </div>
+                    <div class="ns-error-message" ng-show="codeExists">
+                        <div translate>promo.code.codeEx</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-11">
+                <label for="limit_total" class="col-sm-4 control-label" translate>promo.code.qtMax</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="limit_total" name="limit_total" translate translate-attr-placeholder='promo.code.ph2' ng-model="codePromo.limit_total">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-11">
+                <label for="limit_client" class="col-sm-4 control-label" translate>promo.code.useMaxCli</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="limit_client" name="limit_client" translate translate-attr-placeholder='promo.code.ph2' ng-model="codePromo.limit_client">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="cancel()" translate>promo.code.cancel</button>
+        <button type="submit" class="btn btn-success" translate>promo.code.ok</button>
+    </div>
+</form>

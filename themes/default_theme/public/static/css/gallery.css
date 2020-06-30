@@ -1,0 +1,81 @@
+.NSGallery {
+    font-family: 'Oswald', sans-serif;
+}
+
+.NSGallery .text {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    width: 33%;
+    justify-content: center;
+    transform: translate(-50%,-50%);
+    border-bottom: 1px solid white;
+    border-top: 1px solid white;
+}
+
+.NSGallery .overlay:hover{
+    opacity: 0.8;
+}
+
+.NSGallery .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: #000000;
+    z-index:100;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+
+
+.NSGallery .grid-item img{
+    border: 10px solid #FFFFFF;
+    object-fit: cover;
+}
+
+.NSGallery .grid-item{
+    display: grid;
+    cursor:pointer;
+    transition:0.4s;
+    position: relative;
+}   
+
+.NSGallery .videoPlay .imgPlay{
+    position: absolute; 
+    padding:125px;   
+    border:none;     
+}
+
+.NSGallery .load-more{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.NSGallery .load-more button{
+    background-color: rgb(253, 188, 88);
+    border:none;
+    color: white;
+    font-size: 28px;
+    margin-top: 60px;
+    margin-bottom: 81px;
+    width: 120px;
+    transition:0.2s;
+    cursor:pointer;
+}
+
+.NSGallery .load-more button:hover{
+    background-color: rgb(251, 176, 61);
+}

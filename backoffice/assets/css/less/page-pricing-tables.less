@@ -1,0 +1,246 @@
+/* Price Tables
+=================================================================== */
+.price-table.type1 {
+	margin-top: 22px;
+	padding-left: 1px;
+	
+	ul {
+		position: relative;
+		z-index: 1;
+		list-style: none;
+		float: left;
+		margin:0px -1px 0px -1px;
+		padding: 0px;
+		text-align: center;
+		border: 1px solid lighten(@grey, 15%);
+		background: @bodyBackground;
+		
+		li:nth-child(2n+1) {
+			background: lighten(@grey, 20%);
+		}
+		
+		li.header {
+			
+		}
+		
+		li.price {
+			background: @darkGrey;
+			color: white;
+			font-size: 18px;
+			font-weight: bold;
+			text-shadow: none;
+			padding: 20px 0px;
+			height: 58px;
+		}
+		
+		li.strike {
+			text-decoration: line-through;
+		}
+		
+		li {
+			font-size: 12px;
+			text-shadow: none;
+			padding: 10px 0px;
+			
+			span {
+				font-weight: bold;
+			}
+		}	
+			
+	}
+	
+	ul.best-option {
+		border: 3px solid @blue;
+		margin:-27px -3px 0px -3px;
+		z-index: 2;
+		
+		li.header {
+			font-size: 16px;
+			font-weight: bold;
+			padding: 20px 0px;
+			position: relative;
+			overflow: hidden;
+			
+			span {
+				font-size: 10px;
+				line-height: 12px;
+				position: absolute;
+				top: -20px;
+				left: -141px;
+				background: @blue;
+				color: white;
+				padding: 30px 130px 5px 130px;
+				-webkit-transform:rotate(315deg);
+				-moz-transform:rotate(315deg);
+				-ms-transform:rotate(315deg);
+				-o-transform:rotate(315deg);
+			}
+			
+		}
+		
+		li.price {
+			font-size: 24px;
+			font-weight: bold;
+			padding: 20px 0px;
+			background: @blue;
+		}
+		
+	}
+	
+}
+
+.price-table.type2 {
+	margin-top: 22px;
+	padding-left: 1px;
+	
+	ul {
+		position: relative;
+		z-index: 1;
+		list-style: none;
+		float: left;
+		margin:0px -1px 0px -1px;
+		padding: 0px;
+		text-align: center;
+		border: 1px solid lighten(@grey, 10%);
+		background: white;
+		
+		li.header {
+			background: @grey;
+			color: white;
+			font-size: 20px;
+			padding-bottom: 70px;
+			margin-bottom: 60px;
+		}
+		
+		li.price {
+			background: @grey;
+			color: white;
+			font-size: 40px;
+			font-weight: bold;
+			padding: 26px 0px;
+			border: 4px solid lighten(@grey, 20%);
+			.border-radius(50em);
+			display: inline-block;
+			height: 116px;
+			width: 116px;
+			top: 45px;
+			left: 50%;
+			margin-left: -54px;
+			position: absolute;
+			
+			span {
+				font-size: 20px;
+			}
+		}
+		
+		li.strike {
+			text-decoration: line-through;
+		}
+		
+		li {
+			font-size: 12px;
+			padding: 10px 0px;
+			border-bottom: 1px solid lighten(@grey, 20%);
+			background: white;
+			
+			span {
+				font-weight: bold;
+			}
+		}
+		
+		li.select {
+			position: relative;
+			background: @grey;
+			padding: 0px;
+			
+			a {
+				color: white;
+				font-weight: 700;
+				font-size: 14px;
+				text-decoration: none;
+				display: block;
+				width: 100%;
+				height: 100%;
+				padding: 10px 0px;
+			}
+			
+			&:before {
+				content: '';
+				position: absolute;
+				border-left: 10px solid transparent;
+				border-right: 10px solid transparent;
+				border-bottom: 10px solid @grey;
+				top: -10px;
+				left: 50%;
+				margin-left: -5px;
+			}
+			
+			&:hover {
+				background: darken(lighten(@grey, 20%), 20%);
+				
+				&:before {
+					border-bottom: 10px solid darken(lighten(@grey, 20%), 20%);
+				}
+				
+			}
+		
+		}	
+			
+	}
+	
+	ul.best-option {
+		
+		li.header {
+			font-weight: bold;
+			position: relative;
+			background: darken(@green, 20%);
+		}
+		
+		li.price {
+			font-weight: bold;
+			background: @green;
+			border: 4px solid darken(@green, 10%);
+		}
+		
+		li.select {
+			position: relative;
+			background: darken(@green, 20%);
+			
+			&:before {
+				border-bottom: 10px solid darken(@green, 20%);
+			}
+			
+			&:hover {
+				background: darken(@green, 30%);
+				
+				&:before {
+					border-bottom: 10px solid darken(@green, 30%);
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+}
+
+.price-table.five ul {
+	width: 20%;
+}	
+
+.price-table.four ul {
+	width: 25%;
+}
+
+.price-table.three ul {
+	width: 33.333%;
+}	
+
+.price-table.two ul {
+	width: 50%;
+}
+
+.price-table.one ul {
+	width: 100%;
+}

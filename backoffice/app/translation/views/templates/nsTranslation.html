@@ -1,0 +1,7 @@
+<select ng-model="selectedLanguage" 
+        ng-change="changeLanguage(selectedLanguage)" 
+        ng-if="languages.length > 1"
+        ng-options="lang as lang.name for lang in languages track by lang.code"
+        style="width: 120px"
+    class="form-control">           
+</select>

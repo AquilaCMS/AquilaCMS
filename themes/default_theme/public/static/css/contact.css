@@ -1,0 +1,20 @@
+/* == Contact === */
+
+.formLine .wrapperRecaptcha {
+    display: inline-block;
+    width: 70%;
+}
+
+.formLine {
+    margin-bottom: 15px;
+    text-align: center;
+    vertical-align: top;
+}
+
+
+@media screen and (max-width: 768px) {
+    .formLine .g-recaptcha {
+        margin-left: 35%;
+        display: block;
+    }
+}

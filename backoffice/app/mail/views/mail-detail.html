@@ -1,0 +1,180 @@
+<form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
+    <ns-box data-title="mail.detail.t1" title-icon="fa fa-envelope fa-lg" close-href="#/mails">
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form">
+            <ns-translation ng-model="lang" class="pull-right"></ns-translation> 
+            <button ng-if="isEditMode" type="button" ng-click="openItemModal(lang)" class="btn-default"
+                style="top: 150px;position: absolute;right:600px;color: #fff; padding:0 20px; height: 35px; background-color: grey" translate>mail.detail.test</button>
+                
+                <div style="width: 50%;float:left;margin-top:10px">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label for="type" class="col-sm-3 control-label" translate>mail.detail.type</label>
+                            <div class="col-sm-9">
+                                <select name="type" class="form-control" id="type" ng-model="mail.type">
+                                    <option ng-repeat="option in mailTypes" value="{{option.code}}">{{option.name}}</option>
+                                </select>
+                            </div>
+                    
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label for="code" class="col-sm-3 control-label" translate>mail.detail.code</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="code" name="code" ng-model="mail.code" required>
+                                <div class="ns-error-message" ng-show="form.code.$touched || form.nsSubmitted">
+                                    <div ng-show="form.code.$error.required" translate>mail.detail.champRequis</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label for="from" class="col-sm-3 control-label" translate>mail.detail.senderMail</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" id="from" name="from" ng-model="mail.from" required>
+                                <div class="ns-error-message" ng-show="form.from.$touched || form.nsSubmitted">
+                                    <div ng-show="form.from.$error.required" translate>mail.detail.champRequis</div>
+                                    <span ng-show="form.from.$error.email" translate>mail.detail.validMailPls</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label for="from" class="col-sm-3 control-label" translate>mail.detail.senderName</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="fromName" name="fromName" ng-model="mail.fromName">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label for="subject" class="col-sm-3 control-label" translate>mail.detail.sujet</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="subject" name="subject"
+                                    ng-model="mail.translation[lang].subject" required>
+                                <div class="ns-error-message" ng-show="form.subject.$touched || form.nsSubmitted">
+                                    <div ng-show="form.subject.$error.required" translate>mail.detail.champRequis</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 50%;float: right;margin-top:10px" ng-if="isEditMode">
+                    <div class="col-md-10">
+                        <label translate>mail.detail.attachment</label>
+                        <ns-upload-files ng-if="!mail.translation[lang].attachments || mail.translation[lang].attachments.length < 1" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
+                            after-function="after()" lang="lang" on-error="uploadError()"></ns-upload-files>
+                        
+                            <table style="border:1px solid black; margin-bottom: 15px;max-width:100%; table-layout: fixed;">
+                                <tr ng-repeat-start="file in mail.translation[lang].attachments">
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr ng-repeat-end>
+                                    <td style="padding-left:10px; overflow: hidden;font-size:12px"><a target="_blank" href="{{file.path}}">{{file.name}}.pdf</a></td>
+                                    <td style="text-align:right;padding:4px;"><button class="btn btn-red btn-with-icon" style="font-size:12px" ng-click="deletePdf($index, lang)" translate>mail.detail.delete</button></td>
+                                </tr>
+                            </table>
+                        
+                    </div>
+                </div>
+                
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label class="col-sm-2 control-label" translate>mail.detail.html</label>
+                    <div class="col-sm-12 tinyeditor-big">
+                        <ns-tinymce text="mail.translation[lang].content"></ns-tinymce>
+                        <br />
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label class="col-sm-12"><span translate>mail.detail.varDispo</span><br />
+                        <span style="font-size:11px;font-weight: normal"><span translate>mail.detail.deuxAcc </span> {{variable}}</span>
+                    </label>
+                    <div class="col-sm-12"><br />
+                        <table class="variabledispo">
+                            <tr>
+                                <td translate>mail.detail.newIencli</td>
+                                <td><i>login, firstname, lastname, fullname, company, activate_account_token</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.newIencliForAdmin</td>
+                                <td><i>login, firstname, lastname, fullname, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.activateAccount</td>
+                                <td><i>activate_account_token, firstname, lastname, fullname, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.orderSucceed</td>
+                                <td><i>taxdisplay, fullname, lastname, firstname, number, dateReceipt, hourReceipt, address, totalamount, orderdata, appUrl, payment_type, delivery_type, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.orderDiff</td>
+                                <td><i>taxdisplay, fullname, lastname, firstname, number, dateReceipt, hourReceipt, address, totalamount, orderdata, appUrl, payment_type, delivery_type, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.orderSucceedEnt</td>
+                                <td><i>fullname, lastname, firstname, taxdisplay, number, dateReceipt, hourReceipt, orderdata, address, totalamount, appUrl, customer_mobile_phone, payment_type, delivery_type, shipment, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.recupMdp</td>
+                                <td><i>fullname, firstname, lastname, tokenlink, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.statusChanged</td>
+                                <td><i>appUrl, number, fullname, firstname, lastname, status, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.mailContact</td>
+                                <td><i>formDatas</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.receptRetour</td>
+                                <td><i>number, date, articles, refund, firstname, lastname, fullname</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.envoiColis</td>
+                                <td><i>number, trackingUrl, date, transporterName, address, fullname, company</i></td>
+                            </tr>
+                            <tr>
+                                <td translate>mail.detail.all</td>
+                                <td><i>appUrl</i></td>
+                            </tr>
+                            <div bind-html-compile="component_template"></div>
+                        </table>
+                        <style>
+                            .variabledispo tr td:first-child
+                            {
+                                width: 35%;
+                                text-align: right;
+                                padding-right: 15px
+                            }
+
+                            .variabledispocomponenttemplate
+                            {
+                                width: 35%;
+                                text-align: right;
+                                padding-right: 15px
+                            }
+
+                        </style>
+                    </div>
+                </div>
+            </div>
+
+        </ns-buttons>
+    </ns-box>
+</form>

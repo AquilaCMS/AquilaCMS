@@ -1,0 +1,200 @@
+/* Buttons
+=================================================================== */
+.btn {
+	border: none;
+	.border-radius(2px);
+	text-shadow: none;
+	background: lighten(@grey,20%);
+	color: darken(@grey,20%);
+	
+	i {
+		margin-top: 2px;
+	}
+	
+}
+
+.btn-primary {
+	color: #ffffff;
+  	background: @blue;
+	
+		&:hover,
+		&.disabled,
+		&[disabled] {
+	  		background-color: darken(@blue,10%);
+		}
+	
+		&:active,
+		&.active {
+	  		background-color: darken(@blue,12%);
+		}
+}
+
+.btn-warning {
+	color: #ffffff;
+  	background: @lightOrange;
+	
+		&:hover,
+		&.disabled,
+		&[disabled] {
+	  		background-color: darken(@lightOrange,10%);
+		}
+	
+		&:active,
+		&.active {
+	  		background-color: darken(@lightOrange,12%);
+		}
+}
+
+.btn-danger {
+	color: #ffffff;
+  	background: @red;
+	
+		&:hover,
+		&.disabled,
+		&[disabled] {
+	  		background-color: darken(@red,10%);
+		}
+	
+		&:active,
+		&.active {
+	  		background-color: darken(@red,12%);
+		}
+}
+
+.btn-success {
+	color: #ffffff;
+  	background: @darkGreen;
+	
+		&:hover,
+		&.disabled,
+		&[disabled] {
+	  		background-color: darken(@darkGreen,10%);
+		}
+	
+		&:active,
+		&.active {
+	  		background-color: darken(@darkGreen,12%);
+		}
+}
+
+
+.btn-info {
+	color: #ffffff;
+  	background: @lightBlue;
+	
+		&:hover,
+		&.disabled,
+		&[disabled] {
+	  		background-color: darken(@lightBlue,10%);
+		}
+	
+		&:active,
+		&.active {
+	  		background-color: darken(@lightBlue,12%);
+		}
+}
+
+.btn-inverse {
+	color: #ffffff;
+  	background: @inverse;
+	
+		&:hover,
+		&.disabled,
+		&[disabled] {
+	  		background-color: darken(@inverse,10%);
+			color: #ffffff;
+		}
+	
+		&:active,
+		&.active {
+	  		background-color: darken(@inverse,12%);
+		}
+}
+
+.btn-facebook,
+.btn-twitter,
+.btn-linkedin {
+	color: white;
+	position:relative;
+	text-align: center;
+	height: 40px;
+	width: 100%;
+	font-family: 'FontAwesome';
+	font-weight: bold;
+	padding: 10px 0;
+	
+	&:before {
+		position: absolute;
+		display: block;
+		height: 40px;
+		width: 40px;
+		top: 0;
+		left: 0;
+		.border-radius(2px);
+		font-size: 20px;
+		padding: 6px 0;
+	}
+	
+	span {
+		margin-left: 40px;
+	}
+	
+	&:hover {
+		color: white;
+	}
+}
+
+.btn-facebook {
+	background: #3b5998;
+	
+	&:before {
+		content: "\f09a";
+		background: darken(#3b5998, 5%);
+	}
+	
+	&:hover {
+		background: darken(#3b5998, 5%);
+		
+		&:before {
+			background: darken(#3b5998, 10%);
+		}
+		
+	}
+	
+}
+
+.btn-twitter {
+	background: #00aced;
+	
+	&:before {
+		content: "\f099";
+		background: darken(#00aced, 5%);
+	}
+	
+	&:hover {
+		background: darken(#00aced, 5%);
+		
+		&:before {
+			background: darken(#00aced, 10%);
+		}
+		
+	}
+}
+
+.btn-linkedin {
+	background: #4875B4;
+	
+	&:before {
+		content: "\f0e1";
+		background: darken(#4875B4, 5%);
+	}
+	
+	&:hover {
+		background: darken(#4875B4, 5%);
+		
+		&:before {
+			background: darken(#4875B4, 10%);
+		}
+		
+	}
+}

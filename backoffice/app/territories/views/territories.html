@@ -1,0 +1,53 @@
+<ns-box data-title="territories.listing.t1" title-icon="fa fa-globe fa-lg" new-href="#/territories/new">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+
+        <div translate>
+                territories.listing.info
+        </div>
+        <br/>
+
+        <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable table-hover"
+               id="DataTables_Table_0">
+            <thead>
+            <tr role="row">
+                <th role="columnheader" tabindex="0" translate>
+                    territories.listing.name
+                </th>
+                <th role="columnheader" translate>
+                    territories.listing.code
+                </th>
+                <th role="columnheader" style="width: 20%" translate>
+                    territories.listing.type
+                </th>
+                <th role="columnheader" style="width: 10%" translate>
+                    territories.listing.children
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
+                ng-repeat="territory in territoriesList">
+                <td ng-click="detail(territory)">
+                    {{territory.translation[firstLang].name}}
+                </td>
+                <td ng-click="detail(territory)">
+                    {{territory.code}}
+                </td>
+                <td ng-click="detail(territory)">
+                    {{territory.type}}
+                </td>
+                <td ng-click="detail(territory)">
+                    {{territory.children.length}}
+                </td>
+                <td style="width:110px;">
+                    <button ng-click="remove(territory._id)" class="btn btn-red btn-with-icon">
+                        <i class="ico-trash"></i>
+                        <span class="text" translate>territories.listing.delete</span>
+                    </button>
+                </td>
+            </tr >
+            </tbody>
+        </table>
+    </div>
+</ns-box>

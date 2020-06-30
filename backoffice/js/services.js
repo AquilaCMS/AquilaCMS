@@ -1,0 +1,423 @@
+"use strict";
+
+/* Services */
+// paid / payment_confirmation_pending / billed / delivery_progress / delivery_partial_progress / returned
+var adminCatagenServices = angular.module("adminCatagenServices", ["ngResource"]);
+
+adminCatagenServices.service("NSConstants", function () {
+    return {
+        productTypes: [
+            {code: "simple", name: "Simple"},
+            {code: "bundle", name: "Composé"},
+            {code: "virtual", name: "Dematérialisé"}
+        ],
+        orderStatus: 
+            {
+                translation: {
+                    fr:[
+                        { code: "PAYMENT_PENDING", name: "En attente de paiement" },
+                        { code: "PAYMENT_RECEIPT_PENDING", name: "En attente de réception de paiement" },
+                        { code: "PAYMENT_CONFIRMATION_PENDING", name: "En attente de confirmation de paiement" },
+                        { code: "PAID", name: "Payé" },
+                        { code: "PROCESSING", name: "En cours de traitement" },
+                        { code: "PROCESSED", name: "Préparé" },
+                        { code: "BILLED", name: "Facturé" },
+                        { code: "DELIVERY_PROGRESS", name: "Expédié" },
+                        { code: "DELIVERY_PARTIAL_PROGRESS", name: "Expédié partiel" },
+                        { code: "FINISHED", name: "Traité" },
+                        { code: "CANCELED", name: "Annulé" },
+                        { code: "RETURNED", name: "Retour" },
+                        { code: "CANCELLING", name: "En cours d'annulation" },
+                        { code: "ASK_CANCEL", name: "Annulation demandé par le client" }
+                    ],
+                    en:[
+                        { code: "PAYMENT_PENDING", name: "Waiting for payment" },
+                        { code: "PAYMENT_RECEIPT_PENDING", name: "Waiting for payment reception" },
+                        { code: "PAYMENT_CONFIRMATION_PENDING", name: "Waiting for payment confirmation" },
+                        { code: "PAID", name: "Paid" },
+                        { code: "PROCESSING", name: "Processing" },
+                        { code: "PROCESSED", name: "Prepared" },
+                        { code: "BILLED", name: "Billed" },
+                        { code: "DELIVERY_PROGRESS", name: "Sent" },
+                        { code: "DELIVERY_PARTIAL_PROGRESS", name: "Partially sent" },
+                        { code: "FINISHED", name: "Processed" },
+                        { code: "CANCELED", name: "Cancelled" },
+                        { code: "RETURNED", name: "Return" },
+                        { code: "CANCELLING", name: "En cours d'annulation A TRADUIRE" },
+                        { code: "ASK_CANCEL", name: "Cancel order requested by customer" }
+
+                    ]
+                }
+            }
+        ,
+        itemStatus: {
+            PROCESSING: "En cours de traitement",
+            DELIVERY_PROGRESS: "Expédié",
+            DELIVERY_PARTIAL_PROGRESS: "Expédié partiel",
+            RETURNED: "Retour",
+            RETURNED_PARTIAL: "Retour partiel"
+        },
+        paymentStatus: [
+            {name: "DONE", displayName: "Effectué"},
+            {name: "TODO", displayName: "A effectuer"},
+            {name: "FAILED", displayName: "Non effectué"},
+            {name: "CANCELED", displayName: "Annulé"}
+        ],
+        paymentModes: [
+            {name: "cb", displayName: "CB"},
+            {name: "cheque", displayName: "Chèque"},
+            {name: "tranfer", displayName: "Virement"}
+        ]
+    }
+});
+
+adminCatagenServices.factory("logImport", [
+    "$resource", function ($resource)
+    {
+        return $resource("logimport/:action", {}, {
+            query: {method: "GET", params: {action: ""}, isArray: true}, getStatus: {method: "GET", params: {action: "status"}, isArray: false}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Cart", [
+    "$resource", function ($resource)
+    {
+        return $resource("cart/:action", {}, {
+            save: {method: "POST", params: {action: ""}},
+            update: {method: "POST", params: {action: "upd"}},
+            remove: {method: "POST", params: {action: "rmv"}},
+            getList: {method: "GET", params: {action: "getList"}, isArray: true},
+            toOrderOverride: {method: "POST", params: {action: "toOrderOverride"}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("AdminScroll", [
+    "$resource", function ($resource)
+    {
+        return $resource("client/admin/:start/:limit", {}, {
+            query: {method: "GET", params: {start: "", limit: ""}, isArray: true}
+        });
+    }
+]);
+adminCatagenServices.factory("AdminSearch", [
+    "$resource", function ($resource)
+    {
+        return $resource("client/admin/search", {}, {
+            query: {method: "POST", params: {}, isArray: true}
+        });
+    }
+]);
+adminCatagenServices.factory("AdminNew", [
+    "$resource", function ($resource)
+    {
+        return $resource("client/admin/new", {}, {
+            save: {method: "POST", params: {}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("TerritoryCountries", [
+    "$resource", function ($resource)
+    {
+        return $resource("/v2/territories", {}, {
+            query: {method: "POST", isArray: false}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Payment", [
+    "$resource", function ($resource)
+    {
+        return $resource("v2/payments/:type", {}, {
+            query: {method: "POST", params: {type: 'order'}},
+            export: {method: "POST", params: {type: 'export'}},
+        });
+    }
+]);
+
+adminCatagenServices.factory("Themes", [
+    "$resource", function ($resource)
+    {
+        return $resource("themes/:name", {}, {
+            useTheme: {method: "POST", params: {}, isArray: true}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Schedule", [
+    "$resource", function ($resource)
+    {
+        return $resource("schedule/:action/:jobName", {}, {
+            query: {method: "GET", params: {action: "", jobName: ""}, isArray: false},
+            pause: {method: "GET", params: {action: "pause"}},
+            play: {method: "GET", params: {action: "play"}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Discount", [
+    "$resource", function ($resource)
+    {
+        return $resource("discounts/:discountId", {}, {
+            query: {method: "GET", params: {action: "", discountId: ""}, isArray: true}, update: {method: "POST", params: {}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Mailer", [
+    "$resource", function ($resource)
+    {
+        return $resource("v2/mail/:typeMail", {}, {
+            send: {method: "POST", params: {}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Invoice", [
+    "$resource", function ($resource)
+    {
+        return $resource("v2/bills/:action/:id", {}, {
+            query: {method: "POST", params: {}},
+            orderToBill: {method: "POST", params: {action: 'fromOrder'}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Territory", [
+    "$resource", function ($resource)
+    {
+        return $resource("/territory/search/:name/:type", {}, {search: {method: "GET", isArray: true}});
+    }
+]);
+
+adminCatagenServices.factory("User", [
+    "$resource", function ($resource)
+    {
+        return $resource("users/:action/:userId", {}, {
+            resetpassword: {method: "POST", params: {action: "resetpassword"}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("CategoryByProduct", [
+    "$resource", function ($resource)
+    {
+        return $resource("catByProduct/:productId", {}, {
+            get: {method: "GET", params: {productId: ""}, isArray: true}
+        });
+    }
+]);
+
+// Module Options
+
+adminCatagenServices.factory("SetOption", [
+    "$resource", function ($resource)
+    {
+        return $resource("setOptions/:setOptionCode", {}, {
+            get: {method: "GET", params: {setOptionCode: ""}},
+            save: {method: "POST", params: {}},
+            query: {method: "GET", isArray: true},
+            remove: {method: "DELETE", params: {setOptionCode: ""}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("SetOptionId", [
+    "$resource", function ($resource)
+    {
+        return $resource("setOptions/fOne", {}, {
+            fOne: {method: "POST", params: {}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("Opt", [
+    "$resource", function ($resource)
+    {
+        return $resource("opts/:optCode", {}, {
+            get: {method: "GET", params: {optCode: ""}},
+            save: {method: "POST", params: {}},
+            queryClassed: {method: "GET", isArray: true},
+            remove: {method: "DELETE", params: {optCode: ""}}
+        });
+    }
+]);
+
+adminCatagenServices.factory("OptId", [
+    "$resource", function ($resource)
+    {
+        return $resource("opts/fOne", {}, {
+            fOne: {method: "POST", params: {}}, queryOrphans: {method: "GET", isArray: true}
+        });
+    }
+]);
+
+adminCatagenServices.factory("ConfigUpdate", [
+    "$resource", function ($resource)
+    {
+        return $resource("update/:url", {}, {
+            query: {method: "GET", params: {url: ""}}
+        });
+    }
+]);
+
+adminCatagenServices.service("RuleApi", [
+    "$resource",
+    function ($resource)
+    {
+        return $resource(
+            ":action/:_id",
+            {},
+            {
+                query: {method: "POST", params: {action: "rule", _id: ""}, isArray: false},
+                list: {method: "POST", params: {action: "rules", _id: ""}, isArray: true},
+                save: {method: "PUT", params: {action: "rule", _id: ""}, isArray: false},
+                delete: {method: "DELETE", params: {action: "rule"}, isArray: false},
+                testUser: {method: "POST", params: {action: "rules", _id: 'testUser'}, isArray: true}
+            }
+        );
+    }
+]);
+
+adminCatagenServices.service("RulesV2", [
+    "$resource",
+    function ($resource)
+    {
+        return $resource("v2/:type/:id", {}, {
+            list: {method: "POST", params: {type: "rules", id: ""}},
+            query: {method: "POST", params: {type: "rule", id: ""}},
+            save: {method: "PUT", params: {type: "rule", id: ""}},
+            delete: {method: "DELETE", params: {type: "rule"}},
+        });
+    }
+]);
+
+adminCatagenServices.service("ProductV2", [
+    "$resource",
+    function ($resource)
+    {
+        return $resource(
+            "v2/:action/:withFilters",
+            {},
+            {
+                list: {method: "POST", params: {action: 'products'}, isArray: false},
+                listWithFilters: {method: "POST", params: {action: 'products', withFilters: true}, isArray: false},
+                duplicate: {method: "POST", params: {action: 'product', withFilters: 'duplicate'}, isArray: false}
+            }
+        );
+    }
+]);
+
+adminCatagenServices.service("toastService", function ()
+{
+    var service = {};
+
+    var options = {
+        allow_dismiss: true, newest_on_top: true, showProgressbar: false
+    };
+
+    // Toastr
+    service.toast = function (type, message)
+    {
+        options.type = type;
+
+        $.notify({
+            message: message
+        }, options);
+
+    };
+
+    return service;
+});
+adminCatagenServices.factory("ExportCollectionCSV", [
+    "$http", "toastService", function ($http, toastService)
+    {
+        const exportToCSV = function (collection)
+        {
+            $http({
+                method: "GET",
+                url: `v2/export/csv/${collection}`,
+                headers: {"Content-Type": "application/json"},
+                // responseType: "blob"
+            }).success(function (data, status, headers)
+            {
+                headers = headers();
+                const filename = data.file;
+                const linkElement = document.createElement("a");
+                try {
+                    const blob = new Blob([data.csv]);
+                    const url = window.URL.createObjectURL(blob);
+                    linkElement.setAttribute("href", url);
+                    linkElement.setAttribute("download", filename);
+                    const clickEvent = new MouseEvent("click", {"view": window, "bubbles": true, "cancelable": false});
+                    linkElement.dispatchEvent(clickEvent);
+                }
+                catch(err) {
+                    console.error(err);
+                }
+            });
+        };
+        return exportToCSV;
+    }
+]);
+
+
+adminCatagenServices.factory("ProductClass", [
+    "Product", function (Product)
+    {
+        var ProductClass = function (product)
+        {
+            angular.merge(this, product);
+        };
+        ProductClass.prototype = {
+            getProductObject: function ()
+            {
+                return {
+                    active: false, _visible: false, trademark: {}, supplier: {
+                        reference: null
+                    }, details: {
+                        images: []
+                    }
+                };
+            },
+            saveProduct: function (product)
+            {
+                return Product.save(product).$promise;
+            }
+        };
+        return ProductClass;
+    }
+]);
+
+adminCatagenServices.service("MenusList", function ()
+{
+    return [];
+});
+
+adminCatagenServices.factory("ConfirmDeleteModal", [
+    "$modal", function ($modal)
+    {
+        return function (options)
+        {
+
+            return $modal.open({
+                templateUrl: "views/modals/confirm-delete.html",
+                controller: "ConfirmDeleteCtrl",
+                resolve: {
+                    okAction: function ()
+                    {
+                        return options.okAction;
+                    }
+                }
+            });
+
+        };
+    }
+]);
+
+adminCatagenServices.service("InvoiceColumns", function ()
+{
+    return [];
+});

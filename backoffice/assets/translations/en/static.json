@@ -1,0 +1,43 @@
+{
+    "detail": {
+        "t1": "Page Detail",
+        "lastModif": "Last modification date",
+        "active": "Active",
+        "title": "Title",
+        "metaDesc": "Meta description",
+        "slug": "Slug",
+        "preview": "Preview",
+        "save": "Save",
+        "index": "Indexing page"
+    },
+    "list": {
+        "t1": "Static Pages",
+        "ph1": "Search...",
+        "code": "Code",
+        "etats": "States"
+    },
+    "new": {
+        "t1": "Create New Page",
+        "ph1": "Code",
+        "ph2": "Name",
+        "ph3": "Automatic generation from name if empty",
+        "ph4": "Title",
+        "ph5": "Meta description",
+        "code": "Code",
+        "nom": "Name",
+        "slug": "Slug",
+        "title": "Title",
+        "metaDesc": "Meta description",
+        "preview": "Preview",
+        "save": "Save"
+    },
+    "modal": {
+        "add": "Add",
+        "addImage": "Add image",
+        "maxSize": "Max size :",
+        "width": "Width :",
+        "height": "Height :",
+        "cancel": "Cancel",
+        "medias": "Medias"
+    }
+}

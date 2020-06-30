@@ -1,0 +1,35 @@
+/* Skill Bars
+=================================================================== */
+ul.skill-bar {
+	padding: 0px;
+	
+	h5 {
+		margin-bottom:6px;
+	}
+
+	li {
+		margin-bottom:12px;
+		list-style: none;
+		padding-left: 0px;
+		
+		.meter { 
+			height: 20px; 
+			position: relative;
+			background: lighten(@grey,20%);
+			
+			span {
+				display: block;
+				height: 100%;
+				position: relative;
+				overflow: hidden;
+				color: white;
+				background: @grey;
+				.backgroundColor;
+				text-align: right;
+				padding-right: 10px;
+				margin: 0;
+			}
+		}
+	}
+}
+

@@ -1,0 +1,45 @@
+{
+    "detail": {
+        "t1": "Détail Code Promo",
+        "code": "Code",
+        "desc": "Description",
+        "actif": "Actif",
+        "type": "Type",
+        "value": "Valeur",
+        "minAchat": "Minimum d'achat ",
+        "ouverture": "Ouverture",
+        "fermeture": "Fermeture",
+        "comm": "Commentaire",
+        "appTtSite": "Appliquer sur tout le site",
+        "assoc": "Associer...",
+        "cat": "Catégories",
+        "add": "Ajouter",
+        "menus": "Menus"
+    },
+    "list": {
+        "t1": "Codes Promo",
+        "ph1": "Rechercher...",
+        "code": "Code",
+        "price": "Montant",
+        "min": "Minimum",
+        "validPeriod": "Période de validité",
+        "actif": "Actif"
+    },
+    "new": {
+        "t1": "Créer un nouveau Code Promo",
+        "ph1": "Code",
+        "ph2": "Description",
+        "ph3": "Valeur",
+        "ph4": "Minimum d'achat",
+        "code": "Code",
+        "desc": "Description",
+        "type": "Type",
+        "value": "Valeur",
+        "minAchat": "Minimum d'achat ",
+        "ouverture": "Ouverture",
+        "fermeture": "Fermeture",
+        "comm": "Commentaire",
+        "cancel": "Annuler",
+        "save": "Enregistrer"
+    }
+}

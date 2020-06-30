@@ -1,0 +1,47 @@
+<ns-box data-title="shipment.list.t1" title-icon="fa fa-truck fa-lg" new-href="#/shipments/delivery/new"><!-- shipments/new/settings -->
+
+    <div id="deliveryList" class="tab-pane fade in active">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <thead>
+                <tr role="row">
+                    <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 150px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
+                        shipment.list.url
+                    </th>
+                    <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Type: activate to sort column descending">
+                        <a ng-click="sort.type = 'type'; sort.reverse = !sort.reverse" translate>
+                            shipment.list.type
+                            <span ng-show="sort.type == 'type' && !sort.reverse" class="ico-chevron-up"></span>
+                            <span ng-show="sort.type == 'type' && sort.reverse" class="ico-chevron-down"></span>
+                        </a>
+                    </th>
+                    <th class="sorting_asc" role="columnheader" tabindex="1" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
+                        shipment.list.code
+                    </th>
+                    <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
+                        shipment.list.nom
+                    </th>
+                    <th class="sorting_asc" role="columnheader" tabindex="3" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
+                        shipment.list.minAchat
+                    </th>
+                    <th class="sorting_asc" role="columnheader" tabindex="4" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
+                        paymentMethod.list.actif
+                    </th>
+                </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr class="pointer"
+                    ng-class-odd="'odd'" ng-class-even="'even'"
+                    ng-repeat="shipment in shipments | orderBy:sort.type:sort.reverse">
+                    <td ng-click="goToShipmentDetails(shipment._id)"><img src="{{shipment.url_logo}}" alt="{{shipment.translation.fr.name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
+                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.type | shipmentTypeName}}</td>
+                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
+                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation.fr.name}}</td>
+                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
+                    <td style="vertical-align: middle"><span ng-bind-html='shipment.active | checked'></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</ns-box>

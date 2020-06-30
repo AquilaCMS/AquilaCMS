@@ -1,0 +1,24 @@
+{
+    "t1": "Languages",
+
+    "ph1": "Position",
+
+    "addLang": "Add a language",
+    "modLang": "Modify a language",
+    "code": "Code",
+    "des": "Designation",
+    "pos": "Position",
+    "img": "Picture",
+    "add": "Add",
+    "defaultLang": "Default language",
+    "visible": "Visible",
+    "cancel": "Cancel",
+    "valider": "Submit",
+
+    "defLang": "Default language:",
+    "status": "Status",
+    "act": "Actions",
+    "delete": "Delete",
+
+    "saveFirst": "You must save the language first before adding a picture"
+}

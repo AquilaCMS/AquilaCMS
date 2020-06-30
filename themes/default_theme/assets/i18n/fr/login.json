@@ -1,0 +1,98 @@
+{
+    "page": {
+        "title": "Identification",
+        "nav": {
+            "login": "Identification",
+            "sign_in": "Inscription"
+        },
+        "client_sign_in": {
+            "title": "DEJA CLIENT ?",
+            "sub_title": "Connectez-vous",
+            "button_label": "ME CONNECTER",
+            "login_label": "Identifiant",
+            "forgot_password": "Mot de passe oublié ?",
+            "remember_me": "Se souvenir de moi",
+            "email": {
+                "label": "Email",
+                "placeholder": "Email"
+            },
+            "password": {
+                "label": "Mot de passe",
+                "placeholder": "Mot de passe"
+            }
+        },
+        "client_forgot_password":{
+            "title": "MOT DE PASSE OUBLIÉ ?",
+            "sub_title": "Saisissez votre email",
+            "button_label": "Envoyer",
+            "login_label": "Identifiant",
+            "email": {
+                "label": "Email",
+                "placeholder": "Email"
+            },
+            "return": "RETOUR"
+        },
+        "client_sign_up": {
+            "title": "NOUVEAU CLIENT ?",
+            "sub_title": "Inscrivez-vous",
+            "button_label": "ME CONNECTER",
+            "required_label": "*Champs obligatoires",
+            "civility": {
+                "label": "Civilité",
+                "male": "Monsieur",
+                "female": "Madame"
+            },
+            "company": {
+                "label": "Société"
+            },
+            "trade_register": {
+                "label": "Siret"
+            },
+            "lastname": {
+                "label": "Nom"
+            },
+            "firstname": {
+                "label": "Prénom"
+            },
+            "address": {
+                "label": "Adresse"
+            },
+            "address_complementary": {
+                "label": "Complément d'adresse"
+            },
+            "zip": {
+                "label": "Code postal"
+            },
+            "city": {
+                "label": "Ville"
+            },
+            "phone": {
+                "label": "Téléphone"
+            },
+            "phone_mobile": {
+                "label": "Téléphone mobile"
+            },
+            "country": {
+                "label": "Pays"
+            },
+            "email": {
+                "label": "Email"
+            },
+            "email_confirm": {
+                "label": "Confirmer votre email"
+            },
+            "password": {
+                "label": "Mot de passe",
+                "placeholder": "8 caractères minimum dont 1 majuscule et 1 chiffre"
+            },
+            "password_confirm": {
+                "label": "Confirmer votre mot de passe"
+            },
+            "commercial_ads": {
+                "label": "Je souhaite recevoir les offres commerciales",
+                "yes": "Oui",
+                "no": "Non"
+            }
+        }
+    }
+}

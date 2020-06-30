@@ -1,0 +1,79 @@
+{
+  "collection": "attributes",
+  "datas": [
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "usedInRules": true,
+      "usedInFilters": true,
+      "_id": "5d3967aa4aa9c1692db068ce",
+      "code": "material",
+      "translation": {
+        "fr": {
+          "name": "Matières",
+          "values": [
+            "Coton",
+            "Synthétique",
+            "Polyester"
+          ]
+        },
+        "en": {
+          "name": "Material",
+          "values": [
+            "Cotton",
+            "Synthetic",
+            "Polyester"
+          ]
+        }
+      },
+      "type": "multiselect",
+      "param": "Non",
+      "default_value": null
+    },
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "usedInRules": true,
+      "usedInFilters": false,
+      "_id": "5da0a39bde6bed65e1d2a1ec",
+      "param": "Non",
+      "code": "loveit",
+      "translation": {
+        "fr": {
+          "name": "Coup de coeur"
+        },
+        "en": {
+          "name": "Favorite "
+        }
+      },
+      "type": "bool"
+    },
+    {
+      "_type": "products",
+      "set_attributes": [
+        "5c5abe92c1f87b5f46c451fa"
+      ],
+      "position": 1,
+      "usedInRules": true,
+      "usedInFilters": true,
+      "_id": "5da5765ede6bed65e1d2a6f8",
+      "param": "Non",
+      "code": "color",
+      "translation": {
+        "fr": {
+          "name": "Couleurs"
+        },
+        "en": {
+          "name": "Colors"
+        }
+      },
+      "type": "color"
+    }
+  ]
+}

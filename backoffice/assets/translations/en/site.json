@@ -1,0 +1,32 @@
+{
+    "detail": {
+        "t1": "Item detail",
+        "ph1": "Title",
+        "urlKey": "URL Key",
+        "oldUrl": "The old URL won't work if this field is modified",
+        "title": "Title",
+        "visible": "Visible",
+        "img": "Picture",
+        "add": "Add",
+        "content": "Content"
+    },
+    "new": {
+        "t1": "New item",
+        "ph1": "Will be automatically generated if empty",
+        "ph2": "Title",
+        "urlKey": "URL Key",
+        "title": "Title",
+        "visible": "Visible",
+        "img": "Picture",
+        "add": "Add",
+        "content": "Content",
+        "saveFirst": "You must save the article first before adding a picture"
+    },
+    "articles": {
+        "t1": "Blog Writing",
+        "urlKey": "URL Key",
+        "title": "Title",
+        "visible": "Visible",
+        "creaDate": "Creation date"
+    }
+}

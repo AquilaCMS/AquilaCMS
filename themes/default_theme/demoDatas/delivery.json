@@ -1,0 +1,84 @@
+{
+  "collection": "DELIVERY",
+  "datas": [
+    {
+      "preparation": {
+        "delay": 1,
+        "unit": "day"
+      },
+      "type": "DELIVERY",
+      "forAllPos": false,
+      "_id": "5c667592583a67281c09f54c",
+      "countries": [
+        {
+          "prices": [
+            {
+              "weight_min": 0,
+              "weight_max": 500,
+              "price": 2,
+              "_id": "5c6675ce583a67281c09f55a"
+            },
+            {
+              "weight_min": 501,
+              "weight_max": 9999999,
+              "price": 10,
+              "_id": "5c6675ce583a67281c09f559"
+            }
+          ],
+          "_id": "5c6675ce583a67281c09f558",
+          "country": "FR",
+          "translation": {
+            "fr": {
+              "delay": 1,
+              "unit": "day"
+            },
+            "en": {
+              "delay": 1,
+              "unit": "day"
+            }
+          }
+        },
+        {
+          "prices": [
+            {
+              "weight_min": 0,
+              "weight_max": 500,
+              "price": 3,
+              "_id": "5c6675ce583a67281c09f557"
+            },
+            {
+              "weight_min": 501,
+              "weight_max": 9999999,
+              "price": 20,
+              "_id": "5c6675ce583a67281c09f556"
+            }
+          ],
+          "_id": "5c6675ce583a67281c09f555",
+          "country": "UK",
+          "translation": {
+            "fr": {
+              "delay": 1,
+              "unit": "day"
+            },
+            "en": {
+              "delay": 1,
+              "unit": "day"
+            }
+          }
+        }
+      ],
+      "code": "std",
+      "translation": {
+        "en": {
+          "name": "MyShipper"
+        },
+        "fr": {
+          "name": "MonTransporteur"
+        }
+      },
+      "freePriceLimit": 100,
+      "vat_rate": 20,
+      "url_logo": "/images/medias/1x1-60/5c6e88dfa2df781c984d5381/shipper.png"
+    }
+  ]
+}

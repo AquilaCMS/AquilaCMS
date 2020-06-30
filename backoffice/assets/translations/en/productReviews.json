@@ -1,0 +1,27 @@
+{
+    "filter": {
+        "t1": "Opinions on products",
+        "code": "Code",
+        "produit": "Product",
+        "date" : "Date",
+        "note": "Note",
+        "visible": "Visible",
+        "noVisible": "Invisible",
+        "verifie": "Verifed",
+        "noVerifie": "No Verify",
+        "indiff": "Indifferent"
+    },
+    "detail":{
+        "code_produit":"Product code",
+        "nom_produit":"Product name",
+        "date":"Date",
+        "note":"Note",
+        "visible":"Visible",
+        "verifie":"Verify",
+        "client": "Client",
+        "titre": "Title",
+        "avis": "Review",
+        "gererQuestions": "You can manage your surveys in set attributes",
+        "ipClient": "IP du client" 
+    }
+}

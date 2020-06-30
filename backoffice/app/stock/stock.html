@@ -1,0 +1,108 @@
+<form name="form" class="form-horizontal" novalidate ng-submit="save()" role="form">
+    <ns-box data-title="stock.t1" title-icon="fa fa-cog fa-lg">
+        <ns-buttons form="form" save-and-quit="save(true)">
+            <h3 style="margin-bottom: 20px" translate>stock.cartOrder</h3>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="cartExpireTimeout" class="col-sm-5 control-label" translate>stock.delExp</label>
+                    <div class="col-sm-1">
+                        <input id="cartExpireTimeout" type="number" class="form-control" min="0" ng-model="stock.cartExpireTimeout" required />
+                        <div class="ns-error-message">
+                            <div ng-show="(form.name.$dirty || form.nsSubmitted) && form.name.$error.required" translate>stock.fieldReq</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="pendingOrderCancelTimeout" class="col-sm-5 control-label" translate>stock.delAnn</label>
+                    <div class="col-sm-1">
+                        <input id="pendingOrderCancelTimeout" type="number" class="form-control" min="0" ng-model="stock.pendingOrderCancelTimeout" required />
+                        <div class="ns-error-message">
+                            <div ng-show="(form.name.$dirty || form.nsSubmitted) && form.name.$error.required" translate>stock.fieldReq</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label class="col-sm-5 control-label" translate>stock.additionnalFeesTax</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" ng-options="tax.rate as tax.rate for tax in taxerate" ng-model="stock.additionnalFees.tax"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label class="col-sm-5 control-label" translate>stock.additionnalFeesEt</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" ng-model-options="{debounce: 500}" ng-change="fixAdditionnalFees()" name="additionnalFees.et" ng-model="stock.additionnalFees.et"></input>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label class="col-sm-5 control-label" translate>stock.res</label>
+                    <div class="col-sm-6">
+                        <!-- <div class="form-control" disabled translate>stock.cart</div> -->
+                        <select name="bookingStock" id="bookingStock" ng-model="stock.bookingStock" class="form-control">
+                            <option value="panier" translate>stock.cart</option>
+                            <option value="commande" translate>stock.order</option>
+                            <option value="payment" translate>stock.payment</option>
+                            <option value="none" translate>stock.none</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="returnStockToFront" class="col-sm-5 control-label" translate>stock.returnStockToFront</label>
+                    <div class="col-sm-6">
+                        <ns-switch id="returnStockToFront" ng-model="stock.returnStockToFront" name="returnStockToFront"></ns-switch>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <h3 style="margin-bottom: 20px"><span translate>stock.dispoLib</span>
+                </h3>
+                <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+                    <thead>
+                        <tr>
+                            <th><label translate>stock.code</label><i style="color:#576fa1;float:right;cursor: pointer;" ng-click="manageLabel()" class="fa fa-plus-circle fa-2x"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="pointer" ng-repeat="label in stock.labels" ng-click="manageLabel(label)">
+                            <td>{{label.code}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-sm-6">
+                <h3 style="margin-bottom: 20px"><span translate>stock.vats</span>
+                   
+                </h3>
+                <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+                    <thead>
+                        <tr>
+                            <th><label translate>stock.vat</label><i style="color:#576fa1;float:right;cursor: pointer;" ng-click="manageTva()" class="fa fa-plus-circle fa-2x"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="cursor:pointer" ng-repeat="tva in taxerate" ng-click="manageTva(tva)">
+                            <td>{{tva.rate}}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ns-buttons>
+    </ns-box>
+</form>
+<br/>
+<br style="clear: both;"/>
+<br/>

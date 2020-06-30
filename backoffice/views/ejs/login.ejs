@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <base href="<%= adminPrefix %>">
+        <title>Admin : Aquila</title>
+        <link rel="shortcut icon" type="image/x-icon" href="css/images/favicon.ico">
+        <!-- Vendor Styles-->
+        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,600" rel="stylesheet">
+        <link rel="stylesheet" href="vendor/select/dropdown.css">
+        <link rel="stylesheet" href="vendor/select/scrollbar.css">
+        <link rel="stylesheet" href="vendor/jquery-ui-1.12.1.custom/jquery-ui.css">
+        <!-- App Styles-->
+        <link rel="stylesheet" href="css/style.css">
+        <!-- Vendor JS-->
+        <script src="assets/js/jquery-2.0.3.min.js"></script>
+        <script src="vendor/select/core.js"></script>
+        <script src="vendor/select/dropdown.js"></script>
+        <script src="vendor/select/scrollbar.js"></script>
+        <script src="vendor/select/touch.js"></script>
+        <script src="vendor/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script><!-- page scripts -->
+        <script src="assets/js/jquery.icheck.min.js"></script><!-- theme scripts -->
+        <script src="assets/js/custom.min.js"></script><!-- inline scripts related to this page -->
+        <script src="assets/js/pages/login.js"></script>
+        <style>
+            input::placeholder {
+                color: #999 !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="container-wrap">
+                <section style="background-image: url(css/images/login-bg.jpg)" class="section-login">
+                    <div class="section-inner">
+                        <div class="form-login">
+                            <form>
+                                <div class="form-head"><a href="#" class="logo logo-secondary"><img src="css/images/logo-secondary.png" alt="" width="156" height="143"></a></div>
+                                <!-- /.form-head-->
+                                <div class="form-body">
+                                    <div class="form-row">
+                                        <label for="field-email" class="form-label hidden">email</label>
+                                        <div class="form-controls">
+                                            <input id="field-email" type="text" name="username" value="" placeholder="Email" class="field" autofocus  />
+                                            <span class="icon">
+                                                <img src="css/images/image-user-dark.png" alt="" width="34" height="70">
+                                            </span>
+                                        </div>
+                                        <!-- /.form-controls-->
+                                    </div>
+                                    <!-- /.form-row-->
+                                    <div class="form-row">
+                                        <label for="field-password" class="form-label hidden">password</label>
+                                        <div class="form-controls">
+                                            <input id="field-password" type="password" name="password" value="" placeholder="Password" class="field" />
+                                            <span class="icon">
+                                                <img src="css/images/image-padlock-dark.png" alt="" width="23" height="70">
+                                            </span>
+                                        </div>
+                                        <!-- /.form-controls-->
+                                    </div>
+                                    <!-- /.form-row-->
+                                </div>
+                                <!-- /.form-body-->
+                                <div class="form-actions">
+                                    <button type="submit" class="form-btn">Connect</button>
+                                </div>
+                                <!-- /.form-actions-->
+                            </form>
+
+                            <div id="error_msg" style="display: none; text-align: center; color: #ff0000;">Bad login</div>
+                        </div>
+                        <!-- /.form-login-->
+                    </div>
+                    <!-- /.section-inner-->
+                </section>
+                <!-- /.section-intro-->
+            </div>
+            <!-- /.container-wrap-->
+            <%- include('includes/footer'); %>
+        </div>
+        <!-- /.wrapper-->
+    </body>
+</html>

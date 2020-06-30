@@ -1,0 +1,18 @@
+{
+    "detail": {
+        "t1": "Édition mode de paiement",
+        "des": "Désignation",
+        "actif": "Actif",
+        "ordre": "Ordre",
+        "desc": "Description",
+        "instrucMail": "Instruction email",
+        "urlLogo": "URL du logo",
+        "isDeferred" : "Différé"
+    },
+    "list": {
+        "t1": "Modes de paiement",
+        "ph1": "Rechercher...",
+        "des": "Désignation",
+        "actif": "Actif"
+    }
+}

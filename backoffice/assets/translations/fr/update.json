@@ -1,0 +1,11 @@
+{
+    "t1": "Mise à jour d'Aquila",
+    "needupdate": "Une mise à jour est disponible",
+    "noupdate": "Aucune mise à jour n'est disponible",
+    "download": "Télécharger",
+    "verifying" : "Vérification d'une mise à jour...",
+    "maintenance": "Maintenance",
+    "authorizedIPs": "IP authorisées (séparées par ';')",
+    "maj":"Mise à jour",
+    "automatic": "Activer la maintenance automatiquement après une mise à jour"
+}

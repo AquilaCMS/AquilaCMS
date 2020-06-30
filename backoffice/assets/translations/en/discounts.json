@@ -1,0 +1,45 @@
+{
+    "detail": {
+        "t1": "Promo Code Detail",
+        "code": "Code",
+        "desc": "Description",
+        "actif": "Active",
+        "type": "Type",
+        "value": "Value",
+        "minAchat": "Minimum purchase amount ",
+        "ouverture": "Opening",
+        "fermeture": "Closing",
+        "comm": "Comment",
+        "appTtSite": "Apply on the whole website",
+        "assoc": "Associate...",
+        "cat": "Categories",
+        "add": "Add",
+        "menus": "Menus"
+    },
+    "list": {
+        "t1": "Promo Codes",
+        "ph1": "Search...",
+        "code": "Code",
+        "price": "Price",
+        "min": "Minimum",
+        "validPeriod": "Validity period",
+        "actif": "Active"
+    },
+    "new": {
+        "t1": "Create new Promo Code",
+        "ph1": "Code",
+        "ph2": "Description",
+        "ph3": "Value",
+        "ph4": "Minimum purchase amount",
+        "code": "Code",
+        "desc": "Description",
+        "type": "Type",
+        "value": "Value",
+        "minAchat": "Minimum purchase amount ",
+        "ouverture": "Opening",
+        "fermeture": "Closing",
+        "comm": "Comment",
+        "cancel": "Cancel",
+        "save": "Save"
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "medias": {
+        "t1": "Media",
+        "nom": "Name",
+        "lien": "Link",
+        "miniature": "Thumbnail",
+        "cpLien": "Copy link",
+        "delete": "Delete",
+        "uploadInsert" : "Insert in database",
+        "uploadButton" : "Massive adding *",
+        "uploadInfo" : "* Only .zip are accepted. Images must be at the root of .zip."
+    },
+    "new": {
+        "t1": "New Media",
+        "ph1": "File name",
+        "nom": "Name",
+        "lien": "Link :",
+        "cpLien": "Copy link",
+        "media": "Media",
+        "add": "Add"
+    },
+    "uploadMedias": {
+        "queue": "Queue :",
+        "dropFiles": "Drop files here or click to upload",
+        "dropImages": "Drop images here or click to upload",
+        "dropVideos": "Drop videos here or click to upload",
+        "dropPdfs": "Drop PDFs here or click to upload",
+        "upload": "Upload",
+        "uploadnotstarted": "Upload not started",
+        "uploadsuccessful": "Upload successful",
+        "name": "Name",
+        "alt": "Alt tag",
+        "picture": "Picture :"
+    }
+}

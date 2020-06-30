@@ -1,0 +1,131 @@
+<h3 translate>product.price.title</h3>
+
+<div class="form-group">
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.purchase</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="number" ng-model="product.price.purchase" min="0" step="0.01" />
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.et.normal</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="number" ng-model="product.price.et.normal" min="0" step="0.01" ng-change="recalculate('et.normal')" />
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.et.special</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="number" ng-model="product.price.et.special" min="0" step="0.01" ng-change="recalculate('et.special')" />
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.margin</label>
+        <div class="col-sm-6">
+
+            <div ng-if="(product.price.ati.special === null || product.price.ati.special === undefined)" class="form-control" disabled>{{(product.price.et.normal - product.price.purchase).toFixed(2)}}</div>
+            <div ng-if="!(product.price.ati.special === null || product.price.ati.special === undefined)" class="form-control" disabled>{{(product.price.et.special - product.price.purchase).toFixed(2)}}</div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.tax</label>
+        <div class="col-sm-6">
+            <select class="form-control" ng-options="tax.rate as tax.rate for tax in taxerate" ng-model="product.price.tax" min="0" step="0.01" ng-change="recalculate('tax')"></select>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.ati.normal</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="number" ng-model="product.price.ati.normal" min="0" step="0.01" ng-change="recalculate('ati.normal')" />
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.ati.special</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="number" ng-model="product.price.ati.special" min="0" step="0.01" ng-change="recalculate('ati.special')" />
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <label class="col-sm-5 control-label" translate>product.price.coefficient</label>
+        <div class="col-sm-6" ng-if="product.price.et.special === null || product.price.et.special === undefined"  >
+            <div ng-if="(product.price.et.normal / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.normal / product.price.purchase).toFixed(2) === 'Infinity'" class="form-control" disabled></div>
+            <div ng-if="!((product.price.et.normal / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.normal / product.price.purchase).toFixed(2) === 'Infinity')" class="form-control" disabled>x {{(product.price.et.normal / product.price.purchase).toFixed(2)}}</div>
+        </div>
+        <div class="col-sm-6" ng-if="!(product.price.et.special === null || product.price.et.special === undefined)">
+            <div ng-if="(product.price.et.special / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.special  / product.price.purchase).toFixed(2) === 'Infinity'" class="form-control" disabled></div>
+            <div ng-if="!((product.price.et.special / product.price.purchase).toFixed(2) === 'NaN' || (product.price.et.special  / product.price.purchase).toFixed(2) === 'Infinity')" class="form-control" disabled>x {{(product.price.et.special / product.price.purchase).toFixed(2)}}</div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-10 text-right">
+        <p translate>product.price.ifPrice</p>
+    </div>
+</div>
+<h3 translate ng-show="product.type === 'simple'">simple.stock.title</h3>
+
+<!-- Partie stock -->
+
+<div class="form-group" ng-show="product.type === 'simple'">
+    <div class="col-sm-4">
+        <label class="col-sm-4 control-label" translate>simple.stock.qt</label>
+        <div class="col-sm-5">
+            <input class="form-control" type="number" translate-attr="{title: 'simple.t2'}" name="qty" ng-model="product.stock.qty" />
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <label class="col-sm-4 control-label" translate>simple.stock.qtRes</label>
+        <div class="col-sm-5">
+            <div class="form-control" translate-attr="{title: 'simple.t3'}" disabled>{{product.stock.qty_booked}}</div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <label class="col-sm-4 control-label" translate>simple.stock.total</label>
+        <div class="col-sm-5">
+            <div class="form-control" translate-attr="{title: 'simple.t4'}" disabled>{{product.stock.qty - product.stock.qty_booked}}</div>
+        </div>
+    </div>
+</div>
+<div class="form-group" ng-show="product.type !== 'virtual'">
+    <div class="col-sm-4">
+        <label class="col-sm-4 text-right" translate>simple.stock.status</label>
+        <div class="col-sm-5">
+            <select class="form-control" translate-attr="{title: 'simple.t5'}" ng-model="product.stock.status">
+                <option value="liv" translate>simple.stock.livr</option>
+                <option value="dif" translate>simple.stock.diff</option>
+                <option value="epu" translate>simple.stock.epuise</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <label class="col-sm-4 text-right" translate>simple.stock.libelle</label>
+        <div class="col-sm-5">
+            <select class="form-control" translate-attr="{title: 'simple.t6'}" ng-change="applyTranslationStock()" ng-model="product.stock.label" ng-options="label.code as label.translation[lang].value for label in stockLabels">
+            </select>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <label class="col-sm-4 text-right" translate>simple.stock.commandable</label>
+        <div class="col-sm-5">
+            <ns-switch name="stock_orderable" ng-model="product.stock.orderable"></ns-switch>
+        </div>
+    </div>
+</div>
+<div class="form-group" ng-show="product.type !== 'virtual'">
+    <div class="col-sm-4">
+        <label class="col-sm-4 control-label" translate>simple.stock.dateReap</label>
+        <div class="col-sm-5">
+            <!--<input class="form-control" type="date" title="Date à laquelle le réapprovisionnement est prévue" ng-model="product.stock.date_supply" />-->
+            <ns-datepicker name="date_supply" translate-attr="{title: 'simple.t7'}" ng-model="product.stock.date_supply"></ns-datepicker>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <label class="col-sm-4 control-label" translate>simple.stock.dateComm</label>
+        <div class="col-sm-5">
+            <!--<input class="form-control" type="date" title="Date minimale de commercialisation (pré-vente)" ng-model="product.stock.date_selling" />-->
+            <ns-datepicker name="date_selling" translate-attr="{title: 'simple.t9'}" ng-model="product.stock.date_selling"></ns-datepicker>
+        </div>
+    </div>
+</div>

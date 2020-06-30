@@ -1,0 +1,53 @@
+<form name="form" class="form-horizontal" ng-submit="save(lang)">
+    <div class="modal-header">
+        <span ng-hide="isEdit" style="font-weight: bold;" translate>translation.addLang</span>
+        <span ng-show="isEdit" style="font-weight: bold;" translate>translation.modLang</span>
+    </div>
+    <div class="modal-body">
+        ﻿
+        <div class="form-group">
+            <label class="control-label col-sm-3" translate>translation.code</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" name="code" ng-model="lang.code" ng-required="true" ng-disabled="isEdit">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3" translate>translation.des</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" name="name" ng-model="lang.name" ng-required="true">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="position" class="col-sm-3 control-label" translate>translation.pos</label>
+            <div class="col-sm-6">
+                <input type="number" class="form-control" id="position" translate translate-attr-placeholder='translation.ph1' ng-init="isEdit ? lang.position : lang.position=1" ng-model="lang.position">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3" translate>translation.img</label>
+            <div class="col-sm-9 img-responsive">
+                <img ng-src="{{lang.img}}" width="150" height="100">
+            </div>
+            <span ng-hide="isEdit" style="color: red;" translate>translation.saveFirst</span>
+        </div>
+        <div class="form-group">
+            <ns-upload-files accepttype="image/*" ng-show="isEdit" multiple="false" type="language" id="lang._id" entity="lang"></ns-upload-files>
+        </div>
+        <div class="form-group" ng-if="!isDefaultLang">
+            <label class="control-label col-sm-3" translate>translation.defaultLang</label>
+            <div class="col-sm-9">
+                <ns-switch ng-model="lang.defaultLanguage" name="lang_default"></ns-switch>
+            </div>
+        </div>
+        <div class="form-group" ng-if="lang.visible !== undefined">
+            <label class="control-label col-sm-3" translate>translation.visible</label>
+            <div class="col-sm-9">
+                <ns-switch ng-model="lang.visible" name="visible" ng-change="onChangeVisible(lang.visible)"></ns-switch>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()" translate>translation.cancel</button>
+        <button type="submit" class="btn btn-success" translate>translation.valider</button>
+    </div>
+</form>

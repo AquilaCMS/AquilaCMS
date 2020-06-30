@@ -1,0 +1,25 @@
+{
+    "prog": "In progress",
+    "canceled": "Canceled",
+    "waitPay": "Waiting for payment",
+    "ticketUsed": "Ticket used",
+    "paid": "Paid",
+
+    "canceledF": "Canceled",
+    "finished": "Finished",
+    "prep": "Prepared",
+    "processing": "Processing",
+    "billed": "Billed",
+    "paidF": "Paid",
+    "sent": "Sent",
+    "return": "Return",
+
+    "done": "Done",
+    "todo": "To do",
+    "check": "Check",
+    "vir": "Transfer",
+
+    "waitPayConfirm": "Waiting for payment confirmation",
+
+    "info": "Config not found, a new one will be generated"
+}

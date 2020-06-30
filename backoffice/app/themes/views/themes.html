@@ -1,0 +1,88 @@
+<ns-box data-title="themes.t1" title-icon="fa fa-desktop">
+    <form name="form" ng-submit="validate(tab)" ng-show="!showLoading"
+        role="form">
+        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
+            <ns-translation ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
+    <div class="box-content">
+    <ul class="nav nav-tabs">
+        <li ng-click="onTabSelect('select')" class="active"><a data-toggle="tab" href="#select" target="_self" translate>themes.myTheme</a></li>
+        <li ng-click="onTabSelect('config')"><a data-toggle="tab" href="#config" target="_self" translate>themes.customisation</a></li>
+        <!-- <li><a data-toggle="tab" href="#auth" target="_self" translate>config.environment.menu.third-party-auth</a></li> -->
+    </ul>
+        <div class="tab-content">
+           <div id="select" class="tab-pane fade in active" ng-if="tab === 'select'">
+                <!-- <h3 translate>themes.t1</h3> -->
+                <br/>
+
+                <!-- <div class="form-group">
+                                                <label translate>config.environment.theme</label>
+                                                <input type="text" class="form-control" ng-model="config.currentTheme">
+                                            </div> -->
+                <div class="form-group">
+                    <label translate>themes.themeChoice</label> <br />
+                    <select name="themesList" id="themesList" class="form-control" ng-model="config.currentTheme">
+                        <!-- <option value="default_theme">Default theme</option> -->
+                        <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <a download class="btn btn-success" ng-click="packageInstall()" ng-disabled="disabledButton">
+                        yarn install
+                    </a>
+                    <a download class="btn btn-success" ng-click="packageBuild()" ng-disabled="disabledButton">
+                        build theme
+                    </a>
+                    <a download class="btn btn-danger" ng-click="removeTheme()" ng-disabled="disabledButton" style="float:right" translate>
+                        themes.remove
+                    </a>
+                </div>
+                <br />
+                <div class="col-md-12">
+                    <label translate="">themes.newtheme</label>
+                    <ns-upload-files accepttype=".zip" multiple="false" type="theme" before-function="beforeTheme()"
+                        after-function="uploadedTheme()" on-error="onErrorUploadTheme()"></ns-upload-files>
+                    <div ng-show="showThemeLoading" id="overlayModule">
+                        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                    </div>
+                </div>
+           </div>
+
+           <div id="config" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
+            <div class="form-group">
+                <label translate>themes.themeDatas</label> <br />
+                <a download class="btn btn-success" ng-click="copyThemeDatas()" ng-disabled="true" translate>
+                    themes.themeDatasLead
+                </a>
+                <br />
+                <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="local.themeDataOverride">
+                <label class="form-check-label" for="themeDataOverride" style="font-weight:normal"
+                    translate>themes.themeDatasOverride</label>
+            </div>
+            <br />
+                <label ng-if="theme.currentThemeVar" style="margin:20px 0" translate>themes.currentThemeVar</label>
+                <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
+               <div ng-repeat="var in keys[lang]">
+                    <div class="form-group">
+                        <label style="float:left">{{var}} :</label><br/>
+                        <input type="text" class="form-control" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'string'">
+                        <input type="number" class="form-control" step="0.1" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'number'">
+                        <ns-switch name='{{var}}' ng-model='themeConfig.variables[lang][var]' ng-if="typeOf(themeConfig.variables[lang][var]) == 'boolean'"></ns-switch>
+                        <color-picker ng-model="themeConfig.variables[lang][var]" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var]) == 'color'"></color-picker>
+                    </div>
+               </div>
+               <!-- <label ng-if="themeConfig.variables.lenght === 0">Pas de variables</label> -->
+            </div>
+        </div>
+    </div>
+
+    </ns-buttons>
+    </form>
+    <div ng-show="showLoading">
+        <h3>Redémarrage d'Aquila en cours ...</h3>
+        <h4>Le back-office sera accessible à partir de cette adresse (vous allez être redirigé) :<br /> <i><a
+                    href="{{urlRedirect}}">{{urlRedirect}}</a></i></h4>
+        <progressbar style="width: 50%" class="progress-striped active" animate="true" max="100" value="progressValue"
+            type="success"></progressbar>
+    </div>
+</ns-box>

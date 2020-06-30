@@ -1,0 +1,85 @@
+/* Login Box & Register Box
+=================================================================== */
+.login-box,
+.register-box {
+    width: 400px;
+	padding: 20px;
+    margin: 100px auto;
+    background: #fff;
+
+	.header {
+		background: @darkGrey;
+		color: white;
+		text-align: center;
+		margin: -20px -20px 20px -20px;
+		padding: 15px;
+		text-transform: uppercase;
+	}
+	
+	form.login {
+		
+		input[type="text"],
+		input[type="password"] {
+		    border-right: none !important;
+			.border-radius(2px 0 0 2px);
+		}
+		
+		.input-group-addon {
+			height: 0px !important;
+			border: 1px solid lighten(@grey, 20%) !important;
+			background: white;
+			.border-radius(0 2px 2px 0);
+			border-left: 1px none !important;
+			margin-left: -1px !important;
+		}
+		
+	}
+	
+	label {
+		margin: 10px 5px -10px 5px;
+	}
+
+	input[type="text"],
+	input[type="password"] {
+	    border: 1px solid lighten(@grey, 20%);
+	    .box-shadow;
+		.border-radius;
+		padding: 0px 10px;
+		height: 40px;
+		.border-radius(2px);
+		
+		&:focus {
+			outline: none;
+		}
+	}
+	
+	.confirm {
+		position: relative;
+		margin: 20px 0 10px -15px;
+		
+		input {
+		}
+		
+		label {
+			position: absolute;
+			top: -9px;
+			left: 30px;
+		}
+	}
+	
+	form.register {
+		.input-group-addon {
+			height: 0px !important;
+			width: 35%;
+			border: 1px solid lighten(@grey, 20%) !important;
+			background: lighten(@grey, 20%) !important;
+			.border-radius;
+		}
+	}	
+	
+	button {
+		margin: 15px 0px !important;
+	}
+
+
+}

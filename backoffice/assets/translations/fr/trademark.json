@@ -1,0 +1,17 @@
+{
+    "detail": {
+        "t1": "Détail Marque",
+        "t2": "Marques",
+        "click": "Cliquez pour éditer",
+        "id": "ID",
+        "nom": "Nom",
+        "code": "Code",
+        "active": "Active",
+        "creaDate": "Date de création"
+    },
+    "new": {
+        "t1": "Créer une Nouvelle Marque",
+        "ph1": "Nom",
+        "nom": "Nom"
+    }
+}

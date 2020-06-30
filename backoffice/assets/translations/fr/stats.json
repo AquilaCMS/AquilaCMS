@@ -1,0 +1,11 @@
+{
+    "t1": "Statistiques",
+    "yesterday" : "Hier",
+    "today" : "Aujourd'hui",
+    "last30" : "30 derniers jours",
+    "attendance" : "Fréquentation",
+    "transfo" : "Taux transformation",
+    "sales" : "Chiffre d’affaires net",
+    "basket" : "Panier moyen net",
+    "orders" : "Nombre commandes"  
+}

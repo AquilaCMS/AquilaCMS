@@ -1,0 +1,31 @@
+<table class="orders-table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 45%">Détails de la commande</th>
+            <th style="width: 15%">Montant HT</th>
+            <th style="width: 15%">Montant TVA</th>
+            <th style="width: 15%">Montant TTC</th>
+            <th style="width: 10%">Statut</th>
+            <th style="width: 15%">Mode de paiement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="order in orders| orderBy:'-creationDate'">
+            <td>
+                {{convertToDate(order.creationDate) | date:'dd/MM/yyyy HH:mm'}}
+            </td>
+            <td>
+                <span>Numéro commande : {{order.number}}</span><br>
+                Produits :
+                <div ng-repeat="item in order.items">{{item.id.name}} - Quantité : {{item.quantity}}
+                    <span ng-if="item.type == 'event'"> - Date d'arrivée : {{convertToDate(item.variation_start) | date:'dd/MM/yyyy'}}</span></div>
+            </td>
+            <td>{{order.priceTotal.et | number:2}} &euro;</td>
+            <td>{{order.priceTotal.ati - order.priceTotal.et | number:2}} &euro;</td>
+            <td>{{order.priceTotal.ati | number:2}} &euro;</td>
+            <td>{{order.status | orderStatus}}</td>
+            <td>{{order.payment[0].mode | paymentMode}}</td>
+        </tr>
+    </tbody>
+</table>

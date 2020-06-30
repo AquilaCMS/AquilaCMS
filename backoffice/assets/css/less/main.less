@@ -1,0 +1,247 @@
+/* Basic
+=================================================================== */
+.no-space [class*="span"] {
+    margin-left: 0;
+}
+
+.noMarginLeft {
+	margin-left: 0px !important;
+}
+
+.noPadding {
+	padding: 0px !important;
+}
+
+body {
+	background: lighten(@grey, 20%);
+	color: @darkGrey;
+	border: none;
+	font-family: 'Lato', sans-serif;
+	font-weight: 400;
+	margin: 0;
+	padding: 0;
+	position:relative;
+	
+	&:after {
+		top: 0;
+		left: 14.422%;
+		margin-left: -1px;
+		position:absolute;
+		content: '';
+		height: 100%;
+		width: 85.578%;
+		background: @bodyBackground;
+		border-left: 1px solid lighten(@grey, 15%);
+		z-index: 0;
+	}
+	
+	&:before {
+		content: '';
+		position:absolute;
+		z-index: 0;
+		background: @bodyBackground;
+		width: 50%;
+		height: 100%;
+		top: 0;
+		right: 0;
+		z-index: 0;
+	}
+	
+	&.sidebar-minified {
+		
+		&:after {
+			top: 0;
+			left: 40px !important;
+			margin-left: -1px;
+			margin-right: 40px;
+			position:absolute;
+			content: '';
+			height: 100%;
+			background: @bodyBackground;
+			border-left: 1px solid lighten(@grey, 15%);
+			z-index: 0;
+		}
+		
+	}
+	
+}
+
+a {
+	color: @darkGrey;
+}
+
+h1 { font-size: 32px; line-height: 32px; font-weight: 300}
+h2 { font-size: 16px; line-height: 16px; font-weight: 300}
+h3 { font-size: 15px; line-height: 15px; }
+h4 { font-size: 14px; line-height: 14px; }
+h5 { font-size: 13px; line-height: 13px; }
+h6 { font-size: 12px; line-height: 12px; }
+
+#content {
+	padding: 20px;
+	position: relative;
+	background: @bodyBackground;
+	z-index: 1;
+	
+	&:before {
+		position: absolute;
+		content:'';
+		height: 100%;
+		width: 1px;
+		border-left: 1px solid lighten(@grey, 15%);
+		z-index: +1;
+		top: 0px;
+		left: -1px;
+	}
+	
+	&.sidebar-minified {
+		width: 100% !important;
+		border-left: 40px solid lighten(@grey, 20%);
+		margin-right: 1px !important;
+	}
+	
+	&.full {
+		width: 100% !important;
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+		border: none !important;
+	}
+}
+
+.well {
+	border: 1px solid #ddd;
+	background-color: #f6f6f6;
+	.box-shadow;
+	.border-radius(2px);
+}
+
+.breadcrumb {
+	background: lighten(@grey, 20%);
+	.border-radius;
+	height: 40px;
+	position: relative;
+	border-bottom: 1px solid lighten(@grey, 15%);
+	
+	.choose-date {
+		position: absolute;
+		top:0px;
+		right: 0px;
+		height: 40px;
+		width: 254px;
+		border: none;
+		border-left: 1px solid lighten(@grey, 15%);
+		padding: 3px 10px;
+		
+		.input-group-addon, 
+		input {
+			background: transparent;
+			border: none;
+		}
+		
+		.input-group-addon {
+			font-size: 12px;
+		}
+		
+		input {
+			padding: 0;
+			font-weight: 300;
+			
+			&:focus {
+				outline: none;
+				.box-shadow;
+			}
+			
+		}
+		
+		
+	}
+}
+
+.box {
+	border: 1px solid lighten(@grey, 15%);
+	margin: 0px 0px 30px 0px;
+	
+	&.noOverflow {
+		overflow: hidden;
+	}
+	
+	.box-header {
+		background: white;
+		color: @darkGrey;
+		font-size: 16px;
+		overflow: hidden;
+		background: lighten(@grey, 25%);
+		border-bottom: 1px solid lighten(@grey, 15%);
+		height: 40px;
+
+		h2 {
+			float:left;
+			padding: 10px 0px;
+			margin: 0px 0px 0px 20px;
+
+			i {
+				border-right: 1px solid lighten(@grey, 15%);
+				color: lighten(@grey, 10%);
+				padding: 12px 0px;
+				height: 40px;
+				width: 40px;
+				display: inline-block;
+				text-align: center;
+				margin: -10px 20px -10px -20px;
+				font-size: 16px;
+			}
+
+		}
+
+		.box-icon {
+			float:right;
+
+			i {
+				display: inline-block;
+				color: lighten(@grey, 10%);
+				text-align: center;
+				height: 40px;
+				width: 40px;
+				padding: 12px 0px;
+				.transition(all 0.1s ease-in-out);
+				border-left: 1px solid lighten(@grey, 10%);
+				text-decoration: none;
+
+				&:hover {
+				}
+			}
+
+			a {
+				margin-left: -3px !important;
+			}
+
+		}
+
+	}
+	
+	.box-content {
+		padding: 10px;
+		background: white;
+		
+		&.no-padding {
+			background: white;
+			padding: 1px 0;
+		}	
+	}
+	
+}
+
+/* Typography - Blockquote
+=================================================================== */	
+blockquote {
+	background: url(../img/quote.png) no-repeat 0px 10px;
+	font-style: italic;
+	border-left: none;
+	padding: 0 0 0 30px;
+}
+
+/* Alerts
+=================================================================== */
+.alert {
+	.border-radius(2px;)
+}

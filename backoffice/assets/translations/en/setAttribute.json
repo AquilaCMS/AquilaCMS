@@ -1,0 +1,30 @@
+{
+    "detail": {
+        "t1": "Attributes Set Detail",
+        "code": "Code",
+        "nom": "Name",
+        "createAttr": "CREATE ATTRIBUTE",
+        "type": "Type",
+        "addQuestion": "Add question",
+        "descriptionQuestion": "Criteria for which a customer will be able to rate the product, exemple: Price-quality relationship, Product's fluidity... ",
+        "tab": {
+            "setAttr": "Set attributes",
+            "question": "Questions"
+        }
+    },
+
+    "list": {
+        "t1": "Attributes Sets",
+        "code": "Code",
+        "nom": "Name"
+    },
+
+    "new": {
+        "t1": "Create new Attributes Set",
+        "ph1": "(spaces, accents and special characters will be deleted)",
+        "ph2": "Name",
+        "code": "Code",
+        "nom": "Name",
+        "save": "Save"
+    }
+}

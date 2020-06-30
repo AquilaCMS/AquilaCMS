@@ -1,0 +1,327 @@
+/* Navigation Section
+=================================================================== */
+a#main-menu-toggle {
+	background: darken(@darkGrey, 10%);
+	width: 40px;
+	height: 40px;
+	color: white;
+	position: absolute;
+	z-index: 1000;
+	top: 0px;
+	left: 0;
+	padding: 8px 13px;
+	font-size: 16px;
+	text-shadow: none;
+	text-decoration: none;
+	cursor: pointer;
+	
+	&.close {
+		opacity: 1;
+		background: darken(@darkGrey, 5%) !important;
+		padding: 10px 13px !important;
+	}
+}
+
+a#main-menu-min {
+	display: block;
+	border-bottom: 1px solid lighten(@grey, 15%);
+	width: 100%;
+	margin: 30px 0;
+	position: relative;
+	text-decoration: none;
+
+	i {
+		position: absolute;
+		bottom: -10px;
+		left: 50%;
+		margin-left: -10px;
+		width: 20px;
+		height: 20px;
+		background:  lighten(@grey, 15%);
+		font-size: 14px;
+		padding: 3px 0px;
+		color: darken(@grey, 20%);
+		text-align: center;
+		
+		&:hover {
+			background: lighten(@grey, 10%);
+			color: darken(@grey, 25%);
+		}
+	}
+}
+
+#sidebar-left {
+	padding: 10px !important;
+	z-index: 2;
+}
+
+.sidebar-nav > ul {
+	margin: -9px -25px;
+	border: none;
+	padding-bottom: 1px;
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+.sidebar-nav > ul > li > ul,
+.sidebar-nav > ul > li > ul > li > ul,
+.sidebar-nav > ul > li > ul > li > ul > li > ul {
+	list-style: none;
+	display: none;
+	margin: 0;
+	padding: 0;
+	
+}
+
+.nav.main-menu > li {
+	margin-top: -1px;
+}
+
+.nav.main-menu > li > a,
+.nav.main-menu > li > ul > li > a,
+.nav.main-menu > li > ul > li > ul > li > a,
+.nav.main-menu > li > ul > li > ul > li > ul > li > a {
+	margin: 0px;
+	height: 40px;
+	padding: 1px 0 0 0;
+	color: darken(@grey, 20%);
+	border: none;
+	border-bottom: 1px solid lighten(@grey, 15%);
+  	background: transparent;
+  	.border-radius;
+	text-decoration: none;
+	display: block;
+	position: relative;
+	
+	.chevron {
+		font-family: 'FontAwesome';
+		position: absolute;
+		top: 2px;
+		right: -5px;
+		height: 40px;
+		width: 40px;
+		padding: 12px 0px;
+		display: inline-block;
+		text-align: center;
+		font-size: 10px;
+		color: @grey !important;
+		
+		&.opened {
+			
+			&:after {
+				height: 100%;
+				width: 100%;
+				content: "\f078";
+				text-shadow: none;
+			}
+			
+		}
+		
+		&.closed {
+			
+			&:after {
+				height: 100%;
+				width: 100%;
+				content: "\f053";
+				text-shadow: none;
+				color: @grey !important;
+			}
+			
+		}
+			
+	}
+			
+}
+
+.nav.main-menu > li > a > i,
+.nav.main-menu > li > ul > li > a > i {
+	margin-right: 10px;
+	height: 38px;
+	width: 40px;
+	padding: 13px 0px;
+	display: inline-block;
+	text-align: center;
+	border-right: 1px solid lighten(@grey, 15%);
+}
+
+.nav.main-menu > li > ul > li > a > i,
+.nav.main-menu > li > ul > li > ul > li > a > i,
+.nav.main-menu > li > ul > li > ul > li > ul > li > a > i {
+	margin-right: 10px;
+	height: 38px;
+	width: 40px;
+	padding: 13px 0px;
+	display: inline-block;
+	text-align: center;
+	font-size: 13px;
+	border-right: 1px solid lighten(@grey, 15%);
+}
+
+.nav.main-menu > li > ul > li > a {
+	background: lighten(@grey, 18%);
+}
+.nav.main-menu > li > ul > li > ul > li > a {
+	background: lighten(@grey, 17%);
+}
+.nav.main-menu > li > ul > li > ul > li > ul > li > a {
+	background: lighten(@grey, 16%);
+}
+
+.nav.main-menu > li > a:hover,
+.nav.main-menu > li > ul > li > a:hover,
+.nav.main-menu > li > ul > li > ul > li > a:hover,
+.nav.main-menu > li > ul > li > ul > li > ul > li > a:hover {
+  	background: lighten(@grey, 10%);
+	.box-shadow;
+  	.border-radius;
+}
+
+.nav.main-menu > li > a:hover > i,
+.nav.main-menu > li > ul > li > a:hover > i,
+.nav.main-menu > li > ul > li > ul > li > a:hover > i,
+.nav.main-menu > li > ul > li > ul > li > ul > li > a:hover > i {
+	border-right: 1px solid lighten(@grey, 8%);	
+}
+
+.nav.main-menu > li > a:hover,
+.nav.main-menu > li > ul > li > a:hover {
+  	background: lighten(@grey, 10%);
+	.box-shadow;
+  	.border-radius;
+}
+
+.nav.main-menu  > li.active > a,
+.nav.main-menu  > li > ul > li.active > a,
+.nav.main-menu  > li > ul > li > ul > li.active > a,
+.nav.main-menu  > li > ul > li > ul > li > ul > li.active > a {
+  	background: lighten(@grey, 10%);
+}
+
+.nav.main-menu  > li.active > a > i,
+.nav.main-menu  > li > ul > li.active > a > i,
+.nav.main-menu  > li > ul > li > ul > li.active > a > i,
+.nav.main-menu  > li > ul > li > ul > li > ul > li.active > a > i {
+	border-right: 1px solid lighten(@grey, 8%);
+}
+
+.nav.main-menu  > li.active > a:hover,
+.nav.main-menu  > li > ul > li.active > a:hover {
+  	border: none;
+	color: white;
+}
+
+.nav.main-menu  > li.active > ul {
+	padding: 5px 0px;
+  	background: lighten(@grey, 15%);
+}
+
+.nav.main-menu > li:first-child > a {
+	margin: 0px;
+  	.border-radius;
+}
+
+.nav.main-menu > li:last-child > a {
+  	.border-radius;
+}
+
+#sidebar-left {
+	
+	&.minified {
+		width: 40px !important;
+		margin-right: -40px;
+		
+		.sidebar-nav {
+
+			> ul {
+				
+				> li {
+					position: relative;
+					
+					> a {
+						width: 40px;
+						position: relative;
+						
+						&.open {
+							cursor: default;
+						}
+						
+						.chevron {
+							display: none;
+							position: absolute;
+							left: 178px;
+							z-index: 1000;
+						}
+						
+						.text {
+							position: absolute;
+							z-index: 1000;
+							background: lighten(@grey, 20%);
+							min-height: 40px;
+							width: 150px;
+							padding: 8px 15px;
+							border: 1px solid lighten(@grey, 15%);
+							top: 0px;
+							left: 39px;
+							display: none !important;
+						}
+						 
+					}
+					
+					> ul {
+						display: none !important;					
+					}
+					
+					&:hover {
+						
+						> a {
+							position: relative;
+							
+							.chevron {
+								display: inline-block;
+							}
+
+							.text {
+								position: absolute;
+								z-index: 1000;
+								background: lighten(@grey, 20%);
+								min-height: 40px;
+								width: 180px;
+								padding: 8px 15px;
+								border: 1px solid lighten(@grey, 15%);
+								top: 0px;
+								left: 39px;
+								display: block !important;
+							}
+
+						}
+						
+						> ul {
+							display: block !important;
+							position: absolute;
+							top: 39px;
+							left: 39px;
+							z-index: 1000;
+							width: 180px;
+							background: lighten(@grey, 20%);
+							border: 1px solid lighten(@grey, 15%);
+							border-bottom: none;
+							
+							> li {
+								
+								> a {}
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+}

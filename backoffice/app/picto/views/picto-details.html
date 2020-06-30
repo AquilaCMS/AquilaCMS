@@ -1,0 +1,189 @@
+<ns-box data-title="picto.details.t1" title-icon="fa fa-gratipay fa-2x">
+    <form name="form" novalidate ng-submit="save()">
+        <ns-buttons show-duplicate="true" is-edit-mode="isEditMode" return-path="/picto" form="form" remove="openDelete()" save-and-quit="save(true)" disable-save="disableSave" return-path="/picto">
+            <!--<div style="float:right;">
+            <select class="form-control" ng-model="clickLangue" ng-change="changeLanguage(clickLangue)" ng-if="languages.length > 1" ng-init="clickLangue = selectedLanguage">
+                <option ng-repeat="lang in languages" value="{{lang.code}}">{{lang.name}}</option>
+            </select>
+        </div>-->
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#general" target="_self" translate>picto.details.gen</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#rules" target="_self" ng-show="isEditMode" translate>picto.details.rules</a>
+                    <a ng-show="!isEditMode" translate>picto.details.rules</a>
+                </li>
+                <!--<li><a data-toggle="tab" href="#rules" target="_self">Règles</a></li>-->
+            </ul>
+            <div class="tab-content">
+                <div id="general" class="tab-pane fade in active">
+
+                    <div class="row">
+                        <div class="col-md-4 text-center" style="margin-bottom: 30px">
+
+                            <!--<input type="file">-->
+                            <div ng-show="!isEditMode" class="pointer" style="padding-top: 100%; background: #ffffff; background-size: contain; background-repeat: no-repeat; background-position: center;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                    <h4 style="text-transform: uppercase" translate>picto.details.saveFirst</h4>
+                                </div>
+                            </div>
+                            <div class="image-frame"  ng-if="picto.filename !== ''">
+                                <div class="row">
+                                    <div class="col-sm-4 img-responsive" style="white-space: nowrap; text-align: center;">
+                                        <img ng-src="{{getImage(picto)}}" ng-if="picto.filename !== ''" alt="{{picto.filename}}">
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label" translate>medias.uploadMedias.name</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="filename" class="form-control" ng-model="picto.filename" ng-disabled="true" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ns-upload-files accepttype="image/*" ng-show="isEditMode" multiple="false" type="picto" id="picto._id" entity="picto"></ns-upload-files>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group row">
+                                <label for="code" class="col-sm-3 control-label" translate>picto.details.code</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="code" ng-model="picto.code" name="code" required>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group row">
+                                <label for="title" class="col-sm-3 control-label" translate>picto.details.title</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="title" ng-model="picto.title
+                                       " name="title" required>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group row">
+                                <label for="location" class="col-sm-3 control-label" translate>picto.details.place</label>
+                                <div class="col-sm-9">
+                                    <div class="positions row">
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location2" translate>picto.details.topLeft</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location2
+                                       " value="TOP_LEFT">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location1" translate>picto.details.topCenter</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location1
+                                       " value="TOP_CENTER">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location3" translate>picto.details.topRight</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location3
+                                       " value="TOP_RIGHT">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location4" translate>picto.details.midLeft</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location4
+                                       " value="MIDDLE_LEFT">
+                                        </div>
+                                        <div class="col-sm-4 col-md-offset-4">
+                                            <label class="control-label" for="location5" translate>picto.details.midRight</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location5
+                                       " value="MIDDLE_RIGHT">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location6" translate>picto.details.botLeft</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location6
+                                       " value="BOTTOM_LEFT">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location7" translate>picto.details.botCenter</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location7
+                                       " value="BOTTOM_CENTER">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="control-label" for="location8" translate>picto.details.botRight</label>
+                                            <input type="radio" ng-model="picto.location" name="location" id="location8
+                                       " value="BOTTOM_RIGHT">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="form-group row">
+                                <label for="enabled" class="col-sm-3 control-label" translate>picto.details.actif</label>
+                                <div class="col-sm-9">
+                                    <ns-switch id="enabled" ng-model="picto.enabled" name="enabled" ng-change="toggleActive(picto,
+                                        false)"></ns-switch>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="form-group row">
+                                <label class="col-sm-3 control-label" translate>picto.details.dispoFiltres</label>
+                                <div class="col-sm-6">
+                                    <ns-switch name="used_in_filters" ng-model="picto.usedInFilters"></ns-switch>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="rules" class="tab-pane fade">
+                    <ng-form novalidate name="ruleForm">
+                        <ns-rules rule="rule" type="picto"></ns-rules>
+                    </ng-form>
+                </div>
+
+                <!--<div id="rules" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-sm-4">
+                            <label>Univers</label>
+                            <select class="form-control" ng-model="category.rules.universes" multiple ng-options="fam.slug
+                                        as fam.name for fam in universes" style="height: 300px">
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Familles</label>
+                            <select class="form-control" ng-model="category.rules.families" multiple ng-options="fam.slug
+                                        as fam.name for fam in families" style="height: 300px">
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Sous-familles</label>
+                            <select class="form-control" ng-model="category.rules.subfamilies" multiple ng-options="fam.slug
+                                        as fam.name for fam in subfamilies" style="height: 300px">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+            </div>
+            <style>
+                .pointer img {
+                    width: 90%;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    object-fit: contain;
+                    height: 85%;
+                }
+
+                form .form-group {}
+
+                .rule .operand select {
+                    max-width: 100px;
+                    display: inline;
+                }
+
+                .positions div[class*="col-sm"] {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                }
+            </style>
+    </form>
+</ns-box>
+
+<!--<div class="modal-footer">
+<button class="btn btn-default" ng-click="ok()">OK</button>
+<button class="btn btn-default" ng-click="cancel()">Annuler</button>
+</div> -->

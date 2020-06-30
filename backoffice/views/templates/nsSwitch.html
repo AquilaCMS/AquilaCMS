@@ -1,0 +1,14 @@
+<ul class="list-radios">
+    <li>
+        <div class="radio">
+            <input id="{{switchName}}_on" type="radio" class="switch-radio" name="{{switchName}}" ng-value="true" ng-model="switchValue" ng-change="onSwitchChange(switchValue)">
+            <label class="form-label" for="{{switchName}}_on">{{yes_value}}</label>
+        </div>
+    </li>
+    <li>
+        <div class="radio">
+            <input id="{{switchName}}_off" type="radio" class="switch-radio" name="{{switchName}}" ng-value="false" ng-model="switchValue" ng-change="onSwitchChange(switchValue)">
+            <label class="form-label" for="{{switchName}}_off">{{no_value}}</label>
+        </div>
+    </li>
+</ul>

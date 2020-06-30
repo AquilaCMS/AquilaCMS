@@ -1,0 +1,58 @@
+// Default Mixins
+//===================================================================
+.border-radius(@radius: 0px) {
+	-webkit-border-radius: @radius;
+  	-moz-border-radius: @radius;
+  	border-radius: @radius;
+}
+
+.box-shadow(@arguments: none) {
+  	-webkit-box-shadow: @arguments;
+  	-moz-box-shadow: @arguments;
+  	box-shadow: @arguments;
+}
+
+.box-shadow-double(@arguments1: none, @arguments2: none) {
+  	-webkit-box-shadow: @arguments1, @arguments2;
+  	-moz-box-shadow: @arguments1, @arguments2;
+  	box-shadow: @arguments1, @arguments2;
+}
+
+.gradient(@from: none, @to: none) {
+    background-color: @to;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(@from),  to(@to));
+    background-image: -webkit-linear-gradient(top, @from, @to);
+    background-image: -moz-linear-gradient(top, @from, @to);
+    background-image: -o-linear-gradient(top, @from, @to);
+    background-image: -ms-linear-gradient(top, @from, @to);
+    background-image: linear-gradient(top, @from, @to);
+}
+
+.transition(@arguments: none) {
+	-webkit-transition:@arguments;
+	-moz-transition:@arguments;
+	-ms-transition:@arguments;
+	-o-transition:@arguments;
+	transition:@arguments;
+}
+
+.box-sizing(@arguments: border-box) {
+	-webkit-box-sizing: @arguments;
+	   -moz-box-sizing: @arguments;
+	        box-sizing: @arguments;
+}
+
+.clearfix {
+  *zoom: 1;
+  &:before,
+  &:after {
+    display: table;
+    content: "";
+    // Fixes Opera/contenteditable bug:
+    // http://nicolasgallagher.com/micro-clearfix-hack/#comment-36952
+    line-height: 0;
+  }
+  &:after {
+    clear: both;
+  }
+}

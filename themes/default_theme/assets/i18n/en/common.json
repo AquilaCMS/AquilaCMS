@@ -1,0 +1,62 @@
+{
+    "connecter": "Login",
+    "monCompte": "My account",
+    "monPanier": "Cart",
+    "true": "Yes",
+    "false": "No",
+    "retourListe": "Back",
+    "accueil": "Home",
+    "enStock": "Available",
+    "retour": "Back",
+    "valider": "Validate",
+    "printSizeDetails": "Print size",
+    "printFinishDetails": "Print finishes",
+    "nousContacter": "Contact us",
+    "produitsDejaConsultes": "Consulted products",
+    "aucunProduitHistorique": "No product consulted",
+    "email_placeholder": "Your email address",
+    "subscribe_button": "Subscribe",
+    "account_active":"Your account has been activated",
+    "account_inactive":"This token doesn't exist or has already been used",
+    "steps": {
+        "connexion": "Login",
+        "coordonnees": "Contact information",
+        "livraison": "Delivery",
+        "paiement": "Payment",
+        "confirmation": "Confirmation"
+    },
+    "error": {
+        "serverError": "Server Error",
+        "default": "An error has occurred"
+    },
+    "status": {
+        "PENDING": "pending",
+        "CANCELING": "canceling",
+        "CANCELED": "canceled",
+        "ASK_CANCEL": "Cancel order requested by customer",
+        "PAYMENT_CONFIRMATION_PENDING": "Payment pending confirmation",
+        "PAYMENT_RECEIPT_PENDING": "Payment pending receipt",
+        "PAYMENT_PENDING": "Payment pending",
+        "FINISHED": "Completed",
+        "PROCESSED": "Prepared",
+        "PROCESSING": "Ongoing treatment",
+        "BILLED": "Invoiced",
+        "PAID": "Paid",
+        "DELIVERY_PROGRESS": "Sent",
+        "DELIVERY_PARTIAL_PROGRESS": "Partial Sent",
+        "RETURNED": "Return",
+        "liv": "In stock",
+        "dif": "In Preorder",
+        "epu": "Sold out",
+        "no-status": "No status"
+    },
+    "notFound": "Page not found",
+    "returnToHomepage": "Back to the homepage",
+    "price": {
+        "et": "excl tax",
+        "ati": "incl tax"
+    },
+    "buttonCookieAccept": "Accept",
+    "buttonCookieDeny": "Deny",
+    "buttonCookie": "Close"
+}

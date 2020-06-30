@@ -1,0 +1,47 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save()" role="form">
+    <div class="modal-header">
+        <h3 translate>slider.item.addImg</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box-content form-group">
+                    <div class="col-sm-4 text-center">
+                        <div ng-show="showLoader" class="uploadOverlayAddImage">
+                            <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                        </div>
+                        <div class="pointer boxShadow" style="padding-top: 100%; background: #ffffff url({{item.src}}) center; background-size: cover; border-radius:4px; cursor: default;"></div>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <label for="image_url" class="col-sm-4 control-label" translate>slider.item.url</label>
+                        <div class="col-sm-8" style="margin-bottom: 30px">
+                            <input id="image_url" class="form-control" translate translate-attr-placeholder='slider.item.ph1' ng-model="item.src" disabled />
+                        </div>
+
+                        <label for="image_name" class="col-sm-4 control-label" translate>slider.item.nom</label>
+                        <div class="col-sm-8">
+                            <input id="image_name" class="form-control" translate translate-attr-placeholder='slider.item.ph2' ng-model="item.name" />
+                        </div>
+
+                        <label for="image_text" class="col-sm-4 control-label" translate>slider.item.txt</label>
+                        <div class="col-sm-8" style="margin-bottom: 30px">
+                            <input id="image_text" class="form-control" translate translate-attr-placeholder='slider.item.ph3' ng-model="item.text" />
+                        </div>
+
+                        <label for="image_href" class="col-sm-4 control-label" translate>slider.item.link</label>
+                        <div class="col-sm-8">
+                            <input id="image_href" class="form-control" translate translate-attr-placeholder='slider.item.ph4' ng-model="item.href" />
+                        </div>
+                    </div>
+                </div>
+                <ns-upload-files accepttype="image/*" multiple="false" type="slider" id="slider._id" entity="item" images="slider.items" after-function="close()"></ns-upload-files>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="delete($event)" translate>slider.item.delete</button>
+        <button class="btn btn-default" ng-click="cancel($event)" translate>slider.item.cancel</button>
+        <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>slider.item.valider</button>
+    </div>
+</form>

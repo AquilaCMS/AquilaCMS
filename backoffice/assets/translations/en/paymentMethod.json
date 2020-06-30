@@ -1,0 +1,18 @@
+{
+    "detail": {
+        "t1": "Payment mode edit",
+        "des": "Designation",
+        "actif": "Active",
+        "ordre": "Order",
+        "desc": "Description",
+        "instrucMail": "E-mail instruction",
+        "urlLogo": "Logo URL",
+        "isDeferred" : "Deferred"
+    },
+    "list": {
+        "t1": "Payment modes",
+        "ph1": "Search...",
+        "des": "Designation",
+        "actif": "Active"
+    }
+}

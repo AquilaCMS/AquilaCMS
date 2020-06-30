@@ -1,0 +1,47 @@
+{
+    "title": "Confirmation de commande",
+    "page": {
+        "title": "Votre commande n°",
+        "is_register": "est enregistrée",
+        "is_not_register": "n'est pas finalisée car le paiement n'a pas été effectué.",
+        "contact_us": "Vous pouvez nous contacter s'il s'agit d'une erreur.",
+        "mail_sent": "Un e-mail de confirmation vient de vous être envoyé à l'adresse ",
+        "sub_title": "Récapitulatif de votre commande",
+        "delivery": "Livraison",
+        "deliveryDate": "Date de la livraison à partir du ",
+        "articles": "Vos articles",
+        "taxes_includes": "Dont TVA",
+        "payment_method": "Mode de paiement",
+        "credit_card": "Carte bancaire",
+        "transfert": "virement",
+        "sous_total_order": {
+            "et": "SOUS TOTAL HT commande",
+            "ati": "SOUS TOTAL TTC commande"
+        },
+        "total_order": {
+            "et": "TOTAL HT commande",
+            "ati": "TOTAL TTC commande"
+        },
+        "discount_code": "Code avantage",
+        "fee_shipping": {
+            "et": "Dont frais de port HT",
+            "ati": "Dont frais de port TTC"
+        },
+        "additionnal_fees": "Dont frais supplémentaires TTC",
+        "not_logged_in_success": "Vous devez être connecté pour accéder à cette page",
+        "payment_receipt_pending": "mais le paiement n'a pas été effectué.",
+        "label": {
+            "article": "Article",
+            "quantity": "Quantité",
+            "unit_price": {
+                "et": "Prix unitaire HT",
+                "ati": "Prix unitaire TTC"
+            },
+            "total": {
+                "et": "Prix total HT",
+                "ati": "Prix total TTC"
+            }
+        },
+        "cart_discount": "Réduction panier :"
+    }
+}

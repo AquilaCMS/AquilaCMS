@@ -1,0 +1,82 @@
+<ns-box data-title="stats.t1" title-icon="fa fa-bar-chart fa-lg" close-href="#/">
+
+    <style>
+        .graph-type {margin-top:8px}
+        .graph-type > i { margin-right:10px ; cursor: pointer }
+        /*.chart-google {height: 600px}*/
+        .stat-tableImg { width:100px}
+    </style>
+    
+    
+        <div class="row">
+            <div class="col-lg-2">
+                <label class="control-label">Granularité</label>
+                <select class="form-control" ng-model="filter.granularity" style="min-height:40px;border-radius: 10px">
+                    <option value="day" selected>Jour</option>
+                    <!-- <option value="week">Semaine</option> --> 
+                    <option value="month">Mois</option>
+                </select>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group col-lg-6" style="padding-left: 5px; padding-right: 5px;">
+                    <label class="control-label" translate>payment.list.debut</label>
+                    <div>
+                        <div class="input-group">
+                            <ns-datepicker name="dateStart" ng-model="filter.dateStart"></ns-datepicker>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-6" style="padding-left: 5px; padding-right: 5px">
+                    <label class="control-label" translate>payment.list.fin</label>
+                    <div>
+                        <div class="input-group">
+                            <ns-datepicker name="dateEnd" ng-model="filter.dateEnd"></ns-datepicker>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()">Valider</button>
+            </div>
+            <div class="col-lg-4" style="text-align:right">
+                <i class="fa fa-download fa-2x" aria-hidden="true" ng-click="downloadDatas()" style="cursor:pointer"></i>
+            </div>
+        </div>
+    
+
+
+
+
+    
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#newCustomer" target="_self" ng-click="changeTab('newCustomer')">Nombre de créations de compte</a></li>
+            <li><a data-toggle="tab" href="#topClient" target="_self" ng-click="changeTab('topCustomer')">Top clients par CA</a></li>
+        </ul>
+    
+    
+        <div class="tab-content" style="padding:0">
+            <div id="newCustomer" class="tab-pane fade in active">
+                <div google-chart chart="charts.clients.newCustomer" class="chart-google" ng-if="!obj.loading"></div>
+                <div class="fa fa-spinner fa-spin" style="font-size: 200px;position: absolute;top:300px;left:50%;z-index:1" ng-if="obj.loading"></div>
+            </div>
+            <div id="topClient" class="tab-pane fade" style="background-color:#FFF;padding: 30px 80px">
+                <div google-chart chart="charts.clients.topCustomer" class="chart-google" ng-if="!obj.loading"></div>
+                <div class="fa fa-spinner fa-spin" style="font-size: 200px;position: absolute;top:300px;left:50%;z-index:1" ng-if="obj.loading"></div>
+            </div>
+        </div>
+    
+    </ns-box>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,44 @@
+{
+    "detail": {
+        "t1": "Détail du mail",
+        "delete":"Supprimer",
+        "attachment": "Pièce-jointe :",
+        "test": "Tester        ",
+        "type": "Type",
+        "code": "Code *",
+        "champRequis": "Ce champ est requis.",
+        "senderMail": "Adresse mail d'envoi *",
+        "senderName": "Nom de l'éxpéditeur",
+        "validMailPls": "Veuillez saisir un email valide",
+        "sujet": "Objet *",
+        "html": "HTML *",
+        "varDispo": "Variables disponibles :",
+        "deuxAcc": "A mettre entre deux accolades",
+        "newIencli": "Inscription d'un nouveau client :",
+        "newIencliForAdmin": "Inscription d'un nouveau client pour l'admin:",
+        "all": "Tous :",
+        "activateAccount": "Verification du compte :",
+        "orderSucceed": "Commande réussie (client) :",
+        "orderDiff": "Commande différée réussie (client) :",
+        "orderSucceedEnt": "Commande réussie (entreprise) :",
+        "recupMdp": "Récupération mot de passe :",
+        "statusChanged": "Changement de statut de commande :",
+        "mailContact": "Mail de contact :",
+        "receptRetour": "Réception retour produit :",
+        "envoiColis": "Envoi de colis :"
+    },
+    "list": {
+        "t1": "Mails",
+        "code": "Code",
+        "sujet": "Objet",
+        "action": "Action"
+    },
+    "test": {
+        "t1": "Détail du mail test",
+        "expediteur": "Expediteur",
+        "destinataire": "Destinataire",
+        "envoie": "Envoie Test",
+        "titre" : "Veuillez remplir les informations afin de tester le mail.",
+        "null": "Pas de templates existant pour ce type de mail."
+    }
+}

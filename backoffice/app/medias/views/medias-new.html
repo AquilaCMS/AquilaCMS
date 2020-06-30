@@ -1,0 +1,30 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save()" role="form"> <!--style="padding: 100px;"-->
+    <ns-box data-title="medias.new.t1" title-icon="fa fa-file-image-o fa-lg" close-href="#/medias">
+        <ns-buttons is-edit-mode="isEditMode" disable-save="disableSave" hide-save-and-quit="true" return-path="/medias" form="form">
+            <div class="form-group">
+                <label for="name" class="col-sm-1 control-label" translate>medias.new.nom</label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" id="name" translate translate-attr-placeholder='medias.new.ph1' ng-model="media.name" required>
+                </div>
+            </div>
+            <div class="form-group" ng-show="media.link">
+                <label for="link" class="col-sm-1 control-label" translate>medias.new.lien</label>
+                <div class="col-sm-11">
+                    <a class="btn btn-blue btn-with-icon" ng-click="copyLink(media)">{{"medias.medias.cpLien" | translate}}</a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" translate>medias.new.media</label>
+                <div class="col-sm-5">
+                    <ns-upload-files multiple="false" type="media" entity="media" on-error="onErrorUploadMedia()"></ns-upload-files>
+                </div>
+                <div class="col-sm-5 img-responsive" ng-show="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')">
+                    <img ng-src="{{media.link}}" width="300" height="100">
+                </div>
+            </div>
+        </ns-buttons>
+    </ns-box>
+    <div ng-show="showLoading" id="overlayModule">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+    </div>
+</form>

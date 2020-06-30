@@ -1,0 +1,19 @@
+{
+    "trier": "Trier",
+    "filtrer": "Filtrer",
+    "results": "résultat(s)",
+    "trierPar": "Trier par",
+    "filtrerPar": "Filtrer par",
+    "pertinence": "Pertinence",
+    "grid": "Grille",
+    "list": "Liste",
+    "prix": "Prix",
+    "grade": "Note",
+    "new": "Nouveau",
+    "produitsParPage": "Nb par page",
+    "affinerPar": "Affiner par",
+    "confirmer": "CONFIRMER",
+    "aucunResultat": "Aucun résultat",
+    "mostViewed": "Plus visités",
+    "reset_filters": "Réinitialiser"
+}

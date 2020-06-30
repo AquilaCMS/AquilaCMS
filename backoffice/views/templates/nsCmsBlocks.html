@@ -1,0 +1,25 @@
+<h3 style="display: inline-block" translate>ns.cmsBlocks</h3>
+<button type="button" class="btn btn-default pull-right"
+        ng-click="product.cmsBlocks.push({title: null, text: null})" translate>ns.add
+</button>
+
+<div ng-repeat="block in product.cmsBlocks" style="border: 2px solid; padding: 5px;">
+    <div class="form-group">
+        <label class="col-sm-2 control-label" translate>ns.title</label>
+        <div class="col-sm-9">
+            <input class="form-control" type="text" ng-model="block.title">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label" translate>ns.content</label>
+        <div class="col-sm-9 tinyeditor-very-small">
+            <ns-tinymce ng-if="block.text" text="block.text"></ns-tinymce>
+        </div>
+    </div>
+    <div style="text-align: right">
+        <button type="button" class="btn btn-danger"
+                ng-click="product.cmsBlocks.splice($index, 1)" translate>
+            ns.delete
+        </button>
+    </div>
+</div>

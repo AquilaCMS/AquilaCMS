@@ -1,0 +1,6 @@
+{
+    "t1": "Traduction",
+    "translateFile": "Fichier de traduction :",
+    "reboot" : "Appliquer au site (reboot)",
+    "nb" : "Note : afin que vos modifications soient effectives sur le site, il faut cliquer sur 'Appliquer au site (reboot)'"
+}

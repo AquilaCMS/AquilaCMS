@@ -1,0 +1,65 @@
+<ns-box data-title="family.list.t1" title-icon="fa fa-shopping-bag fa-lg">
+
+    <div class="text-right">
+        <button style="pointer-events:auto" ng-click="newFamilies('universe')" class="btn btn-success" translate>family.list.univers</button>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <ul ui-sortable="sortableCategory" class="list-group custom-listgroup-linked" ng-model="menusUniverse">
+                <li ng-repeat="universe in universes | filter:{type:'universe'}">
+                    <div class="list-group-item" ng-class="{ 'active': universe._id == selectedUniverse }" style="margin-top:20px;cursor:pointer"
+                         ng-click="updateFromUnivers(universe._id);" style="cursor:pointer;">
+                         <span class="label label-info">Univers</span>
+                        {{universe.name}}
+                        <span>Univers</span>
+                        <span class="badge">
+                             <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);editFamilies(universe._id);"><span class="glyphicon glyphicon-pencil"></span></a>
+                        </span>
+                        <span class="badge">
+                             <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);removeFamily(universe._id);"><span class="glyphicon glyphicon-trash"></span></a>
+                        </span>
+                        <span class="badge" style="margin-top:2px">
+                            <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);newFamilies('family')"><i class="fa fa-plus-square"></i></a>
+                        </span>
+                    </div>
+                    <div ng-hide="selectedUniverse != universe._id" style="margin-left:20px">
+                        <ul ui-sortable="sortableMenu" class="list-group custom-listgroup-linked" ng-model="menusMenu">
+                            <li ng-if="selectedUniverse == universe._id" ng-repeat="family in families">
+                                <div class="list-group-item" ng-class="{ 'active': family._id == selectedFamily }"
+                                     ng-click="updateFromFamily(family._id)" style="cursor:pointer">
+                                     <span class="label label-info">Famille</span>
+                                    {{family.name}}
+                                    <span class="badge">
+                                        <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);editFamilies(family._id); "><span class="glyphicon glyphicon-pencil"></span></a>
+                                    </span>
+                                    <span class="badge">
+                                        <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);removeFamily(family._id);"><span class="glyphicon glyphicon-trash"></span></a>
+                                    </span>
+                                    <span class="badge" style="margin-top:2px">
+                                        <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);newFamilies('subfamily')"><i class="fa fa-plus-square"></i></a>
+                                    </span>
+
+                                </div>
+                                <div ng-hide="selectedFamily != family._id" style="margin-left:20px">
+                                    <ul ui-sortable="sortableSubmenu" class="list-group custom-listgroup-linked" ng-model="menusSubmenu">
+                                        <li class="list-group-item" ng-if="selectedFamily == family._id" ng-repeat="subFamily in subFamilies" ng-click="updateFromSubFamily(subFamily._id)"
+                                            style="cursor:pointer">
+                                            <span class="label label-info">Sous famille</span>
+                                            {{subFamily.name}}
+                                            <span class="badge">
+                                                <a href="" ng-click="$event.stopPropagation();editFamilies(subFamily._id);"><span class="glyphicon glyphicon-pencil"></span></a>
+                                            </span>
+                                            <span class="badge">
+                                                <a href="" ng-click="$event.stopPropagation();removeFamily(subFamily._id);"><span class="glyphicon glyphicon-trash"></span></a>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+</ns-box>

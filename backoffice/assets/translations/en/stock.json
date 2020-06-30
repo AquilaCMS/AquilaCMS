@@ -1,0 +1,29 @@
+{
+    "t1": "Stock & Orders",
+
+    "cartOrder": "Cart and order",
+    "delExp": "Time before cart expiration (hours)",
+    "fieldReq": "This field is required.",
+    "delAnn": "Time before orders waiting for payment cancelation (hours)",
+    "gestion": "Stock management",
+    "res": "Stock booking",
+    "cart": "Cart",
+    "order": "Order",
+    "payment": "Payment",
+    "none": "No stock managment",
+    "dispoLib": "Availability label",
+    "add": "Add",
+    "code": "Code",
+    "vats": "VAT values",
+    "vat":"VAT",
+    "edVat":"Create VAT",
+    "returnStockToFront": "Send stock info to front (require restart)",
+
+    "edLib": "Label edition",
+    "varDispo": "Available variable: ",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "valider": "Submit",
+    "additionnalFeesTax": "Additionnal fees (Tax)",
+    "additionnalFeesEt": "Additionnal fees (ET)"
+}

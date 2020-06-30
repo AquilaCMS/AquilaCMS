@@ -1,0 +1,31 @@
+{
+    "item": {
+        "ph1": "URL",
+        "ph2": "Name",
+        "ph3": "Description",
+        "ph4": "Redirect link",
+        "addImg": "Add a picture",
+        "url": "URL",
+        "nom": "Name",
+        "txt": "Text",
+        "link": "Link",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "valider": "Submit"
+    },
+    "detail": {
+        "t1": "Carousel Detail",
+        "t2": "New Carousel",
+        "code": "Code",
+        "lecAuto": "Auto Play",
+        "hoverPause": "Pause when hovering",
+        "lecLoop": "Loop Play",
+        "tps2Defil": "Time between 2 scrolls",
+        "add": "Add"
+    },
+    "list": {
+        "t1": "Carousel",
+        "code": "Code",
+        "imgs": "Pictures"
+    }
+}

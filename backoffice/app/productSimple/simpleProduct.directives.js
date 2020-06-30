@@ -1,0 +1,1 @@
+let ProductSimpleDirectives = angular.module('aq.simpleProduct.directives', []);

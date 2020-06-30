@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html ng-app="adminCatagenApp">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <base href="<%= adminPrefix %>">
+        <title>Admin : Aquila</title>
+        <link rel="shortcut icon" type="image/x-icon" href="css/images/favicon.ico">
+
+        <!-- Vendor Styles-->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,600">
+        <link rel="stylesheet" href="vendor/select/dropdown.css">
+        <link rel="stylesheet" href="vendor/select/scrollbar.css">
+        <link rel="stylesheet" href="vendor/jquery-ui-1.12.1.custom/jquery-ui.css">
+        <!-- App Styles-->
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/style_custom.css">
+        <link rel="stylesheet" href="css/slick.css">
+        <link rel="stylesheet" href="lib/angular-ui-tree/angular-ui-tree.min.css">
+        <link rel="stylesheet" href="lib/angular-color-picker-3.4.8/dist/angularjs-color-picker.min.css">
+        <link rel="stylesheet" href="lib/angular-input-dropdown/inputDropdownStyles.css">
+
+        <script src="lib/utils.js"></script>
+        <!-- Vendor JS-->
+        <script src="assets/js/jquery-2.0.3.min.js"></script>
+        <script src="vendor/select/core.js"></script>
+        <script src="vendor/select/dropdown.js"></script>
+        <script src="vendor/select/scrollbar.js"></script>
+        <script src="vendor/select/touch.js"></script>
+        <script src="vendor/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+        <!-- App JS-->
+        <script src="js/functions.js"></script>
+        <script src="assets/js/jquery-migrate-1.2.1.min.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+        <script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+        <script src="assets/js/jquery.ui.touch-punch.min.js"></script>
+        <script src="assets/js/jquery.sparkline.min.js"></script>
+        <script src="assets/js/jquery.autosize.min.js"></script>
+        <script src="assets/js/jquery.placeholder.min.js"></script>
+        <script src="assets/js/moment.min.js"></script>
+        <!-- <script src="assets/js/moment-timezone.min.js"></script> -->
+        <script src="assets/js/moment-timezone-with-data-2012-2022.js"></script>
+        <script src="assets/js/daterangepicker.min.js"></script>
+        <script src="assets/js/jquery.easy-pie-chart.min.js"></script>
+        <script src="assets/js/jquery.dataTables.min.js"></script>
+        <script src="assets/js/dataTables.bootstrap.min.js"></script>
+        <script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+        <script src="assets/js/jquery.noty.min.js"></script>
+        <script src="assets/js/jquery.raty.min.js"></script>
+        <script src="assets/js/jquery.gritter.min.js"></script>
+        <script src="assets/js/jquery.nestable.min.js"></script>
+        <script src="assets/js/jquery.mockjax.min.js"></script>
+        <script src="assets/js/bootstrap-editable.min.js"></script>
+        <script src="assets/js/typeahead.min.js"></script>
+        <script src="assets/js/typeaheadjs.min.js"></script>
+        <script src="assets/js/address.min.js"></script>
+        <script src="assets/js/select2.min.js"></script>
+        <script src="assets/js/pages/ui-nestable-list.js"></script>
+        <script src="assets/js/pages/ui-elements.js"></script>
+        <script src="assets/js/pages/form-x-editable-demo.js"></script>
+        <script src="assets/js/pages/form-x-editable.js"></script>
+        <script src="assets/js/datepicker-fr.js"></script>
+        <script src="lib/slick.min.js"></script>
+        <!-- theme scripts-->
+        <script src="assets/js/custom.min.js"></script>
+        <script src="assets/js/core.min.js"></script>
+        <script src="assets/js/pages/table.js"></script>
+        <!-- inline scripts related to this page-->
+        <script src="assets/js/pages/index.js"></script>
+        <script src="lib/angular/angular.min.js"></script>
+        <script src="lib/angular/i18n/angular-locale_fr-fr.js"></script>
+        <script src="lib/angular-translate/angular-translate.min.js"></script>
+        <script src="lib/angular/angular-resource.min.js"></script>
+        <script src="lib/angular/angular-route.min.js"></script>
+        <script src="lib/angular/angular-animate.min.js"></script>
+        <script src="lib/angular/angular-sanitize.min.js"></script>
+        <link href="lib/angular-xeditable/css/xeditable.css" rel="stylesheet">
+        <script src="lib/angular-xeditable/js/xeditable.min.js"></script>
+        <script src="lib/ng-bootstrap/ui-bootstrap-tpls-0.10.0.min.js"></script>
+        <script src="lib/ng-bootstrap/sortable.js"></script>
+        <script src="lib/ngInfiniteScroll/ng-infinite-scroll.min.js"></script>
+        <script src="lib/tinymce/tinymce.min.js"></script>
+        <script src="lib/ui-tinymce-master/src/tinymce.js"></script>
+        <script src="lib/angular-bind-html-compile/angular-bind-html-compile.min.js"></script>
+        <script src="lib/angular/angular-messages.min.js"></script>
+        <script src="aquilaCmsBlocks/aquilaCmsBlocks.js"></script>
+        <script src="lib/bootstrap-notify.min.js"></script>
+        <script src="lib/angular-ui-tree/angular-ui-tree.min.js"></script>
+        <script src="lib/angular-clipboard.js"></script>
+        <link rel="stylesheet" href="assets/css/angular-bootstrap-toggle.min.css">
+        <script src="assets/js/angular-bootstrap-toggle.min.js"></script>
+        <script src="lib/angular-color-picker-3.4.8/dist/tinycolor-min.js"></script>
+        <script src="lib/angular-color-picker-3.4.8/dist/angularjs-color-picker.js"></script>
+        <script src="lib/angular-input-dropdown/inputDropdown.js"></script>
+        <script src="lib/ng-file-upload/ng-file-upload-shim.min.js"></script>
+        <script src="lib/ng-file-upload/ng-file-upload.min.js"></script>
+        <script src="lib/angular-google-chart/ng-google-chart.min.js"></script>
+        <script src="app/app.js"></script>
+        <script src="js/services.js"></script>
+        <script src="js/controllers.js"></script>
+        <script src="js/filters.js"></script>
+        <script src="js/directives.js"></script>
+
+        <script src="app/home/home.controllers.js"></script>
+        <script src="app/home/home.module.js"></script>
+
+        <script src="app/product/product.module.js"></script>
+        <script src="app/product/product.routes.js"></script>
+        <script src="app/product/product.services.js"></script>
+        <script src="app/product/product.directives.js"></script>
+        <script src="app/product/product.controllers.js"></script>
+        <script src="app/product/product.filters.js"></script>
+        <!-- Simple -->
+        <script src="app/productSimple/simpleProduct.module.js"></script>
+        <script src="app/productSimple/simpleProduct.routes.js"></script>
+        <script src="app/productSimple/simpleProduct.services.js"></script>
+        <script src="app/productSimple/simpleProduct.directives.js"></script>
+        <script src="app/productSimple/simpleProduct.controllers.js"></script>
+        <!-- Bundle -->
+        <script src="app/productBundle/bundleProduct.module.js"></script>
+        <script src="app/productBundle/bundleProduct.routes.js"></script>
+        <script src="app/productBundle/bundleProduct.services.js"></script>
+        <script src="app/productBundle/bundleProduct.directives.js"></script>
+        <script src="app/productBundle/bundleProduct.controllers.js"></script>
+        <script src="app/productBundle/bundleProduct.filters.js"></script>
+        <!-- Virtual -->
+        <script src="app/productVirtual/product-virtual.module.js"></script>
+        <script src="app/productVirtual/product-virtual.routes.js"></script>
+        <script src="app/productVirtual/product-virtual.services.js"></script>
+        <script src="app/productVirtual/product-virtual.controllers.js"></script>
+
+        <script src="app/config/config.module.js"></script>
+        <script src="app/config/config.routes.js"></script>
+        <script src="app/config/config.services.js"></script>
+        <script src="app/config/config.directives.js"></script>
+        <script src="app/config/config.controllers.js"></script>
+        <script src="app/site/site.module.js"></script>
+        <script src="app/site/site.routes.js"></script>
+        <script src="app/site/site.services.js"></script>
+        <script src="app/site/site.directives.js"></script>
+        <script src="app/site/site.controllers.js"></script>
+        <script src="app/medias/medias.module.js"></script>
+        <script src="app/medias/medias.routes.js"></script>
+        <script src="app/medias/medias.services.js"></script>
+        <script src="app/medias/medias.directives.js"></script>
+        <script src="app/medias/medias.controllers.js"></script>
+        <script src="app/modules/modules.module.js"></script>
+        <script src="app/modules/modules.routes.js"></script>
+        <script src="app/modules/modules.controllers.js"></script>
+        <script src="app/translation/translation.controllers.js"></script>
+        <script src="app/translation/translation.routes.js"></script>
+        <script src="app/translation/translation.services.js"></script>
+        <script src="app/translation/translation.module.js"></script>
+        <script src="app/translation/translation.directives.js"></script>
+        <script src="app/translation/translation.filters.js"></script>
+        <script src="app/cmsBlocks/cmsBlocks.controllers.js"></script>
+        <script src="app/cmsBlocks/cmsBlocks.routes.js"></script>
+        <script src="app/cmsBlocks/cmsBlocks.services.js"></script>
+        <script src="app/cmsBlocks/cmsBlocks.module.js"></script>
+        <script src="app/cmsBlocks/cmsBlocks.directives.js"></script>
+
+        <script src="app/design/design.controllers.js"></script>
+        <script src="app/design/design.routes.js"></script>
+        <script src="app/design/design.services.js"></script>
+        <script src="app/design/design.module.js"></script>
+        <script src="app/translate/translate.controllers.js"></script>
+        <script src="app/translate/translate.routes.js"></script>
+        <script src="app/translate/translate.services.js"></script>
+        <script src="app/translate/translate.module.js"></script>
+        <script src="app/update/update.controllers.js"></script>
+        <script src="app/update/update.routes.js"></script>
+        <script src="app/update/update.services.js"></script>
+        <script src="app/update/update.module.js"></script>
+
+        <script src="app/staticPage/staticPage.controllers.js"></script>
+        <script src="app/staticPage/staticPage.routes.js"></script>
+        <script src="app/staticPage/staticPage.services.js"></script>
+        <script src="app/staticPage/staticPage.module.js"></script>
+        <script src="app/staticPage/staticPage.directives.js"></script>
+        <script src="app/family/family.controllers.js"></script>
+        <script src="app/family/family.routes.js"></script>
+        <script src="app/family/family.services.js"></script>
+        <script src="app/family/family.module.js"></script>
+        <script src="app/family/family.directives.js"></script>
+        <script src="app/category/category.controllers.js"></script>
+        <script src="app/category/category.routes.js"></script>
+        <script src="app/category/category.services.js"></script>
+        <script src="app/category/category.module.js"></script>
+        <script src="app/trademark/trademark.controllers.js"></script>
+        <script src="app/trademark/trademark.routes.js"></script>
+        <script src="app/trademark/trademark.module.js"></script>
+        <script src="app/trademark/trademark.services.js"></script>
+        <script src="app/attribute/attribute.controllers.js"></script>
+        <script src="app/attribute/attribute.module.js"></script>
+        <script src="app/attribute/attribute.routes.js"></script>
+        <script src="app/attribute/attribute.services.js"></script>
+        <script src="app/attributesSet/setAttributes.controllers.js"></script>
+        <script src="app/attributesSet/setAttributes.module.js"></script>
+        <script src="app/attributesSet/setAttributes.routes.js"></script>
+        <script src="app/attributesSet/setAttributes.services.js"></script>
+        <script src="app/client/client.controllers.js"></script>
+        <script src="app/client/client.module.js"></script>
+        <script src="app/client/client.routes.js"></script>
+        <script src="app/client/client.services.js"></script>
+        <script src="app/shipment/shipment.controllers.js"></script>
+        <script src="app/shipment/shipment.module.js"></script>
+        <script src="app/shipment/shipment.routes.js"></script>
+        <script src="app/shipment/shipment.services.js"></script>
+        <script src="app/shipment/shipment.filters.js"></script>
+        <script src="app/option/option.controllers.js"></script>
+        <script src="app/option/option.module.js"></script>
+        <script src="app/option/option.routes.js"></script>
+        <script src="app/optionsSet/setOptions.controllers.js"></script>
+        <script src="app/optionsSet/setOptions.module.js"></script>
+        <script src="app/optionsSet/setOptions.routes.js"></script>
+        <script src="app/order/order.controllers.js"></script>
+        <script src="app/order/order.routes.js"></script>
+        <script src="app/order/order.services.js"></script>
+        <script src="app/order/order.module.js"></script>
+        <script src="app/cart/cart.controllers.js"></script>
+        <script src="app/cart/cart.routes.js"></script>
+        <script src="app/cart/cart.services.js"></script>
+        <script src="app/cart/cart.module.js"></script>
+        <script src="app/payment/payment.controllers.js"></script>
+        <script src="app/payment/payment.routes.js"></script>
+        <script src="app/payment/payment.module.js"></script>
+        <script src="app/supplier/supplier.controllers.js"></script>
+        <script src="app/supplier/supplier.module.js"></script>
+        <script src="app/supplier/supplier.routes.js"></script>
+        <script src="app/supplier/supplier.services.js"></script>
+        <script src="app/territories/territories.module.js"></script>
+        <script src="app/territories/territories.routes.js"></script>
+        <script src="app/territories/territories.services.js"></script>
+        <script src="app/territories/territories.directives.js"></script>
+        <script src="app/territories/territories.controllers.js"></script>
+        <script src="app/job/job.controllers.js"></script>
+        <script src="app/job/job.module.js"></script>
+        <script src="app/job/job.services.js"></script>
+        <script src="app/job/job.routes.js"></script>
+        <script src="app/paymentMethod/paymentMethod.module.js"></script>
+        <script src="app/paymentMethod/paymentMethod.controllers.js"></script>
+        <script src="app/paymentMethod/paymentMethod.routes.js"></script>
+        <script src="app/paymentMethod/paymentMethod.services.js"></script>
+        <script src="app/paymentMethod/paymentMethod.directives.js"></script>
+        <script src="app/statistics/statistics.module.js"></script>
+        <script src="app/statistics/statistics.controllers.js"></script>
+        <script src="app/statistics/statistics.routes.js"></script>
+        <script src="app/statistics/statistics.services.js"></script>
+        <script src="app/dependencies/dependencies.module.js"></script>
+        <script src="app/stock/stock.module.js"></script>
+        <script src="app/stock/stock.controllers.js"></script>
+        <script src="app/stock/stock.routes.js"></script>
+        <script src="app/WYSIWYG/WYSIWYG.directives.js"></script>
+
+        <!-- ========== Composants Aquila ========== -->
+        <!-- config de gallery -->
+        <script src="app/gallery/gallery.module.js"></script>
+        <script src="app/gallery/gallery.routes.js"></script>
+        <script src="app/gallery/gallery.services.js"></script>
+        <script src="app/gallery/gallery.controllers.js"></script>
+        <!-- config de slider -->
+        <script src="app/slider/slider.module.js"></script>
+        <script src="app/slider/slider.routes.js"></script>
+        <script src="app/slider/slider.services.js"></script>
+        <script src="app/slider/slider.controllers.js"></script>
+        <!-- config de picto -->
+        <script src="app/picto/picto.module.js"></script>
+        <script src="app/picto/picto.controllers.js"></script>
+        <script src="app/picto/picto.routes.js"></script>
+        <script src="app/picto/picto.services.js"></script>
+        <!-- config des mails -->
+        <script src="app/mail/mail.module.js"></script>
+        <script src="app/mail/mail.controllers.js"></script>
+        <script src="app/mail/mail.routes.js"></script>
+        <script src="app/mail/mail.services.js"></script>
+        <!-- config des promos -->
+        <script src="app/promo/promo.module.js"></script>
+        <script src="app/promo/promo.controllers.js"></script>
+        <script src="app/promo/promo.routes.js"></script>
+        <script src="app/promo/promo.services.js"></script>
+        <!-- config des reviews -->
+        <script src="app/productReviews/productReviews.module.js"></script>
+        <script src="app/productReviews/productReviews.controllers.js"></script>
+        <script src="app/productReviews/productReviews.routes.js"></script>
+        <script src="app/productReviews/productReviews.services.js"></script>
+        <!-- contact -->
+        <script src="app/contact/contact.module.js"></script>
+        <script src="app/contact/contact.controllers.js"></script>
+        <script src="app/contact/contact.routes.js"></script>
+        <script src="app/contact/contact.services.js"></script>
+
+        <!-- themes -->
+        <script src="app/themes/themes.module.js"></script>
+        <script src="app/themes/themes.controllers.js"></script>
+        <script src="app/themes/themes.routes.js"></script>
+        <script src="app/themes/themes.services.js"></script>
+
+        <% tabM.forEach(function(item){ %>
+            <% item.files.forEach(function(file){ %>
+            <script src="app/<%= item.module %>/<%= file %>"></script>
+            <% }); %>
+        <% }); %>
+    </head>
+
+    <body ng-controller="PrincipalCtrl">
+        <%- include('includes/head'); %>
+        <div ng-controller="wrapperCtrl" class="wrapper">
+            <div class="container-wrap">
+                <div class="main">
+                    <%- include('includes/menu'); %>
+                    <div class="content">
+                        <div ng-view autoscroll="true"></div>
+                    </div>
+                </div>
+                <!-- /.main-->
+            </div>
+            <!-- /.container-wrap-->
+        </div>
+        <!--include includes/footer-->
+        <!-- /.wrapper-->
+    </body>
+</html>

@@ -1,0 +1,75 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save()" role="form">
+    <div class="modal-header">
+        <h3 translate>gallery.item.addMedia</h3>
+    </div>
+    <div class="modal-body">
+        <ul class="nav nav-tabs">
+            <li ng-show="!isEditMode || isEditMode && item.src" ng-class="{'active': !isEditMode || isEditMode && item.src}" ng-click="item.type = 'photo'">
+                <a data-toggle="tab" href="#photo" target="_self">{{isEditMode ? "gallery.item.edit" : "gallery.item.add" | translate}} <span translate>gallery.item.uneImg</span></a>
+            </li>
+            <li ng-show="!isEditMode || isEditMode && item.content" ng-class="{'active': isEditMode && item.content}" ng-click="item.type = 'video'">
+                <a data-toggle="tab" href="#video" target="_self">{{isEditMode ? "gallery.item.edit" : "gallery.item.add" | translate}} <span translate>gallery.item.uneVideo</span></a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="photo" class="tab-pane fade" ng-class="{'in active': !isEditMode || isEditMode && item.src}">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="box-content form-group" ng-show="isEditMode">
+                            <div class="col-sm-4 text-center">
+                                <div ng-show="showLoader" class="uploadOverlayAddImage">
+                                    <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                                </div>
+                                <div class="pointer boxShadow" style="padding-top: 100%; background: #ffffff url({{getImage(item)}}) center; background-size: cover; border-radius:4px; cursor: default;">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-8">
+                                <label for="image_url" class="col-sm-4 control-label" translate>gallery.item.url</label>
+                                <div class="col-sm-8" style="margin-bottom: 30px">
+                                    <input id="image_url" class="form-control" translate translate-attr-placeholder='gallery.item.ph1' ng-model="item.src" disabled />
+                                </div>
+
+                                <label for="image_alt" class="col-sm-4 control-label" translate>gallery.item.info</label>
+                                <div class="col-sm-8">
+                                    <input id="image_alt" class="form-control" translate translate-attr-placeholder='gallery.item.ph2' ng-model="item.alt" />
+                                </div>
+                            </div>
+                        </div>
+                        <ns-upload-files accepttype="image/*" multiple="false" type="gallery" id="gallery._id" entity="item" images="gallery.items" showalt="true" after-function="close(isEditMode)"></ns-upload-files>
+                    </div>
+                </div>
+            </div>
+            <div id="video" class="tab-pane fade" ng-class="{'in active': isEditMode && item.content}">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="box-content form-group">
+                            <div class="col-sm-4">
+                                <div class="boxShadow" style="padding-top: 100%; background: url(https://img.youtube.com/vi/{{item.content}}/0.jpg) no-repeat center; background-size: cover; border-radius:4px;"
+                                    ng-style="{'background-image': 'url(https://img.youtube.com/vi/{{item.content}}/0.jpg)'}"></div>
+                            </div>
+
+                            <div class="col-sm-8">
+                                <label for="video_content" class="col-sm-4 control-label" translate>gallery.item.ytID</label>
+                                <div class="col-sm-8" style="margin-bottom: 30px">
+                                    <input id="video_content" class="form-control" translate translate-attr-placeholder='gallery.item.ph3' ng-model="item.content" ng-disabled="isEditMode"
+                                    />
+                                </div>
+
+                                <label for="video_alt" class="col-sm-4 control-label" translate>gallery.item.info</label>
+                                <div class="col-sm-8">
+                                    <input id="video_alt" class="form-control" translate translate-attr-placeholder='gallery.item.ph2' ng-model="item.alt" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button ng-show="isEditMode" class="btn btn-danger" ng-click="delete($event)" translate>gallery.item.delete</button>
+        <button class="btn btn-default" ng-click="cancel($event)" translate>gallery.item.cancel</button>
+        <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>gallery.item.save</button>
+    </div>
+</form>

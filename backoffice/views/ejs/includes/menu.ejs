@@ -1,0 +1,481 @@
+<nav class="nav-fixed">
+
+    <select class="nav-margin form-control hidden" style="padding: 0 5px" ng-model="adminLang" ng-change="adminLangChange(adminLang)">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+    </select>
+    <select class="nav-margin form-control" ng-model="adminLang" ng-change="adminLangChange(adminLang)">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+    </select>
+
+    <ul>
+        <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-handshake-o fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.transactions</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/orders" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-shopping-cart fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.commandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/payments" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-credit-card fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.paiements</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/invoices" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-usd fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.factures</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/cart" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-opencart fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.carts</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-database fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.catalogue</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/products" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-cubes fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.produits</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/categories" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-list-ul fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.categories</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/promos" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-percent fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.promotion</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/picto" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-gratipay fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.picto</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/products/setAttributes" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-align-justify fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.jeuxAttributs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/products/attributes" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-align-center fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.attributs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/trademarks" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-creative-commons fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.marques</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/suppliers" class="menuClick">
+                        <span class="icon">
+                                <i class="fa fa-industry fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.fournisseurs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/families" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-shopping-bag fa-lg"></i>
+                        </span>
+                        <span translate>menu.familles</span>
+                    </a>
+                </li>
+                <!-- <li>
+                    <a href="#/setOptions" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-align-left fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.jeuxOptions</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/opts" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-align-right fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.options</span>
+                    </a>
+                </li> -->
+            </ul>
+        </li>
+
+
+        <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-desktop fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.site</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/staticPage" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-file-text fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.pages</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/cmsBlocks" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-file-code-o fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.BlocsCMS</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/component/gallery" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-picture-o fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.galerie</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/component/slider" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-film fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.carousel</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/medias" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-file-image-o fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.medias</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/site/articles" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-newspaper-o fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.article</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+
+        <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-users fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.clients</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/clients" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-users fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.clients</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/users/setAttributes" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-align-justify fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.jeuxAttributs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/users/attributes" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-align-center fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.attributs</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/reviews" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-star-half-o fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.avis</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/contacts" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-id-card fa-lg i-style"></i>
+                        </span>
+                        <span>Contacts</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-wrench fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.configuration</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/config/environment" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-cogs fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.environnement</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/stock" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-cog fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.stock&commandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/mails" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-envelope fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.mails</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/shipments" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-truck fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.modesExpedition</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="#/territories" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-globe fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.territories</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/languages" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-flag fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.langues</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/paymentMethods" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-credit-card-alt fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.modesPaiement</span>
+                    </a>
+                </li>
+                <li>
+                    <a href='#/jobs' , class='menuClick'>
+                        <span class="icon"></span>
+                        <i class="fa fa-tasks fa-lg i-style"></i>
+                        <span translate>menu.tachesPlanifiees</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/list" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-shield fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/update" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-medkit  fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.update</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-desktop fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.design</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/themes" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-desktop fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.themes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/site/design" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-paint-brush fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.css</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/site/translate" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-language fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.translate</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="parent">
+            <a href="#/modules" class="menuClick">
+                <span class="main-icon">
+                    <i class="fa fa-plug fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.modules</span>
+                </span>
+            </a>
+        </li>
+
+
+        <li ng-repeat="menu in menus" class="parent">
+            <a href="#{{menu.route}}" class="menuClick">
+                <span class="main-icon">
+                    <i class="{{menu.icon || 'fa fa-cog fa-2x i-style'}}"></i>
+                </span>
+                <span class="nav-content" ng-if="menu.multilang">
+                    <span translate>{{menu.title}}</span>
+                </span>
+                <span class="nav-content" ng-if="!menu.multilang">
+                    <span>{{menu.title}}</span>
+                </span>
+            </a>
+        </li>
+
+
+       <li class="parent">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-bar-chart fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span>Stats</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li>
+                    <a href="#/statistics" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-bar-chart fa-lg i-style"></i>
+                        </span>
+                        <span>General</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/statistics/sells" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-bar-chart fa-lg i-style"></i>
+                        </span>
+                        <span>Sells</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#/statistics/clients" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-bar-chart fa-lg i-style"></i>
+                        </span>
+                        <span>Clients</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+
+    </ul>
+
+<br/><br/><br/><br/><br/><br/>
+
+</nav>

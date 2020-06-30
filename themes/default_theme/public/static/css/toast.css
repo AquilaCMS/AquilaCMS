@@ -1,0 +1,14 @@
+.toast {
+    width        : 300px;
+    padding      : 10px;
+    z-index       : 9999;
+    position     : fixed;
+    top          : 20px;
+    right        : 20px;
+    border-radius : 5px;
+}
+
+.toast p {
+    font-size: 16px;
+    margin: 0;
+}

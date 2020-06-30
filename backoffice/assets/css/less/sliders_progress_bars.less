@@ -1,0 +1,214 @@
+/* UI - Sliders & Progress
+=================================================================== */
+.slider {
+	background: lighten(@grey, 20%);
+	border: none;
+	height: 10px;
+	position: relative;
+	z-index: 10;
+	margin: 5px 0px !important;
+	
+	.ui-slider-range {
+		position: absolute;
+		.box-sizing(content-box);
+	}
+	
+	&.small {
+		height: 6px;
+	}
+
+}
+
+.ui-slider-handle {
+	border: 1px solid lighten(@grey, 10%);
+	outline: none !important;
+}
+
+.ui-slider-horizontal {
+	
+	.ui-slider-handle {
+		background: url("../img/handle.png") no-repeat center center scroll white !important;
+		background-position: 50% 50%;
+		background-size: 8px 8px !important;
+	}
+
+}
+
+.ui-slider-horizontal {
+
+	&.small {
+
+		.ui-slider-handle {
+			background: url("../img/handle.png") no-repeat center center scroll white !important;
+			background-position: 50% 50%;
+			background-size: 8px 8px !important;
+			width: 14px !important;
+			height: 14px !important;
+		}
+
+	}	
+	
+}
+
+.sliderVertical {
+	background: lighten(@grey, 20%);
+	border: none;
+	top: auto;
+	bottom: auto;
+	width: 10px !important;
+	position: relative;
+	float: left;
+    height: 100px;
+    margin: 10px 20px;
+    width: 5px;
+	
+	.ui-slider-range {
+		height: 100%;
+		width: 100%;
+		top: auto;
+		bottom: auto;
+		.border-radius(2px);
+		.box-sizing(content-box);
+
+	}
+	
+	.ui-slider-handle {
+		background: url("../img/handlev.png") no-repeat center center scroll white !important;
+		background-position: 50% 50%;
+		background-size: 8px 8px !important;
+		left: 50%;
+		margin: 9px 0px -9px -9px !important;
+	}
+
+	.ui-slider-range-max {
+		top: 0;
+	}
+
+	.ui-slider-range-min {
+		bottom: 0;
+	}
+	
+	&.small {
+		width: 6px !important;
+		position: relative;
+		float: left;
+	    height: 100px;
+	    margin: 10px 20px;
+	    width: 5px;
+	
+		.ui-slider-handle {
+			background: url("../img/handlev.png") no-repeat center center scroll white !important;
+			background-position: 50% 50%;
+			background-size: 8px 8px !important;
+			width: 14px;
+			height: 14px;
+			margin: 0px 0px -7px -7px !important;
+		}
+	
+	}
+
+}
+
+.sliderBlue .ui-slider-range, .progressBlue .ui-progressbar-value {
+	background: @blue;
+}
+
+.sliderGreen .ui-slider-range, .progressGreen .ui-progressbar-value {
+	background: @green;
+}
+
+.sliderDarkGreen .ui-slider-range, .progressDarkGreen .ui-progressbar-value {
+	background: @darkGreen;
+}
+
+.sliderPink .ui-slider-range, .progressPink .ui-progressbar-value {
+	background: @pink;
+}
+
+.sliderOrange .ui-slider-range, .progressOrange .ui-progressbar-value {
+	background: @orange;
+}
+
+.sliderLightOrange .ui-slider-range, .progressLightOrange .ui-progressbar-value {
+	background: @lightOrange;
+}
+
+.sliderRed .ui-slider-range, .progressRed .ui-progressbar-value {
+	background: @red;
+}
+
+.sliderYellow .ui-slider-range, .progressYellow .ui-progressbar-value {
+	background: @yellow;
+}
+
+.progress {
+	background: lighten(@grey, 20%);
+	color: lighten(@grey, 20%);
+	border: none;
+	height: 14px;
+	.box-shadow;
+	position: relative;
+	margin-top: -2px;
+	
+	.ui-progressbar-value {
+		border: none;
+		height: 100%;
+		top: 1px;
+		position: absolute;
+		left: 1px;
+		.box-shadow;
+		.border-radius(2px);
+	}
+	
+	&.slim {
+		height: 10px;
+	}
+	
+}
+
+.progressBarValue {
+	
+	span {
+		font-size: 12px;
+	}
+	
+	span.progressCustomValueVal {
+		font-size: 18px; 
+		font-weight: 700; 
+		padding:0 5px; 
+		color: @orange;
+	}
+	
+}
+
+.progressSlim {
+	background: lighten(@grey, 10%);
+	border: none;
+	height: 10px;
+	position: relative;
+	margin-top: -2px;
+	
+	.ui-progressbar-value {
+		border-color: transparent;
+		height: 100%;
+		top: 0px;
+		position: absolute;
+		left: 0px;
+		.border-radius(2px);
+	}
+}
+
+.tasks .progressSlim {
+	overflow: hidden;
+	border: none !important;
+	height: 8px;
+	.box-shadow;
+	margin-top: 0px;
+	
+	.ui-progressbar-value {
+		overflow: hidden;
+		margin: 0px;
+		border: none !important;
+	}
+	
+}

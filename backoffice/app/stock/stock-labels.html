@@ -1,0 +1,30 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="validLabel()" role="form">
+    <div class="modal-header">
+        <h3 translate>stock.edLib</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <div class="col-sm-11">
+                <label class="col-sm-5 control-label" translate>stock.code</label>
+                <div class="col-sm-6">
+                    <input id="code" class="form-control" ng-model="label.code" ng-disabled="isEditMode" required />
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="form-group" ng-repeat="lang in languages">
+            <div class="col-sm-11">
+                <label class="col-sm-5 control-label">{{lang.name}}</label>
+                <div class="col-sm-6">
+                    <input class="form-control" ng-model="label.translation[lang.code].value" />
+                </div>
+            </div>
+        </div>
+        <em class="pull-right text-right"><span translate>stock.varDispo</span>{date}</em>
+    </div>
+    <div class="modal-footer">
+        <button ng-show="isEditMode" class="btn btn-danger" ng-click="delete($event)" translate>stock.delete</button>
+        <button class="btn btn-default" ng-click="cancel($event)" translate>stock.cancel</button>
+        <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>stock.valider</button>
+    </div>
+</form>

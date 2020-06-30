@@ -1,0 +1,30 @@
+<ns-box data-title="contact.detail.t1" title-icon="fa fa-id-card fa-lg">
+    <form name="form" class="form-horizontal" novalidate role="form">
+        <ns-buttons is-edit-mode="false" disable-save="true" return-path="/contacts" form="form">
+            <div class="box-content">
+                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
+                    <div>
+                        <h3 style="margin: 30px 0px 30px 20px;">ID Contact: {{contact._id}}</h3>
+                        <div class="col-md-8">
+                            <div class="box subbox">
+                                <div class="box-header">
+                                    <h2 translate>contact.detail.datas</h2>
+                                </div>
+                                <div class="box-content">
+                                    <div class="form-group" ng-repeat="key in keys" style="height: 20px;">
+                                        <div class="col-sm-12">
+                                            <label for="lastname" class="col-sm-2 control-label">{{key}}</label>
+                                            <div class="col-sm-10" style="padding-top: 7px;">
+                                                <p>{{contact.data[key]}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ns-buttons>
+    </form>
+</ns-box>

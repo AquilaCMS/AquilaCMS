@@ -1,0 +1,59 @@
+<div class="modal-header">
+    <ol class="breadcrumb">
+        <li style="font-weight: bold;" translate>order-info-payment.payedOrder</li>
+    </ol>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box-content">
+                <form name="form" novalidate class="form-horizontal" role="form">
+                    <div class="row">
+                            <div class="col-sm-12">
+                                <label class="col-sm-2 control-label" translate>order-info-payment.payMode</label>
+                                <div class="col-sm-10">
+                                    <select name="mode" class="form-control" ng-model="return.mode" required>
+                                        <option value="CHEQUE" translate>order-info-payment.cheque</option>
+                                        <option value="TRANSFER" translate>order-info-payment.vir</option>
+                                    </select>
+                                    <div ng-show="form.mode.$invalid" class="ns-error-message">
+                                        <div ng-show="form.mode.$error.required" translate>order-info-payment.fieldReq</div>
+                                    </div>
+                                </div>
+                            </div>
+                        <br>
+                        <br>
+                        <br>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label for="comment" class="col-sm-2 control-label" translate>order-info-payment.det</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="comment" name="comment" ng-model="return.comment" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-sm-12">
+
+                                    <div class="col-sm-6">
+                                        <label class="col-sm-6 control-label" translate>order-info-payment.mailCli</label>
+                                        <div class="col-sm-6">
+                                            <ns-switch name="sendMail" ng-model="return.sendMail"></ns-switch>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div ng-show="error" class="col-sm-12 col-md-7 text-left ns-error-message">{{error}}</div>
+    <button class="btn btn-default" ng-click="cancel()" translate>order-info-payment.cancel</button>
+    <button class="btn btn-default" ng-click="validateInfoPayment()" ng-disabled="form.$invalid" translate>order-info-payment.valider</button>
+</div>

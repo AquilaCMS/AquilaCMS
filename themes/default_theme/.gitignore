@@ -1,0 +1,11 @@
+node_modules/
+.history/
+.next/
+build/
+modules/
+static/\.DS_Store
+.DS_Store/
+.idea/
+coverage/
+.nyc_output/
+yarn.lock

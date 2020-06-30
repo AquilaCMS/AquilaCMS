@@ -1,0 +1,41 @@
+{
+    "item": {
+        "ph1" :"Ajouter un titre",
+        "ph2": "Ajouter une description",
+        "title": "Titre",
+        "couleurTitre": "Couleur titre",
+        "couleurFond": "Couleur fond",
+        "de": "de",
+        "a": "à",
+        "recurrence": "Récurrence",
+        "aucune": "aucune",
+        "journalier": "journalier",
+        "hebdomadaire": "hebdomadaire",
+        "mensuel": "mensuel",
+        "description": "Description",
+        "supprimer": "Supprimer",
+        "annuler": "Annuler",
+        "enregistrer": "Enregistrer"
+    },
+    "detail": {
+        "t1": "Détail Agenda",
+        "t2": "Nouvel Agenda",
+        "edit": "Détail agenda",
+        "new": "Nouvel agenda",
+        "code": "Code",
+        "title": "Titre",
+        "typeAgenda": "Type d'agenda",
+        "simplifie": "Simplifié",
+        "normal": "Normal",
+        "lie": "Lié",
+        "heureMin": "Heure min",
+        "heureMax": "Heure max"
+    },
+    "list": {
+        "t1": "Agenda",
+        "type": "Type",
+        "event": "Événement",
+        "code": "Code",
+        "title": "Titre"
+    }
+}

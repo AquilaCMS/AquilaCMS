@@ -1,0 +1,123 @@
+{
+    "required_fields": "Ces champs sont obligatoires",
+    "title": "MON ESPACE CLIENT",
+    "sidebar": {
+        "account": "MON COMPTE",
+        "coordinates": "Mes coordonnées",
+        "addresses": "Mes adresses",
+        "GDPR": "Mes données personnelles",
+        "trackingOrder": "SUIVI DE COMMANDE",
+        "orders": "Mes commandes",
+        "logout": "Se déconnecter"
+    },
+    "account": {
+        "title": "Mes coordonnées",
+        "sub_title": "Mes coordonnées",
+        "success_msg": {
+            "saved_info": "Informations sauvegardées",
+            "mail_sent": "Vous allez recevoir un mail contenant les instruction nécessaires!"
+        },
+        "error_msg": {
+            "general": "Une erreur est survenue"
+        },
+        "page": {
+            "label": {
+                "id": "Mes identifiants",
+                "email": "Email",
+                "change_password": "Changer de mot de passe",
+                "subscribe_newsletter": "Je m'abonne à la newsletter",
+                "send_mail_verif": "Ré-envoyer l'email de vérification de mon compte",
+                "lastname": "Nom",
+                "firstname": "Prénom",
+                "company": "Société",
+                "validate": "Valider",
+                "preferredLanguage": "Langue favorite"
+            }
+        }
+    },
+    "addresses": {
+        "title": "Mes adresses",
+        "sub_title": "Mes adresses"
+    },
+    "orders": {
+        "title": "Mes commandes",
+        "sub_title": "Mes commandes",
+        "page": {
+            "label": {
+                "order_num": "Commande n°",
+                "article": "Article",
+                "unit_price": {
+                    "et": "Prix unitaire HT",
+                    "ati": "Prix unitaire TTC"
+                },
+                "total": {
+                    "et": "Prix HT",
+                    "ati": "Prix TTC"
+                },
+                "vat_included": "Dont TVA",
+                "shipping_included": "Dont Frais de port",
+                "shipped": "Expédié",
+                "delivery_date": "Livré le",
+                "to_address": "à l’adresse",
+                "delivery": "Adresse de livraison",
+                "to": "à",
+                "payment_mode": "Mode de paiement",
+                "delivery_mode": "Mode de livraison",
+                "paidTax": {
+                    "et": "Payé en HT",
+                    "ati": "Payé en TTC"
+                },
+                "follow": "Suivre le",
+                "follow_my_order": "Suivre ma commande",
+                "total_order": {
+                    "et": "TOTAL HT commande",
+                    "ati": "TOTAL TTC commande"
+                },
+                "total_delivery": {
+                    "et": "Total livraison HT",
+                    "ati": "Total livraison TTC"
+                },
+                "additionnal_fees": "Frais sup. TTC",
+                "discount_code": "Code avantage",
+                "contact_us": "Nous contacter",
+                "download_bill": "Télécharger ma facture",
+                "download_asset": "Télécharger mon avoir",
+                "return_article": "Retourner un article",
+                "no_order": "Aucune commande",
+                "payment_mode_card": "Carte bancaire",
+                "payment_mode_transfert": "Virement",
+                "discount": "Réduction",
+                "discount_apply": "appliqué sur",
+                "cart_discount": "Réduction panier :",
+                "download": "Télécharger",
+                "cancel_order": "Annuler la commande",
+                "confirm_cancel_order": "Êtes-vous certain de vouloir annuler cette commande ?"
+            }
+        }
+    },
+    "rgpd": {
+        "title": "Mes données personnelles",
+        "sub_title": "Mes données personnelles",
+        "accountRemoved": "Votre compte a bien été supprimé. Vous allez être redirigé ...",
+        "accountAnonymized": "Votre compte a bien été anonymisé. Merci de vous reconnecter.",
+        "page": {
+            "label": {
+                "export_data": "Récupérer toutes les données vous concernant",
+                "anonymized_data": "Anonymise toutes les informations vous conernant (attention votre compte ne sera plus disponible suite à cette action)",
+                "remove_account": "Supprime définitivement votre compte",
+                "yes": "Oui",
+                "no": "Non"
+            },
+            "button": {
+                "export_data": "EXPORTER MES DONNÉES",
+                "anonymized_data": "ANONYMISER MES DONNÉES",
+                "remove_account": "SUPPRIMER MON COMPTE"
+            },
+            "modal": {
+                "cannot_revert": "Cette action est irréversible !",
+                "anonymized_data": "Souhaitez-vous anonymiser vos données ?",
+                "remove_account": "Souhaitez-vous supprimer votre compte ?"
+            }
+        }
+    }
+}

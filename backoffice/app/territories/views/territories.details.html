@@ -1,0 +1,47 @@
+<ns-box data-title="territories.details.t1" title-icon="fa fa-globe fa-lg" close-href="#/territories">
+    <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(territory._id, false)">
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(territory._id)" save-and-quit="save()"
+            disable-save="disableSave" return-path="/territories" form="form">
+
+                <br/><br/>
+
+                <div id="detail" class="tab-pane fade in active">
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+
+                    <input type="hidden" value="" name="id" id="template" ng-model="territory._id">
+
+                    <div class="form-group">
+                        <label for="code" class="col-sm-2 control-label">Type</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" disabled>
+                                <option translate>territories.listing.country</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="code" class="col-sm-2 control-label" translate>territories.listing.code</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="code" translate ng-model="territory.code" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>territories.listing.name</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="name" translate ng-model="territory.translation[lang].name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="isTaxeFree" class="col-sm-2 control-label" translate>territories.details.taxeFree</label>
+                        <div class="col-sm-3">
+                            <ns-switch ng-model="territory.taxeFree" yes-value="true" no-value="false" name="isTaxeFree" id="isTaxeFree"></ns-switch>
+                        </div>
+                    </div>
+
+
+                </div>
+        </ns-buttons>
+    </form>
+</ns-box>
