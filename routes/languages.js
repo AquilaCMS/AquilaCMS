@@ -11,7 +11,7 @@ const {authentication, adminAuth} = require("../middleware/authentication");
 const {securityForceFilter}       = require('../middleware/security');
 const {middlewareServer}          = require('../middleware');
 const servicesLanguages           = require("../services/languages");
-const utils                       = require('../utils/utils');
+const mediasUtils                 = require('../utils/medias');
 const NSErrors                    = require("../utils/errors/NSErrors");
 
 module.exports = function (app) {
@@ -140,7 +140,7 @@ const remove = async (req, res, next) => {
         return res.status(304).end();
     }
 
-    await utils.deleteFile(`${lang.img}`);
+    await mediasUtils.deleteFile(`${lang.img}`);
     const removePromises = [];
     const models         = [Products, Categories, Statics, Attributes, CmsBlocks, Configuration];
     for (let i = 0; i < models.length; i++) {

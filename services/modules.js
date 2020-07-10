@@ -444,8 +444,8 @@ const activateModule = async (idModule, toBeChanged) => {
 
     if (myModule.loadTranslationBack) {
         console.log("Loading back translation for module...");
-        const copy  = path.resolve(`backoffice/assets/translations/modules/${myModule.name}`);
-        const copyF = path.resolve(`modules/${myModule.name}/translations/back/`);
+        const copy  = path.resolve(global.appRoot, `backoffice/assets/translations/modules/${myModule.name}`);
+        const copyF = path.resolve(global.appRoot, `modules/${myModule.name}/translations/back/`);
         if (await fs.access(copyF, fs.constants.W_OK)) {
             try {
                 await fs.copyRecursiveSync(copyF, copy, true);
@@ -462,8 +462,8 @@ const activateModule = async (idModule, toBeChanged) => {
         const files = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
         files.splice(files.indexOf('index.js'), 1);
         for (let i = 0; i < files.length; i++) {
-            const copy  = path.resolve(`themes/${currentTheme}/assets/i18n/${files[i]}/modules/${myModule.name}`);
-            const copyF = path.resolve(`modules/${myModule.name}/translations/front/${files[i]}/`);
+            const copy  = path.resolve(global.appRoot, `themes/${currentTheme}/assets/i18n/${files[i]}/modules/${myModule.name}`);
+            const copyF = path.resolve(global.appRoot, `modules/${myModule.name}/translations/front/${files[i]}/`);
             if (await fs.access(copyF, fs.constants.W_OK)) {
                 try {
                     await fs.copyRecursiveSync(copyF, copy, true);

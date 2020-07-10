@@ -371,21 +371,25 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             {code:"statistics", translate:"admin-list.statistics"}
         ];
 
-        $scope.save = function (user)
+        $scope.save = function (quit = false)
         {
             var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            if(user.email === "" || user.email === undefined || !re.test(user.email))
+            if($scope.user.email === "" || $scope.user.email === undefined || !re.test($scope.user.email))
             {
                 toastService.toast("danger", "L'email n'est pas valide");
                 return;
             }
 
-            if(user.email && user.password && user.firstname && user.lastname)
+            if($scope.user.email && $scope.user.password && $scope.user.firstname && $scope.user.lastname)
             {
-                user.isAdmin = true;
-                ClientV2.save(user, function (response)
+                $scope.user.isAdmin = true;
+                console.log($scope.user)
+                ClientV2.save({type: 'user'}, $scope.user, function (response)
                 {
                     toastService.toast("success", "Informations sauvegardées !");
+                    if(quit) {
+                        $location.path("/list")
+                    }
                     //$location.path("/list");
                 }, function (err)
                 {

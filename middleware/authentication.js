@@ -42,7 +42,7 @@ const adminAuth = async (req, res, next) => {
 };
 
 const generateJWTToken = (res, user, isAdmin) => {
-    let token = jwt.sign({type: "USER", userId: user._id, info: user}, global.envFile.jwt.secret, {
+    let token = jwt.sign({type: "USER", userId: user._id, info: {_id: user._id, email: user.email, isAdmin: user.isAdmin, active: user.active}}, global.envFile.jwt.secret, {
         expiresIn : 172800 // 48 hours in second
     });
     token = `JWT ${token}`;

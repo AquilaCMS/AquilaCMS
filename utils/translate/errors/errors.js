@@ -263,6 +263,10 @@ module.exports = {
         fr : "Email invalide",
         en : "Invalid email"
     },
+    EmailFormatInvalid : {
+        fr : "Format de l'email est invalide",
+        en : "Email format is invalid"
+    },
     MailUpdateNoTypeError : {
         fr : "Impossible de mettre le type de mail à \"noType\" le mail",
         en : "Cannot update email type to \"noType\""

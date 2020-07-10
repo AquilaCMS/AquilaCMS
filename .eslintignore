@@ -1,5 +1,6 @@
 node_modules/
 themes/
+documentations/
 
 modules/**
 updates/

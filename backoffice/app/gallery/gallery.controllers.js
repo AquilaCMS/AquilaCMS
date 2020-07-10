@@ -151,7 +151,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
                 toastService.toast("success", $translate.instant('gallery.item.updated'));
                 $modalInstance.close();
             }, function (response) {
-                toastService.toast("danger", response.data.translations.fr);
+                toastService.toast("danger", response.data.message);
             });
         };
 

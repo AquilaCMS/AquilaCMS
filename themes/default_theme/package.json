@@ -26,7 +26,7 @@
     "lightbox-react": "0.3.7",
     "react-i18next": "7.13.0",
     "react-paginate": "6.3.2",
-    "react-responsive-modal": "5.0.2",
+    "react-responsive-modal": "3.6.0",
     "react-slick": "0.26.1"
   },
   "devDependencies": {

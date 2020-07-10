@@ -6,7 +6,7 @@
         "createAttr": "CREATE ATTRIBUTE",
         "type": "Type",
         "addQuestion": "Add question",
-        "descriptionQuestion": "Criteria for which a customer will be able to rate the product, exemple: Price-quality relationship, Product's fluidity... ",
+        "descriptionQuestion": "Criteria where a customer will be able to rate the product, exemple: Price-quality relationship, Product's fluidity... ",
         "tab": {
             "setAttr": "Set attributes",
             "question": "Questions"

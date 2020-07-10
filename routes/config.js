@@ -9,7 +9,7 @@ const fs                          = require('../utils/fsp');
 module.exports = function (app) {
     app.put('/v2/config', authentication, adminAuth, save);
     app.post('/v2/config/sitename', getSiteName);
-    app.post('/v2/config/:key',  getConfigV2);
+    app.post('/v2/config/:key?',  getConfigV2);
 
     app.get('/config/sitename', getSiteName);
     app.post('/config/save', authentication, adminAuth, save);

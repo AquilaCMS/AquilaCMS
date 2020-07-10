@@ -256,10 +256,10 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 MediaApi.list(function (response) {
                                     $scope.medias = response;
                                 });
-                        
+
                                 $scope.size = {};
                                 $scope.size.max = true;
-                        
+
                                 $scope.changeSwitch = function(){
                                     if ($scope.size.max === true){
                                         $scope.size.max = false;
@@ -267,14 +267,14 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         $scope.size.max = true;
                                     }
                                 }
-                        
+
                                 $scope.link = "url.png";
-                        
+
                                 $scope.selectImage = function(image){
                                     $scope.imageId = image._id;
                                     $scope.imageSelected = image.link;
                                 };
-                                
+
                                 $scope.ok = function () {
                                     let url = $scope.imageSelected.split('medias/')[1];
                                     if($scope.size.max){
@@ -282,14 +282,14 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     }else{
                                         url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
                                     }
-                                    // url = 
+                                    // url =
                                     $modalInstance.close(url);
                                 };
-                        
+
                                 $scope.cancel = function () {
                                     $modalInstance.dismiss('cancel');
                                 };
-                        
+
                             }],
                             resolve: {
                             }
@@ -485,7 +485,7 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                 case "textarea":
                 case "Zone de texte":
                     el.append("<div class='col-sm-10'><div class='tinyeditor-small'><ns-tinymce text='att.translation[lang].value'></ns-tinymce></div></div>");
-                    break; 
+                    break;
                 case "bool":
                 case "Booléen (oui/non)":
                     el.append("<div class='col-sm-10'><label><ns-switch name='{{att.code}}' ng-model='att.translation[lang].value'></ns-switch></div>");
@@ -1125,7 +1125,7 @@ adminCatagenDirectives.directive("nsRule", [
                     {value: "lte", translate: "ns.lte"},
                     {value: "lt", translate: "ns.lt"}
                 ];
-                
+
                 $scope.getAttributes = function ()
                 {
                     $scope.attributesClassed = [];
@@ -1709,9 +1709,6 @@ adminCatagenDirectives.directive("nsRule", [
                             });
                         }
 
-                        console.log(attr)
-                        console.log($scope.rule.conditions[index])
-
                         if(attr.type === "select" || attr.type === "multiselect")
                         {
                             if(attr.type && attr.name === attr.type)
@@ -1769,7 +1766,7 @@ adminCatagenDirectives.directive("nsRule", [
                             return operator;
                     }
                 }
-        
+
                 function convertRules() {
                     if ($scope.rule && $scope.rule.conditions) {
                         for (let condition of $scope.rule.conditions) {

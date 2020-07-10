@@ -17,7 +17,7 @@ AttributeControllers.controller("AttributeListCtrl", [
             let PostBody = {
                 filter : {
                     _type          : $scope._type,
-                    set_attributes : {$gt: []},                    
+                    set_attributes : {$gt: []},
                 },
                 structure: '*',
                 populate : 'set_attributes',

@@ -5,6 +5,7 @@ const url              = require('url');
 const ServiceLanguages = require("./languages");
 const encryption       = require('../utils/encryption');
 const utils            = require("../utils/utils");
+const mediasUtils       = require('../utils/medias');
 const NSErrors         = require("../utils/errors/NSErrors");
 const {
     Users,
@@ -121,7 +122,7 @@ async function checkUniqueType(type) {
  * @description supprime le mail dont l'_id est passé en parametre
  * @param {ObjectId} _id
  */
-const deleteMail = async (_id) => {
+const deleteMail = async (_id, lang = "fr") => {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
         throw NSErrors.InvalidObjectIdError;
     }
@@ -129,8 +130,8 @@ const deleteMail = async (_id) => {
     if (!doc) {
         throw NSErrors.MailNotFound;
     }
-    if (doc.attachments && doc.attachments.length !== 0) {
-        await utils.deleteFile(doc.attachments[0].path);
+    if (doc.translation[lang].attachments && doc.translation[lang].attachments.length !== 0) {
+        await mediasUtils.deleteFile(doc.translation[lang].attachments[0].path);
     }
     return doc;
 };
@@ -142,7 +143,7 @@ const sendMailTestConfig = async (mail) => {
 
 const removePdf = async (mail, path) => {
     const result = await Mail.findByIdAndUpdate({_id: mail._id}, {translation: mail.translation}, {new: true, runValidators: true});
-    await utils.deleteFile(path);
+    await mediasUtils.deleteFile(path);
     return result;
 };
 
@@ -173,18 +174,18 @@ const sendMailTest = async (mail, values, lang = "fr") => {
  * @param {string} lang two characters for lang
  * @returns {{content: string, subject: string, fromName: string, pathAttachment: string}}
  */
-async function getMailDataByTypeAndLang(type, lang = "") {
+async function getMailDataByTypeAndLang(type, lang = "fr") {
     lang               = ServiceLanguages.getDefaultLang(lang);
     const mailRegister = await getMailByTypeAndLang(type, lang);
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : "";
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : "";
     let pathAttachment = null;
-    if (mailRegister.attachments && mailRegister.attachments.length > 0) {
+    if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        pathAttachment = _config.environment.appUrl + mailRegister.attachments[0].path;
+        pathAttachment = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
     }
     if (!subject) {
         throw NSErrors.MailFieldSubjectNotFound;
@@ -283,7 +284,7 @@ const sendRegisterForAdmin = async (user_id, lang = "") => {
  * @param {string} name - Nom du destinataire
  * @param {string} tokenlink - Token de validation de la réinitialisation du mot de passe
  */
-const sendResetPassword = async (to, tokenlink, lang = "") => {
+const sendResetPassword = async (to, tokenlink, lang = "fr") => {
     const _user        = await Users.findOne({email: to});
     lang               = determineLanguage(lang, _user.preferredLanguage);
     const mailRegister = await getMailByTypeAndLang("passwordRecovery", lang);
@@ -301,12 +302,12 @@ const sendResetPassword = async (to, tokenlink, lang = "") => {
         }
     }
     let pathAttachment = null;
-    if (mailRegister.attachments && mailRegister.attachments.length > 0) {
+    if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        pathAttachment = _config.environment.appUrl + mailRegister.attachments[0].path;
+        pathAttachment = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
     }
     const oDataMail = {
         "{{name}}"      : _user.fullname,
@@ -750,12 +751,12 @@ const sendGeneric = async (type, to, datas, lang = "") => {
     }
     const content = mail.translation[lang].content ? mail.translation[lang].content : "";
     let pathAttachment = null;
-    if (mail.attachments && mail.attachments.length > 0) {
+    if (mail.translation[lang].attachments && mail.translation[lang].attachments.length > 0) {
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        pathAttachment = _config.environment.appUrl + mail.attachments[0].path;
+        pathAttachment = _config.environment.appUrl + mail.translation[lang].attachments[0].path;
     }
     to = to || mail.from;
 
@@ -781,8 +782,8 @@ const sendContact = async (datas, lang = "") => {
     const content = contactMail.translation[lang].content ? contactMail.translation[lang].content : "";
     const subject = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : "";
     let pathAttachment = null;
-    if (contactMail.attachments && contactMail.attachments.length > 0) {
-        pathAttachment = global.envConfig.environment.appUrl + contactMail.attachments[0].path;
+    if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
+        pathAttachment = global.envConfig.environment.appUrl + contactMail.translation[lang].attachments[0].path;
     }
     let bodyString = "";
     Object.keys(datas).forEach((key) => {
@@ -854,6 +855,31 @@ function getUnitPrice(item, order) {
     return price;
 }
 
+async function sendMailOrderRequestCancel(_id, lang = '') {
+    const _order = await Orders.findOne({_id}).populate("customer.id");
+    if (!_order) {
+        throw NSErrors.OrderNotFound;
+    }
+    lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    const {
+        content,
+        subject,
+        from,
+        fromName,
+        pathAttachment
+    }              = await getMailDataByTypeAndLang("requestCancelOrderNotify", lang);
+    const status   = require("../utils/translate/orderStatus")[_order.status].translation[lang].name;
+    const htmlBody = await generateHTML(content, {
+        "{{number}}"    : _order.number,
+        "{{status}}"    : status,
+        "{{name}}"      : _order.customer.id.fullname,
+        "{{fullname}}"  : _order.customer.id.fullname,
+        "{{company}}"   : _order.customer.company.name,
+        "{{firstname}}" : _order.customer.id.firstname,
+        "{{lastname}}"  : _order.customer.id.lastname});
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
+}
+
 module.exports = {
     getMailDataByTypeAndLang,
     generateHTML,
@@ -876,5 +902,6 @@ module.exports = {
     sendMailOrderSent,
     sendMail,
     sendGeneric,
-    sendContact
+    sendContact,
+    sendMailOrderRequestCancel
 };

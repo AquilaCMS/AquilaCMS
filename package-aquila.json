@@ -2,7 +2,6 @@
     "dependencies": [
         "adm-zip@0.4.16",
         "agenda@3.1.0",
-        "archiver-promise@1.0.0",
         "axios@0.19.2",
         "bcrypt@5.0.0",
         "cookie-parser@1.4.5",
@@ -13,7 +12,7 @@
         "express-ejs-extend@0.0.1",
         "faker@4.1.0",
         "glob@7.1.6",
-        "i18next@19.5.1",
+        "i18next@11.3.3",
         "i18next-fs-backend@1.0.6",
         "i18next-http-backend@1.0.15",
         "i18next-http-middleware@3.0.0",

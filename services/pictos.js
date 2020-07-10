@@ -3,17 +3,18 @@ const {Pictos}         = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const ServiceRules     = require("./rules");
 const utils            = require('../utils/utils');
+const mediasUtils      = require('../utils/medias');
 const NSErrors         = require("../utils/errors/NSErrors");
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'filename', 'location', 'enabled', 'title', 'usedInFilters', '_id'];
 const queryBuilder     = new QueryBuilder(Pictos, restrictedFields, defaultFields);
 
-exports.getPictos = async function (PostBody) {
+const getPictos = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
-exports.savePicto = async function (picto) {
+const savePicto = async (picto) => {
     try {
         const result = await Pictos.findOneAndUpdate({_id: picto._id}, picto, {new: true});
         return result;
@@ -27,7 +28,7 @@ exports.savePicto = async function (picto) {
     }
 };
 
-exports.createPicto = async function (picto) {
+const createPicto = async (picto) => {
     if (
         picto.code !== undefined
         && picto.title !== undefined
@@ -41,23 +42,31 @@ exports.createPicto = async function (picto) {
     }
 };
 
-exports.deletePicto = async function (id) {
+const deletePicto = async (id) => {
     const result = await Pictos.findOneAndRemove({_id: id});
     const rule   = await ServiceRules.queryRule({filter: {owner_id: id}});
     if (rule) {
         await ServiceRules.deleteRule(rule._id);
     }
     if (result.filename !== "") {
-        await utils.deleteFile(`medias/picto/${result.filename}`);
+        await mediasUtils.deleteFile(`medias/picto/${result.filename}`);
         require("./cache").deleteCacheImage('picto', {filename: path.basename(result.filename).split('.')[0]});
     }
     return result;
 };
 
-exports.execRules = async function () {
+const execRules = async () => {
     try {
         return await ServiceRules.execRules('picto');
     } catch (error) {
         return `Erreur : ${error.message}`;
     }
+};
+
+module.exports = {
+    getPictos,
+    savePicto,
+    createPicto,
+    deletePicto,
+    execRules
 };

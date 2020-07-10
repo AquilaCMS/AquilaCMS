@@ -73,6 +73,8 @@ export default class AquilaApp extends App {
             if (typeof window !== 'undefined' && (!window.localStorage.getItem('lang') || window.localStorage.getItem('lang') !== lang)) {
                 window.localStorage.setItem('lang', lang);
             }
+            
+            // Affection de la langue dans les headers
             axios.defaults.headers.common.lang = lang;
             initLangAqlrc(lang);
 
@@ -149,7 +151,7 @@ export default class AquilaApp extends App {
             const { cmsHead, cmsCookieBanner } = await getCmsBlock(['head', 'cookie-banner'], cmsBlocks, lang, bundle.ctx);
 
             // Surcharge de la config du thème
-            const themeConfig = await axios.post(`${getAPIUrl(bundle.ctx)}v2/themeConfig`, { PostBody: {} });
+            const themeConfig = await axios.post(`${getAPIUrl(bundle.ctx)}v2/themeConfig`, { lang, PostBody: {} });
 
             pageProps = {
                 ...pageProps,

@@ -29,7 +29,7 @@
     "et": "all",
     "ou": "one of",
     "none": "none of",
-    "condition": " those conditions are/is respected:",
+    "condition": " those conditions are respected:",
     "selection": "For a selection of products with",
     "cond": " those conditions:",
     "fieldInput": "INPUT FIELD",
@@ -42,18 +42,33 @@
     },
 
     "rule": {
-        "qty": "en-Quantité supérieure ou égal à",
-        "type": "en-Type de remise",
-        "value": "en-La valeur"
+        "qty": "Amount not less than",
+        "type": "Type of discount",
+        "value": "Value"
     },
-    "contains": "Contient",
-    "ncontains": "Ne contient pas",
-    "eq": "Egal à",
-    "neq": "Différent de",
-    "startswith": "Commence par",
-    "endswith": "Fini par",
-    "gte": "Plus grand ou egal à",
-    "gt": "Plus grand que",
-    "lte": "Plus petit que",
-    "lt": "Plus petit ou egal à"
+    "contains": "Contains",
+    "ncontains": "Doesn't contains",
+    "eq": "Equal to",
+    "neq": "Not equal to",
+    "startswith": "Starts with",
+    "endswith": "Finish with",
+    "gte": "Equal or bigger than",
+    "gt": "Bigger than",
+    "lte": "Smaller than",
+    "lt": "Equal or smaller than",
+    "list": {
+        "t1": "Newsletter",
+        "name": "Name"
+    },
+    "details": {
+        "infos": "Details",
+        "name": "Name",
+        "linkedCustomers": "Subscribed customers",
+        "email": "Email",
+        "date": "Subrscribe date",
+        "didReceive": "Receive mails",
+        "download": "Download emails list",
+        "true": "Yes",
+        "false": "No"
+    }
 }

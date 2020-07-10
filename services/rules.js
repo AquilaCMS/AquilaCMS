@@ -91,7 +91,7 @@ const deleteRule = async (_id) => {
     if (rule) {
         if (rule.other_rules.length) {
             for (let i = 0; i < rule.other_rules.length; i++) {
-                this.deleteRule(rule.other_rules[i]);
+                deleteRule(rule.other_rules[i]);
             }
         } else {
             result = await Rules.deleteOne({_id});

@@ -36,7 +36,7 @@
     "configuration": "Configuration",
     "environnement": "Environment",
     "stock&commandes": "Orders param",
-    "modesExpedition": "Shippments",
+    "modesExpedition": "Shippings",
     "territories": "Territories",
     "themes": "Themes",
     "design": "Design",
@@ -49,5 +49,6 @@
 
     "modules": "Plugins",
 
-    "admin": "Administrators"
+    "admin": "Administrators",
+    "newsletter": "Newsletter"
 }

@@ -53,7 +53,7 @@ const getProductImageUrl = (product) => {
 // Fonction générique de suppression de fichier
 const deleteFile = async (filePath) => {
     if (filePath) {
-        await utilsModules.modules_LoadFunctions("removeFile", {key: filePath}, async () => {
+        await utilsModules.modulesLoadFunctions("removeFile", {key: filePath}, async () => {
             const pathUpload   = require("./server").getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = path.resolve(`./${pathUpload}/${filePath}`);
             if (pathToRemove && await fsp.access(pathToRemove)) {
@@ -71,7 +71,7 @@ const deleteFile = async (filePath) => {
 // Fonction générique de suppression de dossier
 const deleteFolder = async (folderPath) => {
     if (folderPath) {
-        await utilsModules.modules_LoadFunctions("removeFolder", {folder: folderPath}, async () => {
+        await utilsModules.modulesLoadFunctions("removeFolder", {folder: folderPath}, async () => {
             const pathUpload   = require("./server").getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = `./${pathUpload}/${folderPath}`;
             if (await fsp.access(pathToRemove)) {
@@ -84,7 +84,7 @@ const deleteFolder = async (folderPath) => {
 // Fonction générique de renommage de fichier
 const renameFile = async (pathIn, filePathOut) => {
     if (pathIn && filePathOut) {
-        await utilsModules.modules_LoadFunctions("renameFile", {
+        await utilsModules.modulesLoadFunctions("renameFile", {
             inPath  : pathIn,
             outPath : filePathOut
         }, async () => {
@@ -106,7 +106,7 @@ const renameFile = async (pathIn, filePathOut) => {
 // Fonction générique de test de présence de fichier
 const existsFile = async (key) => {
     if (key) {
-        return utilsModules.modules_LoadFunctions("existsFile", {key}, async () => {
+        return utilsModules.modulesLoadFunctions("existsFile", {key}, async () => {
             const pathUpload  = require("./server").getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToCheck = `./${pathUpload}/${key}`;
             if (pathToCheck && await fsp.access(pathToCheck)) {

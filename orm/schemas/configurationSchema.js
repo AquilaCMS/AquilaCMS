@@ -4,7 +4,11 @@ const fs       = require('../../utils/fsp');
 const Schema   = mongoose.Schema;
 
 const ConfigurationSchema = new Schema({
-    name        : String,
+    name    : String,
+    licence : {
+        registryKey : {type: String},
+        lastCheck   : {type: Date}
+    },
     environment : {
         adminPrefix       : {type: String, required: true, minlength: 1},
         analytics         : {type: String},

@@ -33,7 +33,7 @@
             "return": "BACK"
         },
         "client_sign_up": {
-            "title": "NEW CUSTOMERS?",
+            "title": "NEW CUSTOMER?",
             "sub_title": "Create an account",
             "button_label": "SIGN IN",
             "required_label": "*Required fields",

@@ -297,6 +297,12 @@
         <script src="app/themes/themes.routes.js"></script>
         <script src="app/themes/themes.services.js"></script>
 
+        <!-- newsletter -->
+        <script src="app/newsletter/newsletter.module.js"></script>
+        <script src="app/newsletter/newsletter.controllers.js"></script>
+        <script src="app/newsletter/newsletter.routes.js"></script>
+        <script src="app/newsletter/newsletter.services.js"></script>
+
         <% tabM.forEach(function(item){ %>
             <% item.files.forEach(function(file){ %>
             <script src="app/<%= item.module %>/<%= file %>"></script>

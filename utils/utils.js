@@ -1,5 +1,15 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2020 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+const axios          = require('axios');
 const path           = require("path");
 const Json2csvParser = require('json2csv').Parser;
+const {v4: uuidv4}   = require('uuid');
+const mongoose       = require('mongoose');
 const fs             = require("./fsp");
 
 const attributeCorrectNewTypeName = (type) => {
@@ -64,6 +74,64 @@ const attributeCorrectOldTypeName = (type) => {
     }
 };
 
+const checkModuleRegistryKey = async (moduleName) => {
+    try {
+        let registryFile = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
+        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        registryFile = JSON.parse((await fs.readFile(registryFile)));
+        if (fs.existsSync(registryFile)) {
+            const result = await axios.post('https://shop.aquila-cms.com/api/v1/register', {
+                registryKey : registryFile.code,
+                aquilaVersion
+            });
+            if (!result.data.data) return true;
+            return true;
+        }
+        const result = await axios.post('https://shop.aquila-cms.com/api/v1/register/check', {
+            registryKey : registryFile.code,
+            aquilaVersion
+        });
+        if (!result.data.data) return true;
+        return true;
+    } catch (err) {
+        return true;
+    }
+};
+
+const checkOrCreateAquilaRegistryKey = async () => {
+    try {
+        const {Configuration, Users} = require('../orm/models');
+        const configuration = await Configuration.findOne({});
+        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        if (!configuration.licence || !configuration.licence.registryKey) {
+            configuration.licence = {
+                registryKey : uuidv4(),
+                lastCheck   : require('moment')().toISOString()
+            };
+            const firstAdmin = await Users.findOne({isAdmin: true}, {_id: 1, isAdmin: 1, email: 1, firstname: 1, lastname: 1, fullname: 1});
+            await axios.post('https://shop.aquila-cms.com/api/v1/register', {
+                registryKey : configuration.licence.registryKey,
+                aquilaVersion,
+                user        : firstAdmin
+            });
+        } else {
+            if (require('moment')().toISOString() >= require('moment')(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
+                configuration.licence = {
+                    lastCheck : require('moment')().toISOString()
+                };
+                await axios.post('https://shop.aquila-cms.com/api/v1/register/check', {
+                    registryKey : configuration.licence.registryKey,
+                    aquilaVersion,
+                    lastCheck   : configuration.licence.lastCheck
+                });
+            }
+        }
+        await configuration.save();
+    } catch (err) {
+        console.error("Unable to join the Aquila-CMS license server");
+    }
+};
+
 const json2csv = async (data, fields, folderPath, filename) => {
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
     const json2csvParser = new Json2csvParser({fields});
@@ -101,11 +169,11 @@ const downloadFile = async (url, dest) => {
                 return reject('File is not found');
             }
             const len = parseInt(res.headers['content-length'], 10);
-            let dowloaded = 0;
+            let downloaded = 0;
             res.pipe(file);
             res.on('data', (chunk) => {
-                dowloaded += chunk.length;
-                console.log(`Downloading ${(100.0 * dowloaded / len).toFixed(2)}% ${dowloaded} bytes\r`);
+                downloaded += chunk.length;
+                console.log(`Downloading ${(100.0 * downloaded / len).toFixed(2)}% ${downloaded} bytes\r`);
             }).on('end', () => {
                 file.end();
                 resolve(null);
@@ -137,7 +205,14 @@ const toET = (ATIPrice, VAT) => {
     return undefined;
 };
 
-const getObjFromDotStr = (obj, str) => str.split(".").reduce((o, i) => o[i], obj);
+const getObjFromDotStr = (obj, str) => {
+    return str.split(".").reduce((o, i) => {
+        if (o[i] instanceof mongoose.Types.ObjectId) {
+            return (o[i]).toString();
+        }
+        return o[i];
+    }, obj);
+};
 
 /* temp : determiner les routes non utilisés */
 // eslint-disable-next-line no-unused-vars
@@ -148,14 +223,12 @@ const tmp_use_route = async (api, fct) => {
 /* End temp : determiner les routes non utilisés */
 
 module.exports = {
-    // services/users
     // utils/datas
     downloadFile,
     json2csv,
     // utils/helpers
     getObjFromDotStr,
     detectDuplicateInArray,
-    // utils/files
     // services/seo ou utils/utils : Strings for slugs
     slugify,
     // utils/utils : Dev info
@@ -164,5 +237,7 @@ module.exports = {
     toET,
     // utils/utils : Retrocompatibilité
     attributeCorrectNewTypeName,
-    attributeCorrectOldTypeName
+    attributeCorrectOldTypeName,
+    checkModuleRegistryKey,
+    checkOrCreateAquilaRegistryKey
 };

@@ -8,7 +8,7 @@ const mailService                        = require('../services/mail');
 const NSErrors                           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/users', authentication, getUsers);
+    app.post('/v2/users', authentication, adminAuth, getUsers);
     app.post('/v2/user', authentication, getUser);
     app.post('/v2/user/resetpassword/:lang?', resetpassword);
     app.post('/v2/user/:id', authentication, getUserById);

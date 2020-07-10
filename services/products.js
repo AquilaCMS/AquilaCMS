@@ -1,8 +1,7 @@
 const moment                  = require('moment-business-days');
-const fs                      = require('fs');
 const path                    = require('path');
 const mongoose                = require('mongoose');
-const {getDecodedToken}       = require("./auth");
+const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
 const QueryBuilder            = require('../utils/QueryBuilder');
 const utils                   = require('../utils/utils');
@@ -27,10 +26,11 @@ const {
     Territory,
     Languages
 }                             = require("../orm/models");
-const {obj} = require('../orm/schemas/itemSchema');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
 const defaultFields    = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
+
+const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
 
 // si dans le config, on demande de ne pas retourner les champs de stock, on les ajoute au restrictedFields
 if (global.envConfig.stockOrder.returnStockToFront !== true) {
@@ -45,8 +45,7 @@ if (global.envConfig.stockOrder.returnStockToFront !== true) {
  * @param {*} keepStructure
  */
 // eslint-disable-next-line no-unused-vars
-exports.getProducts = async function (PostBody, reqRes, lang, keepStructure = true) {
-    const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
+const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
     let properties = [];
     let structure;
     if (PostBody && PostBody.structure) {
@@ -136,8 +135,7 @@ exports.getProducts = async function (PostBody, reqRes, lang, keepStructure = tr
  * @param reqRes
  * @param keepReviews
  */
-exports.getProduct = async function (PostBody, reqRes = undefined, keepReviews = false) {
-    const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
+const getProduct = async (PostBody, reqRes = undefined, keepReviews = false) => {
     let product = await queryBuilder.findOne(PostBody);
     if (!product) {
         return product;
@@ -168,8 +166,7 @@ exports.getProduct = async function (PostBody, reqRes = undefined, keepReviews =
  * @param reqRes
  * @param keepReviews
  */
-exports.getPromosByProduct = async function (PostBody, reqRes = undefined) {
-    const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
+const getPromosByProduct = async (PostBody, reqRes = undefined) => {
     const product = await queryBuilder.findOne(PostBody, false, reqRes.req.headers.authorization);
     if (!product) {
         return product;
@@ -187,7 +184,7 @@ exports.getPromosByProduct = async function (PostBody, reqRes = undefined) {
 /**
  * Duplication de produit dans le back-office
  */
-exports.duplicateProduct = async function (idProduct, newCode) {
+const duplicateProduct = async (idProduct, newCode) => {
     const doc = await Products.findById(idProduct);
     doc._id = mongoose.Types.ObjectId();
     doc.isNew = true;
@@ -212,7 +209,7 @@ exports.duplicateProduct = async function (idProduct, newCode) {
     return doc;
 };
 
-exports._getProductsByCategoryId = async function (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) {
+const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     return global.cache.get(
         `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
         async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
@@ -257,7 +254,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // Si un productsList.id ne répond pas au match alors productsList.id === null
     menu.productsList = menu.productsList.filter((p) => p.id !== null);
     if (PostBody.filter === undefined)  PostBody.filter = {};
-    const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
     const _config = await Configuration.findOne({}, {stockOrder: 1});
     if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
         PostBody.structure.stock = 1;
@@ -296,7 +292,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     if (_config.stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
             const product = result.datas[i];
-            const stockData = await this.calculStock({lang}, product);
+            const stockData = await calculStock({lang}, product);
             if (product.type === 'simple') {
                 // TODO P2 "shipping : business day" : ne marche plus, on met le jour même en dur
                 // const dateShipped = moment().businessAdd(shipment.delay.unit === "DAY" ? shipment.delay.value : 1).format('DD/MM/YYYY');
@@ -469,12 +465,11 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     };
 };
 
-exports.getProductById = async function (id, PostBody = null) {
-    const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
+const getProductById = async (id, PostBody = null) => {
     return queryBuilder.findById(id, PostBody);
 };
 
-exports.calculateFilters = async function (req, result) {
+const calculateFilters = async (req, result) => {
     // On récupère les attributs, le dernier attribut sélectionné et si la valeur a été check ou non
     const attributes = req.body.attributes;
     const attributeLastSelected = req.body.attributeSelected ? req.body.attributeSelected.id_attribut : '';
@@ -552,7 +547,7 @@ exports.calculateFilters = async function (req, result) {
     return result;
 };
 
-exports.setProduct = async function (req) {
+const setProduct = async (req) => {
     // On update le produit
     const product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
@@ -566,7 +561,7 @@ exports.setProduct = async function (req) {
     });
 };
 
-exports.createProduct = async function (req) {
+const createProduct = async (req) => {
     // On vérifie que l'id n'est pas déjà pris
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
@@ -609,7 +604,7 @@ exports.createProduct = async function (req) {
 /**
  * @todo maybe replace map by a for of to fix eslint problem ?
  */
-exports.deleteProduct = async function (_id) {
+const deleteProduct = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     const doc = await Products.findOneAndRemove({_id});
     if (!doc) throw NSErrors.ProductNotFound;
@@ -641,7 +636,7 @@ exports.deleteProduct = async function (_id) {
  * @param   {number?} qtecdé   Quantité a commander
  * @returns {object}  Informations de retour
  */
-exports.checkProductOrderable = function (objstock, qtecdé = 0) {
+const checkProductOrderable = (objstock, qtecdé = 0) => {
     const datas = {
         selling : {// Affichage
             sellable : false,   // Produit vendable (affichage du bouton d'achat en gros)
@@ -699,7 +694,7 @@ exports.checkProductOrderable = function (objstock, qtecdé = 0) {
  * Controle la cohérence de chaque produit
  * @returns {object}  Informations sur les produits incohérent
  */
-exports.controlAllProducts = async function () {
+const controlAllProducts = async () => {
     try {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
@@ -853,11 +848,10 @@ function checkAttribsValidity(array) {
     return true;
 }
 
-exports.applyTranslatedAttribs = async function (PostBody) {
+const applyTranslatedAttribs = async (PostBody) => {
     require("../utils/utils").tmp_use_route("products_service", "applyTranslatedAttribs");
 
     try {
-        const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
         // On récupere ts les produits
         let _products = [];
         if (PostBody === {} || PostBody === undefined) {
@@ -906,19 +900,14 @@ function getTaxDisplay(user) {
     return 'ati';
 }
 
-exports.downloadProduct = async function (req, res) {
+const downloadProduct = async (req, res) => {
     let prd = {};
-    let user = {};
-    if (req.headers.authorization) {
-        user = getDecodedToken(req.headers.authorization);
-    } else {
-        throw NSErrors.UserNotLogin;
-    }
+    const user = req.info;
 
     // si produit payant et que l'on passe par une commande
     if (req.query.op_id) {
         // on check que la commande et le produit existe
-        const order = await serviceOrder.getOrder({filter: {'customer.id': user.info._id, 'items._id': req.query.op_id}, structure: '*', populate: 'items.id'});
+        const order = await serviceOrder.getOrder({filter: {'customer.id': user._id, 'items._id': req.query.op_id}, structure: '*', populate: 'items.id'});
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
@@ -932,7 +921,7 @@ exports.downloadProduct = async function (req, res) {
         }
         // si produit (p_id)
     } else if (req.query.p_id) {
-        prd = await this.getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res});
+        prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res});
         // on check qu'il soit bien virtuel, et que sont prix est egal a 0
         if (!prd || prd.kind !== 'VirtualProduct') {
             throw NSErrors.ProductNotFound;
@@ -959,19 +948,19 @@ exports.downloadProduct = async function (req, res) {
         throw NSErrors.ProductDownloadLinkInvalid;
     }
     // on enregistre que le client télécharge un produit
-    await ServicesDownloadHistory.addToHistory(user.info, prd);
+    await ServicesDownloadHistory.addToHistory(user, prd);
     // on recupere le binaire du fichier
-    const fileBinary = await require('fs').readFileSync(tmpFileLocalPath, 'binary');
+    const fileBinary = await fs.readFile(tmpFileLocalPath, 'binary');
     // on delete le fichier tmp
     await fs.unlinkSync(tmpFileLocalPath);
     return fileBinary;
 };
 
-exports.getProductsListing = async (req, res) => {
+const getProductsListing = async (req, res) => {
     // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
     let result = {};
     if (req.params.withFilters || req.body.withFilters) {
-        result = await this.getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
+        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
 
@@ -985,7 +974,7 @@ exports.getProductsListing = async (req, res) => {
 
         await servicesCategory.generateFilters(result, req.body.lang);
     } else {
-        result = await this.getProducts(req.body.PostBody, {req, res}, req.body.lang);
+        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang);
     }
     if ({req, res} !== undefined && req.params.withFilters === "true") {
         res.locals.datas = result.datas;
@@ -1002,7 +991,7 @@ exports.getProductsListing = async (req, res) => {
     }
     return result;
 };
-exports.getProductsSearchObj = async (body, params) => {
+const getProductsSearchObj = async (body, params) => {
     // Filtre de base
     const filter = body.filter === undefined ? {} : body.filter;
     const searchObj = body.searchObj;
@@ -1275,7 +1264,7 @@ exports.getProductsSearchObj = async (body, params) => {
     return result;
 };
 
-exports.updateStock = async function (productId, qty1 = 0, qty2 = undefined) {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
     if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
         throw NSErrors.ProductNotSalable;
@@ -1317,8 +1306,6 @@ function make_pattern(search_string) {
     return new RegExp(regexp, "g");
 }
 
-exports.restrictedFields = restrictedFields;
-
 const handleStock = async (item, _product, inStockQty) => {
     const {Configuration}   = require("../orm/models");
     const config = await Configuration.findOne({}, {stockOrder: 1});
@@ -1339,12 +1326,10 @@ const handleStock = async (item, _product, inStockQty) => {
     }
 };
 
-exports.handleStock = handleStock;
-
 /**
  * Fonction permettant de calculer les informations de stock pour un produit
  */
-exports.calculStock = async function (params, product = undefined) {
+const calculStock = async (params, product = undefined) => {
     moment.locale('fr', {
         workingWeekdays : [1, 2, 3, 4, 5]
     });
@@ -1381,4 +1366,27 @@ exports.calculStock = async function (params, product = undefined) {
         qty_real  : product.stock.qty_real,
         product
     };
+};
+
+module.exports = {
+    getProducts,
+    getProduct,
+    getPromosByProduct,
+    duplicateProduct,
+    _getProductsByCategoryId,
+    getProductById,
+    calculateFilters,
+    setProduct,
+    createProduct,
+    deleteProduct,
+    checkProductOrderable,
+    controlAllProducts,
+    applyTranslatedAttribs,
+    downloadProduct,
+    getProductsListing,
+    getProductsSearchObj,
+    updateStock,
+    handleStock,
+    calculStock,
+    restrictedFields
 };

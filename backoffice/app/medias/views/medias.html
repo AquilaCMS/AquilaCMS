@@ -25,7 +25,10 @@
                 <td class="  sorting_1">
                     {{config.appUrl}}{{media.link}}&nbsp;
                 </td>
-                <td><img ng-show="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" /></td>
+                <td>
+                    <img ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                    <i style="color: black;" ng-if="!media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')" class="fa fa-file-text fa-lg i-style"></i>
+                </td>
                 <td style="width:270px;">
                     <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index)">{{"medias.medias.cpLien" | translate}}</button>
                     <button ng-click="remove(media)" class="btn btn-red btn-with-icon">

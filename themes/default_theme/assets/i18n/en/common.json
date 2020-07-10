@@ -17,7 +17,7 @@
     "email_placeholder": "Your email address",
     "subscribe_button": "Subscribe",
     "account_active":"Your account has been activated",
-    "account_inactive":"This token doesn't exist or has already been used",
+    "account_inactive":"This account doesn't exist or has already been used",
     "steps": {
         "connexion": "Login",
         "coordonnees": "Contact information",
@@ -43,7 +43,7 @@
         "BILLED": "Invoiced",
         "PAID": "Paid",
         "DELIVERY_PROGRESS": "Sent",
-        "DELIVERY_PARTIAL_PROGRESS": "Partial Sent",
+        "DELIVERY_PARTIAL_PROGRESS": "Partially Sent",
         "RETURNED": "Return",
         "liv": "In stock",
         "dif": "In Preorder",

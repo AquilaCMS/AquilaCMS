@@ -37,20 +37,20 @@ aquilaEvents.on("aqUpdateStatusOrder", async (fields, orderId, stringDate = unde
     }
 });
 
-exports.getOrders = async function (PostBody) {
+const getOrders = async (PostBody) => {
     const result = await queryBuilder.find(PostBody);
     return result;
 };
 
-exports.getOrder = async function (PostBody) {
+const getOrder = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-exports.saveOrder = async function (order) {
+const saveOrder = async (order) => {
     return Orders.updateOne({_id: order._id.toString()}, {$set: order});
 };
 
-exports.getOrderById = async function (id, PostBody = null) {
+const getOrderById = async (id, PostBody = null) => {
     let pBody = PostBody;
     if (pBody !== null) {
         pBody.filter._id = id;
@@ -60,14 +60,14 @@ exports.getOrderById = async function (id, PostBody = null) {
     return queryBuilder.findOne(pBody);
 };
 
-exports.setOrder = async function (order) {
+const setOrder = async (order) => {
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
     return Orders.updateOne({_id: order._id}, {$set: order});
 };
 
-exports.setStatus = async function (_id, status, sendMail = true) {
+const setStatus = async (_id, status, sendMail = true) => {
     if (!status) {
         console.error('Bad status', _id);
         return;
@@ -78,6 +78,13 @@ exports.setStatus = async function (_id, status, sendMail = true) {
         await Orders.updateOne({_id}, {cartId: null});
         await Cart.deleteOne({_id: order.cartId});
     }
+    if ((['ASK_CANCEL']).includes(order.status) && sendMail) {
+        try {
+            await ServiceMail.sendMailOrderRequestCancel(_id);
+        } catch (error) {
+            console.error(error);
+        }
+    }
     if (!(["PAYMENT_CONFIRMATION_PENDING", "PAYMENT_RECEIPT_PENDING", "PAID"]).includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderStatusEdit(_id);
@@ -87,18 +94,18 @@ exports.setStatus = async function (_id, status, sendMail = true) {
     }
 };
 
-exports.paymentSuccess = async function (query, updateObject) {
+const paymentSuccess = async (query, updateObject) => {
     console.log("service order paymentSuccess()");
 
     try {
         const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
-            return console.error(new Error("La commande est introuvable ou n'est pas en attente de paiement."));
+            throw new Error("La commande est introuvable ou n'est pas en attente de paiement.");
         }
         const paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
         // Mode de paiement immédiat (ex: carte bancaire)
         if (!paymentMethod.isDeferred) {
-            await this.setStatus(_order._id, "PAID");
+            await setStatus(_order._id, "PAID");
             try {
                 await ServiceMail.sendMailOrderToCompany(_order._id);
             } catch (e) {
@@ -147,7 +154,7 @@ exports.paymentSuccess = async function (query, updateObject) {
     }
 };
 
-exports.cancelOrder = async function (orderId) {
+const cancelOrder = async (orderId) => {
     const order = await Orders.findOne({
         _id    : orderId,
         status : {
@@ -162,14 +169,14 @@ exports.cancelOrder = async function (orderId) {
     if (!order) {
         return {code: "NOT_CANCELABLE"};
     }
-    await exports.setStatus(orderId, 'CANCELED', order.status !== "PAYMENT_PENDING");
+    await setStatus(orderId, 'CANCELED', order.status !== "PAYMENT_PENDING");
 
     if (global.envConfig.stockOrder.bookingStock !== 'none') {
         aquilaEvents.emit("aqCancelOrder", order);
     }
 };
 
-exports.cancelOrders = function () {
+const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
@@ -177,12 +184,12 @@ exports.cancelOrders = function () {
         .select("_id")
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
-                await exports.cancelOrder(_order._id);
+                await cancelOrder(_order._id);
             });
         });
 };
 
-exports.rma = async function (orderId, returnData) {
+const rma = async (orderId, returnData) => {
     const upd = {rma: returnData};
 
     if (returnData.refund > 0 && returnData.mode !== "") {
@@ -308,9 +315,9 @@ exports.rma = async function (orderId, returnData) {
     }
 };
 
-exports.infoPayment = async function (orderId, returnData, sendMail) {
+const infoPayment = async (orderId, returnData, sendMail) => {
     returnData.operationDate = Date.now();
-    await exports.setStatus(orderId, 'PAID');
+    await setStatus(orderId, 'PAID');
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
@@ -336,7 +343,7 @@ exports.infoPayment = async function (orderId, returnData, sendMail) {
     aquilaEvents.emit("aqPaymentReturn", _order._id);
 };
 
-exports.duplicateItemsFromOrderToCart = async function (req) {
+const duplicateItemsFromOrderToCart = async (req) => {
     const orderId = req.body.idOrder || null;
     let cartId = req.body.idCart || null;
     let products = [];
@@ -461,7 +468,7 @@ exports.duplicateItemsFromOrderToCart = async function (req) {
     return {code: 'ORDER_NOT_DUPLICATED', data: cartReturn};
 };
 
-exports.addPackage = async function (orderId, pkgData) {
+const addPackage = async (orderId, pkgData) => {
     moment.locale(global.defaultLang);
     let status = "DELIVERY_PROGRESS";
     if (pkgData.status && pkgData.status === "partial") {
@@ -472,7 +479,7 @@ exports.addPackage = async function (orderId, pkgData) {
         pkgData.tracking = ord.delivery.url.replace("{{number}}", pkgData.tracking);
     }
 
-    await exports.setStatus(orderId, status, false);
+    await setStatus(orderId, status, false);
     let _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {"delivery.package": pkgData}}, {new: true}).populate("delivery.method");
 
     const packages = {};
@@ -520,24 +527,28 @@ exports.addPackage = async function (orderId, pkgData) {
     }
 
     const dateDelivery = moment().add(_order.delivery.dateDelivery.delayDelivery, _order.delivery.dateDelivery.unitDelivery).add(_order.delivery.dateDelivery.delayPreparation, _order.delivery.dateDelivery.unitPreparation).format('DD/MM/YYYY');
-    await ServiceMail.sendGeneric("orderSent", _order.customer.email, {
-        number          : _order.number,
-        name            : _order.delivery.name,
-        fullname        : _order.customer.fullname,
-        company         : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : "",
-        trackingUrl     : pkgData.tracking,
-        date            : dateDelivery,
-        transporterName : _order.delivery.name,
-        companyName     : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : "", // Legacy
-        address         : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2 ? ` ${_order.addresses.delivery.line2}` : "")}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country ? `, ${country}` : "")}`
-    });
+    try {
+        await ServiceMail.sendGeneric("orderSent", _order.customer.email, {
+            number          : _order.number,
+            name            : _order.delivery.name,
+            fullname        : _order.customer.fullname,
+            company         : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : "",
+            trackingUrl     : pkgData.tracking,
+            date            : dateDelivery,
+            transporterName : _order.delivery.name,
+            companyName     : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : "", // Legacy
+            address         : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2 ? ` ${_order.addresses.delivery.line2}` : "")}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country ? `, ${country}` : "")}`
+        });
+    } catch (error) {
+        console.error(error);
+    }
 };
 
-exports.delPackage = async function (orderId, pkgId) {
+const delPackage = async (orderId, pkgId) => {
     return Orders.findOneAndUpdate({_id: orderId}, {$pull: {"delivery.package": {_id: pkgId}}}, {new: true}).populate("items.id");
 };
 
-exports.updatePayment = async (body) => {
+const updatePayment = async (body) => {
     const findCondition = {
         _id           : body._id,
         "payment._id" : body.paymentId
@@ -558,24 +569,24 @@ exports.updatePayment = async (body) => {
     }
 };
 
-exports.updateStatus = async (body, params) => {
+const updateStatus = async (body, params) => {
     const order = await Orders.findOne({$or: [{_id: params.id}, {_id: body.id}]});
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
     const noAccess = ["PAYMENT_CONFIRMATION_PENDING", "PAID", "BILLED", "DELIVERY_PROGRESS", "DELIVERY_PARTIAL_PROGRESS", "RETURNED", "CANCELING"];
     if (!noAccess.includes(body.status) && body.status !== order.status && order.status !== "CANCELED") {
-        await this.setStatus(order._id, body.status);
+        await setStatus(order._id, body.status);
         return;
     }
     throw NSErrors.StatusUpdateError;
 };
 
-exports.cancelOrderRequest = async function (_id, authorizationToken) {
+const cancelOrderRequest = async (_id, authorizationToken) => {
     const user = await ServiceAuth.getDecodedToken(authorizationToken);
     const order = await Orders.findOne({_id, "customer.email": user.info.email});
     if (order) {
-        await this.setStatus(_id, "ASK_CANCEL");
+        await setStatus(_id, "ASK_CANCEL");
         return order.status = "ASK_CANCEL";
     }
     throw NSErrors.AccessUnauthorized;
@@ -591,3 +602,23 @@ function setItemStatus(order, packages, status1, status2) {
     }
     return order;
 }
+
+module.exports = {
+    getOrders,
+    getOrder,
+    saveOrder,
+    getOrderById,
+    setOrder,
+    setStatus,
+    paymentSuccess,
+    cancelOrder,
+    cancelOrders,
+    rma,
+    infoPayment,
+    duplicateItemsFromOrderToCart,
+    addPackage,
+    delPackage,
+    updatePayment,
+    updateStatus,
+    cancelOrderRequest
+};

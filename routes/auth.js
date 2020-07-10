@@ -11,7 +11,7 @@ const {middlewareServer} = require('../middleware');
 const NSErrors      = require("../utils/errors/NSErrors");
 
 module.exports = function (app) {
-    app.post('/v2/auth/login', login);
+    app.post('/v2/auth/login/:from?', login);
     app.get('/v2/auth/isauthenticated', authentication, IsAuthenticate);
     app.get('/auth/logout', logout);
 

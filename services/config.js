@@ -41,7 +41,7 @@ const getConfig = async (req) => {
 };
 
 const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}) => {
-    const config = await queryBuilder.findOne(PostBody);
+    const config = (await queryBuilder.findOne(PostBody)).toObject();
     if (key) {
         if (key === "taxerate") { return config.taxerate; }
         return {...config[key], databaseConnection: global.envFile.db};

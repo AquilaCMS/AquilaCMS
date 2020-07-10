@@ -3,7 +3,7 @@
 */
 
 const {Opts, SetOptions} = require("../orm/models");
-const utils              = require('../utils/utils');
+const mediasUtils        = require('../utils/utils');
 const NSErrors           = require("../utils/errors/NSErrors");
 
 module.exports = function (app) {
@@ -71,7 +71,7 @@ const save = async (req, res, next) => {
                     const toRemove = option.values.filter((obj) => !(obj[column.name] in bUrls));
 
                     for (let j = 0; j < toRemove.length; j++) {
-                        await utils.deleteFile(toRemove[j][column.name]);
+                        await mediasUtils.deleteFile(toRemove[j][column.name]);
                     }
                 }
             }
@@ -112,7 +112,7 @@ const remove = async (req, res, next) => {
             const column = opt.columns[i];
             if (column.type === 'Image') {
                 for (let j = 0; j < opt.values.length; j++) {
-                    await utils.deleteFile(opt.values[j][column.name]);
+                    await mediasUtils.deleteFile(opt.values[j][column.name]);
                 }
             }
         }

@@ -48,7 +48,7 @@ async function setContact(req, res, next) {
 
                 let target_path_full = path.join(finalPath, `${new Date().getTime()}_${file.originalname}`);
 
-                target_path_full = await modulesUtils.modules_LoadFunctions("uploadFile", {
+                target_path_full = await modulesUtils.modulesLoadFunctions("uploadFile", {
                     target_path : finalPath,
                     target_path_full,
                     file,

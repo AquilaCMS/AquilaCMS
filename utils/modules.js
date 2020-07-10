@@ -1,13 +1,16 @@
 const path      = require("path");
 const fs        = require("./fsp");
 const npm       = require('./npm');
+const utils     = require('./utils');
 const NSError   = require('./errors/NSError');
 const NSErrors  = require('./errors/NSErrors');
+
+let loadedModules;
 
 /**
  * Module : Charge les fonctions dans les init.js des modules si besoin
  */
-const modules_LoadFunctions = async (property, params = {}, functionToExecute) => {
+const modulesLoadFunctions = async (property, params = {}, functionToExecute) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === "function") {
         return global.moduleExtend[property].function(params);
     }
@@ -218,70 +221,81 @@ const cleanAndToBeChanged = async (dependencies, toBeChanged) => {
 /**
  * Module : Charge les fichiers init.js des modules si besoin
  */
-const modules_LoadInit = async (express) => {
-    try {
-        console.log('Start init modules');
-        const Modules  = require("../orm/models/modules");
-        const _modules = await Modules.find({active: true});
-        if (_modules.length > 0) {
-            console.log("Required modules :");
-        }
-        for (let i = 0; i < _modules.length; i++) {
-            console.log(` - ${_modules[i].name}`);
-            if (await fs.access(path.join(global.appRoot, `/modules/${_modules[i].name}/init.js`))) {
-                require(path.join(global.appRoot, `/modules/${_modules[i].name}/init.js`))(express, global.appRoot, global.envFile);
+const modulesLoadInit = async (express) => {
+    const Modules = require("../orm/models/modules");
+    const _modules = await Modules.find({active: true}, {name: 1}).lean();
+    loadedModules = [..._modules];
+    loadedModules = loadedModules.map((lmod) => {return {...lmod, init: true, valid: false};});
+    if (loadedModules.length > 0) {
+        console.log('Start init loading modules');
+        console.log("Required modules :");
+    }
+    for (let i = 0; i < loadedModules.length; i++) {
+        const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
+        if (await fs.access(initModuleFile)) {
+            process.stdout.write(`- ${loadedModules[i].name}`);
+            try {
+                const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
+                if (!isValid) {
+                    throw new Error('Error checking licence');
+                }
+                loadedModules[i].valid = true;
+                require(initModuleFile)(express, global.appRoot, global.envFile);
+                process.stdout.write(`\x1b[32m \u2713 \x1b[0m\n`);
+            } catch (err) {
+                loadedModules[i].init = false;
+                process.stdout.write(`\x1b[31m \u274C \x1b[0m\n`);
+                return false;
             }
         }
-    } catch (err) {
-        console.error(err);
-    } finally {
-        console.log('Finish init modules');
+    }
+    if (loadedModules.length > 0) {
+        console.log('Finish init loading modules');
+    } else {
+        console.log('no modules to load');
     }
 };
 
 /**
  * Module : Charge les fichiers initAfter.js des modules actifs
  */
-const modules_LoadInitAfter = async (apiRouter, server, passport) => {
-    // TODO P3 : peut etre factorisé
-    console.log('Start initAfter modules');
-    const logFinish = 'Finish initAfter modules';
-
-    try {
-        const {Modules} = require("../orm/models");
-        const _modules  = await Modules.find({active: true});
-        if (_modules.length > 0) {
+const modulesLoadInitAfter = async (apiRouter, server, passport) => {
+    loadedModules = loadedModules.filter((mod) => mod.init) || [];
+    if (loadedModules.length > 0) {
+        console.log('Start initAfter loading modules');
+        for (const mod of loadedModules) {
             try {
-                for (const module of _modules) {
-                    // Récupère les fichiers initAfter.js des modules
-                    await new Promise(async (resolve, reject) => {
-                        try {
-                            if (await fs.access(path.join(global.appRoot, `/modules/${module.name}/initAfter.js`))) {
-                                require(path.join(global.appRoot, `/modules/${module.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
+                // Récupère les fichiers initAfter.js des modules
+                await new Promise(async (resolve, reject) => {
+                    try {
+                        if (await fs.access(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
+                            process.stdout.write(`- ${mod.name}`);
+                            if (!mod.valid) {
+                                const isValid = await utils.checkModuleRegistryKey(mod.name);
+                                if (!isValid) {
+                                    throw new Error('Error checking licence');
+                                }
                             }
-                            console.log(`${logFinish} : ${module.name}`);
-                            resolve();
-                        } catch (err) {
-                            console.log(logFinish);
-                            reject(err);
+                            require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
                         }
-                    });
-                }
+                        resolve();
+                    } catch (err) {
+                        process.stdout.write(`\x1b[31m \u274C \x1b[0m\n`);
+                        reject(err);
+                    }
+                });
+                process.stdout.write(`\x1b[32m \u2713 \x1b[0m\n`);
             } catch (err) {
                 console.error(err);
-                console.log(logFinish);
             }
-        } else {
-            console.log(logFinish);
         }
-    } catch (err) {
-        console.error(err);
-        console.log(logFinish);
+        loadedModules = undefined;
+        console.log('Finish initAfter loading modules');
     }
 };
 
 module.exports = {
-    modules_LoadFunctions,
+    modulesLoadFunctions,
     createListModuleFile,
     displayListModule,
     errorModule,
@@ -290,6 +304,6 @@ module.exports = {
     checkModuleDepencendiesAtInstallation,
     checkModuleDepencendiesAtUninstallation,
     cleanAndToBeChanged,
-    modules_LoadInit,
-    modules_LoadInitAfter
+    modulesLoadInit,
+    modulesLoadInitAfter
 };

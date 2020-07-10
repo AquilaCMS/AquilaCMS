@@ -12,7 +12,7 @@
         "DELIVERY_PROGRESS":"Expédié",
         "DELIVERY_PARTIAL_PROGRESS":"Expédié partiel",
         "FINISHED":"Traité",
-        "CANCELING":"En cours d'annulation",
+        "CANCELLING":"En cours d'annulation",
         "CANCELED":"Annulé",
         "ASK_CANCEL":"Annulation demandé par le client",
         "RETURNED":"Retour"

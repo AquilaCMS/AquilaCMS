@@ -55,5 +55,20 @@
     "gte": "Plus grand ou egal à",
     "gt": "Plus grand que",
     "lte": "Plus petit que",
-    "lt": "Plus petit ou egal à"
+    "lt": "Plus petit ou egal à",
+    "list": {
+        "t1": "Newsletter",
+        "name": "Nom"
+    },
+    "details": {
+        "infos": "Informations",
+        "name": "Nom",
+        "linkedCustomers": "Clients abonnés",
+        "email": "Email",
+        "date": "Date d'abonnement",
+        "didReceive": "Est abonné",
+        "download": "Télécharger la liste des emails",
+        "true": "Oui",
+        "false": "Non"
+    }
 }

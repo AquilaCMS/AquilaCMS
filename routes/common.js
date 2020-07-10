@@ -1,4 +1,3 @@
-const utils                       = require('../utils/utils');
 const {authentication, adminAuth} = require("../middleware/authentication");
 const {middlewareServer}          = require('../middleware');
 const servicesCommon              = require('../services/common');

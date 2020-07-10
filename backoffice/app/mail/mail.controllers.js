@@ -295,6 +295,15 @@ MailControllers.controller("MailDetailTestCtrl", [
                 { name: 'fullname', value: '' },
                 { name: 'company', value: '' },
             ],
+            "requestCancelOrderNotify": [
+                {name: 'number'},
+                {name: 'status'},
+                {name: 'fullname'},
+                {name: 'name'},
+                {name: 'company'},
+                {name: 'firstname'},
+                {name: 'lastname'}
+            ]
 
         };
         $scope.dataMail = $scope.type[$scope.mail.type];

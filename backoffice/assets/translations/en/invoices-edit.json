@@ -1,8 +1,8 @@
 {
     "onlineBill": "Online bill",
-    "billNb": "Bill number",
-    "prixTTC": "Bill ATI price",
-    "nbCli": "Customer number",
+    "billNb": "Bill's number",
+    "prixTTC": "Bill's ATI price",
+    "nbCli": "Customer's number",
     "nom": "Name",
     "soc": "Company",
     "coord": "Contact details",

@@ -1,6 +1,25 @@
+const QueryBuilder     = require("../utils/QueryBuilder");
 const {Newsletters} = require('../orm/models');
+const NSErrors         = require("../utils/errors/NSErrors");
+const restrictedFields = [];
+const defaultFields    = [];
+const queryBuilder     = new QueryBuilder(Newsletters, restrictedFields, defaultFields);
 
-exports.getNewsletter = async function (email) {
+exports.getNewsletters = async function (PostBody) {
+    return queryBuilder.find(PostBody);
+};
+
+exports.getNewsletter = async function (PostBody) {
+    return queryBuilder.findOne(PostBody);
+};
+
+exports.getDistinctNewsletters = async function (PostBody) {
+    const newsletterNames = await Newsletters.find(PostBody.filter).distinct("segment.name");
+    const newsletterNamesCount = newsletterNames.length;
+    return {datas: newsletterNames.sort((a, b) => (PostBody.sort.reverse ? b - a : a - b)).slice((PostBody.page - 1 ) * PostBody.limit, PostBody.limit), count: newsletterNamesCount};
+};
+
+exports.getNewsletterByEmail = async function (email) {
     return Newsletters.findOne({email});
 };
 
@@ -10,7 +29,7 @@ exports.getNewsletter = async function (email) {
  * "name": "test", // Nom du segment
  * "optin": true // true pour inscription, false pour désinscription
  */
-exports.setStatusNewsletter = async function (email, params) {
+exports.setStatusNewsletterByEmail = async function (email, params) {
     // segment sera vide si aucun objet ne correspond a la projection
     // au plus il ne pourra y avoir qu'un seul element retourné avec cette projection (même si segment[i].name est présent plusieurs fois dans ce segment)
     const oNewsletter = await Newsletters.findOne(

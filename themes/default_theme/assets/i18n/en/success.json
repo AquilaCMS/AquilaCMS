@@ -27,7 +27,7 @@
             "et": "Of which postage not included",
             "ati": "Including postage"
         },
-        "additionnal_fees": "en-Dont frais supplémentaires TTC",
+        "additionnal_fees": "additional fees",
         "not_logged_in_success": "You must be logged in to access this page",
         "payment_receipt_pending": "but the payment was not made.",
         "label": {

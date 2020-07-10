@@ -3,7 +3,7 @@
     "title": "MY ACCOUNT",
     "sidebar": {
         "account": "MY ACCOUNT",
-        "coordinates": "My informations",
+        "coordinates": "My information",
         "addresses": "My addresses",
         "GDPR": "My personnals datas",
         "trackingOrder": "TRACKING ORDER",
@@ -11,11 +11,11 @@
         "logout": "Sign out"
     },
     "account": {
-        "title": "My informations",
-        "sub_title": "My informations",
+        "title": "My information",
+        "sub_title": "My information",
         "success_msg": {
             "saved_info": "Saved information",
-            "mail_sent": "You will receive an email containing the necessary instructions!"
+            "mail_sent": "You will receive an email containing the required instructions!"
         },
         "error_msg": {
             "general": "An error has occurred"
@@ -27,8 +27,8 @@
                 "change_password": "Change password",
                 "subscribe_newsletter": "I subscribe to the newsletter",
                 "send_mail_verif": "Send verification email from my account",
-                "lastname": "Lastname",
-                "firstname": "Firstname",
+                "lastname": "Last name",
+                "firstname": "First name",
                 "company": "Enterprise",
                 "validate": "Validate",
                 "preferredLanguage": "Preferred language"
@@ -87,8 +87,8 @@
                     "et": "Total delivery (et)",
                     "ati": "Total delivery (ati)"
                 },
-                "additionnal_fees": "en-Frais sup. TTC",
-                "download_asset": "en-Télécharger mon avoir",
+                "additionnal_fees": "Additional fees",
+                "download_asset": "Download my asset",
                 "cart_discount": "Cart discount:",
                 "download": "Download",
                 "cancel_order": "Cancel order",
@@ -97,8 +97,8 @@
         }
     },
     "rgpd": {
-        "title": "My personnals datas",
-        "sub_title": "My personnals datas",
+        "title": "My personnal datas",
+        "sub_title": "My personnal datas",
         "accountRemoved": "Your account has been deleted You will be redirected...",
         "accountAnonymized": "Your account has been anonymised. Thank you for reconnecting.",
         "page": {
@@ -111,7 +111,7 @@
             },
             "button": {
                 "export_data": "EXPORT MY DATA",
-                "anonymized_data": "ANONYMOUS MY DATA",
+                "anonymized_data": "ANONYMIZE MY DATA",
                 "remove_account": "DELETE MY ACCOUNT"
             },
             "modal": {

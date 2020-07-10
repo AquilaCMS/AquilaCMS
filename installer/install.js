@@ -3,6 +3,7 @@ const themeServices = require("../services/themes");
 const fs            = require("../utils/fsp");
 const serverUtils   = require('../utils/server');
 const {createListModuleFile} = require('../utils/modules');
+const NSErrors      = require('../utils/errors/NSErrors');
 
 /**
  * If it's the first launch (/config/env.js exist or not), display the configurator
@@ -165,6 +166,12 @@ const createUserAdmin = async (userDatas) => {
             isAdmin   : true
         });
     } catch (err) {
+        if (err._errors && err._errors.message === 'FORMAT_PASSWORD') {
+            throw NSErrors.LoginSubscribePasswordInvalid;
+        }
+        if (err._errors && err._errors.message === 'BAD_EMAIL_FORMAT') {
+            throw NSErrors.EmailFormatInvalid;
+        }
         console.error("Admin cannot be created");
     }
 };

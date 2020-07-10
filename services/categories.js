@@ -189,6 +189,7 @@ const getCategoryChild = async (code, childConds, authorization = null) => {
         code
     };
 
+    let projectionOptions = {};
     if (!isAdmin(authorization)) {
         const date = new Date();
         queryCondition.$and = [
@@ -199,25 +200,36 @@ const getCategoryChild = async (code, childConds, authorization = null) => {
             {openDate: {$lte: date}},
             {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
         ];
+
+        projectionOptions = {
+            canonical_weight : 0,
+            active           : 0,
+            creationDate     : 0,
+            openDate         : 0,
+            ancestors        : 0
+        };
     }
 
     // TODO P5 gérer récurisvité du populate (actuellement que 3 niveaux)
     // le populate dans le pre ne fonctionne pas
     return Categories.findOne(queryCondition)
-        .select("-productsList")
+        .select({productsList: 0, ...projectionOptions})
         .populate({
             path     : 'children',
             match    : childConds,
             options  : {sort: {displayOrder: "asc"}},
+            select   : projectionOptions,
             populate : {
                 path     : 'children',
                 match    : childConds,
                 options  : {sort: {displayOrder: "asc"}},
+                select   : projectionOptions,
                 populate : {
                     path     : 'children',
                     match    : childConds,
                     options  : {sort: {displayOrder: "asc"}},
-                    populate : {path: 'children'}
+                    populate : {path: 'children'},
+                    select   : projectionOptions
                 }
             }
         });

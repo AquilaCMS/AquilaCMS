@@ -11,15 +11,15 @@ const queryBuilder      = new QueryBuilder(Shipments, restrictedFields, defaultF
 /**
  * @description retourne les shipment
  */
-exports.getShipments = async function (PostBody) {
+const getShipments = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
-exports.getShipment = async function (PostBody) {
+const getShipment = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-exports.getShipmentsFilter = async function (cart, withoutCountry = null, PostBody) {
+const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
     let totalWeight = 0;
     cart = await Cart.findOne({_id: cart._id});
     if (cart.items) {
@@ -36,7 +36,7 @@ exports.getShipmentsFilter = async function (cart, withoutCountry = null, PostBo
     if (withoutCountry) {
         const price = 0;
 
-        const shipments = (await this.getShipments(PostBody)).datas;
+        const shipments = (await getShipments(PostBody)).datas;
         if (!shipments.length) return price;
         const choices = [];
         let i = 0;
@@ -61,7 +61,7 @@ exports.getShipmentsFilter = async function (cart, withoutCountry = null, PostBo
     let shipments = [];
     if (cart.addresses && cart.addresses.delivery && cart.addresses.delivery.isoCountryCode) {
         PostBody.filter = {...PostBody.filter, active: true, countries: {$elemMatch: {country: cart.addresses.delivery.isoCountryCode}}};
-        shipments = (await this.getShipments(PostBody)).datas;
+        shipments = (await getShipments(PostBody)).datas;
     }
     const returnShipments = [];
     const arrayPrices = {};
@@ -141,7 +141,7 @@ function getShippingDate(cart, shipment) {
     return {delay: Math.ceil(finalDelay._millieconds / 3600000), unit: "hour"}; */
 }
 
-exports.getEstimatedFee = async function (cartId, shipmentId, countryCode) {
+const getEstimatedFee = async (cartId, shipmentId, countryCode) => {
     let cartTotalWeight = 0;
     let catTotalPrice = 0;
     if (!cartId) throw new Error('No cart id');
@@ -186,7 +186,7 @@ exports.getEstimatedFee = async function (cartId, shipmentId, countryCode) {
  * @param body : body de la requête, il permettra de mettre à jour le shipment ou de le créer
  * @param _id : string : ObjectId du shipment, si null alors on est en mode création
  */
-exports.setShipment = async function (_id = null, body) {
+const setShipment = async (_id = null, body) => {
     let result;
     if (_id) {
         // Update
@@ -203,9 +203,18 @@ exports.setShipment = async function (_id = null, body) {
 /**
  * Retourne le shipment venant d'étre supprimé en fonction de son _id
  */
-exports.deleteShipment = async function (_id) {
+const deleteShipment = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     const doc = await Shipments.findOneAndRemove({_id});
     if (!doc) throw NSErrors.ShipmentNotFound;
     return doc;
+};
+
+module.exports = {
+    getShipments,
+    getShipment,
+    getShipmentsFilter,
+    getEstimatedFee,
+    setShipment,
+    deleteShipment
 };

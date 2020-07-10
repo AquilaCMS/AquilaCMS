@@ -2,7 +2,7 @@
     "detail": {
         "t1": "Detail Attribut",
         "t2": "Create new attribute",
-        "ph1": "(spaces, accents and special characters will be deletd)",
+        "ph1": "(spaces, accents and special characters will be deleted)",
         "ph2": "Position",
         "code": "Code",
         "nom": "Name",

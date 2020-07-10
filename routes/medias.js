@@ -3,6 +3,7 @@ const {authentication, adminAuth} = require("../middleware/authentication");
 const {middlewareServer}          = require('../middleware');
 const mediasServices              = require('../services/medias');
 const utils                       = require('../utils/utils');
+const mediasUtils                 = require('../utils/medias');
 const NSErrors                    = require("../utils/errors/NSErrors");
 const {Medias}                    = require("../orm/models");
 
@@ -196,7 +197,7 @@ const remove = async (req, res, next) => {
         if (!media) throw NSErrors.MediaNotFound;
 
         if (media.link) {
-            await utils.deleteFile(media.link);
+            await mediasUtils.deleteFile(media.link);
             require("../services/cache").deleteCacheImage('medias', {filename: path.basename(media.link).split('.')[0]});
         }
         await media.remove();

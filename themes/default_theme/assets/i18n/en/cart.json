@@ -9,7 +9,7 @@
             "products": "Products",
             "description": "Home delivery",
             "quantity": "Quantity",
-            "more_infos": "More infos",
+            "more_infos": "More info",
             "add": "Add",
             "cancel": "Cancel",
             "empty": "Empty",
@@ -42,7 +42,7 @@
             "DPD": "Express",
             "country": "Country",
             "free": "Free",
-            "no_shipment": "Pas de transporteur"
+            "no_shipment": "No shipment"
         },
         "code_promo": {
             "discount_label": "Discount code",
@@ -55,8 +55,8 @@
             "totalHT": "Total excl tax",
             "totalTTC": "Total incl tax",
             "taxes": "Taxes",
-            "adresseLivraison": "en-Adresse livraison",
-            "adresseFacturation": "en-Adresse facturation",
+            "adresseLivraison": "Shipping adress",
+            "adresseFacturation": "Billing adress",
             "modifier": "Modify",
             "expedition": "Delivery incl tax"
         }

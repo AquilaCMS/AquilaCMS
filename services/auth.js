@@ -1,3 +1,4 @@
+const {promisify} = require("util");
 const jwt      = require("jsonwebtoken");
 const NSErrors = require("../utils/errors/NSErrors");
 
@@ -34,15 +35,14 @@ const login = async (req, res, next) => {
         let user = await Users.findOne({email: {$regex: username, $options: 'i'}});
 
         if (!user) throw NSErrors.BadLogin;
-        const {appUrl, adminPrefix} = await require("../utils/server").getAppUrl(req);
-        if (appUrl.includes(adminPrefix)) {
+        if (req.params.from === 'admin') {
             if (!user.isAdmin) throw NSErrors.Unauthorized;
         }
 
         const isMatch = await user.validPassword(password);
         if (!isMatch) throw NSErrors.BadLogin;
 
-        const loginPassport = require("util").promisify(req.logIn);
+        const loginPassport = promisify(req.logIn);
         await loginPassport(user, {session: false});
 
         user = user.toObject();

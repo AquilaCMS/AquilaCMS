@@ -4,7 +4,7 @@ const NSErrors = require("../utils/errors/NSErrors");
  * Aggregate Reviews
  * @param {Object} body body
  */
-exports.getAggregateReviews = async function (body) {
+const getAggregateReviews = async (body) => {
     const limit = body.limit || 12;
     if (!body.page) {
         body.page = 1;
@@ -48,7 +48,7 @@ exports.getAggregateReviews = async function (body) {
  * @param {ObjectId} idProduct id du produit
  * @param {Object} review commentaire sur l'article idProduct
  */
-exports.setProductReview = async function (idProduct, user = null, review, title, rate, lang, questions = [], ipClient = null) {
+const setProductReview = async (idProduct, user = null, review, title, rate, lang, questions = [], ipClient = null) => {
     const {Products} = require('../orm/models');
     const product = await Products.findById(idProduct);
     if (!product) {
@@ -87,7 +87,7 @@ exports.setProductReview = async function (idProduct, user = null, review, title
     product.reviews.datas.push(oReview);
     if (product.reviews && product.reviews.datas) {
         // On calcule la moyenne des notes
-        this.computeAverageRateAndCountReviews(product);
+        computeAverageRateAndCountReviews(product);
     }
     const newProduct = await product.save();
     return newProduct;
@@ -98,7 +98,7 @@ exports.setProductReview = async function (idProduct, user = null, review, title
  * @param {ObjectId} idProduct id du produit
  * @param {ObjectId} idreview id de la review
  */
-exports.deleteProductReview = async function (idProduct, idReview) {
+const deleteProductReview = async (idProduct, idReview) => {
     if (!idProduct) {
         throw NSErrors.InvalidParameters;
     }
@@ -130,13 +130,13 @@ exports.deleteProductReview = async function (idProduct, idReview) {
  * On supprime les reviews qui ne sont pas visible et verify dans la liste passé en param
  * @param {Array<Products>} result Tableau de produits
  */
-exports.keepVisibleAndVerifyArray = async function (result) {
+const keepVisibleAndVerifyArray = async (result) => {
     for (let i = 0; i < result.datas.length; i++) {
         const product = result.datas[i];
         if (!product.reviews || !product.reviews.datas || !product.reviews.datas.length) {
             continue;
         }
-        this.keepVisibleAndVerify(product);
+        keepVisibleAndVerify(product);
     }
 };
 
@@ -144,7 +144,7 @@ exports.keepVisibleAndVerifyArray = async function (result) {
  * On supprime les reviews qui ne sont pas visible et verify pour ce produit
  * @param {Products} product Produit
  */
-exports.keepVisibleAndVerify = async function (product) {
+const keepVisibleAndVerify = async (product) => {
     for (let j = product.reviews.datas.length - 1; j >= 0; j--) {
         const {visible, verify} = product.reviews.datas[j];
         if (!visible || !verify) product.reviews.datas.splice(j, 1);
@@ -154,7 +154,7 @@ exports.keepVisibleAndVerify = async function (product) {
 /**
  * This function will compute the average rate for reviews
  */
-exports.computeAverageRateAndCountReviews = async function (product) {
+const computeAverageRateAndCountReviews = async (product) => {
     if (!product.reviews || !product.reviews.datas || !product.reviews.datas.length) {
         return {average: 0, reviews_nb: 0};
     }
@@ -199,4 +199,13 @@ exports.computeAverageRateAndCountReviews = async function (product) {
         product.reviews.average = Number((sum / count).toFixed(1));
         product.reviews.reviews_nb = count;
     }
+};
+
+module.exports = {
+    getAggregateReviews,
+    setProductReview,
+    deleteProductReview,
+    keepVisibleAndVerifyArray,
+    keepVisibleAndVerify,
+    computeAverageRateAndCountReviews
 };

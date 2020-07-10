@@ -74,20 +74,24 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
         const formatDate = $scope.filter.granularity === "day" ? "DD/MM/YYYY" : "MM/YYYY";
         $http({url: `/v2/statistics/${isPageSell ? 'sell' : 'customer'}/${currentRoute}?${parameters}`, method: 'GET'}).then((response) => {
             Statistics.generate({params: response.data.datasObject, currentRoute}, function (response) {
-                const filename = response.file;
-                const linkElement = document.createElement("a");
-                try {
-                    const blob = new Blob([response.csv]);
-                    const url = window.URL.createObjectURL(blob);
-                    linkElement.setAttribute("href", url);
-                    linkElement.setAttribute("download", filename);
-                    const clickEvent = new MouseEvent("click", {"view": window, "bubbles": true, "cancelable": false});
-                    linkElement.dispatchEvent(clickEvent);
-                }
-                catch(err) {
-                    toastService.toast("danger", "Une erreur s'est produite lors de la génération du fichier .csv");
+                if(response.file && response.csv) {
+                    const filename = response.file;
+                    const linkElement = document.createElement("a");
+                    try {
+                        const blob = new Blob([response.csv]);
+                        const url = window.URL.createObjectURL(blob);
+                        linkElement.setAttribute("href", url);
+                        linkElement.setAttribute("download", filename);
+                        const clickEvent = new MouseEvent("click", {"view": window, "bubbles": true, "cancelable": false});
+                        linkElement.dispatchEvent(clickEvent);
                     }
-                });
+                    catch(err) {
+                        toastService.toast("danger", "Une erreur s'est produite lors de la génération du fichier .csv");
+                    }
+                } else {
+                    toastService.toast("danger", "Pas d'informations a exporter");
+                }
+            });
             $scope.obj.loading = false;
         }, function errorCallback(response) {
             console.log(response);

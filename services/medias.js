@@ -1,4 +1,4 @@
-const fs               = require('fs');
+const AdmZip           = require('adm-zip');
 const moment           = require('moment');
 const path             = require('path');
 const mongoose         = require('mongoose');
@@ -32,36 +32,31 @@ const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultField
  */
 exports.downloadAllDocuments = async () => {
     console.log("Preparing downloadAllDocuments...");
-    const path = server.getUploadDirectory();
+    const uploadDirectory = server.getUploadDirectory();
 
-    await utilsModules.modules_LoadFunctions("downloadAllDocuments", {}, async () => {
-        if (!fs.existsSync(`./${path}/temp`)) {
-            fs.mkdirSync(`./${path}/temp`);
+    await utilsModules.modulesLoadFunctions("downloadAllDocuments", {}, () => {
+        if (!fsp.existsSync(`./${uploadDirectory}/temp`)) {
+            fsp.mkdirSync(`./${uploadDirectory}/temp`);
         }
-
-        const archiver = require('archiver-promise');
-        const archive = archiver(`./${path}/temp/documents.zip`, {
-            store : true
+        const zip = new AdmZip();
+        if (fsp.existsSync(path.resolve(uploadDirectory, 'documents'))) {
+            zip.addLocalFolder(path.resolve(uploadDirectory, 'documents'), 'documents');
+        }
+        if (fsp.existsSync(path.resolve(uploadDirectory, 'medias'))) {
+            zip.addLocalFolder(path.resolve(uploadDirectory, 'medias'), 'medias');
+        }
+        if (fsp.existsSync(path.resolve(uploadDirectory, 'photos'))) {
+            zip.addLocalFolder(path.resolve(uploadDirectory, 'photos'), 'photos');
+        }
+        if (fsp.existsSync(path.resolve(uploadDirectory, 'fonts'))) {
+            zip.addLocalFolder(path.resolve(uploadDirectory, 'fonts'), 'fonts');
+        }
+        zip.writeZip(path.resolve(uploadDirectory, 'temp/documents.zip'), (err) => {
+            if (err) console.error(err);
         });
-
-        if (fs.existsSync(`${path}/documents/`)) {
-            archive.directory(`${path}/documents/`, 'documents');
-        }
-        if (fs.existsSync(`${path}/medias/`)) {
-            archive.directory(`${path}/medias/`, 'medias');
-        }
-        if (fs.existsSync(`${path}/photos/`)) {
-            archive.directory(`${path}/photos/`, 'photos');
-        }
-        if (fs.existsSync(`${path}/fonts/`)) {
-            archive.directory(`${path}/fonts/`, 'fonts');
-        }
-
-        await archive.finalize();
-
-        console.log("Finalize downloadAllDocuments..");
     });
-    return fs.readFileSync(`./${path}/temp/documents.zip`, 'binary');
+    console.log("Finalize downloadAllDocuments..");
+    return fsp.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
 };
 
 /**
@@ -76,42 +71,38 @@ exports.uploadAllMedias = async (reqFile, insertDB) => {
         .join('.');
     const target_path = `./${server.getUploadDirectory()}/medias`;
 
-    // Unzip
-    fs.createReadStream(path_init)
-        .pipe(require('unzip2')
-            .Extract({path: path_unzip}))
-        .on('close', () => {
-            // Parcourir l'ensemble des fichiers pour les ajouter à la table medias
-            const filenames = fs.readdirSync(path_unzip);
-            filenames.forEach(async (filename) => {
-                const init_file   = `${path_unzip}/${filename}`;
-                const target_file = `${target_path}/${filename}`;
-                const name_file   = filename.split('.')
-                    .slice(0, -1)
-                    .join('.');
+    const zip = new AdmZip(path_init);
+    zip.extractAllTo(path_unzip);
+    // Parcourir l'ensemble des fichiers pour les ajouter à la table medias
+    const filenames = fsp.readdirSync(path_unzip);
+    filenames.forEach(async (filename) => {
+        const init_file   = path.resolve(path_unzip, filename);
+        const target_file = path.resolve(target_path, filename);
+        const name_file   = filename.split('.')
+            .slice(0, -1)
+            .join('.');
 
-                // Check if folder
-                if (fs.lstatSync(init_file)
-                    .isDirectory()) {
-                    return;
-                }
+        // Check if folder
+        if (fsp.lstatSync(init_file)
+            .isDirectory()) {
+            return;
+        }
 
-                // Déplacer le fichier dans /medias
-                require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
-                    if (err) console.error(err);
-                });
-
-                // L'inserer dans la base de données
-                if (insertDB) {
-                    Medias.create({
-                        link : `medias/${filename}`,
-                        name : name_file
-                    });
-                }
-            });
-
-            console.log("Upload medias done !");
+        // Déplacer le fichier dans /medias
+        require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
+            if (err) console.error(err);
         });
+
+        // L'inserer dans la base de données
+        if (insertDB) {
+            Medias.create({
+                link : `medias/${filename}`,
+                name : name_file
+            });
+        }
+    });
+
+    console.log("Upload medias done !");
 };
 
 /* **************** Documents **************** *
@@ -126,12 +117,9 @@ exports.uploadAllDocuments = async (reqFile) => {
     const target_path = `./${server.getUploadDirectory()}`;
 
     // Unzip
-    fs.createReadStream(path_init)
-        .pipe(require('unzip2')
-            .Extract({path: target_path}))
-        .on('close', async () => {
-            console.log("Upload Documents is done !");
-        });
+    const zip = new AdmZip(path_init);
+    zip.extractAllTo(target_path);
+    console.log("Upload Documents is done !");
 };
 
 /**
@@ -227,20 +215,20 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     // si le dossier de cache n'existe pas, on le créé
     createFolderIfNotExist(cacheFolder);
     // si l'image demandée est deja en cache, on la renvoie direct
-    if (fs.existsSync(filePathCache)) {
+    if (fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
     if (size === 'max' || size === "MAX") {
-        await utilsModules.modules_LoadFunctions("downloadFile", {
+        await utilsModules.modulesLoadFunctions("downloadFile", {
             key     : filePath.substr(_path.length + 1).replace(/\\/g, "/"),
             outPath : filePathCache
         }, () => {
-            fs.copyFileSync(filePath, filePathCache);
+            fsp.copyFileSync(filePath, filePathCache);
         });
     } else {
         // sinon, on recupere l'image original, on la resize, on la compresse et on la retourne
         // resize
-        filePath = await utilsModules.modules_LoadFunctions("getFile", {
+        filePath = await utilsModules.modulesLoadFunctions("getFile", {
             key : filePath.substr(_path.length + 1).replace(/\\/g, "/")
         }, () => {
             return filePath;
@@ -302,14 +290,14 @@ exports.uploadFiles = async (body, files) => {
 
     let target_path_full = target_path + files[0].originalname + extension;
     let name             = files[0].originalname;
-    target_path_full     = await utilsModules.modules_LoadFunctions("uploadFile", {
+    target_path_full     = await utilsModules.modulesLoadFunctions("uploadFile", {
         target_path,
         target_path_full,
         file : files[0],
         extension
     }, async () => {
         // Check if the name is already used
-        if (await fsp.existsSync(path.join(pathFinal, target_path_full))) {
+        if (!(await fsp.existsSync(path.join(pathFinal, target_path_full)))) {
             target_path_full = pathFinal + target_path_full;
         } else {
             name             = `${files[0].originalname}_${Date.now()}`;
@@ -524,9 +512,9 @@ exports.removeMedia = async function (_id) {
 };
 
 function createFolderIfNotExist(dir) {
-    if (!fs.existsSync(dir)) {
+    if (!fsp.existsSync(dir)) {
         createFolderIfNotExist(path.join(dir, ".."));
-        fs.mkdirSync(dir);
+        fsp.mkdirSync(dir);
     }
 }
 

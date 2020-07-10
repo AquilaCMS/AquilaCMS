@@ -21,9 +21,8 @@ const newDependencies          = packageObj.dependencies;
 const newDependenciesTab       = [];
 let newDependenciesLineContent = "";
 
-// eslint-disable-next-line guard-for-in
-for (const i in newDependencies) {
-    newDependenciesLineContent = `${i}@${newDependencies[i]}`;
+for (const key of Object.keys(newDependencies)) {
+    newDependenciesLineContent = `${key}@${newDependencies[key]}`;
     newDependenciesTab.push(newDependenciesLineContent);
 }
 

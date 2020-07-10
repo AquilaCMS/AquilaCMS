@@ -6,7 +6,7 @@
         "sendMail": "Send",
         "sendMailTest": "Send a Test Mail",
         "addressReceipe": "Receipe Address : ",
-        "informationsMail":"Don't forget to save informations before sending a test mail.",
+        "informationsMail":"Don't forget to save information before sending a test mail.",
         "general": "General",
         "baseURL": "Base URL (ex : http://example.com/)",
         "prefixeURL": "Back-office URL Prefix (admin by default)",

@@ -1,11 +1,11 @@
 {
     "prog": "In progress",
-    "canceled": "Canceled",
+    "canceled": "Cancelled",
     "waitPay": "Waiting for payment",
     "ticketUsed": "Ticket used",
     "paid": "Paid",
 
-    "canceledF": "Canceled",
+    "canceledF": "Cancelled",
     "finished": "Finished",
     "prep": "Prepared",
     "processing": "Processing",

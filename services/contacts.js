@@ -29,6 +29,7 @@ exports.setContact = async function (body, mode) {
     }
     return res;
 };
+
 async function storeContact(body, _id = undefined) {
     if (_id) {
         delete body._id;

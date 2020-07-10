@@ -29,7 +29,7 @@ import Error from './_error';
 class PageProduct extends NSPageProduct {
     render = () => {
         const {
-            appurl, lang, notFound, oCmsHeader, oCmsFooter, routerLang, sitename, t
+            appurl, lang, notFound, oCmsHeader, oCmsFooter, routerLang, sitename, t, themeConfig
         } = this.props;
         if (notFound) {
             return (
@@ -111,7 +111,7 @@ class PageProduct extends NSPageProduct {
 
                                     <h2 className="section__subtitle">{product.description1 && product.description1.title ? product.description1.title : null}</h2>
 
-                                    <div className="row-flex">
+                                    <div className="row-flex" style={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false ? { display: 'none' } : {}}>
                                         <div className="rating">
                                             <div className="rating-split align-star">
                                                 <NSDrawStars
@@ -224,7 +224,7 @@ class PageProduct extends NSPageProduct {
 
                                         <div className="product-price_reviews">
 
-                                            <div className="product-reviews hidden-xs">
+                                            <div className="product-reviews hidden-xs" style={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false ? { display: 'none' } : {}}>
                                                 <div className="rating">
                                                     <div className="rating-split align-star">
                                                         <NSDrawStars
@@ -407,7 +407,7 @@ class PageProduct extends NSPageProduct {
                                 )
                             }
 
-                            <section className="section-ratings customer_reviews" id="reviews">
+                            <section className="section-ratings customer_reviews" id="reviews" style={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false ? { display: 'none' } : {}}>
                                 <header className="section__head">
                                     <h4>{t('avisClients')}</h4>
                                 </header>{/* <!-- /.section__head --> */}

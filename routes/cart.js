@@ -1,5 +1,4 @@
 const mongoose                    = require('mongoose');
-const utils                       = require('../utils/utils');
 const utilsDatabase               = require('../utils/database');
 const aquilaEvents                = require("../utils/aquilaEvents");
 const NSErrors                    = require("../utils/errors/NSErrors");

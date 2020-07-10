@@ -76,5 +76,11 @@ module.exports = {
             fr : {name: "Retour"},
             en : {name: "Return"}
         }
+    },
+    CANCELLING : {
+        translation : {
+            fr : {name: "En cours d'annulation"},
+            en : {name: "Being cancelled"}
+        }
     }
 };

@@ -21,7 +21,7 @@ exports.setProductViews = function (product_id) {
 exports.generateStatistics = function (data) {
     try {
         const model = data.currentRoute;
-        const csvFields = Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
+        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
         console.error(error);

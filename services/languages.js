@@ -7,15 +7,15 @@ const restrictedFields = [];
 const defaultFields    = ["code", "name", "defaultLanguage", "status"];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
-exports.getLanguages = async function (PostBody) {
+const getLanguages = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
-exports.getLang = async function (PostBody) {
+const getLang = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-exports.saveLang = async function (lang) {
+const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
@@ -29,13 +29,13 @@ exports.saveLang = async function (lang) {
         result = await Languages.create(lang);
     }
 
-    await this.createDynamicLangFile();
+    await createDynamicLangFile();
     return result;
 };
 
-exports.removeLang = async function (_id) {
+const removeLang = async (_id) => {
     const deletedLang = await Languages.findOneAndDelete({_id});
-    await this.createDynamicLangFile();
+    await createDynamicLangFile();
     return deletedLang;
 };
 
@@ -43,7 +43,7 @@ exports.removeLang = async function (_id) {
  * @description Renvoi le code lang par défaut
  * @param {string} language - Langue demandée (df par défaut)
  */
-exports.getDefaultLang = function (language) {
+const getDefaultLang = (language) => {
     // Si la langue demandé est celle par défault, on va récupérer la "vrai" langue par défaut
     if (language === undefined || language === null || language === "") return global.defaultLang;
     return language;
@@ -54,7 +54,7 @@ exports.getDefaultLang = function (language) {
  * @param translateName : Nom du fichier de translate a editer
  * @param translateValue : Contenu à écrire dans le fichier
  */
-exports.translateSet = async function (translateName, translateValue, lang) {
+const translateSet = async (translateName, translateValue, lang) => {
     const translatePath  = await getTranslatePath(lang);
     if (!fs.existsSync(translatePath)) {
         fs.mkdirSync(translatePath);
@@ -68,7 +68,7 @@ exports.translateSet = async function (translateName, translateValue, lang) {
 /**
  * @description Récupère le contenue du fichier de traduction
  */
-exports.translateGet = async function (filePath, lang) {
+const translateGet = async (filePath, lang) => {
     try {
         const themePath = await getTranslatePath(lang);
         return await fs.readFileSync(`${themePath}/${filePath}.json`, "UTF-8");
@@ -80,7 +80,7 @@ exports.translateGet = async function (filePath, lang) {
 /**
  * @description Récupère la liste des fichier de translate
  */
-exports.translateList = async function () {
+const translateList = async () => {
     try {
         const lang = "fr";
         const translateList   = [];
@@ -108,10 +108,22 @@ async function getTranslatePath(lang) {
 /**
  * Create languages in file "config/dynamic_langs.js"
  */
-exports.createDynamicLangFile = async () => {
+const createDynamicLangFile = async () => {
     const _languages  = await Languages.find({status: "visible"}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
     fs.writeFileSync('./config/dynamic_langs.js', contentFile);
+};
+
+module.exports = {
+    getLanguages,
+    getLang,
+    saveLang,
+    removeLang,
+    getDefaultLang,
+    translateSet,
+    translateGet,
+    translateList,
+    createDynamicLangFile
 };

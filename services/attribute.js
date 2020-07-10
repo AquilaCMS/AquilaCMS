@@ -23,6 +23,7 @@ const getAllAttributes = async (PostBody) => {
     } else if (!PostBody.filter._type || PostBody.filter._type === "products") {
         PostBody.filter._type = {$in: ['products', null]};
     }
+
     const result = await queryBuilder.find(PostBody);
     result.datas.map((value) => value.type = utils.attributeCorrectOldTypeName(value.type));
     return result;
@@ -207,27 +208,9 @@ const remove = async (_id) => {
         throw NSErrors.NotFound;
     }
     await Promise.all([
-        new Promise((resolve, reject) => {
-            Products.updateMany({}, {$pull: {attributes: {id: _id}}}).then(() => {
-                resolve();
-            }).catch((err) => {
-                reject(err);
-            });
-        }),
-        new Promise((resolve, reject) => {
-            Users.updateMany({}, {$pull: {attributes: {id: _id}}}).then(() => {
-                resolve();
-            }).catch((err) => {
-                reject(err);
-            });
-        }),
-        new Promise((resolve, reject) => {
-            SetAttributes.updateMany({_id: {$in: attribute.set_attributes}}, {$pull: {attributes: _id}}).then(() => {
-                resolve();
-            }).catch((err) => {
-                reject(err);
-            });
-        })
+        await Products.updateMany({}, {$pull: {attributes: {id: _id}}}),
+        await Users.updateMany({}, {$pull: {attributes: {id: _id}}}),
+        await SetAttributes.updateMany({_id: {$in: attribute.set_attributes}}, {$pull: {attributes: _id}})
     ]);
 
     await attribute.remove();

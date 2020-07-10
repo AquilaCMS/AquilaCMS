@@ -23,7 +23,7 @@ ThemesController.controller("ThemesCtrl", [
         ThemeConfig.query({ PostBody: { filter: {}, structure: {}, limit: 99 }}, function (response) {
             $scope.keys = {};
             $scope.themeConfig.variables = {};
-            if(response.config){
+            if(response.config && response.config.translation) {
                 $scope.languages.forEach(element => {
                     $scope.themeConfig.variables[element.code] = response.config.translation[element.code];
                     delete $scope.themeConfig.variables[element.code].$promise;

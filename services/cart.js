@@ -7,7 +7,6 @@ const {
     Promo,
     Languages
 }                       = require("../orm/models");
-const utils             = require("../utils/utils");
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
 const NSErrors          = require("../utils/errors/NSErrors");
@@ -76,17 +75,6 @@ const setCartAddresses = async (cartId, addresses) => {
         addressType = addressesType[i];
         updAddress = addresses[addressType.type];
         if (updAddress) {
-            // if (!utils.validateAddress(updAddress)) {
-            //     err = {
-            //         code         : 'NOT_VALID_ADDRESS',
-            //         status       : 400,
-            //         translations : {
-            //             fr : `L'adresse de ${addressType.name} est invalide. Veuillez saisir un pays, un code postal et une ville`,
-            //             en : `The address ${addressType.name} is invalid. Please type a country, a ZIP Code and a city`
-            //         }
-            //     };
-            //     break;
-            // }
             update[`addresses.${addressType.type}`] = updAddress;
         }
     }

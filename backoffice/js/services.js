@@ -43,7 +43,7 @@ adminCatagenServices.service("NSConstants", function () {
                         { code: "FINISHED", name: "Processed" },
                         { code: "CANCELED", name: "Cancelled" },
                         { code: "RETURNED", name: "Return" },
-                        { code: "CANCELLING", name: "En cours d'annulation A TRADUIRE" },
+                        { code: "CANCELLING", name: "Being Cancelled" },
                         { code: "ASK_CANCEL", name: "Cancel order requested by customer" }
 
                     ]

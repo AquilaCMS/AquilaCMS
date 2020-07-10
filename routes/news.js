@@ -3,7 +3,7 @@ const {authentication, adminAuth} = require("../middleware/authentication");
 const {securityForceFilter} = require('../middleware/security');
 const {middlewareServer} = require('../middleware');
 const servicesNews      = require("../services/news");
-const utils             = require('../utils/utils');
+const mediasUtils       = require('../utils/medias');
 
 module.exports = function (app) {
     app.post("/v2/site/news", securityForceFilter([{isVisible: true}]), getNews);
@@ -112,7 +112,7 @@ async function removeImage(req, res, next) {
     try {
         const {_id} = req.params;
         const oNews = await News.findOne({_id});
-        await utils.deleteFile(oNews.img);
+        await mediasUtils.deleteFile(oNews.img);
         // On supprime ensuite le lien de l'image en bdd
         const result = await News.findOneAndUpdate({_id}, {img: ""}, {new: true});
         return res.json(result);
@@ -129,7 +129,7 @@ async function removeImage(req, res, next) {
  */
 async function remove(req, res, next) {
     const oNews = await News.findOne({_id: req.params._id});
-    await utils.deleteFile(oNews.img);
+    await mediasUtils.deleteFile(oNews.img);
     try {
         await News.deleteOne({_id: req.params._id});
         res.end();

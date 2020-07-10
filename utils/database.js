@@ -137,7 +137,8 @@ const initDBValues = async () => {
         {code: 'rmaOrder', name: 'Réception retour produit', position: 8},
         {code: 'orderSent', name: 'Commande envoyée', position: 9},
         {code: 'orderSuccessDeferred', name: 'Commande avec paiement différé', position: 10},
-        {code: 'activationAccount', name: 'Activation du compte', position: 11}
+        {code: 'activationAccount', name: 'Activation du compte', position: 11},
+        {code: 'requestCancelOrderNotify', name: 'Demande d\'annulation de commande', position: 12}
     ];
     // P1 : Utiliser des codes normé ci dessous
     /*   const mailTypes = [

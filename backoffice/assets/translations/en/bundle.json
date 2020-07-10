@@ -31,7 +31,7 @@
         "act": "Actions",
         "qt": "Quantity",
         "attrJeux": "Attributes set attributes",
-        "idFirst": "You must type first the product ID before configuring attributes!",
+        "idFirst": "You must type the product's ID before configuring attributes!",
         "catNom": "Category name"
     }
 }

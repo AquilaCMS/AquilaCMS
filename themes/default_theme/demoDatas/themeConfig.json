@@ -11,14 +11,18 @@
               "itsstring" : "fr", 
               "itsnumber" : 321, 
               "itsboolean" : true, 
-              "itscolor" : "#CCCCCC"
+              "itscolor" : "#CCCCCC",
+              "filters" : "left",
+              "reviews" : "true"
           }, 
           "en" : {
               "showFooter" : true, 
               "itsstring" : "en", 
               "itsnumber" : 123, 
               "itsboolean" : false, 
-              "itscolor" : "#ABCDEF"
+              "itscolor" : "#ABCDEF",
+              "filters" : "left",
+              "reviews" : "true"
           }
       }
       }

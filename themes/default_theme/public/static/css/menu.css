@@ -24,12 +24,12 @@
     display: block;
     position: relative;
     float: left;
-    background: #576fa1;
+    background: var(--color-theme);
 }
 
 .nav ul ul { left: -1px; }
 
-.nav ul a:hover { background: #8b9fc7; }
+.nav ul a:hover { background: var(--color-theme-light) }
 
 .nav ul ul li { border-left: 1px solid white; }
 

@@ -22,7 +22,7 @@ import Error from './_error';
 class PageCategory extends NSPageCategory {
     render() {
         const {
-            lang, notFound, nsCms_extraText, nsCms_extraText2, nsCms_extraText3, oCmsHeader, oCmsFooter, sitename, t
+            lang, notFound, nsCms_extraText, nsCms_extraText2, nsCms_extraText3, oCmsHeader, oCmsFooter, sitename, t, themeConfig
         } = this.props;
         if (notFound) {
             return (
@@ -38,6 +38,7 @@ class PageCategory extends NSPageCategory {
             this.setState({ gridDisplay: true });
             window.localStorage.setItem('gridDisplay', true);
         }
+
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
@@ -149,9 +150,9 @@ class PageCategory extends NSPageCategory {
                                     </div>{/* <!-- /.bar-filters --> */}
                                 </div>{/* <!-- /.tab-filter --> */}
 
-                                <div className="container container--flex align-top">
+                                <div className="container container--flex align-top" style={themeConfig && themeConfig.filters && themeConfig.filters === 'right' ? { flexDirection: "row-reverse" } : {}}>
 
-                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2">
+                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2" style={themeConfig && themeConfig.filters && themeConfig.filters === 'none' ? { display: "none" } : {}}>
                                         {
                                             <NSFilters
                                                 category={category}

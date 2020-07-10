@@ -1,4 +1,5 @@
 const axios                     = require('axios');
+const AdmZip                    = require('adm-zip');
 const path                      = require('path');
 const fsp                       = require('../utils/fsp');
 const packageManager            = require('../utils/packageManager');
@@ -76,14 +77,8 @@ const update = async () => {
     // Décompresser dossier temporaire
     try {
         console.log(`Extracting archive...`);
-        const unzipStream = fsp.createReadStream(filePath).pipe(require('unzip').Extract({path: aquilaPath}));
-        await new Promise((resolve, reject) => {
-            unzipStream.on('error', (err) => {
-                reject(err);
-            }).on('close', () => {
-                resolve('close');
-            });
-        });
+        const zip = new AdmZip(filePath);
+        zip.extractAllTo(aquilaPath);
     } catch (exc) {
         console.error(`Unzip ${filePath} failed`);
     }

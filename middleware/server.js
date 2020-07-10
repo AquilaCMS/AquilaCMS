@@ -6,7 +6,7 @@ const multer            = require('multer');
 const {v1: uuidv1}      = require('uuid');
 const cors              = require('cors');
 const {getDecodedToken} = require("../services/auth");
-const {fsp, utils, translation, serverUtils} = require('../utils');
+const {fsp, translation, serverUtils} = require('../utils');
 
 const getUserFromRequest = (req) => {
     const user = null;

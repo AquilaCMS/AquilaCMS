@@ -8,7 +8,7 @@ $(document).ready(function () {
         e.preventDefault();
         $("#error_msg").hide();
         try {
-            const response = await $.post(window.location.origin + "/api/v2/auth/login", {
+            const response = await $.post(window.location.origin + "/api/v2/auth/login/admin", {
                 username: $("#field-email", this).val(),
                 password: $("#field-password", this).val()
             });

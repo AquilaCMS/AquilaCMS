@@ -69,7 +69,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.promo",
     "aq.productReviews",
     "aq.themes",
-    "aq.productVirtual"
+    "aq.productVirtual",
+    "aq.newsletter"
 
 ]);
 

@@ -2338,7 +2338,7 @@ input:-webkit-autofill {
     /*height: 100vh;*/
     top: 60px;
     height: 100vh;
-    z-index: 2000;
+    z-index: 1000;
     left: 0;
     width: 55px;
     background: #576fa1;
@@ -3846,6 +3846,10 @@ a.ui-button:active,
 
 #form-cross-selling .alert p {
     margin: auto;
+}
+
+.alert {
+    z-index: 9999 !important;
 }
 
 @media (max-width: 765px) {

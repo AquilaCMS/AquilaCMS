@@ -1,6 +1,7 @@
 const aquilaEvents                          = require('../utils/aquilaEvents');
 const NSErrors                              = require('../utils/errors/NSErrors');
 const utils                                 = require('../utils/utils');
+const mediasUtils                           = require('../utils/medias');
 const ServiceProduct                        = require('../services/products');
 const {middlewareServer}                    = require('../middleware');
 const {authentication, adminAuth}           = require('../middleware/authentication');
@@ -14,7 +15,7 @@ module.exports = function (app) {
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
     app.post('/v2/product/duplicate', authentication, adminAuth, duplicateProduct);
-    app.get('/v2/product/download', downloadProduct);
+    app.get('/v2/product/download', authentication, downloadProduct);
     app.post('/v2/product/calculStock', calculStock);
     app.post('/v2/product/:id', getProductById);
     app.post('/v2/products/category/:id', getProductsByCategoryId);
@@ -47,7 +48,7 @@ async function getProductsListing(req, res, next) {
             },
             'bundle_sections.products.id'
         ];
-        const result      = await ServiceProduct.getProductsListing(req, res);
+        const result = await ServiceProduct.getProductsListing(req, res);
 
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
@@ -183,9 +184,12 @@ async function deleteProduct(req, res, next) {
 async function downloadProduct(req, res, next) {
     try {
         const fileBinary = await ServiceProduct.downloadProduct(req, res);
-        res.setHeader('Content-Length', fileBinary.length);
-        res.write(fileBinary, 'binary');
-        res.end();
+        const val = aquilaEvents.emit('aqDownloadProduct', fileBinary, req, res, next);
+        if (!val) {
+            res.setHeader('Content-Length', fileBinary.length);
+            res.write(fileBinary, 'binary');
+            return res.end();
+        }
     } catch (error) {
         return next(error);
     }
@@ -341,7 +345,7 @@ function deleteImages(id, oldImages, newImages) {
 
     oldImages
         .filter((obj) => !(obj._id in bIds))
-        .forEach(async (item) => utils.deleteFile(item.url));
+        .forEach(async (item) => mediasUtils.deleteFile(item.url));
 }
 
 /**

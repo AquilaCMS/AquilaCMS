@@ -210,17 +210,18 @@ function mongorestore(uri) {
  */
 const anonymizeDatabase = async (cb) => {
     // Connexion à la nouvelle database
+    const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1];
     const client = await MongoClient.connect(
         global.envFile.db.replace(
-            global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1],
-            `${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1]}_anonymized`
+            databaseName,
+            `${databaseName}_anonymized`
         ),
         {
             useNewUrlParser    : true,
             useUnifiedTopology : true
         }
     );
-    const database = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1]}_anonymized`);
+    const database = client.db(`${databaseName}_anonymized`);
 
     // Génération d'un mot de passe commun
     const hash = await bcrypt.hash("password", 10);
