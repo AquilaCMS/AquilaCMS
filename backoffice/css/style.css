@@ -2444,7 +2444,6 @@ input:-webkit-autofill {
     transform: translateY(-50%);
     visibility: hidden;
     opacity: 0;
-    transition: all 1s 1s;
 }
 
 .nav-fixed .parent.expanded .ico-arrow-down {
