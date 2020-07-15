@@ -1,0 +1,33 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(form)" role="form">
+    <div class="modal-header">
+        <h3 translate>modules.choosePackageVersions</h3>
+    </div>
+    <div class="modal-body">
+        <div class="panel panel-default">
+            <div class="panel-heading" translate>modules.api</div>
+            <div class="panel-body">
+                <div ng-repeat="(index, value) in checkModule.toBeChanged.api" ng-if="checkModule.toBeChanged.api" ng-show="value.length > 1">
+                    <span>current version installed is {{alreadyInstalled.api[index]}}</span><br>
+                    <label for="{{index}}Version">{{index}} choose version</label>
+                    <select name="{{index}}Version" id="{{index}}" ng-options="option for option in value" ng-if="checkModule.alreadyInstalled.api[index] !== ''" ng-model="checkModule.alreadyInstalled.api[index]"></select>
+                    <select name="{{index}}Version" id="{{index}}" ng-options="option for option in value" ng-if="checkModule.alreadyInstalled.api[index] === ''" ng-model="value[0]"></select>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" translate>modules.theme</div>
+            <div class="panel-body">
+                <div ng-repeat="(index, value) in checkModule.toBeChanged.theme" ng-if="checkModule.toBeChanged.theme" ng-show="value.length > 1">
+                    <span>current version installed is {{alreadyInstalled.theme[index]}}</span><br>
+                    <label for="{{index}}Version">{{index}} choose version</label>
+                    <select name="{{index}}Version" id="{{index}}" ng-options="option for option in value" ng-if="checkModule.alreadyInstalled.theme[index] !== ''" ng-model="checkModule.alreadyInstalled.theme[index]"></select>
+                    <select name="{{index}}Version" id="{{index}}" ng-options="option for option in value" ng-if="checkModule.alreadyInstalled.theme[index] === ''" ng-model="value[0]"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel($event)" translate>modules.cancel</button>
+        <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>modules.save</button>
+    </div>
+</form>
