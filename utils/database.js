@@ -14,18 +14,14 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        try {
-            connection = true;
-            await mongoose.connect(global.envFile.db, {
-                useNewUrlParser    : true,
-                useFindAndModify   : false,
-                useCreateIndex     : true,
-                useUnifiedTopology : true
-            });
-            mongoose.set("objectIdGetter", false);
-        } catch (err) {
-            console.error(err);
-        }
+        connection = true;
+        await mongoose.connect(global.envFile.db, {
+            useNewUrlParser    : true,
+            useFindAndModify   : false,
+            useCreateIndex     : true,
+            useUnifiedTopology : true
+        });
+        mongoose.set("objectIdGetter", false);
     }
 
     return mongoose;

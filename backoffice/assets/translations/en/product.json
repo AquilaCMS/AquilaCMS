@@ -106,8 +106,8 @@
         "indiff": "Indifferent",
         "noActif": "Inactive",
         "noVisible": "Invisible",
-        "creation_date": "en-Date de création",
-        "reset_filters": "en-Réinitialiser les filtres",
+        "creation_date": "Creation date",
+        "reset_filters": "Reinit filters",
         "edit": "Edit",
         "action": "Action"
     }

@@ -2,8 +2,8 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductV2",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductV2)
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2)
     {
         $scope.isEditMode = false;
         $scope.disableSave = false;

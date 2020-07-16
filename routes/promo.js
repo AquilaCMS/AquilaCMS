@@ -1,6 +1,6 @@
 const {authentication, adminAuth} = require("../middleware/authentication");
-const ServicePromo                = require("../services/promo");
 const {getUserFromRequest}        = require("../middleware/server");
+const ServicePromo                = require("../services/promo");
 
 module.exports = function (app) {
     app.get("/v2/promo/check/code/:code/:cartId/:lang?", checkCodePromoByCode);

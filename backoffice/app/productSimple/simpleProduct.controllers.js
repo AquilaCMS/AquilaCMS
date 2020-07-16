@@ -190,7 +190,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             const idProduct = $scope.product._id;
             const newCode = prompt("Saisir le code du nouveau produit : ");
             if (newCode) {
-                const query = ProductV2.duplicate({idProduct, newCode});
+                const newPrd = {...$scope.product, code: newCode};
+                delete newPrd._id;
+                const query = ProductsV2.save(newPrd);
                 query.$promise.then(function (savedPrd) {
                     toastService.toast("success", "Produit dupliqué !");
                     $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);

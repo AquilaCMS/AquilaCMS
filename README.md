@@ -1,6 +1,6 @@
 ![AquilaCMS](https://www.aquila-cms.com/medias/AquilaCMS.png)
 ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg)
-
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/667b93cac0264970bec4e656628e82b3)](https://www.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade)
 
 # AquilaCMS
 

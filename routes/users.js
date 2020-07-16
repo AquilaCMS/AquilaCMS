@@ -1,3 +1,5 @@
+const debug                              = require('debug');
+const log                                = debug('aquila:users');
 const crypto                             = require('crypto');
 const {middlewareServer}                 = require('../middleware');
 const {authentication, adminAuth}        = require('../middleware/authentication');
@@ -37,10 +39,14 @@ module.exports = function (app) {
  */
 async function getUsers(req, res, next) {
     try {
+        log('- getUsers - ', 'call');
         const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        log('- getUsers - ', PostBodyVerified);
         const result           = await usersServices.getUsers(PostBodyVerified);
+        log('- getUsers - ', result);
         return res.json(result);
     } catch (error) {
+        log('- getUsers - ', error);
         return next(error);
     }
 }
@@ -50,10 +56,14 @@ async function getUsers(req, res, next) {
  */
 async function getUser(req, res, next) {
     try {
+        log('- getUser - ', 'call');
         const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        log('- getUser - ', PostBodyVerified);
         const result           = await usersServices.getUser(PostBodyVerified);
+        log('- getUser - ', result);
         return res.json(result);
     } catch (error) {
+        log('- getUser - ', error);
         return next(error);
     }
 }
@@ -63,10 +73,14 @@ async function getUser(req, res, next) {
  */
 async function getUserById(req, res, next) {
     try {
+        log('- getUserById - ', 'call');
         const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        log('- getUserById - ', PostBodyVerified);
         const result           = await usersServices.getUserById(req.params.id, PostBodyVerified);
+        log('- getUserById - ', result);
         return res.json(result);
     } catch (error) {
+        log('- getUserById - ', error);
         return next(error);
     }
 }
@@ -76,9 +90,12 @@ async function getUserById(req, res, next) {
  */
 async function getUserByAccountToken(req, res, next) {
     try {
+        log('- getUserByAccountToken - ', 'call');
         const result = await usersServices.getUserByAccountToken(req.body.activateAccountToken);
+        log('- getUserByAccountToken - ', result);
         return res.json(result);
     } catch (error) {
+        log('- getUserByAccountToken - ', error);
         return next(error);
     }
 }
@@ -89,12 +106,13 @@ async function getUserByAccountToken(req, res, next) {
 async function setUser(req, res, next) {
     let isAdmin = false;
     try {
+        log('- setUser - ', {isAdmin, authorization: req.headers.authorization});
         if (req.headers && req.headers.authorization) {
             const user = authService.getDecodedToken(req.headers.authorization);
             if (user) {
                 isAdmin = user.info.isAdmin ? user.info.isAdmin : false;
             } else {
-                return res.json({code: "NOT_AUTHENTICATED", isAuthenticated: false});
+                return res.json({code: 'NOT_AUTHENTICATED', isAuthenticated: false});
             }
         }
 
@@ -106,8 +124,10 @@ async function setUser(req, res, next) {
 
         // Create
         const newUser = await usersServices.createUser(req.body, isAdmin);
+        log('- setUser - ', newUser);
         return res.status(201).send({user: newUser});
     } catch (error) {
+        log('- setUser - ', error);
         return next(error);
     }
 }
@@ -140,24 +160,32 @@ async function deleteUser(req, res, next) {
  */
 async function getUserTypes(req, res, next) {
     try {
+        log('- getUserTypes - ', req.body);
         const result = await usersServices.getUserTypes(req.body.query);
+        log('- getUserTypes - ', result);
         return res.json(result);
     } catch (error) {
+        log('- getUserTypes - ', error);
         return next(error);
     }
 }
-
+// gerard.lecloerec@nextsourcia.com
 async function resetpassword(req, res, next) {
     try {
         const {email, change, token, password} = req.body;
+        log('- resetpassword - ', {email, change, token, password});
         let result;
         if (email && !change) {
             result = await usersServices.generateTokenSendMail(email, req.params.lang || req.body.lang);
+            log('- resetpassword - ', 'result :', result);
         } else if (email && change) {
             result = await usersServices.changePassword(email, password);
+            log('- resetpassword - ', 'result :', result);
         } else if (token) {
             result = await usersServices.resetPassword(token, password);
+            log('- resetpassword - ', 'result :', result);
         } else {
+            log('- resetpassword - ', 'Aucun token ou adresse e-mail trouvé.');
             return res.status(500).send({message: 'Aucun token ou adresse e-mail trouvé.'});
         }
         if (result.status) {
@@ -165,6 +193,7 @@ async function resetpassword(req, res, next) {
         }
         return res.status(200).json(result);
     } catch (error) {
+        log('- resetpassword - ', error);
         return next(error);
     }
 }
@@ -277,7 +306,7 @@ async function save(req, res, next) {
         const {referer} = req.headers;
         const {isAdmin} = user.info;
         // On un admin a ajouté un nouveau client dans le backoffice
-        if ((referer.endsWith("admin/") || referer.endsWith("admin")) && isAdmin) {
+        if ((referer.endsWith('admin/') || referer.endsWith('admin')) && isAdmin) {
             fromAdmin = true;
         }
     }
@@ -291,7 +320,7 @@ async function save(req, res, next) {
     //     return res.status(400).send({message: 'Le mot de passe doit contenir au minimum 6 caractères, dont une minuscule, une majuscule et un chiffre.'});
     // }
 
-    if ((typeof newData.activateAccountToken === "undefined" || newData.activateAccountToken === "")) {
+    if ((typeof newData.activateAccountToken === 'undefined' || newData.activateAccountToken === '')) {
         const activateAccountToken = crypto.randomBytes(26).toString('hex');
         newData.activateAccountToken = activateAccountToken;
         newData.isActiveAccount = false;
@@ -355,15 +384,15 @@ async function update(req, res, next) {
             res.status(403).send({msg: "Cet email est déjà utilisé, merci d'en choisir un autre"});
         } else {
             delete data.isAdmin;
-            if (data.type === "") {
+            if (data.type === '') {
                 delete data.type;
             }
 
             await Users.updateOne({_id: data._id}, data);
 
             if (oldUser.email !== data.email) {
-                await Orders.updateMany({"customer.email": oldUser.email}, {$set: {"customer.email": data.email}});
-                await Cart.updateMany({"customer.email": oldUser.email}, {$set: {"customer.email": data.email}});
+                await Orders.updateMany({'customer.email': oldUser.email}, {$set: {'customer.email': data.email}});
+                await Cart.updateMany({'customer.email': oldUser.email}, {$set: {'customer.email': data.email}});
                 await Newsletters.updateMany({email: oldUser.email}, {$set: {email: data.email}});
             }
 
