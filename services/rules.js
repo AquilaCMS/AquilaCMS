@@ -1,20 +1,23 @@
-const {Rules,
+const {
+    Rules,
     Users,
     Categories,
     Pictos,
-    Products
-}                      = require("../orm/models");
-const utils            = require("../utils/utils");
-const QueryBuilder     = require("../utils/QueryBuilder");
-const NSErrors         = require("../utils/errors/NSErrors");
+    Products,
+    Promo
+}                      = require('../orm/models');
+const utils            = require('../utils/utils');
+const promoUtils       = require('../utils/promo');
+const QueryBuilder     = require('../utils/QueryBuilder');
+const NSErrors         = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
-const defaultFields    = ["*"];
+const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Rules, restrictedFields, defaultFields);
 
 const inSegment        = {};
 // colNames nom des collections: si le target d'une condition commence par 'colNames[i].' alors nous renvoyons false
-const colNames         = ["client", "famille", "categorie", "panier"];
+const colNames         = ['client', 'famille', 'categorie', 'panier'];
 
 const listRules = (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -51,12 +54,10 @@ const testUser = async (body) => {
     const user = await Users.findOne({_id: body.user_id});
     const result = [];
     for (let i = 0; i < _rules.length; i++) {
-        if (_rules[i].owner_type === "discount") {
-            const condition = await testRulesOnUser(_rules[i], user);
-            if (eval(require('./promo').createIfStatement(condition))) {
-                const promo = await require('./promo').getPromoById(_rules[i].owner_id);
-                result.push({...promo.toObject(), applyResult: condition});
-            }
+        const condition = await testRulesOnUser(_rules[i], user);
+        if (eval(promoUtils.createIfStatement(condition))) {
+            const promo = await Promo.findById(_rules[i].owner_id);
+            result.push({...promo.toObject(), applyResult: condition});
         }
     }
     return result;
@@ -126,7 +127,7 @@ function conditionOperator(operator, obj, target, value) {
 //  * alors nous auront 3 tableaux (pour les 3 conditions)
 //  * contenant chacun 2 boolean (correspondant aux deux produits) ex : norm_conditions= ["ET", [true, false], [true, true], [true, false]]
 //  * Les premiers champs des tableaux correspondront au produit 1, les seconds correspondront au produit 2
-//  * Nous allons donc pour chaque produit normaliser norm_conditions afin qu'il soit utilisé par ServicePromo.createIfStatement
+//  * Nous allons donc pour chaque produit normaliser norm_conditions afin qu'il soit utilisé par promoUtils.createIfStatement
 //  * @param {*} norm_conditions
 //  * @param {*} indexPrd index du produit
 //  * @param {*} res
@@ -153,7 +154,7 @@ function conditionOperator(operator, obj, target, value) {
 //     for (let k = 0; k < itemsOk.length; k++) {
 //         const product = itemsOk[k];
 //         const tCartCondition = normalizeConditions(subCondition, k);
-//         const ifStatement = ServicePromo.createIfStatement(tCartCondition);
+//         const ifStatement = promoUtils.createIfStatement(tCartCondition);
 //         try {
 //             // On test si l'eval peut renvoyer une erreur
 //             eval(ifStatement);
@@ -182,6 +183,10 @@ function conditionOperator(operator, obj, target, value) {
  */
 async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, isRoot = false */) {
     try {
+        // fix par rapport a la limitation des champs du user ...
+        if (user) {
+            user = await Users.findById(user._id);
+        }
         const tCondition = [rule.operand];
         for (let j = 0; j < rule.conditions.length; j++) {
             const condition = rule.conditions[j];
@@ -382,25 +387,25 @@ async function applyRecursiveRules(_rules, query) {
             }
 
             // Gestion des opérateur (transformation expression -> opérateur mongo)
-            if (condition.operator === "Contient") {
+            if (condition.operator === "contains" || condition.operator === "Contient") {
                 queryConds[target] = new RegExp(value);
-            } else if (condition.operator === "Ne contient pas") {
+            } else if (condition.operator === "ncontains" || condition.operator === "Ne contient pas") {
                 queryConds[target] = {$not: new RegExp(value)};
-            } else if (condition.operator === "Egal à") {
+            } else if (condition.operator === "eq" || condition.operator === "Egal à") {
                 queryConds[target] = value;
-            } else if (condition.operator === "Différent de") {
+            } else if (condition.operator === "neq" || condition.operator === "Différent de") {
                 queryConds[target] = {$ne: value};
-            } else if (condition.operator === "Commence par") {
+            } else if (condition.operator === "startswith" || condition.operator === "Commence par") {
                 queryConds[target] = new RegExp(`^${value}`);
-            } else if (condition.operator === "Fini par") {
+            } else if (condition.operator === "endswith" || condition.operator === "Fini par") {
                 queryConds[target] = new RegExp(`${value}$`);
-            } else if (condition.operator === "Plus grand ou egal à") {
+            } else if (condition.operator === "gte" || condition.operator === "Plus grand ou egal à") {
                 queryConds[target] = {$gte: value};
-            } else if (condition.operator === "Plus grand que") {
+            } else if (condition.operator === "gte" || condition.operator === "Plus grand que") {
                 queryConds[target] = {$gt: value};
-            } else if (condition.operator === "Plus petit ou egal à") {
+            } else if (condition.operator === "lte" || condition.operator === "Plus petit ou egal à") {
                 queryConds[target] = {$lte: value};
-            } else if (condition.operator === "Plus petit que") {
+            } else if (condition.operator === "lt" || condition.operator === "Plus petit que") {
                 queryConds[target] = {$lt: value};
             }
 

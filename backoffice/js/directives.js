@@ -1290,7 +1290,7 @@ adminCatagenDirectives.directive("nsRule", [
                                 params: {}
                             },
                             {
-                                name: "client.id",
+                                name: "client._id",
                                 type: "text",
                                 params: {}
                             },

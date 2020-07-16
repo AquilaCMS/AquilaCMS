@@ -17,8 +17,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     } else if (quality < 10) {
         quality = 10;
     }
-    console.log(`TMP: Générate image cache (Path: ${filePathIn}, quality: ${quality}, dest: ${pathOut})`);
-    console.log(`TMP: ${JSON.stringify({quality: [(quality - 10) / 100, (quality + 10) / 100], speed: 1, strip: true})}`);
+
     try {
         // On supprime l'extension, on laisse imagemin check si l'extension correspond bien
         const files = await imagemin([`${filePathIn}.{jpg,JPG,jpeg,JPEG,png,PNG,svg,SVG,gif,GIF}`], {

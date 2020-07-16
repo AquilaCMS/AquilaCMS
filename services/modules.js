@@ -685,18 +685,20 @@ const addOrRemoveThemeFiles = async (idModule, pathModule, toRemove) => {
     for (let i = 0; i < resultDir.length; i++) {
         const file = resultDir[i];
         if (!file.startsWith("Module") || !file.endsWith(".js")) continue;
-        let resultRemoveOrAdd = null;
         if (toRemove) {
             const fileNameWithoutModule = file.replace("Module", "")
                 .replace('.js', '')
                 .toLowerCase();
             await removeFromListModule(file, currentTheme, fileNameWithoutModule);
-            resultRemoveOrAdd = await fs.unlink(`themes/${currentTheme}/modules/${file}`);
-            if (typeof resultRemoveOrAdd !== "undefined") {
-                console.log(`cannot rm themes/${currentTheme}/modules/${file}`);
-                continue;
+            const filePath = path.resolve(`themes/${currentTheme}/modules/${file}`);
+            if (fs.existsSync(filePath)) {
+                try {
+                    await fs.unlink(filePath);
+                    console.log(`rm ${filePath}`);
+                } catch (err) {
+                    console.log(`cannot rm ${filePath}`);
+                }
             }
-            console.log(`rm themes/${currentTheme}/modules/${file}`);
         } else {
             await setFrontModuleInTheme(pathModule, currentTheme);
         }

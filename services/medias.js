@@ -95,7 +95,7 @@ exports.uploadAllMedias = async (reqFile, insertDB) => {
 
         // L'inserer dans la base de données
         if (insertDB) {
-            Medias.create({
+            await Medias.create({
                 link : `medias/${filename}`,
                 name : name_file
             });
