@@ -11,21 +11,21 @@
           "target": "universe",
           "type": "select",
           "value": "tshirts-tshirts",
-          "operator": "Egal à"
+          "operator": "eq"
         },
         {
           "_id": "5d3076414aa9c1692db05410",
           "target": "universe",
           "type": "select",
           "value": "chaussettes-chaussettes",
-          "operator": "Egal à"
+          "operator": "eq"
         },
         {
           "_id": "5d3076414aa9c1692db0540f",
           "target": "universe",
           "type": "select",
           "value": "sweats-sweats",
-          "operator": "Egal à"
+          "operator": "eq"
         }
       ],
       "other_rules": [],
@@ -42,7 +42,7 @@
           "target": "universe",
           "type": "select",
           "value": "tshirts-tshirts",
-          "operator": "Egal à"
+          "operator": "eq"
         }
       ],
       "other_rules": [],
@@ -59,7 +59,7 @@
           "target": "universe",
           "type": "select",
           "value": "sweats-sweats",
-          "operator": "Egal à"
+          "operator": "eq"
         }
       ],
       "other_rules": [],
@@ -76,7 +76,7 @@
           "target": "universe",
           "type": "select",
           "value": "chaussettes-chaussettes",
-          "operator": "Egal à"
+          "operator": "eq"
         }
       ],
       "other_rules": [],
@@ -93,21 +93,21 @@
           "target": "code",
           "type": "text",
           "value": "p000001",
-          "operator": "Egal à"
+          "operator": "eq"
         },
         {
             "_id": "5ecad620eef484275889366d",
             "target": "attr.translation.fr.loveit",
             "type": "bool",
             "value": "true",
-            "operator": "Egal à"
+            "operator": "eq"
         },
         {
             "_id": "5ecad620eef484275889366e",
             "target": "attr.translation.en.loveit",
             "type": "bool",
             "value": "true",
-            "operator": "Egal à"
+            "operator": "eq"
         }
       ],
       "other_rules": [],

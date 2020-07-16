@@ -11,6 +11,7 @@ const {authentication, adminAuth} = require("../middleware/authentication");
 const {securityForceFilter}       = require('../middleware/security');
 const {middlewareServer}          = require('../middleware');
 const servicesLanguages           = require("../services/languages");
+const themesService               = require('../services/themes');
 const mediasUtils                 = require('../utils/medias');
 const NSErrors                    = require("../utils/errors/NSErrors");
 
@@ -170,7 +171,8 @@ const remove = async (req, res, next) => {
         await Promise.all(removePromises);
         try {
             await Languages.deleteOne({code: req.params.id});
-            servicesLanguages.createDynamicLangFile();
+            await servicesLanguages.createDynamicLangFile();
+            await themesService.buildTheme(global.envConfig.environment.currentTheme);
             return res.status(200).end();
             // return servicesLanguages.updateIndex(req.params.id)
             //     .then(function () {
@@ -217,6 +219,7 @@ async function save(req, res, next) {
         }
         // await servicesLanguages.updateIndex();
         await servicesLanguages.createDynamicLangFile();
+        await themesService.buildTheme(global.envConfig.environment.currentTheme);
         return res.status(200).end();
     } catch (err) {
         return next(err);

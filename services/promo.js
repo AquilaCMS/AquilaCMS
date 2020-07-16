@@ -13,6 +13,7 @@ const {
 const ServiceRules         = require('./rules');
 const {getUserFromRequest} = require("../middleware/server");
 const QueryBuilder         = require('../utils/QueryBuilder');
+const promoUtils           = require('../utils/promo.js');
 const NSErrors             = require("../utils/errors/NSErrors");
 
 const restrictedFields     = [];
@@ -92,6 +93,7 @@ const clonePromo = async (_id) => {
     promoCloned.save();
     return promoCloned._id;
 };
+
 function deleteAll_id(rule) {
     remove_idFromList(rule.effects);
     remove_idFromList(rule.conditions);
@@ -101,6 +103,7 @@ function deleteAll_id(rule) {
         deleteAll_id(oneOtherRule);
     }
 }
+
 function remove_idFromList(list_obj, is_other_rules) {
     for (let iObj = 0; iObj < list_obj.length; iObj++) {
         const element = list_obj[iObj];
@@ -122,55 +125,6 @@ const deletePromoById = async (_id) => {
     }
     if (!doc) throw NSErrors.PromoNotFound;
     return doc;
-};
-/**
- * Permet de transformer notre tableau de condition en une condition JS qui sera évalué
- * @param {*} conditions
- * @param {*} str
- */
-const createIfStatement = (conditions, str = "( ") => {
-    let operator;
-    // si on a une condition après un array nous devons mettre l'opérateur avant la condition
-    let afterArray = false;
-    if (conditions[0] === "NONE") {
-        return '(true)';
-    }
-    for (let i = 0; i < conditions.length; i++) {
-        const condition = conditions[i];
-        if (condition instanceof Array) {
-            if (conditions.length && conditions[i - 1] instanceof Array) {
-                str += operator;
-            }
-            str += createIfStatement(condition, "( ");
-        } else {
-            // la condition peut être soit "ET", "OU" ou un boolean
-            if (condition === "ET" || condition === "OU") {
-                // Si l'element conditions précédent est un tableau alors nous devons rajouter l'opérateur après la parenthése
-                // (chaque fin de parenthès correspond a la fin d'un tableau de condition) ex: if( true && ( false || true) && true )
-                if (conditions.length && conditions[i - 1] instanceof Array) {
-                    afterArray = true;
-                }
-                operator = condition === "ET" ? " && " : " || ";
-            } else {
-                // On met l'operateur avant la condition et après (si les conditions sont respectées)
-                if (afterArray) {
-                    str += operator;
-                    str += condition;
-                    afterArray = false;
-                } else {
-                    // On met l'opérateur après la condition
-                    str += condition;
-                }
-                // Si le tableau contient moins de 3 elements (l'opérateur et un boolean)
-                // la condition ci-dessous permet de ne pas avoir ce genre de probleme : if(true || true &&)
-                if (conditions.length > 2 && conditions.length - 1 !== i) {
-                    str += operator;
-                }
-            }
-        }
-    }
-    str += ") ";
-    return str;
 };
 
 const middlewarePromoCatalog = async (req, res) => {
@@ -292,7 +246,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         } else {
             for (let j = 0, lenj = products.length; j < lenj; j++) {
                 const tCondition = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[j]]});
-                const ifStatement = createIfStatement(tCondition);
+                const ifStatement = promoUtils.createIfStatement(tCondition);
                 try {
                     // On test si l'eval peut renvoyer une erreur
                     eval(ifStatement);
@@ -472,7 +426,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
 
                         try {
                             // On test si l'eval peut renvoyer une erreur
-                            statementResult = eval(createIfStatement(action));
+                            statementResult = eval(promoUtils.createIfStatement(action));
                         } catch (error) {
                             throw NSErrors.PromoCodeIfStatementBadFormat;
                         }
@@ -625,7 +579,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             //     }
             // } else {
             const tCondition = await ServiceRules.applyRecursiveRulesDiscount(promoRules.rules_id, user, cart);
-            const ifStatement = createIfStatement(tCondition);
+            const ifStatement = promoUtils.createIfStatement(tCondition);
             try {
                 // On test si l'eval peut renvoyer une erreur
                 eval(ifStatement);
@@ -965,7 +919,6 @@ module.exports = {
     setPromo,
     clonePromo,
     deletePromoById,
-    createIfStatement,
     middlewarePromoCatalog,
     checkPromoCatalog,
     checkForApplyPromo,

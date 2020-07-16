@@ -10,7 +10,10 @@ const fs                = require("./fsp");
  */
 const getEnv = (property) =>  {
     try {
-        return process.env[property];
+        let env = process.env[property];
+        if (!env && property === "AQUILA_ENV") env = "aquila";
+        if (!env && property === "NODE_ENV") env = "production";
+        return env;
     } catch (exc) {
         throw NSErrors("TEST");
     }

@@ -118,7 +118,7 @@
                 error: (response, status, error) => {
                     console.error(response, status, error);
                     
-                    displayErrors(sError);
+                    displayErrors(response.responseText);
                 }
             });
         }
@@ -141,12 +141,12 @@
             return fieldError;
         }
 
-        function displayErrors(sError) {
+        function displayErrors(sError) {           
             document.getElementById("errorArea").innerHTML     = sError;
             document.getElementById("errorArea").style.display = "block";
 
-            loader.style.display = 'none';
-            config.style.display = 'block';
+            document.getElementById("loading").style.display = 'none';
+            document.getElementById("config").style.display = 'block';
         }
 
         function Recover() {

@@ -37,7 +37,11 @@ module.exports = (installRouter) => {
             res.send(result);
         } catch (err) {
             console.error(err);
-            res.status(422).send(`Error : ${JSON.stringify(err)}`);
+            res.status(500).send(`Error : ${JSON.stringify(err)}`);
+
+            // Recréation du env.json "vide"
+            fs.unlinkSync("./config/env.json");
+            await require('../utils/server').getOrCreateEnvFile();
         }
     });
 
@@ -50,7 +54,7 @@ module.exports = (installRouter) => {
             res.send(result);
         } catch (err) {
             console.error(err);
-            res.status(422).send(`Error : ${JSON.stringify(err)}`);
+            res.status(500).send(`Error : ${JSON.stringify(err)}`);
         }
     });
 };

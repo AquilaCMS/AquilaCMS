@@ -42,6 +42,12 @@ const getConfig = async (req) => {
 
 const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}) => {
     const config = (await queryBuilder.findOne(PostBody)).toObject();
+    if (config.environment && config.environment.mailPass) {
+        try {
+            config.environment.mailPass = encryption.decipher(config.environment.mailPass);
+        // eslint-disable-next-line no-empty
+        } catch (err) {}
+    }
     if (key) {
         if (key === "taxerate") { return config.taxerate; }
         return {...config[key], databaseConnection: global.envFile.db};

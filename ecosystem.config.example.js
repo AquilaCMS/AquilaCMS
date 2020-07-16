@@ -6,12 +6,12 @@ module.exports = {
         // To launch in development mode, launch 'pm2 start ecosystem.config.js'
         env    : {
             NODE_ENV   : 'development',
-            AQUILA_ENV : 'Aquila_TEST'
+            AQUILA_ENV : 'aquila'
         },
         // To launch in production mode, launch 'pm2 start ecosystem.config.js --env production'
         env_production : {
             NODE_ENV   : 'production',
-            AQUILA_ENV : 'Aquila_TEST'
+            AQUILA_ENV : 'aquila'
         }
     }]
 };
