@@ -9,9 +9,9 @@ const DownloadHistory = new Schema({
         firstname      : {type: String, required: false},
         civility       : {type: Number, required: false},
         details        : {},
-        set_attributes : {type: ObjectId, ref: "setAttributes", index: true},
+        set_attributes : {type: ObjectId, ref: 'setAttributes', index: true},
         attributes     : [{
-            id          : {type: ObjectId, ref: "attributes", index: true},
+            id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
             param       : String,
@@ -22,9 +22,9 @@ const DownloadHistory = new Schema({
     },
     product : {
         code           : {type: String, required: true},
-        set_attributes : {type: ObjectId, ref: "setAttributes", index: true},
+        set_attributes : {type: ObjectId, ref: 'setAttributes', index: true},
         attributes     : [{
-            id          : {type: ObjectId, ref: "attributes", index: true},
+            id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
             param       : String,

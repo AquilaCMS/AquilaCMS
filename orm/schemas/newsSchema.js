@@ -1,15 +1,15 @@
 const mongoose     = require('mongoose');
-const utils        = require("../../utils/utils");
+const utils        = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const {checkCustomFields} = require('../../utils/translation');
-const aquilaEvents = require("../../utils/aquilaEvents");
-const translation  = require("../../utils/translation");
+const aquilaEvents = require('../../utils/aquilaEvents');
+const translation  = require('../../utils/translation');
 const Schema       = mongoose.Schema;
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
-    img         : {type: String, default: ""},
-    extension   : {type: String, default: ".jpg"},
+    img         : {type: String, default: ''},
+    extension   : {type: String, default: '.jpg'},
     translation : {}
 }, {timestamps: true});
 
@@ -40,7 +40,7 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
         const lang = self.translation[translationKeys[i]];
 
         if (Object.keys(lang).length > 0) {
-            if (lang.slug === undefined || lang.slug === "") {
+            if (lang.slug === undefined || lang.slug === '') {
                 lang.slug = utils.slugify(lang.title);
             } else {
                 lang.slug = utils.slugify(lang.slug);
@@ -53,12 +53,12 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
                 updateQuery.updateOne(slugEdit);
             }
 
-            if (await mongoose.model("news").countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push("slug déjà existant");
+            if (await mongoose.model('news').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
+                errors.push('slug déjà existant');
             }
 
             errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
-                {key: "slug"}, {key: "title"}
+                {key: 'slug'}, {key: 'title'}
             ]));
 
             if (lang.content) {
@@ -71,21 +71,21 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     return errors;
 };
 
-NewsSchema.pre("updateOne", async function (next) {
+NewsSchema.pre('updateOne', async function (next) {
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
-NewsSchema.pre("findOneAndUpdate", async function (next) {
+NewsSchema.pre('findOneAndUpdate', async function (next) {
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
-NewsSchema.pre("save", async function (next) {
+NewsSchema.pre('save', async function (next) {
     const errors = await NewsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
-NewsSchema.post("save", async function (doc) {
-    aquilaEvents.emit("aqNewArticle", doc);
+NewsSchema.post('save', async function (doc) {
+    aquilaEvents.emit('aqNewArticle', doc);
 });
 
 module.exports = NewsSchema;

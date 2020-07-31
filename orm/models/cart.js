@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {CartSchema} = require("../schemas");
+const {CartSchema} = require('../schemas');
 
-module.exports = mongoose.model("cart", CartSchema);
+module.exports = mongoose.model('cart', CartSchema);

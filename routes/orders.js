@@ -1,37 +1,37 @@
-const {Cart, Orders, PaymentMethods} = require("../orm/models");
-const orderService                   = require("../services/orders");
-const ServiceMail                    = require("../services/mail");
-const ServiceLanguages               = require("../services/languages");
-const ServiceOrder                   = require("../services/orders");
+const {Cart, Orders, PaymentMethods} = require('../orm/models');
+const orderService                   = require('../services/orders');
+const ServiceMail                    = require('../services/mail');
+const ServiceLanguages               = require('../services/languages');
+const ServiceOrder                   = require('../services/orders');
 const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
-const {authentication, adminAuth}    = require("../middleware/authentication");
+const {authentication, adminAuth}    = require('../middleware/authentication');
 const utilsDatabase                  = require('../utils/database');
-const NSErrors                       = require("../utils/errors/NSErrors");
+const NSErrors                       = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post("/v2/orders", getOrders);
-    app.post("/v2/order", getOrder);
-    app.post("/v2/order/rma", authentication, adminAuth, rma);
-    app.post("/v2/order/infoPayment", authentication, adminAuth, infoPayment);
-    app.post("/v2/order/duplicateItemsFromOrderToCart", authentication, duplicateItemsFromOrderToCart);
-    app.post("/v2/order/addpkg", authentication, adminAuth, addPackage);
-    app.post("/v2/order/delpkg", authentication, adminAuth, delPackage);
-    app.put("/v2/order/updateStatus", authentication, adminAuth, updateStatus);
-    app.post("/v2/order/pay/:orderNumber/:lang?", authentication, payOrder);
-    app.put("/v2/order/updatePayment", authentication, adminAuth, updatePayment);
-    app.post("/v2/order/:id", getOrderById);
-    app.put("/v2/order/cancel/:id", authentication, adminAuth, cancelOrder);
-    app.put("/v2/order/requestCancel/:id", authentication, cancelOrderRequest);
-    app.put("/v2/order", setOrder);
+    app.post('/v2/orders', getOrders);
+    app.post('/v2/order', getOrder);
+    app.post('/v2/order/rma', authentication, adminAuth, rma);
+    app.post('/v2/order/infoPayment', authentication, adminAuth, infoPayment);
+    app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
+    app.post('/v2/order/addpkg', authentication, adminAuth, addPackage);
+    app.post('/v2/order/delpkg', authentication, adminAuth, delPackage);
+    app.put('/v2/order/updateStatus', authentication, adminAuth, updateStatus);
+    app.post('/v2/order/pay/:orderNumber/:lang?', authentication, payOrder);
+    app.put('/v2/order/updatePayment', authentication, adminAuth, updatePayment);
+    app.post('/v2/order/:id', getOrderById);
+    app.put('/v2/order/cancel/:id', authentication, adminAuth, cancelOrder);
+    app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
+    app.put('/v2/order', setOrder);
 
     // Deprecated
-    app.get("/orders/:id", middlewareServer.deprecatedRoute, detail);
-    app.get("/orders/user/:idUser", middlewareServer.deprecatedRoute, authentication, adminAuth, getByClient);
-    app.post("/orders/cancel/:id", middlewareServer.deprecatedRoute, authentication, cancelOrder);
-    app.put("/orders/status/:id", middlewareServer.deprecatedRoute, authentication, adminAuth, updateStatus);
-    app.post("/orders/pay/:orderNumber/:lang?", middlewareServer.deprecatedRoute, authentication, payOrder);
-    app.post("/orders/payment", middlewareServer.deprecatedRoute, authentication, adminAuth, updatePayment);
+    app.get('/orders/:id', middlewareServer.deprecatedRoute, detail);
+    app.get('/orders/user/:idUser', middlewareServer.deprecatedRoute, authentication, adminAuth, getByClient);
+    app.post('/orders/cancel/:id', middlewareServer.deprecatedRoute, authentication, cancelOrder);
+    app.put('/orders/status/:id', middlewareServer.deprecatedRoute, authentication, adminAuth, updateStatus);
+    app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
+    app.post('/orders/payment', middlewareServer.deprecatedRoute, authentication, adminAuth, updatePayment);
 };
 
 /**
@@ -230,10 +230,10 @@ async function cancelOrderRequest(req, res, next) {
  */
 async function detail(req, res, next) {
     try {
-        const tPopulate = ["customer.id", "items.id"];
+        const tPopulate = ['customer.id', 'items.id'];
         // Si le champs orders.point_of_sale existe alors le module est importé
-        if (Orders.schema.path("point_of_sale")) {
-            tPopulate.push("point_of_sale");
+        if (Orders.schema.path('point_of_sale')) {
+            tPopulate.push('point_of_sale');
         }
         const order = await Orders.findOne({_id: req.params.id}).populate(tPopulate);
         if (!order) {
@@ -257,15 +257,15 @@ async function getByClient(req, res, next) {
     try {
         const sortObj = {};
         const query = {
-            "customer.id" : req.params.idUser
+            'customer.id' : req.params.idUser
         };
         if (req.query.sort_creationDate) {
             sortObj.creationDate = req.query.sort_creationDate;
         }
         /* if(req.baseUrl === ''){
-         query.status = {$nin: ['PAYMENT_PENDING','PAYMENT_CONFIRMATION_PENDING','CANCELING','CANCELED']};
+         query.status = {$nin: ['PAYMENT_PENDING','PAYMENT_CONFIRMATION_PENDING','CANCELED']};
          } */
-        const _orders = await Orders.find(query).sort(sortObj).populate("items.id");
+        const _orders = await Orders.find(query).sort(sortObj).populate('items.id');
         return res.json(_orders);
     } catch (err) {
         return next(err);
@@ -281,14 +281,14 @@ async function getByClient(req, res, next) {
  */
 async function payOrder(req, res, next) {
     const lang = ServiceLanguages.getDefaultLang(req.params.lang);
-    const order = await Orders.findOne({number: req.params.orderNumber, status: "PAYMENT_PENDING", "customer.id": req.info._id});
+    const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
     if (!order) {
         return next(NSErrors.OrderNotFound);
     }
 
     const query = {active: true};
     // Si la commande est associée à un point de vente, alors on recupere les modes de paiement de ce point de vente
-    if (order.schema.path("point_of_sale") && order.point_of_sale) {
+    if (order.schema.path('point_of_sale') && order.point_of_sale) {
         query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
     }
     // Sinon, on recupere tous les modes de paiement actifs
@@ -301,12 +301,12 @@ async function payOrder(req, res, next) {
         }
         await Orders.findOneAndUpdate({
             number        : req.params.orderNumber,
-            status        : "PAYMENT_PENDING",
-            "customer.id" : req.info._id
+            status        : 'PAYMENT_PENDING',
+            'customer.id' : req.info._id
         },
         {
             $set : {
-                status  : "PAYMENT_RECEIPT_PENDING",
+                status  : 'PAYMENT_RECEIPT_PENDING',
                 payment : [createPayment(order, method)]
             }
         });
@@ -345,9 +345,9 @@ async function payOrder(req, res, next) {
  */
 function createPayment(order, method) {
     return {
-        type          : "CREDIT",
+        type          : 'CREDIT',
         operationDate : Date.now(),
-        status        : "TODO",
+        status        : 'TODO',
         mode          : method.code.toUpperCase(),
         amount        : order.priceTotal.ati
     };

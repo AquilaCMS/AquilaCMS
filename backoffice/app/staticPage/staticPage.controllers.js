@@ -5,24 +5,76 @@ StaticPageControllers.controller("StaticPageListCtrl", [
         function init() {
             $scope.sortType = "name"; // set the default sort type
             $scope.sortReverse = false;  // set the default sort order
+            $scope.currentTab = "";
+            $scope.groups = []
+            $scope.search = '';
+
+            StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function (staticsList) {
+                $scope.statics = staticsList.datas;
+                $scope.groups = [...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                $scope.currentTab = $scope.groups[0];
+
+                const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin')) || {};
+
+                if (adminStoredDatas && adminStoredDatas.staticListTab && $scope.groups.includes(adminStoredDatas.staticListTab)) {
+                    $scope.currentTab = adminStoredDatas.staticListTab;
+                } else {
+                    adminStoredDatas.staticListTab = $scope.groups[0];
+                    window.localStorage.setItem('pageAdmin', JSON.stringify(adminStoredDatas))
+                }
+            });
         }
 
         init();
-        StaticV2.list({PostBody: {filter: {}, structure: {active: 1}, limit: 99}}, function (staticsList) {
-            $scope.statics = staticsList.datas;
-        });
 
         $scope.goToStaticPageDetails = function (staticCode) {
             $location.path(`/staticPage/${staticCode}`);
         };
+        $scope.changeTab = function(group) {
+            $scope.currentTab = group;
+            if (window.localStorage.getItem('pageAdmin')) {
+                const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin'));
+                adminStoredDatas.staticListTab = group;
+                window.localStorage.setItem('pageAdmin', JSON.stringify(adminStoredDatas))
+            } else {
+                const adminStoredDatas = {staticListTab: group};
+                window.localStorage.setItem('pageAdmin', JSON.stringify(adminStoredDatas))
+            }
+        }
     }
 ]);
 
 StaticPageControllers.controller("StaticPageNewCtrl", [
     "$scope", "$location", 'StaticV2', "toastService", function ($scope, $location, StaticV2, toastService) {
         $scope.static = {type: "page"};
+        $scope.groups = [];
+        $scope.selectedDropdownItem = "";
+        
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+        };
+
+        $scope.filterDropdown = function (userInput) {
+            if (userInput !== undefined) {
+                $scope.selectedDropdownItem = userInput;
+            }
+            $scope.dropdownItems = [];
+            return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
+                $scope.groups = [...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                $scope.dropdownItems = $scope.groups.map(function (item) {
+                    const dropdownObject = angular.copy(item);
+                    dropdownObject.readableName = item.group;
+                    return dropdownObject;
+                });
+                return $scope.dropdownItems;
+            });
+        };
+
+        $scope.filterDropdown();
 
         $scope.save = function (data, isQuit) {
+            data.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
+
             StaticV2.save(data).$promise.then(function (response) {
                 toastService.toast("success", "Sauvegarde effectuée");
                 if (isQuit) {
@@ -49,11 +101,35 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         $scope.local = {url: ""};
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
+        $scope.groups = [];
 
         StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
             $scope.static = staticPage;
             $scope.local.url = staticPage.code;
+            $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
         });
+        
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+        };
+
+        $scope.filterDropdown = function (userInput) {
+            if (userInput !== undefined) {
+                $scope.selectedDropdownItem = userInput;
+            }
+            $scope.dropdownItems = [];
+            return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
+                $scope.groups = [...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                $scope.dropdownItems = $scope.groups.map(function (item) {
+                    const dropdownObject = angular.copy(item);
+                    dropdownObject.readableName = item.group;
+                    return dropdownObject;
+                });
+                return $scope.dropdownItems;
+            });
+        };
+
+        $scope.filterDropdown();
 
         $scope.onLangChange = function (lang) {
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
@@ -69,7 +145,9 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         };
 
         $scope.saveStatic = function (isQuit) {
-            StaticV2.save($scope.static).$promise.then(function () {
+            $scope.static.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
+
+            StaticV2.save($scope.static, function () {
                 toastService.toast("success", "Page sauvegardée !");
                 if (isQuit) {
                     $location.path("/staticPage");

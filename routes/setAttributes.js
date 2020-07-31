@@ -1,13 +1,13 @@
-const {SetAttributes, Attributes, Products} = require("../orm/models");
+const {SetAttributes, Attributes, Products} = require('../orm/models');
 const setAttributeServices                  = require('../services/setAttributes');
 const {middlewareServer}                    = require('../middleware');
-const {authentication, adminAuth}           = require("../middleware/authentication");
-const NSErrors                              = require("../utils/errors/NSErrors");
+const {authentication, adminAuth}           = require('../middleware/authentication');
+const NSErrors                              = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/setAttributes', getSetAttributes);
     app.post('/v2/setAttribute', getSetAttribute);
-    app.put("/v2/setAttribute", authentication, adminAuth, setSetAttribute);
+    app.put('/v2/setAttribute', authentication, adminAuth, setSetAttribute);
     app.delete('/v2/setAttribute/:id', authentication, adminAuth, deleteSetAttribute);
 
     // Deprecated
@@ -118,7 +118,7 @@ async function detail(req, res, next) {
  */
 async function save(req, res, next) {
     try {
-        const code = req.body.code.replace(/[^A-Z0-9]+/ig, "_");
+        const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
         const {name, update : updateF, questions, type} = req.body;
         const setAttribute = await SetAttributes.findOne({code});
         if (setAttribute && updateF) {
@@ -129,7 +129,7 @@ async function save(req, res, next) {
             }
             // On met a jour les produits ayant le set_attributes qui vient de changer, et on set les nouvelles questions des reviews
             // Cela aura pour effet de supprimer les anciennes notes, nous devons donc les recalculer
-            await Products.updateMany({set_attributes: setAttribute.id}, {$set: {"reviews.questions": tQuestions}});
+            await Products.updateMany({set_attributes: setAttribute.id}, {$set: {'reviews.questions': tQuestions}});
             const tProducts = await Products.find({set_attributes: setAttribute.id});
             const tPromises = [];
             for (let i = 0; i < tProducts.length; i++) {
@@ -163,7 +163,7 @@ async function remove(req, res, next) {
         const setAttr = await SetAttributes.findOne({code: req.params.code});
         if (!setAttr) return res.status(404).send(`Le jeu d'attributs ${req.params.code} n'existe pas.`);
         const product = await Products.findOne({set_attributes: setAttr._id});
-        if (product) return res.status(403).send("Un produit est lié à ce jeu d'attributs. Vous ne pouvez pas le supprimer.");
+        if (product) return res.status(403).send('Un produit est lié à ce jeu d\'attributs. Vous ne pouvez pas le supprimer.');
         await setAttr.remove();
         await Attributes.updateMany({}, {$pull: {set_attributes: setAttr._id}});
         return res.end();

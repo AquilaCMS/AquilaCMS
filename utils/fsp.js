@@ -1,6 +1,6 @@
 /* eslint-disable arrow-body-style */
-const fs   = require("fs");
-const path = require("path");
+const fs   = require('fs');
+const path = require('path');
 
 /**
  * Synchronously reads the entire contents of a file.
@@ -9,17 +9,17 @@ const path = require("path");
  *  Either the encoding for the file, or an object optionally specifying the encoding, file mode, and flag. If `encoding` is not supplied, the default of `'utf8'` is used. If mode is not supplied, the default of `0o666` is used. If `mode` is a string, it is parsed as an octal integer. If `flag` is not supplied, the default of `'w'` is used.
  * @returns {Promise<string | Buffer> | Error}
  */
-const readFile = (path, options = {encoding: "utf8"}) => {
+const readFile = (path, options = {encoding: 'utf8'}) => {
     return new Promise((resolve, reject) => {
-        let readData = "";
+        let readData = '';
         fs.createReadStream(path, options)
-            .on("data", (data) => {
+            .on('data', (data) => {
                 readData += data;
             })
-            .on("close", () => {
+            .on('close', () => {
                 resolve(readData);
             })
-            .on("error", (err) => {
+            .on('error', (err) => {
                 reject(err);
             });
     });
@@ -31,13 +31,13 @@ const readFile = (path, options = {encoding: "utf8"}) => {
  * @param {any} data The data to write.
  * @param {string | { flags?: string; encoding?: string; fd?: number; mode?: number; autoClose?: boolean; start?: number; highWaterMark?: number; }} options Either the encoding for the file, or an object optionally specifying the encoding, file mode, and flag. If `encoding` is not supplied, the default of `'utf8'` is used. If mode is not supplied, the default of `0o666` is used. If `mode` is a string, it is parsed as an octal integer. If `flag` is not supplied, the default of `'w'` is used.
  */
-const writeFile = (path, data = "", options = "utf8") => {
+const writeFile = (path, data = '', options = 'utf8') => {
     return new Promise((resolve, reject) => {
         const cws = fs.createWriteStream(path, options);
-        cws.on("finish", () => {
+        cws.on('finish', () => {
             resolve();
         });
-        cws.on("error", (err) => {
+        cws.on('error', (err) => {
             reject(err);
         });
         cws.write(data);
@@ -50,7 +50,7 @@ const writeFile = (path, data = "", options = "utf8") => {
  * @param {string | Buffer | URL} path  A path to a file. If a URL is provided, it must use the `file:` protocol.
  * @param {"ascii" | "utf8" | "utf-8" | "utf16le" | "ucs2" | "ucs-2" | "base64" | "latin1" | "binary" | "hex" | {encoding: BufferEncoding; withFileTypes?: false;}} options The encoding (or an object specifying the encoding), used as the encoding of the result. If not provided, `'utf8'` is used.
  */
-const readdir = (path, options = "utf8") => {
+const readdir = (path, options = 'utf8') => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, options, (err, files) => {
             if (err) reject(err);
@@ -110,7 +110,7 @@ const access = (path, mode = fs.constants.F_OK) => {
     return new Promise((resolve, reject) => {
         fs.access(path, mode, (err) => {
             if (err) {
-                if (err.code === "ENOENT") {
+                if (err.code === 'ENOENT') {
                     resolve(false);
                 }
                 reject(err);
@@ -193,7 +193,6 @@ const copyRecursiveSync = async (src, dest, override = false) => {
             } else {
                 try {
                     await copyFile(src, dest, fs.constants.COPYFILE_EXCL);
-                    await fs.unlinkSync(src);
                 // eslint-disable-next-line no-empty
                 } catch (err) {}
             }

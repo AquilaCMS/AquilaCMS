@@ -272,13 +272,13 @@ const save = async (req, res, next) => {
 
             switch (req.body.type) {
             case 'simple':
-                req.body.kind = "SimpleProduct";
+                req.body.kind = 'SimpleProduct';
                 break;
             case 'virtual':
-                req.body.kind = "VirtualProduct";
+                req.body.kind = 'VirtualProduct';
                 break;
             case 'bundle':
-                req.body.kind = "BundleProduct";
+                req.body.kind = 'BundleProduct';
                 break;
             default:
                 break;
@@ -287,7 +287,7 @@ const save = async (req, res, next) => {
             if (req.body.set_attributes === undefined) {
                 req.body.attributes = [];
 
-                const setAtt = await SetAttributes.findOne({code: "defaut"});
+                const setAtt = await SetAttributes.findOne({code: 'defaut'});
                 req.body.set_attributes_name = setAtt.name;
                 req.body.set_attributes = setAtt._id;
 
@@ -338,7 +338,7 @@ const save = async (req, res, next) => {
  * @todo RV2 : Utilisé lors d'un delete produit dans l'admin
  */
 function deleteImages(id, oldImages, newImages) {
-    console.warn("Legacy method : deleteImages()");
+    console.warn('Legacy method : deleteImages()');
 
     const bIds = {};
     newImages.forEach((obj) => bIds[obj._id] = obj);
@@ -358,7 +358,7 @@ function deleteImages(id, oldImages, newImages) {
 const searchProductsAdmin = async (req, res, next) => {
     let queryCondition = {
         $or : [// {'details.description': new RegExp(req.body.q, 'i')},
-            {name: new RegExp(req.body.q, "i")} /* {_supplier: new RegExp(req.body.q, 'i')},
+            {name: new RegExp(req.body.q, 'i')} /* {_supplier: new RegExp(req.body.q, 'i')},
              {_trademark: new RegExp(req.body.q, 'i')},
              {supplier_ref: new RegExp(req.body.q, 'i')},
              {'specific.custom_text1': new RegExp(req.body.q, 'i')},
@@ -373,7 +373,7 @@ const searchProductsAdmin = async (req, res, next) => {
                     $or : [{slugMenus: {$size: 0}}, {slugMenus: {$exists: false}}]
                 }, {
                     $or : [// {'details.description': new RegExp(req.body.q, 'i')},
-                        {name: new RegExp(req.body.q, "i")} /* {_supplier: new RegExp(req.body.q, 'i')},
+                        {name: new RegExp(req.body.q, 'i')} /* {_supplier: new RegExp(req.body.q, 'i')},
                          {_trademark: new RegExp(req.body.q, 'i')},
                          {supplier_ref: new RegExp(req.body.q, 'i')} */
                     ]
@@ -382,7 +382,7 @@ const searchProductsAdmin = async (req, res, next) => {
         };
     }
     try {
-        const products = await Products.find(queryCondition, null, {skip: req.body.start, limit: req.body.limit}).sort("code");
+        const products = await Products.find(queryCondition, null, {skip: req.body.start, limit: req.body.limit}).sort('code');
         return res.json(products);
     } catch (err) {
         return next(err);
@@ -397,7 +397,7 @@ const searchProductsAdmin = async (req, res, next) => {
  */
 const list = async (req, res, next) => {
     try {
-        const products = await Products.find(req.query).populate("location.town location.country");
+        const products = await Products.find(req.query).populate('location.town location.country');
         return res.json(products);
     } catch (err) {
         return next(err);
@@ -435,7 +435,7 @@ const getAssociatedProducts = async (req, res, next) => {
 
         const products = await Products.find({
             _id : {$in: associatedProds}
-        }).populate("location.town location.country");
+        }).populate('location.town location.country');
         return res.json(products);
     } catch (err) {
         return next(err);
@@ -457,13 +457,13 @@ const detail = async (req, res, next) => {
         filter.active = req.query.active;
     }
     let query = Products.findOne(filter);
-    if (req.query.populate === "true") {
-        query = query.populate("location.town location.country");
+    if (req.query.populate === 'true') {
+        query = query.populate('location.town location.country');
     }
 
     // Si c'est l'admin qui a fait la demande
-    if (req.baseUrl !== "") {
-        query = query.populate("set_attributes");
+    if (req.baseUrl !== '') {
+        query = query.populate('set_attributes');
     }
 
     try {

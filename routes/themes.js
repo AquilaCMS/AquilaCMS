@@ -1,5 +1,5 @@
-const path                        = require("path");
-const {authentication, adminAuth} = require("../middleware/authentication");
+const path                        = require('path');
+const {authentication, adminAuth} = require('../middleware/authentication');
 const themesServices              = require('../services/themes');
 const fs                          = require('../utils/fsp');
 const packageManager              = require('../utils/packageManager');
@@ -133,7 +133,7 @@ const copyDatas = async (req, res, next) => {
 async function packageInstall(req, res, next) {
     try {
         let themPath = req.body.themeName;
-        if (!themPath || themPath === "" || themPath === "./themes/") {
+        if (!themPath || themPath === '' || themPath === './themes/') {
             themPath = `./themes/${themesServices.getThemePath()}`;
         }
         await packageManager.execCmd(`yarn install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve(`./themes/${themPath}`));
@@ -150,10 +150,10 @@ async function buildTheme(req, res, next) {
     req.setTimeout(300000);
     try {
         let themPath = req.body.themeName;
-        if (!themPath || themPath === "") {
+        if (!themPath || themPath === '') {
             themPath = themesServices.getThemePath();
         }
-        themPath = themPath.replace("./themes/", "");
+        themPath = themPath.replace('./themes/', '');
         await themesServices.buildTheme(themPath);
         res.send(packageManager.restart());
     } catch (error) {

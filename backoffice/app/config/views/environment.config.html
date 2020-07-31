@@ -1,3 +1,20 @@
+<style>
+    .loader {
+        border: 10px solid #f3f3f3; /* Light grey */
+        border-top: 10px solid #576fa1;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        animation: spin 2s linear infinite;
+        margin: auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
 <ns-box data-title="config.environment.t1" title-icon="fa fa-cogs fa-lg">
     <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading"
         role="form">
@@ -255,18 +272,23 @@
                         <label translate>config.auth.callbackURL</label>
                         <input type="text" class="form-control" ng-model="configAuth.facebookAuth.callbackURL">
                     </div>
-
-
-
                 </div>
-
             </div>
         </ns-buttons>
     </form>
-    <div ng-show="showLoading">
+
+    <div ng-show="showLoading" style="text-align: center;">
         <h3 translate>config.environment.redemarrage</h3>
-        <h4 translate>config.environment.redirect</h4><h4><i><a href="{{urlRedirect}}">{{urlRedirect}}</a></i></h4>
-        <progressbar style="width: 50%" class="progress-striped active" animate="true" max="100" value="progressValue"
-            type="success"></progressbar>
+        <h4 translate>config.environment.redirect</h4>
+        <h4>
+            <i>
+                <a href="{{urlRedirect}}">{{urlRedirect}}</a>
+            </i>
+        </h4>
+        <div class="loader"></div>
+    </div>
+
+    <div ng-show="showThemeLoading" id="overlayModule">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
     </div>
 </ns-box>

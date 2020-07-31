@@ -1,10 +1,10 @@
 const path             = require('path');
 const {Pictos}         = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
-const ServiceRules     = require("./rules");
+const ServiceRules     = require('./rules');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
-const NSErrors         = require("../utils/errors/NSErrors");
+const NSErrors         = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'filename', 'location', 'enabled', 'title', 'usedInFilters', '_id'];
@@ -48,9 +48,9 @@ const deletePicto = async (id) => {
     if (rule) {
         await ServiceRules.deleteRule(rule._id);
     }
-    if (result.filename !== "") {
+    if (result.filename !== '') {
         await mediasUtils.deleteFile(`medias/picto/${result.filename}`);
-        require("./cache").deleteCacheImage('picto', {filename: path.basename(result.filename).split('.')[0]});
+        require('./cache').deleteCacheImage('picto', {filename: path.basename(result.filename).split('.')[0]});
     }
     return result;
 };

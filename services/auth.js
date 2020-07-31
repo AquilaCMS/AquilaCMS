@@ -1,6 +1,6 @@
-const {promisify} = require("util");
-const jwt      = require("jsonwebtoken");
-const NSErrors = require("../utils/errors/NSErrors");
+const {promisify} = require('util');
+const jwt      = require('jsonwebtoken');
+const NSErrors = require('../utils/errors/NSErrors');
 
 /**
  * Check if user is authenticate
@@ -9,7 +9,7 @@ const NSErrors = require("../utils/errors/NSErrors");
  */
 const IsAuthenticate = async (req, res) => {
     return res.status(200).send({
-        code           : "AUTHENTICATED",
+        code           : 'AUTHENTICATED',
         isAuthenticate : true,
         user           : req.info,
         data           : req.headers.authorization
@@ -22,7 +22,7 @@ const IsAuthenticate = async (req, res) => {
  * @returns utilisateur
  */
 const getDecodedToken = (token) => {
-    return jwt.decode(token.substr(token.indexOf(" ") + 1));
+    return jwt.decode(token.substr(token.indexOf(' ') + 1));
 };
 
 /**
@@ -31,7 +31,7 @@ const getDecodedToken = (token) => {
 const login = async (req, res, next) => {
     const {username, password} = req.body;
     try {
-        const {Users} = require("../orm/models");
+        const {Users} = require('../orm/models');
         let user = await Users.findOne({email: {$regex: username, $options: 'i'}});
 
         if (!user) throw NSErrors.BadLogin;
@@ -47,10 +47,10 @@ const login = async (req, res, next) => {
 
         user = user.toObject();
         delete user.password;
-        const token = require("../middleware/authentication").generateJWTToken(res, user, user.isAdmin);
+        const token = require('../middleware/authentication').generateJWTToken(res, user, user.isAdmin);
 
         return res.status(200).send({
-            code : "LOGIN_SUCCESS",
+            code : 'LOGIN_SUCCESS',
             data : token
         });
     } catch (err) {
@@ -89,7 +89,7 @@ const validateUserIsAllowedWithoutPostBody = async (token, baseUrl, query, field
             throw NSErrors.AccessUnauthorized;
         }
         const decoded = getDecodedToken(token);
-        const {Configuration} = require("../orm/models");
+        const {Configuration} = require('../orm/models');
         const _config = await Configuration.findOne({});
         if (_config.environment.adminPrefix === undefined) {
             _config.environment.adminPrefix = 'admin';

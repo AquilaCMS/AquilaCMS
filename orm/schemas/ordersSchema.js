@@ -1,12 +1,12 @@
-const autoIncrement     = require("mongoose-plugin-autoinc-fix");
+const autoIncrement     = require('mongoose-plugin-autoinc-fix');
 
 const mongoose          = require('mongoose');
-const aquilaEvents      = require("../../utils/aquilaEvents");
+const aquilaEvents      = require('../../utils/aquilaEvents');
 
-const ItemSchema        = require("./itemSchema");
-const ItemSimpleSchema  = require("./itemSimpleSchema");
-const ItemBundleSchema  = require("./itemBundleSchema");
-const ItemVirtualSchema = require("./itemVirtualSchema");
+const ItemSchema        = require('./itemSchema');
+const ItemSimpleSchema  = require('./itemSimpleSchema');
+const ItemBundleSchema  = require('./itemBundleSchema');
+const ItemVirtualSchema = require('./itemVirtualSchema');
 
 const Schema            = mongoose.Schema;
 const ObjectId          = Schema.ObjectId;
@@ -15,17 +15,17 @@ const OrdersSchema = new Schema({
     number : {type: String, unique: true}, // pcf : W0000001 ++
     bills  : [
         {
-            billId : {type: String, ref: "bills"},
+            billId : {type: String, ref: 'bills'},
             avoir  : {type: Boolean, default: false}
         }
     ],
     invoiceFileName : {type: String},
     creationDate    : {type: Date, default: Date.now},
     lang            : {type: String}, // Permet de connaitre la langue utilisé lors de la commande
-    cartId          : {type: ObjectId, ref: "cart"},
+    cartId          : {type: ObjectId, ref: 'cart'},
     promos          : [
         {
-            promoId     : {type: ObjectId, ref: "promo", required: true},
+            promoId     : {type: ObjectId, ref: 'promo', required: true},
             promoCodeId : {type: ObjectId, required: true}, // L'id d'un promo.codes[i].code
             discountATI : {type: Number, default: null},
             discountET  : {type: Number, default: null},
@@ -43,7 +43,7 @@ const OrdersSchema = new Schema({
         }
     ],
     customer : {
-        id       : {type: ObjectId, ref: "users", index: true},
+        id       : {type: ObjectId, ref: 'users', index: true},
         email    : {type: String, required: true},
         code     : String,
         fullname : String,
@@ -90,22 +90,21 @@ const OrdersSchema = new Schema({
     status : {
         type : String,
         enum : [
-            "PAYMENT_PENDING",
-            "PAYMENT_RECEIPT_PENDING",
-            "PAYMENT_CONFIRMATION_PENDING",
-            "PAID",
-            "PROCESSING",
-            "PROCESSED", // Préparé. A ne pas à confondre avec Finished (Traité)
-            "BILLED",
-            "DELIVERY_PROGRESS",
-            "DELIVERY_PARTIAL_PROGRESS",
-            "FINISHED",
-            "CANCELING", // Pour éviter qu'une commande ne soit annulée deux fois (c'est une sorte de verrou)
-            "CANCELED",
-            "ASK_CANCEL",
-            "RETURNED"
+            'PAYMENT_PENDING',
+            'PAYMENT_RECEIPT_PENDING',
+            'PAYMENT_CONFIRMATION_PENDING',
+            'PAID',
+            'PROCESSING',
+            'PROCESSED', // Préparé. A ne pas à confondre avec Finished (Traité)
+            'BILLED',
+            'DELIVERY_PROGRESS',
+            'DELIVERY_PARTIAL_PROGRESS',
+            'FINISHED',
+            'CANCELED',
+            'ASK_CANCEL',
+            'RETURNED'
         ],
-        default : "PAYMENT_PENDING"
+        default : 'PAYMENT_PENDING'
     },
     priceTotal : {
         vat     : {type: Number},
@@ -122,7 +121,7 @@ const OrdersSchema = new Schema({
     discount : [
         {
             code        : {type: String},
-            type        : {type: String, enum: ["PERCENT", "PRICE", "FREE_DELIVERY"]},
+            type        : {type: String, enum: ['PERCENT', 'PRICE', 'FREE_DELIVERY']},
             value       : {type: Number},
             description : {type: String},
             priceATI    : {type: Number, required: true} // TODO P3 : renommer en amountATI - 2X - (y a til une raison de renommer ?)
@@ -158,7 +157,7 @@ const OrdersSchema = new Schema({
         }
     },
     delivery : {
-        method : {type: ObjectId, ref: "shipments"},
+        method : {type: ObjectId, ref: 'shipments'},
         price  : {
             ati : {type: Number},
             et  : {type: Number},
@@ -182,7 +181,7 @@ const OrdersSchema = new Schema({
             date     : {type: Date, default: Date.now},
             tracking : {type: String, required: true},
             products : [{
-                product_id   : {type: ObjectId, ref: "products", required: true},
+                product_id   : {type: ObjectId, ref: 'products', required: true},
                 product_code : {type: String, required: true},
                 qty_shipped  : {type: Number, required: true},
                 selections   : [{
@@ -194,10 +193,10 @@ const OrdersSchema = new Schema({
     },
     payment : [
         {
-            type          : {type: String, enum: ["DEBIT", "CREDIT"]},
+            type          : {type: String, enum: ['DEBIT', 'CREDIT']},
             creationDate  : {type: Date, default: Date.now},
             operationDate : {type: Date},
-            status        : {type: String, enum: ["TODO", "DONE", "CANCELED", "FAILED"]},
+            status        : {type: String, enum: ['TODO', 'DONE', 'CANCELED', 'FAILED']},
             mode          : {type: String, required: true},
             transactionId : String,
             amount        : Number,
@@ -205,7 +204,7 @@ const OrdersSchema = new Schema({
         }
     ],
     orderReceipt : {
-        method        : {type: String, enum: ["delivery", "withdrawal"]},
+        method        : {type: String, enum: ['delivery', 'withdrawal']},
         date          : Date,
         confirmedDate : Date
     },
@@ -218,7 +217,7 @@ const OrdersSchema = new Schema({
             refund   : {type: Number, required: true},
             products : [
                 {
-                    product_id   : {type: ObjectId, ref: "products", required: true},
+                    product_id   : {type: ObjectId, ref: 'products', required: true},
                     product_code : {type: String, required: true},
                     qty_returned : {type: Number, required: true},
                     selections   : [{
@@ -236,8 +235,8 @@ const OrdersSchema = new Schema({
     }
 }, {usePushEach: true});
 
-OrdersSchema.set("toJSON", {virtuals: true});
-OrdersSchema.set("toObject", {virtuals: true});
+OrdersSchema.set('toJSON', {virtuals: true});
+OrdersSchema.set('toObject', {virtuals: true});
 
 /* OrdersSchema.virtual("delivery.date").get(function () {
     if (this.delivery.dateDelivery !== undefined && this.delivery.dateDelivery.delayPreparation && this.delivery.dateDelivery.delayPreparation) {
@@ -248,15 +247,15 @@ OrdersSchema.set("toObject", {virtuals: true});
     return null;
 }); */
 
-const docArray = OrdersSchema.path("items");
+const docArray = OrdersSchema.path('items');
 
-docArray.discriminator("simple", ItemSimpleSchema);
-docArray.discriminator("bundle", ItemBundleSchema);
-docArray.discriminator("virtual", ItemVirtualSchema);
+docArray.discriminator('simple', ItemSimpleSchema);
+docArray.discriminator('bundle', ItemBundleSchema);
+docArray.discriminator('virtual', ItemVirtualSchema);
 
-OrdersSchema.plugin(autoIncrement.plugin, {model: "orders", field: "id", startAt: 1});
+OrdersSchema.plugin(autoIncrement.plugin, {model: 'orders', field: 'id', startAt: 1});
 
-OrdersSchema.pre("save", function (next) {
+OrdersSchema.pre('save', function (next) {
     const s = `0000000${this.id}`;
     this.number = `W${s.substr(s.length - 7)}`;
 
@@ -267,31 +266,31 @@ OrdersSchema.pre("save", function (next) {
     next();
 });
 
-OrdersSchema.post("save", function (doc) {
+OrdersSchema.post('save', function (doc) {
     if (doc.wasNew) {
-        aquilaEvents.emit("aqNewOrder", doc);
+        aquilaEvents.emit('aqNewOrder', doc);
     } else {
-        aquilaEvents.emit("aqUpdateOrder", doc, doc.modifiedPathsArray);
-        aquilaEvents.emit("aqUpdateStatusOrder", this._update, doc._id);
+        aquilaEvents.emit('aqUpdateOrder', doc, doc.modifiedPathsArray);
+        aquilaEvents.emit('aqUpdateStatusOrder', this._update, doc._id);
     }
 });
 
-OrdersSchema.post("updateOne", function (result) {
+OrdersSchema.post('updateOne', function (result) {
     if ((result.ok && result.nModified === 1) || (result.result && result.result.ok && result.result.nModified === 1)) {
-        aquilaEvents.emit("aqUpdateOrder", {number: this.getQuery().number}, this.getUpdate());
-        aquilaEvents.emit("aqUpdateStatusOrder", this.getUpdate(), this.getQuery()._id);
+        aquilaEvents.emit('aqUpdateOrder', {number: this.getQuery().number}, this.getUpdate());
+        aquilaEvents.emit('aqUpdateStatusOrder', this.getUpdate(), this.getQuery()._id);
     }
 });
 
-OrdersSchema.post("findOneAndUpdate", function (result) {
+OrdersSchema.post('findOneAndUpdate', function (result) {
     if (result) {
-        aquilaEvents.emit("aqUpdateOrder", {number: result.number}, this.getUpdate());
-        aquilaEvents.emit("aqUpdateStatusOrder", this.getUpdate(), result._id.toString());
+        aquilaEvents.emit('aqUpdateOrder', {number: result.number}, this.getUpdate());
+        aquilaEvents.emit('aqUpdateStatusOrder', this.getUpdate(), result._id.toString());
     }
 });
 
 // Permet d'envoyer un evenement avant que le schema order ne soit crée
 // ex: le mondule mondial-relay va écouter cet evenement afin d'ajouter au schema order de nouveaux attributs
-aquilaEvents.emit("orderSchemaInit", OrdersSchema);
+aquilaEvents.emit('orderSchemaInit', OrdersSchema);
 
 module.exports = OrdersSchema;

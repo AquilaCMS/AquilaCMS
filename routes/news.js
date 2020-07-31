@@ -1,23 +1,23 @@
-const {News}            = require("../orm/models");
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {News}            = require('../orm/models');
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceFilter} = require('../middleware/security');
 const {middlewareServer} = require('../middleware');
-const servicesNews      = require("../services/news");
+const servicesNews      = require('../services/news');
 const mediasUtils       = require('../utils/medias');
 
 module.exports = function (app) {
-    app.post("/v2/site/news", securityForceFilter([{isVisible: true}]), getNews);
-    app.post("/v2/site/new", securityForceFilter([{isVisible: true}]), getNew);
-    app.put("/v2/site/new", authentication, adminAuth, saveNew);
-    app.delete("/v2/site/new/:_id", authentication, adminAuth, deleteNew);
+    app.post('/v2/site/news', securityForceFilter([{isVisible: true}]), getNews);
+    app.post('/v2/site/new', securityForceFilter([{isVisible: true}]), getNew);
+    app.put('/v2/site/new', authentication, adminAuth, saveNew);
+    app.delete('/v2/site/new/:_id', authentication, adminAuth, deleteNew);
 
     // Deprecated
-    app.get("/site/news", middlewareServer.deprecatedRoute, list);
-    app.get("/site/news/:_id", middlewareServer.deprecatedRoute, detail);
-    app.post("/site/news", middlewareServer.deprecatedRoute, authentication, adminAuth, save);
-    app.put("/site/news", middlewareServer.deprecatedRoute, authentication, adminAuth, update);
-    app.delete("/site/news/image/:_id", middlewareServer.deprecatedRoute, authentication, adminAuth, removeImage);
-    app.delete("/site/news/:_id", middlewareServer.deprecatedRoute, authentication, adminAuth, remove);
+    app.get('/site/news', middlewareServer.deprecatedRoute, list);
+    app.get('/site/news/:_id', middlewareServer.deprecatedRoute, detail);
+    app.post('/site/news', middlewareServer.deprecatedRoute, authentication, adminAuth, save);
+    app.put('/site/news', middlewareServer.deprecatedRoute, authentication, adminAuth, update);
+    app.delete('/site/news/image/:_id', middlewareServer.deprecatedRoute, authentication, adminAuth, removeImage);
+    app.delete('/site/news/:_id', middlewareServer.deprecatedRoute, authentication, adminAuth, remove);
 };
 
 async function getNews(req, res, next) {
@@ -114,7 +114,7 @@ async function removeImage(req, res, next) {
         const oNews = await News.findOne({_id});
         await mediasUtils.deleteFile(oNews.img);
         // On supprime ensuite le lien de l'image en bdd
-        const result = await News.findOneAndUpdate({_id}, {img: ""}, {new: true});
+        const result = await News.findOneAndUpdate({_id}, {img: ''}, {new: true});
         return res.json(result);
     } catch (error) {
         return next(error);

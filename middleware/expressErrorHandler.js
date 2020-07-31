@@ -1,7 +1,7 @@
-const mongodb = require("mongodb");
-const NSError = require("../utils/errors/NSError");
-const NSErrors = require("../utils/errors/NSErrors");
-const errorMessage = require("../utils/translate/errors");
+const mongodb = require('mongodb');
+const NSError = require('../utils/errors/NSError');
+const NSErrors = require('../utils/errors/NSErrors');
+const errorMessage = require('../utils/translate/errors');
 
 const mongoErrorCodeToNsError = {
     11000 : NSErrors.Conflict
@@ -68,13 +68,13 @@ const expressErrorHandler = (err, req, res, next) => {
         if (!err.status) err.status = 500;
         if (err instanceof NSError && err.level !== 'none') {
             console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}"
-                ${err.status} - "${req.protocol}://${req.get("host")}${req.originalUrl}"`);
+                ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
         } else if (!(err instanceof NSError)) {
             console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}"
-                ${err.status} - "${req.protocol}://${req.get("host")}${req.originalUrl}"`);
+                ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
         }
 
-        let lang = "en";
+        let lang = 'en';
         if (req.headers && req.headers.lang) lang = req.headers.lang;
         else if (req.query && req.query.lang) lang = req.query.lang;
         else if (req.body && req.body.lang) lang = req.body.lang;
@@ -84,9 +84,9 @@ const expressErrorHandler = (err, req, res, next) => {
             log(err);
             const knownError = mongoErrorCodeToNsError[err.code];
             if (knownError) err = knownError;
-            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : "";
+            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
         } else if (err instanceof NSError) {
-            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : "";
+            err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
             log(err);
         } else if (err instanceof Object && !(err instanceof Error)) {
             err.message = applyTranslation(err, lang);

@@ -1,8 +1,8 @@
 module.exports = {
     removeImage : {
         message : {
-            fr : "Image supprimée",
-            en : "Picture deleted"
+            fr : 'Image supprimée',
+            en : 'Picture deleted'
         }
     }
 };

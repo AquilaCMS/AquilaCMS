@@ -1,4 +1,4 @@
-const {AdminInformation, Categories} = require("../orm/models");
+const {AdminInformation, Categories} = require('../orm/models');
 const servicesLanguages              = require('./languages');
 const utils                          = require('../utils/utils');
 
@@ -35,16 +35,16 @@ const deleteAdminInformation = async (code) => {
 const welcome = async () => {
     try {
         await insertAdminInformation({
-            code        : `welcome_to_aquila`,
-            type        : "info",
+            code        : 'welcome_to_aquila',
+            type        : 'info',
             translation : {
                 en : {
-                    title : "Aquila",
-                    text  : "Welcome on Aquila. You will find necessary informations of Aquila here."
+                    title : 'Aquila',
+                    text  : 'Welcome on Aquila. You will find necessary informations of Aquila here.'
                 },
                 fr : {
-                    title : "Aquila",
-                    text  : "Bienvenu sur Aquila. Vous trouverez ici les informations necessaires au bon fonctionnement d'Aquila."
+                    title : 'Aquila',
+                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations necessaires au bon fonctionnement d\'Aquila.'
                 }
             }
         });

@@ -9,7 +9,7 @@
         "add": "Add",
         "nom": "Name",
         "desc": "Description",
-        "cancel": "Cancel"
+        "cancel": "Remove"
     },
     "general": {
         "pdtType": "Product type",

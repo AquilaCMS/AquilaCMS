@@ -1,16 +1,16 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer}          = require('../middleware');
 const servicesCommon              = require('../services/common');
 
 module.exports = function (app) {
     app.post('/cookienotice', setCookieNotice);
     app.get('/serverIsUp', serverIsUp);
-    app.post("/v2/getBreadcrumb", getBreadcrumb);
-    app.get("/v2/export/csv/:model",  authentication, adminAuth, exportData);
-    app.post("/v2/export/csv/:model", authentication, adminAuth, exportData);
+    app.post('/v2/getBreadcrumb', getBreadcrumb);
+    app.get('/v2/export/csv/:model',  authentication, adminAuth, exportData);
+    app.post('/v2/export/csv/:model', authentication, adminAuth, exportData);
 
     // Deprecated
-    app.post("/v2/calculStock", middlewareServer.deprecatedRoute, calculStock);
+    app.post('/v2/calculStock', middlewareServer.deprecatedRoute, calculStock);
 };
 
 function setCookieNotice(req, res, next) {
@@ -65,7 +65,7 @@ async function exportData(req, res, next) {
  */
 async function calculStock(req, res, next) {
     try {
-        const result = await require("../services/products").calculStock(req.body);
+        const result = await require('../services/products').calculStock(req.body);
         return res.json(result);
     } catch (error) {
         return next(error);

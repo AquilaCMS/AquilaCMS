@@ -1,3 +1,5 @@
+const debug            = require('debug');
+const log              = debug('aquila:rules');
 const {
     Rules,
     Users,
@@ -50,16 +52,21 @@ const getRule = async (search) => {
  * @return {Promise<array<{}>>} - Tableau des promo applicable sur le user en question
  */
 const testUser = async (body) => {
+    log('- testUser - ', body);
     const _rules = await Rules.find({owner_type: 'discount'});
     const user = await Users.findOne({_id: body.user_id});
     const result = [];
     for (let i = 0; i < _rules.length; i++) {
+        log('- testUser - ', `${i} / ${_rules.length}`);
         const condition = await testRulesOnUser(_rules[i], user);
+        log('- testUser - ', eval(promoUtils.createIfStatement(condition)));
         if (eval(promoUtils.createIfStatement(condition))) {
             const promo = await Promo.findById(_rules[i].owner_id);
-            result.push({...promo.toObject(), applyResult: condition});
+            log('- testUser - ', promo);
+            if (promo) result.push({...promo.toObject(), applyResult: condition});
         }
     }
+    log('- testUser - ', result);
     return result;
 };
 
@@ -104,16 +111,16 @@ const deleteRule = async (_id) => {
 function conditionOperator(operator, obj, target, value) {
     let isTrue = false;
     try {
-        if (["Contient", "contains"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).includes(value);
-        else if (["Ne contient pas", "ncontains"].indexOf(operator) !== -1) isTrue = !utils.getObjFromDotStr(obj, target).includes(value);
-        else if (["Egal à", "eq"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) === value;
-        else if (["Différent de", "neq"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) !== value;
-        else if (["Commence par", "startswith"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).startsWith(value);
-        else if (["Fini par", "endswith"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).endsWith(value);
-        else if (["Plus grand ou egal à", "gte"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) >= value;
-        else if (["Plus grand que", "gt"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) > value;
-        else if (["Plus petit ou egal à", "lte"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) <= value;
-        else if (["Plus petit que", "lt"].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) < value;
+        if (['Contient', 'contains'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).includes(value);
+        else if (['Ne contient pas', 'ncontains'].indexOf(operator) !== -1) isTrue = !utils.getObjFromDotStr(obj, target).includes(value);
+        else if (['Egal à', 'eq'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) === value;
+        else if (['Différent de', 'neq'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) !== value;
+        else if (['Commence par', 'startswith'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).startsWith(value);
+        else if (['Fini par', 'endswith'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).endsWith(value);
+        else if (['Plus grand ou egal à', 'gte'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) >= value;
+        else if (['Plus grand que', 'gt'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) > value;
+        else if (['Plus petit ou egal à', 'lte'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) <= value;
+        else if (['Plus petit que', 'lt'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) < value;
         return isTrue;
     } catch (error) {
         console.error(error);
@@ -190,14 +197,14 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
         const tCondition = [rule.operand];
         for (let j = 0; j < rule.conditions.length; j++) {
             const condition = rule.conditions[j];
-            let target = condition.target.replace("attr.", "attributes.");
+            let target = condition.target.replace('attr.', 'attributes.');
             let isTrue = false;
             const value = getValueFromCondition(condition);
             // colNames est le nom des collections (c'est une variable en global)
             const tColNamesFound = colNames.filter((colName) =>  target.startsWith(`${colName}.`));
             // Si un colNames est trouvé dans le target alors ce n'est pas un champ produit
             if (tColNamesFound.length > 0) {
-                if (target.startsWith("client.")) {
+                if (target.startsWith('client.')) {
                     // Si user n'existe pas (qu'il rentre un code promo non connecté)
                     if (!user || Object.keys(user).length === 0) {
                         isTrue = false;
@@ -215,9 +222,9 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                             isTrue = conditionOperator(condition.operator, user, target.replace('client.', ''), value);
                         }
                     }
-                } else if (target.startsWith("categorie.") && cart) {
+                } else if (target.startsWith('categorie.') && cart) {
                     isTrue = await checkCartPrdInCategory(cart, target, value, isTrue);
-                } else if (target.startsWith("panier.") && cart) {
+                } else if (target.startsWith('panier.') && cart) {
                     target = target.replace('panier.', '');
                     isTrue = conditionOperator(condition.operator, {priceTotal: await calculateCartTotal(cart)}, target, value);
                 }
@@ -272,7 +279,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
         const validRules = [];
         for (let j = 0; j < rule.conditions.length; j++) {
             const condition = rule.conditions[j];
-            const target = condition.target.replace("attr.", "attributes.");
+            const target = condition.target.replace('attr.', 'attributes.');
             let isTrue = true;
             const value = getValueFromCondition(condition);
             // colNames est le nom des collections (c'est une variable en global)
@@ -280,7 +287,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
             // Si un colNames est trouvé dans le target alors ce n'est pas un champ produit
             if (tColNamesFound.length > 0) {
                 const key = target.split('.')[1];
-                if (target.startsWith("client.")) {
+                if (target.startsWith('client.')) {
                     // Si user n'existe pas (qu'il rentre un code promo non connecté)
                     if (!user) {
                         isTrue = false;
@@ -291,7 +298,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
                             validRules.push(rule);
                         }
                     }
-                } else if (target.startsWith("categorie.") && cart !== undefined) {
+                } else if (target.startsWith('categorie.') && cart !== undefined) {
                     isTrue = await checkCartPrdInCategory(cart, target, value, isTrue);
                 }
             } else if (cart !== undefined) {
@@ -326,7 +333,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
  * @param {*} _rules
  */
 function onlyProductRequest(_rules) {
-    utils.tmp_use_route("rules_service", "onlyProductRequest");
+    utils.tmp_use_route('rules_service', 'onlyProductRequest');
 
     let onlyProduct = true;
     for (let i = 0; i < _rules.length; i++) {
@@ -360,22 +367,22 @@ async function applyRecursiveRules(_rules, query) {
             if (condition.type === 'number') {
                 value = Number(condition.value);
             } else if (condition.type === 'bool') {
-                value = condition.value === "true";
+                value = condition.value === 'true';
             }
             const queryConds = {};
 
             // Traitement spécial si c'est un attribut (contient attr.)
-            if (target.includes("attr.")) {
-                target        = target.replace("attr.", "");
-                const code =          target.split('.')[target.split('.').length - 1];
-                const attrLang =          target.split('.')[target.split('.').length - 2];
+            if (target.includes('attr.')) {
+                target          = target.replace('attr.', '');
+                const code      = target.split('.')[target.split('.').length - 1];
+                const attrLang  = target.split('.')[target.split('.').length - 2];
                 // On récupère le "modèle" attribut dans un produit pour connaitre l'index de l'attribut en question
-                const product = await Products.findOne({active: true, _visible: true}).lean();
+                const product   = await Products.findOne({active: true, _visible: true}).lean();
                 const indexAttr = product.attributes.findIndex((attr) => attr.code === code);
                 // et tester la valeur de cet attribut
-                target = `attributes.${indexAttr}.translation.${attrLang}.value`;
-            } else if (target.includes("categorie.")) {
-                target        = target.replace("categorie.", "");
+                target          = `attributes.${indexAttr}.translation.${attrLang}.value`;
+            } else if (target.includes('categorie.')) {
+                target = target.replace('categorie.', '');
                 // On récupère le "modèle" attribut dans un produit pour connaitre l'index de l'attribut en question
                 const cat = await Categories.findOne({[`${target}`]: value}).lean();
                 if (cat) {
@@ -387,29 +394,45 @@ async function applyRecursiveRules(_rules, query) {
             }
 
             // Gestion des opérateur (transformation expression -> opérateur mongo)
-            if (condition.operator === "contains" || condition.operator === "Contient") {
-                queryConds[target] = new RegExp(value);
-            } else if (condition.operator === "ncontains" || condition.operator === "Ne contient pas") {
-                queryConds[target] = {$not: new RegExp(value)};
-            } else if (condition.operator === "eq" || condition.operator === "Egal à") {
+            if (condition.operator === 'contains' || condition.operator === 'Contient') {
+                if (Object.prototype.toString.call(value) === '[Object String]') {
+                    queryConds[target] = new RegExp(value);
+                } else {
+                    queryConds[target] = value;
+                }
+            } else if (condition.operator === 'ncontains' || condition.operator === 'Ne contient pas') {
+                if (Object.prototype.toString.call(value) === '[Object String]') {
+                    queryConds[target] = {$not: new RegExp(value)};
+                } else {
+                    queryConds[target] = value;
+                }
+            } else if (condition.operator === 'eq' || condition.operator === 'Egal à') {
                 queryConds[target] = value;
-            } else if (condition.operator === "neq" || condition.operator === "Différent de") {
+            } else if (condition.operator === 'neq' || condition.operator === 'Différent de') {
                 queryConds[target] = {$ne: value};
-            } else if (condition.operator === "startswith" || condition.operator === "Commence par") {
-                queryConds[target] = new RegExp(`^${value}`);
-            } else if (condition.operator === "endswith" || condition.operator === "Fini par") {
-                queryConds[target] = new RegExp(`${value}$`);
-            } else if (condition.operator === "gte" || condition.operator === "Plus grand ou egal à") {
+            } else if (condition.operator === 'startswith' || condition.operator === 'Commence par') {
+                if (Object.prototype.toString.call(value) === '[Object String]') {
+                    queryConds[target] = new RegExp(`^${value}`);
+                } else {
+                    queryConds[target] = value;
+                }
+            } else if (condition.operator === 'endswith' || condition.operator === 'Fini par') {
+                if (Object.prototype.toString.call(value) === '[Object String]') {
+                    queryConds[target] = new RegExp(`${value}$`);
+                } else {
+                    queryConds[target] = value;
+                }
+            } else if (condition.operator === 'gte' || condition.operator === 'Plus grand ou egal à') {
                 queryConds[target] = {$gte: value};
-            } else if (condition.operator === "gte" || condition.operator === "Plus grand que") {
+            } else if (condition.operator === 'gte' || condition.operator === 'Plus grand que') {
                 queryConds[target] = {$gt: value};
-            } else if (condition.operator === "lte" || condition.operator === "Plus petit ou egal à") {
+            } else if (condition.operator === 'lte' || condition.operator === 'Plus petit ou egal à') {
                 queryConds[target] = {$lte: value};
-            } else if (condition.operator === "lt" || condition.operator === "Plus petit que") {
+            } else if (condition.operator === 'lt' || condition.operator === 'Plus petit que') {
                 queryConds[target] = {$lt: value};
             }
 
-            if (rule.operand === "ET") {
+            if (rule.operand === 'ET') {
                 Object.assign(query, queryConds);
             } else {
                 if (query.$or === undefined) {
@@ -420,7 +443,7 @@ async function applyRecursiveRules(_rules, query) {
             }
         }
 
-        if (rule.operand === "ET") {
+        if (rule.operand === 'ET') {
             if (rule.other_rules && rule.other_rules.length > 0) {
                 Object.assign(query, await applyRecursiveRules(rule.other_rules, query));
             }
@@ -482,7 +505,7 @@ const execRules = async (owner_type) => {
             for (let i = 0; i < splittedRulesKeys.length; i++) {
                 for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
                     const productsIds = _products[j].map((prd) => prd._id);
-                    if (splittedRulesKeys[i] === "category") {
+                    if (splittedRulesKeys[i] === 'category') {
                         const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, active: true});
                         const cat = await Categories.findOneAndUpdate(
                             {_id: splittedRules[splittedRulesKeys[i]][j].owner_id},
@@ -506,7 +529,7 @@ const execRules = async (owner_type) => {
                             });
                             await cat.save();
                         }
-                    } else if (splittedRulesKeys[i] === "picto") {
+                    } else if (splittedRulesKeys[i] === 'picto') {
                         const picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
                         if (picto) {
                             const pictoData = {code: picto.code, url: `/medias/picto/${picto.filename}`, title: picto.title, location: picto.location};
@@ -541,7 +564,7 @@ const execRules = async (owner_type) => {
 };
 
 const stopExecOnError = (owner_type) => {
-    utils.tmp_use_route("rules_service", "stopExecOnError");
+    utils.tmp_use_route('rules_service', 'stopExecOnError');
 
     inSegment[owner_type] = false;
     console.log(`\x1b[1m\x1b[31mCatégorisation(${owner_type}) automatique en erreur réinitialisé\x1b[0m`);
@@ -563,7 +586,7 @@ module.exports = {
 };
 
 async function checkCartPrdInCategory(cart, target, value, isTrue) {
-    const key = target.slice(target.indexOf(".") + 1);
+    const key = target.slice(target.indexOf('.') + 1);
     const _cat = await Categories.findOne({[key]: value});
 
     if (_cat) {
@@ -582,8 +605,8 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
 }
 
 function getValueFromCondition(condition) {
-    if (condition.type === "number")  return Number(condition.value);
-    if (condition.type === "bool")  return condition.value === "true";
+    if (condition.type === 'number')  return Number(condition.value);
+    if (condition.type === 'bool')  return condition.value === 'true';
     return condition.value;
 }
 

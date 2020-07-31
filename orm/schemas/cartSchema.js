@@ -134,7 +134,7 @@ CartSchema.virtual('delivery.price').get(function () {
     }
 });
 
-CartSchema.virtual("additionnalFees").get(function () {
+CartSchema.virtual('additionnalFees').get(function () {
     // const self = this;
     return {
         ati : Number(global.envConfig.stockOrder.additionnalFees.et + (global.envConfig.stockOrder.additionnalFees.et * (global.envConfig.stockOrder.additionnalFees.tax / 100))),
@@ -188,7 +188,7 @@ CartSchema.virtual('priceTotal').get(function () {
     return priceTotal;
 });
 
-CartSchema.virtual("priceSubTotal").get(function () {
+CartSchema.virtual('priceSubTotal').get(function () {
     // const self = this;
     const priceSubTotal = this.calculateBasicTotal();
 
@@ -240,7 +240,7 @@ CartSchema.post('findById', async function (doc, next) {
 aquilaEvents.emit('cartSchemaInit', CartSchema);
 
 async function updateCarts(update, id, next) {
-    const {Modules} = require("../models");
+    const {Modules} = require('../models');
     const _modules = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
         if (await fs.access(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {

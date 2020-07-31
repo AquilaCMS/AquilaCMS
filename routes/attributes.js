@@ -1,23 +1,23 @@
-const {Attributes}                = require("../orm/models");
-const servicesAttributes          = require("../services/attribute");
+const {Attributes}                = require('../orm/models');
+const servicesAttributes          = require('../services/attribute');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const utils                       = require('../utils/utils');
 const {middlewareServer}          = require('../middleware');
-const NSErrors                    = require("../utils/errors/NSErrors");
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post("/v2/attributes", getAllAttributes);
-    app.post("/v2/attribute", getAttribute);
-    app.put("/v2/attribute", authentication, adminAuth, saveAttribute);
-    app.delete("/v2/attribute/:_id", authentication, adminAuth, deleteAttribute);
+    app.post('/v2/attributes', getAllAttributes);
+    app.post('/v2/attribute', getAttribute);
+    app.put('/v2/attribute', authentication, adminAuth, saveAttribute);
+    app.delete('/v2/attribute/:_id', authentication, adminAuth, deleteAttribute);
 
     // Deprecated
-    app.get("/attributes", middlewareServer.deprecatedRoute, authentication, adminAuth, listClassed);
-    app.get("/attributes/fOne", middlewareServer.deprecatedRoute, authentication, adminAuth, listOrphans);
-    app.get("/attributes/:code", middlewareServer.deprecatedRoute, authentication, adminAuth, detail);
-    app.post("/attributes/fOne", middlewareServer.deprecatedRoute, authentication, adminAuth, fOne);
-    app.post("/attributes/", middlewareServer.deprecatedRoute, authentication, adminAuth, save);
-    app.delete("/attributes/:code", middlewareServer.deprecatedRoute, authentication, adminAuth, remove);
+    app.get('/attributes', middlewareServer.deprecatedRoute, authentication, adminAuth, listClassed);
+    app.get('/attributes/fOne', middlewareServer.deprecatedRoute, authentication, adminAuth, listOrphans);
+    app.get('/attributes/:code', middlewareServer.deprecatedRoute, authentication, adminAuth, detail);
+    app.post('/attributes/fOne', middlewareServer.deprecatedRoute, authentication, adminAuth, fOne);
+    app.post('/attributes/', middlewareServer.deprecatedRoute, authentication, adminAuth, save);
+    app.delete('/attributes/:code', middlewareServer.deprecatedRoute, authentication, adminAuth, remove);
 };
 
 async function getAllAttributes(req, res, next) {
@@ -71,7 +71,7 @@ const listClassed = async (req, res, next) => {
     }
 
     let populate_attributes;
-    if (where.populate === "true") {
+    if (where.populate === 'true') {
         populate_attributes = true;
         delete where.populate;
     }
@@ -87,7 +87,7 @@ const listClassed = async (req, res, next) => {
     if (populate_attributes) {
         result = await Attributes
             .find(where)
-            .populate("set_attributes")
+            .populate('set_attributes')
             .exec();
     } else {
         result = await Attributes

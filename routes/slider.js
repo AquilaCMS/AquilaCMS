@@ -1,17 +1,17 @@
 const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require("../middleware/authentication");
-const ServiceSlider               = require("../services/slider");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const ServiceSlider               = require('../services/slider');
 
 module.exports = function (app) {
-    app.post("/v2/sliders", getSliders);
-    app.post("/v2/slider", getSlider);
-    app.post("/v2/slider/:id", getSliderById);
-    app.put("/v2/slider", authentication, adminAuth, setSlider);
-    app.delete("/v2/slider/:id", authentication, adminAuth, deleteSlider);
+    app.post('/v2/sliders', getSliders);
+    app.post('/v2/slider', getSlider);
+    app.post('/v2/slider/:id', getSliderById);
+    app.put('/v2/slider', authentication, adminAuth, setSlider);
+    app.delete('/v2/slider/:id', authentication, adminAuth, deleteSlider);
     app.delete('/v2/slider/:_id/:_id_item', authentication, adminAuth, deleteItemSlider);
 
     // Deprecated
-    app.put("/v2/slider/:id/item", middlewareServer.deprecatedRoute, authentication, adminAuth, setItemSlider);
+    app.put('/v2/slider/:id/item', middlewareServer.deprecatedRoute, authentication, adminAuth, setItemSlider);
 };
 
 /**
@@ -96,7 +96,7 @@ async function deleteItemSlider(req, res, next) {
 * Fonction pour ajouter ou mettre à jour un item d'un slider
 */
 async function setItemSlider(req, res, next) {
-    require("../utils/utils").tmp_use_route("slider_api", "setItemSlider");
+    require('../utils/utils').tmp_use_route('slider_api', 'setItemSlider');
 
     try {
         const result = await ServiceSlider.setItemSlider(req.params.id, req.body);

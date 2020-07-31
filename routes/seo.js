@@ -1,16 +1,16 @@
-const {authentication} = require("../middleware/authentication");
-const seoServices = require("../services/seo");
+const {authentication} = require('../middleware/authentication');
+const seoServices = require('../services/seo');
 
 module.exports = function (app) {
-    app.post("/v2/seo/genSitemap", authentication, genSitemap);
-    app.get("/v2/seo/isDemoMode", isDemoMode);
+    app.post('/v2/seo/genSitemap', authentication, genSitemap);
+    app.get('/v2/seo/isDemoMode', isDemoMode);
 };
 
 async function genSitemap(req, res, next) {
     try {
         await seoServices.genSitemap();
         return res.status(200).json({
-            message : "SITEMAP_GENERATE_SUCCESS"
+            message : 'SITEMAP_GENERATE_SUCCESS'
         });
     } catch (err) {
         return next(err);

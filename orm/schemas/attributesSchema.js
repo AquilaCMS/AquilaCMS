@@ -13,7 +13,7 @@ const AttributesSchema = new Schema({
         default : 'products'
     },
     param          : {type: String, required: true},
-    set_attributes : [{type: ObjectId, ref: "setAttributes"}],
+    set_attributes : [{type: ObjectId, ref: 'setAttributes'}],
     position       : {type: Number, default: 1},
     default_value  : {},
     usedInRules    : {type: Boolean, default: true},
@@ -21,7 +21,7 @@ const AttributesSchema = new Schema({
     translation    : {}
 });
 
-AttributesSchema.static.translationValidation = async function (self) {
+AttributesSchema.statics.translationValidation = async function (self) {
     let errors = [];
 
     while (self.translation === undefined) {
@@ -40,13 +40,13 @@ AttributesSchema.static.translationValidation = async function (self) {
 
         if (Object.keys(lang).length > 0) {
             if (lang.name === undefined) {
-                errors.push("name manquant");
+                errors.push('name manquant');
             }
 
-            const {checkCustomFields} = require("../../utils/translation");
+            const {checkCustomFields} = require('../../utils/translation');
             errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
-                {key: "name"},
-                {key: "values", type: "object"}
+                {key: 'name'},
+                {key: 'values', type: 'object'}
             ]));
         }
     }
@@ -58,48 +58,48 @@ AttributesSchema.static.translationValidation = async function (self) {
  * Si un attribut est supprimé alors il faut reporter ces modifications dans les categories.filters.attributes et supprimer du tableau categories.filters.attributes
  * l'objet correspondant a l'attribut supprimé
  */
-AttributesSchema.post("remove", async function (doc, next) {
+AttributesSchema.post('remove', async function (doc, next) {
     try {
         // On supprime du tableau categorie.filters.attributes l'objet attribut correspondant à l'attribut venant d'être supprimé
         const {_id} = doc;
-        const {Categories} = require("../models");
-        await Categories.updateMany({"filters.attributes._id": _id}, {$pull: {"filters.attributes": {_id}}}, {new: true, runValidators: true});
+        const {Categories} = require('../models');
+        await Categories.updateMany({'filters.attributes._id': _id}, {$pull: {'filters.attributes': {_id}}}, {new: true, runValidators: true});
     } catch (error) {
         return next(error);
     }
 });
 
-AttributesSchema.pre("updateOne", async function (next) {
+AttributesSchema.pre('updateOne', async function (next) {
     utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
-AttributesSchema.pre("findOneAndUpdate", async function (next) {
+AttributesSchema.pre('findOneAndUpdate', async function (next) {
     utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 /**
  * Lorsqu'un attribut est modifié alors on reporte la modification dans categorie.filters.attributes qui est un tableau d'attribut
  */
-AttributesSchema.post("updateOne", async function ({next}) {
+AttributesSchema.post('updateOne', async function ({next}) {
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {
             const filters = {
-                "filters.attributes.$.position"    : attribute.position,
-                "filters.attributes.$.type"        : attribute.type,
-                "filters.attributes.$.translation" : attribute.translation
+                'filters.attributes.$.position'    : attribute.position,
+                'filters.attributes.$.type'        : attribute.type,
+                'filters.attributes.$.translation' : attribute.translation
             };
-            const {Categories} = require("../models");
-            await Categories.updateMany({"filters.attributes._id": attribute._id}, {$set: filters}, {new: true, runValidators: true});
+            const {Categories} = require('../models');
+            await Categories.updateMany({'filters.attributes._id': attribute._id}, {$set: filters}, {new: true, runValidators: true});
         }
     } catch (err) {
         return next(err);
     }
 });
 
-AttributesSchema.pre("save", async function (next) {
-    const errors = await AttributesSchema.static.translationValidation(this);
-    next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+AttributesSchema.pre('save', async function (next) {
+    const errors = await AttributesSchema.statics.translationValidation(this);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
 aquilaEvents.emit('attributesSchemaInit', AttributesSchema);

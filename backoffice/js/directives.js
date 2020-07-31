@@ -200,6 +200,14 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         // paste_auto_cleanup_on_paste: false,
                         // entity_encoding: "raw",
                         // apply_source_formatting : false,
+
+                        extended_valid_elements: "*[*]",//allow empty <a>-tag 
+                        
+                    // valid_children: "+h2[div],+a[div|h1|h2|h3|h4|h5|h6|p|#text], +div[h1|h2|h3|h4|h5|h6|p|#text], +body[style|link]",//allow some children in the <a>-tag 
+                        // valid_children: "+h2[div]",//allow some children in the <a>-tag 
+                        // verify_html: false,
+                        // cleanup:false,
+                        // allow_html_in_named_anchor: true,
                         entity_encoding: "named",
                         branding: false,
                         forced_root_block: false,
@@ -228,6 +236,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             + "ns-productcard:before{content:'ns-productcard'}"
                             + "ns-search:before{content:'ns-search'}"
                             + "ns-slider:before{content:'ns-slider'}"
+                            + "body { font-family: Arial }"
                         ,
                         toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link unlink | customAddImg | fullscreen preview | code',
                         fontsize_formats: '8px 10px 12px 14px 16px, 20px',
@@ -667,7 +676,6 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PARTIAL_PROGRESS";
                     $scope.statusObj.isDanger =
                         $scope.status === "CANCELED" ||
-                        $scope.status === "CANCELING" ||
                         $scope.status === "RETURNED";
                     $scope.statusObj.isBlue =
                         $scope.status === "DELIVERY_PROGRESS";
@@ -1126,8 +1134,23 @@ adminCatagenDirectives.directive("nsRule", [
                     {value: "lt", translate: "ns.lt"}
                 ];
 
+                $scope.operatorValidForCondition = function(operator, condition) {
+                    // ['number', 'date', 'bool'].indexOf(condition.type) !== -1
+                    if (condition === 'number') {
+                        if (['contains', 'ncontains', 'startswith', 'endswith'].indexOf(operator) !== -1) {
+                            return false;
+                        }
+                    } else if (condition === 'bool') {
+                        if (['contains', 'ncontains', 'startswith', 'endswith', 'gte', 'gt', 'lte', 'lt'].indexOf(operator) !== -1) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
                 $scope.getAttributes = function ()
                 {
+                    // on recup les univers
                     $scope.attributesClassed = [];
                     AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
                     {
@@ -1174,8 +1197,11 @@ adminCatagenDirectives.directive("nsRule", [
                                             name: "attr.translation." + langs[i].code + "." + element.code,
                                             type: type,
                                             params: {
-                                                values: values
-                                            }
+                                                values: values,
+                                                lang: langs[i].name,
+                                                attr: element.code
+                                            },
+                                            name: 'attr.translation'
                                         }
                                     );
                                 }
@@ -1185,137 +1211,165 @@ adminCatagenDirectives.directive("nsRule", [
                         {
                             $scope.attributesClassed.push(
                                 {
-                                    name: "translation." + langs[i].code + ".name",
+                                    value: "translation." + langs[i].code + ".name",
                                     type: "text",
-                                    params: {}
+                                    params: {
+                                        lang: langs[i].name
+                                    },
+                                    name: "translation_name"
                                 },
                                 {
-                                    name: "translation." + langs[i].code + ".slug",
+                                    value: "translation." + langs[i].code + ".slug",
                                     type: "text",
-                                    params: {}
+                                    params: {
+                                        lang: langs[i].name
+                                    },
+                                    name: "translation_slug"
                                 }
                             );
                         }
 
                         $scope.attributesClassed.push(
                             {
-                                name: "code",
+                                value: "code",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: 'code'
                             },
                             {
-                                name: "qty",
+                                value: "qty",
                                 type: "number",
-                                params: {}
+                                params: {},
+                                name: 'qty'
                             },
                             {
-                                name: "creationDate",
+                                value: "creationDate",
                                 type: "date",
-                                params: {}
+                                params: {},
+                                name: 'creationDate'
                             },
                             {
-                                name: "visible",
+                                value: "visible",
                                 type: "bool",
-                                params: {}
+                                params: {},
+                                name: 'visible'
                             },
                             {
-                                name: "active",
+                                value: "active",
                                 type: "bool",
-                                params: {}
+                                params: {},
+                                name: 'active'
                             },
                             {
-                                name: "price.et.normal",
+                                value: "price.et.normal",
                                 type: "number",
-                                params: {}
+                                params: {},
+                                name: 'price_et_normal'
                             },
                             {
-                                name: "price.ati.normal",
+                                value: "price.ati.normal",
                                 type: "number",
-                                params: {}
+                                params: {},
+                                name: "price_ati_normal"
                             },
                             {
-                                name: "price.et.special",
+                                value: "price.et.special",
                                 type: "number",
-                                params: {}
+                                params: {},
+                                name: "price_et_special"
                             },
                             {
-                                name: "price.ati.special",
+                                value: "price.ati.special",
                                 type: "number",
-                                params: {}
+                                params: {},
+                                name: 'price_ati_special'
                             },
                             {
-                                name: "type",
+                                value: "type",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: 'type'
                             },
                             {
-                                name: "is_new",
+                                value: "is_new",
                                 type: "bool",
-                                params: {}
+                                params: {},
+                                name: 'is_new'
                             },
                             {
-                                name: "family",
+                                value: "family",
                                 type: "select",
                                 params: {
                                     type: "family"
-                                }
+                                },
+                                name: 'family'
                             },
                             {
-                                name: "subfamily",
+                                value: "subfamily",
                                 type: "select",
                                 params: {
                                     type: "subfamily"
-                                }
+                                },
+                                name: 'subfamily'
                             },
                             {
-                                name: "universe",
+                                value: "universe",
                                 type: "select",
                                 params: {
                                     type: "universe"
-                                }
+                                },
+                                name: 'universe'
                             },
                             {
-                                name: "_id",
+                                value: "_id",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: '_id'
                             },
                             {
-                                name: "trademark",
+                                value: "trademark",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: 'trademark'
                             },
                             {
-                                name: "supplier_ref",
+                                value: "supplier_ref",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: 'supplier_ref'
                             },
                             {
-                                name: "client._id",
+                                value: "client._id",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: "client__id"
                             },
                             {
-                                name: "client.type",
+                                value: "client.type",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: "client_type"
                             },
                             {
-                                name: "categorie.code",
+                                value: "categorie.code",
                                 type: "text",
-                                params: {}
+                                params: {},
+                                name: 'categorie_code'
                             }
                         );
                         if($scope.typePromo === "1") {
                             $scope.attributesClassed.push(
                                 {
-                                    name: "panier.priceTotal.et",
+                                    value: "panier.priceTotal.et",
                                     type: "number",
-                                    params: {}
+                                    params: {},
+                                    name: "panier_priceTotal_et"
                                 },
                                 {
-                                    name: "panier.priceTotal.ati",
+                                    value: "panier.priceTotal.ati",
                                     type: "number",
-                                    params: {}
+                                    params: {},
+                                    name: "panier_priceTotal_ati"
                                 }
                             )
                         }
@@ -1360,11 +1414,14 @@ adminCatagenDirectives.directive("nsRule", [
                                     }
                                     $scope.attributesClassed.push(
                                         {
-                                            name: "client.attr.translation." + langs[i].code + "." + element.code,
+                                            value: "client.attr.translation." + langs[i].code + "." + element.code,
                                             type: type,
                                             params: {
-                                                values: values
-                                            }
+                                                values: values,
+                                                lang: langs[i].name,
+                                                attr: element.code
+                                            },
+                                            name: "client_attr_translation"
                                         }
                                     );
                                 }
@@ -1375,9 +1432,12 @@ adminCatagenDirectives.directive("nsRule", [
                         {
                             $scope.attributesClassed.push(
                                 {
-                                    name: "categorie.translation." + langs[i].code + ".slug",
+                                    value: "categorie.translation." + langs[i].code + ".slug",
                                     type: "text",
-                                    params: {}
+                                    params: {
+                                        lang: langs[i].name
+                                    },
+                                    name: "categorie_translation_slug"
                                 }
                             );
                         }
@@ -1663,7 +1723,7 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     return function (field)
                     {
-                        if(rule && rule.owner_type && rule.owner_type.startsWith("parent_cart_") && field.name.startsWith("panier.qte_min"))
+                        if(rule && rule.owner_type && rule.owner_type.startsWith("parent_cart_") && field.value.startsWith("panier.qte_min"))
                         {
                             return false;
                         }
@@ -1674,7 +1734,7 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     var attr = $scope.attributesClassed.find(function (element)
                     {
-                        return element.name === target;
+                        return element.value === target;
                     });
                     if(attr)
                     {
@@ -1709,22 +1769,20 @@ adminCatagenDirectives.directive("nsRule", [
                             });
                         }
 
-                        if(attr.type === "select" || attr.type === "multiselect")
-                        {
-                            if(attr.type && attr.name === attr.type)
+                        if((['family', 'subfamily', 'universe']).includes(attr.value)) {
+                            FamilyV2.list({PostBody: {filter: {type: attr.value}, limit: 99, structure: '*'}}, function ({datas})
                             {
-                                FamilyV2.list({PostBody: {filter: {type: attr.type}, limit: 99, structure: '*'}}, function ({datas})
-                                {
-                                    $scope.families[attr.name] = datas;
-                                });
-                            }
-                            else if(attr.params.values && attr.params.values.length > 0)
+                                $scope.families[attr.value] = datas;
+                            });
+                        } else if(attr.type === "select" || attr.type === "multiselect")
+                        {
+                            if(attr.params.values && attr.params.values.length > 0)
                             {
                                 if(attr.type === "multiselect")
                                 {
                                     $scope.rule.conditions[index].attr = "multi";
                                 }
-                                $scope.values[attr.name] = attr.params.values;
+                                $scope.values[attr.value] = attr.params.values;
                             }
                         }
 

@@ -62,7 +62,7 @@
             "other" : "Other",
             "theme" : "Theme",
             "third-party-auth": "Third party Auth",
-            "nextjs": "Next",
+            "nextjs": "NextJS",
             "maintenance": "Maintenance"
         },
         "cache": "Cache of requests",

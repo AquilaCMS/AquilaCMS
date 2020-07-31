@@ -1,12 +1,12 @@
 const crypto           = require('crypto');
-const autoIncrement    = require("mongoose-plugin-autoinc-fix");
+const autoIncrement    = require('mongoose-plugin-autoinc-fix');
 const mongoose         = require('mongoose');
-const ItemBundleSchema = require("./itemBundleSchema");
-const ItemSchema       = require("./itemSchema");
-const ItemSimpleSchema = require("./itemSimpleSchema");
-const AddressSchema    = require("./addressSchema");
+const ItemBundleSchema = require('./itemBundleSchema');
+const ItemSchema       = require('./itemSchema');
+const ItemSimpleSchema = require('./itemSimpleSchema');
+const AddressSchema    = require('./addressSchema');
 
-const aquilaEvents     = require("../../utils/aquilaEvents");
+const aquilaEvents     = require('../../utils/aquilaEvents');
 
 const Schema           = mongoose.Schema;
 const ObjectId         = Schema.ObjectId;
@@ -41,7 +41,7 @@ const BillsSchema = new Schema({
         name : String
     },
     promos : {
-        promoId     : {type: ObjectId, ref: "promo"},
+        promoId     : {type: ObjectId, ref: 'promo'},
         promoCodeId : {type: ObjectId}, // L'id d'un promo.codes[i].code
         discountATI : {type: Number, default: null},
         discountET  : {type: Number, default: null},
@@ -61,15 +61,15 @@ const BillsSchema = new Schema({
     priceSubTotal   : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}}
 });
 
-const docArray = BillsSchema.path("items");
+const docArray = BillsSchema.path('items');
 
-docArray.discriminator("simple", ItemSimpleSchema);
-docArray.discriminator("bundle", ItemBundleSchema);
+docArray.discriminator('simple', ItemSimpleSchema);
+docArray.discriminator('bundle', ItemBundleSchema);
 
-BillsSchema.plugin(autoIncrement.plugin, {model: "bills", field: "id", startAt: 1});
+BillsSchema.plugin(autoIncrement.plugin, {model: 'bills', field: 'id', startAt: 1});
 
-BillsSchema.pre("save", async function (next) {
-    if (!this.facture || this.facture === "" || this.facture === "unset") {
+BillsSchema.pre('save', async function (next) {
+    if (!this.facture || this.facture === '' || this.facture === 'unset') {
         const config = global.envConfig.environment;
         if (config.billsPattern && config.billsPattern !== '') {
             this.facture = config.billsPattern.replace('{year}', new Date().getFullYear())

@@ -1,12 +1,12 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
-const serviceThemeConfig = require("../services/themeConfig");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const serviceThemeConfig = require('../services/themeConfig');
 
 // Fichier themeConfig.json à la racine des thèmes
 
 module.exports = function (app) {
-    app.post("/v2/themeConfig", getThemeConfig);
-    app.get("/v2/themeConfig/:key", getThemeConfigByKey);
-    app.put("/v2/themeConfig", authentication, adminAuth, setThemeConfig);
+    app.post('/v2/themeConfig', getThemeConfig);
+    app.get('/v2/themeConfig/:key', getThemeConfigByKey);
+    app.put('/v2/themeConfig', authentication, adminAuth, setThemeConfig);
 };
 
 async function getThemeConfig(req, res, next) {

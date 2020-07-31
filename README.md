@@ -1,4 +1,7 @@
-![AquilaCMS](https://www.aquila-cms.com/medias/AquilaCMS.png)
+<p style="text-align:center">
+    <img src="https://www.aquila-cms.com/medias/AquilaCMS.png" alt="Aquila-CMS ecommerce Javascript" style="max-width:50%">
+</p>
+
 ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/667b93cac0264970bec4e656628e82b3)](https://www.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade)
 
@@ -13,6 +16,12 @@
 To install the latest AquilaCMS, you need a web server running node.js 12.18.1+ and mongoDB 4.2.5+.
 The package manager yarn 1.22.4+ is required.
 
+### System packages
+
+You must verify that you have these packages installed on your OS :
+g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nasm wkhtmltopdf vips vips-dev libjpeg-turbo libjpeg-turbo-dev
+
+On Windows you must download wkhtmltopdf : https://wkhtmltopdf.org/downloads.html and libvips : https://github.com/libvips/libvips/releases (beware of 32 or 64 bits versions)
 
 ## Installation
 
@@ -41,4 +50,4 @@ You can edit this file manually, an example of the different possible properties
 
 
 ## License
-AquilaCMS is licensed under OSL3.
+AquilaCMS is licensed under OSL3. 

@@ -1,14 +1,14 @@
 // const isEmail  = require('validator').isEmail;
 const mongoose = require('mongoose');
-const {checkCustomFields} = require("../../utils/translation");
+const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
 const Schema   = mongoose.Schema;
 
 const MailSchema = new Schema({
     code        : {type: String, required: true, unique: true},
-    type        : {type: String, default: "", index: true}, // jointure entre type et code dans mail_type
+    type        : {type: String, default: '', index: true}, // jointure entre type et code dans mail_type
     from        : {type: String, trim: true, required: true/* , validate: [{validator: (value) => isEmail(value), msg: 'Invalid email.'}] */}, // adresse mail d'envoi
-    fromName    : {type: String, default: ""},
+    fromName    : {type: String, default: ''},
     translation : {}
 }, {timestamps: true});
 
@@ -21,7 +21,7 @@ MailSchema.statics.translationValidation = async function (updateQuery, self) {
         }
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
-            const lang = await mongoose.model("languages").findOne({defaultLanguage: true});
+            const lang = await mongoose.model('languages').findOne({defaultLanguage: true});
             self.translation[lang.code] = {};
             translationKeys = Object.keys(self.translation);
         }
@@ -31,7 +31,7 @@ MailSchema.statics.translationValidation = async function (updateQuery, self) {
                 self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
             }
             errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
-                {key: "content"}, {key: "subject"}
+                {key: 'content'}, {key: 'subject'}
             ]));
         }
         if (updateQuery) {
@@ -42,16 +42,16 @@ MailSchema.statics.translationValidation = async function (updateQuery, self) {
     return errors;
 };
 
-MailSchema.pre("updateOne", async function (next) {
+MailSchema.pre('updateOne', async function (next) {
     utilsDatabase.preUpdates(this, next, MailSchema);
 });
-MailSchema.pre("findOneAndUpdate", async function (next) {
+MailSchema.pre('findOneAndUpdate', async function (next) {
     utilsDatabase.preUpdates(this, next, MailSchema);
 });
 
-MailSchema.pre("save", async function (next) {
+MailSchema.pre('save', async function (next) {
     const errors = await MailSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
 module.exports = MailSchema;

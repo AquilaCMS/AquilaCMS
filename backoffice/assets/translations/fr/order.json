@@ -12,7 +12,6 @@
         "DELIVERY_PROGRESS":"Expédié",
         "DELIVERY_PARTIAL_PROGRESS":"Expédié partiel",
         "FINISHED":"Traité",
-        "CANCELLING":"En cours d'annulation",
         "CANCELED":"Annulé",
         "ASK_CANCEL":"Annulation demandé par le client",
         "RETURNED":"Retour"
@@ -90,7 +89,8 @@
         "country": "Pays",
         "modifyAddress":"Modifier l'adresse",
         "save":"Sauvegarder",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "transactionId": "ID de la transaction"
     },
     "list": {
         "t1": "Commandes",
@@ -113,7 +113,8 @@
         "date": "Date",
         "prixTTC": "Montant TTC",
         "nom": "Nom",
-        "mail": "Email"
+        "mail": "Email",
+        "export": "Exportation"
     },
     "list2": {
         "priceTotal": {

@@ -1,8 +1,8 @@
-const {Territory}      = require("../orm/models");
+const {Territory}      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
-const defaultFields    = ["*"];
+const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Territory, restrictedFields, defaultFields);
 
 exports.getTerritories = async function (PostBody) {
@@ -31,10 +31,10 @@ exports.setTerritory = async function (territory) {
     if (territory._id) {
         delete territory._id;
     }
-    territory.type = "country";
+    territory.type = 'country';
     territory.children = [];
 
-    if (typeof _id === "undefined") {
+    if (typeof _id === 'undefined') {
         await Territory.create(territory);
     } else {
         await Territory.updateOne({_id}, territory);

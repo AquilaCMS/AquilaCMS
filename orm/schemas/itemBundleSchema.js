@@ -12,7 +12,7 @@ const ItemBundle = new Schema({
 });
 
 ItemBundle.methods.decreaseStock = async function (cartId, cb) {
-    const BundleProduct = require("../models/productBundle");
+    const BundleProduct = require('../models/productBundle');
     try {
         const _product = await BundleProduct.findOneAndUpdate(
             {
@@ -29,7 +29,7 @@ ItemBundle.methods.decreaseStock = async function (cartId, cb) {
                 }
             }
         );
-        if (!_product) return cb({code: 'INADEQUATE_INVENTORY', message: "Inventaire inadéquat."});
+        if (!_product) return cb({code: 'INADEQUATE_INVENTORY', message: 'Inventaire inadéquat.'});
         return cb();
     } catch (err) {
         return cb(err);
@@ -37,7 +37,7 @@ ItemBundle.methods.decreaseStock = async function (cartId, cb) {
 };
 
 ItemBundle.methods.rollbackStock = async function (cb) {
-    const BundleProduct = require("../models/productBundle");
+    const BundleProduct = require('../models/productBundle');
     try {
         await BundleProduct.updateOne({_id: this.id}, {$inc: this.quantity});
         return cb();
@@ -47,7 +47,7 @@ ItemBundle.methods.rollbackStock = async function (cb) {
 };
 
 ItemBundle.methods.populateItem = async function () {
-    const {Products} = require("../models");
+    const {Products} = require('../models');
     const self = this;
     for (const selection of self.selections) {
         for (const [index, _product] of Object.entries(selection.products)) {

@@ -262,10 +262,10 @@ async function updateAddresses(req, res, next) {
     try {
         const {addresses, delivery_address, billing_address, userId} = req.body;
         if (delivery_address > -1 && !addresses[delivery_address]) {
-            return res.status(400).send({code: 'NOT_VALID_ADDRESS', message: "L'adresse de livraison est invalide."});
+            return res.status(400).send({code: 'NOT_VALID_ADDRESS', message: 'L\'adresse de livraison est invalide.'});
         }
         if (billing_address > -1 && !addresses[billing_address]) {
-            return res.status(400).send({code: 'NOT_VALID_ADDRESS', message: "L'adresse de facturation est invalide."});
+            return res.status(400).send({code: 'NOT_VALID_ADDRESS', message: 'L\'adresse de facturation est invalide.'});
         }
         const user = await Users.findOneAndUpdate({_id: userId}, {addresses, delivery_address, billing_address}, {new: true});
         if (!user) throw NSErrors.UserNotFound;
@@ -313,7 +313,7 @@ async function save(req, res, next) {
     const newData = req.body;
     // eslint-disable-next-line no-useless-escape
     if (newData.email === undefined || !new RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i).test(newData.email)) {
-        return res.status(400).send({message: "L'adresse email n'est pas valide."});
+        return res.status(400).send({message: 'L\'adresse email n\'est pas valide.'});
     }
 
     // if (!utils.validatePassword(newData.password)) {
@@ -381,7 +381,7 @@ async function update(req, res, next) {
         const existingUser = await Users.findOne({email: data.email});
 
         if (existingUser != null && existingUser._id.toString() !== data._id.toString() && existingUser.email === data.email) {
-            res.status(403).send({msg: "Cet email est déjà utilisé, merci d'en choisir un autre"});
+            res.status(403).send({msg: 'Cet email est déjà utilisé, merci d\'en choisir un autre'});
         } else {
             delete data.isAdmin;
             if (data.type === '') {

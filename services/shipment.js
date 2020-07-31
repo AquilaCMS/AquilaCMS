@@ -1,8 +1,8 @@
 const mongoose          = require('mongoose');
 const moment            = require('moment');
-const {Shipments, Cart} = require("../orm/models");
+const {Shipments, Cart} = require('../orm/models');
 const QueryBuilder      = require('../utils/QueryBuilder');
-const NSErrors          = require("../utils/errors/NSErrors");
+const NSErrors          = require('../utils/errors/NSErrors');
 
 const restrictedFields  = [];
 const defaultFields     = ['_id', 'code', 'url', 'url_logo'];
@@ -29,9 +29,9 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
     }
     if (PostBody) {
         PostBody.filter = {...PostBody.filter, countries: {$elemMatch: {country: withoutCountry}}};
-        PostBody.structure = {...PostBody.structure, countries: 1, preparation: 1};
+        PostBody.structure = {...PostBody.structure, countries: 1, preparation: 1, freePriceLimit: 1};
     } else {
-        PostBody = {filter: {countries: {$elemMatch: {country: withoutCountry}}}, limit: 99, structure: {countries: 1, preparation: 1}};
+        PostBody = {filter: {countries: {$elemMatch: {country: withoutCountry}}}, limit: 99, structure: {countries: 1, preparation: 1, freePriceLimit: 1}};
     }
     if (withoutCountry) {
         const price = 0;
@@ -60,7 +60,7 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
     }
     let shipments = [];
     if (cart.addresses && cart.addresses.delivery && cart.addresses.delivery.isoCountryCode) {
-        PostBody.filter = {...PostBody.filter, active: true, countries: {$elemMatch: {country: cart.addresses.delivery.isoCountryCode}}};
+        PostBody.filter = {...PostBody.filter, $or: [{active: true}, {active: {$exists: false}}], countries: {$elemMatch: {country: cart.addresses.delivery.isoCountryCode}}};
         shipments = (await getShipments(PostBody)).datas;
     }
     const returnShipments = [];

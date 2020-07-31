@@ -124,9 +124,7 @@ adminCatagenFilters.filter('btdate', function() {
 
 adminCatagenFilters.filter('orderStatus', ['NSConstants', function(NSConstants) {
   return function (item, lang = "fr") {
-      let canceling = { translation: { fr: { code: 'CANCELING', name: "En cours d'annulation" }, en: { code: 'CANCELING', name: "Being cancelled"}}}
-      var allStatus = NSConstants.orderStatus.translation[lang].concat([canceling.translation[lang]]);
-      // var allStatus = NSConstants.orderStatus.translation.en.concat([{ code: 'CANCELING', name: "Being cancelled."}]);
+      var allStatus = NSConstants.orderStatus.translation[lang];
       var status = allStatus.find(function(status){
           return status.code == item;
       });
@@ -241,4 +239,17 @@ adminCatagenFilters.filter('ouiNon', function() {
   return function(input) {
     return input ? 'Oui' : 'Non';
   };
+});
+
+// filtre cutome pour les groupements de CMSs/Statiques/Medias
+adminCatagenFilters.filter('filterListGeneral', function() {
+  return function(models, value) {
+    // si c'est un object, on trie par la clé "group" à la racine de l'object
+    if(typeof models === 'object') {    
+      return models.filter(model => model && (model.group === value || (value === "general" && (model.group === '' || model.group === null || model.group === 'general'))));
+      // si c'est un string, on tri directement par le string
+    } else if(typeof models === 'string') {     
+      return models.filter(model => model && (model === value || (value === "general" && (model === '' || model === null || model === 'general'))));
+    }
+  }
 });

@@ -1,24 +1,24 @@
-const glob           = require("glob");
-const fs             = require("fs");
+const glob           = require('glob');
+const fs             = require('fs');
 const {deleteFolder} = require('../utils/utils');
 const utilsModules   = require('../utils/modules');
 
 const flush = () => {
     global.cache.flush();
-    return "Cache flushed";
+    return 'Cache flushed';
 };
 
 /**
  * @param subfolder : ex: "/medias"
  */
 const cleanCache = async (subfolder = undefined) => {
-    let cacheFolder = `cache`;
+    let cacheFolder = 'cache';
     if (subfolder) {
         cacheFolder += subfolder;
     }
 
     await deleteFolder(cacheFolder);
-    console.log("TCL: services -> utils -> cleanCache ok");
+    console.log('TCL: services -> utils -> cleanCache ok');
 };
 
 const deleteCacheImage = (type, datas) => {
@@ -68,9 +68,9 @@ function deleteFileCache(filePathCache) {
 }
 
 const cacheSetting = () => {
-    const CacheService = require("../utils/CacheService");
+    const CacheService = require('../utils/CacheService');
     const cacheTTL = global.envConfig.cacheTTL ? global.envConfig.cacheTTL : 0;
-    utilsModules.modulesLoadFunctions("useCacheModule", {cacheTTL}, () => {
+    utilsModules.modulesLoadFunctions('useCacheModule', {cacheTTL}, () => {
         global.cache = new CacheService(cacheTTL);
     });
 };
@@ -86,7 +86,7 @@ const getChar = (string, index) => {
             return string[index];
         }
     }
-    return "_";
+    return '_';
 };
 
 module.exports = {

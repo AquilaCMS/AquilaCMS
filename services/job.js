@@ -1,7 +1,7 @@
 const Agenda      = require('agenda');
 const axios       = require('axios');
 const mongoose    = require('mongoose');
-const NSErrors    = require("../utils/errors/NSErrors");
+const NSErrors    = require('../utils/errors/NSErrors');
 /** @type {Agenda} */
 let agenda;
 
@@ -37,27 +37,27 @@ const initAgendaDB = () => {
             if (!tJobsName.includes(tJobsSystem[i])) {
                 try {
                     if (tJobsSystem[i] === 'Sitemap') {
-                        await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Segmentation cat') {
-                        await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', 'Catégorisation automatique', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', 'Catégorisation automatique', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Segmentation picto') {
-                        await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', 'Pictorisation automatique', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', 'Pictorisation automatique', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Canonicalisation') {
-                        await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', 'Genère les canonicals de chaque produit', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', 'Genère les canonicals de chaque produit', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Remove old carts') {
-                        await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', 'Suppression ancien panier', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', 'Suppression ancien panier', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Remove pending payment orders') {
-                        await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', 'Annulation des commandes en attente de paiement', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', 'Annulation des commandes en attente de paiement', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Cohérence produits') {
-                        await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', 'Script de cohérence des produits', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', 'Script de cohérence des produits', 'service', 'system', '', true);
                     /* } else if (tJobsSystem[i] === 'Cohérence données') {
                     await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', "service", 'system', '', true);
                 */ } else if (tJobsSystem[i] === 'Build stats') {
-                        await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', 'Construction des stats de la veille', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', 'Construction des stats de la veille', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Cache requests clean') {
-                        await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', 'Vide le cache des requêtes', "service", 'system', '', true);
+                        await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', 'Vide le cache des requêtes', 'service', 'system', '', true);
                     } else if (tJobsSystem[i] === 'Clean cache') {
-                        await setJob(undefined, tJobsSystem[10], "0 0 0 0 0", "/services/cache/cleanCache", "Vide le cache des images", "service", "user", "", true, "");
+                        await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', 'Vide le cache des images', 'service', 'user', '', true, '');
                     }
                 } catch (error) {
                     console.error(error);
@@ -149,7 +149,7 @@ function agendaDefine(name) {
  * @param {String} [lastExecutionResult=""] default value : "" - le resultat du dernier run du cron
  * @param {Boolean} [fromServer=false] default value : false - si setJob est executé par le serveur ou par le client (depuis une route)
  */
-const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = "") => {
+const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = '') => {
     let query;
     if (_id) query = {_id: mongoose.Types.ObjectId(_id)};
     else query = {name};
