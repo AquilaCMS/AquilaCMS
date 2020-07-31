@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {TerritorySchema} = require("../schemas");
+const {TerritorySchema} = require('../schemas');
 
-module.exports = mongoose.model("territory", TerritorySchema);
+module.exports = mongoose.model('territory', TerritorySchema);

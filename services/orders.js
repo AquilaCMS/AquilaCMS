@@ -1,4 +1,4 @@
-const moment           = require("moment");
+const moment           = require('moment');
 const {
     Orders,
     Cart,
@@ -7,20 +7,20 @@ const {
     PaymentMethods,
     Territory,
     Bills
-}                      = require("../orm/models");
-const QueryBuilder     = require("../utils/QueryBuilder");
-const aquilaEvents     = require("../utils/aquilaEvents");
-const ServiceMail      = require("./mail");
-const ServiceAuth      = require("./auth");
-const ServicePromo     = require("./promo");
-const ServiceCart      = require("./cart");
-const ServicesProducts = require("./products");
-const NSErrors         = require("../utils/errors/NSErrors");
+}                      = require('../orm/models');
+const QueryBuilder     = require('../utils/QueryBuilder');
+const aquilaEvents     = require('../utils/aquilaEvents');
+const ServiceMail      = require('./mail');
+const ServiceAuth      = require('./auth');
+const ServicePromo     = require('./promo');
+const ServiceCart      = require('./cart');
+const ServicesProducts = require('./products');
+const NSErrors         = require('../utils/errors/NSErrors');
 const restrictedFields = [];
-const defaultFields    = ["*"];
+const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Orders, restrictedFields, defaultFields);
 
-aquilaEvents.on("aqUpdateStatusOrder", async (fields, orderId, stringDate = undefined) => {
+aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
             const _order = await Orders.findOne({_id: orderId, historyStatus: {$exists: true}});
@@ -33,7 +33,7 @@ aquilaEvents.on("aqUpdateStatusOrder", async (fields, orderId, stringDate = unde
             }
             await Orders.findOneAndUpdate({_id: orderId}, {$push: {historyStatus}}, {upsert: true, new: true});
         }
-        await Orders.updateOne({_id: orderId, status: "DELIVERY_PROGRESS"}, {$set: {"items.$[].status": "DELIVERY_PROGRESS"}});
+        await Orders.updateOne({_id: orderId, status: 'DELIVERY_PROGRESS'}, {$set: {'items.$[].status': 'DELIVERY_PROGRESS'}});
     }
 });
 
@@ -73,7 +73,7 @@ const setStatus = async (_id, status, sendMail = true) => {
         return;
     }
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
-    if (order.status !== "PAYMENT_PENDING" && order.status !== "CANCELED" && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
+    if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
         // On supprime le panier sauf si la commande est en attente de paiement ou annulée
         await Orders.updateOne({_id}, {cartId: null});
         await Cart.deleteOne({_id: order.cartId});
@@ -85,7 +85,7 @@ const setStatus = async (_id, status, sendMail = true) => {
             console.error(error);
         }
     }
-    if (!(["PAYMENT_CONFIRMATION_PENDING", "PAYMENT_RECEIPT_PENDING", "PAID"]).includes(order.status) && sendMail) {
+    if (!(['PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAID']).includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderStatusEdit(_id);
         } catch (error) {
@@ -95,17 +95,17 @@ const setStatus = async (_id, status, sendMail = true) => {
 };
 
 const paymentSuccess = async (query, updateObject) => {
-    console.log("service order paymentSuccess()");
+    console.log('service order paymentSuccess()');
 
     try {
         const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
-            throw new Error("La commande est introuvable ou n'est pas en attente de paiement.");
+            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
         const paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
         // Mode de paiement immédiat (ex: carte bancaire)
         if (!paymentMethod.isDeferred) {
-            await setStatus(_order._id, "PAID");
+            await setStatus(_order._id, 'PAID');
             try {
                 await ServiceMail.sendMailOrderToCompany(_order._id);
             } catch (e) {
@@ -119,7 +119,7 @@ const paymentSuccess = async (query, updateObject) => {
         }
         // On verifie que les produits du panier soient bien commandable
         const {bookingStock} = global.envConfig.stockOrder;
-        if (bookingStock === "payment") {
+        if (bookingStock === 'payment') {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
                 const _product = await Products.findOne({_id: orderItem.id});
@@ -135,7 +135,7 @@ const paymentSuccess = async (query, updateObject) => {
                         for (let k = 0; k < section.products.length; k++) {
                             const productId = section.products[k];
                             const _product_section = await Products.findOne({_id: productId.id});
-                            if (_product_section.type === "simple") {
+                            if (_product_section.type === 'simple') {
                                 if ((_product_section.stock.orderable) === false) {
                                     throw NSErrors.ProductNotOrderable;
                                 }
@@ -146,10 +146,12 @@ const paymentSuccess = async (query, updateObject) => {
                 }
             }
         }
-        aquilaEvents.emit("aqPaymentReturn", _order._id);
+        aquilaEvents.emit('aqPaymentReturn', _order._id);
         return _order;
     } catch (err) {
-        console.error(`La commande est introuvable:\n query: ${query}\n err:${err}`);
+        console.error('La commande est introuvable:');
+        console.error('query:', JSON.stringify(query, null, 4));
+        console.error('err: ', err);
         throw err;
     }
 };
@@ -159,20 +161,27 @@ const cancelOrder = async (orderId) => {
         _id    : orderId,
         status : {
             $in : [
-                "PAYMENT_PENDING",
-                "PAYMENT_RECEIPT_PENDING",
-                "PAYMENT_CONFIRMATION_PENDING",
-                "PAID"
+                'PAYMENT_PENDING',
+                'PAYMENT_RECEIPT_PENDING',
+                'PAYMENT_CONFIRMATION_PENDING',
+                'PAID',
+                'PROCESSING',
+                'PROCESSED',
+                'DELIVERY_PROGRESS',
+                'DELIVERY_PARTIAL_PROGRESS',
+                'FINISHED',
+                'RETURNED',
+                'ASK_CANCEL'
             ]
         }
     });
     if (!order) {
-        return {code: "NOT_CANCELABLE"};
+        throw NSErrors.OrderNotCancelable;
     }
-    await setStatus(orderId, 'CANCELED', order.status !== "PAYMENT_PENDING");
+    await setStatus(orderId, 'CANCELED', order.status !== 'PAYMENT_PENDING');
 
     if (global.envConfig.stockOrder.bookingStock !== 'none') {
-        aquilaEvents.emit("aqCancelOrder", order);
+        aquilaEvents.emit('aqCancelOrder', order);
     }
 };
 
@@ -180,8 +189,8 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: "PAYMENT_PENDING", creationDate: {$lt: dateAgo}})
-        .select("_id")
+    return Orders.find({status: 'PAYMENT_PENDING', creationDate: {$lt: dateAgo}})
+        .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
                 await cancelOrder(_order._id);
@@ -192,13 +201,13 @@ const cancelOrders = () => {
 const rma = async (orderId, returnData) => {
     const upd = {rma: returnData};
 
-    if (returnData.refund > 0 && returnData.mode !== "") {
+    if (returnData.refund > 0 && returnData.mode !== '') {
         upd.payment = {
-            type          : "DEBIT",
-            status        : "DONE",
+            type          : 'DEBIT',
+            status        : 'DONE',
             operationDate : Date.now(),
             mode          : returnData.mode,
-            transactionId : "",
+            transactionId : '',
             amount        : returnData.refund,
             comment       : returnData.comment
         };
@@ -219,10 +228,10 @@ const rma = async (orderId, returnData) => {
             // on check si on gere le stock
             if (global.envConfig.stockOrder.bookingStock !== 'none' && returnData.in_stock) {
                 const _product = await Products.findOne({_id: rmaProduct.product_id});
-                if (_product.type === "simple") {
+                if (_product.type === 'simple') {
                     // On incremente la quantité
                     await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0);
-                } else if (_product.type === "bundle") {
+                } else if (_product.type === 'bundle') {
                     for (let i = 0; i < rmaProduct.selections.length; i++) {
                         const selectionProducts = rmaProduct.selections[i].products;
                         // on incremente la quantité de chaque produit de chaque section
@@ -238,13 +247,13 @@ const rma = async (orderId, returnData) => {
         }
     }
 
-    _order = setItemStatus(_order, returnPrds, "RETURNED", "RETURNED_PARTIAL");
+    _order = setItemStatus(_order, returnPrds, 'RETURNED', 'RETURNED_PARTIAL');
 
     const historyStatus  = {};
     historyStatus.date   = new Date();
-    historyStatus.status = "RETURNED";
+    historyStatus.status = 'RETURNED';
     _order.historyStatus.push(historyStatus);
-    _order.status = "RETURNED";
+    _order.status = 'RETURNED';
 
     await _order.save();
 
@@ -256,7 +265,7 @@ const rma = async (orderId, returnData) => {
         nom         : _order.addresses.billing.lastname,
         prenom      : _order.addresses.billing.firstname,
         societe     : _order.addresses.billing.companyName,
-        coordonnees : `${_order.addresses.billing.line1 + (_order.addresses.billing.line2 ? ` ${_order.addresses.billing.line2}` : "")}, ${_order.addresses.billing.zipcode} ${_order.addresses.billing.city + (_order.addresses.billing.country ? `, ${_order.addresses.billing.country}` : "")}`,
+        coordonnees : `${_order.addresses.billing.line1 + (_order.addresses.billing.line2 ? ` ${_order.addresses.billing.line2}` : '')}, ${_order.addresses.billing.zipcode} ${_order.addresses.billing.city + (_order.addresses.billing.country ? `, ${_order.addresses.billing.country}` : '')}`,
         email       : _order.customer.email,
         paymentDate : new Date(),
         isPaid      : true,
@@ -284,7 +293,7 @@ const rma = async (orderId, returnData) => {
         checksum      : undefined,
         priceSubTotal : {ati: returnData.refund, et: returnData.refund - (returnData.refund * returnData.tax / 100)},
         avoir         : true,
-        facture       : "unset"
+        facture       : 'unset'
     };
 
     data.items = _order.items.filter((item) => returnData.products.find((prd) => prd.product_id === item.id.toString()));
@@ -309,9 +318,9 @@ const rma = async (orderId, returnData) => {
             articles.push(`${returnedPrd.translation[_order.lang].name} (${returnData.products[i].qty_returned})`);
         }
 
-        datas.articles = articles.join(", ");
+        datas.articles = articles.join(', ');
 
-        await ServiceMail.sendGeneric("rmaOrder", _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
+        await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
 };
 
@@ -340,7 +349,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
             console.error(error);
         } */
     }
-    aquilaEvents.emit("aqPaymentReturn", _order._id);
+    aquilaEvents.emit('aqPaymentReturn', _order._id);
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {
@@ -397,7 +406,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 // Puis les produits des sections
                 for (let k = 0; k < products[i].selections[j].products.length; k++) {
                     // On vérifie que le produit existe, est visible et est actif
-                    const prd = await Products.findOne({_id: products[i].selections[j].products[k], active: true, _visible: true, "stock.orderable": true});
+                    const prd = await Products.findOne({_id: products[i].selections[j].products[k], active: true, _visible: true, 'stock.orderable': true});
                     if (prd) {
                         item.selections[j].products.push(products[i].selections[j].products[k]);
                     } else {
@@ -470,17 +479,17 @@ const duplicateItemsFromOrderToCart = async (req) => {
 
 const addPackage = async (orderId, pkgData) => {
     moment.locale(global.defaultLang);
-    let status = "DELIVERY_PROGRESS";
-    if (pkgData.status && pkgData.status === "partial") {
-        status = "DELIVERY_PARTIAL_PROGRESS";
+    let status = 'DELIVERY_PROGRESS';
+    if (pkgData.status && pkgData.status === 'partial') {
+        status = 'DELIVERY_PARTIAL_PROGRESS';
     }
     const ord = await Orders.findOne({_id: orderId});
     if (ord && ord.delivery && ord.delivery.url) {
-        pkgData.tracking = ord.delivery.url.replace("{{number}}", pkgData.tracking);
+        pkgData.tracking = ord.delivery.url.replace('{{number}}', pkgData.tracking);
     }
 
     await setStatus(orderId, status, false);
-    let _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {"delivery.package": pkgData}}, {new: true}).populate("delivery.method");
+    let _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {'delivery.package': pkgData}}, {new: true}).populate('delivery.method');
 
     const packages = {};
     for (let i = 0; i < _order.delivery.package.length; i++) {
@@ -495,10 +504,10 @@ const addPackage = async (orderId, pkgData) => {
             // on check si on gere le stock
             if (global.envConfig.stockOrder.bookingStock !== 'none') {
                 const _product = await Products.findOne({_id: pkgProduct.product_id});
-                if (_product.type === "simple") {
+                if (_product.type === 'simple') {
                     // On decremente la quantité
                     await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped);
-                } else if (_product.type === "bundle") {
+                } else if (_product.type === 'bundle') {
                     for (let i = 0; i < pkgProduct.selections.length; i++) {
                         const selectionProducts = pkgProduct.selections[i].products;
                         // on decremente la quantité de chaque produit de chaque section
@@ -514,12 +523,12 @@ const addPackage = async (orderId, pkgData) => {
         }
     }
 
-    _order = setItemStatus(_order, packages, "DELIVERY_PROGRESS", "DELIVERY_PARTIAL_PROGRESS");
+    _order = setItemStatus(_order, packages, 'DELIVERY_PROGRESS', 'DELIVERY_PARTIAL_PROGRESS');
 
     await _order.save();
 
     const _country = Territory.findOne({code: _order.addresses.delivery.isoCountryCode});
-    let country = "";
+    let country = '';
     if (_country && _country.name) {
         country = _country.name;
     } else if (_order.addresses.delivery.country) {
@@ -528,16 +537,16 @@ const addPackage = async (orderId, pkgData) => {
 
     const dateDelivery = moment().add(_order.delivery.dateDelivery.delayDelivery, _order.delivery.dateDelivery.unitDelivery).add(_order.delivery.dateDelivery.delayPreparation, _order.delivery.dateDelivery.unitPreparation).format('DD/MM/YYYY');
     try {
-        await ServiceMail.sendGeneric("orderSent", _order.customer.email, {
+        await ServiceMail.sendGeneric('orderSent', _order.customer.email, {
             number          : _order.number,
             name            : _order.delivery.name,
             fullname        : _order.customer.fullname,
-            company         : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : "",
+            company         : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : '',
             trackingUrl     : pkgData.tracking,
             date            : dateDelivery,
             transporterName : _order.delivery.name,
-            companyName     : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : "", // Legacy
-            address         : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2 ? ` ${_order.addresses.delivery.line2}` : "")}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country ? `, ${country}` : "")}`
+            companyName     : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : '', // Legacy
+            address         : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2 ? ` ${_order.addresses.delivery.line2}` : '')}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country ? `, ${country}` : '')}`
         });
     } catch (error) {
         console.error(error);
@@ -545,16 +554,16 @@ const addPackage = async (orderId, pkgData) => {
 };
 
 const delPackage = async (orderId, pkgId) => {
-    return Orders.findOneAndUpdate({_id: orderId}, {$pull: {"delivery.package": {_id: pkgId}}}, {new: true}).populate("items.id");
+    return Orders.findOneAndUpdate({_id: orderId}, {$pull: {'delivery.package': {_id: pkgId}}}, {new: true}).populate('items.id');
 };
 
 const updatePayment = async (body) => {
     const findCondition = {
         _id           : body._id,
-        "payment._id" : body.paymentId
+        'payment._id' : body.paymentId
     };
     let msg = {status: true};
-    if (body.field !== "") {
+    if (body.field !== '') {
         const updateValue = {};
         updateValue[`payment.$.${body.field}`] = body.value;
         try {
@@ -574,8 +583,8 @@ const updateStatus = async (body, params) => {
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    const noAccess = ["PAYMENT_CONFIRMATION_PENDING", "PAID", "BILLED", "DELIVERY_PROGRESS", "DELIVERY_PARTIAL_PROGRESS", "RETURNED", "CANCELING"];
-    if (!noAccess.includes(body.status) && body.status !== order.status && order.status !== "CANCELED") {
+    const noAccess = ['PAYMENT_CONFIRMATION_PENDING', 'PAID', 'BILLED', 'DELIVERY_PROGRESS', 'DELIVERY_PARTIAL_PROGRESS', 'RETURNED'];
+    if (!noAccess.includes(body.status) && body.status !== order.status && order.status !== 'CANCELED') {
         await setStatus(order._id, body.status);
         return;
     }
@@ -584,10 +593,10 @@ const updateStatus = async (body, params) => {
 
 const cancelOrderRequest = async (_id, authorizationToken) => {
     const user = await ServiceAuth.getDecodedToken(authorizationToken);
-    const order = await Orders.findOne({_id, "customer.email": user.info.email});
+    const order = await Orders.findOne({_id, 'customer.email': user.info.email});
     if (order) {
-        await setStatus(_id, "ASK_CANCEL");
-        return order.status = "ASK_CANCEL";
+        await setStatus(_id, 'ASK_CANCEL');
+        return order.status = 'ASK_CANCEL';
     }
     throw NSErrors.AccessUnauthorized;
 };

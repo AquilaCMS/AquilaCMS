@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {AttributesSchema} = require("../schemas");
+const {AttributesSchema} = require('../schemas');
 
-module.exports = mongoose.model("attributes", AttributesSchema);
+module.exports = mongoose.model('attributes', AttributesSchema);

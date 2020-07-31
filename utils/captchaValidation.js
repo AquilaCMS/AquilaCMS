@@ -1,4 +1,4 @@
-const aquilaEvents = require("./aquilaEvents");
+const aquilaEvents = require('./aquilaEvents');
 
 module.exports = (req, res, next) => {
     // TODO add in config something who indicate that a captcha has been activated

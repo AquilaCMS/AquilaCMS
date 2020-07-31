@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+const crypto = require('crypto');
 
 exports.cipher = function (dataToEncrypt) {
     if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
@@ -8,14 +8,14 @@ exports.cipher = function (dataToEncrypt) {
         return encrypted;
     }
 
-    console.error("Encryption config is empty. Please read the instruction");
+    console.error('Encryption config is empty. Please read the instruction');
     console.info(`=== Utilisation ===
         Dans "env.js" :
         - faire un objet "encryption" avec "method" et "password"
         - method = voir encryption list au démarrage du serveur :
         - password = mot de passe utilisé pour généré la clé de chiffrement
         Si les champs devant être chiffré ne le sont pas, une route est disponible dans "devScripts.js", ex: http://local.host:3010/api/encryption/cipher (dans postman, ne pas oublier le JWT admin).`);
-    console.info("Encryption list : ", crypto.getCiphers());
+    console.info('Encryption list : ', crypto.getCiphers());
 
     return dataToEncrypt;
 };

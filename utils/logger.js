@@ -1,8 +1,8 @@
 /* eslint-disable prefer-spread */
 /* eslint-disable prefer-rest-params */
-const winston = require("winston");
+const winston = require('winston');
 const {combine, timestamp, printf} = winston.format;
-const WinstonDailyRotateFile = require("winston-daily-rotate-file");
+const WinstonDailyRotateFile = require('winston-daily-rotate-file');
 
 const transports = [];
 

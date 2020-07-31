@@ -1,7 +1,7 @@
 {
     "medias": {
         "t1": "Media",
-        "nom": "Name",
+        "nom": "Code",
         "lien": "Link",
         "miniature": "Thumbnail",
         "cpLien": "Copy link",
@@ -13,11 +13,12 @@
     "new": {
         "t1": "New Media",
         "ph1": "File name",
-        "nom": "Name",
+        "nom": "Code",
         "lien": "Link :",
         "cpLien": "Copy link",
         "media": "Media",
-        "add": "Add"
+        "add": "Add",
+        "group": "Group"
     },
     "uploadMedias": {
         "queue": "Queue :",

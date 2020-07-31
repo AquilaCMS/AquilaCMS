@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {PromoSchema} = require("../schemas");
+const {PromoSchema} = require('../schemas');
 
-module.exports = mongoose.model("promo", PromoSchema);
+module.exports = mongoose.model('promo', PromoSchema);

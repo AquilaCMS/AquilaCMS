@@ -2,7 +2,7 @@ const moment = require('moment-business-days');
 const utils  = require('../utils/utils');
 
 const getBreadcrumb = async (url) => {
-    const {Languages, News} = require("../orm/models");
+    const {Languages, News} = require('../orm/models');
     const languagesT        = await Languages.find({}, 'code').lean();
     const languages         = [];
     for (let i = 0; i < languagesT.length; i++) {
@@ -35,7 +35,7 @@ const getBreadcrumb = async (url) => {
 
     // Page statique
     if (!url.includes('blog') && url.length === 1) {
-        const staticsServices = require("./statics");
+        const staticsServices = require('./statics');
         const result = await staticsServices.getStatic({filter: {[`translation.${lang}.slug`]: url[0]}});
         if (result !== null) {
             parts.push({
@@ -74,7 +74,7 @@ const getBreadcrumb = async (url) => {
         }
     } else if (url.includes('search') && url.length > 1) { // Recherche
         parts.push({
-            text   : "Recherche",
+            text   : 'Recherche',
             link   : keepL,
             isHome : false
         });
@@ -106,7 +106,7 @@ const exportData = async (model, PostBody) => {
 
 const parseUrlPrdCat = async (parts, url, keepL, lang) => {
     for (let j = 0; j < url.length; j++) {
-        const categoriesServices = require("./categories");
+        const categoriesServices = require('./categories');
         const result = await categoriesServices.getCategory({filter: {[`translation.${lang}.slug`]: url[j]}}, null, lang);
         if (result !== null) {
             parts.push({
@@ -115,7 +115,7 @@ const parseUrlPrdCat = async (parts, url, keepL, lang) => {
                 isHome : false
             });
         } else {
-            const productsServices = require("./products");
+            const productsServices = require('./products');
             const result = await productsServices.getProduct({filter: {[`translation.${lang}.slug`]: url[j]}});
             if (result !== null) {
                 parts.push({

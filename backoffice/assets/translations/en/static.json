@@ -8,13 +8,15 @@
         "slug": "Slug",
         "preview": "Preview",
         "save": "Save",
-        "index": "Indexing page"
+        "index": "Indexing page",
+        "group": "Group"
     },
     "list": {
         "t1": "Static Pages",
         "ph1": "Search...",
         "code": "Code",
-        "etats": "States"
+        "etats": "States",
+        "search": "Search"
     },
     "new": {
         "t1": "Create New Page",
@@ -29,7 +31,8 @@
         "title": "Title",
         "metaDesc": "Meta description",
         "preview": "Preview",
-        "save": "Save"
+        "save": "Save",
+        "group": "Group"
     },
     "modal": {
         "add": "Add",

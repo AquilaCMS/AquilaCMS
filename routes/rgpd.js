@@ -1,19 +1,19 @@
-const fs                          = require("fs");
-const path                        = require("path");
+const fs                          = require('fs');
+const path                        = require('path');
 const {exec}                      = require('child_process');
-const {authentication, adminAuth} = require("../middleware/authentication");
-const ServiceAuth                 = require("../services/auth");
-const rgpdServices                = require("../services/rgpd");
-const {Modules}                   = require("../orm/models");
-const NSErrors                    = require("../utils/errors/NSErrors");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const ServiceAuth                 = require('../services/auth');
+const rgpdServices                = require('../services/rgpd');
+const {Modules}                   = require('../orm/models');
+const NSErrors                    = require('../utils/errors/NSErrors');
 const appdirname                  = path.dirname(require.main.filename);
 
 module.exports = function (app) {
-    app.get("/v2/rgpd/export/:id", authentication, exportData);
-    app.post("/v2/rgpd/copyAndAnonymizeDatabase", authentication, adminAuth, copyAndAnonymizeDatabase);
-    app.delete("/v2/rgpd/deleteUser/:id", authentication, deleteUserDatas);
-    app.get("/v2/rgpd/anonymizeUser/:id", authentication, anonymizeUser);
-    app.post("/v2/rgpd/dumpAnonymizedDatabase", authentication, adminAuth, dumpAnonymizedDatabase);
+    app.get('/v2/rgpd/export/:id', authentication, exportData);
+    app.post('/v2/rgpd/copyAndAnonymizeDatabase', authentication, adminAuth, copyAndAnonymizeDatabase);
+    app.delete('/v2/rgpd/deleteUser/:id', authentication, deleteUserDatas);
+    app.get('/v2/rgpd/anonymizeUser/:id', authentication, anonymizeUser);
+    app.post('/v2/rgpd/dumpAnonymizedDatabase', authentication, adminAuth, dumpAnonymizedDatabase);
 };
 
 /**
@@ -29,7 +29,7 @@ async function exportData(req, res, next) {
             const bills = await rgpdServices.getBillsByUser(userVerified);
             const carts = await rgpdServices.getCartsByUser(userVerified);
             const reviews = await rgpdServices.getReviewsByUser(userVerified);
-            let modulesData = "";
+            let modulesData = '';
 
             const _modules = await Modules.find({active: true});
             if (_modules.length >= 0) {
@@ -55,15 +55,15 @@ async function exportData(req, res, next) {
             res.setHeader('Content-disposition', 'attachment; filename=export_data.txt');
             res.setHeader('Content-type', 'text/plain');
             res.charset = 'UTF-8';
-            res.write("Utilisateur :\n");
+            res.write('Utilisateur :\n');
             res.write(JSON.stringify(userData, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, ''));
-            res.write("\n\nCommandes :\n");
+            res.write('\n\nCommandes :\n');
             res.write(JSON.stringify(orders, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, ''));
-            res.write("\n\nFactures :\n");
+            res.write('\n\nFactures :\n');
             res.write(JSON.stringify(bills, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, ''));
-            res.write("\n\nPaniers :\n");
+            res.write('\n\nPaniers :\n');
             res.write(JSON.stringify(carts, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, ''));
-            res.write("\n\nAvis :\n");
+            res.write('\n\nAvis :\n');
             res.write(JSON.stringify(reviews, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, ''));
             res.write(modulesData);
             return res.end();
@@ -142,7 +142,7 @@ async function deleteUserDatas(req, res, next) {
     if (userVerified) {
         try {
             await rgpdServices.deleteUserDatas(userVerified);
-            return res.send("success");
+            return res.send('success');
         } catch (error) {
             return next(error);
         }
@@ -163,7 +163,7 @@ async function anonymizeUser(req, res, next) {
     if (userVerified) {
         try {
             await rgpdServices.anonymizeUserDatas(userVerified);
-            return res.send("success");
+            return res.send('success');
         } catch (error) {
             return next(error);
         }

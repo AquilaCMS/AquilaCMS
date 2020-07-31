@@ -1,20 +1,20 @@
-require("dotenv").config();
-const express               = require("express");
-const passport              = require("passport");
-const path                  = require("path");
-const next                  = require("next").default;
-const i18nextMiddleware     = require("i18next-http-middleware");
+require('dotenv').config();
+const express               = require('express');
+const passport              = require('passport');
+const path                  = require('path');
+const next                  = require('next').default;
+const i18nextMiddleware     = require('i18next-http-middleware');
 global.envPath              = null;
 global.envFile              = null;
 global.appRoot              = path.resolve(__dirname);
 global.port                 = process.env.PORT || 3010;
-global.defaultLang          = "";
+global.defaultLang          = '';
 global.moduleExtend         = {};
-global.translate            = require("./utils/translate");
-const utils                 = require("./utils/utils");
-const npm                   = require("./utils/npm");
+global.translate            = require('./utils/translate');
+const utils                 = require('./utils/utils');
+const npm                   = require('./utils/npm');
 const fs                    = require('./utils/fsp');
-const translation           = require("./utils/translation");
+const translation           = require('./utils/translation');
 const serverUtils           = require('./utils/server');
 const utilsModules          = require('./utils/modules');
 const utilsThemes           = require('./utils/themes');
@@ -22,7 +22,7 @@ const {
     middlewarePassport,
     expressErrorHandler,
     middlewareServer
-}                           = require("./middleware");
+}                           = require('./middleware');
 
 const dev = !serverUtils.isProd();
 let server;
@@ -46,7 +46,7 @@ process.on('unhandledRejection', (reason, promise) => {
 const init = async () => {
     await npm.npmLoad({});
     await serverUtils.getOrCreateEnvFile();
-    require("./utils/logger")();
+    require('./utils/logger')();
     await serverUtils.logVersion();
 };
 
@@ -54,8 +54,8 @@ const initDatabase = async () => {
     if (global.envFile.db) {
         await require('./utils/database').connect();
         await utilsModules.modulesLoadInit(express);
-        await require("./utils/database").initDBValues();
-        require("./services/job").initAgendaDB();
+        await require('./utils/database').initDBValues();
+        require('./services/job').initAgendaDB();
     }
 };
 
@@ -81,14 +81,14 @@ const initFrontFramework = async (server, themeFolder) => {
     if (i18nInstance) {
         await translation.initI18n(i18nInstance, ns);
         server.use(i18nextMiddleware.handle(i18nInstance));
-        server.use("/locales", express.static(path.join(themeFolder, 'assets/i18n')));
+        server.use('/locales', express.static(path.join(themeFolder, 'assets/i18n')));
     }
 
-    console.log("next build start...");
+    console.log('next build start...');
     await app.prepare();
-    console.log("next build finish");
+    console.log('next build finish');
 
-    server.use("/", middlewareServer.maintenance, handler);
+    server.use('/', middlewareServer.maintenance, handler);
 };
 
 const initServer = async () => {
@@ -98,8 +98,8 @@ const initServer = async () => {
         await utils.checkOrCreateAquilaRegistryKey();
         console.log(`%s@@ Current theme : ${global.envConfig.environment.currentTheme}%s`, '\x1b[32m', '\x1b[0m');
         const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-        const compile = typeof global.envFile.devMode !== "undefined"
-            && typeof global.envFile.devMode.compile !== "undefined"
+        const compile = typeof global.envFile.devMode !== 'undefined'
+            && typeof global.envFile.devMode.compile !== 'undefined'
             && !global.envFile.devMode.compile;
         if (!fs.existsSync(themeFolder) && !compile) {
             throw new Error(`themes folder ${themeFolder} not found`);
@@ -108,17 +108,17 @@ const initServer = async () => {
         middlewareServer.initExpress(server, passport);
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
-        const apiRouter = require("./routes").InitRoutes(express, server);
+        const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
 
         if (compile) {
-            console.log("devMode detected, no compilation");
+            console.log('devMode detected, no compilation');
         } else {
             await initFrontFramework(server, themeFolder);
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation
-        require("./installer/install").handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
+        require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
     }
 };
 

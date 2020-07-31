@@ -1,10 +1,10 @@
 const fs               = require('fs');
 const {Languages}      = require('../orm/models');
-const NSErrors         = require("../utils/errors/NSErrors");
+const NSErrors         = require('../utils/errors/NSErrors');
 const QueryBuilder     = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
-const defaultFields    = ["code", "name", "defaultLanguage", "status"];
+const defaultFields    = ['code', 'name', 'defaultLanguage', 'status'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
 const getLanguages = async (PostBody) => {
@@ -19,7 +19,7 @@ const saveLang = async (lang) => {
     let result = {};
 
     if (lang.defaultLanguage) { // Remove other default language
-        lang.status = "visible"; // The default language need to be visible
+        lang.status = 'visible'; // The default language need to be visible
         await Languages.updateOne({defaultLanguage: true}, {defaultLanguage: false});
     }
 
@@ -45,7 +45,7 @@ const removeLang = async (_id) => {
  */
 const getDefaultLang = (language) => {
     // Si la langue demandé est celle par défault, on va récupérer la "vrai" langue par défaut
-    if (language === undefined || language === null || language === "") return global.defaultLang;
+    if (language === undefined || language === null || language === '') return global.defaultLang;
     return language;
 };
 
@@ -71,7 +71,7 @@ const translateSet = async (translateName, translateValue, lang) => {
 const translateGet = async (filePath, lang) => {
     try {
         const themePath = await getTranslatePath(lang);
-        return await fs.readFileSync(`${themePath}/${filePath}.json`, "UTF-8");
+        return await fs.readFileSync(`${themePath}/${filePath}.json`, 'UTF-8');
     } catch (error) {
         throw NSErrors.TranslationError;
     }
@@ -82,13 +82,13 @@ const translateGet = async (filePath, lang) => {
  */
 const translateList = async () => {
     try {
-        const lang = "fr";
+        const lang = 'fr';
         const translateList   = [];
         const translatePath  = await getTranslatePath(lang);
 
         fs.readdirSync(translatePath).forEach((file) => {
-            if (file.endsWith(".json")) {
-                translateList.push(file.substring(0, file.lastIndexOf(".json")));
+            if (file.endsWith('.json')) {
+                translateList.push(file.substring(0, file.lastIndexOf('.json')));
             }
         });
 
@@ -109,7 +109,7 @@ async function getTranslatePath(lang) {
  * Create languages in file "config/dynamic_langs.js"
  */
 const createDynamicLangFile = async () => {
-    const _languages  = await Languages.find({status: "visible"}).select({code: 1, defaultLanguage: 1, _id: 0});
+    const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file

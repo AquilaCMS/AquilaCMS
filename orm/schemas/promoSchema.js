@@ -7,13 +7,13 @@ const PromoSchema = new Schema(
         dateStart     : {type: Date}, // Date de début de la promo
         dateEnd       : {type: Date}, // Date de fin de la promo
         actif         : {type: Boolean, default: false}, // Si la promo est active ou pas
-        type          : {type: String, enum: ["1", "2"], required: true, index: true}, // Promo panier (type: 1) ou catalogue (type: 2)
+        type          : {type: String, enum: ['1', '2'], required: true, index: true}, // Promo panier (type: 1) ou catalogue (type: 2)
         name          : {type: String, required: true},
         description   : {type: String, required: true},
         discountValue : {type: Number}, // en Euro ou en % -> Si discountType === null alors discountValue ne doit pas être set
-        discountType  : {type: String, enum: ["Aet", "Aati", "P", "FVet", "FVati", "QtyB", null], default: null}, // A pour montant, P pour pourcentage, FV pour valeur finale, QtyB pour quantitybreak
-        rules_id      : {type: ObjectId, ref: "rules"}, // Régle pour appliquer ce prix
-        gifts         : [{type: ObjectId, default: [], ref: "products"}], // Liste d'ObjectId de produit offert
+        discountType  : {type: String, enum: ['Aet', 'Aati', 'P', 'FVet', 'FVati', 'QtyB', null], default: null}, // A pour montant, P pour pourcentage, FV pour valeur finale, QtyB pour quantitybreak
+        rules_id      : {type: ObjectId, ref: 'rules'}, // Régle pour appliquer ce prix
+        gifts         : [{type: ObjectId, default: [], ref: 'products'}], // Liste d'ObjectId de produit offert
         codes         : [
             {
                 code         : {type: String, required: true, sparse: true},
@@ -25,7 +25,7 @@ const PromoSchema = new Schema(
         ],
         priority       : {type: Number, default: 0}, // priorité de la promo si cumulable, 0 étant le moins prioritaire
         applyNextRules : {type: Boolean, default: false}, // true : applique les autres promos, false : applique uniquement une seule promo
-        actions        : [{type: ObjectId, default: [], ref: "rules"}]
+        actions        : [{type: ObjectId, default: [], ref: 'rules'}]
     },
     {timestamps: true}
 );

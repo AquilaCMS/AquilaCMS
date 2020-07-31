@@ -1,8 +1,8 @@
-const util          = require("util");
-const fs            = require("fs");
-const js2xmlparser  = require("js2xmlparser");
-const moment        = require("moment");
-const NSErrors      = require("../utils/errors/NSErrors");
+const util          = require('util');
+const fs            = require('fs');
+const js2xmlparser  = require('js2xmlparser');
+const moment        = require('moment');
+const NSErrors      = require('../utils/errors/NSErrors');
 const fsWriteFile   = util.promisify(fs.writeFile);
 const {
     Languages,
@@ -10,10 +10,10 @@ const {
     Categories,
     Products,
     News
-}                   = require("../orm/models");
+}                   = require('../orm/models');
 
 let inCrawl         = false;
-const sitemapConf   = {home: {frequency: "daily", priority: "1.0"}, product: {frequency: "weekly", priority: "0.5"}, category: {frequency: "daily", priority: "0.8"}, blog: {frequency: "weekly", priority: "0.5"}, other: {frequency: "weekly", priority: "0.2"}};
+const sitemapConf   = {home: {frequency: 'daily', priority: '1.0'}, product: {frequency: 'weekly', priority: '0.5'}, category: {frequency: 'daily', priority: '0.8'}, blog: {frequency: 'weekly', priority: '0.5'}, other: {frequency: 'weekly', priority: '0.2'}};
 
 const genSitemap = async () => {
     // Vérifier qu'on est pas en mode "demoMode"
@@ -28,14 +28,14 @@ const genSitemap = async () => {
         inCrawl = true;
 
         const appUrl = global.envConfig.environment.appUrl;
-        const languages = await Languages.find({status: "visible"});
+        const languages = await Languages.find({status: 'visible'});
         const _languages = {};
         for (let i = 0, leni = languages.length; i < leni; i++) {
             _languages[languages[i].code] = languages[i];
         }
 
         const sitemap = {
-            "@" : {xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9"},
+            '@' : {xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9'},
             url : []
         };
 
@@ -43,9 +43,9 @@ const genSitemap = async () => {
 
         // Parcours des pages statiques
         for (let i = 0, leni = statics.length; i < leni; i++) {
-            let page = "other";
-            if (statics[i].code === "home") {
-                page = "home";
+            let page = 'other';
+            if (statics[i].code === 'home') {
+                page = 'home';
             }
 
             // Parcours des langues
@@ -56,14 +56,14 @@ const genSitemap = async () => {
                 if (_static.slug) {
                     const xhtml = [];
                     const url = {
-                        loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : "") + (page === "home" ? "" : _static.slug),
-                        lastmod    : moment().format("YYYY-MM-DD"),
+                        loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '') + (page === 'home' ? '' : _static.slug),
+                        lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf[page].frequency,
                         priority   : sitemapConf[page].priority
                     };
                     if (languages.length > 1) {
                         for (let k = 0, lenk = languages.length; k < lenk; k++) {
-                            xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ""}${page === "home" ? "" : statics[i].translation[languages[k].code].slug}"`);
+                            xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}${page === 'home' ? '' : statics[i].translation[languages[k].code].slug}"`);
                         }
                         url.xhtml = xhtml;
                     }
@@ -72,7 +72,7 @@ const genSitemap = async () => {
             }
         }
 
-        const categories = await Categories.find({active: true, action: "catalog"});
+        const categories = await Categories.find({active: true, action: 'catalog'});
 
         for (let i = 0, leni = categories.length; i < leni; i++) {
             for (let j = 0, lenj = languages.length; j < lenj; j++) {
@@ -82,15 +82,15 @@ const genSitemap = async () => {
                 if (_category !== undefined && _category.slug) {
                     const xhtml = [];
                     const url = {
-                        loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : "c/") + _category.slug,
-                        lastmod    : moment().format("YYYY-MM-DD"),
+                        loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : 'c/') + _category.slug,
+                        lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf.category.frequency,
                         priority   : sitemapConf.category.priority
                     };
                     if (languages.length > 1) {
                         for (let k = 0, lenk = languages.length; k < lenk; k++) {
                             if (categories[i].translation[languages[k].code] !== undefined && categories[i].translation[languages[k].code].slug !== undefined) {
-                                xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : "c/"}${categories[i].translation[languages[k].code].slug}"`);
+                                xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : 'c/'}${categories[i].translation[languages[k].code].slug}"`);
                             }
                         }
                         url.xhtml = xhtml;
@@ -109,19 +109,19 @@ const genSitemap = async () => {
 
                 if (_product !== undefined && _product.canonical) {
                     const xhtml = [];
-                    _product.canonical = _product.canonical[0] === "/" ? _product.canonical.slice(1) : _product.canonical;
+                    _product.canonical = _product.canonical[0] === '/' ? _product.canonical.slice(1) : _product.canonical;
                     const url = {
-                        loc        : appUrl + (lang && lang.defaultLanguage === false ? "" : "") + _product.canonical,
-                        lastmod    : moment().format("YYYY-MM-DD"),
+                        loc        : appUrl + (lang && lang.defaultLanguage === false ? '' : '') + _product.canonical,
+                        lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf.product.frequency,
                         priority   : sitemapConf.product.priority
                     };
                     if (languages.length > 1) {
                         for (let k = 0, lenk = languages.length; k < lenk; k++) {
-                            let canonical = "";
+                            let canonical = '';
                             if (products[i].translation[languages[k].code] !== undefined && products[i].translation[languages[k].code].canonical !== undefined) {
-                                canonical = products[i].translation[languages[k].code].canonical[0] === "/" ? products[i].translation[languages[k].code].canonical.slice(1) : products[i].translation[languages[k].code].canonical;
-                                xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? "" : ""}${canonical}"`);
+                                canonical = products[i].translation[languages[k].code].canonical[0] === '/' ? products[i].translation[languages[k].code].canonical.slice(1) : products[i].translation[languages[k].code].canonical;
+                                xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? '' : ''}${canonical}"`);
                                 url.xhtml = xhtml;
                             }
                         }
@@ -140,14 +140,14 @@ const genSitemap = async () => {
                 if (_article.slug) {
                     const xhtml = [];
                     const url = {
-                        loc        : `${appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : "")}blog/${_article.slug}`,
-                        lastmod    : moment().format("YYYY-MM-DD"),
+                        loc        : `${appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '')}blog/${_article.slug}`,
+                        lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf.blog.frequency,
                         priority   : sitemapConf.blog.priority
                     };
                     if (languages.length > 1) {
                         for (let k = 0, lenk = languages.length; k < lenk; k++) {
-                            xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ""}blog/${articles[i].translation[languages[k].code].slug}"`);
+                            xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}"`);
                         }
                         url.xhtml = xhtml;
                     }
@@ -159,8 +159,8 @@ const genSitemap = async () => {
         let sitemapString;
 
         if (languages.length > 1) {
-            sitemap["@"].xmlnsxhtml = "http://www.w3.org/1999/xhtml";
-            sitemapString = js2xmlparser.parse("urlset", sitemap, {declaration: {version: "1.0", encoding: "utf-8", standalone: "yes"}});
+            sitemap['@'].xmlnsxhtml = 'http://www.w3.org/1999/xhtml';
+            sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
 
             let find = '<xhtml>';
             let re = new RegExp(find, 'g');
@@ -174,10 +174,10 @@ const genSitemap = async () => {
             re = new RegExp(find, 'g');
             sitemapString = sitemapString.replace(re, 'xmlns:xhtml');
         } else {
-            sitemapString = js2xmlparser.parse("urlset", sitemap, {declaration: {version: "1.0", encoding: "utf-8", standalone: "yes"}});
+            sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
         }
 
-        await fsWriteFile("./sitemap.xml", sitemapString);
+        await fsWriteFile('./sitemap.xml', sitemapString);
         inCrawl = false;
         console.log(`\x1b[5m\x1b[32m ${new Date()} Fin de la génération du sitemap\x1b[0m`);
     } else {

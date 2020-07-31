@@ -1,9 +1,9 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
-const updateService               = require("../services/update");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const updateService               = require('../services/update');
 
 module.exports = function (app) {
-    app.get("/v2/update/verifying", authentication, adminAuth, verifyingUpdate);
-    app.get("/v2/update", authentication, adminAuth, update);
+    app.get('/v2/update/verifying', authentication, adminAuth, verifyingUpdate);
+    app.get('/v2/update', authentication, adminAuth, update);
 };
 
 /*

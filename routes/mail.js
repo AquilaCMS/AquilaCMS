@@ -1,4 +1,4 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceMail                 = require('../services/mail');
 
 module.exports = function (app) {
@@ -15,7 +15,7 @@ module.exports = function (app) {
 async function sendTestEmail(req, res, next) {
     try {
         let result;
-        if (req.body.values === "Email Test") {
+        if (req.body.values === 'Email Test') {
             result = await ServiceMail.sendMailTestConfig(req.body.mail, req.body.values, req.body.lang);
         } else {
             result = await ServiceMail.sendMailTest(req.body.mail, req.body.values, req.body.lang);

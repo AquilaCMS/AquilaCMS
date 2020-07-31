@@ -8,13 +8,15 @@
         "slug": "Slug",
         "preview": "Prévisualiser",
         "save": "Enregistrer",
-        "index": "Indexer la page"
+        "index": "Indexer la page",
+        "group": "Groupe"
     },
     "list": {
         "t1": "Pages statiques",
         "ph1": "Rechercher...",
         "code": "Code",
-        "etats": "États"
+        "etats": "États",
+        "search": "Recherche"
     },
     "new": {
         "t1": "Créer une Nouvelle Page",
@@ -29,7 +31,8 @@
         "title": "Titre",
         "metaDesc": "Méta description",
         "preview": "Prévisualiser",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "group": "Groupe"
     },
     "modal":{
         "add":"Ajouter",

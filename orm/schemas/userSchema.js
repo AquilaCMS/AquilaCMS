@@ -1,7 +1,7 @@
 const bcrypt            = require('bcrypt');
 const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
-const AddressSchema     = require("./addressSchema");
+const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
 const Schema            = mongoose.Schema;
 const ObjectId          = Schema.ObjectId;
@@ -11,10 +11,10 @@ const ObjectId          = Schema.ObjectId;
  */
 const generateUserPassword = () => {
     const CHARACTER_SETS = [
-        [true, "0123456789"],
-        [true, "abcdefghijklmnopqrstuvwxyz"],
-        [true, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"],
-        [false, "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"]
+        [true, '0123456789'],
+        [true, 'abcdefghijklmnopqrstuvwxyz'],
+        [true, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'],
+        [false, '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~']
     ];
 
     const charset = [];
@@ -24,7 +24,7 @@ const generateUserPassword = () => {
         }
     }
     // Generate password
-    let result = "";
+    let result = '';
     for (let i = 0; i < 20; i++) result += charset[randomInt(charset.length)];
     return result;
 };
@@ -32,7 +32,7 @@ const generateUserPassword = () => {
 // Returns a random integer in the range [0, n) using a variety of methods.
 const randomInt = (n) => {
     const x = Math.floor(Math.random() * n);
-    if (x < 0 || x >= n) throw new Error("Arithmetic exception");
+    if (x < 0 || x >= n) throw new Error('Arithmetic exception');
     return x % n;
 };
 
@@ -63,7 +63,7 @@ const UserSchema = new Schema({
         default  : generateUserPassword,
         validate : {
             validator : validatePassword,
-            message   : () => `FORMAT_PASSWORD`
+            message   : () => 'FORMAT_PASSWORD'
         }
     },
     code     : {type: String, unique: true, sparse: true},
@@ -118,10 +118,10 @@ const UserSchema = new Schema({
     details              : {},
     type                 : String,
     preferredLanguage    : String,
-    set_attributes       : {type: ObjectId, ref: "setAttributes", index: true},
+    set_attributes       : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes           : [
         {
-            id          : {type: ObjectId, ref: "attributes", index: true},
+            id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
             param       : String,
@@ -132,9 +132,9 @@ const UserSchema = new Schema({
     ]
 });
 
-UserSchema.set("toJSON", {virtuals: true});
-UserSchema.set("toObject", {virtuals: true});
-UserSchema.virtual("fullname").get(function () {
+UserSchema.set('toJSON', {virtuals: true});
+UserSchema.set('toObject', {virtuals: true});
+UserSchema.virtual('fullname').get(function () {
     return `${this.firstname} ${this.lastname}`;
 });
 
@@ -152,7 +152,7 @@ UserSchema.methods.validPassword = async function (password) {
 
 // RGPD : suppression des données associées à un user (orders et bills)
 UserSchema.pre('remove', async function (next) {
-    const {Orders, Bills} = require("../models");
+    const {Orders, Bills} = require('../models');
     const bills = await Bills.find({client: this._id});
     for (let i = 0; i < bills.length; i++) {
         bills[i].client = undefined;

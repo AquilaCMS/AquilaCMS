@@ -3,7 +3,7 @@ const Schema   = mongoose.Schema;
 
 const boolDefault   = (bool) => ({type: Boolean, default: bool});
 const numberDefault = (num) => ({type: Number, default: num});
-const stringDefault = () => ({type: String, trim: true, default: ""});
+const stringDefault = () => ({type: String, trim: true, default: ''});
 
 const SliderSchema = new Schema({
     name : {

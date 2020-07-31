@@ -123,17 +123,28 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
 
         $scope.newNextVersion = (nextVersion) => {
             if (nextVersion !== $scope.next) {
+                $scope.showThemeLoading = true;
                 $http({
                     method : "POST",
                     url    : "config/next",
                     data : {
-                        nextVersion : nextVersion
+                        nextVersion
                     }
-                }).success(function (data, status, headers) {
+                }).then(function (response) {
                     toastService.toast("success", "restart in progress...");
-                }).error(function (data) {
-                    toastService.toast("danger", data.message);
-                    console.error(data);
+                    $scope.showThemeLoading = false;
+                    $scope.showLoading = true;
+                    $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                    $http.get("/restart");
+                    $interval(() => {
+                        $http.get("/serverIsUp").then(() => {
+                            location.href = window.location = $scope.urlRedirect;
+                        })
+                    }, 10000);
+                }).catch(function (error) {
+                    $scope.showThemeLoading = false;
+                    console.error(error);
+                    toastService.toast("danger", error.message);
                 });
             } else {
                 toastService.toast("danger", "change version of nextjs");
@@ -301,22 +312,13 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     ) {
                         $scope.showThemeLoading = false;
                         $scope.showLoading = true;
-                        $scope.progressValue = 0;
                         $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
                         $http.get("/restart");
-                        var timerRestart = $interval(function () {
-                            $scope.progressValue++;
-
-                            if ($scope.progressValue == 100) {
-                                setTimeout(function () {
-                                    location.href = window.location = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
-                                }, 7000);
-                            }
-
-                            if ($scope.progressValue >= 110) {
-                                $interval.cancel(timerRestart);
-                            }
-                        }, 250);
+                        $interval(() => {
+                            $http.get("/serverIsUp").then(() => {
+                                location.href = window.location = $scope.urlRedirect;
+                            })
+                        }, 10000);
                     } else {
                         window.location.reload(true);
                     }
@@ -327,18 +329,19 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                 });
             });
 
-            function buildAdminUrl(appUrl, adminPrefix) {
-                let correctAppUrl;
-                if (!appUrl) {
-                    correctAppUrl = "/";
-                } else if (!appUrl.endsWith("/")) {
-                    correctAppUrl = `${appUrl}/`;
-                } else {
-                    correctAppUrl = appUrl;
-                }
-                return correctAppUrl + adminPrefix;
-            }
         };
+
+        function buildAdminUrl(appUrl, adminPrefix) {
+            let correctAppUrl;
+            if (!appUrl) {
+                correctAppUrl = "/";
+            } else if (!appUrl.endsWith("/")) {
+                correctAppUrl = `${appUrl}/`;
+            } else {
+                correctAppUrl = appUrl;
+            }
+            return correctAppUrl + adminPrefix;
+        }
     }
 ]);
 
@@ -363,7 +366,7 @@ ConfigControllers.controller("RobotTxtCtrl", [
     "$scope", "$q", "$routeParams", "$location", "toastService", "$modalInstance", "$http",
     function ($scope, $q, $routeParams, $location, toastService, $modalInstance, $http) {
         $scope.robot = {};
-        
+
         $http.get('/robot').then((response) => {
             $scope.robot.text = response.data.robot;
         });

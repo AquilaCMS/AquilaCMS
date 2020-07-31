@@ -1,5 +1,5 @@
 const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServicesRules               = require('../services/rules');
 
 module.exports = function (app) {
@@ -7,13 +7,13 @@ module.exports = function (app) {
     app.post('/v2/rule', queryRule);
     app.put('/v2/rule', authentication, adminAuth, setRule);
     app.delete('/v2/rule/:_id', authentication, adminAuth, deleteRule);
-    app.post("/v2/rules/testUser", authentication, adminAuth, testUser);
+    app.post('/v2/rules/testUser', authentication, adminAuth, testUser);
 
     // Deprecated
-    app.post("/rules", middlewareServer.deprecatedRoute, authentication, adminAuth, getRules);
-    app.post("/rule", middlewareServer.deprecatedRoute, authentication, adminAuth, getRule);
-    app.put("/rule", middlewareServer.deprecatedRoute, authentication, adminAuth, setRule);
-    app.delete("/rule/:_id", middlewareServer.deprecatedRoute, authentication, adminAuth, deleteRule);
+    app.post('/rules', middlewareServer.deprecatedRoute, authentication, adminAuth, getRules);
+    app.post('/rule', middlewareServer.deprecatedRoute, authentication, adminAuth, getRule);
+    app.put('/rule', middlewareServer.deprecatedRoute, authentication, adminAuth, setRule);
+    app.delete('/rule/:_id', middlewareServer.deprecatedRoute, authentication, adminAuth, deleteRule);
     // app.get("/v2/rule/stopExecOnError/:owner_type", authentication, adminAuth, stopExecOnError);
 };
 

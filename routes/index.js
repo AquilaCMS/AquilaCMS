@@ -1,11 +1,11 @@
 const fs       = require('fs');
 const path     = require('path');
-const NSErrors = require("../utils/errors/NSErrors");
+const NSErrors = require('../utils/errors/NSErrors');
 
 const InitRoutes = (express, server) => {
     const apiRouter         = express.Router(); // Route api for the front for client
     const adminFrontRouter  = express.Router(); // Route for serving the front of the admin
-    server.use("/api", apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
+    server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
     server.use(`/${global.envConfig.environment.adminPrefix}`, adminFrontRouter);
     loadDynamicRoutes(apiRouter, adminFrontRouter);
 
@@ -16,7 +16,7 @@ const InitRoutes = (express, server) => {
  * Charge dynamiquement toutes les routes du dossier routes
  */
 const loadDynamicRoutes = (app, adminFront) => {
-    console.log("Loading routes");
+    console.log('Loading routes');
     fs.readdirSync('./routes').forEach((file) => {
         // Ne pas charger le fichier index ou les routes de l'installeur
         if (file === path.basename(__filename) || path.extname(file) !== '.js' || file === 'install.js') {
@@ -24,7 +24,7 @@ const loadDynamicRoutes = (app, adminFront) => {
         }
 
         // Charge les fichiers des routes
-        if (file === "admin.js") {
+        if (file === 'admin.js') {
             require(`./${file}`)(app, adminFront);
         } else {
             require(`./${file}`)(app);
@@ -37,8 +37,8 @@ const loadDynamicRoutes = (app, adminFront) => {
  */
 const manageExceptionsRoutes = async (req, res, next) => {
     if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico'].includes(path.extname(req.url).toLowerCase())) {
-        res.setHeader("Cache-Control", "public, max-age=2592000");
-        res.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());
+        res.setHeader('Cache-Control', 'public, max-age=2592000');
+        res.setHeader('Expires', new Date(Date.now() + 2592000000).toUTCString());
     }
     // Exception BO React
     if (req.url.startsWith('/bo') && !req.url.startsWith('/bo/api')) {
@@ -48,7 +48,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
         } else {
             res.sendFile(path.join(global.appRoot, 'bo/build/index.html'));
         }
-    } else if (req.url === "/sitemap.xml" || req.url === "/robots.txt") {
+    } else if (req.url === '/sitemap.xml' || req.url === '/robots.txt') {
         res.sendFile(path.join(global.appRoot, req.url));
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
         const type      = req.url.split('/')[2];
@@ -58,7 +58,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
         const extension = path.extname(req.url).replace('.', '');
         if (type && size && extension && _id) {
             try {
-                const image = await require("../services/medias").downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined);
+                const image = await require('../services/medias').downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined);
                 res.set('Content-Type', `image/${extension}`);
                 fs.createReadStream(image, {autoClose: true}).pipe(res);
             } catch (e) {
@@ -83,7 +83,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
             }
         }
     } else {
-        require("../services/stats").addUserVisitReq(req);
+        require('../services/stats').addUserVisitReq(req);
 
         // On ajoute le port a req afin qu'il soit dispo dans le req du getInitialProps de next
         req.port = global.port;

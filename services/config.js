@@ -3,7 +3,7 @@ const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const encryption                = require('../utils/encryption');
-const {Configuration, Products} = require("../orm/models");
+const {Configuration, Products} = require('../orm/models');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -12,26 +12,26 @@ const queryBuilder     = new QueryBuilder(Configuration, restrictedFields, defau
 const getConfig = async (req) => {
     let propertie = req.params.propertie;
     if (!req.params.propertie) {
-        propertie = "environment";
+        propertie = 'environment';
     }
     if (req.params.action === propertie) {
         const _config = await Configuration.findOne({});
         try {
             if (
-                propertie === "environment"
+                propertie === 'environment'
                     && _config[propertie]
                     && _config[propertie].mailPass !== undefined
-                    && _config[propertie].mailPass !== ""
+                    && _config[propertie].mailPass !== ''
             ) {
                 _config[propertie].mailPass = encryption.decipher(_config[propertie].mailPass);
             }
         } catch (err) {
             console.error(err);
         }
-        if (propertie === "environment") {
+        if (propertie === 'environment') {
             const cfg = {
                 ..._config[propertie],
-                nodeEnv            : serverUtils.getEnv("NODE_ENV"),
+                nodeEnv            : serverUtils.getEnv('NODE_ENV'),
                 databaseConnection : global.envFile.db
             };
             return cfg;
@@ -49,20 +49,20 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
         } catch (err) {}
     }
     if (key) {
-        if (key === "taxerate") { return config.taxerate; }
+        if (key === 'taxerate') { return config.taxerate; }
         return {...config[key], databaseConnection: global.envFile.db};
     }
     return {...config, databaseConnection: global.envFile.db};
 };
 
 const getSiteName = async () => {
-    require("../utils/utils").tmp_use_route("ConfigServices", "getSiteName");
+    require('../utils/utils').tmp_use_route('ConfigServices', 'getSiteName');
     const _config = await Configuration.findOne({});
     return _config.environment.siteName;
 };
 
 const updateDBConnectionString = async (db) => {
-    const aquila_env       = serverUtils.getEnv("AQUILA_ENV");
+    const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
     let envFile            = await fs.readFile(global.envPath);
     envFile                = JSON.parse(envFile);
     envFile[aquila_env].db = db;
@@ -73,57 +73,58 @@ const updateDBConnectionString = async (db) => {
 const saveConfig = async (req) => {
     req.setTimeout(300000);
     const oldConfig = await Configuration.findOne({});
-    if (
-        req.body.environment
-        && req.body.environment.mailPass !== undefined
-        && req.body.environment.mailPass !== ""
-    ) {
-        try {
-            req.body.environment.mailPass = encryption.cipher(req.body.environment.mailPass);
-        } catch (err) {
-            console.error(err);
+    const {environment, stockOrder} = req.body;
+    if (environment) {
+        if (environment.mailPass !== undefined && environment.mailPass !== '') {
+            try {
+                environment.mailPass = encryption.cipher(environment.mailPass);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        if (environment.photoPath) {
+            if (environment.photoPath.startsWith('/')) {
+                environment.photoPath = environment.photoPath.substr(1);
+            }
+            if (environment.photoPath.endsWith('/')) {
+                environment.photoPath = environment.photoPath.substring(0, environment.photoPath.length - 1);
+            }
+        }
+        if (environment.databaseConnection) {
+            await updateDBConnectionString(environment.databaseConnection);
+            delete environment.databaseConnection;
+        }
+        await Configuration.updateOne({}, req.body);
+        // traitement spécifique
+        if (environment.demoMode) {
+            const seoService = require('./seo');
+            seoService.removeSitemap(); // Supprime le sitemap.xml
+            seoService.manageRobotsTxt(false); // Interdire le robots.txt
         }
     }
-    if (req.body.environment && req.body.environment.photoPath) {
-        if (req.body.environment.photoPath.startsWith('/')) {
-            req.body.environment.photoPath = req.body.environment.photoPath.substr(1);
-        }
-        if (req.body.environment.photoPath.endsWith('/')) {
-            req.body.environment.photoPath = req.body.environment.photoPath.substring(0, req.body.environment.photoPath.length - 1);
-        }
-    }
-    if (req.body.environment && req.body.environment.databaseConnection) {
-        await updateDBConnectionString(req.body.environment.databaseConnection);
-        delete req.body.environment.databaseConnection;
-    }
-    await Configuration.updateOne({}, req.body);
 
-    // traitement spécifique
-    if (req.body.environment && req.body.environment.demoMode) {
-        const seoService = require("./seo");
-
-        // Virer le sitemap.xml
-        seoService.removeSitemap();
-
-        // Interdire le robots.txt
-        seoService.manageRobotsTxt(false);
-    }
-
-    // si le stockOrder a changé, en l'occurence pour les labels de stock, on applique les modif sur les produit possedant ces labels
-    if (req.body.stockOrder) {
+    // si le stockOrder a changé, en l'occurence pour les labels de stock,
+    // on applique les modif sur les produit possedant ces labels
+    if (stockOrder) {
         const result = diff(
             JSON.parse(JSON.stringify(oldConfig.stockOrder.labels)),
-            req.body.stockOrder.labels,
+            stockOrder.labels,
             '_id',
             {
                 updatedValues : diff.updatedValues.second
             }
         );
         for (let i = 0; i < result.removed.length; i++) {
-            await Products.updateMany({'stock.label': result.removed[i].code}, {'stock.label': null, 'stock.translation': undefined});
+            await Products.updateMany(
+                {'stock.label': result.removed[i].code},
+                {'stock.label': null, 'stock.translation': undefined}
+            );
         }
         for (let i = 0; i < result.updated.length; i++) {
-            await Products.updateMany({'stock.label': result.updated[i].code}, {'stock.translation': result.updated[i].translation});
+            await Products.updateMany(
+                {'stock.label': result.updated[i].code},
+                {'stock.translation': result.updated[i].translation}
+            );
         }
     }
 };

@@ -7,9 +7,9 @@ const MailTypeSchema = new Schema({
     position : {type: Number, default: 1}
 }, {timestamps: true});
 
-MailTypeSchema.pre("validate", function (next) {
-    if (this.code === undefined || this.code == null || (this.code === "" && this.name !== "Aucun type")) {
-        next(new Error("mailtype.code is empty"));
+MailTypeSchema.pre('validate', function (next) {
+    if (this.code === undefined || this.code == null || (this.code === '' && this.name !== 'Aucun type')) {
+        next(new Error('mailtype.code is empty'));
     }
     next();
 });

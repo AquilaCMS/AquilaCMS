@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {DownloadHistorySchema} = require("../schemas");
+const {DownloadHistorySchema} = require('../schemas');
 
-module.exports = mongoose.model("downloadHistory", DownloadHistorySchema);
+module.exports = mongoose.model('downloadHistory', DownloadHistorySchema);

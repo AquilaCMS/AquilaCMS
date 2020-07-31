@@ -117,7 +117,7 @@
                 },
                 error: (response, status, error) => {
                     console.error(response, status, error);
-                    
+
                     displayErrors(response.responseText);
                 }
             });
@@ -141,12 +141,16 @@
             return fieldError;
         }
 
-        function displayErrors(sError) {           
+        function displayErrors(sError) {
             document.getElementById("errorArea").innerHTML     = sError;
             document.getElementById("errorArea").style.display = "block";
 
             document.getElementById("loading").style.display = 'none';
             document.getElementById("config").style.display = 'block';
+
+            // let toastContain = document.getElementById("toast-container");
+            // toastContain.style.backgroundColor = "red";
+            // toastContain.MaterialSnackbar.showSnackbar({message: "Some errors are detected"});
         }
 
         function Recover() {
@@ -169,6 +173,45 @@
                 }
             });
         }
+
+        function testDB(){
+
+            let testDBLoader = document.getElementById("testDBLoader");
+            let testDBButton = document.getElementsByClassName("testDB")[0];
+            let toastContain = document.getElementById("toast-container");
+
+            const fieldValue = document.getElementById("databaseAdd").value.replace(/\s/g, "");
+            if(fieldValue === "mongodb://localhost:27017/")
+            {
+                toastContain.style.backgroundColor = "red";
+                toastContain.MaterialSnackbar.showSnackbar({message: "Connection string needs database name"});
+                return;
+            }
+
+            testDBLoader.style.display = 'block';
+            testDBButton.style.display = 'none';
+
+
+            $.ajax({
+                url: '/testdb',
+                type: 'POST',
+                data: {data:document.getElementById("databaseAdd").value},
+                success: (response, status) => {
+                    testDBLoader.style.display         = 'none';
+                    testDBButton.style.display         = 'block';
+                    toastContain.style.backgroundColor = "green";
+                    toastContain.MaterialSnackbar.showSnackbar({message: 'Successful connection'});
+                },
+                error: (response, status, error) => {
+                    testDBLoader.style.display         = 'none';
+                    testDBButton.style.display         = 'block';
+                    toastContain.style.backgroundColor = "red";
+                    toastContain.MaterialSnackbar.showSnackbar({message: response.responseText});
+                    console.error(response, status, error);
+                }
+            });
+        };
+
     </script>
 </header>
 
@@ -214,6 +257,13 @@
                         </span>
                         <span class="mdl-list__item-secondary-content" id="wkhtmlvalid"></span>
                     </li>
+                    <li class="mdl-list__item mdl-list__item--three-line" id="sharp">
+                        <span class="mdl-list__item-primary-content">
+                            <span>sharp</span>
+                            <span class="mdl-list__item-text-body" id="sharpbody"></span>
+                        </span>
+                        <span class="mdl-list__item-secondary-content" id="sharpvalid"></span>
+                    </li>
                 </ul>
             </div>
             <div class="mdl-card__actions mdl-card--border">
@@ -251,6 +301,14 @@
                     <input class="mdl-textfield__input" type="text" id="databaseAdd" name="databaseAdd" required
                         value="mongodb://localhost:27017/">
                     <label class="mdl-textfield__label" for="databaseAdd">Connection string to MongoDB</label>
+                </div>
+                <button onclick="testDB();" class="testDB mdl-button mdl-js-button mdl-button--primary" style="float: right;margin-top: -15px;">
+                    Test connection
+                </button>
+                <div id="testDBLoader" style="display: none;">
+                    <div style="float: right;margin-top: -15px;">
+                        <div class="mdl-spinner mdl-js-spinner is-active"></div>
+                    </div>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -353,6 +411,12 @@
             </div>
 
             <div style="color:red;display: none;text-align: center;" id="errorArea">
+            </div>  
+
+
+            <div id="toast-container" class="mdl-js-snackbar mdl-snackbar">
+                <div class="mdl-snackbar__text"></div>
+                <button class="mdl-snackbar__action" type="button"></button>
             </div>
 
         </form>
@@ -395,19 +459,19 @@
             Recover();
         });
 
-        const isValid     = JSON.parse('{{wkhtmltopdf}}');
-        let valid         = `<span style="color: green;"><i class="material-icons">check_circle</i></span>`;
-        let body          = '';
+        const wkhtmltopdfIsValid = JSON.parse('{{wkhtmltopdf}}');
+        let valid = `<span style="color: green;"><i class="material-icons">check_circle</i></span>`;
+        let body  = '';
         const wkhtmltopdf = document.getElementById('wkhtmltopdf');
-        
-        if (isValid === false) {
+
+        if (wkhtmltopdfIsValid === false) {
             valid = `<span style="color: red;"><i class="material-icons">cancel</i></span>`;
             body = `The library seems missing on your system.<br>
             <a href="http://wkhtmltopdf.org/downloads.html#stable"><b>download</b></a>
             a prebuilt version for your system.<br>
             <b>DO NOT</b> try to use the packages provided by your distribution
             as they may not be using a patched Qt and have missing features.`;
-        } else if (isValid === true) {
+        } else if (wkhtmltopdfIsValid === true) {
             wkhtmltopdf.classList.remove('mdl-list__item--three-line');
         }
 
@@ -415,6 +479,25 @@
         const wkhtmltopdfvalid     = document.getElementById('wkhtmlvalid');
         wkhtmltopdfbody.innerHTML  = body;
         wkhtmltopdfvalid.innerHTML = valid;
+
+        const sharpIsValid = JSON.parse('{{sharp}}');
+        valid = `<span style="color: green;"><i class="material-icons">check_circle</i></span>`;
+        body  = '';
+        const sharp = document.getElementById('sharp');
+
+        if (sharpIsValid === false) {
+            valid = `<span style="color: red;"><i class="material-icons">cancel</i></span>`;
+            body = `to use sharp you needs to install <a href="https://github.com/libvips/libvips">libvips</a><br>
+            or else problems might occur during aquila's usage`;
+        } else if (sharpIsValid === true) {
+            sharp.classList.remove('mdl-list__item--three-line');
+        }
+
+        const sharpbody      = document.getElementById('sharpbody');
+        const sharpvalid     = document.getElementById('sharpvalid');
+        sharpbody.innerHTML  = body;
+        sharpvalid.innerHTML = valid;
+
         document.getElementById("appUrl").value = `${window.location.origin}/`;
     </script>
 </body>

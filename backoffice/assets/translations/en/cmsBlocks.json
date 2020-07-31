@@ -2,7 +2,8 @@
     "list": {
         "t1": "CMS Blocks",
         "code": "Code",
-        "desc": "Description"
+        "desc": "Description",
+        "search": "Search"
     },
     "detail": {
         "t1": "CMS Blocks",
@@ -10,7 +11,8 @@
         "champRequis": "This field is required.",
         "desc": "Description",
         "content": "Content",
-        "preview": "Preview"
+        "preview": "Preview",
+        "group": "Group"
 
     }
 }

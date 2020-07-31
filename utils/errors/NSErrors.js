@@ -31,6 +31,7 @@ class NSErrors {
     static get PostBodyFilterUndefined() { return this.makeErrorAlias(NSErrors.BadRequest, 'PostBodyFilterUndefined'); }
     static get PostBodyUndefined() { return this.makeErrorAlias(NSErrors.BadRequest, 'PostBodyUndefined'); }
     static get PromoCodeIfStatementBadFormat() { return this.makeErrorAlias(NSErrors.BadRequest, 'PromoCodeIfStatementBadFormat'); }
+    static get OrderNotCancelable() { return this.makeErrorAlias(NSErrors.BadRequest, 'OrderNotCancelable'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
     static get UserNotLogin() { return new NSError(401, 'UserNotLogin'); }
@@ -74,6 +75,7 @@ class NSErrors {
     static get GalleryUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'GalleryUpdateError'); }
     static get InvalidIdObjectIdError() { return this.makeErrorAlias(NSErrors.NotFound, 'InvalidIdObjectIdError'); }
     static get InvoiceNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'InvoiceNotFound'); }
+    static get InactiveCart() { return this.makeErrorAlias(NSErrors.NotFound, 'InactiveCart'); }
     static get JobAgendaCannotDeleteSystem() { return this.makeErrorAlias(NSErrors.NotFound, 'JobAgendaCannotDeleteSystem'); }
     static get JobAgendaSaveError() { return this.makeErrorAlias(NSErrors.NotFound, 'JobAgendaSaveError'); }
     static get JobNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'JobNotFound'); }
@@ -99,7 +101,7 @@ class NSErrors {
     static get ProductNotFoundInOrder() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductNotFoundInOrder'); }
     static get ProductNotInStock() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductNotInStock'); }
     static get ProductNotOrderable() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductNotOrderable'); }
-    static get ProductNotSalable() { return this.makeErrorAlias(NSErrors.NotFound, 'OrderNotFound'); }
+    static get ProductNotSalable() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductNotSalable'); }
     static get ProductReviewNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductReviewNotFound'); }
     static get ProductUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ProductUpdateError'); }
     static get PromoCodePromoInvalid() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoCodePromoInvalid'); }
@@ -143,6 +145,7 @@ class NSErrors {
     static get RequiredModuleDependencies() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'RequiredModuleDependencies'); }
 
     static get InternalError() { return new NSError(500, 'InternalError'); }
+    static get PaymentFailed() { return new NSError(500, 'PaymentFailed'); }
     static get TranslateDeleteError() { return this.makeErrorAlias(NSErrors.InternalError, 'TranslateDeleteError'); }
 
     static get ServiceUnavailable() { return new NSError(503, 'ServiceUnavailable'); }

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
-const {StaticsPreviewSchema} = require("../schemas");
+const mongoose = require('mongoose');
+const {StaticsPreviewSchema} = require('../schemas');
 
-module.exports = mongoose.model("staticsPreview", StaticsPreviewSchema);
+module.exports = mongoose.model('staticsPreview', StaticsPreviewSchema);

@@ -1,5 +1,5 @@
 const SercivesDownloadHistory     = require('../services/downloadHistory');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 
 module.exports = function (app) {
     app.post('/v2/downloadHistory', authentication, adminAuth, getHistory);

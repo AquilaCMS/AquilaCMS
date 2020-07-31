@@ -129,7 +129,7 @@ async function setFilters(req, res, next) {
 
 function execRules(req, res) {
     res.send(true);
-    ServiceRules.execRules("category");
+    ServiceRules.execRules('category');
 }
 
 async function applyTranslatedAttribs(req, res, next) {
@@ -148,7 +148,7 @@ async function applyTranslatedAttribs(req, res, next) {
  */
 // eslint-disable-next-line no-unused-vars
 function checkPostBody(postBody, req_headers_authorization) {
-    postBody = securityForceActif(postBody, req_headers_authorization, ["active"]);
+    postBody = securityForceActif(postBody, req_headers_authorization, ['active']);
 
     // TODO : lors de la canonicalisation, prendre aussi en comptes les dates et ne pas mettre de produit dedans si en dehors des dates, ou si inactive
 
@@ -238,7 +238,7 @@ async function getById(req, res, next) {
         let menu;
         if (req.query.populateFilters) {
             menu = await Categories.findOne({_id: req.params.id})
-                .populate({path: "filters.id_attribut", populate: {path: "set_attributes"}});
+                .populate({path: 'filters.id_attribut', populate: {path: 'set_attributes'}});
         } else {
             menu = await Categories.findOne({_id: req.params.id});
         }

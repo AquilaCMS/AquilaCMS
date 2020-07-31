@@ -12,7 +12,6 @@
         "DELIVERY_PROGRESS": "Delivery in progress",
         "DELIVERY_PARTIAL_PROGRESS": "Partial delivery in progress",
         "FINISHED": "Finished",
-        "CANCELING": "Cancelling", 
         "CANCELED": "Cancelled",
         "ASK_CANCEL": "Cancellation requested by the customer",
         "RETURNED": "Returned"
@@ -91,7 +90,8 @@
         "country": "Country",
         "modifyAddress":"Modify address",
         "save":"Save",
-        "cancel":"Cancel"
+        "cancel":"Cancel",
+        "transactionId": "Transaction ID"
     },
     "list": {
         "t1": "Orders",
@@ -114,7 +114,8 @@
         "date": "Date",
         "prixTTC": "ATI Price",
         "nom": "Name",
-        "mail": "E-mail"
+        "mail": "E-mail",
+        "export": "Export"
     },
     "list2": {
         "priceTotal": {

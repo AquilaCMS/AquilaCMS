@@ -1,49 +1,107 @@
 <ns-box data-title="medias.medias.t1" title-icon="fa fa-file-image-o fa-lg" new-href="#/medias/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-        <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
-               id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-            <thead>
-            <tr role="row" class="pointer">
-                <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
-                        medias.medias.nom
-                </th>
-                <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
-                        medias.medias.lien
-                </th>
-                <th role="columnheader" style="width: 20%" translate>
-                        medias.medias.miniature
-                </th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody role="alert" aria-live="polite" aria-relevant="all">
-            <tr ng-class-odd="'odd'" ng-class-even="'even'"
-                ng-repeat="media in list">
-                <td class="  sorting_1">
-                    {{media.name}}
-                </td>
-                <td class="  sorting_1">
-                    {{config.appUrl}}{{media.link}}&nbsp;
-                </td>
-                <td>
-                    <img ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
-                    <i style="color: black;" ng-if="!media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')" class="fa fa-file-text fa-lg i-style"></i>
-                </td>
-                <td style="width:270px;">
-                    <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index)">{{"medias.medias.cpLien" | translate}}</button>
-                    <button ng-click="remove(media)" class="btn btn-red btn-with-icon">
-                        <i class="ico-trash"></i>
-                        <span class="text" translate>medias.medias.delete</span>
-                    </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="dataTables_filter">
+                    <input group="search" ng-model="local.search" ng-change="onPageChange(1)" class="search-field" name="q" id="q" value="" placeholder="{{'static.list.search' | translate}}">                    
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs" style="margin-top: 20px;">
+            <li ng-show="local.search === ''" class="{{currentTab === group ? 'active' : ''}}" ng-repeat="group in groups | filterListGeneral"><a href="" ng-click="changeTab(group)" target="_self">{{group}}</a></li>
+            <li ng-show="local.search !== ''" class="{{local.search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>static.list.search</a></li>
+        </ul>
+        <div ng-show="local.search === '' && currentTab === group" class="tab-content" ng-repeat="group in groups | filterListGeneral">
+            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
+                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <thead>
+                <tr role="row" class="pointer">
+                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                            medias.medias.nom
+                    </th>
+                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                            medias.medias.lien
+                    </th>
+                    <th role="columnheader" style="width: 20%" translate>
+                            medias.medias.miniature
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr ng-class-odd="'odd'" ng-class-even="'even'"
+                    ng-repeat="media in list" ng-click="mediaDetails(media)">
+                    <td class="  sorting_1">
+                        {{media.name}}
+                    </td>
+                    <td class="  sorting_1">
+                        {{config.appUrl}}{{media.link}}&nbsp;
+                    </td>
+                    <td>
+                        <img ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                        <i style="color: black;" ng-if="!media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')" class="fa fa-file-text fa-lg i-style"></i>
+                    </td>
+                    <td style="width:280px;">
+                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')">{{"medias.medias.cpLien" | translate}}</button>
+                        <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
+                            <i class="ico-trash"></i>
+                            <span class="text" translate>medias.medias.delete</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <pagination total-items="totalMedias" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
+                max-size="maxSize" boundary-links="true" rotate="false"></pagination>
+        </div>
+        <div ng-show="local.search !== ''" class="tab-content">
+            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
+                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <thead>
+                <tr role="row" class="pointer">
+                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                            medias.medias.nom
+                    </th>
+                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                            medias.medias.lien
+                    </th>
+                    <th role="columnheader" style="width: 20%" translate>
+                            medias.medias.miniature
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tr ng-class-odd="'odd'" ng-class-even="'even'"
+                    ng-repeat="media in list" ng-click="mediaDetails(media)">
+                    <td class="  sorting_1">
+                        {{media.name}}
+                    </td>
+                    <td class="  sorting_1">
+                        {{config.appUrl}}{{media.link}}&nbsp;
+                    </td>
+                    <td>
+                        <img ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                        <i style="color: black;" ng-if="!media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')" class="fa fa-file-text fa-lg i-style"></i>
+                    </td>
+                    <td style="width:280px;">
+                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')">{{"medias.medias.cpLien" | translate}}</button>
+                        <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
+                            <i class="ico-trash"></i>
+                            <span class="text" translate>medias.medias.delete</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <pagination total-items="totalMedias" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
+                max-size="maxSize" boundary-links="true" rotate="false"></pagination>
+        </div>
     </div>
 
     <hr />
 
-    <div style="width:40%">
+    <div style="width:300px">
         <label translate>medias.medias.uploadButton</label>
         <div style="font-size: 10px" translate>
             medias.medias.uploadInfo
@@ -61,13 +119,13 @@
 
 
     <!-- <input id="copy-link" type="text" ng-model="link"> -->
-    <style>
+    <!-- <style>
         #copy-link {
             /* background-color: transparent;
             color: transparent;
             border-color: transparent; */
             height: 25px;
-            width:100%; 
+            width:100%;
         }
         #copy-link::selection, #copy-link::-moz-selection {
             background: transparent;
@@ -75,7 +133,7 @@
         #copy-link::-moz-selection {
             background: transparent;
         }
-    </style>
+    </style> -->
 
 </ns-box>
 

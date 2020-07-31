@@ -4,11 +4,11 @@
  */
 
 const fs = require('fs');
-let aquilaRootPath = "";
+let aquilaRootPath = '';
 if (process.argv[2] !== undefined) {
     aquilaRootPath = process.argv[2];
 } else {
-    aquilaRootPath = ".";
+    aquilaRootPath = '.';
 }
 const packagePath       = `${aquilaRootPath}/package.json`;
 const packageAquilaPath = `${aquilaRootPath}/package-aquila.json`;
@@ -19,7 +19,7 @@ const packageContent = fs.readFileSync(packagePath, 'utf-8', function (err) {
 const packageObj               = JSON.parse(packageContent);
 const newDependencies          = packageObj.dependencies;
 const newDependenciesTab       = [];
-let newDependenciesLineContent = "";
+let newDependenciesLineContent = '';
 
 for (const key of Object.keys(newDependencies)) {
     newDependenciesLineContent = `${key}@${newDependencies[key]}`;
@@ -40,7 +40,7 @@ try {
         });
         // eslint-disable-next-line eqeqeq
         if (oldPackageContent == newPackageContent) {
-            console.log("No change in package-aquila");
+            console.log('No change in package-aquila');
             process.exit(0);
         } else {
             fs.unlink(packageAquilaPath, function (err) {

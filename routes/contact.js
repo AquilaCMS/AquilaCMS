@@ -4,7 +4,7 @@ const ServiceContacts = require('../services/contacts');
 const {
     authentication,
     adminAuth
-}                     = require("../middleware/authentication");
+}                     = require('../middleware/authentication');
 const {
     fsp,
     captchaValidation,
@@ -44,11 +44,11 @@ async function setContact(req, res, next) {
                 const tmp_path  = file.path;
                 const extension = path.extname(file.originalname);
 
-                finalPath = `mails/`;
+                finalPath = 'mails/';
 
                 let target_path_full = path.join(finalPath, `${new Date().getTime()}_${file.originalname}`);
 
-                target_path_full = await modulesUtils.modulesLoadFunctions("uploadFile", {
+                target_path_full = await modulesUtils.modulesLoadFunctions('uploadFile', {
                     target_path : finalPath,
                     target_path_full,
                     file,
@@ -59,6 +59,7 @@ async function setContact(req, res, next) {
 
                     try {
                         await fsp.copyRecursiveSync(tmp_path, target_path_full);
+                        await fsp.deleteRecursiveSync(tmp_path);
                     } catch (err) {
                         return next(err);
                     }

@@ -1,9 +1,9 @@
 const path             = require('path');
 const mongoose         = require('mongoose');
 const {Slider}         = require('../orm/models');
-const utils            = require("../utils/utils");
+const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
-const NSErrors         = require("../utils/errors/NSErrors");
+const NSErrors         = require('../utils/errors/NSErrors');
 const QueryBuilder     = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
@@ -42,7 +42,7 @@ const deleteSlider = async (req) => {
     const doc = await Slider.findOneAndRemove({_id: req.params.id});
     for (let i = 0; i < doc.items.length; i++) {
         await mediasUtils.deleteFile(doc.items[i].src);
-        require("./cache").deleteCacheImage('slider', {filename: path.basename(doc.items[i].src).split('.')[0]});
+        require('./cache').deleteCacheImage('slider', {filename: path.basename(doc.items[i].src).split('.')[0]});
     }
     if (!doc) throw NSErrors.NotFound;
     return doc;
@@ -86,7 +86,7 @@ const deleteItemSlider = async (_id, _id_item) => {
     if (!doc) throw NSErrors.NotFound;
     const item = slider.items.find((i) => i.id === _id_item);
     await mediasUtils.deleteFile(item.src);
-    require("./cache").deleteCacheImage('slider', {filename: path.basename(item.src).split('.')[0]});
+    require('./cache').deleteCacheImage('slider', {filename: path.basename(item.src).split('.')[0]});
     return doc;
 };
 

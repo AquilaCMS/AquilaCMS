@@ -2,7 +2,7 @@ const ModelPreview     = require('../orm/models/staticsPreview');
 const QueryBuilder     = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
-const defaultFields    = ["_id", "code", "translation"];
+const defaultFields    = ['_id', 'code', 'translation'];
 const queryBuilder     = new QueryBuilder(ModelPreview, restrictedFields, defaultFields);
 
 const getStaticsPreview = async (PostBody) => {

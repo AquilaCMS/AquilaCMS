@@ -2,14 +2,14 @@
 *  This is a legacy file, not used
 */
 
-const {SetOptions, Products} = require("../orm/models");
+const {SetOptions, Products} = require('../orm/models');
 const setOptionServices      = require('../services/setOptions');
-const NSErrors               = require("../utils/errors/NSErrors");
+const NSErrors               = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/setOptions', getSetOptions);
     app.post('/v2/setOption/:id', getSetOptionById);
-    app.put("/v2/setOption", setSetOption);
+    app.put('/v2/setOption', setSetOption);
     app.delete('/v2/setOption/:id', deleteSetOption);
 
     app.get('/setOptions', list);
@@ -101,7 +101,7 @@ async function fOne(req, res, next) {
 
 async function save(req, res, next) {
     try {
-        const code = req.body.code.replace(/[^A-Z0-9]+/ig, "_");
+        const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
         const name = req.body.name;
         const updateF = req.body.update;
 
@@ -124,7 +124,7 @@ async function remove(req, res, next) {
         const _setOpt = await SetOptions.findOne({code: req.params.code});
         if (!_setOpt) {
             throw {
-                code         : "setoption_not_found",
+                code         : 'setoption_not_found',
                 status       : 404,
                 translations : {
                     fr : `Le jeu d'options ${req.params.code} n'existe pas.`,
@@ -132,7 +132,7 @@ async function remove(req, res, next) {
                 }
             };
         }
-        await Products.updateMany({set_options: _setOpt._id}, {$unset: {set_options: ""}});
+        await Products.updateMany({set_options: _setOpt._id}, {$unset: {set_options: ''}});
         await _setOpt.remove();
         return res.end();
     } catch (err) {

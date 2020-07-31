@@ -3,7 +3,7 @@ const Schema   = mongoose.Schema;
 
 const AdmininformationSchema = new Schema({
     code        : {type: String},
-    type        : {type: String, enum: ["success", "info", "warning", "danger"]},
+    type        : {type: String, enum: ['success', 'info', 'warning', 'danger']},
     translation : {},
     date        : {type: Date},
     deleted     : {type: Boolean}

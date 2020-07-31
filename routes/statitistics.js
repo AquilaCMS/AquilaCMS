@@ -1,5 +1,5 @@
 const moment                      = require('moment-business-days');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceStatistics           = require('../services/statistics');
 
 module.exports = function (app) {
@@ -119,8 +119,8 @@ async function getNewCustomer(req, res, next) {
  * Return "moment" date
  */
 function convertDate(dateStart, dateEnd) {
-    const periodeStart = moment(dateStart, "YYYY-MM-DD");
-    const periodeEnd   = moment(dateEnd, "YYYY-MM-DD");
+    const periodeStart = moment(dateStart, 'YYYY-MM-DD');
+    const periodeEnd   = moment(dateEnd, 'YYYY-MM-DD');
 
     return {periodeStart, periodeEnd};
 }

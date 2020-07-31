@@ -6,19 +6,19 @@ const {
     Products,
     Promo,
     Languages
-}                       = require("../orm/models");
+}                       = require('../orm/models');
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
-const NSErrors          = require("../utils/errors/NSErrors");
-const servicesLanguages = require("./languages");
-const ServicePromo      = require("./promo");
-const ServiceShipment   = require("./shipment");
-const ServicesProducts   = require("./products");
-const ServiceAuth       = require("./auth");
-const servicesTerritory = require("./territory");
+const NSErrors          = require('../utils/errors/NSErrors');
+const servicesLanguages = require('./languages');
+const ServicePromo      = require('./promo');
+const ServiceShipment   = require('./shipment');
+const ServicesProducts   = require('./products');
+const ServiceAuth       = require('./auth');
+const servicesTerritory = require('./territory');
 
 const restrictedFields = [];
-const defaultFields    = ["_id", "delivery", "status", "items", "promos", "orderReceipt"];
+const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
 const queryBuilder     = new QueryBuilder(Cart, restrictedFields, defaultFields);
 
 const getCarts = async (PostBody) => {
@@ -29,7 +29,7 @@ const getCarts = async (PostBody) => {
  * Get cart(s) for this client
  */
 const getCartforClient = async (idclient) => {
-    return Cart.find({"customer.id": mongoose.Types.ObjectId(idclient)});
+    return Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 };
 
 const getCartById = async (id, PostBody = null, user = null, lang = null, req = null) => {
@@ -40,7 +40,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
         if (structure.score) {
             PostBody.structure = {score: structure.score};
         }
-        queryBuilder.defaultFields = ["*"];
+        queryBuilder.defaultFields = ['*'];
     }
     let cart = await queryBuilder.findById(id, PostBody);
 
@@ -86,12 +86,12 @@ const setCartAddresses = async (cartId, addresses) => {
         console.log(err);
         throw err;
     }
-    return {code: "CART_UPDATE_ADDRESSES_SUCCESS", data: {cart: resp}};
+    return {code: 'CART_UPDATE_ADDRESSES_SUCCESS', data: {cart: resp}};
 };
 
 const setComment = async (cartId, comment) => {
     const resp = await Cart.findOneAndUpdate({_id: cartId}, {comment}, {new: true});
-    return {code: "CART_UPDATE_COMMENT_SUCCESS", data: {cart: resp}};
+    return {code: 'CART_UPDATE_COMMENT_SUCCESS', data: {cart: resp}};
 };
 
 const deleteCartItem = async (cartId, itemId) => {
@@ -99,9 +99,9 @@ const deleteCartItem = async (cartId, itemId) => {
     if (!cart) throw NSErrors.CartNotFound;
     cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
     if (!cart) throw NSErrors.CartInactive;
-    const itemIndex = cart.items.findIndex((item) => item.id._id.toString() === itemId);
+    const itemIndex = cart.items.findIndex((item) => item._id.toString() === itemId);
     if (itemIndex > -1) {
-        if (global.envConfig.stockOrder.bookingStock === "panier") {
+        if (global.envConfig.stockOrder.bookingStock === 'panier') {
             const ServicesProducts = require('./products');
             const cartItem = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
@@ -119,7 +119,11 @@ const deleteCartItem = async (cartId, itemId) => {
                 }
             }
         }
-        cart = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {$pull: {items: {id: {_id: itemId}}}}, {new: true});
+        cart = await Cart.findOneAndUpdate(
+            {_id: cartId, status: 'IN_PROGRESS'},
+            {$pull: {items: {_id: itemId}}},
+            {new: true}
+        );
     } else {
         throw NSErrors.CartItemNotFound;
     }
@@ -141,13 +145,27 @@ const addItem = async (req) => {
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
     if (cart.items && cart.items.length) {
-        const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
-        if (index > -1) {
-            req.body.item._id = cart.items[index]._id.toString();
-            req.body.item.quantity += cart.items[index].quantity;
-            delete req.body.item.id;
-            delete req.body.item.weight;
-            return updateQty(req);
+        // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
+        const indexes = cart.items.toObject()
+            .map((val, index) => ({val, index}))
+            .filter(({val}) => val.id._id.toString() === _product._id.toString())
+            .map(({index}) => index);
+        for (const index of indexes) {
+            if (
+                cart.items[index].type === 'bundle'
+                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => {
+                    return {bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]};
+                })) !== JSON.stringify(req.body.item.selections)
+            // eslint-disable-next-line no-empty
+            ) {
+                continue;
+            } else {
+                req.body.item._id = cart.items[index]._id.toString();
+                req.body.item.quantity += cart.items[index].quantity;
+                delete req.body.item.id;
+                delete req.body.item.weight;
+                return updateQty(req);
+            }
         }
     }
     if (_product.translation[_lang.code]) {
@@ -164,7 +182,7 @@ const addItem = async (req) => {
         user = ServiceAuth.getDecodedToken(req.headers.authorization);
     }
     const item = {...req.body.item, weight: _product.weight};
-    if (_product.type !== "virtual") item.stock = _product.stock;
+    if (_product.type !== 'virtual') item.stock = _product.stock;
     const data = await _product.addToCart(cart, item, user ? user.info : {}, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
@@ -185,28 +203,38 @@ const updateQty = async (req) => {
     }
     let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'});
     if (!cart) {
-        return {code: 'INACTIVE_CART', message: 'Panier inactif', status: 404};
+        throw NSErrors.InactiveCart;
     }
 
     const item = cart.items.find((item) => item._id.toString() === req.body.item._id);
     const _product = await Products.findOne({_id: item.id});
 
-    if (global.envConfig.stockOrder.bookingStock === "panier") {
+    if (global.envConfig.stockOrder.bookingStock === 'panier') {
         const ServicesProducts = require('./products');
 
         const quantityToAdd = req.body.item.quantity - item.quantity;
-        if (_product.type === "simple") {
-            if (quantityToAdd > 0 && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable) throw NSErrors.ProductNotInStock;
+        if (_product.type === 'simple') {
+            if (
+                quantityToAdd > 0
+                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+            ) {
+                throw NSErrors.ProductNotInStock;
+            }
             // Reza de la qte
             await ServicesProducts.updateStock(_product._id, -quantityToAdd);
-        } else if (_product.type === "bundle") {
+        } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
                 // on check que chaque produit soit commandable
                 for (let j = 0; j < selectionProducts.length; j++) {
                     const selectionProduct = await Products.findById(selectionProducts[j]);
                     if (selectionProduct.type === 'simple') {
-                        if (quantityToAdd > 0 && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable) throw NSErrors.ProductNotInStock;
+                        if (
+                            quantityToAdd > 0
+                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                        ) {
+                            throw NSErrors.ProductNotInStock;
+                        }
                         await ServicesProducts.updateStock(selectionProduct._id, -quantityToAdd);
                     }
                 }
@@ -222,7 +250,7 @@ const updateQty = async (req) => {
         {new: true}
     );
     if (!cart) {
-        return {code: 'INACTIVE_CART', message: 'Panier inactif', status: 404};
+        throw NSErrors.InactiveCart;
     }
     await linkCustomerToCart(cart, req);
     let user = null;
@@ -232,7 +260,7 @@ const updateQty = async (req) => {
     cart = await ServicePromo.checkForApplyPromo(user, cart);
     await cart.save();
     // Event appelé par les modules pour récupérer les modifications dans le panier
-    const shouldUpdateCart = aquilaEvents.emit("aqReturnCart");
+    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
     if (shouldUpdateCart) {
         cart = await Cart.findOne({_id: cart._id});
     }
@@ -264,7 +292,7 @@ const checkCountryTax = async (_cart, _user) => {
     return paidTax;
 };
 
-const cartToOrder = async (cartId, _user, lang = "") => {
+const cartToOrder = async (cartId, _user, lang = '') => {
     try {
         const _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         if (!_cart) {
@@ -307,7 +335,7 @@ const cartToOrder = async (cartId, _user, lang = "") => {
         }
         // On verifie que les produits du panier soient bien commandable
         const {bookingStock} = global.envConfig.stockOrder;
-        if (bookingStock === "commande") {
+        if (bookingStock === 'commande') {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
                 const _product = await Products.findOne({_id: cartItem.id});
@@ -323,7 +351,7 @@ const cartToOrder = async (cartId, _user, lang = "") => {
                         for (let k = 0; k < section.products.length; k++) {
                             const productId = section.products[k];
                             const _product_section = await Products.findOne({_id: productId.id});
-                            if (_product_section.type === "simple") {
+                            if (_product_section.type === 'simple') {
                                 if ((_product_section.stock.orderable) === false) {
                                     throw NSErrors.ProductNotOrderable;
                                 }
@@ -371,7 +399,7 @@ const cartToOrder = async (cartId, _user, lang = "") => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
-        if (_cart.schema.path("point_of_sale")) {
+        if (_cart.schema.path('point_of_sale')) {
             newOrder.point_of_sale = cartObj.point_of_sale;
         }
         // Si le mode de réception de la commande est la livraison...
@@ -406,7 +434,7 @@ const cartToOrder = async (cartId, _user, lang = "") => {
                 await Promo.updateOne({'codes._id': createdOrder.promos[0].promoCodeId}, {$inc: {'codes.$.used': 1}});
                 // alors nous devons aussi actualiser le nombre de client unique ayant utilisé ce code promo
                 const result = await Orders.distinct('customer.id', {'promos.promoCodeId': createdOrder.promos[0].promoCodeId});
-                await Promo.updateOne({"codes._id": createdOrder.promos[0].promoCodeId}, {$set: {"codes.$.client_used": result.length}});
+                await Promo.updateOne({'codes._id': createdOrder.promos[0].promoCodeId}, {$set: {'codes.$.client_used': result.length}});
             // TODO P6 : Décrémenter le stock du produit offert
             // if (_cart.promos[0].gifts.length)
             } catch (err) {
@@ -430,7 +458,7 @@ const removeOldCarts = async () => {
     for (let cartIndex = 0; cartIndex < carts.length; cartIndex++) {
         for (let cartItemIndex = 0; cartItemIndex < carts[cartIndex].items.length; cartItemIndex++) {
             // On gère les stock et reservation panier
-            if (bookingStock === "panier") {
+            if (bookingStock === 'panier') {
                 const ServicesProducts = require('./products');
                 const cartItem = carts[cartIndex].items[cartItemIndex];
                 if (cartItem.type === 'simple') {
@@ -452,7 +480,7 @@ const removeOldCarts = async () => {
     }
 
     const nbDelete = await Cart.deleteMany(params);
-    require("./stats").addOldCart(nbDelete.n);
+    require('./stats').addOldCart(nbDelete.n);
 };
 
 /**
@@ -526,14 +554,14 @@ const updateDelivery = async (datas) => {
 const removeDiscount = async (id) => {
     const updCart = await Cart.findOneAndUpdate({_id: id, status: 'IN_PROGRESS'}, {$pop: {promos: 1}}, {new: true});
     if (!updCart) {
-        return {status: false, code: 'INACTIVE_CART', message: 'Panier inactif'};
+        throw NSErrors.InactiveCart;
     }
     return {code: 'CART_DISCOUNT_REMOVE', data: {cart: updCart}};
 };
 
 const validateForCheckout = (cart) => {
     if (!cart.orderReceipt || !cart.orderReceipt.method) {
-        return {code: 'NOTFOUND_RECEIPT_METHOD', message: "Mode de réception de commande non indiqué."};
+        return {code: 'NOTFOUND_RECEIPT_METHOD', message: 'Mode de réception de commande non indiqué.'};
     }
 
     return {code: 'VALID'};
@@ -543,7 +571,7 @@ const validateForCheckout = (cart) => {
  * @Deprecated
  */
 const _expireCarts = async () => {
-    require("../utils/utils").tmp_use_route("cart_service", "_expireCarts");
+    require('../utils/utils').tmp_use_route('cart_service', '_expireCarts');
     // Actually expire each cart
     const expiredCarts = await Cart.find({status: 'EXPIRING'});
     if (!expiredCarts) {
@@ -552,18 +580,18 @@ const _expireCarts = async () => {
     expiredCarts.forEach(function (currCart) {
         let nbItem = 0;
         currCart.items.forEach(async (item) => {
-            let where = {id: item.id, "carted.id_cart": currCart._id, "carted.qty": item.qty};
+            let where = {id: item.id, 'carted.id_cart': currCart._id, 'carted.qty': item.qty};
             let action = {$pull: {carted: {id_cart: currCart._id}}};
             if (item.variation_id) {
-                where["carted.id_variation"] = item.variation_id;
+                where['carted.id_variation'] = item.variation_id;
                 action.$pull.carted.id_variation = item.variation_id;
             }
 
             await Products.findOneAndUpdate(where, action);
             where = {id: item.product_id, qty: {$ne: null}};
             if (item.variation_id) {
-                where["variation_event._id"] = item.variation_id;
-                action = {$inc: {"variation_event.$.qty": item.qty}};
+                where['variation_event._id'] = item.variation_id;
+                action = {$inc: {'variation_event.$.qty': item.qty}};
             } else {
                 action = {$inc: {qty: item.qty}};
             }

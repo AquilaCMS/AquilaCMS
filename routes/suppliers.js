@@ -1,8 +1,8 @@
-const {Suppliers, Products}       = require("../orm/models");
+const {Suppliers, Products}       = require('../orm/models');
 const ServiceSuppliers            = require('../services/suppliers');
 const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require("../middleware/authentication");
-const NSErrors                    = require("../utils/errors/NSErrors");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const NSErrors                    = require('../utils/errors/NSErrors');
 const utils                       = require('../utils/utils');
 
 module.exports = function (app) {
@@ -12,13 +12,13 @@ module.exports = function (app) {
     app.delete('/v2/supplier/:id', authentication, adminAuth, deleteSupplier);
 
     // Deprecated
-    app.get("/suppliers", middlewareServer.deprecatedRoute, list);
-    app.get("/suppliers/:id", middlewareServer.deprecatedRoute, detail);
-    app.get("/suppliers/getById/:id", middlewareServer.deprecatedRoute, getById);
-    app.get("/suppliers/products/:id", middlewareServer.deprecatedRoute, getSupplierProducts);
-    app.post("/suppliers", middlewareServer.deprecatedRoute, save);
-    app.post("/suppliers/search", middlewareServer.deprecatedRoute, searchSupplier);
-    app.delete("/suppliers/:code", middlewareServer.deprecatedRoute, remove);
+    app.get('/suppliers', middlewareServer.deprecatedRoute, list);
+    app.get('/suppliers/:id', middlewareServer.deprecatedRoute, detail);
+    app.get('/suppliers/getById/:id', middlewareServer.deprecatedRoute, getById);
+    app.get('/suppliers/products/:id', middlewareServer.deprecatedRoute, getSupplierProducts);
+    app.post('/suppliers', middlewareServer.deprecatedRoute, save);
+    app.post('/suppliers/search', middlewareServer.deprecatedRoute, searchSupplier);
+    app.delete('/suppliers/:code', middlewareServer.deprecatedRoute, remove);
 };
 
 const listSuppliers = async (req, res, next) => {
@@ -67,7 +67,7 @@ const deleteSupplier = async (req, res, next) => {
 const searchSupplier = async (req, res, next) => {
     try {
         const queryCondition = {
-            $or : [{name: new RegExp(req.body.q, "i")}, {code: new RegExp(req.body.q, "i")}]
+            $or : [{name: new RegExp(req.body.q, 'i')}, {code: new RegExp(req.body.q, 'i')}]
         };
         const foundSuppliers = await Suppliers.find(queryCondition, null, {
             skip  : (req.body.start - 1) * req.body.limit,
@@ -174,7 +174,7 @@ const remove = async (req, res, next) => {
         const supplier = await Suppliers.findOne({code: req.params.code});
         if (!supplier) throw NSErrors.NotFound;
 
-        await Products.updateMany({supplier_ref: supplier._id}, {$unset: {supplier_ref: ""}});
+        await Products.updateMany({supplier_ref: supplier._id}, {$unset: {supplier_ref: ''}});
         supplier.remove();
         res.status(200).end();
     } catch (err) {

@@ -31,19 +31,6 @@ if (process.browser) {
 if (!i18nInstance.isInitialized) i18nInstance.init(options);
 
 if (module.hot) {
-    /* module.hot.accept('./assets/i18n/index.js', () => {
-        const res = require('./assets/i18n/index.js');
-        Object
-            .keys(res)
-            .forEach((lang) => {
-                Object
-                    .keys(res[lang])
-                    .forEach((namespace) => {
-                        i18nInstance.addResourceBundle(lang, namespace, res[lang][namespace], true, true);
-                    });
-            });
-        i18nInstance.emit('loaded');
-    }); */
     // Ajout des traductions AQLRC + thème fusionnées avec overwrite
     for (const l in loadAssets.assets) {
         for (const ns in loadAssets.assets[l]) {
@@ -51,8 +38,6 @@ if (module.hot) {
         }
     }
 }
-
-// i18nInstance.on()
 
 // a simple helper to getInitialProps passed on loaded i18n data
 const getInitialProps =  (req, namespaces) => {

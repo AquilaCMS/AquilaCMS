@@ -13,28 +13,28 @@ const {
     Slider,
     Opts,
     Mail
-}                      = require("../orm/models");
-const utils            = require("../utils/utils");
+}                      = require('../orm/models');
+const utils            = require('../utils/utils');
 const utilsModules     = require('../utils/modules');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const fsp              = require('../utils/fsp');
-const NSErrors         = require("../utils/errors/NSErrors");
+const NSErrors         = require('../utils/errors/NSErrors');
 const server           = require('../utils/server');
 const utilsMedias      = require('../utils/medias');
 const {getChar}        = require('./cache');
 
 const restrictedFields = [];
-const defaultFields    = ["*"];
+const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultFields);
 
 /**
  * Permet de télécharger un zip contenant tous le dossier "upload"
  */
 exports.downloadAllDocuments = async () => {
-    console.log("Preparing downloadAllDocuments...");
+    console.log('Preparing downloadAllDocuments...');
     const uploadDirectory = server.getUploadDirectory();
 
-    await utilsModules.modulesLoadFunctions("downloadAllDocuments", {}, () => {
+    await utilsModules.modulesLoadFunctions('downloadAllDocuments', {}, () => {
         if (!fsp.existsSync(`./${uploadDirectory}/temp`)) {
             fsp.mkdirSync(`./${uploadDirectory}/temp`);
         }
@@ -55,7 +55,7 @@ exports.downloadAllDocuments = async () => {
             if (err) console.error(err);
         });
     });
-    console.log("Finalize downloadAllDocuments..");
+    console.log('Finalize downloadAllDocuments..');
     return fsp.readFile(path.resolve(uploadDirectory, 'temp/documents.zip'), 'binary');
 };
 
@@ -63,7 +63,7 @@ exports.downloadAllDocuments = async () => {
  * @description Upload zip with all medias
  */
 exports.uploadAllMedias = async (reqFile, insertDB) => {
-    console.log("Upload medias start...");
+    console.log('Upload medias start...');
 
     const path_init   = reqFile.path;
     const path_unzip  = path_init.split('.')
@@ -102,7 +102,7 @@ exports.uploadAllMedias = async (reqFile, insertDB) => {
         }
     });
 
-    console.log("Upload medias done !");
+    console.log('Upload medias done !');
 };
 
 /* **************** Documents **************** *
@@ -111,7 +111,7 @@ exports.uploadAllMedias = async (reqFile, insertDB) => {
  * @description Upload zip with all documents
  */
 exports.uploadAllDocuments = async (reqFile) => {
-    console.log("Uploading Documents for unzip...");
+    console.log('Uploading Documents for unzip...');
 
     const path_init   = reqFile.path;
     const target_path = `./${server.getUploadDirectory()}`;
@@ -119,7 +119,7 @@ exports.uploadAllDocuments = async (reqFile) => {
     // Unzip
     const zip = new AdmZip(path_init);
     zip.extractAllTo(target_path);
-    console.log("Upload Documents is done !");
+    console.log('Upload Documents is done !');
 };
 
 /**
@@ -143,7 +143,7 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     switch (type) {
     // si une image produit est requêtée
     case 'products':
-        const product = await Products.findOne({"images._id": _id});
+        const product = await Products.findOne({'images._id': _id});
         imageObj = product.images.find((img) => img._id.toString() === _id.toString());
         // on recupere le nom du fichier
         fileName = path.basename(imageObj.url);
@@ -167,7 +167,7 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
         break;
     case 'slider':
     case 'gallery':
-        const obj = await mongoose.model(type).findOne({"items._id": _id});
+        const obj = await mongoose.model(type).findOne({'items._id': _id});
         imageObj = obj.items.find((item) => item._id.toString() === _id.toString());
         fileName = path.basename(imageObj.src, `.${extension}`);
         if (await utilsMedias.existsFile(imageObj.src)) {
@@ -218,9 +218,9 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     if (fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
-    if (size === 'max' || size === "MAX") {
-        await utilsModules.modulesLoadFunctions("downloadFile", {
-            key     : filePath.substr(_path.length + 1).replace(/\\/g, "/"),
+    if (size === 'max' || size === 'MAX') {
+        await utilsModules.modulesLoadFunctions('downloadFile', {
+            key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
             outPath : filePathCache
         }, () => {
             fsp.copyFileSync(filePath, filePathCache);
@@ -228,8 +228,8 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     } else {
         // sinon, on recupere l'image original, on la resize, on la compresse et on la retourne
         // resize
-        filePath = await utilsModules.modulesLoadFunctions("getFile", {
-            key : filePath.substr(_path.length + 1).replace(/\\/g, "/")
+        filePath = await utilsModules.modulesLoadFunctions('getFile', {
+            key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
         }, () => {
             return filePath;
         });
@@ -244,7 +244,7 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
             .toFile(filePathCache);
     }
     // compressage
-    filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ""), fileName, quality);
+    filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
     return filePathCache;
 };
 
@@ -268,7 +268,7 @@ exports.uploadFiles = async (body, files) => {
         break;
     }
     case 'media': {
-        target_path = `medias/`;
+        target_path = 'medias/';
         break;
     }
     case 'attribute': {
@@ -281,7 +281,7 @@ exports.uploadFiles = async (body, files) => {
         break;
     }
     case 'mail': {
-        target_path = `documents/mail/`;
+        target_path = 'documents/mail/';
         break;
     }
     default:
@@ -290,7 +290,7 @@ exports.uploadFiles = async (body, files) => {
 
     let target_path_full = target_path + files[0].originalname + extension;
     let name             = files[0].originalname;
-    target_path_full     = await utilsModules.modulesLoadFunctions("uploadFile", {
+    target_path_full     = await utilsModules.modulesLoadFunctions('uploadFile', {
         target_path,
         target_path_full,
         file : files[0],
@@ -305,6 +305,7 @@ exports.uploadFiles = async (body, files) => {
         }
 
         await fsp.copyRecursiveSync(tmp_path, path.normalize(target_path_full));
+        await fsp.deleteRecursiveSync(tmp_path);
 
         return target_path_full.replace(pathFinal, '');
     });
@@ -358,7 +359,7 @@ exports.uploadFiles = async (body, files) => {
         return {name: name + extension, path: target_path_full};
     }
     case 'media': {
-        if (body._id && body._id !== "") {
+        if (body._id && body._id !== '') {
             const result = await Medias.findOne({_id: body._id});
             await deleteFileAndCacheFile(result.link, 'medias');
             await Medias.updateOne({_id: body._id}, {link: target_path_full, extension: path.extname(target_path_full)});
@@ -374,12 +375,12 @@ exports.uploadFiles = async (body, files) => {
             const item    = gallery.items.find((i) => i._id === body.entity._id);
             const oldPath = item.src;
             item.src      = target_path_full;
-            item.alt      = body.alt && body.alt !== "" ? body.alt : item.alt;
+            item.alt      = body.alt && body.alt !== '' ? body.alt : item.alt;
             item.srcset   = [target_path_full];
             await Gallery.updateOne({'items._id': body.entity._id}, {
                 $set : {
                     'items.$.src'       : target_path_full,
-                    'items.$.alt'       : body.alt && body.alt !== "" ? body.alt : item.alt,
+                    'items.$.alt'       : body.alt && body.alt !== '' ? body.alt : item.alt,
                     'items.$.srcset'    : [target_path_full],
                     'items.$.extension' : path.extname(target_path_full)
                 }
@@ -398,7 +399,7 @@ exports.uploadFiles = async (body, files) => {
             sizes     : [],
             alt       : body.alt,
             order     : maxOrder + 1,
-            type      : "photo",
+            type      : 'photo',
             extension : path.extname(target_path_full)
         };
         await Gallery.updateOne({_id: body._id}, {$push: {items: item}});
@@ -413,8 +414,8 @@ exports.uploadFiles = async (body, files) => {
             const item    = slider.items.find((i) => i.id === body.entity._id);
             const oldPath = item.src;
             item.src      = target_path_full;
-            item.name     = body.alt && body.alt !== "" ? body.alt : item.name;
-            item.text     = body.alt && body.alt !== "" ? body.alt : item.text;
+            item.name     = body.alt && body.alt !== '' ? body.alt : item.name;
+            item.text     = body.alt && body.alt !== '' ? body.alt : item.text;
             await Slider.updateOne({'items._id': body.entity._id}, {
                 $set : {
                     'items.$.src'  : target_path_full,
@@ -436,7 +437,7 @@ exports.uploadFiles = async (body, files) => {
             src       : target_path_full,
             text      : name,
             name,
-            href      : "",
+            href      : '',
             extension : path.extname(target_path_full)
         };
         await Slider.updateOne({_id: body._id}, {$push: {items: item}});
@@ -445,7 +446,7 @@ exports.uploadFiles = async (body, files) => {
         return item;
     }
     case 'attribute': {
-        if (body.entity.value && body.entity.value !== "") {
+        if (body.entity.value && body.entity.value !== '') {
             await utilsMedias.deleteFile(body.entity.value);
         }
 
@@ -491,7 +492,7 @@ exports.getMedia = async function (PostBody) {
 };
 
 exports.saveMedia = async function (media) {
-    if (media.link && media.link !== "") {
+    if (media.link && media.link !== '') {
         const result = await Medias.findOneAndUpdate({link: media.link}, media);
         return result;
     }
@@ -506,14 +507,18 @@ exports.removeMedia = async function (_id) {
 
     if (result.link) {
         await utilsMedias.deleteFile(result.link);
-        require("./cache").deleteCacheImage('medias', {filename: path.basename(result.link).split('.')[0]});
+        require('./cache').deleteCacheImage('medias', {filename: path.basename(result.link).split('.')[0]});
     }
     return result;
 };
 
+exports.getMediasGroups = async function () {
+    return Medias.distinct('group');
+};
+
 function createFolderIfNotExist(dir) {
     if (!fsp.existsSync(dir)) {
-        createFolderIfNotExist(path.join(dir, ".."));
+        createFolderIfNotExist(path.join(dir, '..'));
         fsp.mkdirSync(dir);
     }
 }
@@ -521,6 +526,6 @@ function createFolderIfNotExist(dir) {
 async function deleteFileAndCacheFile(link, type) {
     if (link && path.basename(link).includes('.')) {
         await utilsMedias.deleteFile(link);
-        require("./cache").deleteCacheImage(type, {filename: path.basename(link).split('.')[0], extension: path.extname(link)});
+        require('./cache').deleteCacheImage(type, {filename: path.basename(link).split('.')[0], extension: path.extname(link)});
     }
 }

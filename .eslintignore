@@ -1,9 +1,9 @@
 node_modules/
-themes/
-documentations/
-
-modules/**
-updates/
-backoffice/
-bo/
+/modules
+/updates
+/themes
+/documentations
+/backoffice
+/bo
+/uploads
 config/dynamic_langs.js

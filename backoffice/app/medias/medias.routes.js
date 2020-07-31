@@ -14,9 +14,9 @@ MediasRoutes.config(['$routeProvider',
 					checkAccess: checkAccess('medias'),
                 }
             })
-            .when('/medias/new', {
+            .when('/medias/:id', {
                 name: 'medias',
-                controller: 'MediasNewCtrl',
+                controller: 'MediasDetailsCtrl',
                 templateUrl: 'app/medias/views/medias-new.html',
                 resolve: {
                     loggedin: checkLoggedin,

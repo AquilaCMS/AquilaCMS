@@ -1,21 +1,22 @@
-const path                        = require("path");
-const {authentication, adminAuth} = require("../middleware/authentication");
+const path                        = require('path');
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer}          = require('../middleware');
 const mediasServices              = require('../services/medias');
 const utils                       = require('../utils/utils');
 const mediasUtils                 = require('../utils/medias');
-const NSErrors                    = require("../utils/errors/NSErrors");
-const {Medias}                    = require("../orm/models");
+const NSErrors                    = require('../utils/errors/NSErrors');
+const {Medias}                    = require('../orm/models');
 
 module.exports = function (app) {
-    app.post("/v2/medias", listMedias);
-    app.post("/v2/media", getMedia);
-    app.put("/v2/media", authentication, adminAuth, saveMedia);
-    app.delete("/v2/media/:_id", authentication, adminAuth, removeMedia);
-    app.post("/v2/medias/upload", uploadFiles);
-    app.get("/v2/medias/download/documents", authentication, adminAuth, downloadAllDocuments);
-    app.post("/v2/medias/download/documents", authentication, adminAuth, uploadAllDocuments);
-    app.post("/v2/medias/download/medias", authentication, adminAuth, uploadAllMedias);
+    app.post('/v2/medias', authentication, adminAuth, listMedias);
+    app.post('/v2/media', getMedia);
+    app.put('/v2/media', authentication, adminAuth, saveMedia);
+    app.delete('/v2/media/:_id', authentication, adminAuth, removeMedia);
+    app.post('/v2/medias/upload', uploadFiles);
+    app.get('/v2/medias/groups', getMediasGroups);
+    app.get('/v2/medias/download/documents', authentication, adminAuth, downloadAllDocuments);
+    app.post('/v2/medias/download/documents', authentication, adminAuth, uploadAllDocuments);
+    app.post('/v2/medias/download/medias', authentication, adminAuth, uploadAllMedias);
 
     // Deprecated
     app.get('/medias', middlewareServer.deprecatedRoute, list);
@@ -93,12 +94,27 @@ async function uploadFiles(req, res, next) {
 }
 
 /**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function getMediasGroups(req, res, next) {
+    try {
+        const result = await mediasServices.getMediasGroups();
+        return res.json(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
  * @description Upload zip with all medias
  */
 async function uploadAllMedias(req, res, next) {
     if (path.extname(req.files[0].originalname) === '.zip') {
         try {
-            mediasServices.uploadAllMedias(req.files[0], req.body.insertDB === "true");
+            mediasServices.uploadAllMedias(req.files[0], req.body.insertDB === 'true');
             res.json({name: req.files[0].originalname});
         } catch (exc) {
             next(exc);
@@ -171,7 +187,7 @@ async function list(req, res, next) {
 async function save(req, res, next) {
     const data = req.body;
     try {
-        if (data.link && data.link !== "") {
+        if (data.link && data.link !== '') {
             const media = await Medias.findOneAndUpdate({link: data.link}, data);
             res.json(media);
         } else {
@@ -198,7 +214,7 @@ const remove = async (req, res, next) => {
 
         if (media.link) {
             await mediasUtils.deleteFile(media.link);
-            require("../services/cache").deleteCacheImage('medias', {filename: path.basename(media.link).split('.')[0]});
+            require('../services/cache').deleteCacheImage('medias', {filename: path.basename(media.link).split('.')[0]});
         }
         await media.remove();
         return res.end();

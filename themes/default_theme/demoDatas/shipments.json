@@ -23,16 +23,8 @@
 				],
 				"_id": "5c6675ce583a67281c09f558",
 				"country": "FR",
-				"translation": {
-					"fr": {
-						"delay": 1,
-						"unit": "day"
-					},
-					"en": {
-						"delay": 1,
-						"unit": "day"
-					}
-				}
+				"delay": 1,
+				"unit": "day"
 			},
 			{
 				"prices": [{
@@ -50,16 +42,8 @@
 				],
 				"_id": "5c6675ce583a67281c09f555",
 				"country": "UK",
-				"translation": {
-					"fr": {
-						"delay": 2,
-						"unit": "day"
-					},
-					"en": {
-						"delay": 1,
-						"unit": "day"
-					}
-				}
+				"delay": 1,
+				"unit": "day"
 			}
 		],
 		"_id": "5c667592583a67281c09f54c",

@@ -1,25 +1,25 @@
 const mongoose     = require('mongoose');
-const aquilaEvents = require("../../utils/aquilaEvents");
+const aquilaEvents = require('../../utils/aquilaEvents');
 const Schema       = mongoose.Schema;
 const ObjectId     = Schema.ObjectId;
 
 const itemsSchema = new Schema({
-    id     : {type: ObjectId, ref: "products", required: true},
+    id     : {type: ObjectId, ref: 'products', required: true},
     status : {type : String,
         enum : [
-            "PROCESSING",
-            "DELIVERY_PROGRESS",
-            "DELIVERY_PARTIAL_PROGRESS",
-            "RETURNED",
-            "RETURNED_PARTIAL"
+            'PROCESSING',
+            'DELIVERY_PROGRESS',
+            'DELIVERY_PARTIAL_PROGRESS',
+            'RETURNED',
+            'RETURNED_PARTIAL'
         ],
-        default : "PROCESSING"
+        default : 'PROCESSING'
     },
     name               : String,
     code               : String,
     image              : String,
-    parent             : {type: ObjectId, ref: "products"},
-    children           : [{type: ObjectId, ref: "products"}],
+    parent             : {type: ObjectId, ref: 'products'},
+    children           : [{type: ObjectId, ref: 'products'}],
     quantity           : {type: Number, required: true},
     weight             : {type: Number, default: 0},
     noRecalculatePrice : {type: Boolean, default: false},
@@ -40,12 +40,12 @@ const itemsSchema = new Schema({
     },
     atts : [],
     opts : []
-}, {discriminatorKey: "type"});
+}, {discriminatorKey: 'type'});
 
-itemsSchema.set("toJSON", {virtuals: true});
-itemsSchema.set("toObject", {virtuals: true});
+itemsSchema.set('toJSON', {virtuals: true});
+itemsSchema.set('toObject', {virtuals: true});
 
-itemsSchema.virtual("price.total").get(function () {
+itemsSchema.virtual('price.total').get(function () {
     const self = this;
     // const isChildKart = self.name && self.name.indexOf("enfant") > -1;
     let price = self.price.unit.ati;

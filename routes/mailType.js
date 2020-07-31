@@ -1,4 +1,4 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceMailType             = require('../services/mailType');
 
 module.exports = function (app) {

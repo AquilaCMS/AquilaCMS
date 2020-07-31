@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const NSErrors = require("./errors/NSErrors");
+const NSErrors = require('./errors/NSErrors');
 const servicesAuth = require('../services/auth');
 
 class PostBodyCheck {
@@ -30,17 +30,15 @@ module.exports = class QueryBuilder {
      * @param {mongoose.Model} model model
      * @param {string[]} [restrictedFields=[]] restrictedFields
      * @param {string[]} [defaultFields=[]] defaultFields
-     * @param {number} [maxLimit=100] maxLimit
      */
-    constructor(model, restrictedFields = [], defaultFields = [], maxLimit = 100) {
+    constructor(model, restrictedFields = [], defaultFields = []) {
         this.model = model;
         // Les projections par defaut
         this.defaultFields = defaultFields;
         // operateur ne devant jamais être utilisé dans le filter
-        this.restrictedOperators = ["$where"];
+        this.restrictedOperators = ['$where'];
         // champs ne devant jamais être retourné au client sauf si admin
         this.restrictedFields = restrictedFields;
-        this.maxLimit = maxLimit;
     }
 
     /**
@@ -57,14 +55,13 @@ module.exports = class QueryBuilder {
      * @param {PostBody} PostBody, PostBody object
      * @param {"find" | "findOne" | "findById"} [request=find], le type de requete : (find, findOne, findById)
      */
-    verifyPostBody(PostBody, request = "find") {
+    verifyPostBody(PostBody, request = 'find') {
         if (PostBody && PostBody.PostBody) { // Fix postbody pas au bon niveau
             PostBody = PostBody.PostBody;    // P2 : Comment cela se fait-il qu'il y ait un PostBody dans un PostBody ?!
         }
 
-        if (request === "find") {
+        if (request === 'find') {
             const postBodyChecked = new PostBodyCheck(PostBody.filter, PostBody.limit, PostBody.populate, PostBody.skip, PostBody.sort, PostBody.structure, PostBody.page);
-            if (postBodyChecked.limit > this.maxLimit) postBodyChecked.limit = this.maxLimit;
             if (this.containRestrictedLabels(postBodyChecked.filter)) throw NSErrors.OperatorRestricted;
             // Permet de créer une pagination
             if (postBodyChecked.page && Number.isInteger(Number(postBodyChecked.page))) {
@@ -73,9 +70,9 @@ module.exports = class QueryBuilder {
                 postBodyChecked.skip = (postBodyChecked.page - 1) * postBodyChecked.limit;
             }
             return postBodyChecked;
-        } if (request === "findOne") {
+        } if (request === 'findOne') {
             return PostBody ? new PostBodyCheck(PostBody.filter, 1, PostBody.populate, 0, {}, PostBody.structure) : new PostBodyCheck();
-        } if (request === "findById") {
+        } if (request === 'findById') {
             return PostBody ? new PostBodyCheck({}, 1, PostBody.populate, 0, {}, PostBody.structure) : new PostBodyCheck();
         }
     }
@@ -132,7 +129,7 @@ module.exports = class QueryBuilder {
         if (!PostBody.filter) throw NSErrors.PostBodyFilterUndefined;
         if (!Object.keys(PostBody.filter).length) throw NSErrors.PostBodyFilterUndefined;
         // création d'un objet PostBody avec des valeurs par défaut
-        const postBodyCheck = this.verifyPostBody(PostBody, "findOne");
+        const postBodyCheck = this.verifyPostBody(PostBody, 'findOne');
         const {filter, populate, structure} = postBodyCheck;
         if (this.containRestrictedLabels(filter)) throw NSErrors.OperatorRestricted;
         const addStructure = this.addToStructure(structure);
@@ -163,7 +160,7 @@ module.exports = class QueryBuilder {
      */
     async findById(id, PostBody = null, header_authorization = null) {
         // création d'un objet PostBody avec des valeurs par défaut
-        const postBodyCheck = this.verifyPostBody(PostBody, "findById");
+        const postBodyCheck = this.verifyPostBody(PostBody, 'findById');
         const {populate, structure} = postBodyCheck;
         if (!mongoose.Types.ObjectId.isValid(id)) throw NSErrors.InvalidObjectIdError;
         const addStructure = this.addToStructure(structure);
@@ -179,16 +176,16 @@ module.exports = class QueryBuilder {
     addToStructure(structure, sort = null) {
         const structureAdd = [];
         // Si la structure[0] === "*" alors on renvoie tous les champs
-        if ((this.defaultFields && this.defaultFields[0] === "*") || structure === '*') {
+        if ((this.defaultFields && this.defaultFields[0] === '*') || structure === '*') {
             if (sort) {
                 Object.entries(sort).forEach(([key, value]) => {
-                    if (typeof sort[key] === "object" && sort[key].$meta) structureAdd.push({[key]: value});
+                    if (typeof sort[key] === 'object' && sort[key].$meta) structureAdd.push({[key]: value});
                 });
                 const defaultProjection = [...this.defaultFields, ...structureAdd];
                 const oProjection = {};
                 // On crée l'objet oProjection qui contiendra les champs a afficher
                 defaultProjection.forEach((struct) =>  {
-                    if (typeof struct === "object") {
+                    if (typeof struct === 'object') {
                         // exemple : struct == {"score": {"$meta": "textScore"}} dans la projection
                         const key = Object.keys(struct)[0];
                         oProjection[key] = struct[key];
@@ -199,15 +196,15 @@ module.exports = class QueryBuilder {
             return  {};
         }
         Object.entries(structure).forEach(([key, value]) => {
-            if (this.restrictedFields.includes(key)) console.log("includes ");
+            if (this.restrictedFields.includes(key)) console.log('includes ');
             else if (value === 1) structureAdd.push(key);
-            else if (typeof structure[key] === "object" && structure[key].$meta) structureAdd.push({[key]: value});
+            else if (typeof structure[key] === 'object' && structure[key].$meta) structureAdd.push({[key]: value});
         });
         const defaultProjection = [...this.defaultFields, ...structureAdd];
         const oProjection = {};
         // On crée l'objet oProjection qui contiendra les champs a afficher
         defaultProjection.forEach((struct) =>  {
-            if (typeof struct === "object") {
+            if (typeof struct === 'object') {
                 // exemple : struct == {"score": {"$meta": "textScore"}} dans la projection
                 const key = Object.keys(struct)[0];
                 oProjection[key] = struct[key];
@@ -228,7 +225,7 @@ module.exports = class QueryBuilder {
         const structureRemove = [...this.restrictedFields];
         Object.entries(structure)
             .forEach(([key, value]) => {
-                if (this.restrictedFields.includes(key)) console.log("includes ");
+                if (this.restrictedFields.includes(key)) console.log('includes ');
                 else if (value === 0) structureRemove.push(key);
             });
         if (datas.length) {

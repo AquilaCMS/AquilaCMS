@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {StatsTodaySchema} = require("../schemas");
+const {StatsTodaySchema} = require('../schemas');
 
-module.exports = mongoose.model("statstoday", StatsTodaySchema);
+module.exports = mongoose.model('statstoday', StatsTodaySchema);

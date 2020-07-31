@@ -1,12 +1,12 @@
 const mongoose                    = require('mongoose');
 const utilsDatabase               = require('../utils/database');
-const aquilaEvents                = require("../utils/aquilaEvents");
-const NSErrors                    = require("../utils/errors/NSErrors");
-const {Cart, ProductSimple}       = require("../orm/models");
+const aquilaEvents                = require('../utils/aquilaEvents');
+const NSErrors                    = require('../utils/errors/NSErrors');
+const {Cart, ProductSimple}       = require('../orm/models');
 const ServiceCart                 = require('../services/cart');
 const ServicePromo                = require('../services/promo');
 const {getDecodedToken}           = require('../services/auth');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
@@ -73,7 +73,7 @@ const getCartById = async (req, res, next) => {
             await utilsDatabase.populateItems(result.items);
             return res.json(result);
         }
-        throw NSErrors.CartNotFound;
+        return next(NSErrors.CartNotFound);
     } catch (error) {
         return next(error);
     }
@@ -193,7 +193,7 @@ async function deleteItem(req, res, next) {
             status : 'IN_PROGRESS'
         }, {$pull: {items: {_id: req.body.itemId}}}, {new: true});
         if (!cart) {
-            return res.status(404).json({code: 'INACTIVE_CART', message: 'Panier inactif.'});
+            return next(NSErrors.InactiveCart);
         }
         await ServiceCart.linkCustomerToCart(cart, req);
         // Si des promos sont présents et qu'on supprime un item dans le panier on verifie si le code promo peut toujours être utilisé
@@ -222,17 +222,17 @@ async function deleteItem(req, res, next) {
             }
             await cart.save();
             // Event appelé par les modules pour récupérer les modifications dans le panier
-            const shouldUpdateCart = aquilaEvents.emit("aqReturnCart");
+            const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
             if (shouldUpdateCart) {
                 cart = await Cart.findOne({_id: cart._id});
             }
             return res.json({
-                code : "CART_DELETE_ITEM_SUCCESS",
+                code : 'CART_DELETE_ITEM_SUCCESS',
                 data : {cart}
             });
         }
         // Event appelé par les modules pour récupérer les modifications dans le panier
-        const shouldUpdateCart = aquilaEvents.emit("aqReturnCart");
+        const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
         if (shouldUpdateCart) {
             cart = await Cart.findOne({_id: cart._id});
         }

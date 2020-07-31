@@ -5,15 +5,15 @@ const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
 const QueryBuilder            = require('../utils/QueryBuilder');
 const utils                   = require('../utils/utils');
+const utilsServer             = require('../utils/server');
 const utilsMedias             = require('../utils/medias');
-const NSErrors                = require("../utils/errors/NSErrors");
+const NSErrors                = require('../utils/errors/NSErrors');
 const servicesLanguages       = require('./languages');
 const ServicesDownloadHistory = require('./downloadHistory');
 const servicesCategory        = require('./categories');
 const serviceSetAttributs     = require('./setAttributes');
 const servicePromos           = require('./promo');
 const serviceReviews          = require('./reviews');
-const serviceOrder            = require('./orders');
 const {
     Configuration,
     Products,
@@ -25,7 +25,7 @@ const {
     Attributes,
     Territory,
     Languages
-}                             = require("../orm/models");
+}                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
 const defaultFields    = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
@@ -34,7 +34,7 @@ const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields)
 
 // si dans le config, on demande de ne pas retourner les champs de stock, on les ajoute au restrictedFields
 if (global.envConfig.stockOrder.returnStockToFront !== true) {
-    restrictedFields = restrictedFields.concat(["stock.qty", "stock.qty_booked", "stock.qty_real"]);
+    restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
 /**
@@ -52,12 +52,12 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
         // obligé d'avoir tous les champs pour les règles de promo
         structure = PostBody.structure;
         properties = Object.keys(PostBody.structure).concat(defaultFields);
-        properties.push("_id");
+        properties.push('_id');
         delete PostBody.structure;
-        if (properties.includes("score")) {
+        if (properties.includes('score')) {
             PostBody.structure = {score: structure.score};
         }
-        queryBuilder.defaultFields = ["*"];
+        queryBuilder.defaultFields = ['*'];
     }
     let result = await queryBuilder.find(PostBody);
     if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
@@ -66,11 +66,11 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
         }
 
         PostBody.filter.$or = [];
-        PostBody.filter.$or.push({[`translation.${lang}.name`]: {$regex: PostBody.filter.$text.$search, $options: "i"}});
-        PostBody.filter.$or.push({[`translation.${lang}.description1.title`]: {$regex: PostBody.filter.$text.$search, $options: "i"}});
-        PostBody.filter.$or.push({[`translation.${lang}.description1.text`]: {$regex: PostBody.filter.$text.$search, $options: "i"}});
-        PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: "i"}});
-        PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: "i"}});
+        PostBody.filter.$or.push({[`translation.${lang}.name`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
+        PostBody.filter.$or.push({[`translation.${lang}.description1.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
+        PostBody.filter.$or.push({[`translation.${lang}.description1.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
+        PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
+        PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         delete PostBody.filter.$text;
 
         result = await queryBuilder.find(PostBody);
@@ -202,7 +202,7 @@ const duplicateProduct = async (idProduct, newCode) => {
         qty        : 0,
         qty_booked : 0,
         orderable  : false,
-        status     : "liv"
+        status     : 'liv'
     };
     doc.code = newCode;
     await doc.save();
@@ -318,13 +318,41 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     // On récupére tous les produits appartenant a cette categorie afin d'avoir le min et max
     PostBody.filter._id = {$in: menu.productsList.map((item) => item.id._id.toString())};
+    let priceFilter;
+    if (PostBody.filter.$and) {
+        priceFilter = PostBody.filter.$and[0];
+        PostBody.filter.$and.shift();
+        if (PostBody.filter.$and.length === 0) delete PostBody.filter.$and;
+    }
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    const prds = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
+    let prds = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
+    let prdsPrices = JSON.parse(JSON.stringify(prds));
+
+    prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
+    if (priceFilter) {
+        prdsPrices = prdsPrices.filter((prd) => {
+            if (prd.price.ati.special) {
+                if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
+                    && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
+                    return true;
+                }
+            } else {
+                if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
+                    && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+        prds = prds.filter((prd) => prdsPrices
+            .map((prdPri) => prdPri._id.toString())
+            .indexOf(prd._id.toString()) !== -1);
+    }
+
     const arrayPrice = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
-
-    // let prdsPrices = await servicePromos.checkPromoCatalog(prds, user, lang, true);
 
     for (const prd of prds) {
         if (prd.price.et.special) {
@@ -341,8 +369,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     const priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
     const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
-    let prdsPrices = JSON.parse(JSON.stringify(prds));
-    prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
 
     for (const prd of prdsPrices) {
         if (prd.price.et.special) {
@@ -436,8 +462,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    if (PostBody.sort && PostBody.sort["price.priceSort"]) {
-        if (PostBody.sort["price.priceSort"] === "1") {
+    if (PostBody.sort && PostBody.sort['price.priceSort']) {
+        if (PostBody.sort['price.priceSort'] === '1') {
             tProducts = tProducts.sort((a, b) => {
                 if (a.price.priceSort > b.price.priceSort) {
                     return 1;
@@ -610,7 +636,7 @@ const deleteProduct = async (_id) => {
     if (!doc) throw NSErrors.ProductNotFound;
     await Categories.updateMany({}, {$pull: {productsList: {id: _id}}});
     await Products.updateMany({}, {$pull: {associated_prds: _id}});
-    const products = await Products.find({type: "bundle"});
+    const products = await Products.find({type: 'bundle'});
     for (let i = 0; i < products.length; i++) {
         const prd = products[i];
         for (const section of prd.bundle_sections) {
@@ -655,8 +681,8 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // si qtecdé est null, c'est que l'on teste si un produit bundle est orderable ou non
     if (qtecdé === null) {
-        if (objstock.status === "epu") {
-            datas.selling.message = {code: "Épuisé", translation: {fr: "Produit définitivement épuisé", en: "Product permanently out of stock"}};
+        if (objstock.status === 'epu') {
+            datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
             return datas;
         }
     }
@@ -664,16 +690,16 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
     const change_lib_stock = 5; // a récup en bdd
 
     if (typeof objstock.date_selling !== 'undefined'/* && objstock.date_selling > date.now() */) {
-        datas.selling.message   = {code: "OrderableFrom", translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
+        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
         datas.delivery.dates[0]  = objstock.date_selling;
     } else if (objstock.qty_real === 0 && objstock.status === 'epu') {
-        datas.selling.message   = {code: "Épuisé", translation: {fr: "Produit définitivement épuisé", en: "Product permanently out of stock"}};
+        datas.selling.message   = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
     } else if (objstock.qty_real <= change_lib_stock) {
-        datas.selling.message   = {code: "NbObjAvailable", translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
+        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
         datas.delivery.dates[0]  = 'today';
         datas.selling.sellable  = true;
     } else {
-        datas.selling.message   = {code: "Livrable", translation: {fr: "Produit disponible", en: "Available product"}};
+        datas.selling.message   = {code: 'Livrable', translation: {fr: 'Produit disponible', en: 'Available product'}};
         datas.delivery.dates[0]  = 'today';
         datas.selling.sellable  = true;
     }
@@ -681,7 +707,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
     // Commandable ?
     if (qtecdé > 0 && datas.selling.sellable) {
         if (qtecdé > objstock.qty_real) {
-            datas.ordering.message = {code: "NotEnoughPdts", translation: {fr: "Pas assez de produits disponibles pour votre commande.", en: "There not enough products in our stock for your order."}};
+            datas.ordering.message = {code: 'NotEnoughPdts', translation: {fr: 'Pas assez de produits disponibles pour votre commande.', en: 'There not enough products in our stock for your order.'}};
         } else {
             datas.ordering.orderable = true;
         }
@@ -763,11 +789,11 @@ const controlAllProducts = async () => {
             // Control du prix spécial
             if (
                 (
-                    !(typeof oneProduct.price.et.special === "undefined" || oneProduct.price.et.special == null)
+                    !(typeof oneProduct.price.et.special === 'undefined' || oneProduct.price.et.special == null)
                     && oneProduct.price.et.special <= 0
                 )
                 || (
-                    !(typeof oneProduct.price.ati.special === "undefined" || oneProduct.price.ati.special == null)
+                    !(typeof oneProduct.price.ati.special === 'undefined' || oneProduct.price.ati.special == null)
                     && oneProduct.price.ati.special <= 0
                 )
             ) {
@@ -775,7 +801,7 @@ const controlAllProducts = async () => {
             }
 
             // Control du stock
-            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type !== "bundle") { // On gère le stock
+            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type !== 'bundle') { // On gère le stock
                 if (typeof oneProduct.stock === 'undefined' || oneProduct.stock.length === 0 || (oneProduct.stock.qty <= 0 && oneProduct.stock.status === 'liv')) {
                     returnWarning += `<b>${oneProduct.code}</b> : Stock issues<br/>`;
                 }
@@ -849,7 +875,7 @@ function checkAttribsValidity(array) {
 }
 
 const applyTranslatedAttribs = async (PostBody) => {
-    require("../utils/utils").tmp_use_route("products_service", "applyTranslatedAttribs");
+    require('../utils/utils').tmp_use_route('products_service', 'applyTranslatedAttribs');
 
     try {
         // On récupere ts les produits
@@ -907,7 +933,9 @@ const downloadProduct = async (req, res) => {
     // si produit payant et que l'on passe par une commande
     if (req.query.op_id) {
         // on check que la commande et le produit existe
-        const order = await serviceOrder.getOrder({filter: {'customer.id': user._id, 'items._id': req.query.op_id}, structure: '*', populate: 'items.id'});
+
+        // require('./orders') : need to use require there because circular reference is detected
+        const order = await require('./orders').getOrder({filter: {'customer.id': user._id.toString(), 'items._id': req.query.op_id}, structure: '*', populate: 'items.id'});
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
@@ -937,22 +965,36 @@ const downloadProduct = async (req, res) => {
     } else {
         throw NSErrors.AccesUnauthorized;
     }
-    if (!prd.downloadLink) {throw NSErrors.ProductDownloadLinkInvalid;}
+    if (!prd.downloadLink) throw NSErrors.ProductDownloadLinkInvalid;
     // on genere le path du fichier temp en local
-    const tmpFileLocalPath = path.join(await require('../utils/server').getUploadDirectory(), `/modules/${(new Date()).getTime()}${path.basename(prd.downloadLink)}`);
-    // on DL le fichier
-    try {
-        await utils.downloadFile(prd.downloadLink, tmpFileLocalPath);
-    } catch (err) {
-        console.error(err);
-        throw NSErrors.ProductDownloadLinkInvalid;
+    let tmpFileLocalPath;
+    let unlink = true;
+    if (/^https?:\/\//.test(prd.downloadLink)) {
+        try {
+            tmpFileLocalPath = path.join(
+                utilsServer.getUploadDirectory(),
+                `/modules/${(new Date()).getTime()}${path.basename(prd.downloadLink)}`
+            );
+            // on DL le fichier
+            await utils.downloadFile(prd.downloadLink, tmpFileLocalPath);
+        } catch (err) {
+            console.error(err);
+            throw NSErrors.ProductDownloadLinkInvalid;
+        }
+    } else {
+        unlink = false;
+        tmpFileLocalPath = path.resolve(
+            utilsServer.getUploadDirectory(),
+            'medias',
+            prd.downloadLink
+        );
     }
-    // on enregistre que le client télécharge un produit
-    await ServicesDownloadHistory.addToHistory(user, prd);
     // on recupere le binaire du fichier
     const fileBinary = await fs.readFile(tmpFileLocalPath, 'binary');
     // on delete le fichier tmp
-    await fs.unlinkSync(tmpFileLocalPath);
+    if (unlink) await fs.unlinkSync(tmpFileLocalPath);
+    // on enregistre que le client télécharge un produit
+    await ServicesDownloadHistory.addToHistory(user, prd);
     return fileBinary;
 };
 
@@ -970,22 +1012,36 @@ const getProductsListing = async (req, res) => {
         if (!result.filters) {
             result.filters = {};
         }
-        result.filters.attributes = attrs.map((attr) => ({id_attribut: attr._id, code: attr.code, type: attr.type, position: attr.position, translation: attr.translation}));
+        result.filters.attributes = attrs.map((attr) => ({
+            id_attribut : attr._id,
+            code        : attr.code,
+            type        : attr.type,
+            position    : attr.position,
+            translation : attr.translation
+        }));
 
         await servicesCategory.generateFilters(result, req.body.lang);
     } else {
         result = await getProducts(req.body.PostBody, {req, res}, req.body.lang);
     }
-    if ({req, res} !== undefined && req.params.withFilters === "true") {
+    if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
         /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
         result.datas = productsDiscount.datas; */
         // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
         // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (req.body.PostBody.filter.$and && req.body.PostBody.filter.$and[0] && req.body.PostBody.filter.$and[0].$or) {
+        if (
+            req.body.PostBody.filter.$and
+            && req.body.PostBody.filter.$and[0]
+            && req.body.PostBody.filter.$and[0].$or
+        ) {
             result.datas = result.datas.filter((prd) =>  {
                 const pr = prd.price.ati.special || prd.price.ati.normal;
-                return pr >= (req.body.PostBody.filter.$and[0].$or[1]["price.ati.special"].$gte || req.body.PostBody.filter.$and[0].$or[0]["price.ati.normal"].$gte) && pr <= (req.body.PostBody.filter.$and[0].$or[1]["price.ati.special"].$lte || req.body.PostBody.filter.$and[0].$or[0]["price.ati.normal"].$lte);
+                return pr >= (
+                    req.body.PostBody.filter.$and[0].$or[1]['price.ati.special'].$gte
+                    || req.body.PostBody.filter.$and[0].$or[0]['price.ati.normal'].$gte)
+                    && pr <= (req.body.PostBody.filter.$and[0].$or[1]['price.ati.special'].$lte
+                    || req.body.PostBody.filter.$and[0].$or[0]['price.ati.normal'].$lte);
             });
         }
     }
@@ -1007,7 +1063,7 @@ const getProductsSearchObj = async (body, params) => {
                 } else if (body.q) {
                     filter.$text = {$search: body.q};
                 } else if (searchObj.code) {
-                    filter.code = {$regex: `^(?=.*${searchObj.code.replace(/ /g, ")(?=.*")}).*$`, $options: "i"};
+                    filter.code = {$regex: `^(?=.*${searchObj.code.replace(/ /g, ')(?=.*')}).*$`, $options: 'i'};
                 }
 
                 // Recherche parmi une liste déterminée de produits
@@ -1028,8 +1084,8 @@ const getProductsSearchObj = async (body, params) => {
                     }
                 }
                 delete filter.qty;
-                if (searchObj["price.ati.normal"]) {
-                    filter["price.ati.normal"] = searchObj["price.ati.normal"];
+                if (searchObj['price.ati.normal']) {
+                    filter['price.ati.normal'] = searchObj['price.ati.normal'];
                 }
                 // Recherche par actif/non actif
                 if (searchObj.active !== undefined) {
@@ -1041,27 +1097,30 @@ const getProductsSearchObj = async (body, params) => {
                 }
                 // Recherche par prix vente min et prix vente max
                 if (searchObj.priceSaleMin || searchObj.priceSaleMax) {
-                    filter["price.ati.normal"] = {};
+                    filter['price.ati.normal'] = {};
                 }
                 if (searchObj.priceSaleMin) {
-                    filter["price.ati.normal"].$gte = searchObj.priceSaleMin;
+                    filter['price.ati.normal'].$gte = searchObj.priceSaleMin;
                 }
                 if (searchObj.priceSaleMax) {
-                    filter["price.ati.normal"].$lte = searchObj.priceSaleMax;
+                    filter['price.ati.normal'].$lte = searchObj.priceSaleMax;
                 }
                 // Recherche par mots cles
                 if (searchObj.nameId) {
-                    let nameCode = searchObj.nameId.split(" ");
-                    nameCode = nameCode.map((word) => new RegExp(make_pattern(word), "i"));
+                    let nameCode = searchObj.nameId.split(' ');
+                    nameCode = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
                     filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
                 }
 
-                if (searchObj.translation && searchObj.translation.name !== "") {
+                if (searchObj.translation && searchObj.translation.name !== '') {
                     return Languages.find({}).then(function (_languages) {
                         for (let i = 0; i < _languages.length; i++) {
-                            if (searchObj.translation.name !== "") {
+                            if (searchObj.translation.name !== '') {
                                 const name = {};
-                                name[`translation.${_languages[i].code}.name`] = {$regex: `^(?=.*${searchObj.translation.name.replace(/ /g, ")(?=.*")}).*$`, $options: "i"};
+                                name[`translation.${_languages[i].code}.name`] = {
+                                    $regex   : `^(?=.*${searchObj.translation.name.replace(/ /g, ')(?=.*')}).*$`,
+                                    $options : 'i'
+                                };
                                 filter.$or.push(name);
                             }
                         }
@@ -1077,17 +1136,17 @@ const getProductsSearchObj = async (body, params) => {
                 }
 
                 // Recherche par quantite min et quantite vente max
-                if (searchObj["stock.qty"]) {
-                    filter["stock.qty"] = searchObj["stock.qty"];
+                if (searchObj['stock.qty']) {
+                    filter['stock.qty'] = searchObj['stock.qty'];
                 }
                 if (searchObj.qtyMin || searchObj.qtyMax) {
-                    filter["stock.qty"] = {};
+                    filter['stock.qty'] = {};
                 }
                 if (searchObj.qtyMin) {
-                    filter["stock.qty"].$gte = searchObj.qtyMin;
+                    filter['stock.qty'].$gte = searchObj.qtyMin;
                 }
                 if (searchObj.qtyMax) {
-                    filter["stock.qty"].$lte = searchObj.qtyMax;
+                    filter['stock.qty'].$lte = searchObj.qtyMax;
                 }
 
                 // Recherche par nombre de participants
@@ -1107,22 +1166,22 @@ const getProductsSearchObj = async (body, params) => {
                 // if(searchObj.town) filter['location.town'] = new RegExp('^' + searchObj.town, 'i');
 
                 if (searchObj.postal_code) {
-                    Territory.findOne({code: "FR", type: "country"}, (err, country) => {
+                    Territory.findOne({code: 'FR', type: 'country'}, (err, country) => {
                         if (err) {
                             return reject(err);
                         }
 
-                        if (searchObj.postal_code === "Europe") {
-                            filter["location.country"] = {$ne: country._id, $exists: true};
+                        if (searchObj.postal_code === 'Europe') {
+                            filter['location.country'] = {$ne: country._id, $exists: true};
                         } else {
-                            filter["location.country"] = country._id;
+                            filter['location.country'] = country._id;
 
-                            if (new RegExp("Côte d'Azur", "i").test(searchObj.postal_code)) {
-                                filter["location.postal_code"] = {$in: [/^06/, /^83/]};
-                            } else if (new RegExp("Paris", "i").test(searchObj.postal_code)) {
-                                filter["location.postal_code"] = {$in: [/^75/, /^77/, /^78/, /^91/, /^92/, /^93/, /^94/, /^98/]};
-                            } else if (new RegExp("Lyon", "i").test(searchObj.postal_code)) {
-                                filter["location.postal_code"] = {$regex: /^69/};
+                            if (new RegExp('Côte d\'Azur', 'i').test(searchObj.postal_code)) {
+                                filter['location.postal_code'] = {$in: [/^06/, /^83/]};
+                            } else if (new RegExp('Paris', 'i').test(searchObj.postal_code)) {
+                                filter['location.postal_code'] = {$in: [/^75/, /^77/, /^78/, /^91/, /^92/, /^93/, /^94/, /^98/]};
+                            } else if (new RegExp('Lyon', 'i').test(searchObj.postal_code)) {
+                                filter['location.postal_code'] = {$regex: /^69/};
                             }
                         }
 
@@ -1139,7 +1198,7 @@ const getProductsSearchObj = async (body, params) => {
                 Languages.find({}).then(function (_languages) {
                     for (let i = 0; i < _languages.length; i++) {
                         const orLang = {};
-                        orLang[`translation.${_languages[i].code}.name`] = new RegExp(".*", "i");
+                        orLang[`translation.${_languages[i].code}.name`] = new RegExp('.*', 'i');
                         filter.$or.push(orLang);
                     }
                     resolve();
@@ -1170,13 +1229,18 @@ const getProductsSearchObj = async (body, params) => {
                 delete filter.$or;
             }
             if (Object.keys(oIdCatProduct).length === 0) {
-                Products.find(filter, null, {skip: (body.page - 1) * body.limit, limit: body.limit, sort: sortObj}).populate("location.country location.town").then((prdFound) => {
-                    resolve(prdFound);
-                }).catch((err) => reject(err));
+                Products.find(filter, null, {
+                    skip  : (body.page - 1) * body.limit,
+                    limit : body.limit,
+                    sort  : sortObj
+                })
+                    .populate('location.country location.town')
+                    .then((prdFound) => resolve(prdFound))
+                    .catch((err) => reject(err));
             } else {
                 const prdFound = await Products.find(filter);
                 for (let i = 0; i < prdFound.length; i++) {
-                    if (typeof oIdCatProduct[prdFound[i]._id.toString()] === "undefined") {
+                    if (typeof oIdCatProduct[prdFound[i]._id.toString()] === 'undefined') {
                         prdFound[i].sortWeight = -1; // sortWeight fictif que ne sera pas répercuté sur le front
                         continue;
                     }
@@ -1199,7 +1263,7 @@ const getProductsSearchObj = async (body, params) => {
                 resolve(count);
             });
         })), new Promise(((resolve, reject) => {
-            Products.findOne(filter).sort("-price.ati.normal").exec((err, maxProd) => {
+            Products.findOne(filter).sort('-price.ati.normal').exec((err, maxProd) => {
                 if (err) {
                     return reject(err);
                 }
@@ -1210,7 +1274,7 @@ const getProductsSearchObj = async (body, params) => {
                 }
             });
         })), new Promise(((resolve, reject) => {
-            Products.findOne(filter).sort("price.ati.normal").exec((err, minProd) => {
+            Products.findOne(filter).sort('price.ati.normal').exec((err, minProd) => {
                 if (err) {
                     return reject(err);
                 }
@@ -1222,8 +1286,8 @@ const getProductsSearchObj = async (body, params) => {
             });
         })), new Promise(((resolve, reject) => {
             if (params.trademark !== undefined) {
-                if (filter["trademark.name"] !== undefined) {
-                    delete filter["trademark.name"];
+                if (filter['trademark.name'] !== undefined) {
+                    delete filter['trademark.name'];
                 }
 
                 Products.find(filter).exec((err, mark) => {
@@ -1237,7 +1301,10 @@ const getProductsSearchObj = async (body, params) => {
                         const _trademarks = [];
 
                         for (let i = 0; i < mark.length; i++) {
-                            if (_trademarks.find((_mark) => _mark.name === mark[i].trademark.name) === undefined && mark[i].trademark.name !== undefined) {
+                            if (
+                                _trademarks.find((_mark) => _mark.name === mark[i].trademark.name) === undefined
+                                && mark[i].trademark.name !== undefined
+                            ) {
                                 _trademarks.push(mark[i].trademark);
                             }
                         }
@@ -1290,9 +1357,9 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
 };
 
 function make_pattern(search_string) {
-    require("../utils/utils").tmp_use_route("products_api", "make_pattern");
+    require('../utils/utils').tmp_use_route('products_api', 'make_pattern');
     // escape meta characters
-    search_string = search_string.replace(/([|()[{.+*?^$\\])/g, "\\$1");
+    search_string = search_string.replace(/([|()[{.+*?^$\\])/g, '\\$1');
 
     // split into words
     const words = search_string.split(/\s+/);
@@ -1302,21 +1369,21 @@ function make_pattern(search_string) {
     words.sort(length_comp);
 
     // join as alternatives
-    const regexp = words.join("|");
-    return new RegExp(regexp, "g");
+    const regexp = words.join('|');
+    return new RegExp(regexp, 'g');
 }
 
 const handleStock = async (item, _product, inStockQty) => {
-    const {Configuration}   = require("../orm/models");
+    const {Configuration}   = require('../orm/models');
     const config = await Configuration.findOne({}, {stockOrder: 1});
-    if (config.stockOrder.bookingStock === "panier") {
+    if (config.stockOrder.bookingStock === 'panier') {
         if (_product.stock && _product.stock.date_selling > new Date() && _product.stock.status !== 'dif') {
-            const product_no_salable = {code: "product_no_salable"};
+            const product_no_salable = {code: 'product_no_salable'};
             throw product_no_salable;
         }
         // Commandable et on gère la reservation du stock
         const qtyAdded = inStockQty - item.quantity;
-        const ServiceCart = require("./cart");
+        const ServiceCart = require('./cart');
         if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
@@ -1348,7 +1415,7 @@ const calculStock = async (params, product = undefined) => {
         date = product.stock.date_supply;
     }
     const stockLabelExists = stockLabels.find((label) => label.code === product.stock.label);
-    let label = "";
+    let label = '';
     if (stockLabelExists) {
         label = date && stockLabelExists.translation[params.lang] && stockLabelExists.translation[params.lang].value
             ? stockLabelExists.translation[params.lang].value.replace('{date}', moment(date).format('DD/MM/YYYY'))

@@ -1,22 +1,19 @@
-const path              = require("path");
-const spdy              = require("spdy");
+const path              = require('path');
+const spdy              = require('spdy');
 const mongoose          = require('mongoose');
-const NSErrors          = require("./errors/NSErrors");
-const fs                = require("./fsp");
+const {v4: uuidv4}      = require('uuid');
+const NSErrors          = require('./errors/NSErrors');
+const fs                = require('./fsp');
 
 /**
  * return current value of property
  * @returns {String} property
  */
 const getEnv = (property) =>  {
-    try {
-        let env = process.env[property];
-        if (!env && property === "AQUILA_ENV") env = "aquila";
-        if (!env && property === "NODE_ENV") env = "production";
-        return env;
-    } catch (exc) {
-        throw NSErrors("TEST");
-    }
+    let env = process.env[property];
+    if (!env && property === 'AQUILA_ENV') env = 'aquila';
+    if (!env && property === 'NODE_ENV') env = 'production';
+    return env;
 };
 
 /**
@@ -24,7 +21,7 @@ const getEnv = (property) =>  {
  * @returns {boolean}
  */
 const isProd = () => {
-    if (getEnv("NODE_ENV") === 'production') {
+    if (getEnv('NODE_ENV') === 'production') {
         return true;
     }
     return false;
@@ -34,20 +31,20 @@ const isProd = () => {
  */
 const getOrCreateEnvFile = async () => {
     try {
-        global.envPath = (await fs.readFile(path.join(global.appRoot, "config/envPath"))).toString();
+        global.envPath = (await fs.readFile(path.join(global.appRoot, 'config/envPath'))).toString();
     } catch (err) {
-        await fs.writeFile(path.join(global.appRoot, "config/envPath"), "config/env.json");
-        global.envPath = path.join(global.appRoot, "config/env.json");
+        await fs.writeFile(path.join(global.appRoot, 'config/envPath'), 'config/env.json');
+        global.envPath = path.join(global.appRoot, 'config/env.json');
     }
 
     try {
         let envFile;
-        const envExample = await fs.readFile(path.join(global.appRoot, "config/env.template.json"));
+        const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
         if (await fs.access(path.resolve(global.envPath))) {
             envFile = await fs.readFile(global.envPath);
             envFile = JSON.parse(envFile);
             if (!envFile[getEnv('AQUILA_ENV')]) {
-                console.error("no correct NODE_ENV specified, generating new env in env.json");
+                console.error('no correct NODE_ENV specified, generating new env in env.json');
                 const newEnv = generateNewEnv(envExample);
                 envFile[getEnv('AQUILA_ENV')] = newEnv[getEnv('AQUILA_ENV')];
             }
@@ -66,39 +63,39 @@ const getOrCreateEnvFile = async () => {
 
 const showAquilaLogo = () => {
     console.log(
-        "\n\x1b[94m@@@@@@@@@@@@@@@@@@@@@@\x1b[34m(((((((((((((((\x1b[94m#&@@@@@@@@@@@@@@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@@@@@@@&\x1b[34m(((((((((((((((((((((((((((\x1b[94m&@@@@@@@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@@@@%\x1b[34m(((((((((((((((((((((((((((((((((\x1b[94m%@@@@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@%\x1b[34m(((((((((((((((((((((((((((((((((((((((\x1b[94m%@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@%\x1b[34m(((((((((((((((((((((((((((((((((((((((((((\x1b[94m%@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@%\x1b[34m(((((((((((((((\x1b[33m/*,,,,,,,,,,,,,,,,,,*\x1b[34m(((((((((((\x1b[94m%@@@@@@@\n"
-        + "\x1b[94m@@@@@@\x1b[34m((((((((((((\x1b[33m/,,,,,,,**\x1b[34m(((((((((((((((((((/*((((((((\x1b[94m@@@@@@\n"
-        + "\x1b[94m@@@@&\x1b[34m(((((((((((\x1b[33m*,,,,,*/\x1b[34m((((((((((((((((((((((((((((((((((\x1b[94m&@@@@\n"
-        + "\x1b[94m@@@%\x1b[34m(((((((((((\x1b[33m*,,,*(((((*,,,,,,,,,**/\x1b[34m(((((((((((((((((((((\x1b[94m%@@@\n"
-        + "\x1b[94m@@%\x1b[34m(((((((((\x1b[33m*,,,,//,,/(((,,,,,,,,,,,,,,,,*\x1b[34m((((((((((((((((((\x1b[94m%@@\n"
-        + "\x1b[94m@%\x1b[34m((((((((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((((((((((((\x1b[94m%@\n"
-        + "\x1b[94m@\x1b[34m(((((((\x1b[33m/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((((((((\x1b[94m@\n"
-        + "\x1b[94m#\x1b[34m(((((((\x1b[33m*,,,,**////*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((((((\x1b[94m#\n"
-        + "\x1b[34m(((((((((,((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((((((((\n"
-        + "\x1b[34m((((((((((((((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((((\n"
-        + "\x1b[34m(((((((((((((((((((((((((((\x1b[33m/,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m(((((((((\n"
-        + "\x1b[34m(((((((((((((((((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((\n"
-        + "\x1b[34m((((((((((((((((((((((((((((((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((((\n"
-        + "\x1b[34m(((((((((((((((((((((((((((((((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,,\x1b[34m(((((((\n"
-        + "\x1b[94m#\x1b[34m((((((((((((((((((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((\x1b[94m#\n"
-        + "\x1b[94m@\x1b[34m((((((((((((((((((((((((((((((\x1b[33m/,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((\x1b[94m@\n"
-        + "\x1b[94m@#\x1b[34m((((((((((((((((((((((((((/(((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((\x1b[94m#@\n"
-        + "\x1b[94m@@#\x1b[34m(((((((((((((((((((((((\x1b[33m*,*\x1b[94m(((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((\x1b[94m#@@\n"
-        + "\x1b[94m@@@\x1b[34m((((((((((((((((((((\x1b[33m***,*\x1b[94m(((\x1b[33m/************************\x1b[34m((((\x1b[94m@@@\n"
-        + "\x1b[94m@@@@\x1b[34m(((((((((((((((\x1b[33m********\x1b[94m((((\x1b[33m*************************\x1b[34m((\x1b[94m#@@@@\n"
-        + "\x1b[94m@@@@@\x1b[33m*********************\x1b[94m(((((\x1b[33m************************\x1b[34m(((\x1b[94m@@@@@\n"
-        + "\x1b[94m@@@@@@@\x1b[33m*****************/\x1b[94m(((((\x1b[33m/***********************/\x1b[34m(\x1b[94m@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@\x1b[33m**************\x1b[94m(((((((\x1b[33m***********************/\x1b[94m@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@\x1b[33m*********/\x1b[94m(((((((\x1b[33m/***********************\x1b[94m@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@@@\x1b[33m****\x1b[94m((((((((((\x1b[33m***********************\x1b[94m@@@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@@@@@@@((((((((\x1b[33m/*******************/\x1b[94m@@@@@@@@@@@@@@@@@\n"
-        + "\x1b[94m@@@@@@@@@@@@@@@@@@@@@((\x1b[33m/*****************/\x1b[94m@@@@@@@@@@@@@@@@@@@@@",
-        "\x1b[0m"
+        '\n\x1b[94m@@@@@@@@@@@@@@@@@@@@@@\x1b[34m(((((((((((((((\x1b[94m#&@@@@@@@@@@@@@@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@@@@@@@&\x1b[34m(((((((((((((((((((((((((((\x1b[94m&@@@@@@@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@@@@%\x1b[34m(((((((((((((((((((((((((((((((((\x1b[94m%@@@@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@%\x1b[34m(((((((((((((((((((((((((((((((((((((((\x1b[94m%@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@%\x1b[34m(((((((((((((((((((((((((((((((((((((((((((\x1b[94m%@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@%\x1b[34m(((((((((((((((\x1b[33m/*,,,,,,,,,,,,,,,,,,*\x1b[34m(((((((((((\x1b[94m%@@@@@@@\n'
+        + '\x1b[94m@@@@@@\x1b[34m((((((((((((\x1b[33m/,,,,,,,**\x1b[34m(((((((((((((((((((/*((((((((\x1b[94m@@@@@@\n'
+        + '\x1b[94m@@@@&\x1b[34m(((((((((((\x1b[33m*,,,,,*/\x1b[34m((((((((((((((((((((((((((((((((((\x1b[94m&@@@@\n'
+        + '\x1b[94m@@@%\x1b[34m(((((((((((\x1b[33m*,,,*(((((*,,,,,,,,,**/\x1b[34m(((((((((((((((((((((\x1b[94m%@@@\n'
+        + '\x1b[94m@@%\x1b[34m(((((((((\x1b[33m*,,,,//,,/(((,,,,,,,,,,,,,,,,*\x1b[34m((((((((((((((((((\x1b[94m%@@\n'
+        + '\x1b[94m@%\x1b[34m((((((((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((((((((((((\x1b[94m%@\n'
+        + '\x1b[94m@\x1b[34m(((((((\x1b[33m/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((((((((\x1b[94m@\n'
+        + '\x1b[94m#\x1b[34m(((((((\x1b[33m*,,,,**////*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((((((\x1b[94m#\n'
+        + '\x1b[34m(((((((((,((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((((((((\n'
+        + '\x1b[34m((((((((((((((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((((\n'
+        + '\x1b[34m(((((((((((((((((((((((((((\x1b[33m/,,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m(((((((((\n'
+        + '\x1b[34m(((((((((((((((((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((((((\n'
+        + '\x1b[34m((((((((((((((((((((((((((((((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((((\n'
+        + '\x1b[34m(((((((((((((((((((((((((((((((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,,\x1b[34m(((((((\n'
+        + '\x1b[94m#\x1b[34m((((((((((((((((((((((((((((((\x1b[33m*,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((\x1b[94m#\n'
+        + '\x1b[94m@\x1b[34m((((((((((((((((((((((((((((((\x1b[33m/,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((((\x1b[94m@\n'
+        + '\x1b[94m@#\x1b[34m((((((((((((((((((((((((((/(((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,*\x1b[34m((((\x1b[94m#@\n'
+        + '\x1b[94m@@#\x1b[34m(((((((((((((((((((((((\x1b[33m*,*\x1b[94m(((\x1b[33m,,,,,,,,,,,,,,,,,,,,,,,,/\x1b[34m(((\x1b[94m#@@\n'
+        + '\x1b[94m@@@\x1b[34m((((((((((((((((((((\x1b[33m***,*\x1b[94m(((\x1b[33m/************************\x1b[34m((((\x1b[94m@@@\n'
+        + '\x1b[94m@@@@\x1b[34m(((((((((((((((\x1b[33m********\x1b[94m((((\x1b[33m*************************\x1b[34m((\x1b[94m#@@@@\n'
+        + '\x1b[94m@@@@@\x1b[33m*********************\x1b[94m(((((\x1b[33m************************\x1b[34m(((\x1b[94m@@@@@\n'
+        + '\x1b[94m@@@@@@@\x1b[33m*****************/\x1b[94m(((((\x1b[33m/***********************/\x1b[34m(\x1b[94m@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@\x1b[33m**************\x1b[94m(((((((\x1b[33m***********************/\x1b[94m@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@\x1b[33m*********/\x1b[94m(((((((\x1b[33m/***********************\x1b[94m@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@@@\x1b[33m****\x1b[94m((((((((((\x1b[33m***********************\x1b[94m@@@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@@@@@@@((((((((\x1b[33m/*******************/\x1b[94m@@@@@@@@@@@@@@@@@\n'
+        + '\x1b[94m@@@@@@@@@@@@@@@@@@@@@((\x1b[33m/*****************/\x1b[94m@@@@@@@@@@@@@@@@@@@@@',
+        '\x1b[0m'
     );
 };
 
@@ -121,7 +118,7 @@ const startListening = async (server) => {
             key  : await fs.readFile(path.join(global.appRoot, global.envFile.ssl.key)),
             cert : await fs.readFile(path.join(global.appRoot, global.envFile.ssl.cert)),
             spdy : {
-                protocols : ["h2", "http1.1"],
+                protocols : ['h2', 'http1.1'],
                 plain     : false,
                 ssl       : true
             }
@@ -149,11 +146,11 @@ const getAppUrl = async (req) => {
     const config = global.envConfig.environment;
 
     if (config.adminPrefix === undefined) {
-        config.adminPrefix = "admin";
+        config.adminPrefix = 'admin';
     }
 
     return {
-        appUrl      : `${req.protocol}://${req.get("host")}/`,
+        appUrl      : `${req.protocol}://${req.get('host')}/`,
         adminPrefix : config.adminPrefix,
         analytics   : config.analytics
     };
@@ -162,7 +159,7 @@ const getAppUrl = async (req) => {
 const getUploadDirectory = () => {
     if (global.envConfig && global.envConfig.environment) {
         const {photoPath} = global.envConfig.environment;
-        if (photoPath && photoPath !== "") {
+        if (photoPath && photoPath !== '') {
             return photoPath;
         }
     }
@@ -172,23 +169,9 @@ const getUploadDirectory = () => {
 const generateNewEnv = (envExample) => {
     let env = envExample;
     env = env.toString();
-    env = env.replace("{{environnement}}", getEnv('AQUILA_ENV'));
-    env = env.replace("{{secretKey}}", createUUID("xxxxxxxxxxxxxxxxxxxxxxxxx"));
-    env = env.replace("{{cipherKey}}", createUUID("xxxxxxxxxxxxxxxxxxxxxxxxx"));
+    env = env.replace('{{environnement}}', getEnv('AQUILA_ENV'));
+    env = env.replace('{{secretKey}}', uuidv4());
     return JSON.parse(env);
-};
-
-/**
- * Generate GUID
- */
-const createUUID = (stringPatern) => {
-    let dt = new Date().getTime();
-    const uuid = stringPatern.replace(/[xy]/g, (c) => {
-        const r = (dt + Math.random() * 16) % 16 | 0;
-        dt = Math.floor(dt / 16);
-        return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-    return uuid;
 };
 
 const deepObjectVerification = (objectToVerify, objectBase) => {

@@ -1,5 +1,5 @@
-const path      = require("path");
-const fs        = require("./fsp");
+const path      = require('path');
+const fs        = require('./fsp');
 const npm       = require('./npm');
 const utils     = require('./utils');
 const NSError   = require('./errors/NSError');
@@ -11,7 +11,7 @@ let loadedModules;
  * Module : Charge les fonctions dans les init.js des modules si besoin
  */
 const modulesLoadFunctions = async (property, params = {}, functionToExecute) => {
-    if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === "function") {
+    if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
         return global.moduleExtend[property].function(params);
     }
     return functionToExecute();
@@ -21,7 +21,7 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute) =>
  * Module : Create '\themes\ {theme_name}\modules\list_modules.js'
  */
 const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
-    let modules_folder = "";
+    let modules_folder = '';
     try {
         modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
         await fs.ensureDir(modules_folder);
@@ -39,13 +39,13 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
  * @param {String} theme theme name
  */
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
-    let modules_folder = "";
+    let modules_folder = '';
     try {
         modules_folder    = `./themes/${theme}/modules`;
         const fileContent = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
-        console.error("Cannot read list_module !");
+        console.error('Cannot read list_module !');
     }
 };
 
@@ -55,7 +55,7 @@ const errorModule = async (target_path_full) => {
     } catch (err) {
         console.error(err);
     }
-    const path = target_path_full.replace(".zip", "/");
+    const path = target_path_full.replace('.zip', '/');
     try {
         await fs.unlink(path);
     } catch (err) {
@@ -66,12 +66,12 @@ const errorModule = async (target_path_full) => {
 const cleanPackageVersion = async (dependencies) => {
     for (let i = 0; i < dependencies.length; i++) {
         let dependency = dependencies[i];
-        dependency = dependency.split("@");
-        if (dependency.length !== 0 && dependency[dependency.length - 1] !== "") {
+        dependency = dependency.split('@');
+        if (dependency.length !== 0 && dependency[dependency.length - 1] !== '') {
             if (dependency.length === 1) {
-                dependency.push("latest");
+                dependency.push('latest');
             }
-            if (dependency[0] === "") {
+            if (dependency[0] === '') {
                 dependency.splice(0, 1);
                 dependency[0] = `@${dependency[0]}`;
             }
@@ -81,8 +81,8 @@ const cleanPackageVersion = async (dependencies) => {
                     dependency[1] = elem;
                 }
             }
-            dependencies[i] = dependency.join("@");
-        } else if (dependencies[i].endsWith("@")) {
+            dependencies[i] = dependency.join('@');
+        } else if (dependencies[i].endsWith('@')) {
             dependencies[i] = dependencies[i].slice(0, dependencies[i].length - 1);
         }
     }
@@ -96,8 +96,8 @@ const compareDependencies = (myModule, modulesActivated, install = true) => {
     };
     for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
         for (const moduleDependency of Object.values(myModule.packageDependencies[apiOrTheme])) {
-            const dependencyModule = moduleDependency.split("@");
-            if (dependencyModule[0] === "") {
+            const dependencyModule = moduleDependency.split('@');
+            if (dependencyModule[0] === '') {
                 dependencyModule.splice(0, 1);
                 dependencyModule[0] = `@${dependencyModule[0]}`;
             }
@@ -121,8 +121,8 @@ const compareDependencies = (myModule, modulesActivated, install = true) => {
                         && elem.packageDependencies[apiOrTheme].length > 0
                     ) {
                         for (const elemDependencies of elem.packageDependencies[apiOrTheme]) {
-                            const dependencyElem = elemDependencies.split("@");
-                            if (dependencyElem[0] === "") {
+                            const dependencyElem = elemDependencies.split('@');
+                            if (dependencyElem[0] === '') {
                                 dependencyElem.splice(0, 1);
                                 dependencyElem[0] = `@${dependencyElem[0]}`;
                             }
@@ -181,7 +181,7 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
         );
 
         for (const elem of allmodule) {
-            if (elem.moduleDependencies.find((dep) => dep === myModule.name)) {
+            if (elem.moduleDependencies && elem.moduleDependencies.find((dep) => dep === myModule.name)) {
                 needDeactivation.push(elem.name);
             }
         }
@@ -205,9 +205,9 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
 const cleanAndToBeChanged = async (dependencies, toBeChanged) => {
     let allModules = [];
     for (const dependency of await cleanPackageVersion(dependencies)) {
-        const packageName = dependency.split("@")[0];
+        const packageName = dependency.split('@')[0];
         if (toBeChanged[packageName]) {
-            const choosedVersionPackageName = toBeChanged[packageName].split("@")[0];
+            const choosedVersionPackageName = toBeChanged[packageName].split('@')[0];
             if (packageName === choosedVersionPackageName) {
                 allModules = [...allModules, toBeChanged[packageName]];
             }
@@ -222,13 +222,13 @@ const cleanAndToBeChanged = async (dependencies, toBeChanged) => {
  * Module : Charge les fichiers init.js des modules si besoin
  */
 const modulesLoadInit = async (express) => {
-    const Modules = require("../orm/models/modules");
+    const Modules = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1}).lean();
     loadedModules = [..._modules];
     loadedModules = loadedModules.map((lmod) => {return {...lmod, init: true, valid: false};});
     if (loadedModules.length > 0) {
         console.log('Start init loading modules');
-        console.log("Required modules :");
+        console.log('Required modules :');
     }
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
@@ -241,10 +241,10 @@ const modulesLoadInit = async (express) => {
                 }
                 loadedModules[i].valid = true;
                 require(initModuleFile)(express, global.appRoot, global.envFile);
-                process.stdout.write(`\x1b[32m \u2713 \x1b[0m\n`);
+                process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;
-                process.stdout.write(`\x1b[31m \u274C \x1b[0m\n`);
+                process.stdout.write('\x1b[31m \u274C \x1b[0m\n');
                 return false;
             }
         }
@@ -280,11 +280,11 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                         }
                         resolve();
                     } catch (err) {
-                        process.stdout.write(`\x1b[31m \u274C \x1b[0m\n`);
+                        process.stdout.write('\x1b[31m \u274C \x1b[0m\n');
                         reject(err);
                     }
                 });
-                process.stdout.write(`\x1b[32m \u2713 \x1b[0m\n`);
+                process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 console.error(err);
             }

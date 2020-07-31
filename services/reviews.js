@@ -1,4 +1,4 @@
-const NSErrors = require("../utils/errors/NSErrors");
+const NSErrors = require('../utils/errors/NSErrors');
 
 /**
  * Aggregate Reviews
@@ -16,10 +16,10 @@ const getAggregateReviews = async (body) => {
         $project : {
             code            : 1,
             translation     : 1,
-            "reviews.datas" : 1
+            'reviews.datas' : 1
         }
     }, {
-        $unwind : {path: "$reviews.datas"}
+        $unwind : {path: '$reviews.datas'}
     }, {$match: body.match}, {
         $sort : body.sortObj
     }, {
@@ -30,9 +30,9 @@ const getAggregateReviews = async (body) => {
     const tCount = await Products.aggregate([{
         $match : body.filter
     }, {
-        $unwind : {path: "$reviews.datas"}
+        $unwind : {path: '$reviews.datas'}
     }, {$match: body.match}, {
-        $count : "count"
+        $count : 'count'
     }]);
     let count = 0;
     if (tCount.length) {
@@ -63,10 +63,10 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
             throw NSErrors.NotFound;
         }
     }
-    let name = "Anonymous";
+    let name = 'Anonymous';
     let id_client = null;
     if (user) {
-        name = "";
+        name = '';
         const {firstname, lastname, _id} = user.info;
         id_client = _id;
         if (firstname) name += firstname;

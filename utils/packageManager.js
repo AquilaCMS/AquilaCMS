@@ -1,4 +1,4 @@
-const {spawn, exec} = require("child_process");
+const {spawn, exec} = require('child_process');
 
 /**
  * @description Lance une commande sur le path défini
@@ -29,24 +29,24 @@ exports.execSh = async function (cde, param = [], path) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         let cmd;
-        if (process.platform === "win64" || process.platform === "win32") {
+        if (process.platform === 'win64' || process.platform === 'win32') {
             cmd = spawn(cde, [...param], {cwd: path, shell: true});
         } else {
             cmd = spawn(cde, [...param], {cwd: path, shell: true});
         }
 
-        let stdout = "";
-        let stderr = "";
-        cmd.stdout.on("data", (data) => {
+        let stdout = '';
+        let stderr = '';
+        cmd.stdout.on('data', (data) => {
             stdout += data.toString();
         });
-        cmd.stderr.on("data", (data) => {
+        cmd.stderr.on('data', (data) => {
             stderr += data.toString();
         });
-        cmd.on("error", (err) => {
+        cmd.on('error', (err) => {
             reject(err);
         });
-        cmd.on("close", (code, signal) => {
+        cmd.on('close', (code, signal) => {
             console.log(`%scommand : ${cde} with params : [${param}] ended%s`, '\x1b[33m', '\x1b[0m');
             resolve({code, signal, stdout, stderr});
         });

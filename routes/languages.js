@@ -6,28 +6,28 @@ const {
     Attributes,
     CmsBlocks,
     Configuration
-}                                 = require("../orm/models");
-const {authentication, adminAuth} = require("../middleware/authentication");
+}                                 = require('../orm/models');
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceFilter}       = require('../middleware/security');
 const {middlewareServer}          = require('../middleware');
-const servicesLanguages           = require("../services/languages");
+const servicesLanguages           = require('../services/languages');
 const themesService               = require('../services/themes');
 const mediasUtils                 = require('../utils/medias');
-const NSErrors                    = require("../utils/errors/NSErrors");
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/languages', securityForceFilter([{status: "visible"}]), listLangs);
+    app.post('/v2/languages', securityForceFilter([{status: 'visible'}]), listLangs);
     app.post('/v2/language', getLang);
     app.put('/v2/language', authentication, adminAuth, saveLang);
     app.delete('/v2/language/:id', authentication, adminAuth, removeLang);
-    app.get("/V2/translate", translateList);
-    app.get("/V2/translate/:lang/:currentTranslate", translateGet);
-    app.post("/V2/translate/:lang/:currentTranslate", translateSet);
+    app.get('/V2/translate', translateList);
+    app.get('/V2/translate/:lang/:currentTranslate', translateGet);
+    app.post('/V2/translate/:lang/:currentTranslate', translateSet);
 
     // Deprecated
-    app.get("/languages", middlewareServer.deprecatedRoute, list);
-    app.delete("/languages/:id", middlewareServer.deprecatedRoute, remove);
-    app.post("/languages", middlewareServer.deprecatedRoute, save);
+    app.get('/languages', middlewareServer.deprecatedRoute, list);
+    app.delete('/languages/:id', middlewareServer.deprecatedRoute, remove);
+    app.post('/languages', middlewareServer.deprecatedRoute, save);
 };
 
 async function listLangs(req, res, next) {
@@ -112,8 +112,8 @@ async function translateSet(req, res, next) {
  */
 async function list(req, res, next) {
     const condition = req.query;
-    if (condition.status === "active") {
-        condition.status = {$ne: "removing"};
+    if (condition.status === 'active') {
+        condition.status = {$ne: 'removing'};
     }
     try {
         const result = await Languages.find(condition).sort({position: 1});
@@ -132,7 +132,7 @@ async function list(req, res, next) {
 const remove = async (req, res, next) => {
     let lang;
     try {
-        lang = await Languages.findOneAndUpdate({code: req.params.id}, {status: "removing"}, {new: true});
+        lang = await Languages.findOneAndUpdate({code: req.params.id}, {status: 'removing'}, {new: true});
     } catch (err) {
         return next(err);
     }
@@ -148,7 +148,7 @@ const remove = async (req, res, next) => {
         let params  = {};
         const unset = {};
 
-        if (models[i].collection.collectionName === "products") {
+        if (models[i].collection.collectionName === 'products') {
             const paramsAttrs                                              = {attributes: {$elemMatch: {}}};
             const unsetAttrs                                               = {};
             paramsAttrs.attributes.$elemMatch[`.translation.${lang.code}`] = {$ne: null};
@@ -156,9 +156,9 @@ const remove = async (req, res, next) => {
             removePromises.push(models[i].updateMany(paramsAttrs, {$unset: unsetAttrs}));
         }
 
-        if (models[i].collection.collectionName === "configurations") {
-            params                                                             = {"stockOrder.values": {$elemMatch: {}}};
-            params["stockOrder.values"].$elemMatch[`translation.${lang.code}`] = {$ne: null};
+        if (models[i].collection.collectionName === 'configurations') {
+            params                                                             = {'stockOrder.values': {$elemMatch: {}}};
+            params['stockOrder.values'].$elemMatch[`translation.${lang.code}`] = {$ne: null};
             unset[`stockOrder.values.$.translation.${lang.code}`]              = 1;
         } else {
             params[`translation.${lang.code}`] = {$ne: null};
@@ -181,7 +181,7 @@ const remove = async (req, res, next) => {
         } catch (err) {
             console.error(err);
             return next({
-                code         : "translation_delete_error",
+                code         : 'translation_delete_error',
                 status       : 500,
                 translations : {
                     fr : `Toutes les traductions dans la langue ${lang.name} ont été supprimées.
@@ -206,7 +206,7 @@ async function save(req, res, next) {
     try {
         const lang = req.body;
         if (lang.defaultLanguage) {
-            lang.status = "visible";
+            lang.status = 'visible';
         }
         if (lang.defaultLanguage) {
             await Languages.updateOne({defaultLanguage: true}, {defaultLanguage: false});
