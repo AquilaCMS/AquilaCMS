@@ -1,15 +1,15 @@
 const {CmsBlocks}                 = require('../orm/models');
 const ServiceCmsBlock             = require('../services/cmsBlocks');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer}          = require('../middleware');
-const NSErrors                    = require("../utils/errors/NSErrors");
+const NSErrors                    = require('../utils/errors/NSErrors');
 const utils                       = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/cmsBlocks', getCMSBlocks);
-    app.post("/v2/cmsBlock", getCMSBlock);
+    app.post('/v2/cmsBlock', getCMSBlock);
     app.post('/v2/cmsBlock/:code', getCMSBlockById);
-    app.put("/v2/cmsBlock", authentication, adminAuth, setCMSBlock);
+    app.put('/v2/cmsBlock', authentication, adminAuth, setCMSBlock);
     app.delete('/v2/cmsBlock/:code', authentication, adminAuth, deleteCMSBlock);
 
     // Deprecated

@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {SetAttributesSchema} = require("../schemas");
+const {SetAttributesSchema} = require('../schemas');
 
 module.exports = mongoose.model('setAttributes', SetAttributesSchema);

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const helper   = require('../../utils/utils');
 const Schema   = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
-const NSErrors = require("../../utils/errors/NSErrors");
+const NSErrors = require('../../utils/errors/NSErrors');
 
 const ProductBundleSchema = new Schema({
     qty             : {type: Number},
@@ -22,7 +22,7 @@ const ProductBundleSchema = new Schema({
         date_selling : Date,
         date_supply  : Date,
         orderable    : {type: Boolean, default: false},
-        status       : {type: String, default: "liv", enum: ["liv", "dif", "epu"]},
+        status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
         label        : String,
         translation  : {}
     }
@@ -66,7 +66,7 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
         throw NSErrors.ProductInvalid;
     }
     // on check que les section son commandable si le stock est géré
-    if (global.envConfig.stockOrder.bookingStock === "panier") {
+    if (global.envConfig.stockOrder.bookingStock === 'panier') {
         for (let i = 0; i < item.selections.length; i++) {
             const selectionProducts = item.selections[i].products;
             // on check que chaque produit soit commandable

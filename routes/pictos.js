@@ -1,10 +1,10 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
-const ServiceRule                 = require("../services/rules");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const ServiceRule                 = require('../services/rules');
 const ServicePicto                = require('../services/pictos');
 
 module.exports = function (app) {
     app.post('/v2/picto',           authentication, adminAuth, getPictos);
-    app.post("/v2/picto/execRules", authentication, adminAuth, execRules);
+    app.post('/v2/picto/execRules', authentication, adminAuth, execRules);
     app.post('/v2/picto/:id',       authentication, adminAuth, getPictoById);
     app.put('/v2/picto/:id?',       authentication, adminAuth, savePicto);
     app.delete('/v2/picto/:id',     authentication, adminAuth, deletePicto);

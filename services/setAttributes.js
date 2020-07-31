@@ -1,9 +1,9 @@
-const {SetAttributes, Products} = require("../orm/models");
-const NSErrors                  = require("../utils/errors/NSErrors");
+const {SetAttributes, Products} = require('../orm/models');
+const NSErrors                  = require('../utils/errors/NSErrors');
 const QueryBuilder              = require('../utils/QueryBuilder');
 
 const restrictedFields          = [];
-const defaultFields             = ["_id", "code", "name"];
+const defaultFields             = ['_id', 'code', 'name'];
 const queryBuilder              = new QueryBuilder(SetAttributes, restrictedFields, defaultFields);
 
 exports.getSetAttributes = async function (PostBody) {
@@ -52,7 +52,7 @@ exports.setSetAttribute = async function (code, name, attributes) {
 };
 
 exports.createOrUpdateSetAttribute = async function (req) {
-    const code = req.body.code.replace(/[^A-Z0-9]+/ig, "_");
+    const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
     const {name, update : updateF, questions} = req.body;
     const setAttribute = await SetAttributes.findOne({code});
     if (setAttribute && updateF) {
@@ -62,7 +62,7 @@ exports.createOrUpdateSetAttribute = async function (req) {
         if (resSetAttribute.questions.length) {
             tQuestions = resSetAttribute.questions.map((question) => ({idQuestion: question._id, translation: question.translation}));
         }
-        await Products.updateMany({set_attributes: setAttribute.id}, {$set: {"reviews.questions": tQuestions}});
+        await Products.updateMany({set_attributes: setAttribute.id}, {$set: {'reviews.questions': tQuestions}});
         return {status: true};
     }
     if (setAttribute && !updateF) return {alreadyExist: true};

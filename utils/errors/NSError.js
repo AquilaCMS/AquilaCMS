@@ -101,7 +101,7 @@ module.exports = class NSError extends Error {
         }
 
         // remove the first line from the stack to replace it with a custom format
-        let stack = "";
+        let stack = '';
         if (this && this.stack) {
             stack = this.stack.substring(this.stack.indexOf('\n') + 1);
         }

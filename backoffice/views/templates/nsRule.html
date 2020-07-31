@@ -74,13 +74,14 @@
                 </div>
                 <div class="col-sm-4">
                     <label class="control-label" for="field" translate>ns.fieldInput</label>
-                    <select class="form-control" name="field" id="field" ng-model="condition.target" ng-change="select(condition.target, $index, condition )"
-                            ng-options="field.name as field.name for field in attributesClassed | filter:filterAttrClassedByOwnerType(rule)" required></select>
+                    <select class="form-control" name="field" id="field" ng-model="condition.target" ng-change="select(condition.target, $index, condition)"required>
+                        <option value="{{field.value}}" translate="ns.fields.{{field.name}}" ng-repeat="field in attributesClassed | filter:filterAttrClassedByOwnerType(rule)" translate-values="{lang: (field.params.lang).toLowerCase(), attr: field.params.attr}"></option>    
+                    </select>
                 </div>
                 <div class="col-sm-3">
                     <label class="control-label" for="compareTo" translate>ns.comp</label>
                     <select class="form-control" name="compareTo" id="compareTo" ng-model="condition.operator" required>
-                        <option value="{{operator.value}}" ng-repeat="operator in compare" translate>{{operator.translate}}</option>
+                        <option value="{{operator.value}}" ng-repeat="operator in compare" ng-if="operatorValidForCondition(operator.value, condition.type)" translate>{{operator.translate}}</option>
                     </select>
                 </div>
                 <div class="col-sm-4">

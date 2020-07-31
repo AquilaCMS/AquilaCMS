@@ -19,7 +19,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.language = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
-        
+
         ThemeConfig.query({ PostBody: { filter: {}, structure: {}, limit: 99 }}, function (response) {
             $scope.keys = {};
             $scope.themeConfig.variables = {};

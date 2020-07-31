@@ -1,9 +1,9 @@
-const path                        = require("path");
+const path                        = require('path');
 const {Configuration}             = require('../orm/models');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceConfig               = require('../services/config');
-const packageManager              = require("../utils/packageManager");
-const NSErrors                    = require("../utils/errors/NSErrors");
+const packageManager              = require('../utils/packageManager');
+const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
 
 module.exports = function (app) {
@@ -35,7 +35,7 @@ const getConfigV2 = async (req, res, next) => {
 async function save(req, res, next) {
     try {
         await ServiceConfig.saveConfig(req);
-        return res.send("success");
+        return res.send('success');
     } catch (err) {
         return next(err);
     }
@@ -60,17 +60,17 @@ const getSiteName = async (req, res, next) => {
 const getNextVersion = async (req, res, next) => {
     try {
         const datas = {};
-        if (await fs.access(path.join(global.appRoot, "yarn.lock"))) {
-            const result = await packageManager.execSh("yarn", ["info", "next", "versions", "--json"], global.appRoot);
-            let data     = result.stdout.split("}\n{");
+        if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
+            const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json'], global.appRoot);
+            let data     = result.stdout.split('}\n{');
             data         = data[data.length - 1];
-            if (!data.startsWith("{")) {
+            if (!data.startsWith('{')) {
                 data = `{${data}`;
             }
-            let currentVersion = await packageManager.execSh("yarn", ["list", "--pattern", "next", "--json"], global.appRoot);
+            let currentVersion = await packageManager.execSh('yarn', ['list', '--pattern', 'next', '--json'], global.appRoot);
             currentVersion     = JSON.parse(currentVersion.stdout).data.trees;
             for (const elem of currentVersion) {
-                if (elem.name.startsWith("next@")) {
+                if (elem.name.startsWith('next@')) {
                     currentVersion = elem.name;
                     break;
                 }
@@ -79,8 +79,8 @@ const getNextVersion = async (req, res, next) => {
             datas.actual   = currentVersion.slice(5);
             datas.versions = JSON.parse(data).data;
         } else {
-            const nextInstalledVersion = await packageManager.execSh("npm", ["ls", "next", "--json"], global.appRoot);
-            const listNextVersion      = await packageManager.execSh("npm", ["view", "next", "--json"], global.appRoot);
+            const nextInstalledVersion = await packageManager.execSh('npm', ['ls', 'next', '--json'], global.appRoot);
+            const listNextVersion      = await packageManager.execSh('npm', ['view', 'next', '--json'], global.appRoot);
             datas.actual               = JSON.parse(nextInstalledVersion.stdout).dependencies.next.version;
             datas.versions             = JSON.parse(listNextVersion.stdout).versions;
         }
@@ -96,13 +96,13 @@ const changeNextVersion = async (req, res, next) => {
         const {nextVersion} = req.body;
         if (!nextVersion) throw NSErrors.UnprocessableEntity;
         let result;
-        if (await fs.access(path.join(global.appRoot, "yarn.lock"))) {
-            result = await packageManager.execSh("yarn", ["add", `next@${nextVersion}`], global.appRoot);
+        if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
+            result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`], global.appRoot);
         } else {
-            result = await packageManager.execSh("npm", ["install", `next@${nextVersion}`], global.appRoot);
+            result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`], global.appRoot);
         }
         if (result.code !== 0) throw NSErrors.InvalidRequest;
-        await packageManager.restart();
+        res.end();
     } catch (err) {
         return next(err);
     }

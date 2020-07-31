@@ -2,7 +2,8 @@
     "list": {
         "t1": "Blocs CMS",
         "code": "Code",
-        "desc": "Description"
+        "desc": "Description",
+        "search": "Recherche"
     },
     "detail": {
         "t1": "Blocs CMS",
@@ -10,7 +11,8 @@
         "champRequis": "Ce champ est requis.",
         "desc": "Description",
         "content": "Contenu",
-        "preview": "Prévisualiser"
+        "preview": "Prévisualiser",
+        "group": "Groupe"
 
     }
 }

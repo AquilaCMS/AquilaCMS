@@ -45,7 +45,7 @@ FamiliesSchema.post('save', function () {
 // familyCode : families.code
 // slugMenu : menus.slug
 FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu ) {
-    const {Products} = require("../models");
+    const {Products} = require('../models');
 
     // Add menu in family
     const f = await this.findOne({code: familyCode});
@@ -56,7 +56,7 @@ FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu
     }
 
     // Add menu in products assigned to this universe
-    const productList = await Products.find({"whatami._universe_code": familyCode});
+    const productList = await Products.find({'whatami._universe_code': familyCode});
     productList.forEach(async (product) => {
         if ( product.slugMenus === undefined) product.slugMenus = [];
         if ( product.slugMenus.indexOf(slugMenu) === -1) {
@@ -70,7 +70,7 @@ FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu
 // familyCode : families.code
 // slugMenu : menus.slug
 FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slugMenu) {
-    const {Products} = require("../models");
+    const {Products} = require('../models');
 
     // Remove menu from family
     const f = await this.findOne({code: familyCode});
@@ -82,7 +82,7 @@ FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slug
     }
 
     // Remove menu from products assigned to this universe
-    const productList = await Products.find({"whatami._universe_code": familyCode});
+    const productList = await Products.find({'whatami._universe_code': familyCode});
     productList.forEach(async (p) => {
         const prodIndexSlug = p.slugMenus.indexOf(slugMenu);
         if ( prodIndexSlug > -1) {

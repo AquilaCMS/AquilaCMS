@@ -292,12 +292,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             return 'order.status.' + status;
         }
         $scope.test = "order.detail.cancel";
-        // const noAccess = ["PAYMENT_RECEIPT_PENDING", "PAID", "BILLED", "DELIVERY_PROGRESS", "DELIVERY_PARTIAL_PROGRESS", "CANCELING", "RETURNED"];
         $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
-        // noAccess.forEach(element => {
-        //     let key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === element);
-        //     $scope.orderStatus.splice(key, 1);
-        // });
 
         $scope.getStatus = function(status){
             if(status !== undefined){

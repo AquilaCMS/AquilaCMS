@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {ThemeConfigSchema} = require("../schemas");
+const {ThemeConfigSchema} = require('../schemas');
 
-module.exports = mongoose.model("themeConfig", ThemeConfigSchema, "themeConfigs");
+module.exports = mongoose.model('themeConfig', ThemeConfigSchema, 'themeConfigs');

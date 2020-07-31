@@ -5,7 +5,7 @@ const cookieParser      = require('cookie-parser');
 const multer            = require('multer');
 const {v1: uuidv1}      = require('uuid');
 const cors              = require('cors');
-const {getDecodedToken} = require("../services/auth");
+const {getDecodedToken} = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
 
 const getUserFromRequest = (req) => {
@@ -101,29 +101,29 @@ const initExpress = async (server, passport) => {
     server.set('port', port);
 
     const photoPath = serverUtils.getUploadDirectory();
-    server.use(express.static(path.join(global.appRoot, "backoffice"))); // BackOffice V1
-    server.use("/", express.static(path.join(global.appRoot, photoPath))); // Photos
-    server.use("/bo", express.static(path.join(global.appRoot, "bo/build"))); // BackOffice V2 (proof of concept)
-    server.use("/apidoc", express.static(path.join(global.appRoot, "documentations/apidoc"))); // Documentations
+    server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
+    server.use('/', express.static(path.join(global.appRoot, photoPath))); // Photos
+    server.use('/bo', express.static(path.join(global.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
+    server.use('/apidoc', express.static(path.join(global.appRoot, 'documentations/apidoc'))); // Documentations
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
-    server.set("view engine", "ejs");
-    if (serverUtils.getEnv() !== "test" && global.envFile.logs && global.envFile.logs.http) {
-        server.use(morgan("combined", {stream: require("../utils/logger").stream}));
-        server.use(morgan("dev"));
+    server.set('view engine', 'ejs');
+    if (serverUtils.getEnv() !== 'test' && global.envFile.logs && global.envFile.logs.http) {
+        server.use(morgan('combined', {stream: require('../utils/logger').stream}));
+        server.use(morgan('dev'));
     }
-    server.use(express.json({limit: "500mb"}));
+    server.use(express.json({limit: '500mb'}));
     server.use(express.urlencoded({extended: true}));
 
     server.use(cookieParser());
     server.use(passport.initialize());
     server.use(cors({
-        origin         : "*",
-        methods        : ["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allowedHeaders : ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"]
+        origin         : '*',
+        methods        : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
     }));
-    server.use("/api", serverUseRequest);
-    server.get("*", require("../routes/index").manageExceptionsRoutes);
+    server.use('/api', serverUseRequest);
+    server.get('*', require('../routes/index').manageExceptionsRoutes);
 
     // set a cookie
     server.use((req, res, next) => {
@@ -132,7 +132,7 @@ const initExpress = async (server, passport) => {
         if (cookie === undefined) {
             const CurrentDate = new Date();
             CurrentDate.setMonth(CurrentDate.getMonth() + 3);
-            res.cookie("cookie_notice", false, {expires: CurrentDate, httpOnly: false});
+            res.cookie('cookie_notice', false, {expires: CurrentDate, httpOnly: false});
         }
         next();
     });
@@ -153,11 +153,11 @@ const maintenance = async (req, res, next) => {
         global.envConfig.environment.maintenance
             && global.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
-        const maintenanceFile = path.join(global.appRoot, "themes", global.envConfig.environment.currentTheme, "maintenance.html");
+        const maintenanceFile = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'maintenance.html');
         if (fsp.existsSync(maintenanceFile) && await fsp.access(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }
-        return res.status(301).send("<h1>Maintenance</h1>");
+        return res.status(301).send('<h1>Maintenance</h1>');
     }
     return next();
 };

@@ -1,14 +1,14 @@
 const moment                    = require('moment-business-days');
-const {Products, Orders, Users} = require("../orm/models");
-const serviceStats              = require("./stats");
-const utils                     = require("../utils/utils");
+const {Products, Orders, Users} = require('../orm/models');
+const serviceStats              = require('./stats');
+const utils                     = require('../utils/utils');
 
 /**
  * Ajoute une vue au produit (synchrone)
  */
 exports.setProductViews = function (product_id) {
     try {
-        Products.findOneAndUpdate({_id: product_id}, {$inc: {"stats.views": 1}})
+        Products.findOneAndUpdate({_id: product_id}, {$inc: {'stats.views': 1}})
             .exec();
     } catch (error) {
         console.error(error);
@@ -33,9 +33,9 @@ exports.generateStatistics = function (data) {
  */
 exports.getGlobaleStats = async function () {
     const result = {
-        yesterday : await getGlobalStat("YESTERDAY"),
-        today     : await getGlobalStat("TODAY"),
-        month     : await getGlobalStat("MONTH")
+        yesterday : await getGlobalStat('YESTERDAY'),
+        today     : await getGlobalStat('TODAY'),
+        month     : await getGlobalStat('MONTH')
     };
 
     return result;
@@ -49,9 +49,9 @@ async function getGlobalStat(periode) {
     let periodeStart    = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
     let periodeEnd      = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
 
-    if (periode === "MONTH") {
+    if (periode === 'MONTH') {
         periodeStart = periodeStart.add(-30, 'days');
-    } else if (periode === "YESTERDAY") {
+    } else if (periode === 'YESTERDAY') {
         periodeStart = periodeStart.add(-1, 'days');
         periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
     }
@@ -68,18 +68,17 @@ async function getGlobalStat(periode) {
         status : {
             $in : [
                 // "PAYMENT_PENDING",
-                "PAYMENT_RECEIPT_PENDING",
-                "PAYMENT_CONFIRMATION_PENDING",
-                "PAID",
-                "PROCESSING",
-                "PROCESSED", // Préparé. A ne pas à confondre avec Finished (Traité)
-                "BILLED",
-                "DELIVERY_PROGRESS",
-                "DELIVERY_PARTIAL_PROGRESS",
-                "FINISHED",
-                // "CANCELING", // Pour éviter qu'une commande ne soit annulée deux fois (c'est une sorte de verrou)
+                'PAYMENT_RECEIPT_PENDING',
+                'PAYMENT_CONFIRMATION_PENDING',
+                'PAID',
+                'PROCESSING',
+                'PROCESSED', // Préparé. A ne pas à confondre avec Finished (Traité)
+                'BILLED',
+                'DELIVERY_PROGRESS',
+                'DELIVERY_PARTIAL_PROGRESS',
+                'FINISHED',
                 // "CANCELED",
-                "RETURNED"
+                'RETURNED'
             ]
         }
     });
@@ -91,8 +90,8 @@ async function getGlobalStat(periode) {
 
     // --- Fréquentation ---
     let attendance       = 0;
-    if (periode === "MONTH" || periode === "YESTERDAY") {
-        const attendanceTab  = await serviceStats.getHistory("visit", periodeStart, periodeEnd, "$visit.date");
+    if (periode === 'MONTH' || periode === 'YESTERDAY') {
+        const attendanceTab  = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
         for ( let i = 0, _len = attendanceTab.length; i < _len; i++ ) {
             attendance += attendanceTab[i].value;
         }
@@ -119,16 +118,16 @@ async function getGlobalStat(periode) {
  */
 exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd) {
     const granularityQuery = {
-        year : {$substr: ["$oldCart.date", 0, 4]}// {$year: "$oldCart.date"}
+        year : {$substr: ['$oldCart.date', 0, 4]}// {$year: "$oldCart.date"}
     };
-    if (granularity === "month" || granularity === "day") {
-        granularityQuery.month = {$substr: ["$oldCart.date", 5, 2]};// {$month: "$oldCart.date"};
+    if (granularity === 'month' || granularity === 'day') {
+        granularityQuery.month = {$substr: ['$oldCart.date', 5, 2]};// {$month: "$oldCart.date"};
     }
-    if (granularity === "day") {
-        granularityQuery.day = {$substr: ["$oldCart.date", 8, 2]};// {$dayOfMonth: "$oldCart.date"};
+    if (granularity === 'day') {
+        granularityQuery.day = {$substr: ['$oldCart.date', 8, 2]};// {$dayOfMonth: "$oldCart.date"};
     }
 
-    const attendanceTab  = await serviceStats.getHistory("oldCart", periodeStart, periodeEnd, granularityQuery);
+    const attendanceTab  = await serviceStats.getHistory('oldCart', periodeStart, periodeEnd, granularityQuery);
     let datas = [];
 
     datas = pushDatas(attendanceTab, datas);
@@ -145,11 +144,10 @@ exports.getCag = async function (granularity, periodeStart, periodeEnd) {
         periodeEnd,
         statusMatch : {
             $nin : [
-                "CANCELING", // Pour éviter qu'une commande ne soit annulée deux fois (c'est une sorte de verrou)
-                "CANCELED"
+                'CANCELED'
             ]
         },
-        sumGroup : "$priceTotal.ati"
+        sumGroup : '$priceTotal.ati'
     });
 };
 
@@ -162,8 +160,7 @@ exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
         periodeEnd,
         statusMatch : {
             $nin : [
-                "CANCELING", // Pour éviter qu'une commande ne soit annulée deux fois (c'est une sorte de verrou)
-                "CANCELED"
+                'CANCELED'
             ]
         },
         sumGroup : 1
@@ -190,8 +187,8 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentId = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
-            const realProduct = await require("./products").getProductById(currentItem._id);
-            let link = "";
+            const realProduct = await require('./products').getProductById(currentItem._id);
+            let link = '';
             if (realProduct) {
                 link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
             }
@@ -246,8 +243,8 @@ exports.getTopCustomer = async function (granularity, periodeStart, periodeEnd) 
                 $lte : periodeEnd.toDate()
             }
         }},
-        {$group : {_id   : "$customer.email",
-            value : {$sum: "$priceTotal.ati"}}
+        {$group : {_id   : '$customer.email',
+            value : {$sum: '$priceTotal.ati'}}
         },
         {$sort: {value: -1}}
     ]);
@@ -275,13 +272,13 @@ async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatc
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: "$creationDate"}
+        year : {$year: '$creationDate'}
     };
-    if (granularity === "month" || granularity === "day") {
-        granularityQuery.month = {$month: "$creationDate"};
+    if (granularity === 'month' || granularity === 'day') {
+        granularityQuery.month = {$month: '$creationDate'};
     }
-    if (granularity === "day") {
-        granularityQuery.day = {$dayOfMonth: "$creationDate"};
+    if (granularity === 'day') {
+        granularityQuery.day = {$dayOfMonth: '$creationDate'};
     }
 
     const allOrders = await Orders.aggregate([
@@ -310,13 +307,13 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: "$creationDate"}
+        year : {$year: '$creationDate'}
     };
-    if (granularity === "month" || granularity === "day") {
-        granularityQuery.month = {$month: "$creationDate"};
+    if (granularity === 'month' || granularity === 'day') {
+        granularityQuery.month = {$month: '$creationDate'};
     }
-    if (granularity === "day") {
-        granularityQuery.day = {$dayOfMonth: "$creationDate"};
+    if (granularity === 'day') {
+        granularityQuery.day = {$dayOfMonth: '$creationDate'};
     }
 
     const allUsers = await Users.aggregate([
@@ -339,7 +336,7 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
 
 function pushDatas(tab, datas) {
     for ( let i = 0, _len = tab.length; i < _len; i++ ) {
-        const thisDate = moment(`${tab[i]._id.year}/${tab[i]._id.month}/${tab[i]._id.day}`, "YYYY-MM-DD").toDate();
+        const thisDate = moment(`${tab[i]._id.year}/${tab[i]._id.month}/${tab[i]._id.day}`, 'YYYY-MM-DD').toDate();
         datas.push({
             c : [
                 {v: thisDate},

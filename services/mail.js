@@ -2,18 +2,18 @@ const nodemailer       = require('nodemailer');
 const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const url              = require('url');
-const ServiceLanguages = require("./languages");
+const ServiceLanguages = require('./languages');
 const encryption       = require('../utils/encryption');
-const utils            = require("../utils/utils");
+const utils            = require('../utils/utils');
 const mediasUtils       = require('../utils/medias');
-const NSErrors         = require("../utils/errors/NSErrors");
+const NSErrors         = require('../utils/errors/NSErrors');
 const {
     Users,
     Mail,
     Modules,
     Orders,
     PaymentMethods
-}                      = require("../orm/models");
+}                      = require('../orm/models');
 
 /**
  * @description On récupére les mails
@@ -41,7 +41,7 @@ const getMail = async (_id) => {
  * @param {string} type type du mail (ex: "", "register", "orderSuccess" etc...)
  * @param {string} [lang] (ex: df, us, uk etc...) (optionnel)
  */
-const getMailByTypeAndLang = async (type, lang = "") => {
+const getMailByTypeAndLang = async (type, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
     const query = {type, [`translation.${lang}`]: {$exists: true}};
     const result = await Mail.findOne(query);
@@ -63,7 +63,7 @@ const setMail = async (body, _id = null) => {
             if (!mongoose.Types.ObjectId.isValid(_id)) {
                 throw NSErrors.InvalidObjectIdError;
             }
-            if (body.type !== "") {
+            if (body.type !== '') {
                 await checkUniqueType(body.type);
             }
             result = await Mail.findByIdAndUpdate(_id, {$set: body}, {new: true, runValidators: true});
@@ -72,7 +72,7 @@ const setMail = async (body, _id = null) => {
             }
         } else {
             // Create
-            if (body.type !== "") {
+            if (body.type !== '') {
                 await checkUniqueType(body.type);
             }
 
@@ -87,7 +87,7 @@ const setMail = async (body, _id = null) => {
         if (error.code === 11000) {
             throw NSErrors.MailCodeAlreadyExists;
         }
-        if (error.name === "ValidationError") {
+        if (error.name === 'ValidationError') {
             throw NSErrors.LoginSubscribeEmailInvalid;
         }
         throw error;
@@ -108,7 +108,7 @@ async function checkUniqueType(type) {
         }
         // Un ou plusieurs (le cas : 'plusieurs' ne devrait jamais arriver) mail possède ce type, nous assignons ces mail.type = ""
         for (let i = 0; i < mails.length; i++) {
-            const result = await Mail.findByIdAndUpdate({_id: mails[i]._id}, {type: ""}, {new: true, runValidators: true});
+            const result = await Mail.findByIdAndUpdate({_id: mails[i]._id}, {type: ''}, {new: true, runValidators: true});
             if (!result) {
                 throw NSErrors.MailUpdateNoTypeError;
             }
@@ -122,7 +122,7 @@ async function checkUniqueType(type) {
  * @description supprime le mail dont l'_id est passé en parametre
  * @param {ObjectId} _id
  */
-const deleteMail = async (_id, lang = "fr") => {
+const deleteMail = async (_id, lang = 'fr') => {
     if (!mongoose.Types.ObjectId.isValid(_id)) {
         throw NSErrors.InvalidObjectIdError;
     }
@@ -138,7 +138,7 @@ const deleteMail = async (_id, lang = "fr") => {
 
 const sendMailTestConfig = async (mail) => {
     const body = '<table style="width: 100%"><tbody><tr><td style="text-align: center;border-bottom-style: solid; border-bottom-width: 5px; border-bottom-color: #1432AA"><br><span style="color:#1432AA;line-height:60px;font-size:23px;font-weight:bold">TEST MAIL / EMAIL DE TEST</span></td></tr><tr><td><table style="width: 100%;background-color:#EEE"><tbody><tr><td style="width: 5%;"></td><td><br><table style="width: 100%; border-style: solid; border-width: 1px; border-color: #ddd; background-color: #fff;"><tbody><tr><td style="padding: 20px;line-height:24px;color:#888">The email configuration is operational.<br/>La configuration email est opérationnelle.</td></tr></tbody></table></td><td style="width: 5%;"></td></tr></tbody></table></td></tr><tr><td style="padding: 5px;text-align: center; width: 100%;font-size:13px">© AquilaCMS&nbsp;- <a href="https://www.aquila-cms.com" title="Aquila-CMS Opensource" target="_blank" rel="noopener">powered by AquilaCMS</a></td></tr></tbody></table>';
-    return sendMail({subject: "Subject : Email Test", htmlBody: body, mailTo: mail.to, mailFrom: mail.from});
+    return sendMail({subject: 'Subject : Email Test', htmlBody: body, mailTo: mail.to, mailFrom: mail.from});
 };
 
 const removePdf = async (mail, path) => {
@@ -147,7 +147,7 @@ const removePdf = async (mail, path) => {
     return result;
 };
 
-const sendMailTest = async (mail, values, lang = "fr") => {
+const sendMailTest = async (mail, values, lang = 'fr') => {
     const subject = mail.translation[lang].subject;
     const content = mail.translation[lang].content;
     let pathAttachment = null;
@@ -174,11 +174,11 @@ const sendMailTest = async (mail, values, lang = "fr") => {
  * @param {string} lang two characters for lang
  * @returns {{content: string, subject: string, fromName: string, pathAttachment: string}}
  */
-async function getMailDataByTypeAndLang(type, lang = "fr") {
+async function getMailDataByTypeAndLang(type, lang = 'fr') {
     lang               = ServiceLanguages.getDefaultLang(lang);
     const mailRegister = await getMailByTypeAndLang(type, lang);
-    const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : "";
-    const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : "";
+    const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
+    const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
     let pathAttachment = null;
     if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
         const _config = global.envConfig;
@@ -196,7 +196,7 @@ async function getMailDataByTypeAndLang(type, lang = "fr") {
     return {content, subject, from: mailRegister.from, fromName: mailRegister.fromName, pathAttachment};
 }
 
-const sendMailActivationAccount = async (user_id, lang = "") => {
+const sendMailActivationAccount = async (user_id, lang = '') => {
     const _config = global.envConfig;
     if (!_config) {
         throw NSErrors.ConfigurationNotFound;
@@ -208,12 +208,12 @@ const sendMailActivationAccount = async (user_id, lang = "") => {
     lang = determineLanguage(lang, _user.preferredLanguage);
     const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('activationAccount', lang);
     const oDataMail = {
-        "{{activate_account_token}}" : `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`,
-        "{{name}}"                   : _user.fullname,
-        "{{company}}"                : _user.company.name,
-        "{{fullname}}"               : _user.fullname,
-        "{{firstname}}"              : _user.firstname,
-        "{{lastname}}"               : _user.lastname
+        '{{activate_account_token}}' : `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`,
+        '{{name}}'                   : _user.fullname,
+        '{{company}}'                : _user.company.name,
+        '{{fullname}}'               : _user.fullname,
+        '{{firstname}}'              : _user.firstname,
+        '{{lastname}}'               : _user.lastname
     };
     const htmlBody = await generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, pathAttachment});
@@ -224,7 +224,7 @@ const sendMailActivationAccount = async (user_id, lang = "") => {
  * @param {guid} user_id - _id de l'utilisateur destinataire
  * @param {string} [lang] - langue du mail (Optionnel)
  */
-const sendRegister = async (user_id, lang = "") => {
+const sendRegister = async (user_id, lang = '') => {
     const _config = global.envConfig;
     if (!_config) {
         throw NSErrors.ConfigurationNotFound;
@@ -235,23 +235,23 @@ const sendRegister = async (user_id, lang = "") => {
     }
     lang = determineLanguage(lang, _user.preferredLanguage);
 
-    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang("register", lang);
+    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('register', lang);
     const oDataMail = {
-        "{{name}}"      : _user.fullname,
-        "{{fullname}}"  : _user.fullname,
-        "{{firstname}}" : _user.firstname,
-        "{{company}}"   : _user.company.name,
-        "{{lastname}}"  : _user.lastname,
-        "{{login}}"     : _user.email
+        '{{name}}'      : _user.fullname,
+        '{{fullname}}'  : _user.fullname,
+        '{{firstname}}' : _user.firstname,
+        '{{company}}'   : _user.company.name,
+        '{{lastname}}'  : _user.lastname,
+        '{{login}}'     : _user.email
     };
     // if (true) { // Possibilité d'utiliser une variable : valider l'email à l'inscription
-    oDataMail["{{activate_account_token}}"] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
+    oDataMail['{{activate_account_token}}'] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
     // }
     const htmlBody = await generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, pathAttachment});
 };
 
-const sendRegisterForAdmin = async (user_id, lang = "") => {
+const sendRegisterForAdmin = async (user_id, lang = '') => {
     try {
         const _config = global.envConfig;
         if (!_config) {
@@ -262,14 +262,14 @@ const sendRegisterForAdmin = async (user_id, lang = "") => {
             throw NSErrors.AccountUserNotFound;
         }
         lang = determineLanguage(lang, _user.preferredLanguage);
-        const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang("sendRegisterForAdmin", lang);
+        const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
         const oDataMail = {
-            "{{name}}"      : _user.fullname,
-            "{{fullname}}"  : _user.fullname,
-            "{{firstname}}" : _user.firstname,
-            "{{lastname}}"  : _user.lastname,
-            "{{login}}"     : _user.email,
-            "{{company}}"   : _user.company.name
+            '{{name}}'      : _user.fullname,
+            '{{fullname}}'  : _user.fullname,
+            '{{firstname}}' : _user.firstname,
+            '{{lastname}}'  : _user.lastname,
+            '{{login}}'     : _user.email,
+            '{{company}}'   : _user.company.name
         };
         const htmlBody = await generateHTML(content, oDataMail);
         return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
@@ -284,12 +284,12 @@ const sendRegisterForAdmin = async (user_id, lang = "") => {
  * @param {string} name - Nom du destinataire
  * @param {string} tokenlink - Token de validation de la réinitialisation du mot de passe
  */
-const sendResetPassword = async (to, tokenlink, lang = "fr") => {
+const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
     const _user        = await Users.findOne({email: to});
     lang               = determineLanguage(lang, _user.preferredLanguage);
-    const mailRegister = await getMailByTypeAndLang("passwordRecovery", lang);
-    const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : "";
-    const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : "";
+    const mailRegister = await getMailByTypeAndLang('passwordRecovery', lang);
+    const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
+    const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
     if (!subject) {
         throw NSErrors.MailFieldSubjectNotFound;
     }
@@ -310,19 +310,19 @@ const sendResetPassword = async (to, tokenlink, lang = "fr") => {
         pathAttachment = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
     }
     const oDataMail = {
-        "{{name}}"      : _user.fullname,
-        "{{firstname}}" : _user.firstname,
-        "{{lastname}}"  : _user.lastname,
-        "{{company}}"   : _user.company.name,
-        "{{fullname}}"  : _user.fullname,
-        "{{tokenlink}}" : tokenlink
+        '{{name}}'      : _user.fullname,
+        '{{firstname}}' : _user.firstname,
+        '{{lastname}}'  : _user.lastname,
+        '{{company}}'   : _user.company.name,
+        '{{fullname}}'  : _user.fullname,
+        '{{tokenlink}}' : tokenlink
     };
     const htmlBody = await generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, pathAttachment});
 };
 
 // Utilisé par FKA
-const sendPDFAttachmentToClient = async (subject = "", htmlBody = "", mailTo, mailFrom = null, pathAttachment) => {
+const sendPDFAttachmentToClient = async (subject = '', htmlBody = '', mailTo, mailFrom = null, pathAttachment) => {
     if (!pathAttachment || !mailTo) {
         throw NSErrors.MailAttachmentParameterError;
     }
@@ -335,29 +335,29 @@ const sendPDFAttachmentToClient = async (subject = "", htmlBody = "", mailTo, ma
  * @param {ObjectId} order_id l'id d'une commande
  * @param {string} lang langue du mail
  */
-const sendMailOrderToCompany = async (order_id, lang = "") => {
-    const _order     = await Orders.findOne({_id: order_id}).populate("customer.id items.id");
+const sendMailOrderToCompany = async (order_id, lang = '') => {
+    const _order     = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
     lang             = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const taxDisplay = _order.priceTotal.paidTax ? "ati" : "et";
+    const taxDisplay = _order.priceTotal.paidTax ? 'ati' : 'et';
     const {
         content,
         subject,
         from,
         fromName,
         pathAttachment
-    }                = await getMailDataByTypeAndLang("orderSuccessCompany", lang);
-    const tmpTrad    = require("../utils/translate");
+    }                = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
+    const tmpTrad    = require('../utils/translate');
 
     // Les informations de mailling sont enregistrées en BDD
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
-    if (_order.payment.length && _order.payment[0].mode === "CB" && _order.status !== "PAID" && _order.status !== "FINISHED") {
+    if (_order.payment.length && _order.payment[0].mode === 'CB' && _order.status !== 'PAID' && _order.status !== 'FINISHED') {
         throw NSErrors.OrderNotPaid;
     }
     const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = _order.addresses.delivery;
     // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
-    let templateItems = "";
+    let templateItems = '';
     _order.items.forEach((item) => {
         const {translation} = item.id;
         let basePrice = null;
@@ -406,26 +406,26 @@ const sendMailOrderToCompany = async (order_id, lang = "") => {
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : "Europe/Paris").format('DD/MM/YYYY');
-        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : "Europe/Paris").format('HH:mm');
+        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
+        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
     const htmlBody = await generateHTML(content, {
-        "{{company}}"               : _order.customer.company.name,
-        "{{taxdisplay}}"            : tmpTrad.common[taxDisplay][lang],
-        "{{fullname}}"              : _order.customer.id.fullname,
-        "{{name}}"                  : _order.customer.id.fullname,
-        "{{firstname}}"             : _order.customer.id.firstname,
-        "{{lastname}}"              : _order.customer.id.lastname,
-        "{{number}}"                : _order.number,
-        "{{dateReceipt}}"           : dateReceipt,
-        "{{hourReceipt}}"           : hourReceipt,
-        "{{orderdata}}"             : templateItems,
-        "{{address}}"               : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
-        "{{totalamount}}"           : `${_order.priceTotal[taxDisplay].toFixed(2)} € ${tmpTrad.common[taxDisplay][lang]}`,
-        "{{customer_mobile_phone}}" : phone_mobile || _order._doc.customer.id.addresses[0].phone_mobile,
-        "{{payment_type}}"          : _order._doc.payment[0].mode,
-        "{{delivery_type}}"         : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang],
-        "{{shipment}}"              : _order._doc.delivery.name
+        '{{company}}'               : _order.customer.company.name,
+        '{{taxdisplay}}'            : tmpTrad.common[taxDisplay][lang],
+        '{{fullname}}'              : _order.customer.id.fullname,
+        '{{name}}'                  : _order.customer.id.fullname,
+        '{{firstname}}'             : _order.customer.id.firstname,
+        '{{lastname}}'              : _order.customer.id.lastname,
+        '{{number}}'                : _order.number,
+        '{{dateReceipt}}'           : dateReceipt,
+        '{{hourReceipt}}'           : hourReceipt,
+        '{{orderdata}}'             : templateItems,
+        '{{address}}'               : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
+        '{{totalamount}}'           : `${_order.priceTotal[taxDisplay].toFixed(2)} € ${tmpTrad.common[taxDisplay][lang]}`,
+        '{{customer_mobile_phone}}' : phone_mobile || _order._doc.customer.id.addresses[0].phone_mobile,
+        '{{payment_type}}'          : _order._doc.payment[0].mode,
+        '{{delivery_type}}'         : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang],
+        '{{shipment}}'              : _order._doc.delivery.name
     });
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 };
@@ -435,22 +435,22 @@ const sendMailOrderToCompany = async (order_id, lang = "") => {
  * @param {ObjectId} order_id l'id d'une commande
  * @param {string} lang langue du mail
  */
-const sendMailOrderToClient = async (order_id, lang = "") => {
-    const tmpTrad = require("../utils/translate");
-    const _order  = await Orders.findOne({_id: order_id}).populate("customer.id items.id");
+const sendMailOrderToClient = async (order_id, lang = '') => {
+    const tmpTrad = require('../utils/translate');
+    const _order  = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
     // Si une commande est payé en CB le status de la commande doit être a paid ou finished pour continuer
-    if (_order.payment.length && _order.payment[0].mode === "CB" && _order.status !== "PAID" && _order.status !== "FINISHED") {
+    if (_order.payment.length && _order.payment[0].mode === 'CB' && _order.status !== 'PAID' && _order.status !== 'FINISHED') {
         throw NSErrors.OrderNotPaid;
     }
 
     lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const taxDisplay = _order.priceTotal.paidTax ? "ati" : "et";
+    const taxDisplay = _order.priceTotal.paidTax ? 'ati' : 'et';
     const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = _order.addresses.delivery;
     // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
-    let templateItems = "";
+    let templateItems = '';
     _order.items.forEach((item) => {
         const {translation} = item.id;
         let basePrice = null;
@@ -466,7 +466,7 @@ const sendMailOrderToClient = async (order_id, lang = "") => {
             }
         }
         templateItems += `<tr>
-        <td>${translation[lang] ? translation[lang].name : translation.en.name} ${item.parent && translation[lang] ? _order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name : ''} ${item.type === 'virtual' ? `<br/><a href="${url.resolve(global.envConfig.environment.appUrl, `/account/orders`)}">${tmpTrad.mail.sendMailOrderToClient.download[lang]}</a>` : ''}</td>
+        <td>${translation[lang] ? translation[lang].name : translation.en.name} ${item.parent && translation[lang] ? _order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name : ''} ${item.type === 'virtual' ? `<br/><a href="${url.resolve(global.envConfig.environment.appUrl, '/account/orders')}">${tmpTrad.mail.sendMailOrderToClient.download[lang]}</a>` : ''}</td>
         <td>${item.quantity} x</td>
         <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay]).toFixed(2)}€</span></del>` : descPromo} ${getUnitPrice(item, _order).toFixed(2)} €</td>
         <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay] * item.quantity).toFixed(2)}€</span></del>` : descPromoT} ${(getUnitPrice(item, _order) * item.quantity).toFixed(2)} €</td>
@@ -499,27 +499,27 @@ const sendMailOrderToClient = async (order_id, lang = "") => {
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : "Europe/Paris").format('DD/MM/YYYY');
-        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : "Europe/Paris").format('HH:mm');
+        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
+        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
     const oMailData = {
-        "{{taxdisplay}}"    : tmpTrad.common[taxDisplay][lang],
-        "{{company}}"       : _order.customer.company.name,
-        "{{firstname}}"     : _order.customer.id.firstname,
-        "{{lastname}}"      : _order.customer.id.lastname,
-        "{{fullname}}"      : _order.customer.id.fullname,
-        "{{name}}"          : _order.customer.id.fullname,
-        "{{number}}"        : _order.number,
-        "{{dateReceipt}}"   : dateReceipt,
-        "{{hourReceipt}}"   : hourReceipt,
-        "{{address}}"       : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
-        "{{totalamount}}"   : `${_order.priceTotal[taxDisplay].toFixed(2)}`,
-        "{{orderdata}}"     : templateItems,
-        "{{payment_type}}"  : _order._doc.payment[0].mode,
-        "{{delivery_type}}" : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang]
+        '{{taxdisplay}}'    : tmpTrad.common[taxDisplay][lang],
+        '{{company}}'       : _order.customer.company.name,
+        '{{firstname}}'     : _order.customer.id.firstname,
+        '{{lastname}}'      : _order.customer.id.lastname,
+        '{{fullname}}'      : _order.customer.id.fullname,
+        '{{name}}'          : _order.customer.id.fullname,
+        '{{number}}'        : _order.number,
+        '{{dateReceipt}}'   : dateReceipt,
+        '{{hourReceipt}}'   : hourReceipt,
+        '{{address}}'       : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
+        '{{totalamount}}'   : `${_order.priceTotal[taxDisplay].toFixed(2)}`,
+        '{{orderdata}}'     : templateItems,
+        '{{payment_type}}'  : _order._doc.payment[0].mode,
+        '{{delivery_type}}' : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang]
     };
     // On verifie si le module billetterie-aquila n'existe en base de données ou qu'il n'est actif
-    const moduleTicketing = await Modules.findOne({name: "billetterie-aquila"});
+    const moduleTicketing = await Modules.findOne({name: 'billetterie-aquila'});
     if (!moduleTicketing || !moduleTicketing.active) {
         let mailByType;
         // On va chercher la methode de paiement afin de récupérer isDeferred
@@ -527,14 +527,14 @@ const sendMailOrderToClient = async (order_id, lang = "") => {
         if (_order.payment && _order.payment[0] && _order.payment[0].mode) {
             paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
         }
-        if ((paymentMethod && paymentMethod.isDeferred === false) || _order.status === "PAID" || _order.status === "FINISHED") {
+        if ((paymentMethod && paymentMethod.isDeferred === false) || _order.status === 'PAID' || _order.status === 'FINISHED') {
             // On envoie le mail de succès de commande au client
-            mailByType = await getMailDataByTypeAndLang("orderSuccess", lang);
+            mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
         } else {
             // On envoie le mail de succès de commande au client avec les instructions pour payer avec cheque ou virement
-            mailByType = await getMailDataByTypeAndLang("orderSuccessDeferred", lang);
-            if (!paymentMethod) oMailData["{{instruction}}"] = "";
-            else oMailData["{{instruction}}"] = paymentMethod.translation[lang].instruction;
+            mailByType = await getMailDataByTypeAndLang('orderSuccessDeferred', lang);
+            if (!paymentMethod) oMailData['{{instruction}}'] = '';
+            else oMailData['{{instruction}}'] = paymentMethod.translation[lang].instruction;
         }
         const {content, subject, from, fromName, pathAttachment} = mailByType;
         const htmlBody = await generateHTML(content, oMailData);
@@ -547,13 +547,13 @@ const sendMailOrderToClient = async (order_id, lang = "") => {
  * @param {ObjectId} order_id l'id d'une commande
  * @param {string} lang langue du mail
  */
-const sendMailOrderStatusEdit = async (order_id, lang = "") => {
-    const _order = await Orders.findOne({_id: order_id}).populate("customer.id");
+const sendMailOrderStatusEdit = async (order_id, lang = '') => {
+    const _order = await Orders.findOne({_id: order_id}).populate('customer.id');
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
     lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    if (_order.status === "PAID" || _order.status === "FINISHED") {
+    if (_order.status === 'PAID' || _order.status === 'FINISHED') {
         return sendMailOrderToClient(order_id, lang);
     }
     const {
@@ -562,16 +562,16 @@ const sendMailOrderStatusEdit = async (order_id, lang = "") => {
         from,
         fromName,
         pathAttachment
-    }              = await getMailDataByTypeAndLang("changeOrderStatus", lang);
-    const status   = require("../utils/translate/orderStatus")[_order.status].translation[lang].name;
+    }              = await getMailDataByTypeAndLang('changeOrderStatus', lang);
+    const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
     const htmlBody = await generateHTML(content, {
-        "{{number}}"    : _order.number,
-        "{{status}}"    : status,
-        "{{name}}"      : _order.customer.id.fullname,
-        "{{fullname}}"  : _order.customer.id.fullname,
-        "{{company}}"   : _order.customer.company.name,
-        "{{firstname}}" : _order.customer.id.firstname,
-        "{{lastname}}"  : _order.customer.id.lastname});
+        '{{number}}'    : _order.number,
+        '{{status}}'    : status,
+        '{{name}}'      : _order.customer.id.fullname,
+        '{{fullname}}'  : _order.customer.id.fullname,
+        '{{company}}'   : _order.customer.company.name,
+        '{{firstname}}' : _order.customer.id.firstname,
+        '{{lastname}}'  : _order.customer.id.lastname});
     return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
 };
 
@@ -580,18 +580,18 @@ const sendMailOrderStatusEdit = async (order_id, lang = "") => {
  * @param {guid} user_id - _id de l'utilisateur destinataire
  * @param {string} [lang] - langue du mail (Optionnel)
  */
-const sendMailOrderSent = async (order_id, lang = "") => {
-    require("../utils/utils").tmp_use_route("mails_service", "sendMailOrderSent");
+const sendMailOrderSent = async (order_id, lang = '') => {
+    require('../utils/utils').tmp_use_route('mails_service', 'sendMailOrderSent');
     const _config = global.envConfig;
     if (!_config) {
         throw NSErrors.ConfigurationNotFound;
     }
-    const _order = await Orders.findOne({_id: order_id}).populate(["customer.id"]);
+    const _order = await Orders.findOne({_id: order_id}).populate(['customer.id']);
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
     lang = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang("orderSent", lang);
+    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('orderSent', lang);
     // On format la date pour l'envoyer dans le mail ex: 1/5/2015 deviendra 01/05/2018
     const d = new Date();
     let month = (d.getMonth() + 1).toString();
@@ -608,15 +608,15 @@ const sendMailOrderSent = async (order_id, lang = "") => {
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : "Europe/Paris").format('DD/MM/YYYY');
-        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : "Europe/Paris").format('HH:mm');
+        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
+        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
     const htmlBody = await generateHTML(content, {
-        "{{date}}"        : date,
-        "{{number}}"      : _order.number,
-        "{{dateReceipt}}" : dateReceipt,
-        "{{hourReceipt}}" : hourReceipt,
-        "{{address}}"     : `${line1}${line2 ? ` ${line2}` : ''}, ${zipcode}, ${city}, ${country}`
+        '{{date}}'        : date,
+        '{{number}}'      : _order.number,
+        '{{dateReceipt}}' : dateReceipt,
+        '{{hourReceipt}}' : hourReceipt,
+        '{{address}}'     : `${line1}${line2 ? ` ${line2}` : ''}, ${zipcode}, ${city}, ${country}`
     });
     return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
 };
@@ -646,13 +646,13 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachm
         const mailPass = encryption.decipher(_config.environment.mailPass);
 
         // Vérifier qu'il n'y a pas de surcharge du destinataire dans la config
-        if (typeof overrideSendTo !== "undefined" && overrideSendTo !== "") {
+        if (typeof overrideSendTo !== 'undefined' && overrideSendTo !== '') {
             mailTo = overrideSendTo;
         }
 
         // Si on est en mode DEV, le destinataire est le dev, et non le "client"
         const devMode = global.envFile.devMode;
-        if (typeof devMode !== "undefined" && devMode.mailTo) {
+        if (typeof devMode !== 'undefined' && devMode.mailTo) {
             mailTo = devMode.mailTo;
         }
 
@@ -675,9 +675,9 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachm
             if (pathAttachment != null) {
                 mailOptions.attachments = [{path: pathAttachment}];
             }
-            if (mailUser.indexOf("gmail") > -1) {
+            if (mailUser.indexOf('gmail') > -1) {
                 transporter = nodemailer.createTransport({
-                    service : "Gmail",
+                    service : 'Gmail',
                     auth    : {user: mailUser, pass: mailPass},
                     tls     : {rejectUnauthorized: false}
                 });
@@ -697,8 +697,8 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachm
             mailOptions.html = htmlBody;
             transporter = nodemailer.createTransport({
                 sendmail : true,
-                newline  : "unix",
-                path     : "/usr/sbin/sendmail"
+                newline  : 'unix',
+                path     : '/usr/sbin/sendmail'
             });
         }
 
@@ -718,9 +718,9 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachm
 function replaceMultiple(html, obj) {
     for (const x in obj) {
         if (obj[x] !== undefined) {
-            html = html.replace(new RegExp(x, "g"), obj[x]);
+            html = html.replace(new RegExp(x, 'g'), obj[x]);
         } else {
-            html = html.replace(new RegExp(x, "g"), "");
+            html = html.replace(new RegExp(x, 'g'), '');
         }
     }
     return html;
@@ -733,7 +733,7 @@ function replaceMultiple(html, obj) {
  * @param {Object} datas - Objet du formulaire envoyé
  * @param {string} lang - Langue du sujet et du contenu
  */
-const sendGeneric = async (type, to, datas, lang = "") => {
+const sendGeneric = async (type, to, datas, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
     const body = {};
     const datasKeys = Object.keys(datas);
@@ -743,13 +743,13 @@ const sendGeneric = async (type, to, datas, lang = "") => {
     if (!mail) {
         throw NSErrors.MailNotFound;
     }
-    let subject = "";
+    let subject = '';
     if (datas.subject) {
         subject = datas.subject;
     } else if (mail.translation[lang].subject) {
         subject = mail.translation[lang].subject;
     }
-    const content = mail.translation[lang].content ? mail.translation[lang].content : "";
+    const content = mail.translation[lang].content ? mail.translation[lang].content : '';
     let pathAttachment = null;
     if (mail.translation[lang].attachments && mail.translation[lang].attachments.length > 0) {
         const _config = global.envConfig;
@@ -771,21 +771,21 @@ const sendGeneric = async (type, to, datas, lang = "") => {
  * @description Envoyer les informations d'un formulaire de contact par mail
  * @param {Object} datas - Objet du formulaire envoyé
  */
-const sendContact = async (datas, lang = "") => {
+const sendContact = async (datas, lang = '') => {
     lang = determineLanguage(lang, datas.lang);
-    const query = {type: "contactMail", [`translation.${lang}`]: {$exists: true}};
+    const query = {type: 'contactMail', [`translation.${lang}`]: {$exists: true}};
     const contactMail = await Mail.findOne(query);
 
     if (!contactMail) {
         throw NSErrors.MailNotFound;
     }
-    const content = contactMail.translation[lang].content ? contactMail.translation[lang].content : "";
-    const subject = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : "";
+    const content = contactMail.translation[lang].content ? contactMail.translation[lang].content : '';
+    const subject = contactMail.translation[lang].subject ? contactMail.translation[lang].subject : '';
     let pathAttachment = null;
     if (contactMail.translation[lang].attachments && contactMail.translation[lang].attachments.length > 0) {
         pathAttachment = global.envConfig.environment.appUrl + contactMail.translation[lang].attachments[0].path;
     }
-    let bodyString = "";
+    let bodyString = '';
     Object.keys(datas).forEach((key) => {
         if (Array.isArray(datas[key])) {
             for (let i = 0; i < datas[key].length; i++) {
@@ -796,7 +796,7 @@ const sendContact = async (datas, lang = "") => {
         }
     });
 
-    const htmlBody = await generateHTML(content, {"{{formDatas}}": bodyString});
+    const htmlBody = await generateHTML(content, {'{{formDatas}}': bodyString});
     return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, pathAttachment});
 };
 
@@ -815,7 +815,7 @@ async function generateHTML(html, datas) {
     if (!_config) {
         throw NSErrors.ConfigurationNotFound;
     }
-    datas["{{appUrl}}"] = _config.environment.appUrl;
+    datas['{{appUrl}}'] = _config.environment.appUrl;
     // End Override appUrl
 
     return replaceMultiple(html, datas);
@@ -827,11 +827,11 @@ async function generateHTML(html, datas) {
  * @param {string} preferredLanguage    - preferredLanguage
  */
 function determineLanguage(lang, preferredLanguage) {
-    if (lang == null || typeof lang === "undefined" || lang === "undefined") {
-        lang = "";
+    if (lang == null || typeof lang === 'undefined' || lang === 'undefined') {
+        lang = '';
     }
-    if (lang === "" && typeof preferredLanguage !== "undefined" && preferredLanguage !== "") {lang = preferredLanguage;}
-    if (lang === "") {lang = ServiceLanguages.getDefaultLang(lang);}
+    if (lang === '' && typeof preferredLanguage !== 'undefined' && preferredLanguage !== '') {lang = preferredLanguage;}
+    if (lang === '') {lang = ServiceLanguages.getDefaultLang(lang);}
     return lang;
 }
 
@@ -841,7 +841,7 @@ function determineLanguage(lang, preferredLanguage) {
  * @returns {number} prix unitaire
  */
 function getUnitPrice(item, order) {
-    const taxDisplay = order.priceTotal.paidTax ? "ati" : "et";
+    const taxDisplay = order.priceTotal.paidTax ? 'ati' : 'et';
     let price = item.price.unit[taxDisplay];
     if (item.price && item.price.special && item.price.special[taxDisplay] >= 0) {
         price = item.price.special[taxDisplay];
@@ -856,7 +856,7 @@ function getUnitPrice(item, order) {
 }
 
 async function sendMailOrderRequestCancel(_id, lang = '') {
-    const _order = await Orders.findOne({_id}).populate("customer.id");
+    const _order = await Orders.findOne({_id}).populate('customer.id');
     if (!_order) {
         throw NSErrors.OrderNotFound;
     }
@@ -867,16 +867,16 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
         from,
         fromName,
         pathAttachment
-    }              = await getMailDataByTypeAndLang("requestCancelOrderNotify", lang);
-    const status   = require("../utils/translate/orderStatus")[_order.status].translation[lang].name;
+    }              = await getMailDataByTypeAndLang('requestCancelOrderNotify', lang);
+    const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
     const htmlBody = await generateHTML(content, {
-        "{{number}}"    : _order.number,
-        "{{status}}"    : status,
-        "{{name}}"      : _order.customer.id.fullname,
-        "{{fullname}}"  : _order.customer.id.fullname,
-        "{{company}}"   : _order.customer.company.name,
-        "{{firstname}}" : _order.customer.id.firstname,
-        "{{lastname}}"  : _order.customer.id.lastname});
+        '{{number}}'    : _order.number,
+        '{{status}}'    : status,
+        '{{name}}'      : _order.customer.id.fullname,
+        '{{fullname}}'  : _order.customer.id.fullname,
+        '{{company}}'   : _order.customer.company.name,
+        '{{firstname}}' : _order.customer.id.firstname,
+        '{{lastname}}'  : _order.customer.id.lastname});
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 }
 

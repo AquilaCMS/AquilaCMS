@@ -362,6 +362,7 @@
                         <thead>
                             <tr>
                                 <td><strong translate>order.detail.type</strong></td>
+                                <td><strong translate>order.detail.transactionId</strong></td>
                                 <td><strong translate>order.detail.etat</strong></td>
                                 <td><strong translate>order.detail.comment</strong></td>
                                 <td><strong translate>order.detail.creeLe</strong></td>
@@ -374,6 +375,9 @@
                             <tr ng-repeat="payment in order.payment">
                                 <td>
                                     {{payment.type | paymentType}}
+                                </td>
+                                <td>
+                                    {{payment.transactionId}}
                                 </td>
                                 <td>
                                     {{payment.status | paymentStatus}}

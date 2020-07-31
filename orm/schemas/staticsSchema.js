@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const utils    = require("../../utils/utils");
+const utils    = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
 const Schema   = mongoose.Schema;
@@ -10,6 +10,7 @@ const StaticsSchema = new Schema({
     active       : {type: Boolean, default: false},
     creationDate : {type: Date, default: Date.now},
     modifyDate   : {type: Date, default: Date.now},
+    group        : {type: String, default: 'general'},
     // index        : {type: Boolean, default: true},
     translation  : {}
 });
@@ -39,7 +40,7 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
         const lang = self.translation[translationKeys[i]];
 
         if (Object.keys(lang).length > 0) {
-            if (lang.slug === undefined || lang.slug === "") {
+            if (lang.slug === undefined || lang.slug === '') {
                 lang.slug = utils.slugify(lang.name);
             } else {
                 lang.slug = utils.slugify(lang.slug);
@@ -52,14 +53,14 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
                 updateQuery.updateOne(slugEdit);
             }
 
-            if (await mongoose.model("statics").countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push("slug déjà existant");
+            if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
+                errors.push('slug déjà existant');
             } else if (lang.slug.length < 3) {
-                errors.push("le slug doit être composé de 3 caractères minimum");
+                errors.push('le slug doit être composé de 3 caractères minimum');
             }
 
-            errors = errors.concat(checkCustomFields(lang, `translation.lationKeys[i]}`, [
-                {key: "slug"}, {key: "content"}, {key: "title"}, {key: "metaDesc"}
+            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+                {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
             ]));
         }
     }
@@ -67,18 +68,18 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
     return errors;
 };
 
-StaticsSchema.pre("updateOne", async function (next) {
+StaticsSchema.pre('updateOne', async function (next) {
     utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
-StaticsSchema.pre("findOneAndUpdate", async function (next) {
+StaticsSchema.pre('findOneAndUpdate', async function (next) {
     utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
-StaticsSchema.pre("save", async function (next) {
+StaticsSchema.pre('save', async function (next) {
     const errors = await StaticsSchema.statics.translationValidation(undefined, this);
     this.modifyDate = new Date();
-    next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
 module.exports = StaticsSchema;

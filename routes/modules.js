@@ -1,8 +1,8 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer} = require('../middleware');
-const serviceModule = require("../services/modules");
+const serviceModule = require('../services/modules');
 const {Modules}     = require('../orm/models');
-const NSErrors      = require("../utils/errors/NSErrors");
+const NSErrors      = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
@@ -23,7 +23,7 @@ const checkDependencies = async (req, res, next) => {
         const {idModule, installation} = req.query;
         if (!idModule || !installation) throw NSErrors.UnprocessableEntity;
         let result;
-        if (installation === "true") {
+        if (installation === 'true') {
             result = await serviceModule.checkDependenciesAtInstallation(idModule);
         } else {
             result = await serviceModule.checkDependenciesAtUninstallation(idModule);

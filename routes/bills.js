@@ -1,11 +1,11 @@
 const ServiceBills                 = require('../services/bills');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                  = require('../services/auth');
 
 module.exports = function (app) {
-    app.post("/v2/bills", getBills);
-    app.post("/v2/bills/generatePDF", generatePDF);
-    app.post("/v2/bills/fromOrder", authentication, adminAuth, orderToBill);
+    app.post('/v2/bills', getBills);
+    app.post('/v2/bills/generatePDF', generatePDF);
+    app.post('/v2/bills/fromOrder', authentication, adminAuth, orderToBill);
 };
 
 /**
@@ -37,7 +37,8 @@ async function orderToBill(req, res, next) {
 async function generatePDF(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'client');
-        return await ServiceBills.generatePDF(PostBodyVerified, res);
+        const response = await ServiceBills.generatePDF(PostBodyVerified);
+        return response.pipe(res);
     } catch (error) {
         return next(error);
     }

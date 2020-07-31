@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path');
 const packageManager = require('./packageManager');
 const modulesUtils = require('./modules');
 
@@ -8,14 +8,14 @@ const modulesUtils = require('./modules');
 const themeCompile = async () => {
     try {
         try {
-            const currentTheme = path.join("./themes", global.envConfig.environment.currentTheme);
+            const currentTheme = path.join('./themes', global.envConfig.environment.currentTheme);
             if (!global.envFile.db) {
-                await packageManager.execCmd("yarn install", `${currentTheme}`);
+                await packageManager.execCmd('yarn install', `${currentTheme}`);
             }
             await packageManager.execSh(
                 `${path.normalize('./node_modules/next/dist/bin/next')} build ${currentTheme}`,
                 [],
-                "./"
+                './'
             );
         } catch (err) {
             console.error(err);

@@ -17,6 +17,7 @@ import {
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
+import CMS from 'components/CMS';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
 import Error from './_error';
@@ -29,7 +30,7 @@ import Error from './_error';
 class PageProduct extends NSPageProduct {
     render = () => {
         const {
-            appurl, lang, notFound, oCmsHeader, oCmsFooter, routerLang, sitename, t, themeConfig
+            appurl, cmsProductContentBottom, lang, notFound, oCmsHeader, oCmsFooter, routerLang, sitename, t, themeConfig
         } = this.props;
         if (notFound) {
             return (
@@ -538,6 +539,13 @@ class PageProduct extends NSPageProduct {
                                     </div>
                                 </div>{/* <!-- /.section__body --> */}
                             </section>{/* <!-- /.section-ratings --> */}
+                            {
+                                cmsProductContentBottom && (
+                                    <section>
+                                        <CMS ns-code="product-content-bottom" content={cmsProductContentBottom.content || ''} hide_error />
+                                    </section>
+                                )
+                            }
                         </div>{/* <!-- /.shell --> */}
                     </div>
                     <ModalR

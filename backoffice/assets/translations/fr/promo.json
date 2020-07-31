@@ -61,7 +61,7 @@
             "et": "Valeur finale HT",
             "ati": "Valeur finale TTC"
         },
-        "qtyB": "Quantity break",
+        "qtyB": "Remise dégréssive",
         "percent": "Pourcentage",
         "artKdo": "Article offert :",
         "code": "CODE",

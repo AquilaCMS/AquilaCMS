@@ -4,34 +4,42 @@ var SiteControllers = angular.module("aq.site.controllers", []);
 SiteControllers.controller("ArticlesSiteCtrl", [
     "$scope", "$location", "$route", "ArticlesV2", "toastService", "$rootScope", function ($scope, $location, $route, ArticlesV2, toastService, $rootScope)
     {
-        $scope.defaultLang = $rootScope.languages.find(function (lang)
-        {
+        $scope.listArticles = [];
+        $scope.page = 1;
+        $scope.nbItemsPerPage = 10;
+        $scope.maxSize = 5;
+        $scope.totalArticles = 0;
+
+        $scope.defaultLang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
 
-        ArticlesV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas})
-        {
+        ArticlesV2.list({PostBody: {filter: {}, structure: '*', limit: $scope.nbItemsPerPage, page: 1}}, function ({datas, count}) {
             $scope.listArticles = datas;
+            $scope.totalArticles = count;
         });
 
-        $scope.momentDate = function (date)
-        {
+        $scope.onPageChange = function (page) {
+            ArticlesV2.list({PostBody: {filter: {}, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
+                $scope.listArticles = datas;
+                $scope.totalArticles = count;
+            });
+        }
+
+        $scope.momentDate = function (date) {
             return moment(date).format("L, LTS");
         };
-        $scope.remove = function (articles)
-        {
-            if(confirm("Etes-vous sûr de vouloir supprimer cet article ?"))
-            {
-                ArticlesV2.delete({id: articles._id, type: 'new'}, function ()
-                {
+
+        $scope.remove = function (articles) {
+            if(confirm("Etes-vous sûr de vouloir supprimer cet article ?")) {
+                ArticlesV2.delete({id: articles._id, type: 'new'}, function () {
                     toastService.toast("success", "Article supprimé");
                     $route.reload();
                 });
             }
         };
 
-        $scope.goToArticleDetails = function (_id)
-        {
+        $scope.goToArticleDetails = function (_id) {
             $location.path("/site/articles/detail/" + _id);
         };
 

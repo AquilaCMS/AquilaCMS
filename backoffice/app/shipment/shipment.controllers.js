@@ -45,7 +45,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
             if (!$scope.isEditMode && tabActive === "price") return;
             $scope.tabActive = tabActive
         };
-            
+
         $scope.taxerate = [];
         ConfigV2.taxerate( function (cfg) {
             $scope.taxerate = cfg;
@@ -86,7 +86,16 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 id: $routeParams.shipmentId,
                 PostBody: {
                     filter: {_id: $routeParams.shipmentId},
-                    structure: {active:1,vat_rate: 1, preparation: 1, translation: 1, countries: 1, address: 1, component_template: 1}
+                    structure: {
+                        active:1,
+                        vat_rate: 1,
+                        preparation: 1,
+                        translation: 1,
+                        countries: 1,
+                        address: 1,
+                        component_template: 1,
+                        freePriceLimit: 1
+                    }
                 }
             }, function (shipment) {
                 $scope.shipment = shipment;
@@ -186,7 +195,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         $scope.removeCountry = function (index) {
             $scope.shipment.countries.splice(index, 1);
         };
-        
+
         $scope.getCountryByCode = function (code) {
             const country = $scope.countries.datas.find((country) => country.code === code)
             if(country){

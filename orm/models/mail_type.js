@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {MailTypeSchema} = require("../schemas");
+const {MailTypeSchema} = require('../schemas');
 
-module.exports = mongoose.model("mailtype", MailTypeSchema);
+module.exports = mongoose.model('mailtype', MailTypeSchema);

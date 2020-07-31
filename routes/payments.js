@@ -1,14 +1,14 @@
-const path                        = require("path");
+const path                        = require('path');
 const {securityForceActif}        = require('../middleware/security');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer}          = require('../middleware');
 const ServicePayment              = require('../services/payments');
 const {Orders, PaymentMethods}    = require('../orm/models');
-const NSErrors                    = require("../utils/errors/NSErrors");
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/paymentMethods', securityForceActif(["active"]), getPaymentMethods);
-    app.post('/v2/paymentMethod', securityForceActif(["active"]), getPaymentMethod);
+    app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
+    app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
     app.put('/v2/paymentMethod', authentication, adminAuth, savePaymentMethod);
     app.post('/v2/payments/order', getOrdersPayments);
     app.post('/v2/payments/export', authentication, adminAuth, exportPayments);
@@ -65,7 +65,7 @@ async function savePaymentMethod(req, res, next) {
 
 // @Deprecated ?
 async function deletePaymentMethod(req, res, next) {
-    console.warn("Legacy fct ?? : deletePaymentMethod()");
+    console.warn('Legacy fct ?? : deletePaymentMethod()');
     try {
         const result = await ServicePayment.deletePaymentMethod(req.params._id);
         return res.json(result);
@@ -118,18 +118,18 @@ async function exportPayments(req, res, next) {
             orders.forEach(function (order) {
                 if (order.payment.length > 0) {
                     order.payment.forEach(function (payment) {
-                        let status = "Annulé";
-                        if (payment.status === "DONE") {
-                            status = "Effectue";
-                        } else if (payment.status === "TODO") {
-                            status = "A effectuer";
+                        let status = 'Annulé';
+                        if (payment.status === 'DONE') {
+                            status = 'Effectue';
+                        } else if (payment.status === 'TODO') {
+                            status = 'A effectuer';
                         }
                         const u = {
                             Commande : order.number,
                             Client   : order.customer.email,
                             Date     : moment(payment.operationDate).format('L LT'),
                             Statut   : status,
-                            Type     : payment.type === "debit" ? "Remboursement" : "Reglement",
+                            Type     : payment.type === 'debit' ? 'Remboursement' : 'Reglement',
                             Montant  : payment.amount
                         };
                         convOrders.push(u);
@@ -141,7 +141,7 @@ async function exportPayments(req, res, next) {
             if ( convOrders.length > 0 ) {
                 csvFields = Object.keys(convOrders[0]);
             } else {
-                csvFields = ["No data"];
+                csvFields = ['No data'];
             }
             try {
                 const parser = new Parser({fields: csvFields, del: ';'});
@@ -153,11 +153,11 @@ async function exportPayments(req, res, next) {
                     if (err) return next(err);
                     console.log('file saved');
 
-                    res.download(`${exportPath}/file.csv`, "exportPayments.csv", function (err) {
+                    res.download(`${exportPath}/file.csv`, 'exportPayments.csv', function (err) {
                         if (err) {
                             // handle error, keep in mind the response may be partially-sent
                             // so check res.headerSent
-                            console.error("download ko", err);
+                            console.error('download ko', err);
                             res.send(err);
                         }
                     });
@@ -227,11 +227,11 @@ async function exportPaymentOne(req, res, next) {
 
     const rData = JSON.parse(req.body.data);
 
-    let status = "Annulé";
-    if (rData.status === "DONE") {
-        status = "Effectue";
-    } else if (rData.status === "TODO") {
-        status = "A effectuer";
+    let status = 'Annulé';
+    if (rData.status === 'DONE') {
+        status = 'Effectue';
+    } else if (rData.status === 'TODO') {
+        status = 'A effectuer';
     }
 
     const myData = [
@@ -252,7 +252,7 @@ async function exportPaymentOne(req, res, next) {
     if ( myData.length > 0 ) {
         csvFields = Object.keys(myData[0]);
     } else {
-        csvFields = ["No data"];
+        csvFields = ['No data'];
     }
 
     try {
@@ -266,7 +266,7 @@ async function exportPaymentOne(req, res, next) {
 
             res.download(`${exportPath}/file.csv`, `exportPayment_${rData.transactionId}.csv`, function (err) {
                 if (err) {
-                    console.error("download ko", err);
+                    console.error('download ko', err);
                     res.send(err);
                 }
             });

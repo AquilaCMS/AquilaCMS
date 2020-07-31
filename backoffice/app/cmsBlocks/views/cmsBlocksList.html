@@ -1,33 +1,61 @@
 <ns-box data-title="cmsBlocks.list.t1" title-icon="fa fa-file-code-o fa-lg" new-href="#/cmsBlocks/new">
-    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid"></div>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="dataTables_filter">
-                <input type="search" ng-model="search" class="search-field" name="q" id="q" value=""
-                    placeholder="Search..">
+    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="dataTables_filter">
+                    <input group="search" ng-model="search" class="search-field" name="q" id="q" value="" placeholder="{{'cmsBlocks.list.search' | translate}}">                    
+                </div>
             </div>
         </div>
+        <ul class="nav nav-tabs" style="margin-top: 20px;">
+            <li ng-show="search === ''" class="{{currentTab === group ? 'active' : ''}}" ng-repeat="group in groups | filterListGeneral:group"><a href="" ng-click="changeTab(group)" target="_self">{{group}}</a></li>
+            <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>cmsBlocks.list.search</a></li>
+        </ul>
+        <div ng-show="search === '' && currentTab === group" ng-repeat="group in groups" class="tab-content">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th translate>
+                            cmsBlocks.list.code
+                        </th>
+                        <th width="40%" translate>
+                            cmsBlocks.list.desc
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="pointer"
+                        ng-class-odd="'odd'" ng-class-even="'even'"
+                        ng-repeat="block in cmsBlocks | filterListGeneral:group | orderBy:sortType:sortReverse | filter:search"
+                        ng-click="goToCmsBlockDetails(block.code)">
+                        <td>{{block.code}}</td>
+                        <td>{{block.translation[defaultLang].description}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div ng-show="search !== ''" id="__search" class="tab-pane fade in {{search !== '' ? 'active' : ''}}">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th translate>
+                            cmsBlocks.list.code
+                        </th>
+                        <th width="40%" translate>
+                            cmsBlocks.list.desc
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="pointer"
+                        ng-class-odd="'odd'" ng-class-even="'even'"
+                        ng-repeat="block in cmsBlocks | orderBy:sortType:sortReverse|filter:search"
+                        ng-click="goToCmsBlockDetails(block.code)">
+                        <td>{{block.code}}</td>
+                        <td>{{block.translation[defaultLang].description}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th translate>
-                    cmsBlocks.list.code
-                </th>
-                <th width="40%" translate>
-                    cmsBlocks.list.desc
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="pointer"
-                ng-class-odd="'odd'" ng-class-even="'even'"
-                ng-repeat="block in cmsBlocks |orderBy:sortType:sortReverse|filter:search"
-                ng-click="goToCmsBlockDetails(block.code)">
-                <td>{{block.code}}</td>
-                <td>{{block.translation[defaultLang].description}}</td>
-            </tr>
-        </tbody>
-    </table>
 </ns-box>

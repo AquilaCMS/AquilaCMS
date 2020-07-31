@@ -1,16 +1,16 @@
 const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const trademarkServices           = require('../services/trademarks');
-const {Trademarks, Products}      = require("../orm/models");
-const NSErrors                    = require("../utils/errors/NSErrors");
+const {Trademarks, Products}      = require('../orm/models');
+const NSErrors                    = require('../utils/errors/NSErrors');
 const utils                       = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/trademarks',      authentication, adminAuth, getTrademarks);
     app.post('/v2/trademark',       authentication, adminAuth, getTrademark);
     app.post('/v2/trademark/:id',   authentication, adminAuth, getTrademarkById);
-    app.put("/v2/trademark",        authentication, adminAuth, setTrademark);
-    app.delete("/v2/trademark/:id", authentication, adminAuth, deleteTrademark);
+    app.put('/v2/trademark',        authentication, adminAuth, setTrademark);
+    app.delete('/v2/trademark/:id', authentication, adminAuth, deleteTrademark);
 
     app.post('/trademarks/update', authentication, adminAuth, update); // TODO RV2 : Utilisé dans /admin/#/trademarks/__code__ ==> Ne pas transformer en V2 !
 
@@ -93,7 +93,7 @@ async function deleteTrademark(req, res, next) {
 async function list(req, res, next) {
     try {
         const params = {};
-        if (req.query.active === "true") {
+        if (req.query.active === 'true') {
             params.$or = [{active: true}, {active: null}];
         }
         const trademarks = await Trademarks.find(params);

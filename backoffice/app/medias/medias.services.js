@@ -11,6 +11,7 @@ MediasServices.factory("MediaApi", ["$resource", function ($resource) {
 		list: {method: "POST", params: {type: 'medias'}},
 		query: {method: "POST", params: {type: 'media'}},
 		save: {method: "PUT", params: {type: 'media'}},
-		delete: {method: "DELETE", params: {type: 'media'}}
+		delete: {method: "DELETE", params: {type: 'media'}},
+		getGroups: {method: "GET", params: {type: 'medias', id: "groups"}, isArray: true},
 	});
 }]);

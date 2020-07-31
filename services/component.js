@@ -1,4 +1,4 @@
-const NSErrors = require("../utils/errors/NSErrors");
+const NSErrors = require('../utils/errors/NSErrors');
 
 exports.getComponent = async function (componentName, code = null, authorization = null) {
     if (code === null) throw NSErrors.ComponentCodeNotFound;

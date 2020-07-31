@@ -76,7 +76,7 @@ const update = async () => {
 
     // Décompresser dossier temporaire
     try {
-        console.log(`Extracting archive...`);
+        console.log('Extracting archive...');
         const zip = new AdmZip(filePath);
         zip.extractAllTo(aquilaPath);
     } catch (exc) {
@@ -89,7 +89,7 @@ const update = async () => {
 
     for (const module of modules) {
         if (module.packageDependencies && module.packageDependencies.api && module.packageDependencies.api.length > 0) {
-            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`, `./`);
+            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`, './');
         }
     }
 

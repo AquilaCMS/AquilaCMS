@@ -1,6 +1,6 @@
-const path          = require("path");
-const themeServices = require("../services/themes");
-const fs            = require("../utils/fsp");
+const path          = require('path');
+const themeServices = require('../services/themes');
+const fs            = require('../utils/fsp');
 const serverUtils   = require('../utils/server');
 const {createListModuleFile} = require('../utils/modules');
 const NSErrors      = require('../utils/errors/NSErrors');
@@ -12,7 +12,7 @@ const NSErrors      = require('../utils/errors/NSErrors');
  */
 const firstLaunch = async (req, install) => {
     // First launch : Start installer !
-    console.log("-= Process installer =-");
+    console.log('-= Process installer =-');
     if (install) {
         await postConfiguratorDatas(req);
     } else {
@@ -20,14 +20,26 @@ const firstLaunch = async (req, install) => {
     }
 };
 
+/**
+ * Test if a connection to database is valid
+ * @param {Object} req.body.data Connection string to mongodb
+ */
+const testdb = async (req) => {
+    try {
+        await require('../utils/database').testdb(req.body.data);
+    } catch (err) {
+        throw new Error('Cannot connect to MongoDB');
+    }
+};
+
 // Only for installation purpose, will be inaccessible after first installation
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
-    console.log("-= Start installation =-");
+    console.log('-= Start installation =-');
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
-    require("../routes/install")(installRouter);
-    server.use("/", installRouter, (req, res, next) => {
+    require('../routes/install')(installRouter);
+    server.use('/', installRouter, (req, res, next) => {
         if (req.originalUrl !== '/') {
             return res.status(301).redirect('/');
         }
@@ -40,27 +52,27 @@ const handleInstaller = async (middlewareServer, middlewarePassport, server, pas
  */
 const postConfiguratorDatas = async (req) => {
     try {
-        console.log("Installer : Record datas value");
+        console.log('Installer : Record datas value');
         const datas = req.body;
-        if (!await fs.access(datas.envPath) || path.extname(datas.envPath) !== ".json") {
-            throw new Error("envPath is not correct");
+        if (!await fs.access(datas.envPath) || path.extname(datas.envPath) !== '.json') {
+            throw new Error('envPath is not correct');
         }
 
-        console.log("Installer : write env file");
-        await fs.writeFile("./config/envPath", datas.envPath);
-        const aquila_env       = serverUtils.getEnv("AQUILA_ENV");
+        console.log('Installer : write env file');
+        await fs.writeFile('./config/envPath', datas.envPath);
+        const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
         global.envPath         = datas.envPath;
         let envFile            = JSON.parse((await fs.readFile(datas.envPath)).toString());
         envFile[aquila_env].db = datas.databaseAdd;
-        await fs.writeFile(path.join(global.appRoot, "config/env.json"), JSON.stringify(envFile, null, 2));
+        await fs.writeFile(path.join(global.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
         envFile                = envFile[aquila_env];
         global.envFile         = envFile;
-        console.log("Installer : finish writing env file");
+        console.log('Installer : finish writing env file');
 
-        await require("../utils/database").connect();
+        await require('../utils/database').connect();
         // We need to override data in database
         let configuration;
-        if (datas.override === "on") {
+        if (datas.override === 'on') {
             console.log('Installer : start default db installation');
             configuration = await createConfiguration(datas);
             await createUserAdmin(datas);
@@ -72,22 +84,22 @@ const postConfiguratorDatas = async (req) => {
 
         await createDynamicLangFile(datas.language);
 
-        if (datas.demoData && datas.override === "on") {
-            console.log("Installer : installation of the default theme datas");
-            await themeServices.copyDatas("default_theme", true, configuration);
-            console.log("Installer : end installation of the default theme datas");
+        if (datas.demoData && datas.override === 'on') {
+            console.log('Installer : installation of the default theme datas');
+            await themeServices.copyDatas('default_theme', true, configuration);
+            console.log('Installer : end installation of the default theme datas');
         }
         await createListModuleFile('default_theme');
         // Compilation du theme par default
-        console.log("Installer : start default theme installation and compilation");
+        console.log('Installer : start default theme installation and compilation');
         const packageManager = require('../utils/packageManager');
-        if (await fs.access(global.appRoot, "yarn.lock")) {
-            await packageManager.execCmd(`yarn install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve("./themes/default_theme"));
+        if (await fs.access(global.appRoot, 'yarn.lock')) {
+            await packageManager.execCmd(`yarn install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve('./themes/default_theme'));
         } else {
-            await packageManager.execCmd(`npm install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve("./themes/default_theme"));
+            await packageManager.execCmd(`npm install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve('./themes/default_theme'));
         }
-        await packageManager.execSh(path.normalize("./node_modules/next/dist/bin/next"), ["build", path.normalize("./themes/default_theme")], `./`);
-        console.log("Installer : end default theme installation and compilation");
+        await packageManager.execSh(path.normalize('./node_modules/next/dist/bin/next'), ['build', path.normalize('./themes/default_theme')], './');
+        console.log('Installer : end default theme installation and compilation');
     } catch (err) {
         console.error(err);
         throw err;
@@ -98,24 +110,24 @@ const postConfiguratorDatas = async (req) => {
  * Catch the RecoverConfiguration's datas and save it in envPath
  */
 const recoverConfiguration = async (req) => {
-    console.log("Installer : fetching new env path");
+    console.log('Installer : fetching new env path');
     let {envPath} = req.body;
 
     if (!await fs.access(envPath)) {
-        throw new Error("env file doesn't exist or is not located in this folder");
+        throw new Error('env file doesn\'t exist or is not located in this folder');
     }
 
-    if (path.extname(envPath) === ".js") {
+    if (path.extname(envPath) === '.js') {
         const tmpPath = `../${envPath.slice(2)}`;
         const oldFile = require(tmpPath);
         await fs.writeFile(`${envPath}on`, JSON.stringify(oldFile, null, 2));
         await fs.unlink(envPath);
         envPath = `${envPath}on`;
     }
-    await fs.writeFile("./config/envPath", envPath);
+    await fs.writeFile('./config/envPath', envPath);
     global.envPath = envPath;
-    global.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv("AQUILA_ENV")];
-    console.log("Installer : finish fetching new env path");
+    global.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
+    console.log('Installer : finish fetching new env path');
 };
 
 /**
@@ -123,24 +135,24 @@ const recoverConfiguration = async (req) => {
  * @param {Object} datas Datas to insert
  */
 const createConfiguration = async (datas) => {
-    datas.appUrl = datas.appUrl.endsWith("/") ? datas.appUrl : `${datas.appUrl}/`;
-    const {Configuration} = require("../orm/models");
+    datas.appUrl = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
+    const {Configuration} = require('../orm/models');
 
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
-            currentTheme    : "default_theme",
+            currentTheme    : 'default_theme',
             adminPrefix     : datas.adminPrefix,
-            websiteCountry  : datas.language && datas.language === "EN" ? 'UK' : 'FR',
+            websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
             port            : global.port,
             siteName        : datas.siteName,
             demoMode        : true,
-            websiteTimezone : "Europe/Paris"
+            websiteTimezone : 'Europe/Paris'
         },
         stockOrder : {
             cartExpireTimeout         : 1,
             pendingOrderCancelTimeout : 1,
-            bookingStock              : "none"
+            bookingStock              : 'none'
         },
         taxerate : [
             {rate: 2.1},
@@ -156,7 +168,7 @@ const createConfiguration = async (datas) => {
  * @param {{password: String, firstname: String, lastname: String, email: String}} userDatas datas to insert
  */
 const createUserAdmin = async (userDatas) => {
-    const {Users} = require("../orm/models");
+    const {Users} = require('../orm/models');
     try {
         await Users.create({
             password  : userDatas.password,
@@ -172,7 +184,7 @@ const createUserAdmin = async (userDatas) => {
         if (err._errors && err._errors.message === 'BAD_EMAIL_FORMAT') {
             throw NSErrors.EmailFormatInvalid;
         }
-        console.error("Admin cannot be created");
+        console.error('Admin cannot be created');
     }
 };
 
@@ -181,17 +193,17 @@ const createUserAdmin = async (userDatas) => {
  * @param {string} language Language to create
  */
 const createDefaultLanguage = async (language) => {
-    const {Languages} = require("../orm/models");
+    const {Languages} = require('../orm/models');
     try {
         await Languages.create({
             position        : 1,
             defaultLanguage : true,
-            status          : "visible",
+            status          : 'visible',
             code            : language,
-            name            : language === "fr" ? "Français" : "English"
+            name            : language === 'fr' ? 'Français' : 'English'
         });
     } catch (err) {
-        console.error("Language cannot be created");
+        console.error('Language cannot be created');
     }
 };
 
@@ -208,23 +220,24 @@ const createDynamicLangFile = async (language) => {
  * Create default countries
  */
 const createDefaultCountries = async () => {
-    const {Territory} = require("../orm/models");
+    const {Territory} = require('../orm/models');
     try {
         await Territory.insertMany([{
-            code : "FR",
-            name : "France",
-            type : "country"
+            code : 'FR',
+            name : 'France',
+            type : 'country'
         }, {
-            code : "UK",
-            name : "United Kingdom",
-            type : "country"
+            code : 'UK',
+            name : 'United Kingdom',
+            type : 'country'
         }]);
     } catch (err) {
-        console.error("Countries cannot be created");
+        console.error('Countries cannot be created');
     }
 };
 
 module.exports = {
     firstLaunch,
-    handleInstaller
+    handleInstaller,
+    testdb
 };

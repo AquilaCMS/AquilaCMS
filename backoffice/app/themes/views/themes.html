@@ -51,13 +51,12 @@
            <div id="config" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
             <div class="form-group">
                 <label translate>themes.themeDatas</label> <br />
-                <a download class="btn btn-success" ng-click="copyThemeDatas()" ng-disabled="true" translate>
+                <a download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                     themes.themeDatasLead
                 </a>
                 <br />
-                <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="local.themeDataOverride">
-                <label class="form-check-label" for="themeDataOverride" style="font-weight:normal"
-                    translate>themes.themeDatasOverride</label>
+                <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
+                <label class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
             </div>
             <br />
                 <label ng-if="theme.currentThemeVar" style="margin:20px 0" translate>themes.currentThemeVar</label>

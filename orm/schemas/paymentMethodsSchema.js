@@ -1,6 +1,6 @@
 const mongoose     = require('mongoose');
 const aquilaEvents = require('../../utils/aquilaEvents');
-const {checkCustomFields} = require("../../utils/translation");
+const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
 const Schema       = mongoose.Schema;
 
@@ -46,7 +46,7 @@ PaymentMethodsSchema.statics.translationValidation = async function (query, self
     for (let i = 0; i < translationKeys.length; i++) {
         if (Object.keys(self.translation[translationKeys[i]]).length > 0) {
             errors = checkCustomFields(self.translation[translationKeys[i]], `translation.${translationKeys[i]}`, [
-                {key: "name"}, {key: "urlLogo"}, {key: "description"}, {key: "instruction"}
+                {key: 'name'}, {key: 'urlLogo'}, {key: 'description'}, {key: 'instruction'}
             ]);
         }
     }
@@ -54,15 +54,15 @@ PaymentMethodsSchema.statics.translationValidation = async function (query, self
     return errors;
 };
 
-PaymentMethodsSchema.pre("updateOne", async function (next) {
+PaymentMethodsSchema.pre('updateOne', async function (next) {
     utilsDatabase.preUpdates(this, next, PaymentMethodsSchema);
 });
 
-PaymentMethodsSchema.pre("save", async function (next) {
+PaymentMethodsSchema.pre('save', async function (next) {
     const errors = await PaymentMethodsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
-aquilaEvents.emit("paymentMethodSchemaInit", PaymentMethodsSchema);
+aquilaEvents.emit('paymentMethodSchemaInit', PaymentMethodsSchema);
 
 module.exports = PaymentMethodsSchema;

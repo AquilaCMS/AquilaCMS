@@ -24,7 +24,7 @@ ProductVirtualSchema.methods.updateData = async function (data, cb) {
 };
 
 ProductVirtualSchema.methods.addToCart = async function (cart, item, user, lang) {
-    item.type   = "virtual";
+    item.type   = 'virtual';
     const _cart = await this.basicAddToCart(cart, item, user, lang);
     return _cart;
 };

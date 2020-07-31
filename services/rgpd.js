@@ -48,9 +48,9 @@ const anonymizeOrdersByUser = async (id) => {
     const email  = faker.internet.email();
     return Orders.updateMany({'customer.id': id}, {
         $set : {
-            "customer.email"    : email,
-            "customer.phone"    : faker.phone.phoneNumber(),
-            "customer.fullname" : `${firstName} ${lastName}`,
+            'customer.email'    : email,
+            'customer.phone'    : faker.phone.phoneNumber(),
+            'customer.fullname' : `${firstName} ${lastName}`,
             addresses           : {
                 billing  : generateFakeAddresses({firstname: firstName, lastname: lastName}),
                 shipping : generateFakeAddresses({firstname: firstName, lastname: lastName})
@@ -64,7 +64,7 @@ const getCartsByUser = async (id) => {
 };
 
 const getReviewsByUser = async (id) => {
-    const products = await Products.find({"reviews.datas.id_client": id}).lean();
+    const products = await Products.find({'reviews.datas.id_client': id}).lean();
     const datas = [];
     for (let i = 0; i < products.length; i++) {
         for (let j = 0; j < products[i].reviews.datas.length; j++) {
@@ -79,8 +79,8 @@ const getReviewsByUser = async (id) => {
 const anonymizeCartsByUser = async (id) => {
     return Cart.updateMany({'customer.id': id}, {
         $set : {
-            "customer.email" : faker.internet.email(),
-            "customer.phone" : faker.phone.phoneNumber()
+            'customer.email' : faker.internet.email(),
+            'customer.phone' : faker.phone.phoneNumber()
         }
     });
 };
@@ -124,8 +124,8 @@ const anonymizeBillsByUser = async (id) => {
 const anonymizeReviewsByUser = async (id) => {
     return Products.updateMany({'reviews.datas.id_client': id}, {
         $set : {
-            "reviews.datas.$.ip_client" : faker.internet.ip(),
-            "reviews.datas.$.name"      : faker.name.firstName()
+            'reviews.datas.$.ip_client' : faker.internet.ip(),
+            'reviews.datas.$.name'      : faker.name.firstName()
         }
     });
 };
@@ -138,7 +138,7 @@ const anonymizeUser = async (id) => {
         $set : {
             email,
             code             : uuidv4(),
-            title            : Math.random() < 0.5 ? "M." : "Mme",
+            title            : Math.random() < 0.5 ? 'M.' : 'Mme',
             firstname        : firstName,
             lastname         : lastName,
             phone            : faker.phone.phoneNumber(),
@@ -210,7 +210,7 @@ function mongorestore(uri) {
  */
 const anonymizeDatabase = async (cb) => {
     // Connexion à la nouvelle database
-    const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1];
+    const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1];
     const client = await MongoClient.connect(
         global.envFile.db.replace(
             databaseName,
@@ -224,7 +224,7 @@ const anonymizeDatabase = async (cb) => {
     const database = client.db(`${databaseName}_anonymized`);
 
     // Génération d'un mot de passe commun
-    const hash = await bcrypt.hash("password", 10);
+    const hash = await bcrypt.hash('password', 10);
     const users = await database.collection('users').find({}).toArray();
     for (let i = 0; i < users.length; i++) {
         const firstName = faker.name.firstName();
@@ -244,7 +244,7 @@ const anonymizeDatabase = async (cb) => {
                 email,
                 password         : hash,
                 code             : uuidv4(),
-                title            : Math.random() < 0.5 ? "M." : "Mme",
+                title            : Math.random() < 0.5 ? 'M.' : 'Mme',
                 firstname        : firstName,
                 lastname         : lastName,
                 phone            : faker.phone.phoneNumber(),
@@ -265,9 +265,9 @@ const anonymizeDatabase = async (cb) => {
             _id : orders[i]._id
         }, {
             $set : {
-                "customer.email"    : faker.internet.email(),
-                "customer.phone"    : faker.phone.phoneNumber(),
-                "customer.fullname" : `${faker.name.firstName()} ${faker.name.lastName()}`,
+                'customer.email'    : faker.internet.email(),
+                'customer.phone'    : faker.phone.phoneNumber(),
+                'customer.fullname' : `${faker.name.firstName()} ${faker.name.lastName()}`,
                 addresses           : {
                     delivery : generateFakeAddresses(),
                     billing  : generateFakeAddresses()
@@ -295,8 +295,8 @@ const anonymizeDatabase = async (cb) => {
             _id : carts[i]._id
         }, {
             $set : {
-                "customer.email" : faker.internet.email(),
-                "customer.phone" : faker.phone.phoneNumber()
+                'customer.email' : faker.internet.email(),
+                'customer.phone' : faker.phone.phoneNumber()
             }
         });
     }
@@ -308,7 +308,7 @@ const anonymizeDatabase = async (cb) => {
             datas[j].name = faker.name.firstName();
             await database.collection('products').findOneAndUpdate({_id: products[i]._id}, {
                 $set : {
-                    "reviews.datas" : datas
+                    'reviews.datas' : datas
                 }
             });
         }
@@ -342,15 +342,15 @@ const anonymizeDatabase = async (cb) => {
 const dropDatabase = async () => {
     const client = await MongoClient.connect(
         global.envFile.db.replace(
-            global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1],
-            `${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1]}_anonymized`
+            global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1],
+            `${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`
         ),
         {
             useNewUrlParser    : true,
             useUnifiedTopology : true
         }
     );
-    const db = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, "").replace(/\?.*/g, '').split('/')[1]}_anonymized`);
+    const db = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
     await db.dropDatabase();
 };
 
@@ -401,7 +401,7 @@ const anonymizeUserDatas = async (id) => {
 };
 
 const createConnectionStringMongoose = async (data) => {
-    let cmd = "";
+    let cmd = '';
     if (data.options && data.options.replicaSet && data.hosts) {
         cmd += ` --host "${data.options.replicaSet}/${data.hosts.map((h, i) => `${h}${data.ports[i] ? (`:${data.ports[i]}`) : ''},`)}"`;
     } else {
@@ -434,7 +434,7 @@ const generateFakeAddresses = async (options) => {
         city              : faker.address.city(),
         country           : faker.address.country(),
         isoCountryCode    : faker.address.countryCode(),
-        complementaryInfo : ""
+        complementaryInfo : ''
     };
     if (options) {
         for (let i = 0; i < Object.keys(options).length; i++) {

@@ -1,10 +1,10 @@
 {
     "medias": {
         "t1": "Médias",
-        "nom": "Nom",
+        "nom": "Code",
         "lien": "Lien",
         "miniature": "Miniature",
-        "cpLien": "Copier le lien",
+        "cpLien": "Copier lien",
         "delete": "Supprimer",
         "uploadInsert" : "Inserer en base",
         "uploadButton" : "Ajout en masse *",
@@ -13,9 +13,9 @@
     "new": {
         "t1": "Nouveau Média",
         "ph1": "Nom du fichier",
-        "nom": "Nom",
+        "nom": "Code",
         "lien": "Lien :",
-        "cpLien": "Copier le lien",
+        "cpLien": "Copier lien",
         "media": "Média",
         "add": "Ajouter"
     },

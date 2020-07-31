@@ -1,8 +1,8 @@
 module.exports = {
     logout : {
         message : {
-            fr : "Déconnexion réussie.",
-            en : "Successfully logged out."
+            fr : 'Déconnexion réussie.',
+            en : 'Successfully logged out.'
         }
     }
 };

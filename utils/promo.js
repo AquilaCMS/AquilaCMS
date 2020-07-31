@@ -3,11 +3,11 @@
  * @param {*} conditions
  * @param {*} str
  */
-const createIfStatement = (conditions, str = "( ") => {
+const createIfStatement = (conditions, str = '( ') => {
     let operator;
     // si on a une condition après un array nous devons mettre l'opérateur avant la condition
     let afterArray = false;
-    if (conditions[0] === "NONE") {
+    if (conditions[0] === 'NONE') {
         return '(true)';
     }
     for (let i = 0; i < conditions.length; i++) {
@@ -16,16 +16,16 @@ const createIfStatement = (conditions, str = "( ") => {
             if (conditions.length && conditions[i - 1] instanceof Array) {
                 str += operator;
             }
-            str += createIfStatement(condition, "( ");
+            str += createIfStatement(condition, '( ');
         } else {
             // la condition peut être soit "ET", "OU" ou un boolean
-            if (condition === "ET" || condition === "OU") {
+            if (condition === 'ET' || condition === 'OU') {
                 // Si l'element conditions précédent est un tableau alors nous devons rajouter l'opérateur après la parenthése
                 // (chaque fin de parenthès correspond a la fin d'un tableau de condition) ex: if( true && ( false || true) && true )
                 if (conditions.length && conditions[i - 1] instanceof Array) {
                     afterArray = true;
                 }
-                operator = condition === "ET" ? " && " : " || ";
+                operator = condition === 'ET' ? ' && ' : ' || ';
             } else {
                 // On met l'operateur avant la condition et après (si les conditions sont respectées)
                 if (afterArray) {
@@ -44,7 +44,7 @@ const createIfStatement = (conditions, str = "( ") => {
             }
         }
     }
-    str += ") ";
+    str += ') ';
     return str;
 };
 

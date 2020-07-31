@@ -25,15 +25,15 @@ const save = async (environment) => {
         maintenance = true;
     }
 
-    if (environment && environment.mailPass !== undefined && environment.mailPass !== "") {
+    if (environment && environment.mailPass !== undefined && environment.mailPass !== '') {
         environment.mailPass = encryption.cipher(environment.mailPass);
     }
     await Configuration.updateOne({}, {environment});
     // Si le theme a changé
     if (oldConfig.environment.currentTheme !== environment.currentTheme) {
-        console.log("Setup selected theme...");
+        console.log('Setup selected theme...');
         try {
-            await require("./modules").setFrontModules(environment.currentTheme);
+            await require('./modules').setFrontModules(environment.currentTheme);
             await setConfigTheme(environment.currentTheme);
             await installDependencies(environment.currentTheme);
             if (oldConfig && oldConfig.environment && oldConfig.environment.autoMaintenance === true && oldConfig.environment.maintenance === true && maintenance === true) {
@@ -62,24 +62,24 @@ const uploadTheme = async (originalname, filepath) => {
         await fs.unlink(tmp_path);
 
         // Unzip
-        console.log("Unziping new theme...");
+        console.log('Unziping new theme...');
         const AdmZip = require('adm-zip');
         const zip    = new AdmZip(target_path_full);
         zip.extractAllTo(target_path, /* overwrite */true);
         const themeName = originalname.split('.')
             .slice(0, -1)
             .join('.');
-        if (await fs.access(`${target_path_full.replace(".zip", "/")}next.config.js`)) {
+        if (await fs.access(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
             if (await fs.access(target_path_full)) {
                 await fs.unlink(target_path_full);
             }
-            console.log("New theme is ready to be selected (need to build)");
+            console.log('New theme is ready to be selected (need to build)');
             await modulesUtils.createListModuleFile(`${themeName}`);
             return themeName;
         }
         console.log(`Remove theme : ${target_path_full}...`);
-        await fs.deleteRecursiveSync(target_path_full.replace(".zip", "/"));
-        console.log("Theme removed !");
+        await fs.deleteRecursiveSync(target_path_full.replace('.zip', '/'));
+        console.log('Theme removed !');
         return themeName;
     }
     throw NSErrors.InvalidFile;
@@ -90,7 +90,7 @@ const uploadTheme = async (originalname, filepath) => {
  * @param theme : String Theme selectionné
  */
 const setConfigTheme = async (theme) => {
-    console.log("Setting configuration for the theme...");
+    console.log('Setting configuration for the theme...');
     try {
         const data = await fs.readFile(`./themes/${theme}/themeConfig.json`);
         const info = data.toString();
@@ -112,7 +112,7 @@ const setConfigTheme = async (theme) => {
  * @param theme : String Theme selectionné
  */
 async function removeConfigTheme(theme) {
-    console.log("Removing configuration for the theme...");
+    console.log('Removing configuration for the theme...');
     try {
         await ThemeConfig.deleteOne({name: theme});
     } catch (err) {
@@ -125,7 +125,7 @@ async function removeConfigTheme(theme) {
  * @param theme : String Theme selectionné
  */
 const installDependencies = async (theme) => {
-    console.log("Installing new theme's dependencies...");
+    console.log('Installing new theme\'s dependencies...');
     const cmdTheme = `./themes/${theme}`;
     await packageManager.execCmd(`yarn install${isProd() ? ' --prod' : ''}`, cmdTheme);
 };
@@ -137,7 +137,7 @@ const installDependencies = async (theme) => {
 const deleteTheme = async (themePath) => {
     // Bloquer la suppression du theme courant, ou le theme par default
     const currentTheme = await getThemePath();
-    if (!themePath || themePath === "" || themePath === currentTheme || themePath === "default_theme") {
+    if (!themePath || themePath === '' || themePath === currentTheme || themePath === 'default_theme') {
         throw NSErrors.DesignThemeRemoveCurrent;
     }
     await removeConfigTheme(themePath);
@@ -146,7 +146,7 @@ const deleteTheme = async (themePath) => {
     if (await fs.access(path.join(global.appRoot, complete_Path))) {
         await fs.deleteRecursiveSync(path.join(global.appRoot, complete_Path));
     }
-    console.log("Theme removed !");
+    console.log('Theme removed !');
 };
 
 /**
@@ -155,7 +155,7 @@ const deleteTheme = async (themePath) => {
  * @param {Boolean} override : Override datas if exists
  */
 const copyDatas = async (themePath, override = true, configuration = null) => {
-    const themeDemoData = path.join(global.appRoot, "themes", themePath, "demoDatas");
+    const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     await fs.access(themeDemoData, fs.constants.R_OK);
     const data = [];
     const listOfFile = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
@@ -164,10 +164,10 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
             continue;
         }
         let file;
-        if (path.extname(value) === ".js") {
+        if (path.extname(value) === '.js') {
             file = require(value);
-        } else if (path.extname(value) === ".json") {
-            const fileContent = await fs.readFile(value, {encoding: "UTF-8"});
+        } else if (path.extname(value) === '.json') {
+            const fileContent = await fs.readFile(value, {encoding: 'UTF-8'});
             file = JSON.parse(fileContent);
         } else {
             continue;
@@ -179,7 +179,7 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
             });
         } else {
             const model = mongoose.model(file.collection);
-            if (["index", "users", "configuration"].indexOf(file.collection) !== -1) {
+            if (['index', 'users', 'configuration'].indexOf(file.collection) !== -1) {
                 data.push({
                     collection : `${file.collection} : you can't import index, users and configuration`
                 });
@@ -203,15 +203,15 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
     if (configuration === null) {
         configuration = await Configuration.findOne();
     }
-    const photoPath = path.join(global.appRoot, require("../utils/server").getUploadDirectory());
+    const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
-    if (!await fs.access(path.join(themeDemoData, "files"), fs.constants.R_OK)) {
-        throw new Error(`"${path.join(themeDemoData, "files")}" is not readable`);
+    if (!await fs.access(path.join(themeDemoData, 'files'), fs.constants.R_OK)) {
+        throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
     }
     if (!await fs.access(photoPath, fs.constants.OK)) {
         throw new Error(`"${photoPath}" is not writable`);
     }
-    await fs.copyRecursiveSync(path.join(themeDemoData, "files"), photoPath, override);
+    await fs.copyRecursiveSync(path.join(themeDemoData, 'files'), photoPath, override);
     return data;
 };
 
@@ -222,7 +222,7 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join(`./themes`, themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 return fs.readFile(fullPath);
@@ -243,7 +243,7 @@ const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
 
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join(`./themes`, themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
@@ -264,12 +264,12 @@ const getAllCssComponentName = async () => {
         const cssNames   = [];
         const themePath  = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
-            const fullPath = path.join(`./themes`, themePath, cssFolder);
+            const fullPath = path.join('./themes', themePath, cssFolder);
             try {
                 if (fs.existsSync(fullPath)) {
                     for (const file of await fs.readdir(fullPath)) {
-                        if (file.endsWith(".css")) {
-                            cssNames.push(file.substring(0, file.lastIndexOf(".css")));
+                        if (file.endsWith('.css')) {
+                            cssNames.push(file.substring(0, file.lastIndexOf('.css')));
                         }
                     }
                 }
@@ -303,16 +303,16 @@ async function buildTheme(theme) {
         await packageManager.execSh(path.normalize('./node_modules/next/dist/bin/next'), ['build', path.normalize(`./themes/${theme}`)], './');
     } catch (err) {
         if (global.envFile.devMode) {
-            console.error("Enable to build theme because of DevMode");
+            console.error('Enable to build theme because of DevMode');
         } else throw err;
     }
 }
 
 const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware, ns) => {
     if (i18nInstance) {
-        await require("../utils/translation").initI18n(i18nInstance, ns);
+        await require('../utils/translation').initI18n(i18nInstance, ns);
         server.use(i18nextMiddleware.handle(i18nInstance));
-        server.use("/locales", express.static(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets/i18n')));
+        server.use('/locales', express.static(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets/i18n')));
     }
 };
 

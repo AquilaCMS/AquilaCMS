@@ -1,11 +1,11 @@
-const fs           = require("fs");
+const fs           = require('fs');
 const mongoose     = require('mongoose');
-const aquilaEvents = require("../../utils/aquilaEvents");
-const NSErrors     = require("../../utils/errors/NSErrors");
-const utils        = require("../../utils/utils");
+const aquilaEvents = require('../../utils/aquilaEvents');
+const NSErrors     = require('../../utils/errors/NSErrors');
+const utils        = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
-const translation  = require("../../utils/translation");
+const translation  = require('../../utils/translation');
 
 const Schema       = mongoose.Schema;
 const ObjectId     = Schema.ObjectId;
@@ -13,8 +13,8 @@ const ObjectId     = Schema.ObjectId;
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
     trademark          : {code: String, name: String},
-    supplier_ref       : {type: ObjectId, ref: "suppliers"},
-    type               : {type: String, enum: ["simple", "bundle", "virtual"]},
+    supplier_ref       : {type: ObjectId, ref: 'suppliers'},
+    type               : {type: String, enum: ['simple', 'bundle', 'virtual']},
     active             : {type: Boolean, default: true},
     _visible           : {type: Boolean, default: false},
     universe           : String,
@@ -46,11 +46,11 @@ const ProductsSchema = new Schema({
         custom_traitement       : String,
         custom_code_fabrication : String
     },
-    associated_prds : [{type: ObjectId, ref: "products"}],
-    set_attributes  : {type: ObjectId, ref: "setAttributes", index: true},
+    associated_prds : [{type: ObjectId, ref: 'products'}],
+    set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
         {
-            id          : {type: ObjectId, ref: "attributes", index: true},
+            id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
             param       : String,
@@ -59,7 +59,7 @@ const ProductsSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ], // Module Options
-    set_options : {type: ObjectId, ref: "setoptions"}, // Fin Module Options
+    set_options : {type: ObjectId, ref: 'setoptions'}, // Fin Module Options
     images      : [
         {
             url              : String,
@@ -114,37 +114,37 @@ const ProductsSchema = new Schema({
         views : {type: Number, default: 0}
     }
 }, {
-    discriminatorKey : "kind",
+    discriminatorKey : 'kind',
     timestamps       : true,
     usePushEach      : true
 });
 ProductsSchema.index({_visible: 1, active: 1});
 ProductsSchema.index({
-    code                               : "text",
-    trademark                          : "text",
-    type                               : "text",
-    universe                           : "text",
-    family                             : "text",
-    subfamily                          : "text",
-    slugMenus                          : "text",
-    code_ean                           : "text",
-    "specific.custom_text1"            : "text",
-    "specific.custom_text2"            : "text",
-    "specific.custom_text3"            : "text",
-    "specific.custom_supplier_code"    : "text",
-    "specific.custom_traitement"       : "text",
-    "specific.custom_code_fabrication" : "text",
+    code                               : 'text',
+    trademark                          : 'text',
+    type                               : 'text',
+    universe                           : 'text',
+    family                             : 'text',
+    subfamily                          : 'text',
+    slugMenus                          : 'text',
+    code_ean                           : 'text',
+    'specific.custom_text1'            : 'text',
+    'specific.custom_text2'            : 'text',
+    'specific.custom_text3'            : 'text',
+    'specific.custom_supplier_code'    : 'text',
+    'specific.custom_traitement'       : 'text',
+    'specific.custom_code_fabrication' : 'text',
     // "cmsBlocks.title"                  : "text",
     // "cmsBlocks.text"                   : "text",
-    "images.url"                       : "text",
-    "images.name"                      : "text",
-    "images.alt"                       : "text",
-    "pictos.code"                      : "text",
-    "pictos.url"                       : "text",
-    "pictos.title"                     : "text",
-    "pictos.location"                  : "text",
-    "attributes.code"                  : "text"
-}, {name: "textSearchIndex", default_language: "french"});
+    'images.url'                       : 'text',
+    'images.name'                      : 'text',
+    'images.alt'                       : 'text',
+    'pictos.code'                      : 'text',
+    'pictos.url'                       : 'text',
+    'pictos.title'                     : 'text',
+    'pictos.location'                  : 'text',
+    'attributes.code'                  : 'text'
+}, {name: 'textSearchIndex', default_language: 'french'});
 
 /* translation:
  slug: requis, unique entre les produits, pas entre ses langues
@@ -180,7 +180,7 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
         const lang = self.translation[translationKeys[i]];
 
         if (Object.keys(lang).length > 0) {
-            if (lang.slug === undefined || lang.slug === "") {
+            if (lang.slug === undefined || lang.slug === '') {
                 lang.slug = utils.slugify(lang.name);
             } else {
                 lang.slug = utils.slugify(lang.slug);
@@ -195,12 +195,12 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 updateQuery.updateOne(slugEdit);
             }
 
-            if (await mongoose.model("products").countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                errors.push("slug déjà existant");
+            if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
+                errors.push('slug déjà existant');
             }
 
-            errors = errors.concat(checkCustomFields(lang, `translation.lationKeys[i]}`, [
-                {key: "slug"}, {key: "name"}, {key: "title"}, {key: "metaDesc"}, {key: "canonical"}
+            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+                {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
             ]));
 
             if (lang.description1) {
@@ -217,7 +217,7 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
-ProductsSchema.pre("findOneAndUpdate", async function (next) {
+ProductsSchema.pre('findOneAndUpdate', async function (next) {
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
@@ -233,7 +233,7 @@ ProductsSchema.pre("findOneAndUpdate", async function (next) {
                         console.log(error);
                     }
                     try {
-                        require("../../services/cache").deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
+                        require('../../services/cache').deleteCacheImage('products', {_id: oldPrd.images[i]._id.toString(), code: oldPrd.code});
                     } catch (error) {
                         console.log(error);
                     }
@@ -244,14 +244,14 @@ ProductsSchema.pre("findOneAndUpdate", async function (next) {
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
-ProductsSchema.pre("updateOne", async function (next) {
+ProductsSchema.pre('updateOne', async function (next) {
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
-ProductsSchema.pre("save", async function (next) {
+ProductsSchema.pre('save', async function (next) {
     this.price.priceSort = this.price.et.special === undefined || this.price.et.special === null ? this.price.et.normal : this.price.et.special;
     const errors = await ProductsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
 ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
@@ -259,7 +259,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     if (item.quantity <= 0) {
         throw NSErrors.CartQuantityError;
     }
-    const ServicePromo = require("../../services/promo");
+    const ServicePromo = require('../../services/promo');
     const prd = await ServicePromo.checkPromoCatalog([item], user, lang);
     if (prd && prd[0] && prd[0].price) {
         if (prd[0].price.et && prd[0].price.et.special !== undefined) {
@@ -270,9 +270,9 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
         }
     }
     await new Promise((resolve, reject) => {
-        fs.access("modules/priceRules.js", async (err) =>  {
+        fs.access('modules/priceRules.js', async (err) =>  {
             if (err) {
-                if (err.code === "ENOENT") {
+                if (err.code === 'ENOENT') {
                     item.price = {
                         vat  : {rate: this.price.tax},
                         unit : {
@@ -293,7 +293,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 }
             } else {
                 // eslint-disable-next-line import/no-unresolved
-                const priceRules = require("../modules/priceRules");
+                const priceRules = require('../modules/priceRules');
                 priceRules(item, this, function (err, calculatedPrice) {
                     if (err) return reject(err);
                     item.price = {
@@ -305,7 +305,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
             }
         });
     });
-    const resp = await this.model("cart").findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
+    const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
     // cb(null, resp);
     return resp;
 };

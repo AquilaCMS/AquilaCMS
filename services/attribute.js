@@ -1,12 +1,12 @@
-const mongoose           = require("mongoose");
-const {Attributes, Categories, SetAttributes, Products, Users} = require("../orm/models");
+const mongoose           = require('mongoose');
+const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
 const QueryBuilder       = require('../utils/QueryBuilder');
-const NSErrors           = require("../utils/errors/NSErrors");
-const utils              = require("../utils/utils");
-const utilsMedia         = require("../utils/medias");
+const NSErrors           = require('../utils/errors/NSErrors');
+const utils              = require('../utils/utils');
+const utilsMedia         = require('../utils/medias');
 
 const restrictedFields   = [];
-const defaultFields      = ["_id", "code", "type", "values", "param", "set_attributes", "translation"];
+const defaultFields      = ['_id', 'code', 'type', 'values', 'param', 'set_attributes', 'translation'];
 const queryBuilder       = new QueryBuilder(Attributes, restrictedFields, defaultFields);
 
 const getAllAttributes = async (PostBody) => {
@@ -20,7 +20,7 @@ const getAllAttributes = async (PostBody) => {
         PostBody.filter = {
             _type : {$in: ['products', null]}
         };
-    } else if (!PostBody.filter._type || PostBody.filter._type === "products") {
+    } else if (!PostBody.filter._type || PostBody.filter._type === 'products') {
         PostBody.filter._type = {$in: ['products', null]};
     }
 
@@ -63,7 +63,7 @@ const setAttribute = async (body) => {
             if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
             // Alors on supprime les categories.filtres dont l'_id est l'_id de l'attribut modifié
                 await Categories.updateMany(
-                    {"filters._id": attribute._id}, {$pull: {filters: {_id: attribute._id}}},
+                    {'filters._id': attribute._id}, {$pull: {filters: {_id: attribute._id}}},
                     {new: true, runValidators: true}
                 );
             }
@@ -79,23 +79,23 @@ const setAttribute = async (body) => {
                     product_attributes.value    = att.default_value;
                     product_attributes.position = position;
                 }
-                await Products.updateMany({set_attributes: body.set_attributes[i], "attributes.id": {$ne: id}}, {$addToSet: {attributes: product_attributes}});
-                await Users.updateMany({set_attributes: body.set_attributes[i], "attributes.id": {$ne: id}}, {$addToSet: {attributes: product_attributes}});
+                await Products.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
+                await Users.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
                 if (body._type === 'products') {
                     // update du nom et des valeurs pour les produits ayant deja cet attribut
-                    const prdList = await Products.find({set_attributes: body.set_attributes[i], "attributes.id": id});
+                    const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
                     updateObjectAttribute(prdList, product_attributes, 'attributes');
-                    const cats = await Categories.find({"filters.attributes.id_attribut": id});
+                    const cats = await Categories.find({'filters.attributes.id_attribut': id});
                     updateObjectAttribute(cats, product_attributes, 'filters.attributes');
                 } else {
                     // update du nom et des valeurs pour les users ayant deja cet attribut
-                    const usrList = await Users.find({set_attributes: body.set_attributes[i], "attributes.id": id});
+                    const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
                     updateObjectAttribute(usrList, product_attributes, 'attributes');
                 }
             }
             await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
             await Users.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
-            if (body.type === "Sélection multiple" || body.type === "multiselect") {
+            if (body.type === 'Sélection multiple' || body.type === 'multiselect') {
                 await editValues(att);
             }
             return att;

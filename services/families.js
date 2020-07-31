@@ -1,4 +1,4 @@
-const {Families, Products} = require("../orm/models");
+const {Families, Products} = require('../orm/models');
 const QueryBuilder         = require('../utils/QueryBuilder');
 const NSErrors             = require('../utils/errors/NSErrors');
 
@@ -37,15 +37,15 @@ exports.deleteFamily = async function (_id) {
 
     const where = {};
     const action = {};
-    if (result.type === "universe") {
+    if (result.type === 'universe') {
         where.universe = result.slug;
-        action.$unset = {universe: "", family: "", subfamily: ""};
-    } else if (result.type === "family") {
+        action.$unset = {universe: '', family: '', subfamily: ''};
+    } else if (result.type === 'family') {
         where.family = result.slug;
-        action.$unset = {family: "", subfamily: ""};
+        action.$unset = {family: '', subfamily: ''};
     } else {
         where.subfamily = result.slug;
-        action.$unset = {subfamily: ""};
+        action.$unset = {subfamily: ''};
     }
 
     await Products.updateMany(where, action);

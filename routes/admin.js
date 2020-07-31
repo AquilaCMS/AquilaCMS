@@ -1,14 +1,14 @@
-const serviceAdminInformation     = require("../services/admin");
-const {authentication, adminAuth} = require("../middleware/authentication");
-const modules                     = require("../services/modules");
+const serviceAdminInformation     = require('../services/admin');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const modules                     = require('../services/modules');
 
 module.exports = (router, adminFront) => {
-    router.get("/v2/adminInformation", authentication, adminAuth, getAdminInformation);
-    router.delete("/v2/adminInformation/:code", authentication, adminAuth, deleteAdminInformation);
+    router.get('/v2/adminInformation', authentication, adminAuth, getAdminInformation);
+    router.delete('/v2/adminInformation/:code', authentication, adminAuth, deleteAdminInformation);
 
     // BackOffice
-    adminFront.get("/", getAdminHomepage);
-    adminFront.get("/login", renderLogin);
+    adminFront.get('/', getAdminHomepage);
+    adminFront.get('/login', renderLogin);
 };
 
 /**
@@ -16,9 +16,9 @@ module.exports = (router, adminFront) => {
  */
 const renderLogin = async (req, res, next) => {
     try {
-        const {appUrl, adminPrefix} = await require("../utils/server").getAppUrl(req);
+        const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
         if (!appUrl || !adminPrefix) return res.status(404).end();
-        return res.render("login", {appUrl, adminPrefix});
+        return res.render('login', {appUrl, adminPrefix});
     } catch (err) {
         return next(err);
     }
@@ -53,10 +53,10 @@ function deleteAdminInformation(req, res, next) {
  */
 const getAdminHomepage = async (req, res, next) => {
     try {
-        const {appUrl, adminPrefix} = await require("../utils/server").getAppUrl(req);
+        const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
         if (!appUrl || !adminPrefix) return res.status(404).end();
         const tabM = await modules.loadAdminModules();
-        return res.render("layout", {appUrl, adminPrefix, tabM});
+        return res.render('layout', {appUrl, adminPrefix, tabM});
     } catch (err) {
         return next(err);
     }

@@ -1,4 +1,4 @@
-const {Orders, PaymentMethods} = require("../orm/models");
+const {Orders, PaymentMethods} = require('../orm/models');
 const QueryBuilder             = require('../utils/QueryBuilder');
 
 const restrictedFields         = [];
@@ -21,7 +21,7 @@ exports.getOrdersPayments = async function (postBody) {
             payment  : 1
         }
     }, {
-        $unwind : {path: "$payment"}
+        $unwind : {path: '$payment'}
     }, {$match: postBody.filter}, { // postBody.match
         $sort : postBody.sort
     }, {
@@ -33,9 +33,9 @@ exports.getOrdersPayments = async function (postBody) {
     const tCount = await Orders.aggregate([{
         $match : postBody.filter
     }, {
-        $unwind : {path: "$payment"}
+        $unwind : {path: '$payment'}
     }, {$match: postBody.filter}, { // postBody.match
-        $count : "count"
+        $count : 'count'
     }]);
     let count = 0;
     if (tCount.length) {

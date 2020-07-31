@@ -5,9 +5,9 @@ const ObjectId = Schema.ObjectId;
 const TerritorySchema = new Schema({
     translation : {},
     code        : {type: String, required: true, index: true},
-    type        : {type: String, enum: ["country", "district", "department", "city"]},
+    type        : {type: String, enum: ['country', 'district', 'department', 'city']},
     taxeFree    : Boolean,
-    children    : [{type: ObjectId, ref: "territory"}]
+    children    : [{type: ObjectId, ref: 'territory'}]
 });
 
 TerritorySchema.index({code: 1, name: 1}, {unique: true});

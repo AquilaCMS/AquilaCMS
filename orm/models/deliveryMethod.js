@@ -1,4 +1,4 @@
-const Shipment = require("./shipments");
-const {DeliveryMethodSchema} = require("../schemas");
+const Shipment = require('./shipments');
+const {DeliveryMethodSchema} = require('../schemas');
 
-module.exports = Shipment.discriminator("DELIVERY", DeliveryMethodSchema, {discriminatorKey: "type"});
+module.exports = Shipment.discriminator('DELIVERY', DeliveryMethodSchema, {discriminatorKey: 'type'});

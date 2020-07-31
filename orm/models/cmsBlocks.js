@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const {CmsBlocksSchema} = require("../schemas");
+const {CmsBlocksSchema} = require('../schemas');
 
-module.exports = mongoose.model("cmsBlocks", CmsBlocksSchema);
+module.exports = mongoose.model('cmsBlocks', CmsBlocksSchema);

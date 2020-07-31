@@ -1,4 +1,4 @@
-const {Products} = require("../orm/models");
+const {Products} = require('../orm/models');
 const servicesLanguages = require('./languages');
 
 /**
@@ -6,7 +6,7 @@ const servicesLanguages = require('./languages');
  */
 exports.sortAttribs = async function () {
     try {
-        console.log("==><== Début du tri des attributs par order alphabetique ==><==");
+        console.log('==><== Début du tri des attributs par order alphabetique ==><==');
 
         const _products = await Products.find({});
 
@@ -28,10 +28,10 @@ exports.sortAttribs = async function () {
             // await Products.updateOne({_id: _products[i]._id}, {attributes: attribs});
         }
 
-        console.log("==><== Fin du tri ==><==");
-        return {message: "ok"};
+        console.log('==><== Fin du tri ==><==');
+        return {message: 'ok'};
     } catch (err) {
-        console.log("==><== Erreur lors du tri ==><==");
+        console.log('==><== Erreur lors du tri ==><==');
         throw err;
     }
 };
@@ -43,7 +43,7 @@ exports.fixCanonical = async function (product_id) {
     const languages = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
     const tabLang   = languages.datas.map((_lang) => _lang.code);
 
-    const productsList = await Products.find(typeof product_id !== "undefined" ? {_id: product_id} : {});
+    const productsList = await Products.find(typeof product_id !== 'undefined' ? {_id: product_id} : {});
     // Liste des produits
     for (const oneProduct of productsList) {
         // Control par langue

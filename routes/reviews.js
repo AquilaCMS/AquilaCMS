@@ -1,11 +1,11 @@
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {getDecodedToken} = require('../services/auth');
-const ServiceReviews = require("../services/reviews");
+const ServiceReviews = require('../services/reviews');
 
 module.exports = function (app) {
     app.post('/v2/product/reviews/aggregate', getAggregateReviews);
-    app.put("/v2/product/:id/review", setProductReview);
-    app.delete("/v2/product/:id/review/:idreview", authentication, adminAuth, deleteProductReview);
+    app.put('/v2/product/:id/review', setProductReview);
+    app.delete('/v2/product/:id/review/:idreview', authentication, adminAuth, deleteProductReview);
 };
 
 /**

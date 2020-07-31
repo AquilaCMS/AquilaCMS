@@ -1,5 +1,5 @@
 const moment                     = require('moment-business-days');
-const {StatsToday, StatsHistory} = require("../orm/models");
+const {StatsToday, StatsHistory} = require('../orm/models');
 
 /**
  * Permet de compter le nombre de panier supprimé
@@ -23,7 +23,7 @@ const getStatstoday = async () => {
  * Ajout un visiteur (req) unique pour les stats de fréquentation
  */
 const addUserVisitReq = (req) => {
-    const ipClient = req.header("x-forwarded-for") || req.connection.remoteAddress;
+    const ipClient = req.header('x-forwarded-for') || req.connection.remoteAddress;
     addUserVisitIP(ipClient);
 };
 
@@ -86,15 +86,15 @@ const buildStats = async () => {
     try {
         dbToday = await StatsToday.findOne({});
         if (dbToday) {
-            await insertType("oldCart", dbToday.oldCart);
-            await insertType("visit", dbToday.visit.length);
+            await insertType('oldCart', dbToday.oldCart);
+            await insertType('visit', dbToday.visit.length);
             // Reinit les datas du jours
             await StatsToday.findOneAndUpdate({}, {oldCart: 0, visit: []}, {upsert: true, new: true});
         }
     } catch (err) {
         console.error(err);
     }
-    return "OK";
+    return 'OK';
 };
 
 /**

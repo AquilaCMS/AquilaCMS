@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 mongoose.set('debug', false);
 let connection = false;
 
@@ -21,10 +21,20 @@ const connect = async () => {
             useCreateIndex     : true,
             useUnifiedTopology : true
         });
-        mongoose.set("objectIdGetter", false);
+        mongoose.set('objectIdGetter', false);
     }
 
     return mongoose;
+};
+
+const testdb = async (uri_database) => {
+    const mongoose = require('mongoose');
+    await mongoose.connect(uri_database, {
+        useNewUrlParser    : true,
+        useFindAndModify   : false,
+        useCreateIndex     : false,
+        useUnifiedTopology : true
+    });
 };
 
 /**
@@ -64,69 +74,69 @@ const initDBValues = async () => {
     if (!_default) {
         await SetAttributes.create({code: 'defaut', name: 'Défaut', type: 'products', attributes: []});
     }
-    const configuration = await Configuration.findOne({"environment.currentTheme": {$regex: /custom_themes\/.*/, $options: 'i'}});
+    const configuration = await Configuration.findOne({'environment.currentTheme': {$regex: /custom_themes\/.*/, $options: 'i'}});
     if (configuration) {
         configuration.environment.currentTheme = configuration.environment.currentTheme.replace('custom_themes/', '');
         global.envConfig = configuration.toObject();
         await configuration.save();
     }
-    await Configuration.findOneAndUpdate({"stockOrder.cartExpireTimeout": {$exists: false}}, {$set: {"stockOrder.cartExpireTimeout": 48}});
-    await Configuration.findOneAndUpdate({"stockOrder.pendingOrderCancelTimeout": {$exists: false}}, {$set: {"stockOrder.pendingOrderCancelTimeout": 48}});
-    await Configuration.findOneAndUpdate({$or: [{taxerate: {$exists: false}}, {"taxerate.0": {$exists: false}}]}, {$set: {taxerate: [{rate: 5.5}, {rate: 10}, {rate: 20}]}});
+    await Configuration.findOneAndUpdate({'stockOrder.cartExpireTimeout': {$exists: false}}, {$set: {'stockOrder.cartExpireTimeout': 48}});
+    await Configuration.findOneAndUpdate({'stockOrder.pendingOrderCancelTimeout': {$exists: false}}, {$set: {'stockOrder.pendingOrderCancelTimeout': 48}});
+    await Configuration.findOneAndUpdate({$or: [{taxerate: {$exists: false}}, {'taxerate.0': {$exists: false}}]}, {$set: {taxerate: [{rate: 5.5}, {rate: 10}, {rate: 20}]}});
     await Configuration.findOneAndUpdate({
         $or : [
             {stockOrder: null},
-            {"stockOrder.labels": null},
-            {"stockOrder.labels": {$size: 0}}
+            {'stockOrder.labels': null},
+            {'stockOrder.labels': {$size: 0}}
         ]
     },
     {
         $set : {
-            "stockOrder.labels" : [
+            'stockOrder.labels' : [
                 {
-                    code        : "available",
+                    code        : 'available',
                     translation : {
-                        fr : {value: "Produit disponible"},
-                        en : {value: "Available product"}
+                        fr : {value: 'Produit disponible'},
+                        en : {value: 'Available product'}
                     }
                 },
                 {
-                    code        : "availableFrom",
+                    code        : 'availableFrom',
                     translation : {
-                        en : {value: "Available from {date}"},
-                        fr : {value: "Disponible à partir du {date}"}
+                        en : {value: 'Available from {date}'},
+                        fr : {value: 'Disponible à partir du {date}'}
                     }
                 },
                 {
-                    code        : "replenished",
+                    code        : 'replenished',
                     translation : {
-                        en : {value: "Product being replenished"},
-                        fr : {value: "Produit en cours de réapprovisionnement"}
+                        en : {value: 'Product being replenished'},
+                        fr : {value: 'Produit en cours de réapprovisionnement'}
                     }
                 },
                 {
-                    code        : "exhausted",
+                    code        : 'exhausted',
                     translation : {
-                        en : {value: "Product permanently exhausted"},
-                        fr : {value: "Produit définitivement épuisé"}
+                        en : {value: 'Product permanently exhausted'},
+                        fr : {value: 'Produit définitivement épuisé'}
                     }
                 }
             ]
         }
     });
 
-    const homePage = {code: "home", type: "page", active: true, translation: {}};
-    homePage.translation[global.defaultLang] = {name: "home", slug: "home"};
+    const homePage = {code: 'home', type: 'page', active: true, translation: {}};
+    homePage.translation[global.defaultLang] = {name: 'home', slug: 'home'};
     if (!await Statics.findOne({code: 'home'})) {
         await Statics.create(homePage);
     }
     // Permet de créer les types de mails (collection mailType) en base de données
     const mailTypes = [
         {code: '', name: 'Aucun type', position: 0},
-        {code: 'register', name: "Inscription d'un nouveau client", position: 1},
-        {code: 'sendRegisterForAdmin', name: "Inscription d'un nouveau client pour l'admin", position: 2},
+        {code: 'register', name: 'Inscription d\'un nouveau client', position: 1},
+        {code: 'sendRegisterForAdmin', name: 'Inscription d\'un nouveau client pour l\'admin', position: 2},
         {code: 'orderSuccess', name: 'Commande validée (envoi du mail au client)', position: 3},
-        {code: 'orderSuccessCompany', name: "Commande validée (envoi du mail à l'entreprise)", position: 4},
+        {code: 'orderSuccessCompany', name: 'Commande validée (envoi du mail à l\'entreprise)', position: 4},
         {code: 'passwordRecovery', name: 'Récupération de votre mot de passe', position: 5},
         {code: 'contactMail', name: 'Mail de contact', position: 6},
         {code: 'changeOrderStatus', name: 'Changement de statut de la commande', position: 7},
@@ -157,11 +167,11 @@ const initDBValues = async () => {
         }
     }
 
-    const imgTrans = "/medias/paiement-virement-logo.png";
-    const imgCheck = "/medias/paiement-cheque-logo.png ";
+    const imgTrans = '/medias/paiement-virement-logo.png';
+    const imgCheck = '/medias/paiement-cheque-logo.png ';
     const defaultPaymentMethods = [
-        {code: 'transfer', translation: {fr: {name: 'Virement', urlLogo: imgTrans, description: "Virement bancaire requis dans un délais de 5 jours"}, en: {name: 'Bank transfer', urlLogo: imgTrans}}, active: true, isDeferred: true},
-        {code: 'cheque', translation: {fr: {name: 'Chèque', urlLogo: imgCheck, description: "Paiement par chèque à nous envoyer dans les 5 jours"}, en: {name: 'Check', urlLogo: imgCheck}}, active: true, isDeferred: true},
+        {code: 'transfer', translation: {fr: {name: 'Virement', urlLogo: imgTrans, description: 'Virement bancaire requis dans un délais de 5 jours'}, en: {name: 'Bank transfer', urlLogo: imgTrans}}, active: true, isDeferred: true},
+        {code: 'cheque', translation: {fr: {name: 'Chèque', urlLogo: imgCheck, description: 'Paiement par chèque à nous envoyer dans les 5 jours'}, en: {name: 'Check', urlLogo: imgCheck}}, active: true, isDeferred: true},
         {code: 'cash', translation: {fr: {name: 'Espèces'}, en: {name: 'Cash'}}, active: false, isDeferred: true}
     ];
     for (const paymentMethod of defaultPaymentMethods) {
@@ -184,7 +194,7 @@ const populateItems = async (items) => {
 const preUpdates = async (that, next, model) => {
     if (that.getUpdate() && (that.getUpdate()._id || (that.getUpdate().$set && that.getUpdate().$set._id))) {
         const errors = await model.statics.translationValidation(that.getUpdate().$set || that.getUpdate(), that);
-        return next(errors.length > 0 ? new Error(errors.join("\n")) : undefined);
+        return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
     }
     return next();
 };
@@ -194,5 +204,6 @@ module.exports = {
     // checkIfReplicaSet,
     initDBValues,
     populateItems,
-    preUpdates
+    preUpdates,
+    testdb
 };

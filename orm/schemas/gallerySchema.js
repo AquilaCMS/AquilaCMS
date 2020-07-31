@@ -25,13 +25,13 @@ const GallerySchema = new Schema({
     maxColumnNumber : {type: Number, default: 3, required: true},
     items           : [{
         _itemId   : Schema.Types.ObjectId,
-        src       : {type: String, trim: true, default: ""},
+        src       : {type: String, trim: true, default: ''},
         srcset    : [{type: String, trim: true}],
         sizes     : [{type: String, trim: true}],
-        content   : {type: String, trim: true, default: ""}, // IDyoutube
-        alt       : {type: String, default: ""},
+        content   : {type: String, trim: true, default: ''}, // IDyoutube
+        alt       : {type: String, default: ''},
         order     : {type: Number, default: 0},
-        extension : {type: String, default: ".jpg"}
+        extension : {type: String, default: '.jpg'}
     }]
 }, {timestamps: true});
 

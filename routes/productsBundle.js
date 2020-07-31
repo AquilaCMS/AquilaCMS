@@ -1,5 +1,5 @@
 const {ProductBundle} = require('../orm/models');
-const NSErrors        = require("../utils/errors/NSErrors");
+const NSErrors        = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.get('/v2/products/bundle/:code', getProduct);

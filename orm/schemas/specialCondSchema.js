@@ -14,7 +14,7 @@ const SpecialCondSchema = new Schema({
 
 SpecialCondSchema.index(
     {supplier: 1, startDate: 1, endDate: 1, product: 1, user: 1},
-    {name: "specialCond", unique: true}
+    {name: 'specialCond', unique: true}
 );
 
 module.exports = SpecialCondSchema;

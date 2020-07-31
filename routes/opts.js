@@ -2,9 +2,9 @@
 *  This is a legacy file, not used
 */
 
-const {Opts, SetOptions} = require("../orm/models");
+const {Opts, SetOptions} = require('../orm/models');
 const mediasUtils        = require('../utils/utils');
-const NSErrors           = require("../utils/errors/NSErrors");
+const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.get('/opts', listClassed);
@@ -49,7 +49,7 @@ const fOne = async (req, res, next) => {
 };
 
 const save = async (req, res, next) => {
-    const code = req.body.code.replace(/[^A-Z0-9]+/ig, "_");
+    const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
     const name = req.body.name;
     const columns = req.body.columns;
     const values = req.body.values;

@@ -1,15 +1,15 @@
 const URL                         = require('url');
 const {middlewareServer}          = require('../middleware');
-const {authentication, adminAuth} = require("../middleware/authentication");
-const {securityForceActif}        = require("../middleware/security");
+const {authentication, adminAuth} = require('../middleware/authentication');
+const {securityForceActif}        = require('../middleware/security');
 const {Statics, StaticsPreview}   = require('../orm/models');
 const ServiceStatic               = require('../services/statics');
 const ServiceStaticPreview        = require('../services/staticsPreview');
 const utils                       = require('../utils/utils');
 
 module.exports = function (app) {
-    app.post('/v2/statics', securityForceActif(["active"]), getStatics);
-    app.post('/v2/static', securityForceActif(["active"]), getStatic);
+    app.post('/v2/statics', securityForceActif(['active']), getStatics);
+    app.post('/v2/static', securityForceActif(['active']), getStatic);
     app.post('/v2/static/preview', authentication, adminAuth, previewStatic);
     app.post('/v2/static/:id', getStaticById);
     app.put('/v2/static', authentication, adminAuth, setStatic);
@@ -93,7 +93,7 @@ async function getStatic(req, res, next) {
  * Fonction retournant une page statique en fonction de son id
  */
 async function getStaticById(req, res, next) {
-    console.warn("Unused route ?? : /v2/static/:id");
+    console.warn('Unused route ?? : /v2/static/:id');
 
     try {
         const result = await ServiceStatic.getStaticById(req.params.id, req.body.PostBody);

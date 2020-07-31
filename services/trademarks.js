@@ -1,9 +1,9 @@
-const {Trademarks, Products} = require("../orm/models");
+const {Trademarks, Products} = require('../orm/models');
 const QueryBuilder           = require('../utils/QueryBuilder');
-const NSErrors               = require("../utils/errors/NSErrors");
+const NSErrors               = require('../utils/errors/NSErrors');
 
 const restrictedFields       = [];
-const defaultFields          = ["_id", "name", "_slug"];
+const defaultFields          = ['_id', 'name', '_slug'];
 const queryBuilder           = new QueryBuilder(Trademarks, restrictedFields, defaultFields);
 
 exports.getTrademarks = async function (PostBody) {

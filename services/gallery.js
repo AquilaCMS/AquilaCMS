@@ -1,10 +1,10 @@
 const path               = require('path');
 const mongoose           = require('mongoose');
 const {Gallery}          = require('../orm/models');
-const utils              = require("../utils/utils");
+const utils              = require('../utils/utils');
 const mediasUtils        = require('../utils/medias');
-const NSErrors           = require("../utils/errors/NSErrors");
-const cacheService       = require("./cache");
+const NSErrors           = require('../utils/errors/NSErrors');
+const cacheService       = require('./cache');
 
 /**
  * @description Retourne toutes les galleries

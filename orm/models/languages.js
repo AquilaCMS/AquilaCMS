@@ -9,6 +9,6 @@
  */
 
 const mongoose = require('mongoose');
-const {LanguagesSchema} = require("../schemas");
+const {LanguagesSchema} = require('../schemas');
 
 module.exports = mongoose.model('languages', LanguagesSchema);

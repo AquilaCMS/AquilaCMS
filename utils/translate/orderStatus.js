@@ -1,86 +1,80 @@
 module.exports = {
     PAYMENT_PENDING : {
         translation : {
-            fr : {name: "En attente de paiement"},
-            en : {name: "Waiting for payment"}
+            fr : {name: 'En attente de paiement'},
+            en : {name: 'Waiting for payment'}
         }
     },
     PAYMENT_RECEIPT_PENDING : {
         translation : {
-            fr : {name: "En attente de réception de paiement"},
-            en : {name: "Waiting for payment reception"}
+            fr : {name: 'En attente de réception de paiement'},
+            en : {name: 'Waiting for payment reception'}
         }
     },
     PAYMENT_CONFIRMATION_PENDING : {
         translation : {
-            fr : {name: "En attente de confirmation de paiement"},
-            en : {name: "Waiting for payment confirmation"}
+            fr : {name: 'En attente de confirmation de paiement'},
+            en : {name: 'Waiting for payment confirmation'}
         }
     },
     PAID : {
         translation : {
-            fr : {name: "Payé"},
-            en : {name: "Paid"}
+            fr : {name: 'Payé'},
+            en : {name: 'Paid'}
         }
     },
     PROCESSING : {
         translation : {
-            fr : {name: "En cours de traitement"},
-            en : {name: "Processing"}
+            fr : {name: 'En cours de traitement'},
+            en : {name: 'Processing'}
         }
     },
     PROCESSED : {
         translation : {
-            fr : {name: "Préparé"},
-            en : {name: "Prepared"}
+            fr : {name: 'Préparé'},
+            en : {name: 'Prepared'}
         }
     },
     BILLED : {
         translation : {
-            fr : {name: "Facturé"},
-            en : {name: "Billed"}
+            fr : {name: 'Facturé'},
+            en : {name: 'Billed'}
         }
     },
     DELIVERY_PROGRESS : {
         translation : {
-            fr : {name: "Expédié"},
-            en : {name: "Sent"}
+            fr : {name: 'Expédié'},
+            en : {name: 'Sent'}
         }
     },
     DELIVERY_PARTIAL_PROGRESS : {
         translation : {
-            fr : {name: "Expédié partiel"},
-            en : {name: "Partially sent"}
+            fr : {name: 'Expédié partiel'},
+            en : {name: 'Partially sent'}
         }
     },
     FINISHED : {
         translation : {
-            fr : {name: "Traité"},
-            en : {name: "Processed"}
+            fr : {name: 'Traité'},
+            en : {name: 'Processed'}
         }
     },
     CANCELED : {
         translation : {
-            fr : {name: "Annulé"},
-            en : {name: "Cancelled"}
+            fr : {name: 'Annulé'},
+            en : {name: 'Cancelled'}
         }
     },
     ASK_CANCEL : {
         translation : {
-            fr : {name: "Annulation demandé par le client"},
-            en : {name: "Cancel order requested by customer"}
+            fr : {name: 'Annulation demandé par le client'},
+            en : {name: 'Cancel order requested by customer'}
         }
     },
     RETURNED : {
         translation : {
-            fr : {name: "Retour"},
-            en : {name: "Return"}
-        }
-    },
-    CANCELLING : {
-        translation : {
-            fr : {name: "En cours d'annulation"},
-            en : {name: "Being cancelled"}
+            fr : {name: 'Retour'},
+            en : {name: 'Return'}
         }
     }
 };

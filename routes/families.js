@@ -1,5 +1,5 @@
-const {Families, Products}        = require("../orm/models");
-const {authentication, adminAuth} = require("../middleware/authentication");
+const {Families, Products}        = require('../orm/models');
+const {authentication, adminAuth} = require('../middleware/authentication');
 const {middlewareServer}          = require('../middleware');
 const ServicesFamilies            = require('../services/families');
 const utils                       = require('../utils/utils');
@@ -68,7 +68,7 @@ async function deleteFamily(req, res, next) {
 async function listInAdmin(req, res, next) {
     try {
         const families = await Families.find(req.query)
-            .sort("name");
+            .sort('name');
         return res.json(families);
     } catch (err) {
         return next(err);
@@ -105,7 +105,7 @@ async function save(req, res, next) {
         code   : utils.slugify(req.body.code)
     };
 
-    if (req.body._id === "") {
+    if (req.body._id === '') {
         try {
             const newFamilly = new Families(newData);
             await newFamilly.save();
@@ -142,7 +142,7 @@ async function save(req, res, next) {
                     'ancestors.$._slug' : `${utils.slugify(newData.name)}-${this.id}`
                 }
             });
-            console.log("Name: Ancestors updated!");
+            console.log('Name: Ancestors updated!');
         } catch (err) {
             return next(err);
         }
@@ -187,15 +187,15 @@ const remove = async (req, res, next) => {
 
         const where = {};
         const action = {};
-        if (_family.type === "universe") {
+        if (_family.type === 'universe') {
             where.universe = _family.slug;
-            action.$unset = {universe: "", family: "", subfamily: ""};
-        } else if (_family.type === "family") {
+            action.$unset = {universe: '', family: '', subfamily: ''};
+        } else if (_family.type === 'family') {
             where.family = _family.slug;
-            action.$unset = {family: "", subfamily: ""};
+            action.$unset = {family: '', subfamily: ''};
         } else {
             where.subfamily = _family.slug;
-            action.$unset = {subfamily: ""};
+            action.$unset = {subfamily: ''};
         }
 
         await Products.updateMany(where, action);

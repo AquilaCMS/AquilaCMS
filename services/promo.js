@@ -9,12 +9,12 @@ const {
     ProductVirtual,
     Orders,
     Cart
-}                          = require("../orm/models");
+}                          = require('../orm/models');
 const ServiceRules         = require('./rules');
-const {getUserFromRequest} = require("../middleware/server");
+const {getUserFromRequest} = require('../middleware/server');
 const QueryBuilder         = require('../utils/QueryBuilder');
 const promoUtils           = require('../utils/promo.js');
-const NSErrors             = require("../utils/errors/NSErrors");
+const NSErrors             = require('../utils/errors/NSErrors');
 
 const restrictedFields     = [];
 const defaultFields        = ['*'];
@@ -59,7 +59,7 @@ const clonePromo = async (_id) => {
     const promoInit       = await queryBuilder.findById(_id);
     let promoCloned       = JSON.parse(JSON.stringify(promoInit));
     delete promoCloned._id;
-    promoCloned.name     += " (cloned)";
+    promoCloned.name     += ' (cloned)';
     promoCloned.actif     = false;
     promoCloned.createdAt = new Date().toISOString();
     promoCloned.updatedAt = new Date().toISOString();
@@ -78,7 +78,7 @@ const clonePromo = async (_id) => {
     }
 
     // Cloner les actions
-    const actionsInit = await Rules.find({owner_id: _id, owner_type: "discountAction"});
+    const actionsInit = await Rules.find({owner_id: _id, owner_type: 'discountAction'});
     promoCloned.actions = [];
     for (let iAction = 0; iAction < actionsInit.length; iAction++) {
         const oneAction         = actionsInit[iAction];
@@ -110,8 +110,8 @@ function remove_idFromList(list_obj, is_other_rules) {
         delete element._id;
 
         if (is_other_rules) { // ces deux champs sont obligatoire (mongoose), alors qu'ils ont été créé sans...
-            element.owner_type = "discount";
-            element.owner_id = mongoose.Types.ObjectId("000000000000000000000000");
+            element.owner_type = 'discount';
+            element.owner_id = mongoose.Types.ObjectId('000000000000000000000000');
         }
     }
 }
@@ -119,11 +119,11 @@ function remove_idFromList(list_obj, is_other_rules) {
 const deletePromoById = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     const doc = await Promo.findOneAndRemove({_id});
+    if (!doc) throw NSErrors.PromoNotFound;
     const rule = await ServiceRules.queryRule({filter: {owner_id: _id}});
-    if (rule !== null) {
+    if (rule) {
         await ServiceRules.deleteRule(rule._id);
     }
-    if (!doc) throw NSErrors.PromoNotFound;
     return doc;
 };
 
@@ -173,10 +173,10 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
                 {$and: [{dateStart: {$lt: currentDate}}, {dateEnd: {$gt: currentDate}}]}
             ],
             actif : true,
-            type  : "2"
+            type  : '2'
         }, null,
         {sort: {priority: -1}}
-    ).populate("rules_id").lean();
+    ).populate('rules_id').lean();
     if (!promos.length) {
         // Il n'y a actuellement aucune promo catalogue
         return products;
@@ -280,8 +280,8 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         }
 
         for (let j = 0, lenj = product.relevantDiscount.length; j < lenj; j++) {
-            if (product.relevantDiscount[j].discountType.startsWith("FV")) {
-                if (product.relevantDiscount[j].discountType === "FVet") {
+            if (product.relevantDiscount[j].discountType.startsWith('FV')) {
+                if (product.relevantDiscount[j].discountType === 'FVet') {
                     product.price.et.special = product.relevantDiscount[j].discountValue;
                     product.price.ati.special = (product.relevantDiscount[j].discountValue * (product.price.tax / 100 + 1));
                 } else {
@@ -318,7 +318,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             }
             if (!associatedProducts) {
                 if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
-                    populate.push("associated_prds");
+                    populate.push('associated_prds');
                     await products[i].populate(populate).execPopulate();
                 }
                 const prds = products[i].associated_prds;
@@ -343,8 +343,8 @@ const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
                 user = userInfo;
             }
         }
-        if (typeof cart === "string") {
-            cart = await Cart.findOne({_id: cart}).populate("items.id");
+        if (typeof cart === 'string') {
+            cart = await Cart.findOne({_id: cart}).populate('items.id');
         }
         let code;
         if (codePromo) {
@@ -381,7 +381,7 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
 
     if (!cart) throw NSErrors.CartInactiveNotFound;
     // On cherche les promos de type panier (type: "1") et quantitybreak
-    const promos = await Promo.find({discountType: "QtyB", actif: true, type: "1"}, null, {sort: {priority: -1}});
+    const promos = await Promo.find({discountType: 'QtyB', actif: true, type: '1'}, null, {sort: {priority: -1}});
     if (!promos || !promos.length) {
         return cart;
     }
@@ -413,8 +413,8 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
         if ((dateStart === null || dateStart < currentDate) && (dateEnd === null || dateEnd > currentDate) && promo.actions.length > 0) {
             // promo = await promo.populate("rules_id").execPopulate();
 
-            if (promo.rules_id && promo.actions.length > 0) {
-                promo = await promo.populate("actions").execPopulate();
+            if (promo.actions.length > 0) {
+                promo = await promo.populate('actions').execPopulate();
 
                 for (let i = 0, leni = promo.actions.length; i < leni; i++) {
                     // on teste chaque action sur chaque produit
@@ -435,22 +435,22 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
                             // si c'est true, on applique les actions
                             for (let k = 0, lenk = promo.actions[i].effects.length; k < lenk; k++) {
                                 if (copyCart.items[j].quantity >= promo.actions[i].effects[k].qty) {
-                                    if (promo.actions[i].effects[k].type.startsWith("FV")) {
-                                        let field = "unit";
+                                    if (promo.actions[i].effects[k].type.startsWith('FV')) {
+                                        let field = 'unit';
                                         if (baseProduct.price.et.special !== undefined) {
-                                            field = "special";
+                                            field = 'special';
                                         }
 
-                                        if (!bestPromoByProduct[itemId] || bestPromoByProduct[itemId].et < baseProduct.price.et[field === "unit" ? "normal" : "special"]) {
-                                            if (promo.actions[i].effects[k].type === "FVet") {
+                                        if (!bestPromoByProduct[itemId] || bestPromoByProduct[itemId].et < baseProduct.price.et[field === 'unit' ? 'normal' : 'special']) {
+                                            if (promo.actions[i].effects[k].type === 'FVet') {
                                                 bestPromoByProduct[itemId] = {
-                                                    et  : baseProduct.price.et[field === "unit" ? "normal" : "special"] - promo.actions[i].effects[k].value,
-                                                    ati : baseProduct.price.ati[field === "unit" ? "normal" : "special"] - (promo.actions[i].effects[k].value * (baseProduct.price.tax / 100 + 1))
+                                                    et  : baseProduct.price.et[field === 'unit' ? 'normal' : 'special'] - promo.actions[i].effects[k].value,
+                                                    ati : baseProduct.price.ati[field === 'unit' ? 'normal' : 'special'] - (promo.actions[i].effects[k].value * (baseProduct.price.tax / 100 + 1))
                                                 };
                                             } else {
                                                 bestPromoByProduct[itemId] = {
-                                                    et  : baseProduct.price.et[field === "unit" ? "normal" : "special"] - (promo.actions[i].effects[k].value / (baseProduct.price.tax / 100 + 1)),
-                                                    ati : baseProduct.price.ati[field === "unit" ? "normal" : "special"] - promo.actions[i].effects[k].value
+                                                    et  : baseProduct.price.et[field === 'unit' ? 'normal' : 'special'] - (promo.actions[i].effects[k].value / (baseProduct.price.tax / 100 + 1)),
+                                                    ati : baseProduct.price.ati[field === 'unit' ? 'normal' : 'special'] - promo.actions[i].effects[k].value
                                                 };
                                             }
 
@@ -491,9 +491,9 @@ const checkQuantityBreakPromo = async (cart, user = null, lang = null, resetProm
         const baseProduct = await ProductSimple.findOne({code: copyCart.items[prdIndex].code}).lean();
 
         if (prdIndex > -1) {
-            let field = "unit";
+            let field = 'unit';
             if (baseProduct.price.ati.special || baseProduct.price.et.special) {
-                field = "special";
+                field = 'special';
             }
             cart.set(`items.${prdIndex}.price.special`, {
                 et  : baseProduct.price.et[field === 'unit' ? 'normal' : 'special'] - bestPromoByProduct[productsPromoIds[i]].et,
@@ -516,10 +516,10 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // -----------------------------------------------------------------------------
     // ------ Récupérations des données et check de la validité du code promo ------
     // -----------------------------------------------------------------------------
-    const cart = await Cart.findById({_id: idCart}).populate("items.id");
+    const cart = await Cart.findById({_id: idCart}).populate('items.id');
     if (!cart) throw NSErrors.CartInactiveNotFound;
     // On cherche si un code promo correspondant a 'code' existe est actif et est de type panier (type: "1")
-    const promo = await Promo.findOne({"codes.code": code, actif: true, type: "1"});
+    const promo = await Promo.findOne({'codes.code': code, actif: true, type: '1'});
     if (!promo) {
         // Le code promo entré est mauvais alors on supprime l'ancien code promo
         await removePromoFromCart(cart);
@@ -545,7 +545,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // si son nombre de commande avec ce code promo est >= au promo.codes.limit_client (Le nombre de fois qu'un client peut utiliser ce code)
     // alors il ne pourra pas réutiliser le code promo
     if (user) {
-        const orderWithCode = await Orders.find({"customer.id": user._id, "promos.promoCodeId": newCode[0]._id});
+        const orderWithCode = await Orders.find({'customer.id': user._id, 'promos.promoCodeId': newCode[0]._id});
         if (newCode[0].limit_client !== null && (orderWithCode.length === newCode[0].limit_client || orderWithCode.length >= newCode[0].limit_client)) {
             await removePromoFromCart(cart);
             throw NSErrors.PromoCodePromoLimitClientMax;
@@ -558,7 +558,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // peut utiliser ce code promo en fonction de ce que contient le panier
     const validCartProduct = [];
     if (promo.rules_id) {
-        const promoRules = await promo.populate("rules_id").execPopulate();
+        const promoRules = await promo.populate('rules_id').execPopulate();
         if (promoRules.rules_id.conditions.length > 0 || promoRules.rules_id.other_rules.length > 0) {
             // TODO P5 (chaud): a supprimer si test avancé OK
             // On verifie que la requête s'effectue uniquement sur la collection product
@@ -624,7 +624,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             const language = await Languages.findOne({defaultLanguage: true});
             lang = language.code;
         }
-        const promoWithGiftsPopulated = await promo.populate("gifts").execPopulate();
+        const promoWithGiftsPopulated = await promo.populate('gifts').execPopulate();
         // On ajoute les produits au gifts du cart
         promoWithGiftsPopulated.gifts.forEach((gift) => {
             const {_id, translation, attributes} = gift;
@@ -683,7 +683,7 @@ async function isUniqueCodePromo(promo) {
     const tCodes = [];
     let nbFound = 0;
     for (let i = 0; i < promo.codes.length; i++) {
-        tCodes.push(Promo.findOne({"codes.code": promo.codes[i].code, _id: {$ne: promo._id}}));
+        tCodes.push(Promo.findOne({'codes.code': promo.codes[i].code, _id: {$ne: promo._id}}));
     }
     try {
         const resultPromo = await Promise.all(tCodes);
@@ -703,23 +703,23 @@ function calculDiscountItem(prd, promo) {
     // On calcule le total avec remise du panier
     let values = [];
     const {discountType, discountValue} = promo;
-    let field = "normal";
+    let field = 'normal';
 
     // Si un prix spécial existe alors on calcul la réduction sur la prix spécial
     if (prd.price.et.special !== undefined || prd.price.et.special != null) {
-        field = "special";
+        field = 'special';
     }
 
     const prices = {et: prd.price.et[field], ati: prd.price.ati[field]};
 
     // Si le discountType est du pourcentage
-    if (discountType === "P") {
+    if (discountType === 'P') {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
         values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100, prices.ati - Math.round(prices.ati * discountValue) / 100);
-    } else if (discountType === "Aet") {
+    } else if (discountType === 'Aet') {
         values = calculateCartItemDiscount(prices, discountValue, discountValue * (prd.price.tax / 100 + 1), true);
-    } else if (discountType === "Aati") {
+    } else if (discountType === 'Aati') {
         values = calculateCartItemDiscount(prices, discountValue * (prd.price.tax / 100 + 1), discountValue, true);
     }
 
@@ -735,25 +735,25 @@ async function calculCartDiscountItem(item, promo) {
     // On calcule le total avec remise du panier
     let values = [];
     const {discountType, discountValue} = promo;
-    let field = "normal";
+    let field = 'normal';
     const baseProduct = await ProductSimple.findOne({code: item.code}).lean();
 
     // Si un prix spécial existe alors on calcul la réduction sur la prix spécial
     if (baseProduct.price && baseProduct.price.et.special >= 0 && baseProduct.price.ati.special >= 0) {
-        field = "special";
+        field = 'special';
     }
 
     const prices = {ati: baseProduct.price.ati[field], et: baseProduct.price.et[field]};
     const taxRate = baseProduct.price.tax !== undefined ? baseProduct.price.tax : baseProduct.price.vat.rate;
 
     // Si le discountType est du pourcentage
-    if (discountType === "P") {
+    if (discountType === 'P') {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
         values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100, prices.ati - Math.round(prices.ati * discountValue) / 100);
-    } else if (discountType === "Aet") {
+    } else if (discountType === 'Aet') {
         values = calculateCartItemDiscount(prices, discountValue, discountValue / (taxRate / 100 + 1));
-    } else if (discountType === "Aati") {
+    } else if (discountType === 'Aati') {
         values = calculateCartItemDiscount(prices, discountValue / (taxRate / 100 + 1), discountValue);
     }
 
@@ -780,11 +780,11 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
     // priceTotal = await calculateCartTotal(cart);
     // On calcul la prix total avant l'application des codes promo et avant l'application des quantityBreaks
     // Si le discountType est du pourcentage
-    if (discountType === "P") {
+    if (discountType === 'P') {
         // Si le prix TTC/HT est inférieur a la remise alors on met une remise correspondant au prix du cart total
         // afin d'avoir priceTotal - discountATI (ou discountET) = 0
         values = calculateCartItemDiscount(priceTotal, Math.round(priceTotal.et * discountValue) / 100, Math.round(priceTotal.ati * discountValue) / 100);
-    } else if (discountType === "Aet" || discountType === "Aati") {
+    } else if (discountType === 'Aet' || discountType === 'Aati') {
         // le discountType est un montant
         // Si le prix TTC/HT est inférieur a la remise alors on met une remise correspondant au prix du cart
         // afin d'avoir priceTotal - discountATI (ou discountET) = 0
@@ -797,7 +797,7 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
     const prdIndex = productsCatalog.findIndex((_prd) => _prd._id.toString() === (cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id).toString());
     if (prdIndex > -1) {
         if (cart.items[cartPrdIndex].id === mongoose.Types.ObjectId) {
-            await cart.populate("items.id");
+            await cart.populate('items.id');
         }
         if (!cart.items[cartPrdIndex].noRecalculatePrice) {
             cart.items[cartPrdIndex].price.unit = {
@@ -892,10 +892,10 @@ const calculDiscount = (myCart) => {
         if (total >= discount.minimumATI) {
             let discountAmount = 0;
             switch (discount.type) {
-            case "PERCENT":
+            case 'PERCENT':
                 discountAmount = (total * discount.value) / 100;
                 break;
-            case "PRICE":
+            case 'PRICE':
                 discountAmount = discount.value;
                 break;
             default:
