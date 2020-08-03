@@ -96,13 +96,13 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
     function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams) {
         $scope.media = {
             link : "",
-            name : ""
+            name : "",
+            group: ""
         };
         $scope.routeId = $routeParams.id;
         
         $scope.selectedDropdownItem = "";
 
-        console.log($routeParams)
 
         $scope.copyLink = function (media) {
             $modal.open({

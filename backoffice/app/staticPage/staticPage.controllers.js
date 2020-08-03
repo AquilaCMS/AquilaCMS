@@ -11,7 +11,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
 
             StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function (staticsList) {
                 $scope.statics = staticsList.datas;
-                $scope.groups = [...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                $scope.groups = ([...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
                 $scope.currentTab = $scope.groups[0];
 
                 const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin')) || {};
@@ -60,7 +60,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             }
             $scope.dropdownItems = [];
             return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
-                $scope.groups = [...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                $scope.groups = ([...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
                 $scope.dropdownItems = $scope.groups.map(function (item) {
                     const dropdownObject = angular.copy(item);
                     dropdownObject.readableName = item.group;
@@ -119,7 +119,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
             $scope.dropdownItems = [];
             return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
-                $scope.groups = [...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                $scope.groups = ([...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
                 $scope.dropdownItems = $scope.groups.map(function (item) {
                     const dropdownObject = angular.copy(item);
                     dropdownObject.readableName = item.group;
