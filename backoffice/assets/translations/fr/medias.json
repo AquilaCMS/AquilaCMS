@@ -17,7 +17,8 @@
         "lien": "Lien :",
         "cpLien": "Copier lien",
         "media": "Média",
-        "add": "Ajouter"
+        "add": "Ajouter",
+        "group": "Groupe"
     },
     "uploadMedias": {
         "queue": "File d'attente :",
