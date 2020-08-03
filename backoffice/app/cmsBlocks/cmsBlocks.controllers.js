@@ -12,7 +12,7 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 
         CmsBlocksApi.list({PostBody: {filter: {_id: {$ne: null}}, structure: '*', limit: 99}}, function (cmsBlocks) {
             $scope.cmsBlocks = cmsBlocks.datas;
-            $scope.groups = [...new Set(cmsBlocks.datas.filter(sttc => sttc.group !== null).map(cmsBlock => cmsBlock.group))];
+            $scope.groups = ([...new Set(cmsBlocks.datas.filter(sttc => sttc.group !== null).map(cmsBlock => cmsBlock.group))]).sort();
             $scope.currentTab = $scope.groups[0];
 
             const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin')) || {};
@@ -51,7 +51,8 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.groups = [];
 
         CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsList) {
-            $scope.groups = [...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))];
+            console.log(([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]))
+            $scope.groups = ([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort();
         });
 
         if ($routeParams.code !== "new") {
@@ -129,7 +130,8 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             }
             $scope.dropdownItems = [];
             return CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsList) {
-                $scope.groups = [...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]
+                console.log(([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]))
+                $scope.groups = ([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
                 $scope.dropdownItems = $scope.groups.map(function (item) {
                     const dropdownObject = angular.copy(item);
                     dropdownObject.readableName = item.group;

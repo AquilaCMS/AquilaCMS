@@ -147,65 +147,53 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
         imageObj = product.images.find((img) => img._id.toString() === _id.toString());
         // on recupere le nom du fichier
         fileName = path.basename(imageObj.url);
-        if (await utilsMedias.existsFile(imageObj.url)) {
-            filePath      = path.join(_path, imageObj.url);
-            fileName      = `${product.code}_${imageObj._id}_${size}_${quality}${path.extname(fileName)}`;
-            filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
-            createFolderIfNotExist(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)));
-        }
+        filePath      = path.join(_path, imageObj.url);
+        fileName      = `${product.code}_${imageObj._id}_${size}_${quality}${path.extname(fileName)}`;
+        filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
+        createFolderIfNotExist(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)));
         break;
         // si un media est requêté
     case 'medias':
         imageObj = await Medias.findOne({_id});
         fileName = path.basename(imageObj.link, `.${extension}`);
-        if (await utilsMedias.existsFile(imageObj.link)) {
-            filePath      = path.join(_path, imageObj.link);
-            fileName      = `${fileName}_${size}_${quality}.${extension}`;
-            filePathCache = path.join(cacheFolder, 'medias', fileName);
-            createFolderIfNotExist(path.join(cacheFolder, 'medias'));
-        }
+        filePath      = path.join(_path, imageObj.link);
+        fileName      = `${fileName}_${size}_${quality}.${extension}`;
+        filePathCache = path.join(cacheFolder, 'medias', fileName);
+        createFolderIfNotExist(path.join(cacheFolder, 'medias'));
         break;
     case 'slider':
     case 'gallery':
         const obj = await mongoose.model(type).findOne({'items._id': _id});
         imageObj = obj.items.find((item) => item._id.toString() === _id.toString());
         fileName = path.basename(imageObj.src, `.${extension}`);
-        if (await utilsMedias.existsFile(imageObj.src)) {
-            filePath      = path.resolve(_path, imageObj.src);
-            fileName      = `${fileName}_${size}_${quality}.${extension}`;
-            filePathCache = path.resolve(cacheFolder, type, fileName);
-            createFolderIfNotExist(path.join(cacheFolder, type));
-        }
+        filePath      = path.resolve(_path, imageObj.src);
+        fileName      = `${fileName}_${size}_${quality}.${extension}`;
+        filePathCache = path.resolve(cacheFolder, type, fileName);
+        createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     case 'blog':
         const blog = await mongoose.model('news').findOne({_id});
         fileName = path.basename(blog.img, `.${extension}`);
-        if (await utilsMedias.existsFile(blog.img)) {
-            filePath      = path.join(_path, blog.img);
-            fileName      = `${fileName}_${size}_${quality}.${extension}`;
-            filePathCache = path.join(cacheFolder, type, fileName);
-            createFolderIfNotExist(path.join(cacheFolder, type));
-        }
+        filePath      = path.join(_path, blog.img);
+        fileName      = `${fileName}_${size}_${quality}.${extension}`;
+        filePathCache = path.join(cacheFolder, type, fileName);
+        createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     case 'category':
         const category = await mongoose.model('categories').findOne({_id});
         fileName = path.basename(category.img, `.${extension}`);
-        if (await utilsMedias.existsFile(category.img)) {
-            filePath      = path.join(_path, category.img);
-            fileName      = `${fileName}_${size}_${quality}.${extension}`;
-            filePathCache = path.join(cacheFolder, type, fileName);
-            createFolderIfNotExist(path.join(cacheFolder, type));
-        }
+        filePath      = path.join(_path, category.img);
+        fileName      = `${fileName}_${size}_${quality}.${extension}`;
+        filePathCache = path.join(cacheFolder, type, fileName);
+        createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     case 'picto':
         const picto = await mongoose.model('pictos').findOne({_id});
         fileName = path.basename(picto.filename, path.extname(picto.filename));
-        if (await utilsMedias.existsFile(path.join('medias/picto', picto.filename))) {
-            filePath      = path.join(_path, 'medias/picto', picto.filename);
-            fileName      = `${fileName}_${size}_${quality}${path.extname(picto.filename)}`;
-            filePathCache = path.join(cacheFolder, type, fileName);
-            createFolderIfNotExist(path.join(cacheFolder, type));
-        }
+        filePath      = path.join(_path, 'medias/picto', picto.filename);
+        fileName      = `${fileName}_${size}_${quality}${path.extname(picto.filename)}`;
+        filePathCache = path.join(cacheFolder, type, fileName);
+        createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     default:
         return null;
@@ -218,34 +206,37 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     if (fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
-    if (size === 'max' || size === 'MAX') {
-        await utilsModules.modulesLoadFunctions('downloadFile', {
-            key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
-            outPath : filePathCache
-        }, () => {
-            fsp.copyFileSync(filePath, filePathCache);
-        });
-    } else {
+    if (await utilsMedias.existsFile(filePath)) {
+        if (size === 'max' || size === 'MAX') {
+            await utilsModules.modulesLoadFunctions('downloadFile', {
+                key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
+                outPath : filePathCache
+            }, () => {
+                fsp.copyFileSync(filePath, filePathCache);
+            });
+        } else {
         // sinon, on recupere l'image original, on la resize, on la compresse et on la retourne
         // resize
-        filePath = await utilsModules.modulesLoadFunctions('getFile', {
-            key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
-        }, () => {
-            return filePath;
-        });
+            filePath = await utilsModules.modulesLoadFunctions('getFile', {
+                key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
+            }, () => {
+                return filePath;
+            });
 
-        await require('sharp')(filePath)
-            .resize({
-                width      : Number(size.split('x')[0]),
-                height     : Number(size.split('x')[1]),
-                fit        : 'contain',
-                background : {r: 255, g: 255, b: 255, alpha: 1}
-            })
-            .toFile(filePathCache);
+            await require('sharp')(filePath)
+                .resize({
+                    width      : Number(size.split('x')[0]),
+                    height     : Number(size.split('x')[1]),
+                    fit        : 'contain',
+                    background : {r: 255, g: 255, b: 255, alpha: 1}
+                })
+                .toFile(filePathCache);
+        }
+        // compressage
+        filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
+        return filePathCache;
     }
-    // compressage
-    filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
-    return filePathCache;
+    throw NSErrors.MediaNotFound;
 };
 
 exports.uploadFiles = async (body, files) => {
@@ -513,7 +504,8 @@ exports.removeMedia = async function (_id) {
 };
 
 exports.getMediasGroups = async function () {
-    return Medias.distinct('group');
+    const medias = await Medias.find();
+    return ([...new Set(medias.map((media) => media.group))]).sort((a, b) => a - b);
 };
 
 function createFolderIfNotExist(dir) {
