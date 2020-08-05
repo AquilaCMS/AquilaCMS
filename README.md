@@ -1,10 +1,7 @@
-<p style="text-align:center">
-    <img src="https://www.aquila-cms.com/medias/AquilaCMS.png" alt="Aquila-CMS ecommerce Javascript" style="max-width:50%">
-</p>
+![AquilaCMS](https://www.aquila-cms.com/images/medias/1024x200-90/5eb883a6e88bcc4391038570/AquilaCMS.png)
 
 ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3ac2a8b4b7ac4b6880b49d544fdabfcd)](https://app.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&utm_medium=referral&utm_content=AquilaCMS/AquilaCMS&utm_campaign=Badge_Grade_Dashboard)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/667b93cac0264970bec4e656628e82b3)](https://www.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade)
 
 # AquilaCMS
 
