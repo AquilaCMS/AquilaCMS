@@ -133,20 +133,22 @@ exports.uploadAllDocuments = async (reqFile) => {
  * @param {number} quality the quality of the result image - default 80
  */
 exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
-    let _path = server.getUploadDirectory();
-    _path = path.join(process.cwd(), _path);
+    let _path         = server.getUploadDirectory();
+    _path             = path.join(process.cwd(), _path);
     const cacheFolder = path.join(_path, '/cache/');
-    let filePath = '';
+    let filePath      = '';
     let filePathCache = '';
-    let fileName = '';
-    let imageObj = {};
+    let fileName      = '';
+    let imageObj      = {};
+    let relativePath  = '';
     switch (type) {
     // si une image produit est requêtée
     case 'products':
         const product = await Products.findOne({'images._id': _id});
-        imageObj = product.images.find((img) => img._id.toString() === _id.toString());
+        imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
         // on recupere le nom du fichier
-        fileName = path.basename(imageObj.url);
+        fileName      = path.basename(imageObj.url);
+        relativePath  = imageObj.url;
         filePath      = path.join(_path, imageObj.url);
         fileName      = `${product.code}_${imageObj._id}_${size}_${quality}${path.extname(fileName)}`;
         filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
@@ -154,8 +156,9 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
         break;
         // si un media est requêté
     case 'medias':
-        imageObj = await Medias.findOne({_id});
-        fileName = path.basename(imageObj.link, `.${extension}`);
+        imageObj      = await Medias.findOne({_id});
+        fileName      = path.basename(imageObj.link, `.${extension}`);
+        relativePath  = imageObj.link;
         filePath      = path.join(_path, imageObj.link);
         fileName      = `${fileName}_${size}_${quality}.${extension}`;
         filePathCache = path.join(cacheFolder, 'medias', fileName);
@@ -163,17 +166,19 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
         break;
     case 'slider':
     case 'gallery':
-        const obj = await mongoose.model(type).findOne({'items._id': _id});
-        imageObj = obj.items.find((item) => item._id.toString() === _id.toString());
-        fileName = path.basename(imageObj.src, `.${extension}`);
+        const obj     = await mongoose.model(type).findOne({'items._id': _id});
+        imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
+        fileName      = path.basename(imageObj.src, `.${extension}`);
+        relativePath  = imageObj.src;
         filePath      = path.resolve(_path, imageObj.src);
         fileName      = `${fileName}_${size}_${quality}.${extension}`;
         filePathCache = path.resolve(cacheFolder, type, fileName);
         createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     case 'blog':
-        const blog = await mongoose.model('news').findOne({_id});
-        fileName = path.basename(blog.img, `.${extension}`);
+        const blog    = await mongoose.model('news').findOne({_id});
+        fileName      = path.basename(blog.img, `.${extension}`);
+        relativePath  = blog.img;
         filePath      = path.join(_path, blog.img);
         fileName      = `${fileName}_${size}_${quality}.${extension}`;
         filePathCache = path.join(cacheFolder, type, fileName);
@@ -181,15 +186,17 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
         break;
     case 'category':
         const category = await mongoose.model('categories').findOne({_id});
-        fileName = path.basename(category.img, `.${extension}`);
-        filePath      = path.join(_path, category.img);
-        fileName      = `${fileName}_${size}_${quality}.${extension}`;
-        filePathCache = path.join(cacheFolder, type, fileName);
+        fileName       = path.basename(category.img, `.${extension}`);
+        relativePath   = category.img;
+        filePath       = path.join(_path, category.img);
+        fileName       = `${fileName}_${size}_${quality}.${extension}`;
+        filePathCache  = path.join(cacheFolder, type, fileName);
         createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     case 'picto':
-        const picto = await mongoose.model('pictos').findOne({_id});
-        fileName = path.basename(picto.filename, path.extname(picto.filename));
+        const picto   = await mongoose.model('pictos').findOne({_id});
+        fileName      = path.basename(picto.filename, path.extname(picto.filename));
+        relativePath  = path.join('medias/picto', picto.filename);
         filePath      = path.join(_path, 'medias/picto', picto.filename);
         fileName      = `${fileName}_${size}_${quality}${path.extname(picto.filename)}`;
         filePathCache = path.join(cacheFolder, type, fileName);
@@ -206,7 +213,7 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     if (fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
-    if (await utilsMedias.existsFile(filePath)) {
+    if (await utilsMedias.existsFile(relativePath)) {
         if (size === 'max' || size === 'MAX') {
             await utilsModules.modulesLoadFunctions('downloadFile', {
                 key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
@@ -215,8 +222,8 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
                 fsp.copyFileSync(filePath, filePathCache);
             });
         } else {
-        // sinon, on recupere l'image original, on la resize, on la compresse et on la retourne
-        // resize
+            // sinon, on recupere l'image original, on la resize, on la compresse et on la retourne
+            // resize
             filePath = await utilsModules.modulesLoadFunctions('getFile', {
                 key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
             }, () => {

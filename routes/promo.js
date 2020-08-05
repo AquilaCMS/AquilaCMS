@@ -10,6 +10,7 @@ module.exports = function (app) {
     app.put('/v2/promo/:_id/clone', authentication, adminAuth, clonePromo);
     app.put('/v2/promo',            authentication, adminAuth, setPromo);
     app.delete('/v2/promo/:_id',    authentication, adminAuth, deletePromo);
+    app.delete('/v2/promo/:promoId/code/:codeId',    authentication, adminAuth, deletePromoCode);
 };
 
 async function checkCodePromoByCode(req, res, next) {
@@ -88,6 +89,18 @@ async function clonePromo(req, res, next) {
 async function deletePromo(req, res, next) {
     try {
         const result = await ServicePromo.deletePromoById(req.params._id);
+        return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * Fonction permettant de supprimer un code d'une promo
+ */
+async function deletePromoCode(req, res, next) {
+    try {
+        const result = await ServicePromo.deletePromoCodeById(req.params.promoId, req.params.codeId);
         return res.json(result);
     } catch (error) {
         return next(error);

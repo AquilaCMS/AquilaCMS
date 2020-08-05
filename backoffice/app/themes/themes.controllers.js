@@ -73,17 +73,20 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.packageInstall = function () {
-            $scope.isLoading = true;
-            $scope.showThemeLoading = true;
-            $http.post("/v2/themes/package/install", { themeName: $scope.config.currentTheme }).then(function (response) {
-                toastService.toast("success", "Succès");
-                $scope.isLoading = false;
-                $scope.showThemeLoading = false;
-            }, function (err) {
-                $scope.isLoading = false;
-                $scope.showThemeLoading = false;
-                toastService.toast("danger", "Error !");
-            });
+            if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
+                $scope.isLoading = true;
+                $scope.showThemeLoading = true;
+                $http.post("/v2/themes/package/install", { themeName: $scope.config.currentTheme }).then(function (response) {
+                    toastService.toast("success", "Succès");
+                    $scope.isLoading = false;
+                    $scope.showThemeLoading = false;
+                }, function (err) {
+                    $scope.isLoading = false;
+                    $scope.showThemeLoading = false;
+                    toastService.toast("danger", "Error !");
+                }); 
+            }
+            
         };
 
         $scope.onErrorUploadTheme = function () {
@@ -99,17 +102,19 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.packageBuild = function () {
-            $scope.isLoading = true;
-            $scope.showThemeLoading = true;
-            $http.post("/v2/themes/package/build", { themeName: $scope.config.currentTheme }).then(function (response) {
-                toastService.toast("success", "Succès");
-                $scope.isLoading = false;
-                $scope.showThemeLoading = false;
-            }, function (err) {
-                $scope.isLoading = false;
-                $scope.showThemeLoading = false;
-                toastService.toast("danger", "Error !");
-            });
+            if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
+                $scope.isLoading = true;
+                $scope.showThemeLoading = true;
+                $http.post("/v2/themes/package/build", { themeName: $scope.config.currentTheme }).then(function (response) {
+                    toastService.toast("success", "Succès");
+                    $scope.isLoading = false;
+                    $scope.showThemeLoading = false;
+                }, function (err) {
+                    $scope.isLoading = false;
+                    $scope.showThemeLoading = false;
+                    toastService.toast("danger", "Error !");
+                });
+            }
         };
 
         $scope.packageRestart = async function () {
@@ -145,12 +150,14 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.copyThemeDatas = async function () {
-            try {
-                await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
-                toastService.toast("success", "Données du thème copiées avec succès.");
-            } catch (err) {
-                $scope.isLoading = false;
-                toastService.toast("danger", err.data.message);
+            if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
+                try {
+                    await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
+                    toastService.toast("success", "Données du thème copiées avec succès.");
+                } catch (err) {
+                    $scope.isLoading = false;
+                    toastService.toast("danger", err.data.message);
+                }
             }
         };
 
@@ -178,24 +185,29 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.showThemeLoading = true;
                     $http.post("/v2/themes/save", { environment: $scope.config }).then(function () {
                         if (oldAdmin.currentTheme !== $scope.config.currentTheme) {
-                            $scope.showThemeLoading = false;
-                            $scope.showLoading = true;
-                            $scope.progressValue = 0;
-                            $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
-                            $http.get("/restart");
-                            var timerRestart = $interval(function () {
-                                $scope.progressValue++;
+                            if (confirm("Êtes vous sur de vouloir changer de thème ?")) {
+                                $scope.showThemeLoading = false;
+                                $scope.showLoading = true;
+                                $scope.progressValue = 0;
+                                $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                                $http.get("/restart");
+                                var timerRestart = $interval(function () {
+                                    $scope.progressValue++;
 
-                                if ($scope.progressValue == 100) {
-                                    setTimeout(function () {
-                                        location.href = window.location = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
-                                    }, 7000);
-                                }
+                                    if ($scope.progressValue == 100) {
+                                        setTimeout(function () {
+                                            location.href = window.location = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                                        }, 7000);
+                                    }
 
-                                if ($scope.progressValue >= 110) {
-                                    $interval.cancel(timerRestart);
-                                }
-                            }, 250);
+                                    if ($scope.progressValue >= 110) {
+                                        $interval.cancel(timerRestart);
+                                    }
+                                }, 250);
+                            }else{
+                                $scope.showThemeLoading = false;
+                            }
+                            
                         }
                         else {
                             window.location.reload(true);

@@ -8,7 +8,7 @@
             <div class="col-sm-11">
                 <label for="code" class="col-sm-4 control-label" translate>promo.code.code</label>
                 <div class="col-sm-6">
-                    <input  type="text" class="form-control" id="code" name="code" ng-model="codePromo.code" autocomplete="off" 
+                    <input type="text" class="form-control" id="code" name="code" ng-model="codePromo.code" autocomplete="off" 
                             ng-model-options="{debounce: 500}" ng-change="checkCodeExists()" translate translate-attr-placeholder='promo.code.ph1' required>
                     <div class="ns-error-message" ng-show="local.form.code.$touched || local.form.nsSubmitted">
                         <div ng-show="local.form.code.$error.required" translate>promo.code.fieldReq</div>
