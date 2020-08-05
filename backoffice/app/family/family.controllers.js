@@ -212,15 +212,15 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
             $scope.selectedUniverse = idUniverse;
             $scope.families = [];
 
-            FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 99}}, function (result) {
+            FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 99, populate:'children'}}, function (result) {
                 $scope.families = result.children;
             });
         };
         $scope.updateFromFamily = function (idCategoryV2) {
             $scope.selectedFamily = idCategoryV2;
             $scope.subFamilies = [];
-            FamilyV2.list({PostBody: {filter: {_id: idCategoryV2}, limit: 99}}, function (result) {
-                $scope.subFamilies = result.children;
+            FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 99, populate: 'children'}}, function (result) {
+                $scope.subFamilies = result.datas[0].children;
             });
         };
 

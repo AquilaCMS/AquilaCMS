@@ -107,6 +107,7 @@ class NSErrors {
     static get PromoCodePromoInvalid() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoCodePromoInvalid'); }
     static get PromoDateError() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoDateError'); }
     static get PromoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoNotFound'); }
+    static get PromoCodeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoCodeNotFound'); }
     static get PromoUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoUpdateError'); }
     static get ResetPasswordMailContentAdminNotExists() { return this.makeErrorAlias(NSErrors.NotFound, 'ResetPasswordMailContentAdminNotExists'); }
     static get SetAttributeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SetAttributeNotFound'); }

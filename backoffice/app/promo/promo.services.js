@@ -15,6 +15,12 @@ PromoServices.factory('PromosV2', ['$resource', function ($resource) {
     });
 }]);
 
+PromoServices.factory('PromoCodeV2', ['$resource', function ($resource) {
+    return $resource('/v2/promo/:promoId/code/:codeId', {}, {
+        delete: { method: 'DELETE', params: { }}
+    });
+}]);
+
 PromoServices.factory('PromoGetById', ['$resource', function ($resource) {
     return $resource('/v2/promo/:_id', {}, {
         query: { method: 'POST', params: {} },

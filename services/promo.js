@@ -127,6 +127,18 @@ const deletePromoById = async (_id) => {
     return doc;
 };
 
+const deletePromoCodeById = async (promoId, codeId) => {
+    if (!mongoose.Types.ObjectId.isValid(promoId)) throw NSErrors.InvalidObjectIdError;
+    if (!mongoose.Types.ObjectId.isValid(codeId)) throw NSErrors.InvalidObjectIdError;
+    const doc = await Promo.findOne({_id: promoId});
+    if (!doc) throw NSErrors.PromoNotFound;
+    try {
+        return Promo.updateOne({_id: promoId}, {$pull: {codes: {_id: codeId}}});
+    } catch (err) {
+        throw NSErrors.PromoCodeNotFound;
+    }
+};
+
 const middlewarePromoCatalog = async (req, res) => {
     try {
         const user = getUserFromRequest(req);
@@ -919,6 +931,7 @@ module.exports = {
     setPromo,
     clonePromo,
     deletePromoById,
+    deletePromoCodeById,
     middlewarePromoCatalog,
     checkPromoCatalog,
     checkForApplyPromo,

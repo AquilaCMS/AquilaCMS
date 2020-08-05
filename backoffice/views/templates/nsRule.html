@@ -9,7 +9,7 @@
                 </div>
                 <div class="col-sm-4">
                     <label class="control-label" for="qty_{{effect.type}}_{{$index}}" translate>ns.rule.qty</label>
-                    <input id="qty_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="qty_{{effect.type}}_{{$index}}" ng-model="effect.qty" required" />
+                    <input type="number" id="qty_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="qty_{{effect.type}}_{{$index}}" ng-model="effect.qty" required" />
                 </div>
                 <div class="col-sm-4">
                     <label class="control-label" for="type_{{effect.type}}_{{$index}}" translate>ns.rule.type</label>
@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-sm-3">
                     <label class="control-label" for="value_{{effect.type}}_{{$index}}" translate>ns.rule.value</label>
-                    <input id="value_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="value_{{effect.type}}_{{$index}}" ng-model="effect.value" required />
+                    <input type="number" id="value_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="value_{{effect.type}}_{{$index}}" ng-model="effect.value" required />
                 </div>
             </div>
             <div class="condition" ng-repeat-end>
