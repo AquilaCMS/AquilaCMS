@@ -363,6 +363,10 @@ module.exports = {
         fr : 'Impossible de trouver la promotion',
         en : 'Cannot find discount'
     },
+    PromoCodeNotFound : {
+        fr : 'Impossible de trouver le code de la promotion',
+        en : 'Cannot find the code discount'
+    },
     PromoCodeIfStatementBadFormat : {
         fr : 'Une erreur de format est survenue lors de la création de la condition',
         en : 'A format error occurred while creating the condition'

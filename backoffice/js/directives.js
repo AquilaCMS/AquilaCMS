@@ -1194,7 +1194,7 @@ adminCatagenDirectives.directive("nsRule", [
                                     }
                                     $scope.attributesClassed.push(
                                         {
-                                            name: "attr.translation." + langs[i].code + "." + element.code,
+                                            value: "attr.translation." + langs[i].code + "." + element.code,
                                             type: type,
                                             params: {
                                                 values: values,
@@ -1882,7 +1882,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                 }
 
                                 $scope.files[i].extension = $scope.files[i].name.match(/\.[^/.]+$/);
-                                $scope.files[i].nameModified = $scope.files[i].nameModified !== $scope.files[i].name.replace(/\.[^/.]+$/, "") && $scope.files[i].nameModified ? $scope.files[i].nameModified.replace(/[^A-Z0-9]+/ig, "_") : $scope.files[i].name.replace(/\.[^/.]+$/, "").replace(/[^A-Z0-9]+/ig, "_");
+                                $scope.files[i].nameModified = $scope.files[i].nameModified !== $scope.files[i].name.replace(/\.[^/.]+$/, "") && $scope.files[i].nameModified ? $scope.files[i].nameModified.replace(/[^A-Z0-9-]+/ig, "_") : $scope.files[i].name.replace(/\.[^/.]+$/, "").replace(/[^A-Z0-9-]+/ig, "_");
                                 $scope.files[i].alt = $scope.files[i].alt !== "" ? $scope.files[i].alt : '';
                             }
                         }
@@ -1955,6 +1955,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             }
                                         });
                                     }
+                                    debugger;
                                     $scope.up.then(function (response) {
                                         var index = $scope.files.map(function (item) {
                                             return item.nameModified.replace(/[^A-Z0-9]+/ig, "_");

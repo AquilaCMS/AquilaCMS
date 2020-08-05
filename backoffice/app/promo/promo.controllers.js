@@ -51,8 +51,8 @@ PromoControllers.controller("PromoListCtrl", [
  * Controller de la page contenant le detail d'un Promo
  */
 PromoControllers.controller("PromoDetailCtrl", [
-    "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone",
-    function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone) {
+    "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2",
+    function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2) {
         $scope.promo = {
             discountType     : "Aet",
             actif            : false,
@@ -299,6 +299,14 @@ PromoControllers.controller("PromoDetailCtrl", [
                 $scope.promo.codes.push(codePromo);
             });
         };
+
+        $scope.removePromo = async function (codeId) {
+            let code = $scope.promo.codes.findIndex(x => x._id === codeId);
+            $scope.promo.codes.splice(code,1);
+            return;
+        };
+
+
         /**
          * Supprime l'objet gift dont l'index est passé en parametre
          * @param {*} i
@@ -487,8 +495,8 @@ PromoControllers.controller("PromoDetailTypeCtrl", [
 
 PromoControllers.controller("PromoDetailAddCodePromoCtrl",
     [
-        "$scope", "$modalInstance", "PromosV2",
-        function ($scope, $modalInstance, PromosV2) {
+        "$scope", "$modalInstance", "PromosV2","toastService",
+        function ($scope, $modalInstance, PromosV2, toastService) {
             // Si le codePromo.code existe déjà dans le tableau promo.codes alors on indique a l'utilisateur que le code promo existe déjà
             $scope.checkCodeExists = function () {
                 PromosV2.query({PostBody: {filter: {"codes.code": $scope.codePromo.code}, structure: '*'}}, function (promo) {
@@ -506,9 +514,23 @@ PromoControllers.controller("PromoDetailAddCodePromoCtrl",
             $scope.codeExists = false;
             $scope.local = {};
             $scope.save = function () {
+                function checkNumber(number) {
+                    debugger;
+                    if(number === "*"){
+                        return "*";
+                    }else if(!isNaN(parseInt(number))){
+                        return parseInt(number);
+                    }else{
+                        return false;
+                    }
+                }
                 $scope.local.form.nsSubmitted = true;
                 // Si le code existe déjà on averti l'utilisateur
                 if (!$scope.codePromo.code || $scope.codeExists) {
+                    return;
+                }
+                if (!checkNumber($scope.codePromo.limit_total) || !checkNumber($scope.codePromo.limit_client)){
+                    toastService.toast("danger", "Quantité maximale et Utilisation max par client doivent être des nombres ou '*'");
                     return;
                 }
                 $modalInstance.close($scope.codePromo);

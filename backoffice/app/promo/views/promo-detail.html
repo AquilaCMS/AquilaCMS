@@ -197,7 +197,10 @@
                                         <input type="text" ng-change="searchCodeByField()" ng-model="filter.limit_total" translate translate-attr-placeholder='promo.detail.ph5' class="form-control">
                                     </th>
                                     <th>
-                                        <input type="text" ng-change="searchCodeByField()" ng-model="filter.limit_client" translate translate-attr-placeholder='promo.detail.ph6' class="form-control">
+                                        <input type="text" translate translate-attr-placeholder='promo.detail.ph6' class="form-control">
+                                    </th>
+                                    <th>
+                                        
                                     </th>
                                 </tr>
                             </thead>
@@ -210,6 +213,9 @@
                                     <td class="text-center" style="font-size: 20px;">{{code.client_used}}</td>
                                     <td class="text-center" style="font-size: 20px;">{{code.limit_total || "&#8734;"}}</td>
                                     <td class="text-center" style="font-size: 20px;">{{code.limit_client || "&#8734;"}}</td>
+                                    <td class="text-center" style="font-size: 20px;">
+                                        <button class="btn btn-danger ng-scope" ng-click="removePromo(code._id)" translate>ns.delete</button> 
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
