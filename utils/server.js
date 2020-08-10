@@ -111,12 +111,12 @@ const logVersion = async () => {
 const startListening = async (server) => {
     if (global.envFile && global.envFile.ssl && global.envFile.ssl.key
         && global.envFile.ssl.cert && global.envFile.ssl.active
-        && await fs.access(path.join(global.appRoot, global.envFile.ssl.key))
-        && await fs.access(path.join(global.appRoot, global.envFile.ssl.cert))
+        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key))
+        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))
     ) {
         spdy.createServer({
-            key  : await fs.readFile(path.join(global.appRoot, global.envFile.ssl.key)),
-            cert : await fs.readFile(path.join(global.appRoot, global.envFile.ssl.cert)),
+            key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
+            cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
             spdy : {
                 protocols : ['h2', 'http1.1'],
                 plain     : false,

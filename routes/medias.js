@@ -101,7 +101,7 @@ async function uploadFiles(req, res, next) {
  */
 async function getMediasGroups(req, res, next) {
     try {
-        const result = await mediasServices.getMediasGroups();
+        const result = await mediasServices.getMediasGroups(req.query.query);
         return res.json(result);
     } catch (error) {
         next(error);

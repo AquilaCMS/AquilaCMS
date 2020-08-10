@@ -510,9 +510,18 @@ exports.removeMedia = async function (_id) {
     return result;
 };
 
-exports.getMediasGroups = async function () {
+exports.getMediasGroups = async function (query) {
     const medias = await Medias.find();
-    return ([...new Set(medias.map((media) => media.group))]).sort((a, b) => a - b);
+    const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
+    // s'il est la, on place "general" en premier index
+    if (sortedGroups.includes('general')) {
+        sortedGroups.splice(sortedGroups.indexOf('general'), 1);
+        sortedGroups.unshift('general');
+    }
+    if (query) {
+        return sortedGroups.filter((group) => group.match(new RegExp(query, 'gim')));
+    }
+    return sortedGroups;
 };
 
 function createFolderIfNotExist(dir) {

@@ -2,6 +2,7 @@ const path          = require('path');
 const themeServices = require('../services/themes');
 const fs            = require('../utils/fsp');
 const serverUtils   = require('../utils/server');
+const {themeCompile} = require('../utils/themes');
 const {createListModuleFile} = require('../utils/modules');
 const NSErrors      = require('../utils/errors/NSErrors');
 
@@ -92,13 +93,7 @@ const postConfiguratorDatas = async (req) => {
         await createListModuleFile('default_theme');
         // Compilation du theme par default
         console.log('Installer : start default theme installation and compilation');
-        const packageManager = require('../utils/packageManager');
-        if (await fs.access(global.appRoot, 'yarn.lock')) {
-            await packageManager.execCmd(`yarn install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve('./themes/default_theme'));
-        } else {
-            await packageManager.execCmd(`npm install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve('./themes/default_theme'));
-        }
-        await packageManager.execSh(path.normalize('./node_modules/next/dist/bin/next'), ['build', path.normalize('./themes/default_theme')], './');
+        await themeCompile('default_theme');
         console.log('Installer : end default theme installation and compilation');
     } catch (err) {
         console.error(err);

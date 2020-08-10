@@ -57,6 +57,7 @@ const setPromo = async (body, _id = null) => {
 const clonePromo = async (_id) => {
     // Cloner le discount
     const promoInit       = await queryBuilder.findById(_id);
+    promoInit.codes       = [];
     let promoCloned       = JSON.parse(JSON.stringify(promoInit));
     delete promoCloned._id;
     promoCloned.name     += ' (cloned)';

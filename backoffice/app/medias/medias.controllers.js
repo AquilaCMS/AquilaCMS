@@ -140,33 +140,34 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             MediaApiV2.query({PostBody: {filter: {_id: $routeParams.id}, limit: 99}}, function (response) {
                 $scope.media = response;
                 $scope.selectedDropdownItem = $scope.media.group ? $scope.media.group : '';
+
+                $scope.getGroups()
             });
         };
-        
-        $scope.itemObjectSelected = function (item) {
-            $scope.selectedDropdownItem = item;
-        };
 
-        $scope.filterDropdown = function (userInput) {
-            if (userInput !== undefined) {
-                $scope.selectedDropdownItem = userInput;
-            }
-            $scope.dropdownItems = [];
-            return MediaApiV2.getGroups().$promise.then(function (groups) {
-                $scope.groups = [...new Set(groups.filter(group => group !== null).map(group => group))]
-                $scope.dropdownItems = $scope.groups.map(function (item) {
-                    const dropdownObject = angular.copy(item);
-                    dropdownObject.readableName = item;
-                    return dropdownObject;
+        $scope.getGroups = function () {
+            $scope.itemObjectSelected = function (item) {
+                $scope.selectedDropdownItem = item;
+            };
+    
+            $scope.filterDropdown = function (userInput) {
+                if (userInput !== undefined) {
+                    $scope.selectedDropdownItem = userInput;
+                }
+
+                return MediaApiV2.getGroups({query: $scope.selectedDropdownItem}).$promise.then(function (groups) {
+                    $scope.groups = groups
+                    return groups;
                 });
-                return $scope.dropdownItems;
-            });
-        };
-
-        $scope.filterDropdown();
+            };
+    
+            $scope.filterDropdown();
+        }
 
         if($routeParams.id !== 'new') {
             $scope.init();
+        } else {
+            $scope.getGroups()
         }
     }]);
 

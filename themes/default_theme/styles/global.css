@@ -2565,12 +2565,12 @@ select::-ms-expand {
 
 .paging li { position: relative; font-size: 20px; font-weight: 300; line-height: 1.35; color: #9B9B9B; }
 
-.paging li + li:before { display: inline-block; content: 'I'; margin: 0 3px; }
+.paging li + li:before { display: inline-block; content: '|'; margin: 0 3px; }
 
 .paging .paging__spacer + li:before,
 .paging li + .paging__spacer:before { display: none; }
 
-.paging a { color: inherit; text-decoration: none; }
+.paging a { color: inherit; text-decoration: none; padding: 10px; }
 
 .paging .paging__spacer { padding: 0 5px; }
 

@@ -297,12 +297,14 @@ PromoControllers.controller("PromoDetailCtrl", [
                     codePromo.limit_client = null;
                 }
                 $scope.promo.codes.push(codePromo);
+                $scope.form.$dirty = true;
             });
         };
 
-        $scope.removePromo = async function (codeId) {
+        $scope.removePromo = function (codeId) {
             let code = $scope.promo.codes.findIndex(x => x._id === codeId);
             $scope.promo.codes.splice(code,1);
+            $scope.form.$dirty = true; 
             return;
         };
 
@@ -469,7 +471,8 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
-        $scope.cloneDiscount = function () {
+        $scope.cloneDiscount = async function () {
+            await $scope.save(false);
             PromoClone.clone({_id: $scope.promo._id}, function (response) {
                 if (response) {
                     toastService.toast("success", "Promotion clonée !");
@@ -515,12 +518,9 @@ PromoControllers.controller("PromoDetailAddCodePromoCtrl",
             $scope.local = {};
             $scope.save = function () {
                 function checkNumber(number) {
-                    debugger;
-                    if(number === "*"){
-                        return "*";
-                    }else if(!isNaN(parseInt(number))){
-                        return parseInt(number);
-                    }else{
+                    if (number === null || number === "*" || !isNaN(parseInt(number))) {
+                        return true;
+                    } else {
                         return false;
                     }
                 }
