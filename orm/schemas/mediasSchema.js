@@ -4,7 +4,7 @@ const Schema   = mongoose.Schema;
 const MediasSchema = new Schema({
     name      : String,
     link      : String,
-    group     : {type: String, default: 'general'},
+    group     : {type: String, default: ''},
     extension : {type: String, default: '.jpg'}
 });
 

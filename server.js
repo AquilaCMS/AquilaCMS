@@ -69,13 +69,16 @@ const setEnvConfig = async () => {
 };
 
 const initFrontFramework = async (server, themeFolder) => {
-    if (dev) {
-        await utilsThemes.themeCompile();
-    }
+    if (dev) await utilsThemes.themeCompile();
 
-    const app                = next({dev, dir: themeFolder});
-    const routes             = require(path.join(themeFolder, 'routes'));
-    const handler            = routes.getRequestHandler(app);
+    const app = next({dev, dir: themeFolder});
+    let handler;
+    if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
+        const routes  = require(path.join(themeFolder, 'routes'));
+        handler = routes.getRequestHandler(app);
+    } else {
+        handler = app.getRequestHandler();
+    }
     const {i18nInstance, ns} = await utilsThemes.loadTheme();
 
     if (i18nInstance) {

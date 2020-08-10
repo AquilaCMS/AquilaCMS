@@ -6,6 +6,7 @@ import Head from 'next/head';
 import { Link, Router } from 'routes';
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
+import { listModulePage } from 'lib/utils';
 
 /**
  * PageCart - Page panier (surcharge NSPageCart)
@@ -233,16 +234,16 @@ class PageCart extends NSPageCart {
                                                         <Link route="home" params={{ lang: routerLang }}>
                                                             <a className="btn btn--silver">{t('page.cart.continue_buying')}</a>
                                                         </Link>
-                                                    </footer>
-                                                    {/* <!-- /.products__foot --> */}
-                                                </div>
-                                                {/* <!-- /.products --> */}
-                                            </div>
-                                            {/* <!-- /.section__body --> */}
+                                                    </footer>{/* <!-- /.products__foot --> */}
+                                                </div>{/* <!-- /.products --> */}
+                                            </div>{/* <!-- /.section__body --> */}
+                                        </div>{/* <!-- /.section__content --> */}
+                                        <div>
+                                            {
+                                                listModulePage('cart')
+                                            }
                                         </div>
-                                        {/* <!-- /.section__content --> */}
-                                    </div>
-                                    {/* <!-- /.content --> */}
+                                    </div>{/* <!-- /.content --> */}
 
                                     <aside className="sidebar sidebar--alt sidebar-visible-on-mobile">
                                         <div className="widget-form">

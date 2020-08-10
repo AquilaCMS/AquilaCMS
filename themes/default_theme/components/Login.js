@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { NSContext, NSLogin } from 'aqlrc';
 import CMS from './CMS';
 import { withI18next } from 'lib/withI18n';
+import { listModulePage } from 'lib/utils';
 
 /**
  * Login - Formulaire de connexion / inscription (surcharge NSLogin)
@@ -85,6 +86,11 @@ class Login extends NSLogin {
                                                 <button type="submit" className="form__btn btn btn--red">{t('login:page.client_sign_in.button_label')}</button>
                                             </div>{/* <!-- /.form__actions --> */ }
 
+                                            <div className="form__entry">
+                                            {
+                                                listModulePage('auth')
+                                            }
+                                            </div>{/* <!-- /.form__entry --> */ }
                                             <div className="form__entry">
                                                 {
                                                     cmsLogin && <CMS ns-code="login" content={cmsLogin.content || ''} hide_error />

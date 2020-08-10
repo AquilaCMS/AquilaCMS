@@ -7,7 +7,7 @@ import {
     NSFilters,
     NSProductCard,
 } from 'aqlrc';
-import ReactPaginate from 'react-paginate';
+import ReactPagination from 'react-js-pagination';
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
 import { Link, Router } from 'routes';
@@ -116,19 +116,17 @@ class PageCategory extends NSPageCategory {
                                         </div>{/* <!-- /.form__row --> */}
 
                                         <div className="paging" hidden={count <= itemsPerPages}>
-                                            <ReactPaginate
-                                                previousLabel={<span>&lt;&lt;</span>}
-                                                nextLabel={<span>&gt;&gt;</span>}
-                                                previousClassName="paging__previous"
-                                                nextClassName="paging__next"
-                                                breakLabel={<li className="paging__spacer">...</li>}
-                                                breakClassName="paging__spacer"
-                                                pageCount={Math.ceil(count / itemsPerPages)}
-                                                marginPagesDisplayed={2}
+                                            <ReactPagination
+                                                hideDisabled
+                                                hideFirstLastPages
+                                                activePage={this.state.current}
+                                                itemsCountPerPage={itemsPerPages}
+                                                totalItemsCount={count}
                                                 pageRangeDisplayed={5}
-                                                onPageChange={(page) => this.onPageChange({ ...page }, itemsPerPages, undefined, filters)}
-                                                activeClassName="current"
-                                                forcePage={this.state.current - 1}
+                                                onChange={(page) => this.onPageChange(page, itemsPerPages, undefined, filters)}
+                                                activeClass="current"
+                                                prevPageText={<span>&lt;</span>}
+                                                nextPageText={<span>&gt;</span>}
                                             />
                                         </div>
 
@@ -184,19 +182,17 @@ class PageCategory extends NSPageCategory {
 
                                         <div className="content__actions">
                                             <div className="paging" hidden={count <= itemsPerPages}>
-                                                <ReactPaginate
-                                                    previousLabel={<span>&lt;&lt;</span>}
-                                                    nextLabel={<span>&gt;&gt;</span>}
-                                                    previousClassName="paging__previous"
-                                                    nextClassName="paging__next"
-                                                    breakLabel={<li className="paging__spacer">...</li>}
-                                                    breakClassName="paging__spacer"
-                                                    pageCount={Math.ceil(count / itemsPerPages)}
-                                                    marginPagesDisplayed={2}
+                                                <ReactPagination
+                                                    hideDisabled
+                                                    hideFirstLastPages
+                                                    activePage={this.state.current}
+                                                    itemsCountPerPage={itemsPerPages}
+                                                    totalItemsCount={count}
                                                     pageRangeDisplayed={5}
-                                                    onPageChange={(page) => this.onPageChange({ ...page }, itemsPerPages, undefined, filters, '.tab-filter')}
-                                                    activeClassName="current"
-                                                    forcePage={this.state.current - 1}
+                                                    onChange={(page) => this.onPageChange(page, itemsPerPages, undefined, filters)}
+                                                    activeClass="current"
+                                                    prevPageText={<span>&lt;</span>}
+                                                    nextPageText={<span>&gt;</span>}
                                                 />
                                             </div>{/* <!-- /.paging --> */}
 

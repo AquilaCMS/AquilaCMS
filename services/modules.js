@@ -137,6 +137,7 @@ const initModule = async (originalname, filepath) => {
                 moduleDependencies       : jInfo.info.moduleDependencies,
                 component_template_front : jInfo.info.component_template_front || null,
                 files                    : jInfo.info.files || [],
+                type                     : jInfo.info.type,
                 active                   : !!(myModule && myModule.active)
             }, {upsert: true, new: true});
 
@@ -649,8 +650,11 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         if (!file.startsWith('Module') || !file.endsWith('.js')) {
             continue;
         }
+        const info = await fs.readFile(path.resolve(savePath, 'info.json'));
+        let type = JSON.parse(info).info.type;
+        type = type ? `type: '${type}'` : '';
         const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleNomComposant.js ->nomcomposant
-        const jsxModuleToImport     = `{ jsx: require('./${file}').default, code: 'aq-${fileNameWithoutModule}' },`;
+        const jsxModuleToImport     = `{ jsx: require('./${file}').default, code: 'aq-${fileNameWithoutModule}', ${type} },`;
         const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
         const result                = await fs.readFile(pathListModules, 'utf8');
 

@@ -1,25 +1,25 @@
 const path = require('path');
+const nextBuild = require('next/dist/build').default;
+const fs = require('./fsp');
 const packageManager = require('./packageManager');
 const modulesUtils = require('./modules');
+const {isProd} = require('./server');
 
 /**
  * Compile the current theme
  */
-const themeCompile = async () => {
+const themeCompile = async (theme) => {
     try {
-        try {
-            const currentTheme = path.join('./themes', global.envConfig.environment.currentTheme);
-            if (!global.envFile.db) {
-                await packageManager.execCmd('yarn install', `${currentTheme}`);
+        theme = theme || global.envConfig.environment.currentTheme;
+        theme = path.resolve(global.appRoot, 'themes', theme);
+        if (!global.envFile.db) {
+            if (await fs.access(global.appRoot, 'yarn.lock')) {
+                await packageManager.execCmd(`yarn install ${isProd() ? ' --prod' : ''}`, `${theme}`);
+            } else {
+                await packageManager.execCmd(`npm install ${isProd() ? ' --prod' : ''}`, `${theme}`);
             }
-            await packageManager.execSh(
-                `${path.normalize('./node_modules/next/dist/bin/next')} build ${currentTheme}`,
-                [],
-                './'
-            );
-        } catch (err) {
-            console.error(err);
         }
+        await nextBuild(theme);
     } catch (err) {
         console.error(err);
     }

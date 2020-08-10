@@ -183,40 +183,43 @@ ThemesController.controller("ThemesCtrl", [
             } else {
                 ConfigV2.environment(function (oldAdmin) {
                     $scope.showThemeLoading = true;
-                    $http.post("/v2/themes/save", { environment: $scope.config }).then(function () {
-                        if (oldAdmin.currentTheme !== $scope.config.currentTheme) {
-                            if (confirm("Êtes vous sur de vouloir changer de thème ?")) {
-                                $scope.showThemeLoading = false;
-                                $scope.showLoading = true;
-                                $scope.progressValue = 0;
-                                $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
-                                $http.get("/restart");
-                                var timerRestart = $interval(function () {
-                                    $scope.progressValue++;
+                    if (oldAdmin.currentTheme !== $scope.config.currentTheme) {
+                        if (confirm("Êtes vous sur de vouloir changer de thème ?")) {
+                            $http.post("/v2/themes/save", { environment: $scope.config }).then(function () {
+                                if (oldAdmin.currentTheme !== $scope.config.currentTheme) {
+                                    $scope.showThemeLoading = false;
+                                    $scope.showLoading = true;
+                                    $scope.progressValue = 0;
+                                    $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                                    $http.get("/restart");
+                                    var timerRestart = $interval(function () {
+                                        $scope.progressValue++;
 
-                                    if ($scope.progressValue == 100) {
-                                        setTimeout(function () {
-                                            location.href = window.location = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
-                                        }, 7000);
-                                    }
+                                        if ($scope.progressValue == 100) {
+                                            setTimeout(function () {
+                                                location.href = window.location = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                                            }, 7000);
+                                        }
 
-                                    if ($scope.progressValue >= 110) {
-                                        $interval.cancel(timerRestart);
-                                    }
-                                }, 250);
-                            }else{
+                                        if ($scope.progressValue >= 110) {
+                                            $interval.cancel(timerRestart);
+                                        }
+                                    }, 250);
+                                }
+                                else {
+                                    window.location.reload(true);
+                                }
                                 $scope.showThemeLoading = false;
-                            }
-                            
+
+                            }, function (err) {
+                                $scope.showThemeLoading = false;
+                                toastService.toast("danger", "Une erreur est survenue !");
+                                console.error(err);
+                            });
+                        } else {
+                            $scope.showThemeLoading = false;
                         }
-                        else {
-                            window.location.reload(true);
-                        }
-                    }, function (err) {
-                        $scope.showThemeLoading = false;
-                        toastService.toast("danger", "Une erreur est survenue !");
-                        console.error(err);
-                    });
+                    }
                 });
 
                 function buildAdminUrl(appUrl, adminPrefix) {

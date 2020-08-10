@@ -386,6 +386,17 @@ adminCatagenApp.controller("PrincipalCtrl", [ "$http", "$rootScope", "$scope",
         {
             return Math.min.apply(null, this);
         };
+
+        Array.prototype.getAndSortGroups = function (filterQuery = "")
+        {
+            const sortedGroups = ([...new Set(this.map((element) => (element && !element.group ? 'general' : element.group)))]).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+            // s'il est la, on place "general" en premier index
+            if (sortedGroups.includes('general')) {
+                sortedGroups.splice(sortedGroups.indexOf('general'), 1);
+                sortedGroups.unshift('general');
+            }
+            return sortedGroups.filter((group) => group && group.match(new RegExp(filterQuery, 'gim')))
+        };
     }
 ]);
 
