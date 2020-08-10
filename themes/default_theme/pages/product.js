@@ -17,6 +17,7 @@ import {
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
+import { listModulePage } from 'lib/utils';
 import CMS from 'components/CMS';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
@@ -408,7 +409,7 @@ class PageProduct extends NSPageProduct {
                                 )
                             }
 
-                            <section className="section-ratings customer_reviews" id="reviews" style={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false ? { display: 'none' } : {}}>
+                            <section className="section-ratings customer_reviews" id="reviews" hidden={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false}>
                                 <header className="section__head">
                                     <h4>{t('avisClients')}</h4>
                                 </header>{/* <!-- /.section__head --> */}
@@ -539,6 +540,11 @@ class PageProduct extends NSPageProduct {
                                     </div>
                                 </div>{/* <!-- /.section__body --> */}
                             </section>{/* <!-- /.section-ratings --> */}
+                            <section>
+                                {
+                                    listModulePage('product')
+                                }
+                            </section>
                             {
                                 cmsProductContentBottom && (
                                     <section>

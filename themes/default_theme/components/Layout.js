@@ -7,6 +7,7 @@ import { withRouter } from 'next/router';
 import CMS from './CMS';
 import { Router } from 'routes';
 import { withI18next } from 'lib/withI18n';
+import { listModulePage } from 'lib/utils';
 
 /**
  * Layout - Squelette de la page (header / contenu / footer)
@@ -81,6 +82,9 @@ class Layout extends React.Component {
         return (
             <>
                 <NSToast />
+                {
+                    listModulePage('global')
+                }
                 <CMS ns-code="header" content={header} />
                 {children}
                 {themeConfig && themeConfig.showFooter && <CMS ns-code="footer" content={footer} />}

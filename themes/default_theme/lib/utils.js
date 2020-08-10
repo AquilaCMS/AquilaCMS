@@ -1,4 +1,6 @@
+import React from 'react';
 import axios from 'axios';
+import nsModules from 'modules/list_modules';
 import getAPIUrl from './getAPIUrl';
 
 /**
@@ -49,7 +51,20 @@ async function countProductInCartByProduct(product) {
     }
 }
 
-const totalAmountMax = 5000;
+/**
+ * Liste les modules en fonction du type
+ * @param {*} type
+ * @returns {React.Component}
+ */
+function listModulePage(type) {
+    return nsModules.filter((m) => m.type === type).map((m, index) => {
+        const Comp = m.jsx;
+        return (
+            <Comp key={index + m.code} />
+        );
+    });
+}
+
 export {
-    totalAmountMax, countProductInCartByCategory, countProductInCartByProduct
+    countProductInCartByCategory, countProductInCartByProduct, listModulePage
 };

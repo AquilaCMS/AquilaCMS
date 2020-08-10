@@ -10,7 +10,7 @@ const StaticsSchema = new Schema({
     active       : {type: Boolean, default: false},
     creationDate : {type: Date, default: Date.now},
     modifyDate   : {type: Date, default: Date.now},
-    group        : {type: String, default: 'general'},
+    group        : {type: String, default: ''},
     // index        : {type: Boolean, default: true},
     translation  : {}
 });

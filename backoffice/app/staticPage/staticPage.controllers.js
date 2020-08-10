@@ -11,7 +11,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
 
             StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function (staticsList) {
                 $scope.statics = staticsList.datas;
-                $scope.groups = ([...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
+                $scope.groups = staticsList.datas.getAndSortGroups()
                 $scope.currentTab = $scope.groups[0];
 
                 const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin')) || {};
@@ -58,15 +58,9 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             if (userInput !== undefined) {
                 $scope.selectedDropdownItem = userInput;
             }
-            $scope.dropdownItems = [];
             return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
-                $scope.groups = ([...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
-                $scope.dropdownItems = $scope.groups.map(function (item) {
-                    const dropdownObject = angular.copy(item);
-                    dropdownObject.readableName = item.group;
-                    return dropdownObject;
-                });
-                return $scope.dropdownItems;
+                $scope.groups = staticsList.datas.getAndSortGroups($scope.selectedDropdownItem)
+                return staticsList.datas.getAndSortGroups($scope.selectedDropdownItem);
             });
         };
 
@@ -119,13 +113,8 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
             $scope.dropdownItems = [];
             return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
-                $scope.groups = ([...new Set(staticsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
-                $scope.dropdownItems = $scope.groups.map(function (item) {
-                    const dropdownObject = angular.copy(item);
-                    dropdownObject.readableName = item.group;
-                    return dropdownObject;
-                });
-                return $scope.dropdownItems;
+                $scope.groups = staticsList.datas.getAndSortGroups(userInput);
+                return $scope.groups;
             });
         };
 

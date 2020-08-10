@@ -12,7 +12,7 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 
         CmsBlocksApi.list({PostBody: {filter: {_id: {$ne: null}}, structure: '*', limit: 99}}, function (cmsBlocks) {
             $scope.cmsBlocks = cmsBlocks.datas;
-            $scope.groups = ([...new Set(cmsBlocks.datas.filter(sttc => sttc.group !== null).map(cmsBlock => cmsBlock.group))]).sort();
+            $scope.groups = cmsBlocks.datas.getAndSortGroups();
             $scope.currentTab = $scope.groups[0];
 
             const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin')) || {};
@@ -50,20 +50,36 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.modules = [];
         $scope.groups = [];
 
-        CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsList) {
-            console.log(([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]))
-            $scope.groups = ([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort();
-        });
-
+        $scope.getGroups = function () {
+            $scope.itemObjectSelected = function (item) {
+                $scope.selectedDropdownItem = item;
+            };
+    
+            $scope.filterDropdown = function (userInput) {
+                if (userInput !== undefined) {
+                    $scope.selectedDropdownItem = userInput;
+                }
+                return CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsBlocks) {
+                    $scope.groups = cmsBlocks.datas.getAndSortGroups($scope.selectedDropdownItem)
+                    return $scope.groups;
+                });
+            };
+    
+            $scope.filterDropdown();
+        }
         if ($routeParams.code !== "new") {
             CmsBlocksApi.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (block) {
                 $scope.cmsBlock = block;
                 $scope.isEditMode = true;
                 $scope.selectedDropdownItem = block.group ? block.group : "";
+
+                $scope.getGroups()
             });
         } else {
             $scope.cmsBlock = {};
             $scope.selectedDropdownItem = "";
+
+            $scope.getGroups()
         }
 
         $scope.save = async function (quit) {
@@ -120,27 +136,5 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             }
             return tagText;
         };
-        $scope.itemObjectSelected = function (item) {
-            $scope.selectedDropdownItem = item;
-        };
-
-        $scope.filterDropdown = function (userInput) {
-            if (userInput !== undefined) {
-                $scope.selectedDropdownItem = userInput;
-            }
-            $scope.dropdownItems = [];
-            return CmsBlocksApi.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (cmsList) {
-                console.log(([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]))
-                $scope.groups = ([...new Set(cmsList.datas.filter(sttc => sttc.group !== null).map(sttc => sttc.group))]).sort()
-                $scope.dropdownItems = $scope.groups.map(function (item) {
-                    const dropdownObject = angular.copy(item);
-                    dropdownObject.readableName = item.group;
-                    return dropdownObject;
-                });
-                return $scope.dropdownItems;
-            });
-        };
-
-        $scope.filterDropdown();
     }
 ]);

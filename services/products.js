@@ -261,7 +261,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     // On verifie que les infos de PostBody sont correctes
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
-    // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit) si PostBody.sort n'existe pas ou que sort.sortWeight existe
+    // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit)
+    // si PostBody.sort n'existe pas ou que sort.sortWeight existe
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         // on trie les sortWeight du plus petit au plus grand
         if (PostBody.sort && PostBody.sort.sortWeight && PostBody.sort.sortWeight === 1 ) {
@@ -349,6 +350,19 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         prds = prds.filter((prd) => prdsPrices
             .map((prdPri) => prdPri._id.toString())
             .indexOf(prd._id.toString()) !== -1);
+        if (PostBody.sort && PostBody.sort['price.ati.normal']) {
+            prds = prds.sort((a, b) => {
+                let priceA = a.price.ati.normal;
+                let priceB = a.price.ati.normal;
+                if (a.price.ati.special) priceA = a.price.ati.special;
+                if (b.price.ati.special) priceB = b.price.ati.special;
+                let result;
+                const sort = Number(PostBody.sort['price.ati.normal']);
+                if (sort === 1) result = priceA - priceB;
+                if (sort === -1) result = priceB - priceA;
+                return result;
+            });
+        }
     }
 
     const arrayPrice = {et: [], ati: []};

@@ -4,7 +4,7 @@ const Schema   = mongoose.Schema;
 
 const CmsBlocksSchema = new Schema({
     code        : {type: String, required: true, unique: true},
-    group       : {type: String, default: 'general'},
+    group       : {type: String, default: ''},
     description : String,
     translation : {}
 });

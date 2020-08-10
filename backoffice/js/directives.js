@@ -1944,7 +1944,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             method: 'POST',
                                             data: {
                                                 type: $scope.type,
-                                                file: Upload.rename(file, file.nameModified.replace(/[^A-Z0-9]+/ig, "_")),
+                                                file: Upload.rename(file, file.nameModified.replace(/[^A-Z0-9-]+/ig, "_")),
                                                 alt: file.alt || '',
                                                 extension: file.extension[0],
                                                 default: file.default,

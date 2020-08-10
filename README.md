@@ -48,4 +48,4 @@ You can edit this file manually, an example of the different possible properties
 
 
 ## License
-AquilaCMS is licensed under OSL3. 
+AquilaCMS is licensed under OSL3.
