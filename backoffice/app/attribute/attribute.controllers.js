@@ -229,19 +229,18 @@ AttributeControllers.controller("AttributeDetailCtrl", [
 
                 data.update = true;
                 data._type = $scope._type;
-                AttributesV2.save(data, function (res) {
-                    console.log(res._id)
+                 AttributesV2.save(data, function (res) {
                     if (res._id) {
                         toastService.toast("success", "Sauvegarde effectuée");
                         if (isQuit) {
                             if($routeParams.code) {
-                                $location.path(`/${$scope._type}/setAttributes/${$routeParams.code}`);
+                                return $location.path(`/${$scope._type}/setAttributes/${$routeParams.code}`);
                             } else {
-                                $location.path(`/${$scope._type}/attributes`); 
+                                return $location.path(`/${$scope._type}/attributes`); 
                             }                           
                         }
                         if($routeParams.attributeCode === "new") {
-                            $location.path(`/${$scope._type}/attributes/${res.code}`);
+                            return $location.path(`/${$scope._type}/attributes/${res.code}`);
                         }
                     } else {
                         toastService.toast("danger", "Une erreur est survenue");

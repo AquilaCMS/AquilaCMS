@@ -70,7 +70,8 @@ exports.restart = function () {
             // Start a script on the current folder
             pm2.restart('server.js', function (err) {
                 if (err) {
-                    if (err.message === 'process or namespace not found') { // Il n'y a pas PM2 d'installé, on ne leve pas d'erreur explicite (reject)
+                    // Il n'y a pas PM2 d'installé, on ne leve pas d'erreur explicite (reject)
+                    if (err.message === 'process or namespace not found') {
                         console.error('Please restart manually');
                         return resolve('ManualRestart');
                     }

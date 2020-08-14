@@ -4,7 +4,7 @@
 
     "onlineBills": "Factures en ligne",
     "bill": "Facture",
-    "iencli": "Client",
+    "client": "Client",
     "date": "Date",
     "status": "Statut",
     "prixTTC": "Montant TTC",

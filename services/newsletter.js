@@ -15,11 +15,15 @@ exports.getNewsletter = async function (PostBody) {
 exports.getDistinctNewsletters = async function (PostBody) {
     const newsletterNames = await Newsletters.find(PostBody.filter).distinct('segment.name');
     const newsletterNamesCount = newsletterNames.length;
-    return {
-        datas : newsletterNames.sort((a, b) => (PostBody.sort.reverse ? b - a : a - b))
-            .slice((PostBody.page - 1 ) * PostBody.limit, PostBody.limit),
-        count : newsletterNamesCount
-    };
+    const newsCount = [];
+    const datas = newsletterNames.sort((a, b) => (PostBody.sort.reverse ? b - a : a - b)).slice((PostBody.page - 1) * PostBody.limit, PostBody.limit);
+
+    for (const element of datas) {
+        const a = await queryBuilder.find({PostBody : {filter: {'segment.name': element}}
+        });
+        newsCount.push({name: element, count: a.count});
+    }
+    return {datas: newsCount, count: newsletterNamesCount};
 };
 
 exports.getNewsletterByEmail = async function (email) {

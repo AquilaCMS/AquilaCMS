@@ -242,7 +242,8 @@
                         <span translate>bundle.product.idFirst</span>
                     </span>
                     <div class="form-group" style="margin-top: 20px;" ng-show="product.code != null">
-                        <ns-attributes class="col-sm-11" ng-if="att.type" ng-repeat="att in product.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
+                        <ns-attributes ng-show="product.attributes && product.attributes.length" class="col-sm-11" ng-if="att.type" ng-repeat="att in product.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
+                        <p ng-show="!product.attributes || !product.attributes.length" class="col-sm-11" style="margin-top: 20px;"><em>Pas d'attributes</em></p>
                     </div>
                 </div>
 

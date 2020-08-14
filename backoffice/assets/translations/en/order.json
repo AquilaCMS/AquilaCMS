@@ -24,7 +24,7 @@
         "paiement": "Payment",
         "bill": "Bill",
         "edit": "Edit",
-        "iencli": "Customer",
+        "client": "Customer",
         "histo": "history",
         "compteCli": "Customer Account",
         "comments": "Comments",

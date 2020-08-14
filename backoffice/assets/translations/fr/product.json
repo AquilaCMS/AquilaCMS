@@ -31,7 +31,8 @@
         "descLg": "Description longue",
         "titleDescCt": "Titre description courte",
         "descCt": "Description courte",
-        "canon": "Canonical"
+        "canon": "Canonical",
+        "noAttribs": "Pas d'attributs"
     },
     "marketing": {
         "fournisseur": "Fournisseur",
@@ -110,5 +111,13 @@
         "reset_filters": "Réinitialiser les filtres",
         "edit":"Éditer",
         "action":"Action"
+    }, 
+    "virtual": {
+        "clientEmail": "Email client",
+        "lastDownload": "Last download",
+        "firstDownload": "First download",
+        "countDownloads": "Download count",
+        "downloadHistory": "Download history",
+        "email": "Email"
     }
 }

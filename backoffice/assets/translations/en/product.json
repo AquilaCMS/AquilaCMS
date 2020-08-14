@@ -31,7 +31,8 @@
         "descLg": "Long description",
         "titleDescCt": "Short description title",
         "descCt": "Short description",
-        "canon": "Canonical"
+        "canon": "Canonical",
+        "noAttribs": "No attributes"
     },
     "marketing": {
         "fournisseur": "Supplier",
@@ -110,5 +111,13 @@
         "reset_filters": "Reinit filters",
         "edit": "Edit",
         "action": "Action"
+    },
+    "virtual": {
+        "clientEmail": "Email client",
+        "lastDownload": "Dernier telechargement",
+        "firstDownload": "Premier telechargement",
+        "countDownloads": "Nombre de fois telechargé",
+        "downloadHistory": "Téléchargement",
+        "email": "Email"
     }
 }

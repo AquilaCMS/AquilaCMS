@@ -38,11 +38,11 @@
                         {{config.appUrl}}{{media.link}}&nbsp;
                     </td>
                     <td>
-                        <img ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
-                        <i style="color: black;" ng-if="!media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')" class="fa fa-file-text fa-lg i-style"></i>
+                        <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                        <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
                     </td>
                     <td style="width:280px;">
-                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')">{{"medias.medias.cpLien" | translate}}</button>
+                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="isPicture(media)">{{"medias.medias.cpLien" | translate}}</button>
                         <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
                             <i class="ico-trash"></i>
                             <span class="text" translate>medias.medias.delete</span>
@@ -81,11 +81,11 @@
                         {{config.appUrl}}{{media.link}}&nbsp;
                     </td>
                     <td>
-                        <img ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
-                        <i style="color: black;" ng-if="!media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')" class="fa fa-file-text fa-lg i-style"></i>
+                        <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                        <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
                     </td>
                     <td style="width:280px;">
-                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')">{{"medias.medias.cpLien" | translate}}</button>
+                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="isPicture(media)">{{"medias.medias.cpLien" | translate}}</button>
                         <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
                             <i class="ico-trash"></i>
                             <span class="text" translate>medias.medias.delete</span>
@@ -115,25 +115,6 @@
             </input>
         </div>
     </div>
-
-
-
-    <!-- <input id="copy-link" type="text" ng-model="link"> -->
-    <!-- <style>
-        #copy-link {
-            /* background-color: transparent;
-            color: transparent;
-            border-color: transparent; */
-            height: 25px;
-            width:100%;
-        }
-        #copy-link::selection, #copy-link::-moz-selection {
-            background: transparent;
-        }
-        #copy-link::-moz-selection {
-            background: transparent;
-        }
-    </style> -->
 
 </ns-box>
 

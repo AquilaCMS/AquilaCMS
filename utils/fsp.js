@@ -172,23 +172,32 @@ const lstat = (path) => {
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
  * @param {string | Buffer | URL} dest A path to a file or directory.
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
+ * @param {string[]} except A path to a file or directory.
+ * Array of names for excepted files and folders
  */
-const copyRecursiveSync = async (src, dest, override = false) => {
+const copyRecursiveSync = async (src, dest, override = false, except = []) => {
+    if (except !== [] && except.includes(src.split('\\')[src.split('\\').length - 1])) {
+        return;
+    }
     try {
         if (await access(src) && fs.statSync(src).isDirectory()) {
-            if (!await access(dest)) {
+            if (!(await access(dest))) {
                 await mkdir(dest, {recursive: true});
             }
             (await readdir(src)).forEach(async (childItemName) => {
                 await copyRecursiveSync(
                     path.join(src, childItemName),
                     path.join(dest, childItemName),
-                    override
+                    override,
+                    except
                 );
             });
-        } else if (!await access(dest, fs.constants.W_OK)) {
-            if (!await access(path.dirname(dest), fs.constants.W_OK)) await mkdir(path.dirname(dest), {recursive: true});
+        } else if (!(await access(dest, fs.constants.W_OK))) {
+            if (!(await access(path.dirname(dest), fs.constants.W_OK))) {
+                await mkdir(path.dirname(dest), {recursive: true});
+            }
             if (override) {
+                console.log(src);
                 await copyFile(src, dest);
             } else {
                 try {

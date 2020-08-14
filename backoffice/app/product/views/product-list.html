@@ -123,7 +123,7 @@
                 </tr>
             </tbody>
         </table>
-        <pagination total-items="totalItems" page="currentPage" on-select-page="getProducts(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
+        <pagination ng-if="totalItems > nbItemsPerPage" total-items="totalItems" page="currentPage" on-select-page="getProducts(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                     rotate="false"></pagination>
     </div>
 </ns-box>

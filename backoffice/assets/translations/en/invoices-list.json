@@ -4,7 +4,7 @@
 
     "onlineBills": "Online bills",
     "bill": "Bill",
-    "iencli": "Customer",
+    "client": "Customer",
     "date": "Date",
     "status": "Status",
     "prixTTC": "ATI Price",

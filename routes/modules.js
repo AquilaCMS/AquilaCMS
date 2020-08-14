@@ -81,7 +81,7 @@ async function setModuleConfigById(req, res, next) {
 const uploadModule = async (req, res, next) => {
     req.setTimeout(300000);
     try {
-        const moduleInstalled = await serviceModule.initModule(req.files[0].originalname, req.files[0].path);
+        const moduleInstalled = await serviceModule.initModule(req.files[0]);
         return res.json(moduleInstalled);
     } catch (error) {
         return next(error);
