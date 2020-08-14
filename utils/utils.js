@@ -207,6 +207,7 @@ const toET = (ATIPrice, VAT) => {
 
 const getObjFromDotStr = (obj, str) => {
     return str.split('.').reduce((o, i) => {
+        if (!o[i]) return '';
         if (o[i] instanceof mongoose.Types.ObjectId) {
             return (o[i]).toString();
         }

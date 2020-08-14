@@ -1125,6 +1125,9 @@ const getProductsSearchObj = async (body, params) => {
                     nameCode = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
                     filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
                 }
+                if (searchObj.type) {
+                    filter.type = searchObj.type;
+                }
 
                 if (searchObj.translation && searchObj.translation.name !== '') {
                     return Languages.find({}).then(function (_languages) {

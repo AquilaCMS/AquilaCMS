@@ -46,7 +46,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
 
 StaticPageControllers.controller("StaticPageNewCtrl", [
     "$scope", "$location", 'StaticV2', "toastService", function ($scope, $location, StaticV2, toastService) {
-        $scope.static = {type: "page"};
+        $scope.static = {type: "page", group: ""};
         $scope.groups = [];
         $scope.selectedDropdownItem = "";
         

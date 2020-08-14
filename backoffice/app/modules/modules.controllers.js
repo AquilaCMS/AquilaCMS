@@ -73,7 +73,6 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                         }
                     }
                 }).result.then((function(result) {
-                    console.log(result);
                     $scope.showModuleLoading = true;
                     $http.post('/v2/modules/toggle', {
                         'idModule': id,

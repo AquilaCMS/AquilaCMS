@@ -9,6 +9,7 @@ ProductVirtualRoutes.config(['$routeProvider',
                 controller  : 'ProductVirtualCtrl',
                 resolve     : {
                     loggedin : checkLoggedin,
+                    checkAccess: checkAccess("products")
                 }
             });
     }]);

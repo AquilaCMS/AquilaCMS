@@ -2,27 +2,31 @@
     <div class="box-content">
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
 
-            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" style="width:60%">
                 <thead>
                     <tr role="row">
-                        <th class="col-sm-1" style="text-align: center">
+                        <th class="col-sm-6" style="text-align: center">
                             <a ng-click="sort.type = 'segment.name'; sort.reverse = !sort.reverse; getNewsletters(1);">
                                 <span translate>ns.list.name</span>
                                 <span ng-show="sort.type == 'segment.name' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'segment.name' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
-                    </tr>
-                    <tr role="row">
-                        <th style="text-align: center">
-                            <input class="form-control" ng-model="filter['segment.name']" ng-model-options="{debounce: 500}" ng-change="getNewsletters(1)" />
+                        <th class="col-sm-3" style="text-align: center">
+                            <a ng-click="sort.type = 'segment.name'; sort.reverse = !sort.reverse; getNewsletters(1);">
+                                <span translate>ns.list.numberMail</span>
+                                <span ng-show="sort.type == 'segment.name' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'segment.name' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
                         </th>
                     </tr>
                 </thead>
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
-                    <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToNewsletterDetails(newsletter)" ng-repeat="newsletter in newsletters">
-                        <td>{{newsletter}}</td>
+                    <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToNewsletterDetails(newsletter.name)" ng-repeat="newsletter in newsletters">
+                        <td>{{newsletter.name}}</td>
+                        <td>{{newsletter.count}}</td>
                     </tr>
+                    
                 </tbody>
             </table>
             <pagination total-items="totalItems" page="currentPage" on-select-page="getNewsletters(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"

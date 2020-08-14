@@ -16,24 +16,24 @@ const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFields);
 
 /**
- * @description retourne les modules en fonction du PostBody
+ * retourne les modules en fonction du PostBody
  */
 const getModules = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
 /**
- * @description retourne le module en fonction du PostBody
+ * retourne le module en fonction du PostBody
  */
 const getModule = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
 /**
- * @description Permet de modifier la configuration (champ conf) d'un module
- * @return Retourne la configuration du module la review venant d'étre modifié
+ * Permet de modifier la configuration (champ conf) d'un module
  * @param body : body de la requête, il permettra de mettre à jour la configuration du module
  * @param _id : string : ObjectId de la configuration du module a modifié
+ * @returns Retourne la configuration du module la review venant d'étre modifié
  */
 const setModuleConfigById = async (_id, config) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
@@ -44,9 +44,9 @@ const setModuleConfigById = async (_id, config) => {
 };
 
 /**
- * @description Permet récupérer la configuration (champ conf) d'un module
- * @return Retourne la configuration du module
+ * Permet récupérer la configuration (champ conf) d'un module
  * @param name (string) nom/code du module
+ * @returns Retourne la configuration du module
  * @deprecated
  */
 const getConfig = async (name) => {
@@ -55,10 +55,10 @@ const getConfig = async (name) => {
 };
 
 /**
- * @description Permet définir la configuration (champ conf) d'un module
- * @return {Promise<*>} Retourne la nouvelle configuration du module
+ * Permet définir la configuration (champ conf) d'un module
  * @param name {string} nom/code du module
  * @param newConfig {object} la nouvelle configuration
+ * @returns {Promise<*>} Retourne la nouvelle configuration du module
  * @deprecated
  */
 const setConfig = async (name, newConfig) => {
@@ -66,7 +66,7 @@ const setConfig = async (name, newConfig) => {
 };
 
 /**
- * @description Permet modifier une partie de la configuration (champ conf) d'un module
+ * Permet modifier une partie de la configuration (champ conf) d'un module
  * @param name {string} nom/code du module
  * @param field {string} le champ à modifier
  * @param value {*} la valeur définir dans le champ
@@ -80,104 +80,132 @@ const setPartialConfig = async (name, field, value) => {
 };
 
 /**
- * Module : dezip module et copie dans /modules, insert en BDD
- * @param {string} originalname
- * @param {string} filepath
+ * unzip module in `modules` folder
+ * and save module added in database
+ * @param {Object} zipFile file information from express
+ * @param {string} file.destination
+ * @param {string} file.encoding
+ * @param {string} file.fieldname
+ * @param {string} file.filename
+ * @param {string} file.mimetype
+ * @param {string} file.originalname
+ * @param {string} file.path
+ * @param {string} file.size
  */
-const initModule = async (originalname, filepath) => {
-    if (path.extname(originalname) === '.zip') {
-        console.log('Upload module...');
-        const target_path      = 'modules/';
-        const target_path_full = path.join(target_path, originalname);
-
-        // move the file from the temporary location to the intended location
-        if (!await fs.access(target_path)) {
-            await fs.mkdir(target_path);
-        }
-        await fs.copyFile(filepath, target_path_full);
-        await fs.unlink(filepath);
-
-        // Unzip
-        console.log('Unziping module...');
-        const AdmZip = require('adm-zip');
-        try {
-            const zip = new AdmZip(target_path_full);
-            let found = false;
-            zip.getEntries().forEach((zipEntry) => {
-                if (
-                    zipEntry.entryName === originalname.replace('.zip', '/')
-                    || zipEntry.entryName.startsWith(originalname.replace('.zip', '/'))
-                ) {
-                    found = true;
-                }
-            });
-            if (!found) {
-                throw new Error('missing main folder in zip');
-            }
-            zip.extractAllTo(target_path, /* overwrite */true);
-            console.log('Unzip module ok, reading info.json...');
-            const data = await fs.readFile(`${target_path_full.replace('.zip', '/')}info.json`);
-            console.log('Installing module...');
-            const info   = data.toString();
-            const jInfo  = JSON.parse(info);
-            const myModule = await Modules.findOne({name: jInfo.info.name});
-
-            const newModule = await Modules.findOneAndUpdate({name: jInfo.info.name}, {
-                name                     : jInfo.info.name,
-                description              : jInfo.info.description,
-                version                  : jInfo.info.version,
-                path                     : target_path_full.replace('.zip', '/'),
-                url                      : jInfo.info.url,
-                cronNames                : jInfo.info.cronNames,
-                mailTypeCode             : jInfo.info.mailTypeCode,
-                loadApp                  : jInfo.info.loadApp,
-                loadTranslationBack      : jInfo.info.loadTranslationBack,
-                loadTranslationFront     : jInfo.info.loadTranslationFront,
-                packageDependencies      : jInfo.info.packageDependencies,
-                moduleDependencies       : jInfo.info.moduleDependencies,
-                component_template_front : jInfo.info.component_template_front || null,
-                files                    : jInfo.info.files || [],
-                type                     : jInfo.info.type,
-                active                   : !!(myModule && myModule.active)
-            }, {upsert: true, new: true});
-
-            // On teste si les fonctions init, initAfter, uninit et rgpd sont présentes
-            const pathUninit = path.join(global.appRoot, '..', target_path_full.replace('.zip', '/'), 'uninit.js');
-            try {
-                await fs.access(pathUninit, fs.constants.F_OK);
-            } catch (err) {
-                console.error(`Uninit file is missing for : ${jInfo.info.name}`);
-            }
-
-            const pathInit = path.join(global.appRoot, '..', target_path_full.replace('.zip', '/'), 'init.js');
-            try {
-                await fs.access(pathInit, fs.constants.F_OK);
-            } catch (err) {
-                console.error(`Init file is missing for : ${jInfo.info.name}`);
-            }
-
-            const pathInitAfter = path.join(global.appRoot, '..', target_path_full.replace('.zip', '/'), 'initAfter.js');
-            try {
-                await fs.access(pathInitAfter, fs.constants.F_OK);
-            } catch (err) {
-                console.error(`InitAfter file is missing for : ${jInfo.info.name}`);
-            }
-
-            const pathRgpd = path.join(global.appRoot, '..', target_path_full.replace('.zip', '/'), 'rgpd.js');
-            try {
-                await fs.access(pathRgpd, fs.constants.F_OK);
-            } catch (err) {
-                console.error(`RGPD file is missing for : ${jInfo.info.name}`);
-            }
-
-            console.log('Module installed');
-            return newModule;
-        } catch (err) {
-            modulesUtils.errorModule(target_path_full);
-            throw err;
-        }
+const initModule = async (zipFile) => {
+    const {originalname, path: filepath} = zipFile;
+    if (path.extname(originalname) !== '.zip') {
+        throw NSErrors.InvalidFile;
     }
-    throw NSErrors.InvalidFile;
+    console.log('Upload module...');
+    const moduleFolder = 'modules/';
+    const zipFilePath = `${moduleFolder}/${originalname}`;
+    const extractZipFilePath = zipFilePath.replace('.zip', '/');
+
+    // move the file from the temporary location to the intended location
+    if (!fs.existsSync(path.resolve(global.appRoot, moduleFolder))) {
+        await fs.mkdir(path.resolve(global.appRoot, moduleFolder));
+    }
+    await fs.copyFile(
+        path.resolve(global.appRoot, filepath),
+        path.resolve(global.appRoot, zipFilePath)
+    );
+    await fs.unlink(path.resolve(global.appRoot, filepath));
+
+    try {
+        const zip = new AdmZip(zipFilePath);
+        let found = false;
+        for (const zipEntry of zip.getEntries()) {
+            if (
+                zipEntry.entryName === originalname.replace('.zip', '/')
+                    || zipEntry.entryName.startsWith(originalname.replace('.zip', '/'))
+            ) {
+                found = true;
+            }
+        }
+        if (!found) {
+            throw NSErrors.ModuleMainFolder;
+            // throw new Error('missing main folder in zip');
+        }
+        console.log('Unziping module...');
+        await new Promise((resolve, reject) => {
+            zip.extractAllToAsync(moduleFolder, true, (err) => {
+                if (err) {
+                    console.error(err);
+                    reject();
+                }
+                resolve();
+            });
+        });
+        console.log('Unzip module ok, reading info.json...');
+        const infoPath = path.resolve(extractZipFilePath, 'info.json');
+        if (!fs.existsSync(infoPath)) {
+            throw NSErrors.ModuleInfoNotFound;
+        }
+        let infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'));
+        infoFile = infoFile.toString();
+        const {info} = JSON.parse(infoFile);
+        console.log('Installing module...');
+
+        const myModule = await Modules.findOne({name: info.name});
+        const newModule = await Modules.findOneAndUpdate({name: info.name}, {
+            name                     : info.name,
+            description              : info.description,
+            version                  : info.version,
+            path                     : extractZipFilePath,
+            url                      : info.url,
+            cronNames                : info.cronNames,
+            mailTypeCode             : info.mailTypeCode,
+            loadApp                  : info.loadApp,
+            loadTranslationBack      : info.loadTranslationBack,
+            loadTranslationFront     : info.loadTranslationFront,
+            packageDependencies      : info.packageDependencies || {},
+            moduleDependencies       : info.moduleDependencies,
+            component_template_front : info.component_template_front || null,
+            files                    : info.files || [],
+            type                     : info.type,
+            versionAquila            : info.versionAquila,
+            active                   : !!(myModule && myModule.active)
+        }, {upsert: true, new: true});
+
+        // On teste si les fonctions init, initAfter, uninit et rgpd sont présentes
+        const pathUninit = path.join(global.appRoot, extractZipFilePath, 'uninit.js');
+        if (!fs.existsSync(pathUninit)) {
+            console.error(`Uninit file is missing for : ${info.name}`);
+        }
+
+        const pathInit = path.join(global.appRoot, extractZipFilePath, 'init.js');
+        if (!fs.existsSync(pathInit)) {
+            console.error(`Init file is missing for : ${info.name}`);
+        }
+
+        const pathInitAfter = path.join(global.appRoot, extractZipFilePath, 'initAfter.js');
+        if (!fs.existsSync(pathInitAfter)) {
+            console.error(`InitAfter file is missing for : ${info.name}`);
+        }
+
+        const pathRgpd = path.join(global.appRoot, extractZipFilePath, 'rgpd.js');
+        if (!fs.existsSync(pathRgpd)) {
+            console.error(`RGPD file is missing for : ${info.name}`);
+        }
+
+        console.log('Module installed');
+        return newModule;
+    } catch (err) {
+        try {
+            console.log('removing zip file in module folder...');
+            await fs.unlink(zipFilePath);
+        } catch (err) {
+            console.error(err);
+        }
+        try {
+            console.log('removing file in module folder...');
+            await fs.deleteRecursiveSync(extractZipFilePath);
+        } catch (err) {
+            console.error(err);
+        }
+        throw err;
+    }
 };
 
 const checkDependenciesAtInstallation = async (idModule) => {
@@ -445,15 +473,15 @@ const activateModule = async (idModule, toBeChanged) => {
 
     if (myModule.loadTranslationBack) {
         console.log('Loading back translation for module...');
-        const copy  = path.resolve(global.appRoot, `backoffice/assets/translations/modules/${myModule.name}`);
-        const copyF = path.resolve(global.appRoot, `modules/${myModule.name}/translations/back/`);
-        if (await fs.access(copyF, fs.constants.W_OK)) {
+        const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/back');
+        const dest  = path.resolve(global.appRoot, 'backoffice/assets/translations/modules', myModule.name);
+        if (fs.existsSync(src)) {
             try {
-                await fs.copyRecursiveSync(copyF, copy, true);
+                await fs.copyRecursiveSync(src, dest, true);
             } catch (err) {
                 console.error(err);
             }
-            copyTab[1] = copy;
+            copyTab[1] = dest;
         }
     }
 
@@ -461,17 +489,16 @@ const activateModule = async (idModule, toBeChanged) => {
         console.log('Loading front translation for module...');
         const {currentTheme} = global.envConfig.environment;
         const files = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
-        files.splice(files.indexOf('index.js'), 1);
         for (let i = 0; i < files.length; i++) {
-            const copy  = path.resolve(global.appRoot, `themes/${currentTheme}/assets/i18n/${files[i]}/modules/${myModule.name}`);
-            const copyF = path.resolve(global.appRoot, `modules/${myModule.name}/translations/front/${files[i]}/`);
-            if (await fs.access(copyF, fs.constants.W_OK)) {
+            const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/front', files[i]);
+            const dest  = path.resolve(global.appRoot, 'themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
+            if (fs.existsSync(src, fs.constants.W_OK)) {
                 try {
-                    await fs.copyRecursiveSync(copyF, copy, true);
+                    await fs.copyRecursiveSync(src, dest, true);
                 } catch (err) {
                     console.error(err);
                 }
-                copyTab[i + 2] = copy;
+                copyTab[i + 2] = dest;
             }
         }
     }
@@ -490,42 +517,59 @@ const activateModule = async (idModule, toBeChanged) => {
             const allModulesTheme = await modulesUtils.cleanAndToBeChanged(myModule.packageDependencies.theme, toBeChanged.theme);
             if (allModulesTheme.length > 0) {
                 console.log('Installing dependencies of the module in theme...');
-                await packageManager.execCmd(`yarn add ${allModulesTheme.join(' ')}`, path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme));
+                await packageManager.execCmd(
+                    `yarn add ${allModulesTheme.join(' ')}`,
+                    path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
+                );
             }
         }
     }
 
     // Si le module doit importer des composants dans le front
-    await addOrRemoveThemeFiles(`modules/${myModule.name}/theme_components`, false);
+    await addOrRemoveThemeFiles(
+        path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
+        false,
+        myModule.type ? `type: '${myModule.type}'` : ''
+    );
     await myModule.updateOne({$push: {files: copyTab}, active: true});
     console.log('Module activated');
     return Modules.find({});
 };
 
 /**
- * Module : supprimer les fichiers (back & front), mettre en inactif le module, npm install back (dans aquila), npm install du theme (avec les modules actifs)
+ * Deactivate a module by id and delete file moved
+ * to the backoffice and the theme if exists
+ * @param {String} idModule
+ * @param {{api: {}, theme: {}}} toBeChanged
+ * @param {{api: {}, theme: {}}} toBeRemoved
  */
 const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
-    const myModule = await Modules.findOne({_id: idModule});
-    await modulesUtils.checkModuleDepencendiesAtUninstallation(myModule);
-    // Si le module doit importer des composants dans le front, alors on les supprimes dans le front
+    const _module = await Modules.findById(idModule);
+    if (!_module) {
+        throw NSErrors.ModuleNotFound;
+    }
+    await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
+    await removeModuleAddon(_module);
     try {
-        await removeModuleAddon(myModule);
-        await addOrRemoveThemeFiles(`${myModule.path}theme_components`, true);
+        await addOrRemoveThemeFiles(
+            path.resolve(global.appRoot, _module.path, 'theme_components'),
+            true,
+            _module.type ? `type: '${_module.type}'` : ''
+        );
     } catch (error) {
         console.error(error);
     }
 
     // Suppression des fichiers copiés
-    for (let i = 0; i < myModule.files.length; i++) {
-        if (await fs.access(myModule.files[i])) {
-            if ((await fs.lstatSync(myModule.files[i])).isDirectory()) {
-                require('rimraf')(myModule.files[i], (err) => {
+    for (let i = 0; i < _module.files.length; i++) {
+        if (await fs.access(_module.files[i])) {
+            if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
+                require('rimraf')(_module.files[i], (err) => {
                     if (err) console.error(err);
                 });
             } else {
                 try {
-                    await fs.unlink(myModule.files[i]);
+                    await fs.unlink(_module.files[i]);
                 } catch (err) {
                     console.error('Error: ', err);
                 }
@@ -677,23 +721,21 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
 
 /**
  * Fonction permettant de gérer l'ajout ou la suppression d'un module front
- * @param {string} pathModule chemin vers le composant front du module ex: "modules/mon-module-aquila/theme_components"
+ * @param {string} pathThemeComponents chemin vers le composant front du module ex: "modules/mon-module-aquila/theme_components"
  * @param {boolean} toRemove si true alors on supprime les fichiers de "themes/currentTheme/modules" ainsi que de "themes/currentTheme/list_modules"
  */
-const addOrRemoveThemeFiles = async (pathModule, toRemove) => {
+const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
     // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!(await fs.access(pathModule))) return;
+    if (!fs.existsSync(pathThemeComponents)) return;
     const currentTheme = global.envConfig.environment.currentTheme;
-    const resultDir    = await fs.readdir(pathModule);
-    for (let i = 0; i < resultDir.length; i++) {
-        const file = resultDir[i];
+    for (const file of await fs.readdir(pathThemeComponents)) {
         if (!file.startsWith('Module') || !file.endsWith('.js')) continue;
         if (toRemove) {
             const fileNameWithoutModule = file.replace('Module', '')
                 .replace('.js', '')
                 .toLowerCase();
-            await removeFromListModule(file, currentTheme, fileNameWithoutModule);
-            const filePath = path.resolve(`themes/${currentTheme}/modules/${file}`);
+            await removeFromListModule(file, currentTheme, fileNameWithoutModule, type);
+            const filePath = path.resolve(global.appRoot, 'themes', currentTheme, 'modules', file);
             if (fs.existsSync(filePath)) {
                 try {
                     await fs.unlink(filePath);
@@ -703,13 +745,12 @@ const addOrRemoveThemeFiles = async (pathModule, toRemove) => {
                 }
             }
         } else {
-            await setFrontModuleInTheme(pathModule, currentTheme);
+            await setFrontModuleInTheme(pathThemeComponents, currentTheme);
         }
     }
     // Rebuild du theme
     if (serverUtils.getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
-        packageManager.restart();
     }
 };
 
@@ -741,49 +782,56 @@ const removeImport = async (jsxModuleToImport, exportDefaultListModule, pathList
     exportDefaultListModule = exportDefaultListModule.replace(/\s+/g, '');
     // On replace par "" l'objet a supprimer de fichier
     const result            = exportDefaultListModule.replace(objectToRemove, '');
-    await fs.writeFile(pathListModules, `export default ${result}`, {flag: 'w'});
+    await fs.writeFile(pathListModules, `export default ${result}`);
 };
 
-const removeFromListModule = async (file, currentTheme, fileNameWithoutModule) => {
+const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, type) => {
     try {
-        const pathListModules = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
-        await fs.stat(pathListModules); // On verifie si pathListModules existe
-        const result                  = await fs.readFile(pathListModules, 'utf8');
-        const jsxModuleToImport       = `{ jsx: require('./${file}').default, code: 'aq-${fileNameWithoutModule}' },`;
-        const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
-        await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
+        const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
+        if (fs.existsSync(pathListModules)) {
+            const result = await fs.readFile(pathListModules, 'utf8');
+            const jsxModuleToImport = `{ jsx: require('./${file}').default, code: 'aq-${fileNameWithoutModule}', ${type} },`;
+            const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
+            await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
+        }
     } catch (error) {
         console.error(error);
     }
 };
 
-const removeModuleAddon = async (myModule) => {
-    if (!myModule) return;
-    try {
-        const uninit = require(path.join(global.appRoot, myModule.path, 'uninit'));
-        await new Promise((resolve, reject) => {
-            uninit(resolve, reject);
-        });
-    } catch (error) {
-        if (error.code !== 'MODULE_NOT_FOUND') throw error;
-    }
-    // Si c'est un module contenant un job alors on supprime le job dans la collection agendaJobs
-    if (myModule.cronNames && myModule.cronNames.length > 0) {
+/**
+ * call uninit in _module, remove cronNames and mailTypeCode
+ * @param {Modules} _module
+ */
+const removeModuleAddon = async (_module) => {
+    if (!_module) return;
+    const uninit = path.join(global.appRoot, _module.path, 'uninit.js');
+    if (fs.existsSync(uninit)) {
         try {
-            myModule.cronNames.forEach(async (cronName) => {
-                await require('./job').deleteModuleJobByName(cronName);
+            await new Promise((resolve, reject) => {
+                require(uninit)(resolve, reject);
             });
         } catch (error) {
-            console.error(error);
+            if (error.code !== 'MODULE_NOT_FOUND') throw error;
         }
     }
-    if (myModule.mailTypeCode && myModule.mailTypeCode.length > 0) {
-        try {
-            myModule.mailTypeCode.forEach(async (mailCode) => {
+    // Si c'est un module contenant un job alors on supprime le job dans la collection agendaJobs
+    if (_module.cronNames && _module.cronNames.length > 0) {
+        for (const cronName of _module.cronNames) {
+            try {
+                await require('./job').deleteModuleJobByName(cronName);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+    if (_module.mailTypeCode && _module.mailTypeCode.length > 0) {
+        for (const mailCode of _module.mailTypeCode) {
+            try {
                 await require('./mailType').deleteMailType(mailCode);
-            });
-        } catch (error) {
-            console.error(error);
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 };
@@ -794,7 +842,10 @@ const initComponentTemplate = async (model, component, moduleName) => {
         if (!elem.component_template || !elem.component_template.includes(component)) {
             let newComponentTemplate = elem.component_template || '';
             newComponentTemplate += component;
-            await mongoose.model(model).updateOne({_id: elem._id}, {$set: {component_template: newComponentTemplate}});
+            await mongoose.model(model).updateOne(
+                {_id: elem._id},
+                {$set: {component_template: newComponentTemplate}}
+            );
         }
     }
     console.log(`${moduleName}: Ajout du champ component_template = ${component} nombre de champs ajouté: ${elements.length}`);
@@ -805,7 +856,10 @@ const uninitComponentTemplate = async (model, component, moduleName, field) => {
     for (const elem of elements) {
         let newComponentTemplate = elem.component_template || '';
         newComponentTemplate = newComponentTemplate.replace(component, '');
-        await mongoose.model(model).updateOne({_id: elem._id}, {$unset: {[field]: ''}, $set: {component_template: newComponentTemplate}});
+        await mongoose.model(model).updateOne(
+            {_id: elem._id},
+            {$unset: {[field]: ''}, $set: {component_template: newComponentTemplate}}
+        );
     }
     console.log(`${moduleName}: Suppression du champ component_template = ${component} nombre de champs supprimé: ${elements.length}`);
 };

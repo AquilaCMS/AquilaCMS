@@ -97,12 +97,15 @@
                     <select ng-if="condition.type === 'select' && condition.attr === undefined && families[condition.target]"
                             name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
                             ng-change="onChangeField(condition.value)" ng-options="family.slug as family.name for family in families[condition.target]"></select>
-                    <select ng-if="condition.type === 'select' && condition.attr === undefined && values[condition.target]"
+                    <select ng-if="condition.type === 'select' && condition.attr === undefined && values[condition.target] && condition.target !== 'supplier_ref'"
                             name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
                             ng-change="onChangeField(condition.value)" ng-options="value for value in values[condition.target]"></select>
                     <select ng-if="condition.type === 'select' && condition.attr === 'multi' && values[condition.target]"
                             name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
                             ng-change="onChangeField(condition.value)" ng-options="value for value in values[condition.target]" multiple></select>
+                    <select ng-if="condition.type === 'select' && condition.target === 'supplier_ref' && values[condition.target]"
+                            name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"
+                            ng-change="onChangeField(condition.value)" ng-options="value._id as value.name for value in values[condition.target]"></select>
                     <!-- TODO
                             <select ng-if="condition.type === 'select' && condition.attr === 'multi'" name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value" ng-change="onChangeField(condition.value)" ng-options="value for value in values[condition.target]" multiple></select>
                             TODO -->

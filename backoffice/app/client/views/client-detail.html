@@ -41,7 +41,7 @@
                                             <label for="firstname" class="col-sm-2 control-label" translate>client.detail.prenom</label>
                                             <div class="col-sm-10">
                                                 <input type="text" class="form-control" id="firstname" name="firstname"
-                                                    ng-model="client.firstname" required />
+                                                    ng-model="client.firstname" />
                                                 <div class="ns-error-message" ng-show="form.firstname.$touched || form.nsSubmitted">
                                                     <div ng-show="form.firstname.$error.required" translate>client.detail.champRequis</div>
                                                 </div>
@@ -53,8 +53,7 @@
                                         <div class="col-sm-12">
                                             <label for="lastname" class="col-sm-2 control-label" translate>client.detail.nom</label>
                                             <div class="col-sm-10">
-                                                <input type="text" class="form-control" id="lastname" name="lastname" ng-model="client.lastname"
-                                                    required />
+                                                <input type="text" class="form-control" id="lastname" name="lastname" ng-model="client.lastname" />
                                                 <div class="ns-error-message" ng-show="form.lastname.$touched || form.nsSubmitted">
                                                     <div ng-show="form.lastname.$error.required" translate>client.detail.champRequis</div>
                                                 </div>
@@ -506,7 +505,8 @@
                     </div>
 
                     <div class="form-group" style="margin-top: 20px;">
-                        <ns-attributes class="col-sm-11" ng-if="att.type" ng-repeat="att in client.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
+                        <ns-attributes ng-show="client.attributes && client.attributes.length" class="col-sm-11" ng-if="att.type" ng-repeat="att in client.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
+                        <p ng-show="!client.attributes || !client.attributes.length" translate>product.general.noAttribs</p>
                     </div>
                 </div>
                 <div id="downloadHistory" class="tab-pane fade">

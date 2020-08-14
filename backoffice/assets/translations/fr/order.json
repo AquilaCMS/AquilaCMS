@@ -23,7 +23,7 @@
         "paiement": "Paiement",
         "bill": "Facture",
         "edit": "Editer",
-        "iencli": "Client",
+        "client": "Client",
         "histo": "historique",
         "compteCli": "Compte Client",
         "comments": "Commentaires",
