@@ -34,25 +34,6 @@
             $(this).closest('li').toggleClass('dropdown-open').siblings().removeClass('dropdown-open');
         });
 
-        function toggleDropdown(event)
-        {
-            if(!$(event.target).parents('li').find('.dropdown').length &&
-                !$(event.target).closest('.dropdown').length &&
-                !$(event.target).is('.nav-fixed > ul > li > a') &&
-                !$(event.target).is('.dropdown'))
-            {
-                // Wait until event bubbles to document
-                setTimeout(function ()
-                {
-                    $('.nav-fixed .parent').removeClass('expanded dropdown-open');
-                }, 10);
-            }
-        }
-
-        $('.content').on('mouseenter', toggleDropdown);
-
-        $doc.on('click touchstart', toggleDropdown);
-
         if (window.matchMedia("(min-width: 767px)").matches) {
             $('.btn-menu').click();
         }

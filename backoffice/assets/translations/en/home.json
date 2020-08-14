@@ -2,7 +2,7 @@
     "orders": "Orders",
     "payments": "Payments",
     "pdts": "Products",
-    "iencli": "Customers",
+    "client": "Customers",
     "pages": "Pages",
     "modules": "Plugins"
 }

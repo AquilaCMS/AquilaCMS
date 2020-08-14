@@ -1,4 +1,4 @@
-<form name="form" novalidate class="form-horizontal" ng-submit="save()" role="form"> <!--style="padding: 100px;"-->
+<form name="form" class="form-horizontal" ng-submit="save()" role="form"> <!--style="padding: 100px;"-->
     <ns-box data-title="medias.new.t1" title-icon="fa fa-file-image-o fa-lg" close-href="#/medias">
         <ns-buttons is-edit-mode="isEditMode" disable-save="disableSave" hide-save-and-quit="true" return-path="/medias" form="form">
             <div class="form-group">
@@ -22,13 +22,13 @@
                 <div class="col-sm-5" ng-show="routeId === 'new'">
                     <ns-upload-files multiple="false" type="media" entity="media" on-error="onErrorUploadMedia()"></ns-upload-files>
                 </div>
-                <div class="col-sm-5 img-responsive" ng-show="media.link.includes('.jpg') || media.link.includes('.png') || media.link.includes('.jpeg') || media.link.includes('.gif')">
+                <div class="col-sm-5 img-responsive" ng-show="isPicture(media)">
                     <br/> <br/>
                     <a class="btn btn-blue btn-with-icon" ng-click="copyLink(media)">{{"medias.medias.cpLien" | translate}}</a>
                     <br/> <br/>
                     <img ng-src="{{media.link}}" width="300" height="100">
                 </div>
-                <div class="col-sm-5 img-responsive" ng-show="media.link && !media.link.includes('.jpg') && !media.link.includes('.png') && !media.link.includes('.jpeg') && !media.link.includes('.gif')">
+                <div class="col-sm-5 img-responsive" ng-show="media.link && !isPicture(media)">
                     <br/> <br/>
                     <b>Lien du media : </b><a href="{{media.link}}" target="_blank">{{media.link}}</a>
                 </div>

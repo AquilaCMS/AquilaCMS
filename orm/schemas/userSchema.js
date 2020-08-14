@@ -135,7 +135,7 @@ const UserSchema = new Schema({
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});
 UserSchema.virtual('fullname').get(function () {
-    return `${this.firstname} ${this.lastname}`;
+    return `${this.firstname ? this.firstname : ''} ${this.lastname ? this.lastname : ''}`;
 });
 
 UserSchema.post('validate', async function () {

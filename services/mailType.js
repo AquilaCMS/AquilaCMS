@@ -31,7 +31,6 @@ exports.setMailType = async function (body, _id = null) {
 };
 
 exports.deleteMailType = async function (code) {
-    require('../utils/utils').tmp_use_route('MailTypeServices', 'deleteMailType');
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
     const doc = await MailType.findOneAndRemove({code});

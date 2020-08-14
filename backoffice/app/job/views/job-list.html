@@ -46,10 +46,10 @@
                     <td class=" ">{{job.data.comment}}</td>
                     <td class=" ">{{job.repeatInterval}}</td>
                     <td class=" ">
-                        <span ng-if="!job.disabled">{{(job.nextRunAt | date:'medium')}}</span>
+                        <span ng-if="!job.disabled">{{(job.nextRunAt | date:'yyyy-MM-dd HH:mm:ss Z')}}</span>
                         <span ng-if="job.disabled" translate>job.list.paused</span>
                     </td>
-                    <td class=" ">{{job.lastRunAt | date:'medium'}}</td>
+                    <td class=" ">{{job.lastRunAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                 </tr>
             </tbody>
         </table>

@@ -41,8 +41,8 @@ SupplierControllers.controller("SupplierNewCtrl", [
             }
           
         SuppliersV2.save(data, function (response) {
-                console.log("Supplier Saved!");
-                $location.path("/suppliers");
+                console.log("Supplier Saved!", response);
+                $location.path("/suppliers/"+response.code);
             }, function (err) {
                 console.error(err);
                 toastService.toast("danger", "Une erreur interne est survenue.");

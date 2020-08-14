@@ -1,5 +1,6 @@
-const path                         = require('path');
 const mongoose                     = require('mongoose');
+const nextBuild                    = require('next/dist/build').default;
+const path                         = require('path');
 const fs                           = require('../utils/fsp');
 const packageManager               = require('../utils/packageManager');
 const encryption                   = require('../utils/encryption');
@@ -300,7 +301,7 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        await packageManager.execSh(path.normalize('./node_modules/next/dist/bin/next'), ['build', path.normalize(`./themes/${theme}`)], './');
+        await nextBuild(path.resolve(global.appRoot, 'themes', theme));
     } catch (err) {
         if (global.envFile.devMode) {
             console.error('Enable to build theme because of DevMode');
@@ -312,7 +313,12 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
     if (i18nInstance) {
         await require('../utils/translation').initI18n(i18nInstance, ns);
         server.use(i18nextMiddleware.handle(i18nInstance));
-        server.use('/locales', express.static(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'assets/i18n')));
+        server.use('/locales', express.static(path.join(
+            global.appRoot,
+            'themes',
+            global.envConfig.environment.currentTheme,
+            'assets/i18n'
+        )));
     }
 };
 

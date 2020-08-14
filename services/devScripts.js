@@ -11,8 +11,8 @@ exports.createModelData = async () => {
             schemas.push({collection: modelName, datas: model});
         }
     }
-
-    if (!fs.access(path.join(themeFolder, '/demoDatas/'))) {
+    const exist = await !fs.access(path.join(themeFolder, '/demoDatas/'));
+    if (!exist) {
         await fs.ensureDir(path.join(themeFolder, '/demoDatas/'));
     }
     // eslint-disable-next-line guard-for-in
@@ -44,6 +44,8 @@ exports.createModelData = async () => {
 
     await fs.copyRecursiveSync(
         photoPath,
-        path.join(themeFolder, '/demoDatas/files')
+        path.join(themeFolder, '/demoDatas/files'),
+        false,
+        ['cache']
     );
 };

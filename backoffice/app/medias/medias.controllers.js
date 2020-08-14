@@ -90,6 +90,12 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         $scope.mediaDetails = (media) => {
             $location.path('/medias/' + media._id)
         }
+        $scope.isPicture = function(media) {
+            if(media.link.match(new RegExp("jpg|jpeg|png|gif|svg", 'i'))) {
+                return true
+            }
+            return false
+        }
     }]);
 
 MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", 
@@ -162,6 +168,12 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             };
     
             $scope.filterDropdown();
+        }
+        $scope.isPicture = function(media) {
+            if(media.link.match(new RegExp("jpg|jpeg|png|gif|svg", "i"))) {
+                return true
+            }
+            return false
         }
 
         if($routeParams.id !== 'new') {

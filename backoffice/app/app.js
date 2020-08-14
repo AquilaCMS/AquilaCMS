@@ -81,7 +81,7 @@ var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeou
 {
     // Initialize a new promise
     var deferred = $q.defer();
-    
+
     $http.get("v2/auth/isauthenticated").then(function (resp)
     {
         if (!$rootScope.demoMode){
@@ -106,7 +106,7 @@ var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeou
             $window.location.href = $window.location.pathname + "/login";
         }, 0);
     });
-    
+
     return deferred.promise;
 };
 //================================================

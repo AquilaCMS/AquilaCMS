@@ -1115,12 +1115,13 @@ adminCatagenDirectives.directive("nsRule", [
                 condType: "="
             },
             replace: true,
-            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope)
+            controller: function ($scope, AttributesV2, FamilyV2, $modal, $element, $rootScope, SuppliersV2, TrademarksV2)
             {
                 var langs = [];
 
                 $scope.families = {};
                 $scope.values = {};
+                $scope.suppliers = []
                 $scope.compare = [
                     {value: "contains", translate: "ns.contains"},
                     {value: "ncontains", translate: "ns.ncontains"},
@@ -1152,6 +1153,12 @@ adminCatagenDirectives.directive("nsRule", [
                 {
                     // on recup les univers
                     $scope.attributesClassed = [];
+                    SuppliersV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                        $scope.values.supplier_ref = response.datas;
+                    })
+                    TrademarksV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function(response) {
+                        $scope.values['trademark.name'] = response.datas.map(tm => tm.name);
+                    })
                     AttributesV2.list({PostBody: {filter: {usedInRules: true}, structure: '*', limit: 99}}, function (response)
                     {
                         response.datas.map(function (element)
@@ -1327,14 +1334,14 @@ adminCatagenDirectives.directive("nsRule", [
                                 name: '_id'
                             },
                             {
-                                value: "trademark",
-                                type: "text",
+                                value: "trademark.name",
+                                type: "select",
                                 params: {},
                                 name: 'trademark'
                             },
                             {
                                 value: "supplier_ref",
-                                type: "text",
+                                type: "select",
                                 params: {},
                                 name: 'supplier_ref'
                             },
@@ -1955,7 +1962,6 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             }
                                         });
                                     }
-                                    debugger;
                                     $scope.up.then(function (response) {
                                         var index = $scope.files.map(function (item) {
                                             return item.nameModified.replace(/[^A-Z0-9]+/ig, "_");

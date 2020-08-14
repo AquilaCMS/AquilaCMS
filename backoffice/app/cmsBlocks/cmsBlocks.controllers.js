@@ -76,7 +76,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 $scope.getGroups()
             });
         } else {
-            $scope.cmsBlock = {};
+            $scope.cmsBlock = {group: ""};
             $scope.selectedDropdownItem = "";
 
             $scope.getGroups()

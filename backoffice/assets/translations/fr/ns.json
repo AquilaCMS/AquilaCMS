@@ -58,7 +58,8 @@
     "lt": "Plus petit ou egal à",
     "list": {
         "t1": "Newsletter",
-        "name": "Nom"
+        "name": "Nom",
+        "numberMail": "Nombre d'email"
     },
     "details": {
         "infos": "Informations",

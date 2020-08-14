@@ -8,7 +8,7 @@ const ModulesSchema = new Schema({
     path                 : {type: String},
     url                  : {type: String},
     cronNames            : [String],
-    mailTypeCode         : [{type: String}],
+    mailTypeCode         : [String],
     loadApp              : {type: Boolean, default: true},
     loadTranslationBack  : {type: Boolean, default: false},
     loadTranslationFront : {type: Boolean, default: false},
@@ -16,11 +16,11 @@ const ModulesSchema = new Schema({
     active               : {type: Boolean, default: false},
     config               : {type: Object, default: {}},
     packageDependencies  : {
-        theme : {type: Array, default: []},
-        api   : {type: Array, default: []}
+        theme : {type: [String], default: []},
+        api   : {type: [String], default: []}
     },
     type                     : {type: String},
-    moduleDependencies       : [String],
+    moduleDependencies       : {type: [String], default: []},
     component_template_front : {type: String, default: null}
 });
 
