@@ -335,7 +335,7 @@ exports.uploadFiles = async (body, files) => {
             result.translation[body.lang].attachments = [];
         }
 
-        result.translation[body.lang].attachments.push({path: target_path_full, name: files[0].originalname});
+        result.translation[body.lang].attachments.push({path: target_path_full, name: files[0]});
         await Mail.updateOne({_id: body._id}, {translation: result.translation});
         return result.translation;
     }

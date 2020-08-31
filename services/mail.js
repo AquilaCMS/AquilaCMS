@@ -2,12 +2,15 @@ const nodemailer       = require('nodemailer');
 const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const url              = require('url');
+const path             = require('path');
 const ServiceLanguages = require('./languages');
 const encryption       = require('../utils/encryption');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
 const aquilaEvents     = require('../utils/aquilaEvents');
+const utilsServer      = require('../utils/server');
+const fs               = require('../utils/fsp');
 const {
     Users,
     Mail,
@@ -132,7 +135,9 @@ const deleteMail = async (_id, lang = 'fr') => {
         throw NSErrors.MailNotFound;
     }
     if (doc.translation[lang].attachments && doc.translation[lang].attachments.length !== 0) {
-        await mediasUtils.deleteFile(doc.translation[lang].attachments[0].path);
+        for (const file of doc.translation[lang].attachments) {
+            await mediasUtils.deleteFile(file);
+        }
     }
     return doc;
 };
@@ -151,13 +156,12 @@ const removePdf = async (mail, path) => {
 const sendMailTest = async (mail, values, lang = 'fr') => {
     const subject = mail.translation[lang].subject;
     const content = mail.translation[lang].content;
-    let pathAttachment = null;
+    const attachments = [];
     if (mail.translation[lang] && mail.translation[lang].attachments && mail.translation[lang].attachments.length > 0) {
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        pathAttachment = _config.environment.appUrl + mail.translation[lang].attachments[0].path;
+        mail.translation[lang].attachments.forEach((file) => {
+            attachments.push(file);
+        });
+        // pathAttachment = _config.environment.appUrl + mail.translation[lang].attachments[0].path;
     }
 
     const data = {};
@@ -166,27 +170,30 @@ const sendMailTest = async (mail, values, lang = 'fr') => {
     });
 
     const htmlBody = await generateHTML(content, data);
-    return sendMail({subject, htmlBody, mailTo: mail.to, mailFrom: mail.from, pathAttachment});
+    return sendMail({subject, htmlBody, mailTo: mail.to, mailFrom: mail.from, attachments});
 };
 
 /**
  *
  * @param {string} type type of mail in database
  * @param {string} lang two characters for lang
- * @returns {{content: string, subject: string, fromName: string, pathAttachment: string}}
+ * @returns {{content: string, subject: string, fromName: string, attachments: Array}}
  */
 async function getMailDataByTypeAndLang(type, lang = 'fr') {
     lang               = ServiceLanguages.getDefaultLang(lang);
     const mailRegister = await getMailByTypeAndLang(type, lang);
     const content      = mailRegister.translation[lang].content ? mailRegister.translation[lang].content : '';
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
-    let pathAttachment = null;
+    const attachments = [];
     if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
         }
-        pathAttachment = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
+        mailRegister.translation[lang].attachments.forEach((file) => {
+            attachments.push(file.path);
+        });
+        // attachments = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
     }
     if (!subject) {
         throw NSErrors.MailFieldSubjectNotFound;
@@ -194,7 +201,7 @@ async function getMailDataByTypeAndLang(type, lang = 'fr') {
     if (!content) {
         throw NSErrors.MailFieldHtmlNotFound;
     }
-    return {content, subject, from: mailRegister.from, fromName: mailRegister.fromName, pathAttachment};
+    return {content, subject, from: mailRegister.from, fromName: mailRegister.fromName, attachments};
 }
 
 const sendMailActivationAccount = async (user_id, lang = '') => {
@@ -636,7 +643,7 @@ const sendMailOrderSent = async (order_id, lang = '') => {
  * envelope – is an envelope object {from:‘address’, to:[‘address’]}\
  * messageId – is the Message-ID header value
  */
-async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachment = null, textBody = null, fromName = null}) {
+async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments = null, textBody = null, fromName = null}) {
     try {
         let transporter;
         const _config = global.envConfig;
@@ -667,17 +674,29 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachm
             html : htmlBody,
             subject
         };
-        if (pathAttachment != null) {
-            mailOptions.attachments = [{path: pathAttachment}];
+
+        if (attachments) {
+            for (const file of attachments) {
+                if (!mailOptions.attachments) {
+                    mailOptions.attachments = [];
+                }
+                const data = await fs.readFile(path.resolve(utilsServer.getUploadDirectory(), file.path), {encoding: 'base64'});
+                mailOptions.attachments.push({
+                    filename    : `${file.name.originalname}.${file.name.mimetype.split('/')[1]}`,
+                    content     : data,
+                    encoding    : 'base64',
+                    contentType : file.name.mimetype
+                });
+            }
         }
         mailOptions.text = textBody || htmlBody;
         const aqSendMail = aquilaEvents.emit('aqSendMail', mailOptions);
-        if (!aqSendMail) {
-            if (!mailHost || !mailPort || !mailUser || !mailPass) {
-                throw NSErrors.UnableToMail;
-            }
 
+        if (!aqSendMail) {
             if (!mailIsSendmail) {
+                if (!mailHost || !mailPort || !mailUser || !mailPass) {
+                    throw NSErrors.UnableToMail;
+                }
                 if (mailUser.indexOf('gmail') > -1) {
                     transporter = nodemailer.createTransport({
                         service : 'Gmail',
