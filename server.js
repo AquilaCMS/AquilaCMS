@@ -53,9 +53,9 @@ const init = async () => {
 const initDatabase = async () => {
     if (global.envFile.db) {
         await require('./utils/database').connect();
+        await require('./services/job').initAgendaDB();
         await utilsModules.modulesLoadInit(express);
         await require('./utils/database').initDBValues();
-        require('./services/job').initAgendaDB();
     }
 };
 

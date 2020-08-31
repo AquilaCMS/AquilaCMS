@@ -8,75 +8,78 @@ let agenda;
 /**
  * Connect Agenda to mongodb
  */
-const initAgendaDB = () => {
-    agenda = new Agenda({db: {address: global.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
-        let tAgendaJobs;
-        try {
-            tAgendaJobs = await agenda.jobs({'data.flag': 'system'});
-        } catch (error) {
-            console.error(error);
-        }
-        if (!tAgendaJobs) return;
+const initAgendaDB = async () => {
+    await new Promise((resolve) => {
+        agenda = new Agenda({db: {address: global.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
+            let tAgendaJobs;
+            try {
+                tAgendaJobs = await agenda.jobs({'data.flag': 'system'});
+            } catch (error) {
+                console.error(error);
+            }
+            if (!tAgendaJobs) return;
 
-        const tJobsName = tAgendaJobs.map((job) => job.attrs.name);
-        const tJobsSystem = [
-            'Sitemap',
-            'Segmentation cat',
-            'Segmentation picto',
-            'Canonicalisation',
-            'Remove old carts',
-            'Remove pending payment orders',
-            'Cohérence produits',
-            'Cohérence données',
-            'Build stats',
-            'Cache requests clean',
-            'Clean cache'
-        ];
-        for (let i = 0; i < tJobsSystem.length; i++) {
-        // Si un job "system" n'existe pas en base de données alors on le crée
-            if (!tJobsName.includes(tJobsSystem[i])) {
-                try {
-                    if (tJobsSystem[i] === 'Sitemap') {
-                        await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Segmentation cat') {
-                        await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', 'Catégorisation automatique', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Segmentation picto') {
-                        await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', 'Pictorisation automatique', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Canonicalisation') {
-                        await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', 'Genère les canonicals de chaque produit', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Remove old carts') {
-                        await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', 'Suppression ancien panier', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Remove pending payment orders') {
-                        await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', 'Annulation des commandes en attente de paiement', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Cohérence produits') {
-                        await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', 'Script de cohérence des produits', 'service', 'system', '', true);
-                    /* } else if (tJobsSystem[i] === 'Cohérence données') {
-                    await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', "service", 'system', '', true);
-                */ } else if (tJobsSystem[i] === 'Build stats') {
-                        await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', 'Construction des stats de la veille', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Cache requests clean') {
-                        await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', 'Vide le cache des requêtes', 'service', 'system', '', true);
-                    } else if (tJobsSystem[i] === 'Clean cache') {
-                        await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', 'Vide le cache des images', 'service', 'user', '', true, '');
+            const tJobsName = tAgendaJobs.map((job) => job.attrs.name);
+            const tJobsSystem = [
+                'Sitemap',
+                'Segmentation cat',
+                'Segmentation picto',
+                'Canonicalisation',
+                'Remove old carts',
+                'Remove pending payment orders',
+                'Cohérence produits',
+                'Cohérence données',
+                'Build stats',
+                'Cache requests clean',
+                'Clean cache'
+            ];
+            for (let i = 0; i < tJobsSystem.length; i++) {
+            // Si un job "system" n'existe pas en base de données alors on le crée
+                if (!tJobsName.includes(tJobsSystem[i])) {
+                    try {
+                        if (tJobsSystem[i] === 'Sitemap') {
+                            await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Segmentation cat') {
+                            await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', 'Catégorisation automatique', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Segmentation picto') {
+                            await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', 'Pictorisation automatique', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Canonicalisation') {
+                            await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', 'Genère les canonicals de chaque produit', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Remove old carts') {
+                            await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', 'Suppression ancien panier', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Remove pending payment orders') {
+                            await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', 'Annulation des commandes en attente de paiement', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Cohérence produits') {
+                            await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', 'Script de cohérence des produits', 'service', 'system', '', true);
+                        /* } else if (tJobsSystem[i] === 'Cohérence données') {
+                        await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', "service", 'system', '', true);
+                    */ } else if (tJobsSystem[i] === 'Build stats') {
+                            await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', 'Construction des stats de la veille', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Cache requests clean') {
+                            await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', 'Vide le cache des requêtes', 'service', 'system', '', true);
+                        } else if (tJobsSystem[i] === 'Clean cache') {
+                            await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', 'Vide le cache des images', 'service', 'user', '', true, '');
+                        }
+                    } catch (error) {
+                        console.error(error);
                     }
+                }
+            }
+
+            // On define les jobs dans la collection agendaJob, les jobs ayant disabled = false seront lancés
+            for (const job of await agenda.jobs({})) {
+                try {
+                    await defineJobOnStartUp(job);
                 } catch (error) {
                     console.error(error);
                 }
             }
-        }
 
-        // On define les jobs dans la collection agendaJob, les jobs ayant disabled = false seront lancés
-        for (const job of await agenda.jobs({})) {
-            try {
-                await defineJobOnStartUp(job);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        console.log('Scheduler started!');
+            console.log('Scheduler started!');
+        });
+        agenda.defaultLockLifetime(1000);
+        resolve();
     });
-    agenda.defaultLockLifetime(1000);
 };
 
 /**
@@ -113,29 +116,32 @@ const getJobById = async (_id) => {
  * Permet de définir un agenda
  * @param name: nom du job
  */
-function agendaDefine(name) {
-    agenda.define(name, async (job, done) => {
-        try {
-            if (job.attrs.disabled === false) {
-                console.log(`${new Date()} -> Début du job ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `);
-                await execDefine(job);
-                console.log(`${new Date()} -> Fin du job ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `);
+const agendaDefine = async (name) => {
+    await new Promise((resolve) => {
+        agenda.define(name, async (job, done) => {
+            try {
+                if (job.attrs.disabled === false) {
+                    console.log(`${new Date()} -> Début du job ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `);
+                    await execDefine(job);
+                    console.log(`${new Date()} -> Fin du job ${job.attrs.name} -> ${job.attrs.data.method} -${job.attrs.data.api} `);
+                }
+                done();
+            } catch (error) {
+                if (error.error && error.error.code === 'job_not_supported_request_method') {
+                    // On désactive le job si la requete passé en parametre est mauvaise et on save le resultat de l'erreur
+                    error.job.disable();
+                    error.job.attrs.data.lastExecutionResult = 'job_not_supported_request_method';
+                    await error.job.save();
+                    console.error(`job_not_supported_request_method: disabled_job_${error.job.attrs.name}`);
+                } else {
+                    console.error(`job_api_${error}`);
+                }
+                done();
             }
-            done();
-        } catch (error) {
-            if (error.error && error.error.code === 'job_not_supported_request_method') {
-                // On désactive le job si la requete passé en parametre est mauvaise et on save le resultat de l'erreur
-                error.job.disable();
-                error.job.attrs.data.lastExecutionResult = 'job_not_supported_request_method';
-                await error.job.save();
-                console.error(`job_not_supported_request_method: disabled_job_${error.job.attrs.name} `);
-            } else {
-                console.error(`job_api_${error} `);
-            }
-            done();
-        }
+        });
+        resolve();
     });
-}
+};
 
 /**
  * Service permettant de créer ou mettre à jour les données d'un job existant dans la collection agendaJob
@@ -160,7 +166,7 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
         jobs[0].attrs.failReason = '';
     }
     // définition de la tâche que devra executer l'agenda
-    agendaDefine(name);
+    await agendaDefine(name);
     // On met a jour le job
     if (exists) {
         // Permet de calculer le prochain lancement du cron si une erreur survient et que nextRunAt devient null suite a l'erreur
@@ -218,7 +224,7 @@ const defineJobOnStartUp = async (job) => {
     const {name, repeatInterval, disabled, data} = job.attrs;
     const {api, comment, method, flag, lastExecutionResult, params} = data;
     // définition de la tâche que devra executer l'agenda
-    agendaDefine(name);
+    await agendaDefine(name);
     // création dans la collection agendaJobs du document et ajout dans data des champs api, comment et flag
     const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params});
     // Si il y a une erreur on renvoie l'oAgenda: failReason sera rempli, c'est ce qui nous permet d'afficher une erreur
