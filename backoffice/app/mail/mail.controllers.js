@@ -47,6 +47,11 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.mailTypes = mailTypes;
         });
 
+        $scope.getNameAttachment = function(file){
+            let name = file.name.originalname + "." + file.name.mimetype.split("/")[1];
+            return name;
+        }
+        
         $scope.MailGetById = function () {
             MailGetById.query({_id: $routeParams.mailId}, function (mail) {
                 $scope.mail = mail;
@@ -60,11 +65,11 @@ MailControllers.controller("MailDetailCtrl", [
 
         $scope.after = function(){
             $scope.MailGetById();
-            toastService.toast("success", "Fichier PDF sauvegardé !");
+            toastService.toast("success", "Fichier sauvegardé !");
         }
 
         $scope.uploadError = function(){
-                toastService.toast("danger", "Le fichier PDF n'a pas été sauvegardé");
+                toastService.toast("danger", "Le fichier n'a pas été sauvegardé");
         }
 
         $scope.deletePdf = function(position, lang){
@@ -72,11 +77,11 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.mail.translation[lang].attachments.splice(position, 1);
             MailRemovePdf.removePdf({mail:$scope.mail, path}, function (response) {
                 if (response.msg) {
-                    toastService.toast("danger", "Le fichier PDF n'a pas été supprimé");
+                    toastService.toast("danger", "Le fichier n'a pas été supprimé");
                     $scope.MailGetById();
                 }
                 else {
-                    toastService.toast("success", "Fichier PDF supprimé !");
+                    toastService.toast("success", "Fichier supprimé !");
                     $scope.MailGetById();
                 }
             }, function (err) {

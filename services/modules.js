@@ -699,7 +699,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         let type = JSON.parse(info).info.type;
         type = type ? `type: '${type}'` : '';
         const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleNomComposant.js ->nomcomposant
-        const jsxModuleToImport     = `{ jsx: require('./${file}').default, code: 'aq-${fileNameWithoutModule}', ${type} },`;
+        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
         const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
         const result                = await fs.readFile(pathListModules, 'utf8');
 
@@ -791,7 +791,7 @@ const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, t
         const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
             const result = await fs.readFile(pathListModules, 'utf8');
-            const jsxModuleToImport = `{ jsx: require('./${file}').default, code: 'aq-${fileNameWithoutModule}', ${type} },`;
+            const jsxModuleToImport = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
             const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
             await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
         }
