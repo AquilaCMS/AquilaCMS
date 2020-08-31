@@ -465,5 +465,25 @@ module.exports = {
     ModulePathNotFound : {
         fr : 'Le chemin du module n\'a pas été trouvé',
         en : 'Module path was not found'
+    },
+    ModuleMainFolder : {
+        fr : 'Dossier principal manquant dans le zip',
+        en : 'Missing main folder in zip'
+    },
+    ModuleInfoNotFound : {
+        fr : 'Module info not found',
+        en : 'Module info.json introuvable'
+    },
+    ModuleAquilaVersionNotSatisfied : {
+        fr : 'Version du module Aquila non satisfaite',
+        en : 'Module aquila version not satisfied'
+    },
+    ThemePackageNotFound : {
+        fr : 'Thème Package.json introuvable',
+        en : 'Theme package.json not found'
+    },
+    ThemeAquilaVersionNotSatisfied : {
+        fr : 'Version du theme Aquila non satisfaite',
+        en : 'Aquila theme version not satisfied'
     }
 };

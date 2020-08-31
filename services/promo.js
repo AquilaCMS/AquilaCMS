@@ -796,7 +796,11 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
     if (discountType === 'P') {
         // Si le prix TTC/HT est inférieur a la remise alors on met une remise correspondant au prix du cart total
         // afin d'avoir priceTotal - discountATI (ou discountET) = 0
-        values = calculateCartItemDiscount(priceTotal, Math.round(priceTotal.et * discountValue) / 100, Math.round(priceTotal.ati * discountValue) / 100);
+        values = calculateCartItemDiscount(
+            priceTotal,
+            Math.round(priceTotal.et * discountValue) / 100,
+            Math.round(priceTotal.ati * discountValue) / 100
+        );
     } else if (discountType === 'Aet' || discountType === 'Aati') {
         // le discountType est un montant
         // Si le prix TTC/HT est inférieur a la remise alors on met une remise correspondant au prix du cart
@@ -807,7 +811,10 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
 }
 
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
-    const prdIndex = productsCatalog.findIndex((_prd) => _prd._id.toString() === (cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id).toString());
+    const prdIndex = productsCatalog.findIndex((_prd) => {
+        const idProduct = cart.items[cartPrdIndex].id._id ? cart.items[cartPrdIndex].id._id : cart.items[cartPrdIndex].id;
+        return _prd._id.toString() === idProduct.toString();
+    });
     if (prdIndex > -1) {
         if (cart.items[cartPrdIndex].id === mongoose.Types.ObjectId) {
             await cart.populate('items.id');
@@ -884,9 +891,9 @@ async function resetCartProductPrice(cart, j) {
 async function calculateCartTotal(cart) {
     const total = {ati: 0, et: 0};
     for (let i = 0; i < cart.items.length; i++) {
-        const item = await Products.findOne({code: cart.items[i].code});
-        total.ati += (item.price.ati.special ? item.price.ati.special : item.price.ati.normal) * cart.items[i].quantity;
-        total.et += (item.price.et.special ? item.price.et.special : item.price.et.normal) * cart.items[i].quantity;
+        const item = cart.items[i];
+        total.ati += (item.price.special && item.price.special.ati ? item.price.special.ati : item.price.unit.ati) * item.quantity;
+        total.et += (item.price.special && item.price.special.et ? item.price.special.et : item.price.unit.et) * item.quantity;
     }
     return total;
 }

@@ -9,7 +9,12 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         $scope.taxerate = []
 
         $scope.fixAdditionnalFees = function () {
-            if(!$scope.stock.additionnalFees.et || $scope.stock.additionnalFees.et.toString().endsWith('.')) return 
+            if (
+                !$scope.stock.additionnalFees.et
+                || $scope.stock.additionnalFees.et.toString().endsWith('.')
+            ) {
+                return;
+            }
             $scope.stock.additionnalFees.et = Number($scope.stock.additionnalFees.et.toFixed(2))
         }
 
@@ -142,8 +147,6 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
                 $modalInstance.close();
             }
         };
-
-       
     }
 ]).controller("StockTvaCtrl", [
     "$scope", "$modalInstance", "tva", function ($scope, $modalInstance, tva) {

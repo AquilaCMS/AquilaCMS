@@ -15,12 +15,12 @@ exports.createModelData = async () => {
     if (!exist) {
         await fs.ensureDir(path.join(themeFolder, '/demoDatas/'));
     }
-    // eslint-disable-next-line guard-for-in
+    const noCopy = ['users', 'configurations'];
     for (const data in schemas) {
-        // deleteVersion(schemas[data].datas);
-
-        const json = JSON.stringify(schemas[data], null, 2);
-        await fs.writeFile(path.join(themeFolder, `/demoDatas/${schemas[data].collection}.json`), json, 'utf8');
+        if (!noCopy.includes(schemas[data].collection) && schemas[data].datas.length !== 0) {
+            const json = JSON.stringify(schemas[data], null, 2);
+            await fs.writeFile(path.join(themeFolder, `/demoDatas/${schemas[data].collection}.json`), json, 'utf8');
+        }
     }
 
     const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());

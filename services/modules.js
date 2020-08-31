@@ -1,3 +1,4 @@
+const AdmZip           = require('adm-zip');
 const path             = require('path');
 const mongoose         = require('mongoose');
 const rimraf           = require('rimraf');
@@ -44,28 +45,6 @@ const setModuleConfigById = async (_id, config) => {
 };
 
 /**
- * Permet récupérer la configuration (champ conf) d'un module
- * @param name (string) nom/code du module
- * @returns Retourne la configuration du module
- * @deprecated
- */
-const getConfig = async (name) => {
-    const _module = await Modules.findOne({name});
-    return _module ? _module.config : undefined;
-};
-
-/**
- * Permet définir la configuration (champ conf) d'un module
- * @param name {string} nom/code du module
- * @param newConfig {object} la nouvelle configuration
- * @returns {Promise<*>} Retourne la nouvelle configuration du module
- * @deprecated
- */
-const setConfig = async (name, newConfig) => {
-    return Modules.updateOne({name}, {$set: {config: newConfig}}, {new: true});
-};
-
-/**
  * Permet modifier une partie de la configuration (champ conf) d'un module
  * @param name {string} nom/code du module
  * @param field {string} le champ à modifier
@@ -99,7 +78,7 @@ const initModule = async (zipFile) => {
     }
     console.log('Upload module...');
     const moduleFolder = 'modules/';
-    const zipFilePath = `${moduleFolder}/${originalname}`;
+    const zipFilePath = `${moduleFolder}${originalname}`;
     const extractZipFilePath = zipFilePath.replace('.zip', '/');
 
     // move the file from the temporary location to the intended location
@@ -114,6 +93,18 @@ const initModule = async (zipFile) => {
 
     try {
         const zip = new AdmZip(zipFilePath);
+        const infojson = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
+        if (!infojson) {
+            throw NSErrors.ModuleInfoNotFound; // info.json not found in zip
+        }
+        const moduleAquilaVersion = JSON.parse(infojson.getData().toString()).info.aquilaVersion;
+        if (moduleAquilaVersion) {
+            const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
+            const aquilaVersion = JSON.parse(packageAquila).version;
+            if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+                throw NSErrors.ModuleAquilaVersionNotSatisfied;
+            }
+        }
         let found = false;
         for (const zipEntry of zip.getEntries()) {
             if (
@@ -456,84 +447,88 @@ const checkDependenciesAtUninstallation = async (idModule) => {
  * @param {String} idModule mongoose id of the module
  */
 const activateModule = async (idModule, toBeChanged) => {
-    const myModule = await Modules.findOne({_id: idModule});
-    await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
+    try {
+        const myModule = await Modules.findOne({_id: idModule});
+        await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-    const copy  = path.resolve(`backoffice/app/${myModule.name}`);
-    const copyF = path.resolve(`modules/${myModule.name}/app/`);
-    const copyTab = [];
-    if (await fs.access(copyF, fs.constants.W_OK)) {
-        try {
-            await fs.copyRecursiveSync(copyF, copy, true);
-        } catch (err) {
-            console.error(err);
-        }
-        copyTab[0] = copy;
-    }
-
-    if (myModule.loadTranslationBack) {
-        console.log('Loading back translation for module...');
-        const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/back');
-        const dest  = path.resolve(global.appRoot, 'backoffice/assets/translations/modules', myModule.name);
-        if (fs.existsSync(src)) {
+        const copy  = path.resolve(`backoffice/app/${myModule.name}`);
+        const copyF = path.resolve(`modules/${myModule.name}/app/`);
+        const copyTab = [];
+        if (await fs.access(copyF, fs.constants.W_OK)) {
             try {
-                await fs.copyRecursiveSync(src, dest, true);
+                await fs.copyRecursiveSync(copyF, copy, true);
             } catch (err) {
                 console.error(err);
             }
-            copyTab[1] = dest;
+            copyTab.push(copy);
         }
-    }
 
-    if (myModule.loadTranslationFront) {
-        console.log('Loading front translation for module...');
-        const {currentTheme} = global.envConfig.environment;
-        const files = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
-        for (let i = 0; i < files.length; i++) {
-            const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/front', files[i]);
-            const dest  = path.resolve(global.appRoot, 'themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
-            if (fs.existsSync(src, fs.constants.W_OK)) {
+        if (myModule.loadTranslationBack) {
+            console.log('Loading back translation for module...');
+            const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/back');
+            const dest  = path.resolve(global.appRoot, 'backoffice/assets/translations/modules', myModule.name);
+            if (fs.existsSync(src)) {
                 try {
                     await fs.copyRecursiveSync(src, dest, true);
                 } catch (err) {
                     console.error(err);
                 }
-                copyTab[i + 2] = dest;
+                copyTab.push(dest);
             }
         }
-    }
 
-    // Si le module contient des dépendances utilisable dans le front
-    // alors on lance l'install pour installer les dépendances dans aquila
-    if (myModule.packageDependencies) {
-        if (myModule.packageDependencies.api) {
-            const allModulesApi = await modulesUtils.cleanAndToBeChanged(myModule.packageDependencies.api, toBeChanged.api);
-            if (allModulesApi.length > 0) {
-                console.log('Installing dependencies of the module in aquila...');
-                await packageManager.execCmd(`yarn add ${allModulesApi.join(' ')}`, './');
+        if (myModule.loadTranslationFront) {
+            console.log('Loading front translation for module...');
+            const {currentTheme} = global.envConfig.environment;
+            const files = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
+            for (let i = 0; i < files.length; i++) {
+                const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/front', files[i]);
+                const dest  = path.resolve(global.appRoot, 'themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
+                if (fs.existsSync(src, fs.constants.W_OK)) {
+                    try {
+                        await fs.copyRecursiveSync(src, dest, true);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                    copyTab.push(dest);
+                }
             }
         }
-        if (myModule.packageDependencies.theme) {
-            const allModulesTheme = await modulesUtils.cleanAndToBeChanged(myModule.packageDependencies.theme, toBeChanged.theme);
-            if (allModulesTheme.length > 0) {
-                console.log('Installing dependencies of the module in theme...');
-                await packageManager.execCmd(
-                    `yarn add ${allModulesTheme.join(' ')}`,
-                    path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
-                );
-            }
-        }
-    }
 
-    // Si le module doit importer des composants dans le front
-    await addOrRemoveThemeFiles(
-        path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
-        false,
-        myModule.type ? `type: '${myModule.type}'` : ''
-    );
-    await myModule.updateOne({$push: {files: copyTab}, active: true});
-    console.log('Module activated');
-    return Modules.find({});
+        // Si le module contient des dépendances utilisable dans le front
+        // alors on lance l'install pour installer les dépendances dans aquila
+        if (myModule.packageDependencies) {
+            for (const apiOrTheme of Object.keys(toBeChanged)) {
+                let installPath = './';
+                let position = 'aquila';
+                if (apiOrTheme === 'theme') {
+                    installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+                    position = 'the theme';
+                }
+                if (myModule.packageDependencies[apiOrTheme]) {
+                    const allModules = await modulesUtils.cleanAndToBeChanged(myModule.packageDependencies[apiOrTheme], toBeChanged[apiOrTheme]);
+                    if (allModules.length > 0) {
+                        console.log(`Installing dependencies of the module in ${position}...`);
+                        await packageManager.execCmd(`yarn add ${allModules.join(' ')}`, installPath);
+                    }
+                }
+            }
+        }
+
+        // Si le module doit importer des composants dans le front
+        await addOrRemoveThemeFiles(
+            path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
+            false,
+            myModule.type ? `type: '${myModule.type}'` : ''
+        );
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
+        console.log('Module activated');
+        return Modules.find({});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({});
+        throw err;
+    }
 };
 
 /**
@@ -544,82 +539,88 @@ const activateModule = async (idModule, toBeChanged) => {
  * @param {{api: {}, theme: {}}} toBeRemoved
  */
 const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
-    const _module = await Modules.findById(idModule);
-    if (!_module) {
-        throw NSErrors.ModuleNotFound;
-    }
-    await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
-    await removeModuleAddon(_module);
     try {
-        await addOrRemoveThemeFiles(
-            path.resolve(global.appRoot, _module.path, 'theme_components'),
-            true,
-            _module.type ? `type: '${_module.type}'` : ''
-        );
-    } catch (error) {
-        console.error(error);
-    }
+        const _module = await Modules.findById(idModule);
+        if (!_module) {
+            throw NSErrors.ModuleNotFound;
+        }
+        await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
+        await removeModuleAddon(_module);
+        try {
+            await addOrRemoveThemeFiles(
+                path.resolve(global.appRoot, _module.path, 'theme_components'),
+                true,
+                _module.type ? `type: '${_module.type}'` : ''
+            );
+        } catch (error) {
+            console.error(error);
+        }
 
-    // Suppression des fichiers copiés
-    for (let i = 0; i < _module.files.length; i++) {
-        if (await fs.access(_module.files[i])) {
-            if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
-                require('rimraf')(_module.files[i], (err) => {
-                    if (err) console.error(err);
-                });
-            } else {
-                try {
-                    await fs.unlink(_module.files[i]);
-                } catch (err) {
-                    console.error('Error: ', err);
+        // Suppression des fichiers copiés
+        for (let i = 0; i < _module.files.length; i++) {
+            if (await fs.access(_module.files[i])) {
+                if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
+                    require('rimraf')(_module.files[i], (err) => {
+                        if (err) console.error(err);
+                    });
+                } else {
+                    try {
+                        await fs.unlink(_module.files[i]);
+                    } catch (err) {
+                        console.error('Error: ', err);
+                    }
                 }
             }
         }
+
+        await Modules.updateOne({_id: idModule}, {files: [], active: false});
+
+        console.log('Removing dependencies of the module...');
+        // On supprime les dépendances du module
+        for (const apiOrTheme of Object.keys(toBeRemoved)) {
+            let allModulesToRemove = [];
+            for (const packageName of Object.values(toBeRemoved[apiOrTheme])) {
+                const elem = packageName.split('@');
+                if (elem[0] === '') {
+                    elem.splice(0, 1);
+                    elem[0] = `@${elem[0]}`;
+                }
+                allModulesToRemove = [...allModulesToRemove, elem[0]];
+            }
+            if (allModulesToRemove.length > 0) {
+                if (apiOrTheme === 'theme') {
+                    await packageManager.execCmd(
+                        `yarn remove ${allModulesToRemove.join(' ')}`,
+                        path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
+                    );
+                } else if (apiOrTheme === 'api') {
+                    await packageManager.execCmd(`yarn remove ${allModulesToRemove.join(' ')}`, './');
+                }
+            }
+
+            let allModulesAquila = [];
+            for (const packageName of Object.values(toBeChanged[apiOrTheme])) {
+                allModulesAquila = [...allModulesAquila, packageName];
+            }
+            if (allModulesAquila.length > 0) {
+                if (apiOrTheme === 'theme') {
+                    await packageManager.execCmd(
+                        `yarn add ${allModulesAquila.join(' ')}`,
+                        path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
+                    );
+                } else if (apiOrTheme === 'api') {
+                    await packageManager.execCmd(`yarn add ${allModulesAquila.join(' ')}`, './');
+                }
+            }
+        }
+
+        console.log('Module desactivated');
+        return Modules.find({});
+    } catch (err) {
+        if (!err.datas) err.datas = {};
+        err.datas.modules = await Modules.find({});
+        throw err;
     }
-
-    await Modules.updateOne({_id: idModule}, {files: [], active: false});
-
-    console.log('Removing dependencies of the module...');
-    // On supprime les dépendances du module
-    for (const apiOrTheme of Object.keys(toBeRemoved)) {
-        let allModulesToRemove = [];
-        for (const packageName of Object.values(toBeRemoved[apiOrTheme])) {
-            const elem = packageName.split('@');
-            if (elem[0] === '') {
-                elem.splice(0, 1);
-                elem[0] = `@${elem[0]}`;
-            }
-            allModulesToRemove = [...allModulesToRemove, elem[0]];
-        }
-        if (allModulesToRemove.length > 0) {
-            if (apiOrTheme === 'theme') {
-                await packageManager.execCmd(
-                    `yarn remove ${allModulesToRemove.join(' ')}`,
-                    path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
-                );
-            } else if (apiOrTheme === 'api') {
-                await packageManager.execCmd(`yarn remove ${allModulesToRemove.join(' ')}`, './');
-            }
-        }
-
-        let allModulesAquila = [];
-        for (const packageName of Object.values(toBeChanged[apiOrTheme])) {
-            allModulesAquila = [...allModulesAquila, packageName];
-        }
-        if (allModulesAquila.length > 0) {
-            if (apiOrTheme === 'theme') {
-                await packageManager.execCmd(
-                    `yarn add ${allModulesAquila.join(' ')}`,
-                    path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
-                );
-            } else if (apiOrTheme === 'api') {
-                await packageManager.execCmd(`yarn add ${allModulesAquila.join(' ')}`, './');
-            }
-        }
-    }
-
-    console.log('Module desactivated');
-    return Modules.find({});
 };
 
 /**
@@ -906,12 +907,31 @@ const loadAdminModules = async () => {
     return tabM;
 };
 
+/**
+ * Permet récupérer la configuration (champ conf) d'un module
+ * @param name (string) nom/code du module
+ * @returns Retourne la configuration du module
+ */
+const getConfig = async (name) => {
+    const _module = await Modules.findOne({name});
+    return _module ? _module.config : undefined;
+};
+
+/**
+ * Permet définir la configuration (champ conf) d'un module
+ * @param name {string} nom/code du module
+ * @param newConfig {object} la nouvelle configuration
+ * @returns {Promise<*>} Retourne la nouvelle configuration du module
+ * @deprecated
+ */
+const setConfig = async (name, newConfig) => {
+    return Modules.updateOne({name}, {$set: {config: newConfig}}, {new: true});
+};
+
 module.exports = {
     getModules,
     getModule,
     setModuleConfigById,
-    getConfig,
-    setConfig,
     setPartialConfig,
     initModule,
     checkDependenciesAtInstallation,
@@ -928,5 +948,7 @@ module.exports = {
     removeModuleAddon,
     initComponentTemplate,
     uninitComponentTemplate,
-    loadAdminModules
+    loadAdminModules,
+    getConfig,
+    setConfig
 };

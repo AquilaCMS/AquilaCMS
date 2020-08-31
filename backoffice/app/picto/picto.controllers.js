@@ -36,6 +36,9 @@ PictoControllers.controller('PictoDetailsCtrl', [
         $scope.picto = {};
         $scope.isEditMode = true;
         $scope.rule = {};
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
         PictoApi.query(
             {PostBody: {filter: {_id: $routeParams.id}, limit: 1}},
             function (response) {
@@ -84,6 +87,10 @@ PictoControllers.controller('PictoDetailsCtrl', [
          * @param {bool} back - Retourner a la liste des picto ou des regles apres la sauvegarde
          */
         $scope.save = function (back) {
+            if ($scope.nsUploadFiles.isSelected) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
             if (this.form.ruleForm.$invalid) {
                 toastService.toast('danger', 'Formulaire des regles incomplet');
                 return;

@@ -94,7 +94,6 @@ const saveConfig = async (req) => {
             await updateDBConnectionString(environment.databaseConnection);
             delete environment.databaseConnection;
         }
-        await Configuration.updateOne({}, req.body);
         // traitement spécifique
         if (environment.demoMode) {
             const seoService = require('./seo');
@@ -127,6 +126,7 @@ const saveConfig = async (req) => {
             );
         }
     }
+    await Configuration.updateOne({}, req.body);
 };
 
 module.exports = {

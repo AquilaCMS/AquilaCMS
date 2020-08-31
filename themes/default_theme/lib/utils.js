@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import {Link} from "../routes";
+import Head from "next/head";
 import nsModules from 'modules/list_modules';
 import getAPIUrl from './getAPIUrl';
 
@@ -58,13 +60,32 @@ async function countProductInCartByProduct(product) {
  */
 function listModulePage(type) {
     return nsModules.filter((m) => m.type === type).map((m, index) => {
-        const Comp = m.jsx;
+        const Comp = m.jsx.default;
         return (
-            <Comp key={index + m.code} />
+            <Comp key={index + m.code} gNext={{Head, Link}} />
         );
     });
 }
 
+/**
+ * Liste les modules et recupere les finction de hook en fonction du type
+ * @param {*} type
+ * @returns {React.Component}
+ */
+async function getModulesHookFunctionsByType(type = 'all') {
+    let modulesFileTheme = nsModules.map(m => m.jsx);
+    if (type !== 'all') modulesFileTheme = nsModules.filter((m) => m.type === type).map(m => m.jsx);
+    const hooksFunctions = {}
+    for (const moduleFileTheme of modulesFileTheme) {
+        const nsModuleKeys = Object.keys(moduleFileTheme).filter(key => key !== 'default')
+        for (const nsModuleKey of nsModuleKeys) {
+            if(hooksFunctions[nsModuleKey] === undefined) hooksFunctions[nsModuleKey] = []
+            hooksFunctions[nsModuleKey].push(async () => await moduleFileTheme[nsModuleKey]())
+        }
+    }
+    return hooksFunctions;
+}
+
 export {
-    countProductInCartByCategory, countProductInCartByProduct, listModulePage
+    countProductInCartByCategory, countProductInCartByProduct, listModulePage, getModulesHookFunctionsByType
 };

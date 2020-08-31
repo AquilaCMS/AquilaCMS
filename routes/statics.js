@@ -1,11 +1,9 @@
 const URL                         = require('url');
-const {middlewareServer}          = require('../middleware');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
-const {Statics, StaticsPreview}   = require('../orm/models');
+const {StaticsPreview}            = require('../orm/models');
 const ServiceStatic               = require('../services/statics');
 const ServiceStaticPreview        = require('../services/staticsPreview');
-const utils                       = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
@@ -14,12 +12,6 @@ module.exports = function (app) {
     app.post('/v2/static/:id', getStaticById);
     app.put('/v2/static', authentication, adminAuth, setStatic);
     app.delete('/v2/static/:id', authentication, adminAuth, deleteStatic);
-
-    // Deprecated
-    app.get('/statics', middlewareServer.deprecatedRoute, list);
-    app.get('/statics/:code', middlewareServer.deprecatedRoute, getStaticOld);
-    app.delete('/statics/:id', middlewareServer.deprecatedRoute, remove);
-    app.post('/statics', middlewareServer.deprecatedRoute, save);
 };
 
 /**
@@ -177,83 +169,5 @@ async function previewStatic(req, res, next) {
         return res.json({url: URL.resolve(_config.environment.appUrl, `/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}?preview=${preview._id}`)});
     } catch (err) {
         next(err);
-    }
-}
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
- * @deprecated
- * @param {Express.Request} req req
- * @param {Express.Response} res res
- * @param {Function} next next
- */
-function getStaticOld(req, res, next) {
-    const queryCondition = {code: req.params.code};
-    Statics.findOne(queryCondition, (err, pStatic) => {
-        if (err) { return next(err); }
-        res.json(pStatic);
-    });
-}
-
-/**
- * @deprecated
- * @param {Express.Request} req req
- * @param {Express.Response} res res
- * @param {Function} next next
- */
-function list(req, res, next) {
-    const queryCondition = {};
-
-    Statics.find(
-        queryCondition,
-        (err, statics) => {
-            if (err) { return next(err); }
-            res.json(statics);
-        }
-    );
-}
-
-/**
- * @deprecated
- * @param {Express.Request} req req
- * @param {Express.Response} res res
- * @param {Function} next next
- */
-function remove(req, res, next) {
-    const query = {_id: req.params.id};
-    Statics.findOne(query, (err, pStatic) => {
-        if (err) {
-            return next(err);
-        }
-        req.static = pStatic;
-
-        req.static.remove((err) => {
-            if (err) return next(err);
-            const msg = {status: true};
-            return res.json(msg);
-        });
-    });
-}
-
-/**
- * @deprecated
- * @param {Express.Request} req req
- * @param {Express.Response} res res
- * @param {Function} next next
- */
-async function save(req, res, next) {
-    try {
-        if (req.body._id == null) {
-            req.body.code = utils.slugify(req.body.code);
-            const response = await Statics.create(req.body);
-            return res.json(response);
-        }
-        const response = await Statics.findOneAndUpdate({_id: req.body._id}, req.body, {new: true});
-        return res.json(response);
-    } catch (err) {
-        return next(err);
     }
 }

@@ -1,13 +1,8 @@
-const aquilaEvents                          = require('../utils/aquilaEvents');
-const NSErrors                              = require('../utils/errors/NSErrors');
-const utils                                 = require('../utils/utils');
-const mediasUtils                           = require('../utils/medias');
-const ServiceProduct                        = require('../services/products');
-const {middlewareServer}                    = require('../middleware');
-const {authentication, adminAuth}           = require('../middleware/authentication');
-const {securityForceActif}                  = require('../middleware/security');
-const {getDecodedToken}                     = require('../services/auth');
-const {Products, SetAttributes, Attributes} = require('../orm/models');
+const aquilaEvents                  = require('../utils/aquilaEvents');
+const ServiceProduct                = require('../services/products');
+const {authentication, adminAuth}   = require('../middleware/authentication');
+const {securityForceActif}          = require('../middleware/security');
+const {getDecodedToken}             = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/products/searchObj', getProductsSearchObj);
@@ -21,16 +16,6 @@ module.exports = function (app) {
     app.post('/v2/products/category/:id', getProductsByCategoryId);
     app.put('/v2/product', authentication, adminAuth, setProduct);
     app.delete('/v2/product/:id', authentication, adminAuth, deleteProduct);
-
-    // Deprecated
-    app.get('/products', middlewareServer.deprecatedRoute, list);
-    app.get('/products/:code', middlewareServer.deprecatedRoute, detail);
-    app.get('/products/pagination/:page/:limit', middlewareServer.deprecatedRoute, getPagination);
-    app.post('/products', middlewareServer.deprecatedRoute, save); // TODO RV2 : Utilisé dans /admin/#/products/simple/__id__ lors du save
-    app.post('/products/searchadmin', middlewareServer.deprecatedRoute, searchProductsAdmin);
-    app.get('/products/associated/:code/:size?', middlewareServer.deprecatedRoute, getAssociatedProducts);
-    app.delete('/products/:code', middlewareServer.deprecatedRoute, removeProduct);
-    app.post('/v2/products/attribs/applyTranslated', middlewareServer.deprecatedRoute, applyTranslatedAttribs);
 };
 
 /**
@@ -171,15 +156,13 @@ async function deleteProduct(req, res, next) {
 }
 
 /**
- *
- * @param {Express.Request} req - Request
- * @param {Express.Response} res
- * @param {Function} next
- *
- * req.query.op_id = _id de l'ITEM (et non du produit) d'une la commande
- * req.query.p_id = _id d'un produit (dans le cas d'un produit gratuit)
- * req.headers.authorization = token d'un user (dans le cas d'une requete depuis le site client)
- *
+ * @api {get} /v2/product/download Download virtual product
+ * @apiGroup Products
+ * @apiVersion 2.0.0
+ * @apiDescription Download a virtual-product
+ * @apiParam {string} op_id (optional) _id de l'ITEM (et non du produit) d'une la commande
+ * @apiParam {string} p_id (optional) _id d'un produit (dans le cas d'un produit gratuit)
+ * @apiSuccess {Stream} - Stream to download
  */
 async function downloadProduct(req, res, next) {
     try {
@@ -207,6 +190,22 @@ async function calculStock(req, res, next) {
     }
 }
 
+/**
+ * @api {post} /v2/products/searchObj Get products
+ * @apiGroup Products
+ * @apiVersion 2.0.0
+ * @apiDescription Get all products
+ * @apiUse param_PostBody
+ * @apiParamExample {js} Example usage:
+TODO
+{"page":1,"limit":12,"filter":{},"sortObj":{"code":1}}
+ * @apiUse ProductSchemaDefault
+ * @apiUse ProductPrice
+ * @apiUse ProductTranslation
+ * @apiUse ProductReviews
+ * @apiUse ProductStats
+ * @apiUse ErrorPostBody
+ */
 async function getProductsSearchObj(req, res, next) {
     try {
         const result = await ServiceProduct.getProductsSearchObj(req.body, req.params);
@@ -215,284 +214,3 @@ async function getProductsSearchObj(req, res, next) {
         next(error);
     }
 }
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
-* @deprecated
-*/
-async function applyTranslatedAttribs(req, res, next) {
-    try {
-        const result = await ServiceProduct.applyTranslatedAttribs(req.body.PostBody);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-/**
-
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-async function removeProduct(req, res, next) {
-    try {
-        // /!\
-        // lors de la suppression d'un produit nous supprimons aussi les attributes du produit dans categories.filters.attributes
-        // cette suppression se fait via un hook mongoose (voir post(findOneAndRemove,...) dans models/products.js)
-        // Si vous changez la fonction findOneAndRemove ci-dessous par une autre, veillez a changer le hook dans models/products
-        // Verifier aussi que lors de la suppression le nouveau hook est appelé
-        // /!\
-        const product = await Products.findOneAndRemove({code: req.params.code});
-        deleteImages(product._id, product.images, []);
-        return res.send({status: true});
-    } catch (error) {
-        return next(error);
-    }
-}
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const save = async (req, res, next) => {
-    try {
-        if (!req.body._id) {
-            // On vérifie que le code n'est pas déjà pris
-            const product = await Products.findOne({code: req.body.code});
-            if (product) {
-                return next(NSErrors.ProductCodeExisting);
-            }
-
-            switch (req.body.type) {
-            case 'simple':
-                req.body.kind = 'SimpleProduct';
-                break;
-            case 'virtual':
-                req.body.kind = 'VirtualProduct';
-                break;
-            case 'bundle':
-                req.body.kind = 'BundleProduct';
-                break;
-            default:
-                break;
-            }
-
-            if (req.body.set_attributes === undefined) {
-                req.body.attributes = [];
-
-                const setAtt = await SetAttributes.findOne({code: 'defaut'});
-                req.body.set_attributes_name = setAtt.name;
-                req.body.set_attributes = setAtt._id;
-
-                for (const attrs of setAtt.attributes) {
-                    const attr = await Attributes.findOne({_id: attrs});
-                    if (attr != null) {
-                        const arrAttr = JSON.parse(JSON.stringify(attr));
-                        arrAttr.id = attr._id;
-                        req.body.attributes.push(arrAttr);
-                    }
-                }
-                aquilaEvents.emit('aqProductCreated', product._id);
-                return res.send(product);
-            }
-            req.body.code = utils.slugify(req.body.code);
-
-            const _product = await Products.create(req.body);
-            aquilaEvents.emit('aqProductCreated', _product._id);
-            return res.send(_product);
-        }
-        const product = await Products.findById(req.body._id);
-        if (!product) throw NSErrors.NotFound;
-
-        deleteImages(req.body._id, product.images, req.body.images);
-
-        if (req.body.autoSlug) {
-            // On met à jour le slug du produit
-            req.body._slug = `${utils.slugify(req.body.name)}-${req.body.code}`;
-        }
-
-        product.updateData(req.body, (err, result) => {
-            if (err) {
-                return next(err);
-            }
-            return res.json(result);
-        });
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- * @todo RV2 : Utilisé lors d'un delete produit dans l'admin
- */
-function deleteImages(id, oldImages, newImages) {
-    console.warn('Legacy method : deleteImages()');
-
-    const bIds = {};
-    newImages.forEach((obj) => bIds[obj._id] = obj);
-
-    oldImages
-        .filter((obj) => !(obj._id in bIds))
-        .forEach(async (item) => mediasUtils.deleteFile(item.url));
-}
-
-/**
- * Full text search on backoffice
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const searchProductsAdmin = async (req, res, next) => {
-    let queryCondition = {
-        $or : [// {'details.description': new RegExp(req.body.q, 'i')},
-            {name: new RegExp(req.body.q, 'i')} /* {_supplier: new RegExp(req.body.q, 'i')},
-             {_trademark: new RegExp(req.body.q, 'i')},
-             {supplier_ref: new RegExp(req.body.q, 'i')},
-             {'specific.custom_text1': new RegExp(req.body.q, 'i')},
-             {'specific.custom_text2': new RegExp(req.body.q, 'i')},
-             {'specific.custom_text3': new RegExp(req.body.q, 'i')} */
-        ]
-    };
-    if (req.query.requiredSlugMenus) {
-        queryCondition = {
-            $and : [
-                {
-                    $or : [{slugMenus: {$size: 0}}, {slugMenus: {$exists: false}}]
-                }, {
-                    $or : [// {'details.description': new RegExp(req.body.q, 'i')},
-                        {name: new RegExp(req.body.q, 'i')} /* {_supplier: new RegExp(req.body.q, 'i')},
-                         {_trademark: new RegExp(req.body.q, 'i')},
-                         {supplier_ref: new RegExp(req.body.q, 'i')} */
-                    ]
-                }
-            ]
-        };
-    }
-    try {
-        const products = await Products.find(queryCondition, null, {skip: req.body.start, limit: req.body.limit}).sort('code');
-        return res.json(products);
-    } catch (err) {
-        return next(err);
-    }
-};
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const list = async (req, res, next) => {
-    try {
-        const products = await Products.find(req.query).populate('location.town location.country');
-        return res.json(products);
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const getAssociatedProducts = async (req, res, next) => {
-    try {
-        const product = await Products.findOne({code: req.params.code});
-        if (!product) {
-            throw NSErrors.NotFound;
-        }
-        let associatedProds = [];
-
-        if (product.associated_prds.length > req.params.size && req.params.size !== undefined) {
-            let limit = 0;
-            while (associatedProds.length < req.params.size && limit < 1000) {
-                const rand = Math.floor(Math.random() * product.associated_prds.length);
-                if (associatedProds.indexOf(product.associated_prds[rand]) === -1) {
-                    associatedProds.push(product.associated_prds[rand]);
-                }
-
-                limit++;
-            }
-        } else {
-            associatedProds = product.associated_prds;
-        }
-
-        const products = await Products.find({
-            _id : {$in: associatedProds}
-        }).populate('location.town location.country');
-        return res.json(products);
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const detail = async (req, res, next) => {
-    const filter = {
-        code : req.params.code
-    };
-    if (req.query.active) {
-        filter.active = req.query.active;
-    }
-    let query = Products.findOne(filter);
-    if (req.query.populate === 'true') {
-        query = query.populate('location.town location.country');
-    }
-
-    // Si c'est l'admin qui a fait la demande
-    if (req.baseUrl !== '') {
-        query = query.populate('set_attributes');
-    }
-
-    try {
-        const product = await query;
-        if (!product) {
-            throw NSErrors.NotFound;
-        }
-        return res.json(product);
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const getPagination = async (req, res, next) => {
-    try {
-        const foundProducts = await Products.find(req.query, null, {
-            skip  : (req.params.page - 1) * req.params.limit,
-            limit : parseInt(req.params.limit, 10)
-        });
-        const count = await Products.countDocuments(req.query);
-        return res.json({products: foundProducts, count});
-    } catch (err) {
-        return next(err);
-    }
-};

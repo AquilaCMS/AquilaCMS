@@ -1,4 +1,14 @@
 /**
+ * @apiDefine headerAuth
+ * @apiHeader {String} authorization Authorization value for customer.
+ */
+
+ /**
+ * @apiDefine headerAuthAdmin
+ * @apiHeader {String} authorization Authorization value for admin.
+ */
+
+ /**
  * @apiDefine param_PostBody
  * @apiParam {Object} PostBody Use <a href="#api-_">PostBody strucure</a>
  */

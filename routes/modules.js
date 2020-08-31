@@ -1,8 +1,6 @@
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {middlewareServer} = require('../middleware');
-const serviceModule = require('../services/modules');
-const {Modules}     = require('../orm/models');
-const NSErrors      = require('../utils/errors/NSErrors');
+const {authentication, adminAuth}   = require('../middleware/authentication');
+const serviceModule                 = require('../services/modules');
+const NSErrors                      = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
@@ -12,9 +10,6 @@ module.exports = function (app) {
     app.post('/v2/modules/toggle',   authentication, adminAuth, toggleActiveModule);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
-
-    // Deprecated
-    app.get('/modules', middlewareServer.deprecatedRoute, getModules);
 };
 
 const checkDependencies = async (req, res, next) => {
@@ -112,21 +107,3 @@ const removeModule = async (req, res, next) => {
         return next(error);
     }
 };
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
- * @deprecated
- * @param {Express.Request} req req
- * @param {Express.Response} res res
- * @param {Function} next next
- */
-async function getModules(req, res, next) {
-    try {
-        return res.json(await Modules.find());
-    } catch (err) {
-        return next(err);
-    }
-}

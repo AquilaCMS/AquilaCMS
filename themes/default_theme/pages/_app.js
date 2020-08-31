@@ -4,10 +4,11 @@ import App from 'next/app';
 import Head from 'next/head';
 import parse from 'html-react-parser';
 import {
-    NSToast, initAqlrc, initLangAqlrc, getCmsBlock, initPage, jwtManager, getUser, logoutUser
+    NSToast, initAqlrc, initLangAqlrc, getCmsBlock, initPage, jwtManager, getUser, logoutUser, scrollToTop
 } from 'aqlrc';
 import getAPIUrl from 'lib/getAPIUrl';
 import { Router } from 'routes';
+import {getModulesHookFunctionsByType} from '../lib/utils';
 import 'styles/global.css';
 import 'public/static/css/slider.css';
 import 'rc-slider/assets/index.css';
@@ -15,7 +16,7 @@ import 'lightbox-react/style.css';
 import 'public/static/slick-1.6.0/slick_and_theme.css';
 import 'public/static/css/product-card.css';
 
-export default class AquilaApp extends App {
+class AquilaApp extends App {
     static async getInitialProps(bundle) {
         initAqlrc();
 
@@ -169,11 +170,11 @@ export default class AquilaApp extends App {
                 langs,
                 lang,
                 routerLang,
-                urlLang
+                urlLang,
+                hooksFunctions: await getModulesHookFunctionsByType()
             };
             return { pageProps };
         } catch (err) {
-            console.error(err);
             return { pageProps };
         }
     }
@@ -198,7 +199,7 @@ export default class AquilaApp extends App {
         /* Évènements levés pour Google Analytics */
         const init = new CustomEvent('init', {});
         window.dispatchEvent(init);
-        let logPageView = new CustomEvent('logPageView', {});
+        let logPageView = new CustomEvent('logPageView', {detail: {url: window.location.pathname}});
         window.dispatchEvent(logPageView);
 
         Router.onRouteChangeStart = () => {
@@ -207,12 +208,14 @@ export default class AquilaApp extends App {
         };
 
         const previousCallback = Router.onRouteChangeComplete;
-        Router.onRouteChangeComplete = () => {
+        Router.onRouteChangeComplete = (url) => {
             if (typeof previousCallback === 'function') {
                 previousCallback();
             }
-            logPageView = new CustomEvent('logPageView', {});
-            window.dispatchEvent(logPageView);
+
+            if (typeof window !== 'undefined' && window.location.hash === '') scrollToTop(1000);
+            const onChangeLogPageView = new CustomEvent('logPageView', {detail: {url}});
+            window.dispatchEvent(onChangeLogPageView);
         };
 
         // Affectation de la langue dans le local storage en fonction de l'URL
@@ -257,3 +260,4 @@ export default class AquilaApp extends App {
         );
     }
 }
+export default AquilaApp;

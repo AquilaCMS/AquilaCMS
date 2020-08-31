@@ -276,8 +276,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2",
-    function ($scope, $filter, SetAttributesV2, AttributesV2) {
+    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal",
+    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
 
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
@@ -293,6 +293,30 @@ ProductControllers.controller("nsProductGeneral", [
                 }
             }
         });
+
+        $scope.changeActiveVisible = function(product){
+            $modal.open({
+                templateUrl: 'app/product/views/modals/canonical.html',
+                controller: function ($scope, $modalInstance, CategoryV2) {
+                    $scope.product = product;
+
+                        CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
+                            $scope.cat = categoriesLink.datas.length !== 0;
+                        });
+                    
+                    $scope.cancel = function () {
+                        $modalInstance.dismiss('cancel');
+                    };
+                },
+                resolve: {
+                    product: function () {
+                        return product;
+                    },
+                    
+                }
+            }).result.then(function () {
+            });
+        }
 
 
         $scope.loadNewAttrs = function () {

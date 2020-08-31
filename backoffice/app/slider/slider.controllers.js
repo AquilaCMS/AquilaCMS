@@ -21,6 +21,9 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         $scope.disableSave = true;
         $scope.showLoader = false;
         $scope.slider = {};
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
 
         if($routeParams.id !== "new")
         {
@@ -64,6 +67,10 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
 
         $scope.save = function (quit)
         {
+            if ($scope.nsUploadFiles.isSelected) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
             SliderService.save($scope.slider, function (res)
             {
                 if($scope.isEditMode)

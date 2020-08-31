@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {
-    NSContext, NSToast, scrollToTop, NSCookieBanner
+    NSContext, NSToast, NSCookieBanner
 } from 'aqlrc';
 import { withRouter } from 'next/router';
 import CMS from './CMS';
@@ -16,9 +16,6 @@ import { listModulePage } from 'lib/utils';
 
 class Layout extends React.Component {
     componentDidMount = () => {
-        Router.onRouteChangeComplete = () => {
-            if (typeof window !== 'undefined' && window.location.hash === '') scrollToTop(1000);
-        };
         axios.interceptors.request.use((config) => {
             // spinning start to show
             // UPDATE: Add this code to show global loading indicator
@@ -78,7 +75,17 @@ class Layout extends React.Component {
         const {
             header, children, footer, t
         } = this.props;
-        const { messageCookie, themeConfig } = this.context.state;
+        let messageCookie;
+        let themeConfig;
+        if (
+            this.context
+            && this.context.state
+            && this.context.state.messageCookie
+            && this.context.state.themeConfig
+        ) {
+            messageCookie = this.context.state.messageCookie;
+            themeConfig = this.context.state.themeConfig;
+        }
         return (
             <>
                 <NSToast />
@@ -87,8 +94,21 @@ class Layout extends React.Component {
                 }
                 <CMS ns-code="header" content={header} />
                 {children}
-                {themeConfig && themeConfig.showFooter && <CMS ns-code="footer" content={footer} />}
-                <NSCookieBanner message={messageCookie} button-accept-text={t('common:buttonCookieAccept')} button-deny-text={t('common:buttonCookieDeny')} />
+                {
+                    themeConfig
+                    && themeConfig.showFooter
+                        ? <CMS ns-code="footer" content={footer} />
+                        : ''
+                }
+                {
+                    messageCookie
+                        ? <NSCookieBanner
+                            message={messageCookie}
+                            button-accept-text={t('common:buttonCookieAccept')}
+                            button-deny-text={t('common:buttonCookieDeny')}
+                        />
+                        : ''
+                }
             </>
         );
     }
