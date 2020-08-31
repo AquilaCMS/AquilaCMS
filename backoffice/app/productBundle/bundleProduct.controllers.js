@@ -9,6 +9,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
         $scope.disableSave = false;
         $scope.promos = []
         $scope.displayModes = BundleSectionDisplayModes;
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
 
         if($routeParams.code !== "new")
         {
@@ -160,6 +163,10 @@ BundleProductControllers.controller("BundleProductCtrl", [
 
         $scope.saveProduct = function (product, isQuit)
         {
+            if ($scope.nsUploadFiles.isSelected) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
             var attrsErrors = false;
             //Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;

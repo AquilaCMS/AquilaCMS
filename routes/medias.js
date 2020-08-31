@@ -1,11 +1,7 @@
 const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {middlewareServer}          = require('../middleware');
 const mediasServices              = require('../services/medias');
-const utils                       = require('../utils/utils');
-const mediasUtils                 = require('../utils/medias');
 const NSErrors                    = require('../utils/errors/NSErrors');
-const {Medias}                    = require('../orm/models');
 
 module.exports = function (app) {
     app.post('/v2/medias', authentication, adminAuth, listMedias);
@@ -17,11 +13,6 @@ module.exports = function (app) {
     app.get('/v2/medias/download/documents', authentication, adminAuth, downloadAllDocuments);
     app.post('/v2/medias/download/documents', authentication, adminAuth, uploadAllDocuments);
     app.post('/v2/medias/download/medias', authentication, adminAuth, uploadAllMedias);
-
-    // Deprecated
-    app.get('/medias', middlewareServer.deprecatedRoute, list);
-    app.post('/medias', middlewareServer.deprecatedRoute, save);
-    app.delete('/medias/:id', middlewareServer.deprecatedRoute, remove);
 };
 
 /**
@@ -156,69 +147,3 @@ async function uploadAllDocuments(req, res, next) {
         next(NSErrors.InvalidFile);
     }
 }
-
-//= =======================================================================
-//= ============================= Deprecated ==============================
-//= =======================================================================
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-async function list(req, res, next) {
-    try {
-        const medias = await Medias.find(null);
-        res.json(medias);
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-async function save(req, res, next) {
-    const data = req.body;
-    try {
-        if (data.link && data.link !== '') {
-            const media = await Medias.findOneAndUpdate({link: data.link}, data);
-            res.json(media);
-        } else {
-            data.name = utils.slugify(data.name);
-            const media = await Medias.create(data);
-            res.json(media);
-        }
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-const remove = async (req, res, next) => {
-    try {
-        const media = await Medias.findById(req.params.id);
-        if (!media) throw NSErrors.MediaNotFound;
-
-        if (media.link) {
-            await mediasUtils.deleteFile(media.link);
-            require('../services/cache').deleteCacheImage('medias', {filename: path.basename(media.link).split('.')[0]});
-        }
-        await media.remove();
-        return res.end();
-    } catch (err) {
-        return next(err);
-    }
-};

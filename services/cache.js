@@ -1,6 +1,6 @@
 const glob           = require('glob');
 const fs             = require('fs');
-const {deleteFolder} = require('../utils/utils');
+const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
 
 const flush = () => {

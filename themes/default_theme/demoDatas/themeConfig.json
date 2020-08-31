@@ -2,7 +2,6 @@
   "collection": "themeConfig",
   "datas": [
     {
-      "_id": "5d512301bb730b3b0140767b",
       "name": "default_theme",
       "config": {
         "translation" : {
@@ -24,7 +23,7 @@
               "filters" : "left",
               "reviews" : "true"
           }
-      }
+      	}
       }
     }
   ]

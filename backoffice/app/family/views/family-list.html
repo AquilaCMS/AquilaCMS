@@ -22,10 +22,10 @@
                         <span class="badge" style="margin-top:2px">
                             <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);newFamilies('family')"><i class="fa fa-plus-square"></i></a>
                         </span>
-                        <span ng-show="selectedUniverse != universe._id && universe.children.length" class="badge">
+                        <span ng-show="selectedUniverse != universe._id && universe.children.length" class="badge" style="float: left;">
                             <a href=""><span class="glyphicon glyphicon-chevron-up"></span></a>
                         </span>
-                        <span ng-show="selectedUniverse == universe._id && universe.children.length" class="badge">
+                        <span ng-show="selectedUniverse == universe._id && universe.children.length" class="badge" style="float: left;">
                             <a href=""><span class="glyphicon glyphicon-chevron-down"></span></a>
                         </span>
                     </div>
@@ -45,10 +45,10 @@
                                     <span class="badge" style="margin-top:2px">
                                         <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);newFamilies('subfamily')"><i class="fa fa-plus-square"></i></a>
                                     </span>
-                                    <span ng-show="selectedFamily != family._id && family.children.length" class="badge">
+                                    <span ng-show="selectedFamily != family._id && family.children.length" class="badge" style="float: left;">
                                         <a href=""><span class="glyphicon glyphicon-chevron-up"></span></a>
                                     </span>
-                                    <span ng-show="selectedFamily == family._id && family.children.length" class="badge">
+                                    <span ng-show="selectedFamily == family._id && family.children.length" class="badge" style="float: left;">
                                         <a href=""><span class="glyphicon glyphicon-chevron-down"></span></a>
                                     </span>
                                 </div>

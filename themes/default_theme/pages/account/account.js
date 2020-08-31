@@ -124,7 +124,7 @@ class PageAccount extends NSPageAccount {
 
     render() {
         const {
-            langs, oCmsHeader, oCmsFooter, sitename, t
+            langs, oCmsHeader, oCmsFooter, sitename, t, hooksFunctions
         } = this.props;
         const { user, optinNewsletter } = this.state;
         return (

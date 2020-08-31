@@ -7,6 +7,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
     function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
@@ -88,6 +91,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         };
 
         $scope.saveProduct = function (product, isQuit) {
+            if ($scope.nsUploadFiles.isSelected) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
             let attrsErrors = false;
             // Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;

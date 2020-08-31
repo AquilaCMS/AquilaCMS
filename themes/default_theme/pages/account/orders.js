@@ -95,7 +95,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                             }
                                                                                                             let imgDefault = imgDefaultBase64;
                                                                                                             let imgAlt = 'illustration produit';
-                                                                                                            if (item.id.images && item.id.images.length) {
+                                                                                                            if (item.id && item.id.images && item.id.images.length) {
                                                                                                                 const foundImg = item.id.images.find((img) => img.default);
                                                                                                                 if (foundImg) {
                                                                                                                     imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
@@ -113,10 +113,10 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                 <img src={imgDefault} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
-                                                                                                                                <h6>{item.id.name} x {item.quantity}</h6>
+                                                                                                                                <h6>{item.id && item.id.name || 'NO NAME'} x {item.quantity}</h6>
                                                                                                                                 <p>
                                                                                                                                     {
-                                                                                                                                        item.id &&  item.id.description1 && item.id.description1.title
+                                                                                                                                        item.id && item.id.description1 && item.id.description1.title
                                                                                                                                             ? item.id.description1.title
                                                                                                                                             : ''
                                                                                                                                     }

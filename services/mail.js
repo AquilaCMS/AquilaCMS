@@ -5,8 +5,9 @@ const url              = require('url');
 const ServiceLanguages = require('./languages');
 const encryption       = require('../utils/encryption');
 const utils            = require('../utils/utils');
-const mediasUtils       = require('../utils/medias');
+const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
+const aquilaEvents     = require('../utils/aquilaEvents');
 const {
     Users,
     Mail,
@@ -656,58 +657,60 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, pathAttachm
             mailTo = devMode.mailTo;
         }
 
-        if (!mailHost || !mailPort || !mailUser || !mailPass) {
-            throw NSErrors.UnableToMail;
-        }
-
         let fromMail = mailFrom != null ? mailFrom : _config.environment.mailFromContact;
-        if (fromName != null) {
+        if (fromName != null && fromName !== '') {
             fromMail = `${fromName} <${fromMail}>`;
         }
         const mailOptions = {
             from : fromMail,
             to   : mailTo,
+            html : htmlBody,
             subject
         };
-
-        if (!mailIsSendmail) {
-            mailOptions.html = htmlBody;
-            if (pathAttachment != null) {
-                mailOptions.attachments = [{path: pathAttachment}];
+        if (pathAttachment != null) {
+            mailOptions.attachments = [{path: pathAttachment}];
+        }
+        mailOptions.text = textBody || htmlBody;
+        const aqSendMail = aquilaEvents.emit('aqSendMail', mailOptions);
+        if (!aqSendMail) {
+            if (!mailHost || !mailPort || !mailUser || !mailPass) {
+                throw NSErrors.UnableToMail;
             }
-            if (mailUser.indexOf('gmail') > -1) {
-                transporter = nodemailer.createTransport({
-                    service : 'Gmail',
-                    auth    : {user: mailUser, pass: mailPass},
-                    tls     : {rejectUnauthorized: false}
-                });
+
+            if (!mailIsSendmail) {
+                if (mailUser.indexOf('gmail') > -1) {
+                    transporter = nodemailer.createTransport({
+                        service : 'Gmail',
+                        auth    : {user: mailUser, pass: mailPass},
+                        tls     : {rejectUnauthorized: false}
+                    });
+                } else {
+                    transporter = nodemailer.createTransport({
+                        host   : mailHost,
+                        port   : Number.parseInt(mailPort, 10),
+                        secure : mailSecure || false,
+                        auth   : {
+                            user : mailUser,
+                            pass : mailPass
+                        }
+                    });
+                }
             } else {
                 transporter = nodemailer.createTransport({
-                    host   : mailHost,
-                    port   : Number.parseInt(mailPort, 10),
-                    secure : mailSecure || false,
-                    auth   : {
-                        user : mailUser,
-                        pass : mailPass
-                    }
+                    sendmail : true,
+                    newline  : 'unix',
+                    path     : '/usr/sbin/sendmail'
                 });
             }
-        } else {
-            mailOptions.text = textBody || htmlBody;
-            mailOptions.html = htmlBody;
-            transporter = nodemailer.createTransport({
-                sendmail : true,
-                newline  : 'unix',
-                path     : '/usr/sbin/sendmail'
-            });
-        }
 
-        try {
-            return await transporter.sendMail(mailOptions);
-        } catch (err) {
-            console.error('Send mail error', err);
-            throw err;
+            try {
+                return transporter.sendMail(mailOptions);
+            } catch (err) {
+                console.error('Send mail error', err);
+                throw err;
+            }
         }
+        return aqSendMail;
     } catch (error) {
         const errorMail = NSErrors.UnableToMail;
         errorMail.datas = {message: error.message, stack: error.stack};

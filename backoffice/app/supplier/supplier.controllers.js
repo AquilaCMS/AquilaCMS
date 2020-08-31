@@ -33,7 +33,7 @@ SupplierControllers.controller("SupplierNewCtrl", [
         $scope.supplier = {};
         $scope.form = {};
 
-        $scope.save = function (data) {
+        $scope.save = function (data, isQuit) {
             $scope.form.nsSubmitted = true;
             if ($scope.form.supplier.$invalid) {
                 toastService.toast("danger", "Les informations saisies ne sont pas valides.");
@@ -41,8 +41,14 @@ SupplierControllers.controller("SupplierNewCtrl", [
             }
           
         SuppliersV2.save(data, function (response) {
-                console.log("Supplier Saved!", response);
-                $location.path("/suppliers/"+response.code);
+            toastService.toast("success", "Fournisseur créé.");
+            console.log("Supplier Saved!", response);
+            if (isQuit) {
+                $location.path("/suppliers/");
+            } else {
+                $location.path("/suppliers/" + response.code);
+
+            }
             }, function (err) {
                 console.error(err);
                 toastService.toast("danger", "Une erreur interne est survenue.");

@@ -11,8 +11,8 @@ module.exports = (installRouter) => {
             let html = (fs.readFileSync(path.join(global.appRoot, '/installer/install.html'))).toString();
             html     = html.replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`);
             html     = html.replace('{{aquilaCMSVersion}}', JSON.parse(fs.readFileSync(path.resolve(global.appRoot, './package.json'))).version);
-            let wkhtmlInstalled = true;
-            let sharpInstalled = true;
+            let wkhtmlInstalled = false;
+            let sharpInstalled = false;
             try {
                 wkhtmlInstalled = await (new Promise((resolve, reject) => {
                     const res = fork(path.resolve(global.appRoot, 'scripts/wkhtmltopdf.js'), [], {});
@@ -20,10 +20,10 @@ module.exports = (installRouter) => {
                         resolve(message);
                     });
                     res.on('error', (err) => {
-                        reject(err);
+                        if (err) reject(err);
                     });
                     res.send('process', (err) => {
-                        reject(err);
+                        if (err) reject(err);
                     });
                 }));
             } catch (err) {
@@ -36,10 +36,10 @@ module.exports = (installRouter) => {
                         resolve(message);
                     });
                     res.on('error', (err) => {
-                        reject(err);
+                        if (err) reject(err);
                     });
                     res.send(global.appRoot, (err) => {
-                        reject(err);
+                        if (err) reject(err);
                     });
                 }));
             } catch (err) {

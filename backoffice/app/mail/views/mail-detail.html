@@ -1,6 +1,6 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
     <ns-box data-title="mail.detail.t1" title-icon="fa fa-envelope fa-lg" close-href="#/mails">
-        <ns-buttons is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form">
+        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form">
             <ns-translation ng-model="lang" class="pull-right"></ns-translation> 
             <button ng-if="isEditMode" type="button" ng-click="openItemModal(lang)" class="btn-default"
                 style="top: 150px;position: absolute;right:600px;color: #fff; padding:0 20px; height: 35px; background-color: grey" translate>mail.detail.test</button>
@@ -68,7 +68,7 @@
                 <div style="width: 50%;float: right;margin-top:10px" ng-if="isEditMode">
                     <div class="col-md-10">
                         <label translate>mail.detail.attachment</label>
-                        <ns-upload-files ng-if="!mail.translation[lang].attachments || mail.translation[lang].attachments.length < 1" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
+                        <ns-upload-files is-selected="nsUploadFiles.isSelected" ng-if="!mail.translation[lang].attachments || mail.translation[lang].attachments.length < 1" accepttype="application/pdf" id="mail._id" multiple="false" type="mail" before-function="before()"
                             after-function="after()" lang="lang" on-error="uploadError()"></ns-upload-files>
                         
                             <table style="border:1px solid black; margin-bottom: 15px;max-width:100%; table-layout: fixed;">

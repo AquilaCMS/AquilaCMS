@@ -108,7 +108,10 @@ CartSchema.methods.calculateBasicTotal = function () {
 
         if (item.get('price.special.ati') !== undefined) {
             if (item.price.special === undefined || item.price.special.ati === undefined) {
-                item.price.special = {et: item.id.price.et.special, ati: item.id.price.ati.special * ((item.price.vat.rate / 100) + 1)};
+                item.price.special = {
+                    et  : item.id.price.et.special,
+                    ati : item.id.price.ati.special * ((item.price.vat.rate / 100) + 1)
+                };
             }
             priceTotal.et += item.price.special.et * item.quantity;
             priceTotal.ati += item.price.special.ati * item.quantity;
@@ -136,10 +139,11 @@ CartSchema.virtual('delivery.price').get(function () {
 
 CartSchema.virtual('additionnalFees').get(function () {
     // const self = this;
+    const {et, tax} = global.envConfig.stockOrder.additionnalFees;
     return {
-        ati : Number(global.envConfig.stockOrder.additionnalFees.et + (global.envConfig.stockOrder.additionnalFees.et * (global.envConfig.stockOrder.additionnalFees.tax / 100))),
-        et  : Number(global.envConfig.stockOrder.additionnalFees.et),
-        tax : Number(global.envConfig.stockOrder.additionnalFees.tax)
+        ati : Number(et + (et * (tax / 100))),
+        et  : Number(et),
+        tax : Number(tax)
     };
 });
 
@@ -157,7 +161,7 @@ CartSchema.virtual('priceTotal').get(function () {
     }
     // Si des promos s'appliquant sur certain item du panier sont disponibles
     if (self.promos && self.promos.length && self.promos[0].productsId) {
-        for (let i = 0, leni = self.promos[0].productsId.length; i < leni; i++) {
+        for (let i = 0; i < self.promos[0].productsId.length; i++) {
             const promoProduct = self.promos[0].productsId[i];
             const item = self.items.find((_item) => _item.id.id.toString() === promoProduct.productId.toString());
             if (item && priceTotal.et && priceTotal.ati) {
@@ -182,8 +186,9 @@ CartSchema.virtual('priceTotal').get(function () {
     }
     // ajout additional
     if (global.envConfig.stockOrder.additionnalFees) {
-        priceTotal.ati += global.envConfig.stockOrder.additionnalFees.et + (global.envConfig.stockOrder.additionnalFees.et * (global.envConfig.stockOrder.additionnalFees.tax / 100));
-        priceTotal.et += global.envConfig.stockOrder.additionnalFees.et;
+        const {et, tax} = global.envConfig.stockOrder.additionnalFees;
+        priceTotal.ati += et + (et * (tax / 100));
+        priceTotal.et += et;
     }
     return priceTotal;
 });

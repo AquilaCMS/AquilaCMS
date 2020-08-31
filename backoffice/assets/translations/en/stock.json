@@ -25,5 +25,6 @@
     "cancel": "Cancel",
     "valider": "Submit",
     "additionnalFeesTax": "Additionnal fees (Tax)",
-    "additionnalFeesEt": "Additionnal fees (ET)"
+    "additionnalFeesEt": "Additionnal fees (ET)",
+    "automaticBilling": "Automatic billing (Order is paid)"
 }

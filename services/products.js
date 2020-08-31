@@ -953,7 +953,7 @@ const downloadProduct = async (req, res) => {
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
-        if (order.status !== 'PAID') {
+        if (['PAID', 'BILLED'].indexOf(order.status) === -1) {
             throw NSErrors.OrderNotPaid;
         }
         prd = order.items.find((item) => item._id.toString() === req.query.op_id.toString()).id;

@@ -114,9 +114,8 @@ exports.uploadAllDocuments = async (reqFile) => {
     console.log('Uploading Documents for unzip...');
 
     const path_init   = reqFile.path;
-    const target_path = `./${server.getUploadDirectory()}`;
+    const target_path = path.resolve(server.getUploadDirectory());
 
-    // Unzip
     const zip = new AdmZip(path_init);
     zip.extractAllTo(target_path);
     console.log('Upload Documents is done !');
@@ -303,7 +302,11 @@ exports.uploadFiles = async (body, files) => {
         }
 
         await fsp.copyRecursiveSync(tmp_path, path.normalize(target_path_full));
-        await fsp.deleteRecursiveSync(tmp_path);
+        if ((await fsp.stat(tmp_path)).isDirectory()) {
+            await fsp.deleteRecursiveSync(tmp_path);
+        } else {
+            await fsp.unlink(tmp_path);
+        }
 
         return target_path_full.replace(pathFinal, '');
     });

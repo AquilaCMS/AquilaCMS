@@ -1,4 +1,3 @@
-const {middlewareServer}          = require('../middleware');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceSlider               = require('../services/slider');
 
@@ -9,9 +8,6 @@ module.exports = function (app) {
     app.put('/v2/slider', authentication, adminAuth, setSlider);
     app.delete('/v2/slider/:id', authentication, adminAuth, deleteSlider);
     app.delete('/v2/slider/:_id/:_id_item', authentication, adminAuth, deleteItemSlider);
-
-    // Deprecated
-    app.put('/v2/slider/:id/item', middlewareServer.deprecatedRoute, authentication, adminAuth, setItemSlider);
 };
 
 /**
@@ -81,25 +77,6 @@ async function deleteSlider(req, res, next) {
 async function deleteItemSlider(req, res, next) {
     try {
         const result = await ServiceSlider.deleteItemSlider(req.params._id, req.params._id_item);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
-* @deprecated
-* Fonction pour ajouter ou mettre à jour un item d'un slider
-*/
-async function setItemSlider(req, res, next) {
-    require('../utils/utils').tmp_use_route('slider_api', 'setItemSlider');
-
-    try {
-        const result = await ServiceSlider.setItemSlider(req.params.id, req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
