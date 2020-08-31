@@ -338,7 +338,8 @@ ProductDirectives.directive("nsProductPhoto", function () {
     return {
         restrict : "E",
         scope    : {
-            form : "="
+            form : "=",
+            isSelected: "=" 
         },
         require     : "ngModel",
         templateUrl : "app/product/views/templates/nsProductPhoto.html",

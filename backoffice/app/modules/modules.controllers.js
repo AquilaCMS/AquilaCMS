@@ -129,7 +129,6 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                 }).catch((err) => {
                     $scope.showModuleLoading = false;
                     if (err.data.datas && err.data.datas.missingDependencies && err.data.datas.needActivation) {
-                        $scope.modules.find((elem) => elem._id === id).active = false;
                         toastService.toast("danger",
                             `${err.data.message}<br>
                             ${err.data.datas.missingDependencies.length > 0 ? `missing dependencies :<br>
@@ -138,7 +137,6 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                             <b>${err.data.datas.needActivation.map(elem => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}`
                         );
                     } else if (err.data.datas && err.data.datas.needDeactivation) {
-                        $scope.modules.find((elem) => elem._id === id).active = true;
                         toastService.toast("danger",
                             `${err.data.message}<br>
                             ${err.data.datas.needDeactivation.length > 0 ? `need deactivation :<br>
@@ -146,6 +144,9 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                         );
                     } else {
                         toastService.toast("danger", err.data.message);
+                    }
+                    if (err.data.datas && err.data.datas.modules) {
+                        $scope.modules = err.data.datas.modules;
                     }
                 });
             }

@@ -3,6 +3,9 @@ const ProductVirtualController = angular.module('aq.productVirtual.controllers',
 ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location', '$controller', 'toastService', 'ProductsV2', '$routeParams', '$filter',
     function ($scope, $location, $controller, toastService, ProductsV2, $routeParams, $filter) {
         angular.extend(this, $controller('SimpleProductCtrl', {$scope: $scope}));
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
 
         if ($routeParams.code === "new") {
             $scope.product.type = "virtual";

@@ -46,7 +46,7 @@ class CMS extends React.Component {
         }
         // Module Next Sourcia : <aq-[...]>
         if (name && type === 'tag' && nsModules.find((comp) => comp.code === name)) {
-            const NsModule = nsModules.find((comp) => comp.code === name).jsx;
+            const NsModule = nsModules.find((comp) => comp.code === name).jsx.default;
             const component = React.cloneElement(
                 <NsModule />,
                 {

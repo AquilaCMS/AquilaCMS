@@ -274,7 +274,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
                 user.isAdmin = true;
                 ClientV2.saveAdmin(user, function (msg)
                 {
-                    if(msg.status)
+                    if(msg.user)
                     {
                         toastService.toast("success", "Informations sauvegardées !");
                         $location.path("/list");

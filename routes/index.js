@@ -38,7 +38,10 @@ const loadDynamicRoutes = (app, adminFront) => {
 const manageExceptionsRoutes = async (req, res, next) => {
     if (['.jpg', '.jpeg', '.png', '.css', '.js', '.json', '.txt', '.ico'].includes(path.extname(req.url).toLowerCase())) {
         res.setHeader('Cache-Control', 'public, max-age=2592000');
-        res.setHeader('Expires', new Date(Date.now() + 2592000000).toUTCString());
+
+        const dt = new Date(Date.now());
+        dt.setMonth( dt.getMonth() + 1 );
+        res.setHeader('Expires', dt.toUTCString());
     }
     // Exception BO React
     if (req.url.startsWith('/bo') && !req.url.startsWith('/bo/api')) {

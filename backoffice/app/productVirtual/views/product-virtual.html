@@ -1,6 +1,7 @@
 <form name="form" novalidate class="form-horizontal" role="form" ng-submit="saveProduct(product, false)">
     <ns-box data-title="simple.t1" title-icon="fa fa-cubes fa-lg" close-href="#/products">
         <ns-buttons show-duplicate="true"
+                    is-selected="nsUploadFiles.isSelected"
                     is-edit-mode="isEditMode"
                     return-path="/products"
                     form="form"
@@ -35,7 +36,7 @@
                 </div>
 
                 <div id="photos" class="tab-pane fade">
-                    <ns-product-photo ng-model=product form="form"></ns-product-photo>
+                    <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model=product form="form"></ns-product-photo>
                 </div>
 
                 <div id="cross_selling" class="tab-pane fade">

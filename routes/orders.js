@@ -6,7 +6,6 @@ const ServiceOrder                   = require('../services/orders');
 const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
 const {authentication, adminAuth}    = require('../middleware/authentication');
-const utilsDatabase                  = require('../utils/database');
 const NSErrors                       = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
@@ -26,12 +25,7 @@ module.exports = function (app) {
     app.put('/v2/order', setOrder);
 
     // Deprecated
-    app.get('/orders/:id', middlewareServer.deprecatedRoute, detail);
-    app.get('/orders/user/:idUser', middlewareServer.deprecatedRoute, authentication, adminAuth, getByClient);
-    app.post('/orders/cancel/:id', middlewareServer.deprecatedRoute, authentication, cancelOrder);
-    app.put('/orders/status/:id', middlewareServer.deprecatedRoute, authentication, adminAuth, updateStatus);
     app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
-    app.post('/orders/payment', middlewareServer.deprecatedRoute, authentication, adminAuth, updatePayment);
 };
 
 /**
@@ -78,8 +72,7 @@ async function getOrder(req, res, next) {
 }
 
 /**
- * Fonction retournant une commande
- *
+ * Return an Order by it's id
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -95,7 +88,7 @@ async function getOrderById(req, res, next) {
 }
 
 /**
- *
+ * RMA means Return Material Authorization
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -220,57 +213,6 @@ async function cancelOrderRequest(req, res, next) {
 //= ====================================================================
 //= ========================== Deprecated ==============================
 //= ====================================================================
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-async function detail(req, res, next) {
-    try {
-        const tPopulate = ['customer.id', 'items.id'];
-        // Si le champs orders.point_of_sale existe alors le module est importé
-        if (Orders.schema.path('point_of_sale')) {
-            tPopulate.push('point_of_sale');
-        }
-        const order = await Orders.findOne({_id: req.params.id}).populate(tPopulate);
-        if (!order) {
-            return next(NSErrors.OrderNotFound);
-        }
-        await utilsDatabase.populateItems(order.items);
-        return res.json(order);
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-async function getByClient(req, res, next) {
-    try {
-        const sortObj = {};
-        const query = {
-            'customer.id' : req.params.idUser
-        };
-        if (req.query.sort_creationDate) {
-            sortObj.creationDate = req.query.sort_creationDate;
-        }
-        /* if(req.baseUrl === ''){
-         query.status = {$nin: ['PAYMENT_PENDING','PAYMENT_CONFIRMATION_PENDING','CANCELED']};
-         } */
-        const _orders = await Orders.find(query).sort(sortObj).populate('items.id');
-        return res.json(_orders);
-    } catch (err) {
-        return next(err);
-    }
-}
 
 /**
  *

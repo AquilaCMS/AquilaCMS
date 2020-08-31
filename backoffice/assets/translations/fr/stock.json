@@ -18,12 +18,13 @@
     "vat": "TVA",
     "edVat": "Créer TVA",
     "returnStockToFront": "Retourner les informations de stock au client (redemarrage necessaire)",
-    
+
     "edLib": "Édition du libellé",
     "varDispo": "Variable disponible : ",
     "delete": "Supprimer",
     "cancel": "Annuler",
     "valider": "Valider",
     "additionnalFeesTax": "Frais supplémentaires (Tax)",
-    "additionnalFeesEt": "Frais supplémentaires (HT)"
+    "additionnalFeesEt": "Frais supplémentaires (HT)",
+    "automaticBilling": "Facturation automatique (la commande est payée)"
 }

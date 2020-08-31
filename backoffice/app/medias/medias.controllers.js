@@ -105,6 +105,11 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             name : "",
             group: ""
         };
+
+        $scope.nsUploadFiles = {
+            isSelected : false
+        };
+        
         $scope.routeId = $routeParams.id;
         
         $scope.selectedDropdownItem = "";
@@ -133,6 +138,10 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
         }
 
         $scope.save = function () {
+            if ($scope.nsUploadFiles.isSelected){
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response){return}
+            }
             $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
                 toastService.toast("success", "Media sauvegardé !");

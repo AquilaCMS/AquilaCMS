@@ -152,8 +152,12 @@ ThemesController.controller("ThemesCtrl", [
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
-                    toastService.toast("success", "Données du thème copiées avec succès.");
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
+                    if (data.data.noDatas) {
+                        toastService.toast("success", "Ce thème ne contient pas de données.");
+                    } else {
+                        toastService.toast("success", "Données du thème copiées avec succès.");
+                    }
                 } catch (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);

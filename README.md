@@ -40,12 +40,17 @@ npm run start:pm2
 
 With docker :
 ```bash
-soon
+docker pull nextsourcia/aquilacms
+docker run -p 127.0.0.1:3010:3010/tcp nextsourcia/aquilacms
 ```
 
 At the first launch, there is an installation page. It allows you to create an env.json file in the config folder.
 You can edit this file manually, an example of the different possible properties is in the config/env.example.json file.
 
+Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS website to a Mongo database, you can :
+- run a MongoDB image next to the AquilaCMS image
+- use an external link to, for example, an Atlas database
+- use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your mongod.conf and change your bindIp by your network ip instead of 127.0.0.1)
 
 ## License
 AquilaCMS is licensed under OSL3.

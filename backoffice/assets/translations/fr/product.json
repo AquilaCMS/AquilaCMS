@@ -26,6 +26,7 @@
         "jeuOpt": "Jeu d'options",
         "selectJeuOpt": "Sélectionner le jeu d'options",
         "actif": "Actif",
+        "actifVisible": "Actif & Visible",
         "visible": "Visible",
         "titleDescLg": "Titre description longue",
         "descLg": "Description longue",
@@ -33,6 +34,11 @@
         "descCt": "Description courte",
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs"
+    },
+    "modal":{
+        "activeProduct": "Activer un  produit",
+        "close": "Fermer",
+        "help": "Ce produit n'est pas activable car il ne possède pas de 'canonical' (URL unique).</br>Pour se faire, vous devez : </br></br><span ng-if='!cat'>- <a target='_blank' href='admin#/categories'>Ajouter ce produit à une catégorie</a> ou <a target='_blank' href='admin#/jobs'>générer une catégorisation</a></br></br></span><span>- <a target='_blank' href='admin#/jobs'>Générer la 'canonicalisation'</a></span>"
     },
     "marketing": {
         "fournisseur": "Fournisseur",
@@ -114,10 +120,10 @@
     }, 
     "virtual": {
         "clientEmail": "Email client",
-        "lastDownload": "Last download",
-        "firstDownload": "First download",
-        "countDownloads": "Download count",
-        "downloadHistory": "Download history",
+        "lastDownload": "Dernier telechargement",
+        "firstDownload": "Premier telechargement",
+        "countDownloads": "Nombre de fois telechargé",
+        "downloadHistory": "Téléchargement",
         "email": "Email"
     }
 }

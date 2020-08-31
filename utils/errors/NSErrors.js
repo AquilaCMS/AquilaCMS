@@ -122,6 +122,9 @@ class NSErrors {
     static get UpdateUserInvalid() { return this.makeErrorAlias(NSErrors.NotFound, 'UpdateUserInvalid'); }
     static get UserNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'UserNotFound'); }
     static get ModulePathNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModulePathNotFound'); }
+    static get ModuleMainFolder() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleMainFolder' ); }
+    static get ModuleInfoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleInfoNotFound'); }
+    static get ThemePackageNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemePackageNotFound'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }
@@ -144,6 +147,8 @@ class NSErrors {
     static get InvalidObjectIdError() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'InvalidObjectIdError'); }
     static get MissingModuleDependencies() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'MissingModuleDependencies'); }
     static get RequiredModuleDependencies() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'RequiredModuleDependencies'); }
+    static get ModuleAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleAquilaVersionNotSatisfied'); }
+    static get ThemeAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemeAquilaVersionNotSatisfied'); }
 
     static get InternalError() { return new NSError(500, 'InternalError'); }
     static get PaymentFailed() { return new NSError(500, 'PaymentFailed'); }

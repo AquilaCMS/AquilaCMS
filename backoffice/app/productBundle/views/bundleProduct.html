@@ -2,6 +2,7 @@
     <ns-box data-title="bundle.t1" title-icon="fa fa-cubes fa-lg" close-href="#/products">
         <ns-buttons show-duplicate="true"
                     is-edit-mode="isEditMode"
+                    is-selected="nsUploadFiles.isSelected"
                     return-path="/products"
                     form="form"
                     remove="removeProduct(product._id)"
@@ -148,7 +149,7 @@
                 </div>
 
                 <div id="photos" class="tab-pane fade">
-                    <ns-product-photo ng-model=product form="form"></ns-product-photo>
+                    <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model=product form="form"></ns-product-photo>
                 </div>
 
                 <div id="cross_selling" class="tab-pane fade">

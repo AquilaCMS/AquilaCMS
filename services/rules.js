@@ -30,22 +30,6 @@ const queryRule = (PostBody) => {
 };
 
 /**
- * @deprecated
- */
-const getRules = async (search) => {
-    const result = await Rules.find(search || {});
-    return result;
-};
-
-/**
- * @deprecated
- */
-const getRule = async (search) => {
-    const result = await Rules.findOne(search);
-    return result;
-};
-
-/**
  * @function testUser
  * @param {Object} body - Contient le user_id pour lequel on souhaite recevoir les discount
  * @param {string} body.user_id user id to get discount
@@ -374,13 +358,9 @@ async function applyRecursiveRules(_rules, query) {
             // Traitement spécial si c'est un attribut (contient attr.)
             if (target.includes('attr.')) {
                 target          = target.replace('attr.', '');
-                const code      = target.split('.')[target.split('.').length - 1];
                 const attrLang  = target.split('.')[target.split('.').length - 2];
-                // On récupère le "modèle" attribut dans un produit pour connaitre l'index de l'attribut en question
-                const product   = await Products.findOne({active: true, _visible: true}).lean();
-                const indexAttr = product.attributes.findIndex((attr) => attr.code === code);
                 // et tester la valeur de cet attribut
-                target          = `attributes.${indexAttr}.translation.${attrLang}.value`;
+                target          = `attributes.translation.${attrLang}.value`;
             } else if (target.includes('categorie.')) {
                 target = target.replace('categorie.', '');
                 // On récupère le "modèle" attribut dans un produit pour connaitre l'index de l'attribut en question
@@ -520,13 +500,17 @@ const execRules = async (owner_type) => {
                                 const product = oldCat.productsList[k];
                                 oProductsListCat[product.id.toString()] = product;
                             }
-                            cat.productsList = productsIds.map((prd) => {
-                                // Si le produit n'est pas trouvé
-                                if (!oProductsListCat[prd.toString()]) {
-                                    return {id: prd, checked: true};
+                            for (let k = 0; k < productsIds.length; k++) {
+                                if (!oProductsListCat[productsIds[k].toString()]) {
+                                    cat.productsList.push({id: productsIds[k], checked: true});
+                                } else {
+                                    cat.productsList.push({
+                                        id         : productsIds[k],
+                                        checked    : oProductsListCat[productsIds[k].toString()].checked,
+                                        sortWeight : oProductsListCat[productsIds[k].toString()].sortWeight
+                                    });
                                 }
-                                return {id: prd, checked: oProductsListCat[prd.toString()].checked, sortWeight: oProductsListCat[prd.toString()].sortWeight};
-                            });
+                            }
                             await cat.save();
                         }
                     } else if (splittedRulesKeys[i] === 'picto') {
@@ -573,8 +557,6 @@ const stopExecOnError = (owner_type) => {
 module.exports = {
     listRules,
     queryRule,
-    getRules,
-    getRule,
     testUser,
     setRule,
     deleteRule,

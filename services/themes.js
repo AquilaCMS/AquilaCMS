@@ -49,7 +49,9 @@ const save = async (environment) => {
 };
 
 /**
- * @description Upload, dezip and install theme
+ * Upload, unzip and install theme
+ * @param {string} originalname original file name
+ * @param {string} filepath temporary file position
  */
 const uploadTheme = async (originalname, filepath) => {
     if (path.extname(originalname) === '.zip') {
@@ -66,6 +68,18 @@ const uploadTheme = async (originalname, filepath) => {
         console.log('Unziping new theme...');
         const AdmZip = require('adm-zip');
         const zip    = new AdmZip(target_path_full);
+        const packageTheme = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
+        if (!packageTheme) {
+            throw NSErrors.ThemePackageNotFound; // info.json not found in zip
+        }
+        const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
+        if (moduleAquilaVersion) {
+            const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
+            const aquilaVersion = JSON.parse(packageAquila).version;
+            if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+                throw NSErrors.ThemeAquilaVersionNotSatisfied;
+            }
+        }
         zip.extractAllTo(target_path, /* overwrite */true);
         const themeName = originalname.split('.')
             .slice(0, -1)
@@ -157,8 +171,11 @@ const deleteTheme = async (themePath) => {
  */
 const copyDatas = async (themePath, override = true, configuration = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
-    await fs.access(themeDemoData, fs.constants.R_OK);
     const data = [];
+    if (!fs.existsSync(themeDemoData)) {
+        return {data, noDatas: true};
+    }
+    await fs.access(themeDemoData, fs.constants.R_OK);
     const listOfFile = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
     for (const value of listOfFile) {
         if ((await fs.lstat(value)).isDirectory()) {
@@ -300,13 +317,7 @@ function getThemePath() {
  * @param {String} theme
  */
 async function buildTheme(theme) {
-    try {
-        await nextBuild(path.resolve(global.appRoot, 'themes', theme));
-    } catch (err) {
-        if (global.envFile.devMode) {
-            console.error('Enable to build theme because of DevMode');
-        } else throw err;
-    }
+    await nextBuild(path.resolve(global.appRoot, 'themes', theme));
 }
 
 const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware, ns) => {

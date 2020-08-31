@@ -114,8 +114,10 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
     function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout)
     {
         var selectedLang = "";
-
         $scope.isEditMode = false;
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
 
         $scope.langChange = function (lang)
         {
@@ -178,6 +180,10 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
 
         $scope.save = function (isQuit)
         {
+            if ($scope.nsUploadFiles.isSelected) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
             //Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;
 

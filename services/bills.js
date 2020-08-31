@@ -1,5 +1,6 @@
 const crypto                     = require('crypto');
 const moment                     = require('moment');
+const wkhtmltopdf                = require('wkhtmltopdf');
 const {Bills, Orders, CmsBlocks} = require('../orm/models');
 const QueryBuilder               = require('../utils/QueryBuilder');
 const NSErrors                   = require('../utils/errors/NSErrors');
@@ -100,33 +101,36 @@ const orderToBill = async (idOrder, isAvoir = false) => {
 };
 
 const generatePDF = async (PostBody) => {
-    const bills = await queryBuilder.findOne(PostBody);
-    if (!bills) {
+    let bill = await queryBuilder.findOne(PostBody);
+    if (!bill) {
         throw NSErrors.AccessUnauthorized;
     }
-    const bill        = bills.toObject();
+    bill              = bill.toObject();
     const lang        = bill.lang || global.defaultLang;
     const oldChecksum = bill.checksum;
-    bill.checksum     = undefined;
+    delete bill.checksum;
     const obj         = cleanBillObject(bill);
     const checksum    = crypto.createHash('md5').update(obj, 'utf8').digest('hex');
     if (oldChecksum !== checksum) {
         throw NSErrors.ChecksumInvoiceError;
     }
+    const order = await Orders.findById(bill.order_id);
     moment.locale(lang);
-    const wkhtmltopdf = require('wkhtmltopdf');
     const html        = await CmsBlocks.findOne({code: 'invoice'});
     const withNoTaxes = lang === 'fr' ? 'HT' : 'ET';
     const withTaxes   = lang === 'fr' ? 'TTC' : 'ATI';
     const unpaid      = lang === 'fr' ? 'Non payé' : 'Unpaid';
     const paid        = lang === 'fr' ? 'Payé' : 'Paid';
+    const currency    = ' &euro;';
     const datas       = {
         '{{number}}'                 : bill.facture,
-        '{{totalAmount}}'            : bill.montant,
+        '{{totalAmount}}'            : `${parseFloat(bill.montant).toFixed(2)}${currency}`,
         '{{withTaxes}}'              : bill.withTaxes ? withTaxes : withNoTaxes,
         '{{email}}'                  : bill.email,
         '{{paymentDate}}'            : bill.paymentDate ? moment(bill.paymentDate).format('DD/MM/YYYY - HH:mm') : '',
         '{{creationDate}}'           : moment(bill.creationDate).format('DD/MM/YYYY - HH:mm'),
+        '{{orderDate}}'              : moment(order.creationDate).format('DD/MM/YYYY - HH:mm'),
+        '{{orderComment}}'           : order.comment || '',
         '{{isPaid}}'                 : bill.isPaid ? paid : unpaid,
         '{{firstname}}'              : bill.address.firstname,
         '{{lastname}}'               : bill.address.lastname,
@@ -139,31 +143,41 @@ const generatePDF = async (PostBody) => {
         '{{address.city}}'           : bill.address.city,
         '{{address.isoCountryCode}}' : bill.address.isoCountryCode,
         '{{address.country}}'        : bill.address.country,
-        '{{deliveryPriceAti}}'       : bill.delivery && bill.delivery.price ? bill.delivery.price.ati.toFixed(2) : '',
-        '{{deliveryPriceEt}}'        : bill.delivery && bill.delivery.price ? bill.delivery.price.et.toFixed(2) : '',
+        '{{deliveryPriceAti}}'       : bill.delivery && bill.delivery.price ? `${bill.delivery.price.ati.toFixed(2)}${currency}` : '',
+        '{{deliveryPriceEt}}'        : bill.delivery && bill.delivery.price ? `${bill.delivery.price.et.toFixed(2)}${currency}` : '',
         '{{deliveryPriceVat}}'       : bill.delivery && bill.delivery.price && bill.delivery.price.vat ? bill.delivery.price.vat.toFixed(2) : '',
         '{{deliveryCode}}'           : bill.delivery ? bill.delivery.code : '',
         '{{deliveryName}}'           : bill.delivery ? bill.delivery.name : '',
-        '{{promoPriceAti}}'          : bill.promos && bill.promos.discountATI ? bill.promos.discountATI.toFixed(2) : '',
+        '{{promoPriceAti}}'          : bill.promos && bill.promos.discountATI ? `${bill.promos.discountATI.toFixed(2)}${currency}` : '',
         '{{promoPriceEt}}'           : bill.promos && bill.promos.discountET ? bill.promos.discountET.toFixed(2) : '',
+        '{{promoVisible}}'           : bill.promos && (bill.promos.discountATI || bill.promos.discountET) ? 'visible' : 'hidden',
         '{{promoName}}'              : bill.promos && bill.promos.name ? bill.promos.name : '',
         '{{promoDescription}}'       : bill.promos && bill.promos.description ? bill.promos.description : '',
         '{{promoCode}}'              : bill.promos && bill.promos.code ? bill.promos.code : '',
-        '{{additionnalFeesAti}}'     : bill.additionnalFees.ati,
-        '{{additionnalFeesEt}}'      : bill.additionnalFees.et,
-        '{{additionnalFeesTax}}'     : bill.additionnalFees.tax,
-        '{{priceSubTotalAti}}'       : bill.priceSubTotal.ati,
-        '{{priceSubTotalEt}}'        : bill.priceSubTotal.et
+        '{{additionnalFeesAti}}'     : bill.additionnalFees && bill.additionnalFees.ati ? bill.additionnalFees.ati.toFixed(2) : '',
+        '{{additionnalFeesEt}}'      : bill.additionnalFees && bill.additionnalFees.et ? bill.additionnalFees.et.toFixed(2) : '',
+        '{{additionnalFeesTax}}'     : bill.additionnalFees && bill.additionnalFees.tax ? `${bill.additionnalFees.tax.toFixed(2)}${currency}` : '',
+        '{{priceSubTotalAti}}'       : bill.priceSubTotal && bill.priceSubTotal.ati ? `${bill.priceSubTotal.ati.toFixed(2)}${currency}` : '',
+        '{{priceSubTotalEt}}'        : bill.priceSubTotal && bill.priceSubTotal.et ? `${bill.priceSubTotal.et.toFixed(2)}${currency}` : '',
+        '{{totalTaxes}}'             : '',
+        '{{totalByTaxRate}}'         : ''
     };
-    let taxString = '';
-    Object.keys(bill.taxes).forEach(function (key) {
-        if (lang === 'fr') {
-            taxString += `Total des produits avec taxe à ${key}% : ${bill.taxes[key]} euros<br/>`;
-        } else {
-            taxString += `Total for products with a ${key}% tax: ${bill.taxes[key]} euros<br/>`;
-        }
-    });
-    datas['{{totalByTaxRate}}'] = taxString;
+
+    if (bill.taxes) {
+        const totalTaxes        = bill.taxes ? Object.values(bill.taxes).reduce((val, acc) => {return val + acc;}) : 0;
+        datas['{{totalTaxes}}'] = totalTaxes ? parseFloat(totalTaxes).toFixed(2) + currency : '';
+
+        let taxString = '';
+        Object.keys(bill.taxes).forEach(function (key) {
+            if (lang === 'fr') {
+                taxString += `Total des produits avec taxe à ${key}% : ${bill.taxes[key]} euros<br/>`;
+            } else {
+                taxString += `Total for products with a ${key}% tax: ${bill.taxes[key]} euros<br/>`;
+            }
+        });
+        datas['{{totalByTaxRate}}'] = taxString;
+    }
+
     if (!html) {
         throw NSErrors.InvoiceNotFound;
     }
@@ -174,26 +188,39 @@ const generatePDF = async (PostBody) => {
     if (itemTemplate && itemTemplate[0]) {
         const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
         for (let i = 0; i < bill.items.length; i++) {
+            const priceData        = {et: {}, ati: {}};
+            priceData.ati.unitInit = bill.items[i].price.unit.ati ? bill.items[i].price.unit.ati.toFixed(2) : ''; // Old price;
+            priceData.ati.unit     = bill.items[i].price.special ? bill.items[i].price.special.ati.toFixed(2) : priceData.ati.unitInit; // New price;
+            priceData.ati.total    = (priceData.ati.unit * bill.items[i].quantity).toFixed(2);// Total (new) price
+            if (priceData.ati.unitInit === priceData.ati.unit) {
+                priceData.ati.unitInit = '';
+            }
+            priceData.et.unitInit = bill.items[i].price.unit.et ? bill.items[i].price.unit.et.toFixed(2) : ''; // Old price;
+            priceData.et.unit     = bill.items[i].price.special ? bill.items[i].price.special.et.toFixed(2) : priceData.et.unitInit; // New price;
+            priceData.et.total    = (priceData.et.unit * bill.items[i].quantity).toFixed(2);// Total (new) price
+            if (priceData.et.unitInit === priceData.et.unit) {
+                priceData.et.unitInit = '';
+            }
+
             const prdData = {
-                '{{product.name}}'            : bill.items[i].name,
-                '{{product.code}}'            : bill.items[i].code,
-                '{{product.quantity}}'        : bill.items[i].quantity,
-                '{{product.priceAti}}'        : bill.items[i].price.unit.ati ? bill.items[i].price.unit.ati.toFixed(2) : '',
-                '{{product.specialPriceAti}}' : bill.items[i].price.special ? bill.items[i].price.special.ati.toFixed(2) : '',
-                '{{product.priceEt}}'         : bill.items[i].price.unit.et ? bill.items[i].price.unit.et.toFixed(2) : '',
-                '{{product.specialPriceEt}}'  : bill.items[i].price.special ? bill.items[i].price.special.et.toFixed(2) : '',
-                '{{product.vatRate}}'         : bill.items[i].price.vat && bill.items[i].price.vat.rate ? bill.items[i].price.vat.rate : '',
-                '{{product.discountATI}}'     : '',
-                '{{product.discountET}}'      : '',
-                '{{product.basePriceET}}'     : '',
-                '{{product.basePriceATI}}'    : ''
+                '{{product.name}}'          : bill.items[i].name,
+                '{{product.code}}'          : bill.items[i].code,
+                '{{product.vatRate}}'       : bill.items[i].price.vat && bill.items[i].price.vat.rate ? bill.items[i].price.vat.rate : '',
+                '{{product.quantity}}'      : bill.items[i].quantity,
+                '{{product.basePriceATI}}'  : priceData.ati.unitInit ? priceData.ati.unitInit + currency : '',
+                '{{product.basePriceET}}'   : priceData.et.unitInit  ? priceData.et.unitInit + currency : '',
+                '{{product.priceAti}}'      : priceData.ati.unit     ? priceData.ati.unit + currency : '',
+                '{{product.priceEt}}'       : priceData.et.unit      ? priceData.et.unit + currency : '',
+                '{{product.totalPriceATI}}' : priceData.ati.total    ? priceData.ati.total + currency : '',
+                '{{product.totalPriceET}}'  : priceData.et.total     ? priceData.et.total + currency : ''
+
             };
             if (bill.promos.productsId) {
                 const index = bill.promos.productsId.findIndex((p) => p.productId.toString() === bill.items[i]._id);
                 if (index > -1) {
-                    prdData['{{product.discountATI}}'] = bill.promos.productsId[index].discountATI.toFixed(2);
-                    prdData['{{product.discountET}}'] = bill.promos.productsId[index].discountET.toFixed(2);
-                    prdData['{{product.basePriceET}}'] = bill.promos.productsId[index].basePriceET.toFixed(2);
+                    prdData['{{product.discountATI}}']  = bill.promos.productsId[index].discountATI.toFixed(2);
+                    prdData['{{product.discountET}}']   = bill.promos.productsId[index].discountET.toFixed(2);
+                    prdData['{{product.basePriceET}}']  = bill.promos.productsId[index].basePriceET.toFixed(2);
                     prdData['{{product.basePriceATI}}'] = bill.promos.productsId[index].basePriceATI.toFixed(2);
                 }
             }
@@ -201,7 +228,9 @@ const generatePDF = async (PostBody) => {
         }
         content = content.replace(htmlItem, items);
     }
-    return wkhtmltopdf(content);
+    return wkhtmltopdf(content, {
+        encoding : 'utf8'
+    });
 };
 
 function cleanBillObject(bill) {

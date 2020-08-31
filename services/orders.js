@@ -78,6 +78,9 @@ const setStatus = async (_id, status, sendMail = true) => {
         await Orders.updateOne({_id}, {cartId: null});
         await Cart.deleteOne({_id: order.cartId});
     }
+    if (status === 'PAID' && global.envConfig.stockOrder.automaticBilling) {
+        await require('./bills').orderToBill(order._id.toString());
+    }
     if ((['ASK_CANCEL']).includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderRequestCancel(_id);
@@ -85,7 +88,7 @@ const setStatus = async (_id, status, sendMail = true) => {
             console.error(error);
         }
     }
-    if (!(['PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAID']).includes(order.status) && sendMail) {
+    if (!['PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAID'].includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderStatusEdit(_id);
         } catch (error) {

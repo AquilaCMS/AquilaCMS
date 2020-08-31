@@ -1,7 +1,7 @@
 <div>
     <div class="row" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
         <div class="col-sm-2" style="margin-bottom: 1%">
-            <ns-return-button  style="pointer-events:auto" form="form" return-path="{{returnPath}}" ng-hide="hideReturn"></ns-return-button>
+            <ns-return-button is-selected="isSelected"  style="pointer-events:auto" form="form" return-path="{{returnPath}}" ng-hide="hideReturn"></ns-return-button>
         </div>
         <div class="col-sm-7 col-sm-offset-3 text-right" style="margin-bottom: 1%">
             <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-disabled="disableSave" translate>ns.save</button>

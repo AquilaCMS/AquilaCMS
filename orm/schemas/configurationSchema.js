@@ -51,7 +51,8 @@ const ConfigurationSchema = new Schema({
             tax : {type: Number, default: 0},
             et  : {type: Number, default: 0}
         },
-        returnStockToFront : {type: Boolean, default: false}
+        returnStockToFront : {type: Boolean, default: false},
+        automaticBilling   : {type: Boolean, default: false}
     }
 });
 

@@ -29,6 +29,9 @@ MailControllers.controller("MailDetailCtrl", [
     function ($scope, $q, $routeParams, $location, toastService, MailRemovePdf, MailSave, MailUpdate, MailRemove, MailGetById, MailTypesGet, MailVariables, $modal) {
         $scope.mail = {};
         $scope.mailTypes = [];
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
 
         if($routeParams.mailId != "new")
         {
@@ -88,6 +91,10 @@ MailControllers.controller("MailDetailCtrl", [
 
         //Ajout ou update d'un mail
         $scope.save = function (isQuit) {
+            if ($scope.nsUploadFiles.isSelected) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
             $scope.form.nsSubmitted = true;
             if($scope.form.$invalid)
             {
@@ -107,9 +114,9 @@ MailControllers.controller("MailDetailCtrl", [
                         deferred.resolve(response);
                     }
                 }, function (err) {
-                    if(err.data && err.data.translations)
+                    if(err.data && err.data.message)
                     {
-                        return deferred.reject(err.data.translations.fr);
+                        return deferred.reject(err.data.message);
                     }
                     return deferred.reject(err);
                 });
@@ -119,9 +126,9 @@ MailControllers.controller("MailDetailCtrl", [
                 MailSave.save($scope.mail, function (response) {
                     deferred.resolve(response);
                 }, function (err) {
-                    if(err.data && err.data.translations)
+                    if(err.data && err.data.message)
                     {
-                        return deferred.reject(err.data.translations.fr);
+                        return deferred.reject(err.data.message);
                     }
                     return deferred.reject(err);
                 });

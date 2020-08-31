@@ -1,6 +1,6 @@
 <ns-box data-title="picto.details.t1" title-icon="fa fa-gratipay fa-2x">
     <form name="form" novalidate ng-submit="save()">
-        <ns-buttons show-duplicate="true" is-edit-mode="isEditMode" return-path="/picto" form="form" remove="openDelete()" save-and-quit="save(true)" disable-save="disableSave" return-path="/picto">
+        <ns-buttons is-selected="nsUploadFiles.isSelected" show-duplicate="true" is-edit-mode="isEditMode" return-path="/picto" form="form" remove="openDelete()" save-and-quit="save(true)" disable-save="disableSave" return-path="/picto">
             <!--<div style="float:right;">
             <select class="form-control" ng-model="clickLangue" ng-change="changeLanguage(clickLangue)" ng-if="languages.length > 1" ng-init="clickLangue = selectedLanguage">
                 <option ng-repeat="lang in languages" value="{{lang.code}}">{{lang.name}}</option>
@@ -43,7 +43,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ns-upload-files accepttype="image/*" ng-show="isEditMode" multiple="false" type="picto" id="picto._id" entity="picto"></ns-upload-files>
+                            <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" ng-show="isEditMode" multiple="false" type="picto" id="picto._id" entity="picto"></ns-upload-files>
                         </div>
                         <div class="col-md-8">
                             <div class="form-group row">
