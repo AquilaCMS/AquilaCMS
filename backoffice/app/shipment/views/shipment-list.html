@@ -33,10 +33,10 @@
                 <tr class="pointer"
                     ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-repeat="shipment in shipments | orderBy:sort.type:sort.reverse">
-                    <td ng-click="goToShipmentDetails(shipment._id)"><img src="{{shipment.url_logo}}" alt="{{shipment.translation.fr.name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
+                    <td ng-click="goToShipmentDetails(shipment._id)"><img src="{{shipment.url_logo}}" alt="{{shipment.translation[lang].name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
                     <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.type | shipmentTypeName}}</td>
                     <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
-                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation.fr.name}}</td>
+                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation[lang].name}}</td>
                     <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
                     <td style="vertical-align: middle"><span ng-bind-html='shipment.active | checked'></span></td>
                 </tr>

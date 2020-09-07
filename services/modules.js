@@ -484,7 +484,7 @@ const activateModule = async (idModule, toBeChanged) => {
             for (let i = 0; i < files.length; i++) {
                 const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/front', files[i]);
                 const dest  = path.resolve(global.appRoot, 'themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
-                if (fs.existsSync(src, fs.constants.W_OK)) {
+                if (fs.existsSync(src)) {
                     try {
                         await fs.copyRecursiveSync(src, dest, true);
                     } catch (err) {
@@ -909,7 +909,7 @@ const loadAdminModules = async () => {
 
 /**
  * Permet récupérer la configuration (champ conf) d'un module
- * @param name (string) nom/code du module
+ * @param {string} name (string) nom/code du module
  * @returns Retourne la configuration du module
  */
 const getConfig = async (name) => {

@@ -333,15 +333,29 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
     if (priceFilter) {
         prdsPrices = prdsPrices.filter((prd) => {
-            if (prd.price.ati.special) {
-                if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
-                    && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
-                    return true;
+            if (priceFilter.$or[1]['price.ati.special']) {
+                if (prd.price.ati.special) {
+                    if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
+                        && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
+                        return true;
+                    }
+                } else {
+                    if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
+                        && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
+                        return true;
+                    }
                 }
-            } else {
-                if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
-                    && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
-                    return true;
+            } else if (priceFilter.$or[1]['price.et.special']) {
+                if (prd.price.et.special) {
+                    if (prd.price.et.special <= priceFilter.$or[1]['price.et.special'].$lte
+                        && prd.price.et.special >= priceFilter.$or[1]['price.et.special'].$gte) {
+                        return true;
+                    }
+                } else {
+                    if (prd.price.et.normal <= priceFilter.$or[0]['price.et.normal'].$lte
+                        && prd.price.et.normal >= priceFilter.$or[0]['price.et.normal'].$gte) {
+                        return true;
+                    }
                 }
             }
 

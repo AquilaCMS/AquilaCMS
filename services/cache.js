@@ -76,7 +76,13 @@ const cacheSetting = () => {
 };
 
 /**
- * Retourne un caractere à un index donné
+ * Returns char at `index` or `_`
+ * ```js
+ *  getChar('hello', 1)
+ *  // returns e
+ * ```
+ * @param {string} string input string to get char
+ * @param {number} index index of char to find in string
  */
 const getChar = (string, index) => {
     if (string[index]) {

@@ -44,7 +44,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
         res.setHeader('Expires', dt.toUTCString());
     }
     // Exception BO React
-    if (req.url.startsWith('/bo') && !req.url.startsWith('/bo/api')) {
+    if (req.url.startsWith('/bo/') && !req.url.startsWith('/bo/api')) {
         if (path.basename(req.url).indexOf('.') > -1) {
             const url = req.url.replace('/bo', '/bo/build');
             res.sendFile(path.join(global.appRoot, url));

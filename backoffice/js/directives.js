@@ -239,6 +239,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 onAction: function () {
                                     $scope.addImage();
                                 }
+                                
                             });
                         }
                     };
@@ -248,11 +249,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             backdrop: 'static',
                             keyboard: false,
                             templateUrl: 'views/modals/add-image-tinymce.html',
-                            controller: ['$scope', '$location', '$modalInstance', "MediaApi","toastService",
-                            function ($scope, $location, $modalInstance, MediaApi, toastService) {
-                                // $scope.parents = $scope.getParentsList(familyType);
-                                MediaApi.list(function (response) {
-                                    $scope.medias = response;
+                            controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
+                                function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
+                                const filter = {};
+                                filter.$or = [{ group: null }, { group: "" }, { group: "general" }];
+                                MediaApiV2.list({ PostBody: {filter, structure: '*', limit:99 } }, function ({ datas, count }) {
+                                    $scope.medias = datas;
                                 });
 
                                 $scope.size = {};
@@ -294,6 +296,10 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         });
 
                         modalInstance.result.then(function (url) {
+                            // for (i = 0; i < tinyMCE.editors.length; i++) {
+                            //     var content = tinyMCE.editors[i].getContent();
+                            //     alert('Editor-Id(' + tinyMCE.editors[i].id + '):' + content);
+                            // }
                             tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
                             // tinyMCE.activeEditor.setContent(tinymce.activeEditor.getContent());
                             // $scope.product.translation[lang].description2.text =  tinymce.activeEditor.getContent();

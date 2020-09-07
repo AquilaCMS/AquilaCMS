@@ -1,0 +1,80 @@
+<style>
+    .modal-dialog {
+        width: 500px;
+        padding:30px;
+    }
+
+    .modal {
+    z-index: 30050 !important;
+}
+.modal-backdrop {
+    z-index: 30040 !important;
+}
+    /* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: black; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
+</style>
+
+<div>
+    <div class="modal-header">
+        Ajouter un lien
+    </div>
+    <div class="modal-body" style="padding:50px">
+            <div class="row"style="margin-bottom:40px;">
+                <div style="float:left">
+                    <label >Type : </label>
+                </div>
+                <div style="float:right">
+                    <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
+                        ng-options="type.id as type.name for type in types" ng-model="typeSelected" ng-change="loadLinks(typeSelected)">
+                    </select>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom:40px;">
+                <div style="float:left">
+                    <label>Lien : </label>
+                </div>
+                <div style="float:right">
+                    <select ng-if="pages" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
+                        ng-options="page.translation[lang].slug as page.translation[lang].title for page in pages" ng-model="selected.pageSelelected">
+                    </select>
+                    <select ng-if="categories" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
+                        ng-options="category.translation[lang].slug as category.translation[lang].name for category in categories" ng-model="selected.categorySelelected">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div style="float:left">
+                    <label>Nom du lien : </label>
+                </div>
+                <div style="float:right">
+                    <input type="text" class="form-control ng-pristine ng-valid ng-not-empty ng-valid-required ng-touched" id="name"
+                        style="width:200px; float:right" name="name" ng-model="name">
+                </div>
+            </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()" translate>static.modal.cancel</button>
+        <button class="btn btn-default" ng-if="typeSelected ==='cat'" ng-disabled="!selected.categorySelelected" ng-click="ok(selected.categorySelelected,name)" translate>static.modal.add</button>
+        <button class="btn btn-default" ng-if="typeSelected ==='page'" ng-disabled="!selected.pageSelelected" ng-click="ok(selected.pageSelelected,name)" translate>static.modal.add</button>
+    </div>
+</div>

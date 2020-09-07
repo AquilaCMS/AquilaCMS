@@ -38,8 +38,8 @@ const save = async (environment) => {
             await setConfigTheme(environment.currentTheme);
             await installDependencies(environment.currentTheme);
             if (oldConfig && oldConfig.environment && oldConfig.environment.autoMaintenance === true && oldConfig.environment.maintenance === true && maintenance === true) {
-                oldConfig.environment.maintenance = false;
-                await Configuration.updateOne({_id: oldConfig._id}, {$set: {environment: oldConfig.environment}});
+                environment.maintenance = false;
+                await Configuration.updateOne({_id: oldConfig._id}, {$set: {environment}});
             }
             await buildTheme(environment.currentTheme);
         } catch (err) {

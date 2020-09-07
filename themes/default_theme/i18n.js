@@ -47,8 +47,6 @@ const getInitialProps =  (req, namespaces) => {
     }
     if ((url && url.indexOf('.') > -1) || (url && url.indexOf('admin') > -1)) {
         req.res.end();
-    } else if (url) {
-        console.log('\x1b[33m', '[NEXTJS] Render: ', url);
     }
     if (!namespaces) namespaces = i18nInstance.options.defaultNS;
     if (typeof namespaces === 'string') namespaces = [namespaces];

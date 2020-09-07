@@ -281,6 +281,10 @@ exports.uploadFiles = async (body, files) => {
         target_path = 'documents/mail/';
         break;
     }
+    case 'language': {
+        target_path = 'language/';
+        break;
+    }
     default:
         break;
     }

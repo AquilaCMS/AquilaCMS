@@ -74,12 +74,7 @@ const initDBValues = async () => {
     if (!_default) {
         await SetAttributes.create({code: 'defaut', name: 'Défaut', type: 'products', attributes: []});
     }
-    const configuration = await Configuration.findOne({'environment.currentTheme': {$regex: /custom_themes\/.*/, $options: 'i'}});
-    if (configuration) {
-        configuration.environment.currentTheme = configuration.environment.currentTheme.replace('custom_themes/', '');
-        global.envConfig = configuration.toObject();
-        await configuration.save();
-    }
+
     await Configuration.findOneAndUpdate({'stockOrder.cartExpireTimeout': {$exists: false}}, {$set: {'stockOrder.cartExpireTimeout': 48}});
     await Configuration.findOneAndUpdate({'stockOrder.pendingOrderCancelTimeout': {$exists: false}}, {$set: {'stockOrder.pendingOrderCancelTimeout': 48}});
     await Configuration.findOneAndUpdate({$or: [{taxerate: {$exists: false}}, {'taxerate.0': {$exists: false}}]}, {$set: {taxerate: [{rate: 5.5}, {rate: 10}, {rate: 20}]}});

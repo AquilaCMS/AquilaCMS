@@ -40,6 +40,9 @@ class CartSuccess extends React.Component {
             return Router.pushRoute('home', { lang: routerLang });
         }
         window.localStorage.removeItem('order');
+        // EVENT ADD TO CART
+        const event = new CustomEvent('placeOrder', { detail: { order: orderTemp } });
+        window.dispatchEvent(event);
 
         try {
             // Récupération de la commande
