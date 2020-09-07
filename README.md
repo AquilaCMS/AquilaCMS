@@ -7,7 +7,7 @@
 
 # AquilaCMS
 
-[AquilaCMS](https://www.aquila-cms.com) is an Open-source e-commerce web application, 100% javascript with Node.js and MongoDB. Themes can be used with ReactJS and NextJS (for polymorphism). A complete Back office is available for managing your website. You can download some modules or themes in [Aquila's Shop](https://www.aquila-cms.com).
+[AquilaCMS](https://www.aquila-cms.com) is an Open-source e-commerce web application, 100% javascript with Node.js and MongoDB. Themes can be used with ReactJS and NextJS (for polymorphism). A complete Back office is available for managing your website. You can download some modules or themes in [Aquila's Shop](https://shop.aquila-cms.com).
 
 ![AquilaCMS](https://www.aquila-cms.com/medias/aquilacms_pres.gif)
 

@@ -207,7 +207,7 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
                         await model.deleteMany({});
                     }
                     const result = await model.insertMany(file.datas, null, null);
-                    console.log(`insertion of ${file.collection} in database`);
+                    // console.log(`insertion of ${file.collection} in database`);
                     data.push({
                         collection : `${file.collection}`,
                         data       : [...result]
