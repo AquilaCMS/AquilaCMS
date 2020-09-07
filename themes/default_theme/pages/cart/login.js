@@ -1,9 +1,10 @@
 import React from 'react';
 import Head from 'next/head';
 import {
-    NSContext, NSLogin, getCmsBlock, getLangPrefix
+    NSContext, getCmsBlock, getLangPrefix
 } from 'aqlrc';
 import CartStructure from 'components/CartStructure';
+import Login from 'components/Login';
 import { withI18next } from 'lib/withI18n';
 import { Router } from 'routes';
 
@@ -53,7 +54,7 @@ class CartLogin extends React.Component {
                         <title>{sitename} | {t('login:page.title')}</title>
                         <meta property="og:type" content="website" />
                     </Head>
-                    <NSLogin gNext={{ Head, Router }} t={t} />
+                    <Login gNext={{ Head, Router }} t={t} />
                 </CartStructure>
             </NSContext.Provider>
         );

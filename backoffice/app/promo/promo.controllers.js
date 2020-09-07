@@ -518,7 +518,9 @@ PromoControllers.controller("PromoDetailAddCodePromoCtrl",
             $scope.local = {};
             $scope.save = function () {
                 function checkNumber(number) {
-                    if (number === null || number === "*" || !isNaN(parseInt(number) || number === "")) {
+                    if (!number || number === '*') {
+                        return true;
+                    } else if (!isNaN(parseInt(number))){
                         return true;
                     } else {
                         return false;

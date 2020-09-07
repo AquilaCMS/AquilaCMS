@@ -5,6 +5,7 @@ import { NSPageBlogArticle, NSBreadcrumb, NSContext } from 'aqlrc';
 import routes, { Link } from 'routes';
 import { withI18next } from 'lib/withI18n';
 import Layout from 'components/Layout';
+import Error from 'pages/_error';
 
 /**
  * PageBlogArticle - Page article de blog (surcharge NSPageBlogArticle)
@@ -16,6 +17,13 @@ class PageBlogArticle extends NSPageBlogArticle {
         const {
             article, lang, oCmsHeader, oCmsFooter, sitename
         } = this.props;
+        if (!article) {
+            return (
+                <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
+                    <Error statusCode={404} message="Not found" oCmsHeader={oCmsHeader} oCmsFooter={oCmsFooter} />);
+                </NSContext.Provider>
+            );
+        }
         let pathUrl = this.props.pathUrl;
         if (pathUrl === '') {
             pathUrl = window.location.href;

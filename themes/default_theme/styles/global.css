@@ -3898,6 +3898,12 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle-upper { /*transform: translate
 
 .rgpd.popup__container {padding: 30px 50px 30px 50px;}
 
+.rgpd-content div {height: 100px; }
+
+.rgpd-content button {width: 240px; float: right; }
+
+.rgpd-content p {width: 500px; }
+
 .float-right {float: right}
 .float-left {float: left}
 

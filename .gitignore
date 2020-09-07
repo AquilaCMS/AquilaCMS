@@ -3,6 +3,7 @@ node_modules
 *.swp
 .pnp*
 .yarn
+yarn.lock
 yarn-error.log
 .yarnrc
 .tmp

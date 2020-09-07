@@ -140,6 +140,7 @@ class PageRgpd extends NSPageAccount {
                                             <div className="form rgpd">
                                                 <div className="main__inner">
                                                     <div className="shell rgpd-content">
+                                                        <br/>
                                                         <div>
                                                             <button type="button" onClick={() => this.exportData()} className="btn btn--red">{t('account:rgpd.page.button.export_data')}</button>
                                                             <p>{t('account:rgpd.page.label.export_data')}</p>

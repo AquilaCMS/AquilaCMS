@@ -1,7 +1,8 @@
 var ShipmentControllers = angular.module('aq.shipment.controllers', []);
 
-ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Shipment', '$http',
-    function ($scope, $location, Shipment, $http,) {
+ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Shipment', '$http', '$rootScope',
+    function ($scope, $location, Shipment, $http, $rootScope) {
+        $scope.lang = $rootScope.adminLang;
 
         function init() {
             $scope.sort = {
@@ -13,7 +14,17 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
         init();
 
         function getShipments() {
-            Shipment.list({PostBody: {structure: {active: 1, vat_rate: 1, preparation: 1, translation: 1, countries: 1}, skip: 0, limit: 100}}, function (shipmentList) {
+            Shipment.list({PostBody: {
+                structure: {
+                    active: 1,
+                    vat_rate: 1,
+                    preparation: 1,
+                    translation: 1,
+                    countries: 1
+                },
+                skip: 0,
+                limit: 100
+            }}, function (shipmentList) {
                 $scope.shipments = shipmentList.datas;
             });
         }
@@ -23,7 +34,6 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
         $scope.goToShipmentDetails = function (shipmentId) {
             $location.path("shipments/delivery/" + shipmentId);
         }
-
     }]);
 
 ShipmentControllers.controller('ShipmentBeforeCreateCtrl', ['$scope', '$location',
@@ -55,7 +65,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         $scope.tabActive       = "general";
         $scope.selectedCountry = {};
         $scope.countries = [];
-        TerritoryCountries.query({PostBody: { filter: { type: 'country'}, limit: 99}}, function (countries) {
+        TerritoryCountries.query({PostBody: { filter: { type: 'country'}, limit: 999}}, function (countries) {
             $scope.countries = countries;
             $scope.countries.datas.forEach(function (country, i){
                 $scope.languages.forEach(lang => {
@@ -197,14 +207,15 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         };
 
         $scope.getCountryByCode = function (code) {
-            const country = $scope.countries.datas.find((country) => country.code === code)
-            if(country){
-                if (country.translation[$rootScope.adminLang]){
-                    return country.translation[$rootScope.adminLang].name;
+            if ($scope.countries && $scope.countries.datas) {
+                const country = $scope.countries.datas.find((country) => country.code === code)
+                if(country){
+                    if (country.translation[$rootScope.adminLang]){
+                        return country.translation[$rootScope.adminLang].name;
+                    }
+                    return country.code;
                 }
-                return country.code;
             }
-            return;
         };
 
         $scope.changeCountry = function () {

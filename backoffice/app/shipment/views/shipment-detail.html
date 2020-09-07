@@ -167,10 +167,10 @@
                     <div class="form-group" ng-repeat="country in shipment.countries">
                         <label for="delay" class="col-sm-2 control-label">{{getCountryByCode(country.country)}}</label>
                         <div class="col-sm-6 col-lg-1">
-                            <input name="country.delay" type="number" class="form-control" min="0" id="delay" ng-model="shipment.countries[$index].delay">
+                            <input name="country.delay" type="number" class="form-control" min="0" ng-model="shipment.countries[$index].delay">
                         </div>
                         <div class="col-sm-6 col-lg-2">
-                            <select name="unit" id="unit" class="form-control"
+                            <select name="unit" class="form-control"
                                     ng-model="shipment.countries[$index].unit">
                                 <option value="day" translate>shipment.detail.days</option>
                                 <option value="week" translate>shipment.detail.weeks</option>

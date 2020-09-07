@@ -27,8 +27,11 @@ class PageSearch extends NSPageSearch {
     }
 
     componentDidMount = () => {
+        // EVENT ADD TO CART
+        const event = new CustomEvent('searchItems', { detail: { products: this.props.products, searchQuery: this.props.router.query.search } });
+        window.dispatchEvent(event);
         // Si un seul produit est trouvé alors on va directement sur la page du produit
-        if (this.props.products.length === 1) {
+        if (this.props.products.length === 1 && this.props.products[0].canonical) {
             Router.pushRoute(this.props.products[0].canonical);
         }
     }

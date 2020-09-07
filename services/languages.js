@@ -4,7 +4,7 @@ const NSErrors         = require('../utils/errors/NSErrors');
 const QueryBuilder     = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
-const defaultFields    = ['code', 'name', 'defaultLanguage', 'status'];
+const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
 const getLanguages = async (PostBody) => {

@@ -15,6 +15,7 @@ export default class SidebarAccount extends NSSidebarAccount {
         // Déconnexion de l'utilisateur
         try {
             await logoutUser();
+            // HOOK => onLogout
             if(this.context.props.hooksFunctions && this.context.props.hooksFunctions.onLogout) this.context.props.hooksFunctions.onLogout.map(func => func())
             if (Router !== undefined) {
                 Router.pushRoute('home', { lang: routerLang });
