@@ -919,10 +919,11 @@
       ],
       "pictos": [
         {
-          "_id": "5ecad66deef4842758893715",
+          "type": "bool",
+          "_id": "5da57efade6bed65e1d2b141",
           "code": "LoveIt",
-          "url": "/medias/picto/loveit.png",
-          "title": "Love It",
+          "url": "/images/picto/32x32-70/5da09f77db0b3834cf91a506/loveit.png",
+          "title": "Coup de coeur",
           "location": "TOP_LEFT"
         }
       ],
