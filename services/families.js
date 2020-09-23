@@ -6,15 +6,15 @@ const restrictedFields     = [];
 const defaultFields        = [];
 const queryBuilder         = new QueryBuilder(Families, restrictedFields, defaultFields);
 
-exports.getFamilies = async function (PostBody) {
+const getFamilies = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
-exports.getFamily = async function (PostBody) {
+const getFamily = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-exports.saveFamily = async function (family) {
+const saveFamily = async (family) => {
     if (!family) throw NSErrors.UnprocessableEntity;
     let _family = null;
     if (family._id) {
@@ -28,7 +28,7 @@ exports.saveFamily = async function (family) {
     return _family;
 };
 
-exports.deleteFamily = async function (_id) {
+const deleteFamily = async (_id) => {
     if (!_id) throw NSErrors.UnprocessableEntity;
     const result = await Families.findOneAndDelete({_id});
 
@@ -51,4 +51,11 @@ exports.deleteFamily = async function (_id) {
     await Products.updateMany(where, action);
 
     return result.ok === 1;
+};
+
+module.exports = {
+    getFamilies,
+    getFamily,
+    saveFamily,
+    deleteFamily
 };

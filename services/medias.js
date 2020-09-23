@@ -30,7 +30,7 @@ const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultField
 /**
  * Permet de télécharger un zip contenant tous le dossier "upload"
  */
-exports.downloadAllDocuments = async () => {
+const downloadAllDocuments = async () => {
     console.log('Preparing downloadAllDocuments...');
     const uploadDirectory = server.getUploadDirectory();
 
@@ -62,7 +62,7 @@ exports.downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-exports.uploadAllMedias = async (reqFile, insertDB) => {
+const uploadAllMedias = async (reqFile, insertDB) => {
     console.log('Upload medias start...');
 
     const path_init   = reqFile.path;
@@ -110,7 +110,7 @@ exports.uploadAllMedias = async (reqFile, insertDB) => {
 /**
  * @description Upload zip with all documents
  */
-exports.uploadAllDocuments = async (reqFile) => {
+const uploadAllDocuments = async (reqFile) => {
     console.log('Uploading Documents for unzip...');
 
     const path_init   = reqFile.path;
@@ -131,7 +131,7 @@ exports.uploadAllDocuments = async (reqFile) => {
  * @param {string} extension - extension du fichier (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
-exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
+const downloadImage = async (type, _id, size, extension, quality = 80) => {
     let _path         = server.getUploadDirectory();
     _path             = path.join(process.cwd(), _path);
     const cacheFolder = path.join(_path, '/cache/');
@@ -229,14 +229,27 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
                 return filePath;
             });
 
-            await require('sharp')(filePath)
-                .resize({
-                    width      : Number(size.split('x')[0]),
-                    height     : Number(size.split('x')[1]),
-                    fit        : 'contain',
-                    background : {r: 255, g: 255, b: 255, alpha: 1}
-                })
-                .toFile(filePathCache);
+            try {
+                // throw {gftdgf: 'gdfdgf'};
+                await require('sharp')(filePath)
+                    .resize({
+                        width      : Number(size.split('x')[0]),
+                        height     : Number(size.split('x')[1]),
+                        fit        : 'contain',
+                        background : {r: 255, g: 255, b: 255, alpha: 1}
+                    })
+                    .toFile(filePathCache);
+            } catch (exc) {
+                console.error('Image not resized : Sharp may not be installed');
+
+                // Take the original file size
+                await utilsModules.modulesLoadFunctions('downloadFile', {
+                    key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
+                    outPath : filePathCache
+                }, () => {
+                    fsp.copyFileSync(filePath, filePathCache);
+                });
+            }
         }
         // compressage
         filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
@@ -245,7 +258,7 @@ exports.downloadImage = async (type, _id, size, extension, quality = 80) => {
     throw NSErrors.MediaNotFound;
 };
 
-exports.uploadFiles = async (body, files) => {
+const uploadFiles = async (body, files) => {
     const pathUpload = server.getUploadDirectory();
     const pathFinal  = `${pathUpload}/`;
     const tmp_path   = files[0].path;
@@ -488,15 +501,15 @@ exports.uploadFiles = async (body, files) => {
     }
 };
 
-exports.listMedias = async function (PostBody) {
+const listMedias = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
-exports.getMedia = async function (PostBody) {
+const getMedia = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-exports.saveMedia = async function (media) {
+const saveMedia = async (media) => {
     if (media.link && media.link !== '') {
         const result = await Medias.findOneAndUpdate({link: media.link}, media);
         return result;
@@ -506,7 +519,7 @@ exports.saveMedia = async function (media) {
     return result;
 };
 
-exports.removeMedia = async function (_id) {
+const removeMedia = async (_id) => {
     const result = await Medias.findOneAndDelete({_id});
     if (!result) throw NSErrors.MediaNotFound;
 
@@ -517,7 +530,7 @@ exports.removeMedia = async function (_id) {
     return result;
 };
 
-exports.getMediasGroups = async function (query) {
+const getMediasGroups = async (query) => {
     const medias = await Medias.find();
     const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
     // s'il est la, on place "general" en premier index
@@ -538,9 +551,22 @@ function createFolderIfNotExist(dir) {
     }
 }
 
-async function deleteFileAndCacheFile(link, type) {
+const deleteFileAndCacheFile = async (link, type) => {
     if (link && path.basename(link).includes('.')) {
         await utilsMedias.deleteFile(link);
         require('./cache').deleteCacheImage(type, {filename: path.basename(link).split('.')[0], extension: path.extname(link)});
     }
-}
+};
+
+module.exports = {
+    downloadAllDocuments,
+    uploadAllMedias,
+    uploadAllDocuments,
+    downloadImage,
+    uploadFiles,
+    listMedias,
+    getMedia,
+    saveMedia,
+    removeMedia,
+    getMediasGroups
+};

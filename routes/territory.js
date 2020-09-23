@@ -11,6 +11,13 @@ module.exports = function (app) {
     app.get('/territory/countries', listCountries);
 };
 
+/**
+ * POST /api/v2/territories
+ * @tags Territory
+ * @summary get a list of territory
+ * @param {PostBody} request.body.required - PostBody
+ * @return {ResponseTerritories} 200 - list of territories | territories
+ */
 async function getTerritories(req, res, next) {
     try {
         const result = await ServiceTerritory.getTerritories(req.body.PostBody);
@@ -20,6 +27,12 @@ async function getTerritories(req, res, next) {
     }
 }
 
+/**
+ * POST /api/v2/territory
+ * @tags Territory
+ * @param {PostBody} request.body.required - PostBody
+ * @returns {TerritorySchema} territory
+ */
 async function getTerritory(req, res, next) {
     try {
         const result = await ServiceTerritory.getTerritory(req.body.PostBody);
@@ -30,7 +43,10 @@ async function getTerritory(req, res, next) {
 }
 
 /**
- * Save or edit Territory
+ * PUT /api/v2/territory
+ * @summary used for creating and updating territories
+ * @tags Territory
+ * @param {TerritorySchema} request.body.required - territory
  */
 async function setTerritory(req, res, next) {
     try {
@@ -41,6 +57,13 @@ async function setTerritory(req, res, next) {
     }
 }
 
+/**
+ * POST /api/v2/territory/{id}
+ * @tags Territory
+ * @param {string} id.path.required - territory id
+ * @param {PostBody} request.body - PostBody
+ * @returns {TerritorySchema} territory
+ */
 async function getTerritoryById(req, res, next) {
     try {
         const result = await ServiceTerritory.getTerritoryById(req.params.id, req.body.PostBody);
@@ -51,7 +74,9 @@ async function getTerritoryById(req, res, next) {
 }
 
 /**
- * Delete Territory
+ * DELETE /api/v2/territory/{id}
+ * @tags Territory
+ * @param {string} id.path.required - territory id
  */
 async function deleteTerritory(req, res, next) {
     try {
@@ -62,6 +87,10 @@ async function deleteTerritory(req, res, next) {
     }
 }
 
+/**
+ * GET /api/territory/countries
+ * @tags Territory
+ */
 async function listCountries(req, res, next) {
     try {
         const countries = await Territory.find({type: 'country'}).sort({name: 1});

@@ -6,9 +6,10 @@ const {isAdmin} = require('../services/auth');
 const securityForceActif = (arrayFieldsToActivate) => {
     return (req, res, next) => {
         // TODO : appeler securityForceFilter() pour factoriser
-        const {PostBody} = req.body;
         const {authorization} = req.headers;
         if (!isAdmin(authorization)) {
+            if (!req.body.PostBody) req.body.PostBody = {};
+            const {PostBody} = req.body;
             if (!PostBody.filter) {
                 PostBody.filter = {};
             }
@@ -28,9 +29,10 @@ const securityForceActif = (arrayFieldsToActivate) => {
  */
 const securityForceFilter = (arrayFieldsToActivate) => {
     return (req, res, next) => {
-        const {PostBody} = req.body;
         const {authorization} = req.headers;
         if (!isAdmin(authorization)) {
+            if (!req.body.PostBody) req.body.PostBody = {};
+            const {PostBody} = req.body;
             if (!PostBody.filter) {
                 PostBody.filter = {};
             }

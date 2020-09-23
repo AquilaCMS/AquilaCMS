@@ -1,31 +1,44 @@
 const crypto = require('crypto');
+const IV_LENGTH = 16;
 
-exports.cipher = function (dataToEncrypt) {
+const cipher = (dataToEncrypt) => {
     if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
-        const cipher = crypto.createCipher(global.envFile.encryption.method, global.envFile.encryption.password);
-        let encrypted = cipher.update(dataToEncrypt, 'utf8', 'hex');
-        encrypted += cipher.final('hex');
-        return encrypted;
+        const {method, password} = global.envFile.encryption;
+        const iv = crypto.randomBytes(IV_LENGTH);
+        const cipher = crypto.createCipheriv(method, Buffer.from(password, 'hex'), iv);
+        let encrypted = cipher.update(dataToEncrypt);
+        encrypted = Buffer.concat([encrypted, cipher.final()]);
+        return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
     }
 
     console.error('Encryption config is empty. Please read the instruction');
-    console.info(`=== Utilisation ===
-        Dans "env.js" :
-        - faire un objet "encryption" avec "method" et "password"
-        - method = voir encryption list au démarrage du serveur :
-        - password = mot de passe utilisé pour généré la clé de chiffrement
-        Si les champs devant être chiffré ne le sont pas, une route est disponible dans "devScripts.js", ex: http://local.host:3010/api/encryption/cipher (dans postman, ne pas oublier le JWT admin).`);
+    console.info(`=== Usage ===
+        In "env.json" :
+        - make an "encryption" object with "method" and "password"
+        - method = see encryption list when starting the server
+        - password = password used to generate the encryption key
+        If the fields to be encrypted are not, a route is available in "devScripts.js",
+        ex: http://localhost:3010/api/encryption/cipher`);
     console.info('Encryption list : ', crypto.getCiphers());
 
     return dataToEncrypt;
 };
 
-exports.decipher = function (dataToDecrypt) {
+const decipher = (dataToDecrypt) => {
     if (global.envFile.encryption && global.envFile.encryption.method && global.envFile.encryption.password) {
-        const decipher = crypto.createDecipher(global.envFile.encryption.method, global.envFile.encryption.password);
-        let decrypted = decipher.update(dataToDecrypt, 'hex', 'utf8');
-        decrypted += decipher.final('utf8');
-        return decrypted;
+        const {method, password} = global.envFile.encryption;
+        const textParts = dataToDecrypt.split(':');
+        const iv = Buffer.from(textParts.shift(), 'hex');
+        const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+        const decipher = crypto.createDecipheriv(method, Buffer.from(password, 'hex'), iv);
+        let decrypted = decipher.update(encryptedText);
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
+        return decrypted.toString();
     }
     return dataToDecrypt;
+};
+
+module.exports = {
+    cipher,
+    decipher
 };

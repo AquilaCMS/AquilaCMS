@@ -54,7 +54,7 @@ const deleteFile = async (filePath) => {
     if (filePath) {
         await utilsModules.modulesLoadFunctions('removeFile', {key: filePath}, async () => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
-            const pathToRemove = path.resolve(`./${pathUpload}/${filePath}`);
+            const pathToRemove = path.resolve(pathUpload, filePath);
             if (pathToRemove && await fsp.access(pathToRemove)) {
                 try {
                     await fsp.unlink(pathToRemove);
@@ -72,7 +72,7 @@ const deleteFolder = async (folderPath) => {
     if (folderPath) {
         await utilsModules.modulesLoadFunctions('removeFolder', {folder: folderPath}, async () => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
-            const pathToRemove = `./${pathUpload}/${folderPath}`;
+            const pathToRemove = path.resolve(pathUpload, folderPath);
             if (await fsp.access(pathToRemove)) {
                 await fsp.deleteRecursiveSync(pathToRemove);
             }
@@ -88,8 +88,8 @@ const renameFile = async (pathIn, filePathOut) => {
             outPath : filePathOut
         }, async () => {
             const pathUpload = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
-            const oldPath    = `./${pathUpload}/${pathIn}`;
-            const newPath    = `./${pathUpload}/${filePathOut}`;
+            const oldPath    = path.resolve(pathUpload, pathIn);
+            const newPath    = path.resolve(pathUpload, filePathOut);
             if (oldPath && fsp.existsSync(oldPath)) {
                 try {
                     await fsp.rename(pathIn, newPath);
@@ -107,7 +107,7 @@ const existsFile = async (key) => {
     if (key) {
         return utilsModules.modulesLoadFunctions('existsFile', {key}, async () => {
             const pathUpload  = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
-            const pathToCheck = `./${pathUpload}/${key}`;
+            const pathToCheck = path.resolve(pathUpload, key);
             if (pathToCheck && await fsp.access(pathToCheck)) {
                 return true;
             }

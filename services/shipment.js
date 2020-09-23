@@ -5,7 +5,7 @@ const QueryBuilder      = require('../utils/QueryBuilder');
 const NSErrors          = require('../utils/errors/NSErrors');
 
 const restrictedFields  = [];
-const defaultFields     = ['_id', 'code', 'url', 'url_logo'];
+const defaultFields     = ['_id', 'code', 'url', 'url_logo', 'translation'];
 const queryBuilder      = new QueryBuilder(Shipments, restrictedFields, defaultFields);
 
 /**
@@ -43,7 +43,7 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
         for (const shipment of shipments) {
             const index = shipment.countries.findIndex((country) => {
                 country = country.toObject();
-                return country.country === withoutCountry;
+                return (country.country).toLowerCase() === (withoutCountry).toLowerCase();
             });
             const shipObject = shipment.countries[index].toObject();
             const range = shipObject.prices.find((_price) => totalWeight >= _price.weight_min && totalWeight <= _price.weight_max);
@@ -60,7 +60,7 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
     }
     let shipments = [];
     if (cart.addresses && cart.addresses.delivery && cart.addresses.delivery.isoCountryCode) {
-        PostBody.filter = {...PostBody.filter, $or: [{active: true}, {active: {$exists: false}}], countries: {$elemMatch: {country: cart.addresses.delivery.isoCountryCode}}};
+        PostBody.filter = {...PostBody.filter, $or: [{active: true}, {active: {$exists: false}}], countries: {$elemMatch: {country: new RegExp(cart.addresses.delivery.isoCountryCode, 'ig')}}};
         shipments = (await getShipments(PostBody)).datas;
     }
     const returnShipments = [];
@@ -68,7 +68,7 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
     for (const shipment of shipments) {
         let selectedCountry = shipment.countries.find((country) => {
             country = country.toObject();
-            return country.country === cart.addresses.delivery.isoCountryCode;
+            return (country.country).toLowerCase() === (cart.addresses.delivery.isoCountryCode).toLowerCase();
         });
         selectedCountry = selectedCountry.toObject();
         if (selectedCountry) {

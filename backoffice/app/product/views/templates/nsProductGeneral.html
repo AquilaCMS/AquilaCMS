@@ -63,7 +63,8 @@
     <div class="col-sm-11">
         <label for="canonical" class="col-sm-2 control-label" translate>product.general.canon</label>
         <div class="col-sm-6">
-            <input type="text" class="form-control" id="canonical" name="canonical" ng-model="product.translation[lang].canonical" disabled="disabled">
+            <input style="float:left" type="text" class="form-control" id="canonical" name="canonical" ng-model="product.translation[lang].canonical" disabled="disabled">
+            <a ng-if="product.translation[lang].canonical" style="float:left;margin-left:-30px;padding-top:5px" target="_blank" href="{{product.translation[lang].canonical}}"><i class="fa fa-eye"></i></a>
         </div>
     </div>
 </div>
@@ -166,7 +167,7 @@
     <div class="col-sm-11">
         <label for="description2.title" class="col-sm-2 control-label" translate>product.general.descCt</label>
         <div class="col-sm-10 tinyeditor-small">
-            <ns-tinymce text="product.translation[lang].description2.text"></ns-tinymce>
+            <ns-tinymce id="'1'" lang="lang" text="product.translation[lang].description2.text"></ns-tinymce>
         </div>
     </div>
 </div>
@@ -184,7 +185,7 @@
     <div class="col-sm-11">
         <label for="description1.title" class="col-sm-2 control-label" translate>product.general.descLg</label>
         <div class="col-sm-10 tinyeditor-big">
-            <ns-tinymce text="product.translation[lang].description1.text"></ns-tinymce>
+            <ns-tinymce id="'2'" lang="lang" text="product.translation[lang].description1.text"></ns-tinymce>
         </div>
     </div>
 </div>

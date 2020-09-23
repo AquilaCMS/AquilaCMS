@@ -34,6 +34,13 @@ Here is the structure of a PostBody object :
 
 <code>PostBody.structure</code> : Returns the desired object structure. It's an object based on the mongodb's projection : <https://docs.mongodb.com/manual/reference/operator/projection/positional/>
 
+<code>PostBody.populate</code> : ask to populate fields in this array.
+
+<code>PostBody.skip</code> : skip a specific amount of element from the request. The default value is 0
+
+<code>PostBody.sort</code> : sort. It's an object based on the mongodb's sort : <https://docs.mongodb.com/manual/reference/method/cursor.sort/>
+
+<code>PostBody.page</code> : page. The default value is null
 
 
 

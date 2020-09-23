@@ -1,7 +1,7 @@
 var NewsletterServices = angular.module("aq.newsletter.services", ["ngResource"]);
 
 
-OrderServices.service("NewsletterV2", [
+NewsletterServices.service("NewsletterV2", [
     "$resource", function ($resource)
     {
         return $resource("v2/:route/:action", {}, {

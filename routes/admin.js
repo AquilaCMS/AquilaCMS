@@ -12,20 +12,9 @@ module.exports = (router, adminFront) => {
 };
 
 /**
- * return backoffice login page
- */
-const renderLogin = async (req, res, next) => {
-    try {
-        const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
-        if (!appUrl || !adminPrefix) return res.status(404).end();
-        return res.render('login', {appUrl, adminPrefix});
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * Get admin information
+ * GET /api/v2/adminInformation
+ * @tags Admin
+ * @summary Get admin information
  */
 async function getAdminInformation(req, res, next) {
     try {
@@ -37,7 +26,9 @@ async function getAdminInformation(req, res, next) {
 }
 
 /**
- * Delete admin information
+ * GET /api/v2/adminInformation/{code}
+ * @tags Admin
+ * @summary Delete admin information
  */
 function deleteAdminInformation(req, res, next) {
     try {
@@ -48,15 +39,22 @@ function deleteAdminInformation(req, res, next) {
     }
 }
 
-/**
- * return backoffice home page
- */
 const getAdminHomepage = async (req, res, next) => {
     try {
         const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
         if (!appUrl || !adminPrefix) return res.status(404).end();
         const tabM = await modules.loadAdminModules();
         return res.render('layout', {appUrl, adminPrefix, tabM});
+    } catch (err) {
+        return next(err);
+    }
+};
+
+const renderLogin = async (req, res, next) => {
+    try {
+        const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
+        if (!appUrl || !adminPrefix) return res.status(404).end();
+        return res.render('login', {appUrl, adminPrefix});
     } catch (err) {
         return next(err);
     }

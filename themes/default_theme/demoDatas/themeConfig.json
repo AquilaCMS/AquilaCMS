@@ -6,22 +6,18 @@
       "config": {
         "translation" : {
           "fr" : {
-              "showFooter" : true, 
-              "itsstring" : "fr", 
-              "itsnumber" : 321, 
-              "itsboolean" : true, 
-              "itscolor" : "#CCCCCC",
+              "showFooter" : true,
               "filters" : "left",
-              "reviews" : "true"
+              "reviews" : true,
+              "itsnumber" : 321, 
+              "itscolor" : "#CCCCCC"
           }, 
           "en" : {
               "showFooter" : true, 
-              "itsstring" : "en", 
-              "itsnumber" : 123, 
-              "itsboolean" : false, 
-              "itscolor" : "#ABCDEF",
               "filters" : "left",
-              "reviews" : "true"
+              "reviews" : true,
+              "itsnumber" : 123, 
+              "itscolor" : "#ABCDEF"
           }
       	}
       }

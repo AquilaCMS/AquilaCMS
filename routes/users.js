@@ -75,7 +75,13 @@ async function getUser(req, res, next) {
 }
 
 /**
- * Fonction retournant un utilisateur
+ * POST /api/v2/user/{id}
+ * @tags User
+ * @summary Fonction retournant un utilisateur
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.bod.required - PostBody
+ * @param {string} id.path.required - user id
+ * @return {UserSchema} 200 - success
  */
 async function getUserById(req, res, next) {
     try {
@@ -92,7 +98,16 @@ async function getUserById(req, res, next) {
 }
 
 /**
- * Fonction retournant un utilisateur en fonction de son token d'activation
+ * @typedef {object} RequestAccountToken
+ * @property {string} activateAccountToken.required - activateAccountToken
+ */
+
+/**
+ * POST /api/v2/user/active/account
+ * @tags User
+ * @summary Fonction retournant un utilisateur en fonction de son token d'activation
+ * @param {RequestAccountToken} request.body - activateAccountToken
+ * @return {UserSchema} 200 - response success
  */
 async function getUserByAccountToken(req, res, next) {
     try {
@@ -107,7 +122,9 @@ async function getUserByAccountToken(req, res, next) {
 }
 
 /**
- * Fonction pour ajouter ou mettre à jour un utilisateur
+ * PUT /api/v2/user
+ * @tags User
+ * @summary Fonction pour ajouter ou mettre à jour un utilisateur
  */
 async function setUser(req, res, next) {
     let isAdmin = false;
@@ -139,7 +156,9 @@ async function setUser(req, res, next) {
 }
 
 /**
- * Fonction pour mettre à jour les adresses d'un utilisateur
+ * PUT /api/v2/user/addresses
+ * @tags User
+ * @summary Fonction pour mettre à jour les adresses d'un utilisateur
  */
 async function setUserAddresses(req, res, next) {
     try {
@@ -150,7 +169,9 @@ async function setUserAddresses(req, res, next) {
 }
 
 /**
- * Fonction supprimant un utilisateur
+ * DELETE /api/v2/user/{id}
+ * @tags User
+ * @summary Fonction supprimant un utilisateur
  */
 async function deleteUser(req, res, next) {
     try {
@@ -162,7 +183,9 @@ async function deleteUser(req, res, next) {
 }
 
 /**
- * Fonction retournant les types d'users
+ * POST /api/v2/getUserTypes
+ * @tags User
+ * @summary Fonction retournant les types d'users
  */
 async function getUserTypes(req, res, next) {
     try {
@@ -175,7 +198,16 @@ async function getUserTypes(req, res, next) {
         return next(error);
     }
 }
-// gerard.lecloerec@nextsourcia.com
+
+/**
+ * PUT /api/v2/user/resetpassword
+ * @tags User
+ * @summary Reset password
+ * @param {oneOf|TokenSendMail|changePassword|resetPassword} request.body parameter - success | example | {
+ * "email": "testmail@gmail.com",
+ * "lang": "fr"
+ * }
+ */
 async function resetpassword(req, res, next) {
     try {
         const {email, change, token, password} = req.body;

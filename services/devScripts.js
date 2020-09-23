@@ -2,7 +2,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const fs = require('../utils/fsp');
 
-exports.createModelData = async () => {
+const createModelData = async () => {
     const schemas = [];
     const themeFolder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}`);
     for (const modelName of mongoose.modelNames()) {
@@ -46,6 +46,10 @@ exports.createModelData = async () => {
         photoPath,
         path.join(themeFolder, '/demoDatas/files'),
         false,
-        ['cache']
+        ['cache', 'temp']
     );
+};
+
+module.exports = {
+    createModelData
 };

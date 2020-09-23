@@ -9,7 +9,17 @@ module.exports = function (app) {
 };
 
 /**
- * Récupèration de toutes les factures
+ * @api {post} /v2/bills Get bills
+ * @apiName getBills
+ * @apiGroup Bills
+ * @apiVersion 2.0.0
+ * @apiDescription Get all bills
+ * @apiParam {String} lang Get the translation in the right language
+ * @apiUse param_PostBody
+ * @apiParamExample {js} Example usage:
+    // Get the french pages for slug "mon_slug" with the default fields except one field "metadesc" :
+    {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
+ * @apiUse ErrorPostBody
  */
 async function getBills(req, res, next) {
     try {
@@ -21,7 +31,21 @@ async function getBills(req, res, next) {
 }
 
 /**
- * Création d'une facture à partir d'une commande
+ * @api {post} /v2/bills/fromOrder Generate bills from order
+ * @apiName orderToBill
+ * @apiGroup Bills
+ * @apiVersion 2.0.0
+ * @apiDescription Création d'une facture à partir d'une commande
+ * @apiParam {Number} idOrder id of the order
+ * @apiParam {Boolean} isAvoir Is a credit on the invoice `default: false`
+ * @apiParamExample {json} Example usage:
+    {
+        idOrder: '',
+        isAvoir: false
+    }
+ * @apiUse BillSchema
+ * @apiSuccess null
+ * @apiError {Object} InvoiceAlreadyExists Invoice already exists.
  */
 async function orderToBill(req, res, next) {
     try {
@@ -32,7 +56,17 @@ async function orderToBill(req, res, next) {
 }
 
 /**
- * Génération d'un PDF
+ * @api {post} /v2/bills/generatePDF generate PDF from Bill
+ * @apiName generatePDF
+ * @apiGroup Bills
+ * @apiVersion 2.0.0
+ * @apiDescription Génération d'un PDF
+ * @apiParam {String} lang Get the translation in the right language
+ * @apiUse param_PostBody
+ * @apiParamExample {js} Example usage:
+    // Get the french pages for slug "mon_slug" with the default fields except one field "metadesc" :
+    {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
+ * @apiUse ErrorPostBody
  */
 async function generatePDF(req, res, next) {
     try {

@@ -13,7 +13,6 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
 ]).controller("GalleryDetailCtrl", [
     "$rootScope", "$scope", "$routeParams", "$location", "GalleryService", "GalleryItemService", "toastService", "$modal",
     function ($rootScope, $scope, $routeParams, $location, GalleryService, GalleryItemService, toastService, $modal) {
-        var isDrop = false;
 
         $scope.isEditMode = false;
         $scope.disableSave = true;

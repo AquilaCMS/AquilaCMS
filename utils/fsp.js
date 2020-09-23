@@ -180,24 +180,25 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
         return;
     }
     try {
-        if (await access(src) && fs.statSync(src).isDirectory()) {
+        const accessSrc = await access(src);
+        if (accessSrc && fs.statSync(src).isDirectory()) {
+            console.log(src);
             if (!(await access(dest))) {
                 await mkdir(dest, {recursive: true});
             }
             (await readdir(src)).forEach(async (childItemName) => {
                 await copyRecursiveSync(
-                    path.join(src, childItemName),
-                    path.join(dest, childItemName),
+                    path.resolve(src, childItemName),
+                    path.resolve(dest, childItemName),
                     override,
                     except
                 );
             });
-        } else if (!(await access(dest, fs.constants.W_OK))) {
+        } else {
             if (!(await access(path.dirname(dest), fs.constants.W_OK))) {
                 await mkdir(path.dirname(dest), {recursive: true});
             }
             if (override) {
-                console.log(src);
                 await copyFile(src, dest);
             } else {
                 try {
@@ -210,28 +211,43 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
 };
 
 /**
- * delete a folder recursively
- * @param {string | Buffer | URL} folder A path to a file or directory.
+ * delete a file or a folder recursively
+ * @param {string | Buffer | URL} filePath A path to a file or directory.
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
  */
-const deleteRecursiveSync = async (folder) => {
-    const statDirectory = await lstat(folder);
-    if (!statDirectory.isDirectory()) {
-        console.error(`"${folder}" is not a directory`);
-        return;
-    }
-    if (await access(folder)) {
-        for (const file of await readdir(folder)) {
-            const curPath = path.join(folder, file);
-            const statSubDirectory = await lstat(curPath);
-            if (statSubDirectory.isDirectory()) { // recurse
-                await deleteRecursiveSync(curPath);
-            } else { // delete file
-                await unlink(curPath);
+const deleteRecursiveSync = async (filePath) => {
+    if (fs.existsSync(filePath)) {
+        const statFile = await lstat(filePath);
+        if (statFile.isFile()) {
+            await unlink(filePath);
+        } else if (statFile.isDirectory()) {
+            if (fs.existsSync(filePath) && await access(filePath)) {
+                for (const file of await readdir(filePath)) {
+                    const curPath = path.resolve(filePath, file);
+                    const statSubDirectory = await lstat(curPath);
+                    if (statSubDirectory.isDirectory()) { // recurse
+                        await deleteRecursiveSync(curPath);
+                    } else { // delete file
+                        await unlink(curPath);
+                    }
+                }
+                await rmdir(filePath);
             }
         }
-        fs.rmdirSync(folder);
     }
+};
+
+/**
+ * Asynchronous rmdir(2) - delete a directory.
+ * @param {string | Buffer | URL} filePath A path to a file. If a URL is provided, it must use the `file:` protocol.
+ */
+const rmdir = async (filePath) => {
+    return new Promise((resolve, reject) => {
+        fs.rmdir(filePath, (err) => {
+            if (err) return reject(err);
+            return resolve();
+        });
+    });
 };
 
 /**
@@ -303,5 +319,6 @@ module.exports = {
     moveFile,
     lstat,
     rename,
-    copyFile
+    copyFile,
+    rmdir
 };

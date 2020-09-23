@@ -456,7 +456,11 @@ const activateModule = async (idModule, toBeChanged) => {
         const copyTab = [];
         if (await fs.access(copyF, fs.constants.W_OK)) {
             try {
-                await fs.copyRecursiveSync(copyF, copy, true);
+                await fs.copyRecursiveSync(
+                    path.resolve(global.appRoot, copyF),
+                    path.resolve(global.appRoot, copy),
+                    true
+                );
             } catch (err) {
                 console.error(err);
             }
@@ -465,11 +469,15 @@ const activateModule = async (idModule, toBeChanged) => {
 
         if (myModule.loadTranslationBack) {
             console.log('Loading back translation for module...');
-            const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/back');
-            const dest  = path.resolve(global.appRoot, 'backoffice/assets/translations/modules', myModule.name);
+            const src = path.resolve('modules', myModule.name, 'translations/back');
+            const dest  = path.resolve('backoffice/assets/translations/modules', myModule.name);
             if (fs.existsSync(src)) {
                 try {
-                    await fs.copyRecursiveSync(src, dest, true);
+                    await fs.copyRecursiveSync(
+                        path.resolve(global.appRoot, src),
+                        path.resolve(global.appRoot, dest),
+                        true
+                    );
                 } catch (err) {
                     console.error(err);
                 }
@@ -482,8 +490,8 @@ const activateModule = async (idModule, toBeChanged) => {
             const {currentTheme} = global.envConfig.environment;
             const files = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
             for (let i = 0; i < files.length; i++) {
-                const src = path.resolve(global.appRoot, 'modules', myModule.name, 'translations/front', files[i]);
-                const dest  = path.resolve(global.appRoot, 'themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
+                const src = path.resolve('modules', myModule.name, 'translations/front', files[i]);
+                const dest  = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
                 if (fs.existsSync(src)) {
                     try {
                         await fs.copyRecursiveSync(src, dest, true);

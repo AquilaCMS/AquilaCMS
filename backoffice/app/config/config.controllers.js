@@ -85,8 +85,8 @@ ConfigControllers.controller("ImportConfigCtrl", [
 
 
 ConfigControllers.controller("EnvironmentConfigCtrl", [
-    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "EnvBlocks", "TerritoryCountries", "$modal",
-    function ($scope, ConfigV2, $http, $interval, $sce, toastService, EnvBlocks, TerritoryCountries, $modal) {
+    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "EnvBlocks", "TerritoryCountries", "$modal", "Upload",
+    function ($scope, ConfigV2, $http, $interval, $sce, toastService, EnvBlocks, TerritoryCountries, $modal, Upload) {
         $scope.blocks = EnvBlocks;
         $scope.disabledButton = false;
         $scope.countries = [];
@@ -96,7 +96,14 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             if (!$scope.config.adminPrefix) {
                 $scope.config.adminPrefix = "admin";
             }
+
+            $scope.ssl = {
+                cert : $scope.config.ssl.cert || '',
+                key  : $scope.config.ssl.key || ''
+            }
+            delete $scope.config.$promise;
         });
+
         $scope.local = {
             themeDataOverride : false
         };
@@ -298,11 +305,28 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             if ($scope.config.appUrl && !$scope.config.appUrl.endsWith('/')) {
                 $scope.config.appUrl += "/";
             }
-
+            let file = {};
+            if ($scope.config.ssl.cert instanceof File || $scope.config.ssl.cert instanceof File) {
+                if ($scope.config.ssl.cert instanceof File) {
+                    file.cert = $scope.config.ssl.cert;
+                    $scope.config.ssl.cert = $scope.config.ssl.cert.name;
+                }
+                if ($scope.config.ssl.key instanceof File) {
+                    file.key = $scope.config.ssl.key;
+                    $scope.config.ssl.key = $scope.config.ssl.key.name;
+                }
+            }
 
             ConfigV2.environment(function (oldAdmin) {
                 $scope.showThemeLoading = true;
-                ConfigV2.save({environment: $scope.config}, function () {
+                Upload.upload({
+                    url: 'v2/config',
+                    method: 'PUT',
+                    data: {
+                        ...file,
+                        environment: $scope.config
+                    }
+                }).then((response) => {
                     if (
                         oldAdmin.adminPrefix !== $scope.config.adminPrefix
                         || oldAdmin.appUrl !== $scope.config.appUrl
@@ -328,7 +352,6 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     console.error(err);
                 });
             });
-
         };
 
         function buildAdminUrl(appUrl, adminPrefix) {

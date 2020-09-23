@@ -19,7 +19,7 @@
       "_id": "5ba1f80349ceac42b4a16861",
       "items": [
         {
-          "order": 0,
+          "order": 1,
           "src": "medias/slider/believe_197091_1920.jpg",
           "text": "believe",
           "name": "believe",
@@ -28,7 +28,7 @@
           "_id": "5d26fabd4aa9c1692db052fc"
         },
         {
-          "order": 0,
+          "order": 2,
           "src": "medias/slider/clothes_1834650_1920.jpg",
           "text": "clothes",
           "name": "clothes",

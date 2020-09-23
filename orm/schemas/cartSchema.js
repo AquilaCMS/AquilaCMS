@@ -125,7 +125,7 @@ CartSchema.methods.calculateBasicTotal = function () {
 
 CartSchema.virtual('delivery.price').get(function () {
     const self = this;
-    if (self.orderReceipt && self.orderReceipt.method === 'delivery') {
+    if (self.delivery && self.delivery.value) {
         const priceTotal = this.calculateBasicTotal();
         const deliveryPrice = {ati: 0, et: 0};
 
@@ -198,6 +198,11 @@ CartSchema.virtual('priceSubTotal').get(function () {
     const priceSubTotal = this.calculateBasicTotal();
 
     return priceSubTotal;
+});
+
+CartSchema.pre('save', function (next) {
+    this.wasNew = this.isNew;
+    next();
 });
 
 CartSchema.post('save', async function (doc, next) {

@@ -108,7 +108,10 @@
                                 category.detail.slugPageCible
                             </td>
                             <td>
-                                <input type="text" class="form-control" ng-model="category.translation[lang].pageSlug" />
+                                <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched"
+                                    ng-options="page.translation[lang].slug as page.translation[lang].title group by getOptGroup(page.group) for page in pages | filter:exist"
+                                    ng-model="category.translation[lang].pageSlug">
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -177,7 +180,7 @@
                                 category.detail.textSupp1
                             </td>
                             <td>
-                                <ns-tinymce text="category.translation[lang].extraText"></ns-tinymce>
+                                <ns-tinymce id="'1'" lang="lang" text="category.translation[lang].extraText"></ns-tinymce>
                                 <br />
                             </td>
                         </tr>
@@ -186,7 +189,7 @@
                                 category.detail.textSupp2
                             </td>
                             <td>
-                            <ns-tinymce text="category.translation[lang].extraText2"></ns-tinymce>
+                            <ns-tinymce  id="'2'" lang="lang" text="category.translation[lang].extraText2"></ns-tinymce>
                             </td>
                         </tr>
                         <tr id="text3">
@@ -194,7 +197,7 @@
                                 category.detail.textSupp3
                             </td>
                             <td>
-                                <ns-tinymce text="category.translation[lang].extraText3"></ns-tinymce>
+                                <ns-tinymce lang="lang" id="'3'" text="category.translation[lang].extraText3"></ns-tinymce>
                             </td>
                         </tr>
                     </tbody>

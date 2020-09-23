@@ -24,7 +24,9 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing panier
+ * POST /api/v2/carts
+ * @tags Cart
+ * @summary Fonction retournant un listing panier
  */
 const getCarts = async (req, res, next) => {
     try {
@@ -35,7 +37,9 @@ const getCarts = async (req, res, next) => {
 };
 
 /**
- * Get cart(s) for this client
+ * GET /v2/cart/user/{idclient}
+ * @tags Cart
+ * @summary Get cart(s) for this client
  */
 const getCartforClient = async (req, res, next) => {
     try {
@@ -46,7 +50,9 @@ const getCartforClient = async (req, res, next) => {
 };
 
 /**
- * Fonction retournant un panier
+ * Post /api/v2/cart/:id
+ * @tags Cart
+ * @summary Fonction retournant un panier
  */
 const getCartById = async (req, res, next) => {
     try {
@@ -160,7 +166,15 @@ async function removeDiscount(req, res, next) {
 //= ====================================================================
 
 /**
- * @Deprecated
+ * PUT /api/cart/comment
+ * @tags Cart
+ * @deprecated
+ */
+
+/**
+ * GET /api/v2/cart/checkcart/expire
+ * @tags Cart
+ * @deprecated
  */
 function getJobExpireCarts(req, res) {
     console.log(`Paniers expirés -> Run at ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`);

@@ -138,7 +138,7 @@ class CartPayment extends React.Component {
     renderPaymentMethod = (pm) => {
         const { cart } = this.state;
         if (pm.component_template_front && nsModules) {
-            const Comp = nsModules.find((module) => module.code === pm.component_template_front).jsx;
+            const Comp = nsModules.find((module) => module.code === pm.component_template_front).jsx.default;
             if (Comp) {
                 return (
                     <div key={pm.code} className="payment-option payment-option--featured">

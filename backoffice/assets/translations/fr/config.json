@@ -55,20 +55,27 @@
         "billsPattern" : "Schéma des codes de facturation",
         "billsVariables" : "Variables disponibles : {year} pour l'année en cours et {numAuto} pour un numéro auto incrémenté. Exemple : MONSITE_{year}_{numAuto}",
         "menu": {
-            "general" : "General",
+            "general" : "Général",
             "path" : "Dossier",
             "mail" : "Mail",
             "ga" : "Script",
             "other" : "Autre",
-            "theme" : "Thème",
+            "theme" : "Thèmes",
             "third-party-auth": "Authentifications tiers",
             "nextjs": "NextJS",
-            "maintenance": "Maintenance"
+            "maintenance": "Maintenance",
+            "security": "Sécurité"
         },
         "cache": "Cache des requêtes",
         "ttlCache": "Durée du cache en secondes",
         "database": "Base de données",
-        "connectionString": "Chaine de connexion"
+        "connectionString": "Chaine de connexion",
+        "ssl": {
+            "ssl": "SSL",
+            "active": "Activée",
+            "cert": "certificat",
+            "key": "clé privée"
+        }
     },
     "import": {
         "t1": "Imports des produits",

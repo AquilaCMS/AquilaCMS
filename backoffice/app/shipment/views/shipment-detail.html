@@ -143,10 +143,11 @@
                                 </select>
                             </div>
                         </div>
+
+
+                        <div bind-html-compile="shipment.component_template"></div>
                     </div>
                 </div>
-
-                <div bind-html-compile="shipment.component_template"></div>
 
                 <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'">
                     <div class="form-group">

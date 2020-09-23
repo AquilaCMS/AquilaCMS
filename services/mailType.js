@@ -4,7 +4,7 @@ const NSErrors = require('../utils/errors/NSErrors');
 /**
  * On récupére les mails
  */
-exports.getMailTypes = async function () {
+const getMailTypes = async () => {
     const {MailType} = require('../orm/models');
     return MailType.find({}).sort({position: 1});
 };
@@ -14,7 +14,7 @@ exports.getMailTypes = async function () {
  * @param {*} body les data a enregistrer
  * @param {*} _id si l'_id existe alors on met a jour sinon on update
  */
-exports.setMailType = async function (body, _id = null) {
+const setMailType = async (body, _id = null) => {
     require('../utils/utils').tmp_use_route('mailType_service', 'setMailType');
     const {MailType} = require('../orm/models');
     let result;
@@ -30,7 +30,7 @@ exports.setMailType = async function (body, _id = null) {
     return result;
 };
 
-exports.deleteMailType = async function (code) {
+const deleteMailType = async (code) => {
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
     const doc = await MailType.findOneAndRemove({code});
@@ -41,4 +41,10 @@ exports.deleteMailType = async function (code) {
     mail.type = '';
     await Mail.findByIdAndUpdate(mail._id, {$set: mail}, {new: true, runValidators: true});
     return doc;
+};
+
+module.exports = {
+    getMailTypes,
+    setMailType,
+    deleteMailType
 };

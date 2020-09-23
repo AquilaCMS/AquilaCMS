@@ -60,15 +60,22 @@
             "mail" : "Mail",
             "ga" : "Script",
             "other" : "Other",
-            "theme" : "Theme",
+            "theme" : "Themes",
             "third-party-auth": "Third party Auth",
             "nextjs": "NextJS",
-            "maintenance": "Maintenance"
+            "maintenance": "Maintenance",
+            "security": "Security"
         },
         "cache": "Cache of requests",
         "ttlCache": "Cache duration in seconds",
         "database": "Database",
-        "connectionString": "Connection chain"
+        "connectionString": "Connection chain",
+        "ssl": {
+            "ssl": "SSL",
+            "active": "Activate",
+            "cert": "certificate",
+            "key": "private key"
+        }
     },
     "import": {
         "t1": "Products imports",

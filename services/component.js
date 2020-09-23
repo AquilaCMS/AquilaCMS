@@ -1,6 +1,12 @@
 const NSErrors = require('../utils/errors/NSErrors');
 
-exports.getComponent = async function (componentName, code = null, authorization = null) {
+/**
+ * get component
+ * @param {string} componentName always starts with "ns-"
+ * @param {string} code
+ * @param {string} [authorization]
+ */
+const getComponent = async (componentName, code, authorization = null) => {
     if (code === null) throw NSErrors.ComponentCodeNotFound;
     // Le component doit commencer par ns- sinon ce composant n'est pas valide
     if (!componentName.startsWith('ns-')) throw NSErrors.ComponentNotAllowed;
@@ -43,4 +49,8 @@ exports.getComponent = async function (componentName, code = null, authorization
         const funcName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
         return genericServices[`get${funcName}`](PostBody);
     }
+};
+
+module.exports = {
+    getComponent
 };

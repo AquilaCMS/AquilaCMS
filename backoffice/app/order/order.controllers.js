@@ -106,11 +106,11 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderMondialRelay", "Invoice", "$location", '$anchorScroll', '$rootScope',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderMondialRelay, Invoice, $location, $anchorScroll, $rootScope)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope',
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope)
     {
         $scope.fields = OrderFields;
-        $scope.orderMondialRelay = OrderMondialRelay;
+        $scope.orderRelayPoint = OrderRelayPoint;
         $scope.editableMode = false;
         $scope.order = {};
         $scope.status = "";

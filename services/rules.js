@@ -95,16 +95,33 @@ const deleteRule = async (_id) => {
 function conditionOperator(operator, obj, target, value) {
     let isTrue = false;
     try {
-        if (['Contient', 'contains'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).includes(value);
-        else if (['Ne contient pas', 'ncontains'].indexOf(operator) !== -1) isTrue = !utils.getObjFromDotStr(obj, target).includes(value);
-        else if (['Egal à', 'eq'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) === value;
-        else if (['Différent de', 'neq'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) !== value;
-        else if (['Commence par', 'startswith'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).startsWith(value);
-        else if (['Fini par', 'endswith'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).endsWith(value);
-        else if (['Plus grand ou egal à', 'gte'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) >= value;
-        else if (['Plus grand que', 'gt'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) > value;
-        else if (['Plus petit ou egal à', 'lte'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) <= value;
-        else if (['Plus petit que', 'lt'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) < value;
+        // Si value est un tableau (ex: attribut de type select multiple)
+        if (Object.prototype.toString.call(value) !== '[object String]' && value.length > -1) {
+            for (let i = 0; i < value.length; i++) {
+                if (['Contient', 'contains'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target).includes(value[i]);
+                else if (['Ne contient pas', 'ncontains'].indexOf(operator) !== -1) isTrue = isTrue || !utils.getObjFromDotStr(obj, target).includes(value[i]);
+                else if (['Egal à', 'eq'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target) === value[i];
+                else if (['Différent de', 'neq'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target) !== value[i];
+                else if (['Commence par', 'startswith'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target).startsWith(value[i]);
+                else if (['Fini par', 'endswith'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target).endsWith(value[i]);
+                else if (['Plus grand ou egal à', 'gte'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target) >= value[i];
+                else if (['Plus grand que', 'gt'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target) > value[i];
+                else if (['Plus petit ou egal à', 'lte'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target) <= value[i];
+                else if (['Plus petit que', 'lt'].indexOf(operator) !== -1) isTrue = isTrue || utils.getObjFromDotStr(obj, target) < value[i];
+            }
+        // Sinon ...
+        } else {
+            if (['Contient', 'contains'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).includes(value);
+            else if (['Ne contient pas', 'ncontains'].indexOf(operator) !== -1) isTrue = !utils.getObjFromDotStr(obj, target).includes(value);
+            else if (['Egal à', 'eq'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) === value;
+            else if (['Différent de', 'neq'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) !== value;
+            else if (['Commence par', 'startswith'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).startsWith(value);
+            else if (['Fini par', 'endswith'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target).endsWith(value);
+            else if (['Plus grand ou egal à', 'gte'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) >= value;
+            else if (['Plus grand que', 'gt'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) > value;
+            else if (['Plus petit ou egal à', 'lte'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) <= value;
+            else if (['Plus petit que', 'lt'].indexOf(operator) !== -1) isTrue = utils.getObjFromDotStr(obj, target) < value;
+        }
         return isTrue;
     } catch (error) {
         console.error(error);
@@ -185,7 +202,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
             let isTrue = false;
             const value = getValueFromCondition(condition);
             // colNames est le nom des collections (c'est une variable en global)
-            const tColNamesFound = colNames.filter((colName) =>  target.startsWith(`${colName}.`));
+            const tColNamesFound = colNames.filter((colName) => target.startsWith(`${colName}.`));
             // Si un colNames est trouvé dans le target alors ce n'est pas un champ produit
             if (tColNamesFound.length > 0) {
                 if (target.startsWith('client.')) {
@@ -359,8 +376,24 @@ async function applyRecursiveRules(_rules, query) {
             if (target.includes('attr.')) {
                 target          = target.replace('attr.', '');
                 const attrLang  = target.split('.')[target.split('.').length - 2];
+                const attrCode  = target.split('.')[target.split('.').length - 1];
                 // et tester la valeur de cet attribut
-                target          = `attributes.translation.${attrLang}.value`;
+                target          = 'attributes';
+                if (Object.prototype.toString.call(value) !== '[object String]' && value.length !== undefined) {
+                    value = {
+                        $elemMatch : {
+                            code                              : attrCode,
+                            [`translation.${attrLang}.value`] : {$in: value}
+                        }
+                    };
+                } else {
+                    value = {
+                        $elemMatch : {
+                            code                              : attrCode,
+                            [`translation.${attrLang}.value`] : value
+                        }
+                    };
+                }
             } else if (target.includes('categorie.')) {
                 target = target.replace('categorie.', '');
                 // On récupère le "modèle" attribut dans un produit pour connaitre l'index de l'attribut en question
@@ -372,54 +405,59 @@ async function applyRecursiveRules(_rules, query) {
             } else if (target === 'qty') {
                 target = 'stock.qty';
             }
-
-            // Gestion des opérateur (transformation expression -> opérateur mongo)
-            if (condition.operator === 'contains' || condition.operator === 'Contient') {
-                if (Object.prototype.toString.call(value) === '[Object String]') {
-                    queryConds[target] = new RegExp(value);
-                } else {
-                    queryConds[target] = value;
-                }
-            } else if (condition.operator === 'ncontains' || condition.operator === 'Ne contient pas') {
-                if (Object.prototype.toString.call(value) === '[Object String]') {
-                    queryConds[target] = {$not: new RegExp(value)};
-                } else {
-                    queryConds[target] = value;
-                }
-            } else if (condition.operator === 'eq' || condition.operator === 'Egal à') {
-                queryConds[target] = value;
-            } else if (condition.operator === 'neq' || condition.operator === 'Différent de') {
-                queryConds[target] = {$ne: value};
-            } else if (condition.operator === 'startswith' || condition.operator === 'Commence par') {
-                if (Object.prototype.toString.call(value) === '[Object String]') {
-                    queryConds[target] = new RegExp(`^${value}`);
-                } else {
-                    queryConds[target] = value;
-                }
-            } else if (condition.operator === 'endswith' || condition.operator === 'Fini par') {
-                if (Object.prototype.toString.call(value) === '[Object String]') {
-                    queryConds[target] = new RegExp(`${value}$`);
-                } else {
-                    queryConds[target] = value;
-                }
-            } else if (condition.operator === 'gte' || condition.operator === 'Plus grand ou egal à') {
-                queryConds[target] = {$gte: value};
-            } else if (condition.operator === 'gte' || condition.operator === 'Plus grand que') {
-                queryConds[target] = {$gt: value};
-            } else if (condition.operator === 'lte' || condition.operator === 'Plus petit ou egal à') {
-                queryConds[target] = {$lte: value};
-            } else if (condition.operator === 'lt' || condition.operator === 'Plus petit que') {
-                queryConds[target] = {$lt: value};
+            if (Object.prototype.toString.call(value) === '[object String]' || value.length === undefined) {
+                value = [value];
             }
 
-            if (rule.operand === 'ET') {
-                Object.assign(query, queryConds);
-            } else {
-                if (query.$or === undefined) {
-                    query.$or = [];
+            for (let i = 0; i < value.length; i++) {
+                // Gestion des opérateur (transformation expression -> opérateur mongo)
+                if (condition.operator === 'contains' || condition.operator === 'Contient') {
+                    if (Object.prototype.toString.call(value[i]) === '[object String]') {
+                        queryConds[target] = new RegExp(value[i]);
+                    } else {
+                        queryConds[target] = value[i];
+                    }
+                } else if (condition.operator === 'ncontains' || condition.operator === 'Ne contient pas') {
+                    if (Object.prototype.toString.call(value[i]) === '[object String]') {
+                        queryConds[target] = {$not: new RegExp(value[i])};
+                    } else {
+                        queryConds[target] = value[i];
+                    }
+                } else if (condition.operator === 'eq' || condition.operator === 'Egal à') {
+                    queryConds[target] = value[i];
+                } else if (condition.operator === 'neq' || condition.operator === 'Différent de') {
+                    queryConds[target] = {$ne: value[i]};
+                } else if (condition.operator === 'startswith' || condition.operator === 'Commence par') {
+                    if (Object.prototype.toString.call(value[i]) === '[object String]') {
+                        queryConds[target] = new RegExp(`^${value[i]}`);
+                    } else {
+                        queryConds[target] = value[i];
+                    }
+                } else if (condition.operator === 'endswith' || condition.operator === 'Fini par') {
+                    if (Object.prototype.toString.call(value[i]) === '[object String]') {
+                        queryConds[target] = new RegExp(`${value[i]}$`);
+                    } else {
+                        queryConds[target] = value[i];
+                    }
+                } else if (condition.operator === 'gte' || condition.operator === 'Plus grand ou egal à') {
+                    queryConds[target] = {$gte: value[i]};
+                } else if (condition.operator === 'gte' || condition.operator === 'Plus grand que') {
+                    queryConds[target] = {$gt: value[i]};
+                } else if (condition.operator === 'lte' || condition.operator === 'Plus petit ou egal à') {
+                    queryConds[target] = {$lte: value[i]};
+                } else if (condition.operator === 'lt' || condition.operator === 'Plus petit que') {
+                    queryConds[target] = {$lt: value[i]};
                 }
 
-                query.$or.push(queryConds);
+                if (rule.operand === 'ET') {
+                    Object.assign(query, queryConds);
+                } else {
+                    if (query.$or === undefined) {
+                        query.$or = [];
+                    }
+
+                    query.$or.push(queryConds);
+                }
             }
         }
 
@@ -442,7 +480,8 @@ async function applyRecursiveRules(_rules, query) {
     return query;
 }
 
-const execRules = async (owner_type) => {
+// eslint-disable-next-line no-unused-vars
+const execRules = async (owner_type, products = []) => {
     const result = [];
     let logValue = '';
     // La catégorisation est-elle en cours ?
@@ -474,7 +513,7 @@ const execRules = async (owner_type) => {
             }
         }
         try {
-            await Products.updateMany({}, {$set: {pictos: []}});
+            if (owner_type === 'picto') {await Products.updateMany({}, {$set: {pictos: []}});}
             const _products = await Promise.all(productsPromise);
             if (_products.length <= 0) {
                 inSegment[owner_type] = false;
@@ -516,7 +555,7 @@ const execRules = async (owner_type) => {
                     } else if (splittedRulesKeys[i] === 'picto') {
                         const picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
                         if (picto) {
-                            const pictoData = {code: picto.code, url: `/medias/picto/${picto.filename}`, title: picto.title, location: picto.location};
+                            const pictoData = {code: picto.code, image: picto.filename, pictoId: picto._id, title: picto.title, location: picto.location};
                             await Products.updateMany({_id: {$in: productsIds}, pictos: {$ne: pictoData}}, {$push: {pictos: pictoData}});
                         }
                     } else {

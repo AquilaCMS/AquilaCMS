@@ -1,15 +1,16 @@
-const path            = require('path');
-const url             = require('url');
-const ServiceContacts = require('../services/contacts');
+const path                 = require('path');
+const url                  = require('url');
+const ServiceContacts      = require('../services/contacts');
+const {getUploadDirectory} = require('../utils/server');
 const {
     authentication,
     adminAuth
-}                     = require('../middleware/authentication');
+}                          = require('../middleware/authentication');
 const {
     fsp,
     captchaValidation,
     modules: modulesUtils
-}                     = require('../utils');
+}                          = require('../utils');
 
 module.exports = function (app) {
     app.post('/v2/contacts', authentication, adminAuth, getContacts);
@@ -33,20 +34,18 @@ async function getContacts(req, res, next) {
 async function setContact(req, res, next) {
     try {
         let finalPath    = '';
-        const pathUpload = require('../utils/server').getUploadDirectory();
+        const pathUpload = getUploadDirectory();
         const _body      = JSON.parse(JSON.stringify(req.body));
         _body.filesPath  = [];
         if (req.files) {
-            const pathFinal = `${pathUpload}/`;
-
             for (let i = 0; i < req.files.length; i++) {
                 const file      = req.files[i];
-                const tmp_path  = file.path;
+                const tmp_path  = path.resolve(file.path);
                 const extension = path.extname(file.originalname);
 
                 finalPath = 'mails/';
 
-                let target_path_full = path.join(finalPath, `${new Date().getTime()}_${file.originalname}`);
+                let target_path_full = `${finalPath}${new Date().getTime()}_${file.originalname}`;
 
                 target_path_full = await modulesUtils.modulesLoadFunctions('uploadFile', {
                     target_path : finalPath,
@@ -55,7 +54,7 @@ async function setContact(req, res, next) {
                     extension,
                     full        : true
                 }, async () => {
-                    target_path_full = path.join(pathFinal, target_path_full);
+                    target_path_full = path.resolve(pathUpload, target_path_full);
 
                     try {
                         await fsp.copyRecursiveSync(tmp_path, target_path_full);
@@ -64,8 +63,8 @@ async function setContact(req, res, next) {
                         return next(err);
                     }
 
-                    target_path_full   = target_path_full.replace(pathFinal, '');
-                    _body.filesPath[i] = url.resolve(global.envConfig.environment.appUrl, target_path_full.replace(pathFinal.replace('./', ''), ''));
+                    target_path_full   = target_path_full.replace(path.resolve(global.appRoot, pathUpload), '');
+                    _body.filesPath[i] = url.resolve(global.envConfig.environment.appUrl, target_path_full);
                     return _body.filesPath[i];
                 });
 

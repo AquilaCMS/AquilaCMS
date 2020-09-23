@@ -25,18 +25,21 @@
                 <label class="control-label col-sm-1" translate>site.detail.img</label>
                 <div ng-show="articles.img" class="col-sm-5 img-responsive" style="width: fit-content; position: relative;">
                     <span ng-click="removeImage(articles)" class="upload-delete-image">X</span>
-                    <img ng-if="articles.img" ng-src="{{getImage(articles.img)}}" width="100" height="100" />
+                    <img ng-if="articles.img" ng-src="{{getImage(articles.img)}}" width="200" height="200" />
+                </div>
+                <div class="col-sm-6">
+                    <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="article"
+                        id="articles._id" entity="articles"></ns-upload-files>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-1 col-sm-4">
-                    <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="article" id="articles._id" entity="articles"></ns-upload-files>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-1 control-label" translate>site.detail.content</label>
                 <div class="col-sm-11">
-                    <ns-tinymce text="articles.translation[lang].content.text"></ns-tinymce>
+                    <ns-tinymce lang="lang" text="articles.translation[lang].content.text"></ns-tinymce>
                 </div>
             </div>
         </ns-buttons>

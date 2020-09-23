@@ -3359,11 +3359,12 @@ input:-webkit-autofill {
     position: absolute;
     color: #fb0f0f;
     font-weight: bolder;
-    left: 100px;
+    left: 190px;
     background-color: #e8e8e866;
     border: 1px solid #a5a5a563;
     border-radius: 59%;
     height: 20px;
+    margin-top: 5px;
     text-align: center;
     width: 20px;
     line-height: 20px;

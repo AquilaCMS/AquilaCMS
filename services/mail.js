@@ -153,7 +153,12 @@ const removePdf = async (mail, path) => {
     return result;
 };
 
-const sendMailTest = async (mail, values, lang = 'fr') => {
+/**
+ * @param {{to: string, from: string, translation: {lang: {subject: string, content: string}}}} mail
+ * @param {[{name: string, value: any}]} [values=[]] values to replace in mail
+ * @param {string} [lang="fr"] lang of mail
+ */
+const sendMailTest = async (mail, values = [], lang = 'fr') => {
     const subject = mail.translation[lang].subject;
     const content = mail.translation[lang].content;
     const attachments = [];
@@ -161,15 +166,14 @@ const sendMailTest = async (mail, values, lang = 'fr') => {
         mail.translation[lang].attachments.forEach((file) => {
             attachments.push(file);
         });
-        // pathAttachment = _config.environment.appUrl + mail.translation[lang].attachments[0].path;
     }
 
     const data = {};
-    values.forEach((element) => {
+    for (const element of values) {
         data[`{{${element.name}}}`] = element.value;
-    });
+    }
 
-    const htmlBody = await generateHTML(content, data);
+    const htmlBody = generateHTML(content, data);
     return sendMail({subject, htmlBody, mailTo: mail.to, mailFrom: mail.from, attachments});
 };
 
@@ -186,14 +190,9 @@ async function getMailDataByTypeAndLang(type, lang = 'fr') {
     const subject      = mailRegister.translation[lang].subject ? mailRegister.translation[lang].subject : '';
     const attachments = [];
     if (mailRegister.translation[lang].attachments && mailRegister.translation[lang].attachments.length > 0) {
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
         mailRegister.translation[lang].attachments.forEach((file) => {
             attachments.push(file.path);
         });
-        // attachments = _config.environment.appUrl + mailRegister.translation[lang].attachments[0].path;
     }
     if (!subject) {
         throw NSErrors.MailFieldSubjectNotFound;
@@ -206,9 +205,6 @@ async function getMailDataByTypeAndLang(type, lang = 'fr') {
 
 const sendMailActivationAccount = async (user_id, lang = '') => {
     const _config = global.envConfig;
-    if (!_config) {
-        throw NSErrors.ConfigurationNotFound;
-    }
     const _user = await Users.findById(user_id);
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
@@ -223,7 +219,7 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
         '{{firstname}}'              : _user.firstname,
         '{{lastname}}'               : _user.lastname
     };
-    const htmlBody = await generateHTML(content, oDataMail);
+    const htmlBody = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, pathAttachment});
 };
 
@@ -234,9 +230,6 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
  */
 const sendRegister = async (user_id, lang = '') => {
     const _config = global.envConfig;
-    if (!_config) {
-        throw NSErrors.ConfigurationNotFound;
-    }
     const _user = await Users.findById(user_id);
     if (!_user) {
         throw NSErrors.AccountUserNotFound;
@@ -255,16 +248,12 @@ const sendRegister = async (user_id, lang = '') => {
     // if (true) { // Possibilité d'utiliser une variable : valider l'email à l'inscription
     oDataMail['{{activate_account_token}}'] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
     // }
-    const htmlBody = await generateHTML(content, oDataMail);
+    const htmlBody = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: _user.email, mailFrom: from, fromName, pathAttachment});
 };
 
 const sendRegisterForAdmin = async (user_id, lang = '') => {
     try {
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
         const _user = await Users.findById(user_id);
         if (!_user) {
             throw NSErrors.AccountUserNotFound;
@@ -279,7 +268,7 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
             '{{login}}'     : _user.email,
             '{{company}}'   : _user.company.name
         };
-        const htmlBody = await generateHTML(content, oDataMail);
+        const htmlBody = generateHTML(content, oDataMail);
         return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
     } catch (error) {
         console.error(error);
@@ -288,9 +277,9 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
 
 /**
  * @description Envoie le mail de réinitialisation du mot de passe
- * @param {string || array} to - Destinataire ou liste de destinataires
- * @param {string} name - Nom du destinataire
- * @param {string} tokenlink - Token de validation de la réinitialisation du mot de passe
+ * @param {string|array} to Destinataire ou liste de destinataires
+ * @param {string} tokenlink Token de validation de la réinitialisation du mot de passe
+ * @param {string} [lang="fr"] lang
  */
 const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
     const _user        = await Users.findOne({email: to});
@@ -325,11 +314,13 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
         '{{fullname}}'  : _user.fullname,
         '{{tokenlink}}' : tokenlink
     };
-    const htmlBody = await generateHTML(content, oDataMail);
+    const htmlBody = generateHTML(content, oDataMail);
     return sendMail({subject, htmlBody, mailTo: to, mailFrom: mailRegister.from, fromName: mailRegister.fromName, pathAttachment});
 };
 
-// Utilisé par FKA
+/**
+ * Utilisé par FKA
+ */
 const sendPDFAttachmentToClient = async (subject = '', htmlBody = '', mailTo, mailFrom = null, pathAttachment) => {
     if (!pathAttachment || !mailTo) {
         throw NSErrors.MailAttachmentParameterError;
@@ -417,7 +408,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
-    const htmlBody = await generateHTML(content, {
+    const htmlBody = generateHTML(content, {
         '{{company}}'               : _order.customer.company.name,
         '{{taxdisplay}}'            : tmpTrad.common[taxDisplay][lang],
         '{{fullname}}'              : _order.customer.id.fullname,
@@ -545,7 +536,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
             else oMailData['{{instruction}}'] = paymentMethod.translation[lang].instruction;
         }
         const {content, subject, from, fromName, pathAttachment} = mailByType;
-        const htmlBody = await generateHTML(content, oMailData);
+        const htmlBody = generateHTML(content, oMailData);
         return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
     }
 };
@@ -572,7 +563,7 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
         pathAttachment
     }              = await getMailDataByTypeAndLang('changeOrderStatus', lang);
     const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
-    const htmlBody = await generateHTML(content, {
+    const htmlBody = generateHTML(content, {
         '{{number}}'    : _order.number,
         '{{status}}'    : status,
         '{{name}}'      : _order.customer.id.fullname,
@@ -619,7 +610,7 @@ const sendMailOrderSent = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
-    const htmlBody = await generateHTML(content, {
+    const htmlBody = generateHTML(content, {
         '{{date}}'        : date,
         '{{number}}'      : _order.number,
         '{{dateReceipt}}' : dateReceipt,
@@ -646,26 +637,31 @@ const sendMailOrderSent = async (order_id, lang = '') => {
 async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments = null, textBody = null, fromName = null}) {
     try {
         let transporter;
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        const {mailHost, mailPort, mailUser, mailIsSendmail, mailSecure, overrideSendTo} = _config.environment;
-        const mailPass = encryption.decipher(_config.environment.mailPass);
+        const {
+            mailHost,
+            mailPort,
+            mailUser,
+            mailIsSendmail,
+            mailSecure,
+            overrideSendTo,
+            mailFromContact
+        } = global.envConfig.environment;
+        let {mailPass} = global.envConfig.environment;
+        mailPass = encryption.decipher(mailPass);
 
         // Vérifier qu'il n'y a pas de surcharge du destinataire dans la config
-        if (typeof overrideSendTo !== 'undefined' && overrideSendTo !== '') {
+        if (overrideSendTo) {
             mailTo = overrideSendTo;
         }
 
         // Si on est en mode DEV, le destinataire est le dev, et non le "client"
         const devMode = global.envFile.devMode;
-        if (typeof devMode !== 'undefined' && devMode.mailTo) {
+        if (devMode && devMode.mailTo) {
             mailTo = devMode.mailTo;
         }
 
-        let fromMail = mailFrom != null ? mailFrom : _config.environment.mailFromContact;
-        if (fromName != null && fromName !== '') {
+        let fromMail = mailFrom || mailFromContact;
+        if (fromName) {
             fromMail = `${fromName} <${fromMail}>`;
         }
         const mailOptions = {
@@ -693,18 +689,19 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
         const aqSendMail = aquilaEvents.emit('aqSendMail', mailOptions);
 
         if (!aqSendMail) {
+            let options = {};
             if (!mailIsSendmail) {
                 if (!mailHost || !mailPort || !mailUser || !mailPass) {
                     throw NSErrors.UnableToMail;
                 }
                 if (mailUser.indexOf('gmail') > -1) {
-                    transporter = nodemailer.createTransport({
+                    options = {
                         service : 'Gmail',
                         auth    : {user: mailUser, pass: mailPass},
                         tls     : {rejectUnauthorized: false}
-                    });
+                    };
                 } else {
-                    transporter = nodemailer.createTransport({
+                    options = {
                         host   : mailHost,
                         port   : Number.parseInt(mailPort, 10),
                         secure : mailSecure || false,
@@ -712,17 +709,18 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
                             user : mailUser,
                             pass : mailPass
                         }
-                    });
+                    };
                 }
             } else {
-                transporter = nodemailer.createTransport({
+                options = {
                     sendmail : true,
                     newline  : 'unix',
                     path     : '/usr/sbin/sendmail'
-                });
+                };
             }
 
             try {
+                transporter = nodemailer.createTransport(options);
                 return transporter.sendMail(mailOptions);
             } catch (err) {
                 console.error('Send mail error', err);
@@ -737,9 +735,9 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
     }
 }
 
-function replaceMultiple(html, obj) {
+function replaceMultiple(html, obj = {}) {
     for (const x in obj) {
-        if (obj[x] !== undefined) {
+        if (obj[x]) {
             html = html.replace(new RegExp(x, 'g'), obj[x]);
         } else {
             html = html.replace(new RegExp(x, 'g'), '');
@@ -786,7 +784,7 @@ const sendGeneric = async (type, to, datas, lang = '') => {
         body[`{{${datasKeys[i]}}}`] = datas[datasKeys[i]];
     }
 
-    return sendMail({subject, htmlBody: await generateHTML(content, body), mailTo: to, mailFrom: mail.from, fromName: mail.fromName, pathAttachment});
+    return sendMail({subject, htmlBody: generateHTML(content, body), mailTo: to, mailFrom: mail.from, fromName: mail.fromName, pathAttachment});
 };
 
 /**
@@ -818,42 +816,34 @@ const sendContact = async (datas, lang = '') => {
         }
     });
 
-    const htmlBody = await generateHTML(content, {'{{formDatas}}': bodyString});
+    const htmlBody = generateHTML(content, {'{{formDatas}}': bodyString});
     return sendMail({subject, htmlBody, mailTo: contactMail.from, mailFrom: contactMail.from, fromName: contactMail.fromName, pathAttachment});
 };
 
 /**
  * @description Generation du HTML depuis un template et ses données
- * @param {string} html           - template HTML récupéré de la collection mail
- * @param {Object} datas          - Object contenant les datas à remplacer : {"variable_a_remplacer":"la_valeur", "var2":"value2"}
+ * @param {string} html template HTML récupéré de la collection mail
+ * @param {object} [datas={}] Object contenant les datas à remplacer : {"variable_a_remplacer":"la_valeur", "var2":"value2"}
  */
-async function generateHTML(html, datas) {
-    if (datas == null) {
-        datas = [];
-    }
-
+const generateHTML = (html, datas = {}) => {
+    if (!datas) datas = {};
+    const {appUrl} = global.envConfig.environment;
     // Override appUrl
-    const _config = global.envConfig;
-    if (!_config) {
-        throw NSErrors.ConfigurationNotFound;
-    }
-    datas['{{appUrl}}'] = _config.environment.appUrl;
-    // End Override appUrl
-
+    datas['{{appUrl}}'] = appUrl;
     return replaceMultiple(html, datas);
-}
+};
 
 /**
  * @description Determine the best language for the user
- * @param {string} lang                 - lang
- * @param {string} preferredLanguage    - preferredLanguage
+ * @param {string} lang lang
+ * @param {string} preferredLanguage preferredLanguage
  */
 function determineLanguage(lang, preferredLanguage) {
     if (lang == null || typeof lang === 'undefined' || lang === 'undefined') {
         lang = '';
     }
-    if (lang === '' && typeof preferredLanguage !== 'undefined' && preferredLanguage !== '') {lang = preferredLanguage;}
-    if (lang === '') {lang = ServiceLanguages.getDefaultLang(lang);}
+    if (lang === '' && typeof preferredLanguage !== 'undefined' && preferredLanguage !== '') lang = preferredLanguage;
+    if (lang === '') lang = ServiceLanguages.getDefaultLang(lang);
     return lang;
 }
 
@@ -891,7 +881,7 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
         pathAttachment
     }              = await getMailDataByTypeAndLang('requestCancelOrderNotify', lang);
     const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
-    const htmlBody = await generateHTML(content, {
+    const htmlBody = generateHTML(content, {
         '{{number}}'    : _order.number,
         '{{status}}'    : status,
         '{{name}}'      : _order.customer.id.fullname,

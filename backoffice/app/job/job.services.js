@@ -39,6 +39,12 @@ JobServices.factory('JobUpdate', ['$resource', function ($resource) {
         update: { method: 'PUT', params: {} }
     });
 }]);
+JobServices.factory('ExecRules', ['$resource', function ($resource) {
+    return $resource('/v2/rules/execRule', {}, {
+        exec: { method: 'POST', params: {}, isArray: true },
+        update: { method: 'POST', params: {} }
+    });
+}]);
 JobServices.factory('JobSave', ['$resource', function ($resource) {
     return $resource('/v2/job', {}, {
         save: { method: 'PUT', params: {} }

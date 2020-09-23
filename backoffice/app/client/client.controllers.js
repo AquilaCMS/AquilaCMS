@@ -293,6 +293,13 @@ ClientControllers.controller("ClientDetailCtrl", [
             $scope.disableSave = !$scope.isEditMode;
 
             ClientV2.save($scope.client, function(response) {
+                for(var i = 0; i < $scope.blocks.length; i++)
+                {
+                    if($scope.blocks[i].callback)
+                    {
+                        $scope.blocks[i].callback();
+                    }
+                }
                 if (isQuit) {
                     $location.path("/clients");
                 } else {
