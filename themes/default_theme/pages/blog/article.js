@@ -54,7 +54,7 @@ class PageBlogArticle extends NSPageBlogArticle {
                                             <div className="article-date" itemProp="datePublished" content={moment(article.createdAt).format('DD/MM/YYYY - HH[h]mm')}>
                                                 {moment(article.createdAt).format('DD/MM/YYYY - HH[h]mm')}
                                             </div>
-                                            <div itemProp="articleBody" className="ns-article-content" dangerouslySetInnerHTML={{ __html: (article.img ? `<img src="/images/blog/300x300/${article._id}/${article.slug[lang]}${article.extension}" alt="${article.title}" />` : '') + article.content.text }} />
+                                            <div itemProp="articleBody" className="ns-article-content" dangerouslySetInnerHTML={{ __html: (article.img ? `<img src="/images/blog/450x315/${article._id}/${article.slug[lang]}${article.extension}" alt="${article.title}" />` : '') + article.content.text }} />
                                         </div>
                                     </div>
                                 </div>

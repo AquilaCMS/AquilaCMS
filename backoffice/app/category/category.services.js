@@ -14,6 +14,7 @@ CategoryServices.factory('CategoryV2', ['$resource', function ($resource)
     return $resource('/v2/:type/:id', {}, {
         list: {method: 'POST', params: {type: 'categories'}},
         get: {method: 'POST', params: {type: 'category'}},
+        canonical: {method: 'POST', params: {type: 'category', id: 'canonical'}},
         save: {method: 'PUT', params: {type: 'category'}},
         delete: {method: 'DELETE', params: {type: 'category'}},
         applyTranslatedAttribs: {method: 'POST', params: {type: 'category', id: 'applyTranslatedAttribs'}}

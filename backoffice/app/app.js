@@ -57,7 +57,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.statistics",
     "aq.stock",
     "aq.territories",
-    "aq.WYSIWYG",
     "aq.contact",
 
     /* composant Aquila */
@@ -243,7 +242,7 @@ adminCatagenApp.config([
 ]);
 
 var namespaces = [
-    "agenda", "attribute", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules", "option",
+    "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules", "option",
     "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setOption", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
     "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual"
 ];
@@ -264,7 +263,6 @@ adminCatagenApp
                             translation[m.name] = tr.data;
                         });
                     });
-
                     angular.forEach(namespaces, function (ns)
                     {
                         $http.get("assets/translations/" + options.key + "/" + ns + ".json").then(function (nsTranslation)

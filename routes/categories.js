@@ -8,6 +8,7 @@ module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
     app.post('/v2/category/execRules', authentication, adminAuth, execRules);
+    app.post('/v2/category/canonical', authentication, adminAuth, execCanonical);
     app.post('/v2/category/applyTranslatedAttribs', applyTranslatedAttribs);
     app.post('/v2/category/:id', securityForceActif(['active']), getCategoryById);
     app.put('/v2/category', authentication, adminAuth, setCategory);
@@ -15,12 +16,16 @@ module.exports = function (app) {
     app.put('/v2/category/:id/filter', setFilter);
     app.delete('/v2/category/:id', authentication, adminAuth, deleteCategory);
 };
+
 /**
- * Fonction retournant un listing de categories
+ * POST /api/v2/categories
+ * @summary Fonction retournant un listing de categories
+ * @tags Category
+ * @param {PostBody} request.body.required - PostBody
  */
 async function getCategories(req, res, next) {
     try {
-        const {PostBody} = req.body;// checkPostBody(req.body.PostBody, req.headers.authorization);
+        const {PostBody} = req.body;
         const result   = await ServiceCategory.getCategories(PostBody);
         return res.json(result);
     } catch (error) {
@@ -33,7 +38,7 @@ async function getCategories(req, res, next) {
  */
 async function getCategory(req, res, next) {
     try {
-        const {PostBody, withFilter, lang} = req.body;// checkPostBody(req.body.PostBody, req.headers.authorization);
+        const {PostBody, withFilter, lang} = req.body;
         const result   = await ServiceCategory.getCategory(PostBody, withFilter, lang);
         return res.json(result);
     } catch (error) {
@@ -113,9 +118,18 @@ async function setFilters(req, res, next) {
     }
 }
 
-function execRules(req, res) {
+async function execRules(req, res) {
+    await ServiceRules.execRules('category');
     res.send(true);
-    ServiceRules.execRules('category');
+}
+
+async function execCanonical(req, res, next) {
+    try {
+        res.json(await ServiceCategory.execCanonical());
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
 }
 
 async function applyTranslatedAttribs(req, res, next) {

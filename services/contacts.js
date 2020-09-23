@@ -3,11 +3,11 @@ const ServiceMail    = require('./mail');
 const QueryBuilder   = require('../utils/QueryBuilder');
 const queryBuilder   = new QueryBuilder(Contacts, [], []);
 
-exports.getContacts = async function (body) {
+const getContacts = async (body) => {
     return queryBuilder.find(body.PostBody);
 };
 
-exports.setContact = async function (body, mode) {
+const setContact = async (body, mode) => {
     if (body === undefined) {
         throw new Error('Invalid contact in body');
     } else if (mode === undefined) {
@@ -49,3 +49,8 @@ async function sendContact(body) {
     }
     return 'ok';
 }
+
+module.exports = {
+    getContacts,
+    setContact
+};

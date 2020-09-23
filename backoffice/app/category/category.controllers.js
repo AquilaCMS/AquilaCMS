@@ -1,8 +1,8 @@
 var CategoryControllers = angular.module("aq.category.controllers", []);
 
 CategoryControllers.controller("CategoryIncludeCtrl", [
-    "$scope", "$http", "$q", "Category", "$route", "$location", "ProductsV2", "ProductTri", "ProductSearch", "ProductPagination", "CategoryProducts", "toastService", "RulesV2", "CategoryGetAttributesUsedInFilters", "CategoryV2","$modal",
-    function ($scope, $http, $q, Category, $route, $location, ProductsV2, ProductTri, ProductSearch, ProductPagination, CategoryProducts, toastService, RulesV2, CategoryGetAttributesUsedInFilters, CategoryV2, $modal)
+    "$scope", "$rootScope", "$http", "$q", "Category", "$route", "$location", "StaticV2", "ProductsV2", "ProductTri", "ProductSearch", "ProductPagination", "CategoryProducts", "toastService", "RulesV2", "CategoryGetAttributesUsedInFilters", "CategoryV2", "$modal","$translate",
+    function ($scope, $rootScope, $http, $q, Category, $route, $location, StaticV2, ProductsV2, ProductTri, ProductSearch, ProductPagination, CategoryProducts, toastService, RulesV2, CategoryGetAttributesUsedInFilters, CategoryV2, $modal, $translate)
     {
         $scope.currentPage = 1;
         $scope.rule = {};
@@ -10,7 +10,27 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         $scope.selectedAttributes;
         $scope.selectedFilters;
         $scope.searchObj = {};
+        
+        StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+            $scope.pages = staticsList.datas;
+            if ($scope.pages[0]) {
+                $scope.pageSelelected = $scope.pages[0].translation[$scope.lang].slug;
+            }
+            $scope.group = staticsList.datas.getAndSortGroups()[0];
+        });
 
+        $scope.exist = function(item){
+            if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug){
+                return true;
+            }
+            return false;
+        }
+        $scope.getOptGroup = function(group){
+            if(!group){
+                group = $scope.group;
+            }
+            return group;
+        }
         // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
         CategoryGetAttributesUsedInFilters.query({PostBody: {limit: 99}}, function (resp)
         {

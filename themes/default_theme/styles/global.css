@@ -911,11 +911,6 @@ blockquote:last-child { margin-bottom: 0; }
 
 .text-right { text-align: right; }
 
-/*  Disabled  */
-
-[disabled],
-.disabled { cursor: default; }
-
 /*  Grid  */
 
 .cols { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: horizontal; -webkit-box-direction: normal; -ms-flex-flow: row wrap; flex-flow: row wrap; margin: 0 -15px; }
@@ -1428,6 +1423,8 @@ hr + .address-sum  { margin-top: 36px; }
 .btn--silver { background: #C1C1C1;  color: #fff; }
 
 .btn--silver:hover { border: 1px solid #C1C1C1; color: #C1C1C1; }
+
+.form__btn:disabled { background-color: grey; }
 
 /*  Cart  */
 
@@ -2666,6 +2663,10 @@ select::-ms-expand {
 
 .product .rating span { font-size: 12px; margin-left: 10px; }
 
+figure.product__image {text-align: center;}
+
+.product .product__image img:hover { transform:scale(1.25); }
+
 /*  Product Price  */
 
 .product-price { height: 50px; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; margin-bottom: 5px; }
@@ -3872,6 +3873,11 @@ select::-ms-expand {
 	Themes
 \* ------------------------------------------------------------ */
 
+/*  Disabled  */
+
+[disabled],
+.disabled { cursor: not-allowed; }
+
 /* ------------------------------------------------------------ *\
 	Ui slider
 \* ------------------------------------------------------------ */
@@ -3893,8 +3899,9 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle-upper { /*transform: translate
 
 .slider__label { display: block; color: #9B9B9B; font-weight: 600; font-size: 14px; line-height: 1.36; }
 
+.nbb { background: unset; border: 0; width: 100%; height: 100%; overflow: hidden; }
 
-.nbb { background: unset; border: 0 }
+.nbb img { transition: all 0.8s; }
 
 .rgpd.popup__container {padding: 30px 50px 30px 50px;}
 

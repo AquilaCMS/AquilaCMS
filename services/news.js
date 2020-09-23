@@ -6,15 +6,15 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(News, restrictedFields, defaultFields);
 
-exports.getNews = async function (PostBody) {
+const getNews = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
-exports.getNew = async function (PostBody) {
+const getNew = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-exports.saveNew = async function (_new) {
+const saveNew = async (_new) => {
     if (!_new) throw NSErrors.UnprocessableEntity;
     if (_new._id) {
         return News.findOneAndUpdate({_id: _new._id}, _new);
@@ -22,8 +22,15 @@ exports.saveNew = async function (_new) {
     return News.create(_new);
 };
 
-exports.deleteNew = async function (_id) {
+const deleteNew = async (_id) => {
     if (!_id) throw NSErrors.UnprocessableEntity;
     const result = await News.deleteOne({_id});
     return result.ok === 1;
+};
+
+module.exports = {
+    getNews,
+    getNew,
+    saveNew,
+    deleteNew
 };

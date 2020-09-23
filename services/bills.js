@@ -181,7 +181,7 @@ const generatePDF = async (PostBody) => {
     if (!html) {
         throw NSErrors.InvoiceNotFound;
     }
-    let content = await generateHTML(html.translation[bill.lang].content, datas);
+    let content = generateHTML(html.translation[bill.lang].content, datas);
     let items   = '';
     // eslint-disable-next-line no-useless-escape
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
@@ -224,7 +224,7 @@ const generatePDF = async (PostBody) => {
                     prdData['{{product.basePriceATI}}'] = bill.promos.productsId[index].basePriceATI.toFixed(2);
                 }
             }
-            items += await generateHTML(htmlItem, prdData);
+            items += generateHTML(htmlItem, prdData);
         }
         content = content.replace(htmlItem, items);
     }

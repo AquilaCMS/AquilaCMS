@@ -100,5 +100,17 @@
         "translation_name": "Produit : Nom ({{lang}})",
         "translation_slug": "Produit : Slug ({{lang}})",
         "attr.translation": "Produit : Attribut '{{attr}}' ({{lang}})"
+    },
+    "help": {
+        "products": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Produits.</a>",
+        "themes": "<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Thèmes.</a>",
+        "staticPage":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Pages.</a>",
+        "shipments":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Transporteurs.</a>",
+        "cmsBlocks":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Block CMS.</a>",
+        "articles":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Articles.</a>",
+        "contacts":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Contacts.</a>",
+        "medias":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation des Médias.</a>",
+        "gallery":"<a target='_blank' href='{{url}}' style='cursor:pointer'>Cliquez ici pour accéder à la documentation de la Gallerie.</a>",
+        "hide":"Cacher"
     }
 }

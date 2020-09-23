@@ -1,7 +1,9 @@
-const Agenda      = require('agenda');
-const axios       = require('axios');
-const mongoose    = require('mongoose');
-const NSErrors    = require('../utils/errors/NSErrors');
+const Agenda   = require('agenda');
+const axios    = require('axios');
+const mongoose = require('mongoose');
+const NSErrors = require('../utils/errors/NSErrors');
+const utils    = require('../utils/utils');
+
 /** @type {Agenda} */
 let agenda;
 
@@ -31,7 +33,8 @@ const initAgendaDB = async () => {
                 'Cohérence données',
                 'Build stats',
                 'Cache requests clean',
-                'Clean cache'
+                'Clean cache',
+                'Remove temp file'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
             // Si un job "system" n'existe pas en base de données alors on le crée
@@ -59,6 +62,8 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', 'Vide le cache des requêtes', 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Clean cache') {
                             await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', 'Vide le cache des images', 'service', 'user', '', true, '');
+                        } else if (tJobsSystem[i] === 'Remove temp file') {
+                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', 'Remove temporary files', 'service', 'user', '', true, '');
                         }
                     } catch (error) {
                         console.error(error);
@@ -145,15 +150,16 @@ const agendaDefine = async (name) => {
 
 /**
  * Service permettant de créer ou mettre à jour les données d'un job existant dans la collection agendaJob
- * @param {String} _id : id du cron, si vide alors on crée le job dans agenda job
- * @param {String} name si le name existe dans la collection job alors on lance le cron (on le set)
- * @param {String} repeatInterval frequence d'execution du job
- * @param {String} api api qui doit être appelée en fonction de repeatInterval
- * @param {String} [comment=""] default value : "" - commentaire décrivant la tâche qu'execute le cron
- * @param {String} [method=get] default value : 'get' - methode get/post/put/delete
- * @param {String} [flag=user] default value : 'user' - si "system" alors l'utilisateur ne pourra pas l'éditer dans l'admin sinon il pourra
- * @param {String} [lastExecutionResult=""] default value : "" - le resultat du dernier run du cron
- * @param {Boolean} [fromServer=false] default value : false - si setJob est executé par le serveur ou par le client (depuis une route)
+ * @param {string} _id : id du cron, si vide alors on crée le job dans agenda job
+ * @param {string} name si le name existe dans la collection job alors on lance le cron (on le set)
+ * @param {string} repeatInterval frequence d'execution du job
+ * @param {string} api api qui doit être appelée en fonction de repeatInterval
+ * @param {string} [comment=""] default value : "" - commentaire décrivant la tâche qu'execute le cron
+ * @param {string} [method='service'] default value : 'get' - methode get/post/put/delete
+ * @param {string} [flag='user'] default value : 'user' - si "system" alors l'utilisateur ne pourra pas l'éditer dans l'admin sinon il pourra
+ * @param {string} [lastExecutionResult=""] default value : "" - le resultat du dernier run du cron
+ * @param {boolean} [fromServer=false] default value : false - si setJob est executé par le serveur ou par le client (depuis une route)
+ * @param {string} [params=''] default value : "" - jobs data params
  */
 const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'service', flag = 'user', lastExecutionResult = '', fromServer = false, params = '') => {
     let query;
@@ -318,7 +324,6 @@ async function execDefine(job) {
             if (api.endsWith('/')) api = api.substr(0, api.length - 1);
             const funcName = api.substr(api.lastIndexOf('/') + 1);
             const modulePath = api.substr(0, api.lastIndexOf('/'));
-            // const myFunction = require(`..${modulePath}`)[funcName];
             try {
                 result = await require(`..${modulePath}`)[funcName]();
             } catch (error) {
@@ -348,7 +353,7 @@ async function execDefine(job) {
             if (api.startsWith('/')) api = api.substr(1);
             api = global.envConfig.environment.appUrl + api;
         }
-        if (!IsJsonString(params)) {
+        if (!utils.IsJsonString(params)) {
             throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
         }
         result = await axios[httpMethod](api, JSON.parse(params));
@@ -357,15 +362,6 @@ async function execDefine(job) {
     }
     await job.save();
     if (errorData !== null) throw errorData;
-}
-
-function IsJsonString(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
 }
 
 /**

@@ -102,14 +102,14 @@ async function dumpAnonymizedDatabase(req, res, next) {
             }
             const pathUpload = require('../utils/server').getUploadDirectory();
             try {
-                await dump(`mongodump --uri "${uri}" --gzip --archive=./${pathUpload}/database_dump.gz`);
+                await dump(`mongodump --uri "${uri}" --gzip --archive=./${pathUpload}/temp/database_dump.gz`);
             } catch (err) {
                 console.error(err);
             }
             // Suppression de la bdd copy
             await rgpdServices.dropDatabase();
             // Téléchargement du fichier dump
-            return res.download(`./${pathUpload}/database_dump.gz`);
+            return res.download(`./${pathUpload}/temp/database_dump.gz`);
         });
     } catch (error) {
         return next(error);

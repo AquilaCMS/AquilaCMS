@@ -40,11 +40,11 @@ const welcome = async () => {
             translation : {
                 en : {
                     title : 'Aquila',
-                    text  : 'Welcome on Aquila. You will find necessary informations of Aquila here.'
+                    text  : 'Welcome on Aquila. You will find necessary informations of Aquila here. For more informations on how this admin works, you can read the documentation on <a href="https://www.aquila-cms.com/ressources-documentation">aquila-cms.com</ a>.'
                 },
                 fr : {
                     title : 'Aquila',
-                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations necessaires au bon fonctionnement d\'Aquila.'
+                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations necessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/ressources-documentation">aquila-cms.com</a>.'
                 }
             }
         });

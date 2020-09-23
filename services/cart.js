@@ -82,11 +82,15 @@ const setCartAddresses = async (cartId, addresses) => {
     let resp;
     try {
         resp = await Cart.findOneAndUpdate({_id: cartId}, {$set: {...update}}, {new: true});
+        if (!resp) {
+            const newCart = await Cart.create(update);
+            return {code: 'CART_CREATED', data: {cart: newCart}};
+        }
+        return {code: 'CART_UPDATED', data: {cart: resp}};
     } catch (err) {
         console.log(err);
         throw err;
     }
-    return {code: 'CART_UPDATE_ADDRESSES_SUCCESS', data: {cart: resp}};
 };
 
 const setComment = async (cartId, comment) => {
@@ -496,7 +500,7 @@ const checkProductOrderable = async (stock, qty) => {
  * Fonction pour associer un utilisateur à un panier
  */
 const linkCustomerToCart = async (cart, req) => {
-    if (cart && !cart.customer.id && req.headers && req.headers.authorization) {
+    if (cart && (!cart.customer || !cart.customer.id) && req.headers && req.headers.authorization) {
         const user = ServiceAuth.getDecodedToken(req.headers.authorization);
         if (user) {
             const customer = {
@@ -521,7 +525,7 @@ const updateDelivery = async (datas) => {
         const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
         shipment = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
     }
-    const country = shipment.countries.find((country) => country.country === isoCountryCode);
+    const country = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
     const delaysT = country.translation;
     const delays = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
     const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
@@ -544,9 +548,14 @@ const updateDelivery = async (datas) => {
             unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
         }
     };
-    const cart = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery}, {new: true});
+    const cart = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
     if (!cart) {
         throw NSErrors.CartInactive;
+    }
+    if (cart.orderReceipt.method === 'delivery') {
+        cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
+        cart.addresses.billing = cart.customer.id.addresses[cart.customer.id.billing_address];
+        await cart.save();
     }
     return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
 };

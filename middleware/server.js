@@ -1,11 +1,12 @@
-const express           = require('express');
-const path              = require('path');
-const morgan            = require('morgan');
-const cookieParser      = require('cookie-parser');
-const multer            = require('multer');
-const {v1: uuidv1}      = require('uuid');
-const cors              = require('cors');
-const {getDecodedToken} = require('../services/auth');
+const expressJSDocSwagger = require('@haegemonia/express-jsdoc-swagger');
+const cookieParser        = require('cookie-parser');
+const cors                = require('cors');
+const express             = require('express');
+const morgan              = require('morgan');
+const multer              = require('multer');
+const path                = require('path');
+const {v1: uuidv1}        = require('uuid');
+const {getDecodedToken}   = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
 
 const getUserFromRequest = (req) => {
@@ -105,7 +106,7 @@ const initExpress = async (server, passport) => {
     server.use(express.static(path.join(global.appRoot, 'acme'), {dotfiles: 'allow'}));
     server.use('/', express.static(path.join(global.appRoot, photoPath))); // Photos
     server.use('/bo', express.static(path.join(global.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
-    server.use('/apidoc', express.static(path.join(global.appRoot, 'documentations/apidoc'))); // Documentations
+    // server.use('/apidoc', express.static(path.join(global.appRoot, 'documentations/apidoc'))); // Documentations
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');
@@ -139,13 +140,15 @@ const initExpress = async (server, passport) => {
     });
 
     const storage = multer.diskStorage({
-        destination : photoPath,
+        destination : path.resolve(photoPath, 'temp'),
         filename(req, file, cb) {
             cb(null, uuidv1() + path.extname(file.originalname));
         }
     });
 
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
+    const swaggerFile = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'swagger.json')));
+    await expressJSDocSwagger(server)({...swaggerFile, baseDir: global.appRoot});
 };
 
 const maintenance = async (req, res, next) => {
@@ -168,11 +171,17 @@ const deprecatedRoute = (req, res, next) => {
     next();
 };
 
+const extendTimeOut = (req, res, next) => {
+    req.setTimeout(300000);
+    next();
+};
+
 module.exports = {
     getUserFromRequest,
     initExpress,
     maintenance,
-    deprecatedRoute
+    deprecatedRoute,
+    extendTimeOut
 };
 
 const restrictProductFields = (element, url) => {

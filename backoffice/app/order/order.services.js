@@ -38,7 +38,7 @@ OrderServices.service("OrderFields", function ()
     return [];
 });
 
-OrderServices.service("OrderMondialRelay", function ()
+OrderServices.service("OrderRelayPoint", function ()
 {
     return [];
 });

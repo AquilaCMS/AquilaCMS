@@ -35,10 +35,10 @@
 
 <div>
     <div class="modal-header" translate>
-        static.modal.addImage
+        tinymce.modal.addImage
     </div>
     <div class="modal-body">
-        <div class="row" style="margin-bottom:30px;overflow:scroll; height:400px;overflow-x: hidden;padding:15px 20px">
+        <div class="row" style="margin-bottom:30px;overflow:scroll; height:70vh;overflow-x: hidden;padding:15px 20px">
             <div ng-repeat="media in medias">
                 <div class="col-md-3" style="text-align: center;margin-bottom:20px">
                     <button ng-if="imageId === media._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"
@@ -56,7 +56,7 @@
         <hr>
         <div class='row'>
             <div  class="col-md-4">
-                <label translate>static.modal.maxSize</label>
+                <label translate>tinymce.modal.maxSize</label>
                 <ns-switch id="maxSize" ng-model="size.max" name="maxSize"></ns-switch>
                 <!-- <ns-switch id="maxSize" ng-model="false" name="active"></ns-switch> -->
 
@@ -64,25 +64,25 @@
             <div class="col-md-8" ng-if="!size.max">
 
                 <div class="col-md-2">
-                    <label translate>static.modal.width</label>
+                    <label translate>tinymce.modal.width</label>
                 </div>
                 <div class="col-md-2">
                     <input type="number" class="form-control" ng-model="size.width" />
                 </div>
 
                 <div class="col-md-2">
-                <label translate>static.modal.height </label>
+                <label translate>tinymce.modal.height </label>
                 </div>
                 <div class="col-md-2">
                 <input style="float:left" type="number" class="form-control" ng-model="size.height" />
                 </div>
             </div>
-        </div
+        </div>
     </div>
     
     <div class="modal-footer">
-        <a href="#/medias"><button ng-click="cancel()" style="float:left" class="btn btn-default" translate>static.modal.medias</button></a>
-        <button class="btn btn-default" ng-click="cancel()" translate>static.modal.cancel</button>
-        <button class="btn btn-default" ng-disabled="!imageSelected || (size.max === false && (size.width === undefined || size.width === null || size.height === undefined || size.height === null || size.width < 0 || size.height < 0 )) " ng-click="ok()" translate>static.modal.add</button>
+        <a href="#/medias"><button ng-click="cancel()" style="float:left" class="btn btn-default" translate>tinymce.modal.medias</button></a>
+        <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
+        <button class="btn btn-default" ng-disabled="!imageSelected || (size.max === false && (size.width === undefined || size.width === null || size.height === undefined || size.height === null || size.width < 0 || size.height < 0 )) " ng-click="ok()" translate>tinymce.modal.add</button>
     </div>
 </div>

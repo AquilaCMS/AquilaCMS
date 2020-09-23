@@ -1,20 +1,21 @@
 const diff                      = require('diff-arrays-of-objects');
+const path                      = require('path');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
 const encryption                = require('../utils/encryption');
+const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Configuration, restrictedFields, defaultFields);
 
-const getConfig = async (req) => {
-    let propertie = req.params.propertie;
-    if (!req.params.propertie) {
+const getConfig = async (action, propertie) => {
+    if (!propertie) {
         propertie = 'environment';
     }
-    if (req.params.action === propertie) {
+    if (action === propertie) {
         const _config = await Configuration.findOne({});
         try {
             if (
@@ -40,40 +41,113 @@ const getConfig = async (req) => {
     }
 };
 
-const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}) => {
+const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
+    PostBody = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
+    let isAdmin = true;
+    if (!user) {
+        if (!user || !user.isAdmin) {
+            isAdmin = false;
+            PostBody.structure = undefined;
+            queryBuilder.defaultFields = [];
+            queryBuilder.restrictedFields = [
+                'environment.adminPrefix',
+                'environment.authorizedIPs',
+                'environment.mailHost',
+                'environment.mailPass',
+                'environment.mailPort',
+                'environment.mailUser',
+                'environment.overrideSendTo',
+                'environment.port',
+                'licence'
+            ];
+        }
+    }
     const config = (await queryBuilder.findOne(PostBody)).toObject();
-    if (config.environment && config.environment.mailPass) {
-        try {
-            config.environment.mailPass = encryption.decipher(config.environment.mailPass);
-        // eslint-disable-next-line no-empty
-        } catch (err) {}
+    if (config.environment) {
+        if (isAdmin) {
+            config.environment = {
+                ...config.environment,
+                ssl : global.envFile.ssl || {
+                    active : false,
+                    cert   : '',
+                    key    : ''
+                },
+                databaseConnection : global.envFile.db
+            };
+            config.environment.ssl.cert = path.basename(config.environment.ssl.cert);
+            config.environment.ssl.key = path.basename(config.environment.ssl.key);
+        }
+        if (config.environment.mailPass) {
+            try {
+                config.environment.mailPass = encryption.decipher(config.environment.mailPass);
+            // eslint-disable-next-line no-empty
+            } catch (err) {}
+        }
     }
-    if (key) {
-        if (key === 'taxerate') { return config.taxerate; }
-        return {...config[key], databaseConnection: global.envFile.db};
-    }
-    return {...config, databaseConnection: global.envFile.db};
+    let data = config;
+    if (key) data = {...config[key]};
+    return data;
 };
 
 const getSiteName = async () => {
     require('../utils/utils').tmp_use_route('ConfigServices', 'getSiteName');
-    const _config = await Configuration.findOne({});
+    const _config = await Configuration.findOne({}, {'environment.siteName': 1});
     return _config.environment.siteName;
 };
 
-const updateDBConnectionString = async (db) => {
-    const aquila_env       = serverUtils.getEnv('AQUILA_ENV');
-    let envFile            = await fs.readFile(global.envPath);
-    envFile                = JSON.parse(envFile);
-    envFile[aquila_env].db = db;
-    global.envFile         = envFile[aquila_env];
-    await fs.writeFile(global.envPath, JSON.stringify(envFile, null, 4));
+const updateEnvFile = async () => {
+    const aquila_env = serverUtils.getEnv('AQUILA_ENV');
+    let oldEnvFile   = await fs.readFile(global.envPath);
+    oldEnvFile       = JSON.parse(oldEnvFile);
+    if (!utils.isEqual(oldEnvFile[aquila_env], global.enFile)) {
+        oldEnvFile[aquila_env] = global.envFile;
+        global.envFile         = oldEnvFile[aquila_env];
+        await fs.writeFile(global.envPath, JSON.stringify(oldEnvFile, null, 4));
+    }
 };
 
-const saveConfig = async (req) => {
-    req.setTimeout(300000);
+const saveEnvFile = async (body, files) => {
+    const {environment} = body;
+    if (environment) {
+        global.envFile.ssl = {
+            cert   : '',
+            key    : '',
+            active : false,
+            ...global.envFile.ssl
+        };
+        if (files && files.length > 0) {
+            for (const file of files) {
+                if (['cert', 'key'].indexOf(file.fieldname) !== -1) {
+                    try {
+                        await fs.copyRecursiveSync(
+                            path.resolve(file.destination, file.filename),
+                            path.resolve(global.appRoot, 'config/ssl', file.originalname),
+                            true
+                        );
+                        global.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+            }
+        }
+        if (
+            environment.databaseConnection
+            && environment.databaseConnection !== global.envFile.db
+        ) {
+            global.envFile.db = environment.databaseConnection;
+        }
+        if (environment.ssl && environment.ssl.active) {
+            global.envFile.ssl.active = Boolean(environment.ssl.active);
+        }
+        await updateEnvFile();
+        delete environment.databaseConnection;
+    }
+};
+
+const saveEnvConfig = async (body) => {
     const oldConfig = await Configuration.findOne({});
-    const {environment, stockOrder} = req.body;
+    const {environment, stockOrder} = body;
     if (environment) {
         if (environment.mailPass !== undefined && environment.mailPass !== '') {
             try {
@@ -81,19 +155,14 @@ const saveConfig = async (req) => {
             } catch (err) {
                 console.error(err);
             }
-        }
+        } // ./uploads/__custom/cbo
         if (environment.photoPath) {
-            if (environment.photoPath.startsWith('/')) {
-                environment.photoPath = environment.photoPath.substr(1);
-            }
-            if (environment.photoPath.endsWith('/')) {
-                environment.photoPath = environment.photoPath.substring(0, environment.photoPath.length - 1);
-            }
+            environment.photoPath = environment.photoPath
+                .replace(/^.?(\\\\|\\|\/?)/, '')
+                .replace(/(\\\\|\\|\/?)$/, '');
         }
-        if (environment.databaseConnection) {
-            await updateDBConnectionString(environment.databaseConnection);
-            delete environment.databaseConnection;
-        }
+        await updateEnvFile();
+        delete environment.databaseConnection;
         // traitement spécifique
         if (environment.demoMode) {
             const seoService = require('./seo');
@@ -126,12 +195,13 @@ const saveConfig = async (req) => {
             );
         }
     }
-    await Configuration.updateOne({}, req.body);
+    await Configuration.updateOne({}, body);
 };
 
 module.exports = {
     getConfig,
     getConfigV2,
     getSiteName,
-    saveConfig
+    saveEnvConfig,
+    saveEnvFile
 };

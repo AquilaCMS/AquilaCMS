@@ -1,6 +1,6 @@
 {
   "name": "aquila-cms",
-  "version": "1.009.07b",
+  "version": "1.009.23",
   "description": "CMS e-commerce",
   "main": "server.js",
   "license": "OSL-3.0",
@@ -26,6 +26,7 @@
     "test": "exit 0"
   },
   "dependencies": {
+    "@haegemonia/express-jsdoc-swagger": "^1.0.0",
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
     "axios": "0.19.2",

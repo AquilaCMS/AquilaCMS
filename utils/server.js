@@ -159,9 +159,7 @@ const getAppUrl = async (req) => {
 const getUploadDirectory = () => {
     if (global.envConfig && global.envConfig.environment) {
         const {photoPath} = global.envConfig.environment;
-        if (photoPath && photoPath !== '') {
-            return photoPath;
-        }
+        if (photoPath) return photoPath;
     }
     return 'uploads';
 };

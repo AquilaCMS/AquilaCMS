@@ -33,15 +33,5 @@
         "preview": "Prévisualiser",
         "save": "Enregistrer",
         "group": "Groupe"
-    },
-    "modal":{
-        "add":"Ajouter",
-        "addImage":"Ajouter une image",
-        "maxSize":"Taille maximale :",
-        "width":"Largeur :",
-        "height":"Hauteur :",
-        "cancel":"Annuler",
-        "medias": "Médias"
-
     }
 }

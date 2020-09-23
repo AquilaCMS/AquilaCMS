@@ -80,12 +80,12 @@ module.exports = class QueryBuilder {
     /**
      * Fonction qui va constuire, verifier et lancer la requete
      * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
-     * @property {number} [PostBody.limit=] limit
-     * @property {number} [PostBody.skip=] skip
+     * @property {Object} [PostBody.filter] filter
+     * @property {Object} [PostBody.structure] structure
+     * @property {Object} [PostBody.populate] populate
+     * @property {Object} [PostBody.sort] sort
+     * @property {number} [PostBody.limit] limit
+     * @property {number} [PostBody.skip] skip
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object

@@ -276,8 +276,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal",
-    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal) {
+    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "$rootScope",
+    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, $rootScope) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
 
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
@@ -297,8 +297,12 @@ ProductControllers.controller("nsProductGeneral", [
         $scope.changeActiveVisible = function(product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',
-                controller: function ($scope, $modalInstance, CategoryV2) {
+                controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
                     $scope.product = product;
+                    $scope.adminUrl = "";
+                    $scope.config = ConfigV2.environment(function () {
+                            $scope.adminUrl = $scope.config.adminPrefix;
+                    });
 
                         CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
                             $scope.cat = categoriesLink.datas.length !== 0;
@@ -307,6 +311,23 @@ ProductControllers.controller("nsProductGeneral", [
                     $scope.cancel = function () {
                         $modalInstance.dismiss('cancel');
                     };
+                    $scope.runCanonicalisation = async function () {
+                        ExecRules.exec({type: "category"}, function (result) {
+                            CategoryV2.canonical({}, {}, function () {
+                                toastService.toast('success', "Terminé")
+                                ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
+                                    $scope.product = response
+                                    $scope.product.active = true;
+                                    ProductsV2.save({}, $scope.product, function (response) {
+                                        window.location.reload()
+                                    })
+                                })
+                            })
+                        }, function (error) {
+                            console.log(error)
+                            toastService.toast('danger', "Erreur lors de la categorisation")
+                        })
+                    }
                 },
                 resolve: {
                     product: function () {

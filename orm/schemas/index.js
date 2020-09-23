@@ -46,6 +46,7 @@ const TerritorySchema        = require('./territorySchema');
 const ThemeConfigSchema      = require('./themeConfigSchema');
 const TrademarksSchema       = require('./trademarksSchema');
 const UserSchema             = require('./userSchema');
+const ShortcodesSchema       = require('./shortcodesSchema');
 
 module.exports = {
     AdminInformationSchema,
@@ -95,5 +96,6 @@ module.exports = {
     TerritorySchema,
     ThemeConfigSchema,
     TrademarksSchema,
-    UserSchema
+    UserSchema,
+    ShortcodesSchema
 };

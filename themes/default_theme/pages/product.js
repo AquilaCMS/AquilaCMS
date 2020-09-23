@@ -51,10 +51,10 @@ class PageProduct extends NSPageProduct {
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/products/272x211/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/products/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/products/272x211/${product.images[0]._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/products/516x400/${product.images[0]._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -144,7 +144,7 @@ class PageProduct extends NSPageProduct {
                                         pictos ? pictos.map((picto) => (
                                             <div className="product_picto" style={picto.style} key={picto.location + Math.random()}>
                                                 {
-                                                    picto.pictos && picto.pictos.map((p) => <img src={p.url} alt={p.title} title={p.title} key={p._id} />)
+                                                    picto.pictos && picto.pictos.map((p) => <img src={`/images/picto/32x32-70/${p.pictoId}/${p.image}`} alt={p.title} title={p.title} key={p._id} />)
                                                 }
                                             </div>
                                         )) : ''
@@ -294,7 +294,7 @@ class PageProduct extends NSPageProduct {
                             </section>{/* <!-- /.section-product-main --> */}
 
                             {
-                                product.description1 && (
+                                product.description1 && product.description1.length > 0 && (
                                     <section className="section-product-description">
                                         <header className="section__head">
                                             <h4>{product.description1.title ? product.description1.title : null}</h4>

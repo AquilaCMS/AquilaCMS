@@ -1,0 +1,18 @@
+{
+    "modal":{
+        "add": "Add",
+        "addImage": "Add image",
+        "maxSize": "Max size :",
+        "width": "Width :",
+        "height": "Height :",
+        "cancel": "Cancel",
+        "medias": "Medias",
+        "addLink":"Add Link",
+        "link":"Link :",
+        "nameLink":"Link name :",
+        "type":"Type :",
+        "addShortcode":"Add Shortcode",
+        "noParameters":"This shortcode has no parameters.",
+        "back":"Return"
+    }
+}

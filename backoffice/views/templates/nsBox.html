@@ -28,6 +28,10 @@
     </div>
 
     <div class="box-content">
+        <div ng-if="help" style="text-align:center;width:80%;background-color:#D9EDF7; margin:0 auto 20px auto; padding:20px;color:#3F89B4;font-weight: bold;">
+            <i style="cursor:pointer;float:right;color:right;font-weight: bold;" ng-click="hideAdvice(type)" translate>ns.help.hide</i>
+            <i class="fa fa-info-circle fa-lg" style="float:left" aria-hidden="true"></i><p translate translate-values='{{translationValues}}'>{{translation}}</p>
+        </div>
         <div ng-transclude></div>
     </div>
 </div>

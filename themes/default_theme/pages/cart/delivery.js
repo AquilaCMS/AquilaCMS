@@ -3,6 +3,7 @@ import moment from 'moment';
 import {
     NSCartResume, NSContext, NSToast, getCart, getLangPrefix, updateAddressesCart, getShipmentsCart, updateDeliveryCart
 } from 'aqlrc';
+import nsModules from 'modules/list_modules';
 import Head from 'next/head';
 import CartStructure from 'components/CartStructure';
 import { withI18next } from 'lib/withI18n';
@@ -30,12 +31,11 @@ class CartDelivery extends React.Component {
             },
             shipments                : [],
             arrayPrices              : [],
-            isMondialRelay           : false, // Check si on selectionne le transporteur mondial relay
-            MondialRelay             : null, // Composant mondial relay
-            // si mondial relay est selectionné alors l'utilisateur doit sauvegarder l'adresse de livraison
-            mondialRelayAddressSaved : false,
-            // Addresse de livraison initial: si l'utilisateur choisi mondial relay alors cart.addresses.delivery
-            // sera l'addresse mondial relay selectionné. Si il choisi un autre mode d'expédition après avoir selectionné MondialRelay,
+            isRelayPoint           : false, // Check si on selectionne le transporteur en point relais
+            // si un point relais est selectionné alors l'utilisateur doit sauvegarder l'adresse de livraison
+            relayPointAddressSaved : false,
+            // Addresse de livraison initial: si l'utilisateur choisi un point relais alors cart.addresses.delivery
+            // sera l'addresse du point relais selectionné. Si il choisi un autre mode d'expédition après avoir selectionné un point relais,
             // alors on ajoutera deliveryAddress a cart.addresses.delivery
             deliveryAddress          : null
         };
@@ -73,18 +73,6 @@ class CartDelivery extends React.Component {
             deliveryAddress = user.addresses[user.delivery_address];
         }
 
-        const MondialRelay = null;
-        /* try {
-            const list_modules = await import('modules/list_modules');
-            const ModuleMondialRelay = list_modules.default.find((module) => module.code === 'aq-mondialrelay');
-            if (ModuleMondialRelay) {
-                MondialRelay = ModuleMondialRelay.jsx;
-            }
-        } catch (error) {
-            MondialRelay = null;
-            console.error(error);
-        } */
-
         let shipments;
         try {
             shipments = await getShipmentsCart(cart, lang);
@@ -99,7 +87,6 @@ class CartDelivery extends React.Component {
         }
 
         this.setState({
-            MondialRelay,
             deliveryAddress,
             cart,
             index       : shipments.datas.findIndex((ship) => ship._id === cart.delivery.method),
@@ -107,13 +94,13 @@ class CartDelivery extends React.Component {
             arrayPrices : shipments.arrayPrices
         });
 
-        // Lorsque le module mondial relay sauvegarde l'adresse
-        document.addEventListener('MondialRelayAddressSaved', (e) => {
-            if (!this.state.isMondialRelay) {
+        // Lorsque un point relais est saisi
+        document.addEventListener('relayPointAddressSaved', (e) => {
+            if (!this.state.isRelayPoint) {
                 return;
             }
             // true ou false
-            this.setState({ mondialRelayAddressSaved: e.detail });
+            this.setState({ relayPointAddressSaved: e.detail });
         });
     }
 
@@ -132,43 +119,27 @@ class CartDelivery extends React.Component {
     }
 
     onChangeSelect = async (e, index) => {
-        // Si le transporteur est mondial relay
-        if (this.state.shipments[index].code === 'MD') {
-            return this.setState({ index: e.target.checked ? index : -1, isMondialRelay: true });
+        // Si le transporteur est en point relais
+        if (this.state.shipments[index].type === 'RELAY_POINT') {
+            return this.setState({ index: e.target.checked ? index : -1, isRelayPoint: true });
         }
-        return this.setState({ index: e.target.checked ? index : -1, isMondialRelay: false });
+        return this.setState({ index: e.target.checked ? index : -1, isRelayPoint: false });
     };
 
     selectDelivery = async () => {
         const {
-            lang, routerLang, cart, index, isMondialRelay, deliveryAddress, mondialRelayAddressSaved, shipments
+            lang, routerLang, cart, index, isRelayPoint, relayPointAddressSaved, shipments
         } = this.state;
         const cartId = window.localStorage.getItem('cart_id');
 
         if (index === -1) {
             return NSToast.warn('delivery:choose_delivery_mode');
         }
-        // MondialRelay a été selectionné mais aucune addresse n'a été sauvegardé
-        /* if (isMondialRelay === true && mondialRelayAddressSaved === false) {
+
+         // Un point relais a été selectionné mais aucune addresse n'a été sauvegardé
+         if (isRelayPoint && !relayPointAddressSaved) {
             return NSToast.warn('delivery:choose_relay_point');
         }
-        // Une addresse MondialRelay a été sauvegardé et MondialRelay n'est plus selectionné (l'utilisateur a changé de transporteur)
-        if (isMondialRelay === false) {
-            // Alors cart.addresses.delivery a été modifié par MondialRelay, on défait ce changement avec l'addresse de l'utilisateur
-            const addresses = { delivery: { ...deliveryAddress } };
-
-            // Modification des adresses du panier
-            try {
-                await updateAddressesCart(cartId, addresses);
-            } catch (err) {
-                if (err.response && err.response.data && err.response.data.message) {
-                    NSToast.error(err.response.data.message);
-                } else {
-                    NSToast.error('common:error_occured');
-                    console.error(err);
-                }
-            }
-        } */
 
         // Modification du mode de livraison du panier
         try {
@@ -185,12 +156,24 @@ class CartDelivery extends React.Component {
         }
     };
 
+
+    displayFrontModule = (ship, index) => {
+        const Comp = nsModules.find((module) => module.code === ship.component_template_front).jsx.default;
+        if (Comp) {
+            return (
+                <div key={ship.code} hidden={index !== this.state.index}>
+                    {React.cloneElement(<Comp />, { onSuccess: () => console.log('trigger onSuccess'), shipment: ship, cart: this.state.cart })}
+                </div>
+            );
+        }
+    }
+
     render() {
         const {
             oCmsHeader, oCmsFooter, sitename, t
         } = this.props;
         const {
-            routerLang, shipments, cart, MondialRelay, isMondialRelay, arrayPrices,
+            shipments, cart, isRelayPoint, arrayPrices, relayPointAddressSaved
         } = this.state;
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -225,27 +208,16 @@ class CartDelivery extends React.Component {
                                                                     </label>
                                                                 </div>{ /* <!-- /.radio --> */ }
                                                                 <strong className="delivery-price">{arrayPrices[ship.code].toFixed(2)}€</strong>
-                                                                {
-                                                                    this.state.shipments[index].code === 'MD' && isMondialRelay && MondialRelay
-                                                                && (
-                                                                    <div
-                                                                        className="form__entry" style={{
-                                                                            zIndex : 10, display : 'flex', width : '100%', justifyContent : 'center',
-                                                                        }}
-                                                                    >
-                                                                        <MondialRelay />
-                                                                    </div>
-                                                                )
-                                                                }
+                                                                {(ship.component_template_front && nsModules) ? this.displayFrontModule(ship, index) : null }
                                                             </div>
                                                         )) : <p>{t('delivery:no_shipment')}</p>
                                                     }
                                                 </div>{ /* <!-- /.form__body --> */ }
                                                 <div className="form__actions  text-right" style={{ marginTop: '40px' }}>
-                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => { Router.pushRoute('cartAddress', { lang: routerLang }); }} type="button">
+                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => {Router.pushRoute('cartAddress', { lang: this.state.routerLang });}} type="button">
                                                         {t('common:retour')}
                                                     </button>
-                                                    {shipments.length ? <button type="submit" className="form__btn btn btn--red">{t('common:valider')}</button> : ''}
+                                                    {shipments.length ? <button disabled={isRelayPoint && !relayPointAddressSaved} type="submit" className="form__btn btn btn--red">{t('common:valider')}</button> : ''}
                                                 </div>
                                             </form>
                                         </div>{ /* <!-- /.form-shipping-address --> */ }

@@ -33,10 +33,11 @@ const ShipmentSchema = new Schema({
         isoCountryCode : String,
         country        : String
     },
-    freePriceLimit     : Number,
-    vat_rate           : Number,
-    forAllPos          : {type: Boolean, default: false},
-    component_template : String
+    freePriceLimit           : Number,
+    vat_rate                 : Number,
+    forAllPos                : {type: Boolean, default: false},
+    component_template       : String,
+    component_template_front : String
 }, {discriminatorKey: 'type'});
 
 aquilaEvents.emit('shipmentSchemaInit', ShipmentSchema);

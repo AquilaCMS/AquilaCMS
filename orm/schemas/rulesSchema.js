@@ -11,7 +11,7 @@ const RulesSchema = new Schema({
             target                : {type: String, required: true},
             type                  : {type: String, required: true},
             operator              : {type: String, required: true},
-            value                 : {type: String, required: true},
+            value                 : {type: Schema.Types.Mixed, required: true},
             id_parent_other_rules : {type: String} // une other_rules pourra faire reference a id_parent_other_rules afin d'indiquer son appartenance a cette condition
         }
     ],

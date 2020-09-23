@@ -96,16 +96,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 id: $routeParams.shipmentId,
                 PostBody: {
                     filter: {_id: $routeParams.shipmentId},
-                    structure: {
-                        active:1,
-                        vat_rate: 1,
-                        preparation: 1,
-                        translation: 1,
-                        countries: 1,
-                        address: 1,
-                        component_template: 1,
-                        freePriceLimit: 1
-                    }
+                    structure: '*',
                 }
             }, function (shipment) {
                 $scope.shipment = shipment;

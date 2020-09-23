@@ -9,7 +9,7 @@ const cacheService       = require('./cache');
 /**
  * @description Retourne toutes les galleries
  */
-exports.getGalleries = async function () {
+const getGalleries = async () => {
     const resultTmp = await Gallery.find({});
     const result = resultTmp.map((gallery) => {
         gallery.itemCount = gallery.items.length;
@@ -23,7 +23,7 @@ exports.getGalleries = async function () {
  * @description Retourne une gallerie dont l'id est passé en paramétre
  * @param _id : _id de la gallerie
  */
-exports.getGallery = async function (_id) {
+const getGallery = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     const result = await Gallery.findById(_id);
     if (!result) throw NSErrors.GalleryNotFound;
@@ -36,7 +36,7 @@ exports.getGallery = async function (_id) {
  * @param skip : le nombre d'element a skip avant d'afficher les "initItemNumber" prochains elements
  * @param initItemNumber : le nombre d'item à afficher (équivalent a limit dans mongodb)
  */
-exports.getItemsGallery = async function (code, skip = null, initItemNumber = null) {
+const getItemsGallery = async (code, skip = null, initItemNumber = null) => {
     const doc = await Gallery.findOne({code});
     if (!doc) throw NSErrors.GalleryNotFound;
     let items = doc.items.sort((itemA, itemB) => itemA.order - itemB.order);
@@ -57,7 +57,7 @@ exports.getItemsGallery = async function (code, skip = null, initItemNumber = nu
  * @param maxColumnNumber : nombre de colone que doit fficher la gallerie
  * @param _id : _id de la gallerie, si non null alors on fera un update
  */
-exports.setGallery = async function (code, initItemNumber, maxColumnNumber, _id = null) {
+const setGallery = async (code, initItemNumber, maxColumnNumber, _id = null) => {
     let result;
     code = utils.slugify(code);
     if (_id) {
@@ -77,7 +77,7 @@ exports.setGallery = async function (code, initItemNumber, maxColumnNumber, _id 
  * @param _id : _id de la gallerie
  * @param datas : correspond a l'item qui doit être ajouté à la gallerie
  */
-exports.setItemGallery = async function (_id, datas) {
+const setItemGallery = async (_id, datas) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     let result;
     if (datas._id) {
@@ -107,7 +107,7 @@ exports.setItemGallery = async function (_id, datas) {
  * @description Retourne la gallerie venant d'étre supprimé
  * @param _id : _id de la gallerie
  */
-exports.deleteGallery = async function (_id) {
+const deleteGallery = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     const doc = await Gallery.findOneAndRemove({_id});
     for (let i = 0; i < doc.items.length; i++) {
@@ -123,7 +123,7 @@ exports.deleteGallery = async function (_id) {
  * @param _id : _id de la gallerie
  * @param _id_item : id de l'item à supprimer dans la gallerie
  */
-exports.deleteItemGallery = async function (_id, _id_item) {
+const deleteItemGallery = async (_id, _id_item) => {
     if (!mongoose.Types.ObjectId.isValid(_id) || !mongoose.Types.ObjectId.isValid(_id_item)) {
         throw NSErrors.InvalidObjectIdError;
     }
@@ -134,4 +134,14 @@ exports.deleteItemGallery = async function (_id, _id_item) {
     const doc = await Gallery.findByIdAndUpdate(_id, {$pull: {items: {_id: _id_item}}}, {new: true});
     if (!doc) throw NSErrors.GalleryNotFound;
     return doc;
+};
+
+module.exports = {
+    getGalleries,
+    getGallery,
+    getItemsGallery,
+    setGallery,
+    setItemGallery,
+    deleteGallery,
+    deleteItemGallery
 };

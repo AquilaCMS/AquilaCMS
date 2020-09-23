@@ -38,9 +38,6 @@ $(document).ready(function(){
 	/* ---------- DateRangepicker for Bootstrap ---------- */
 	$('#daterange').daterangepicker();
 	
-	/* ---------- Bootstrap Wysiwig ---------- */
-	$('.editor').wysiwyg();
-	
 	/* ---------- Colorpicker for Bootstrap ---------- */
 	$('#colorpicker1').colorpicker();
 	

@@ -1,18 +1,20 @@
 const path                        = require('path');
 const {Configuration}             = require('../orm/models');
 const {authentication, adminAuth} = require('../middleware/authentication');
+const {extendTimeOut}             = require('../middleware/server');
 const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
-    app.put('/v2/config', authentication, adminAuth, save);
+    app.put('/v2/config', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config/sitename', getSiteName);
-    app.post('/v2/config/:key?',  getConfigV2);
+    app.post('/v2/config/:key?', getConfigV2);
 
     app.get('/config/sitename', getSiteName);
-    app.post('/config/save', authentication, adminAuth, save);
+    app.post('/config/save', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.get('/config/:action/:propertie', authentication, adminAuth, getConfig);
     app.get('/config/data', getConfigTheme);
     app.get('/restart', authentication, adminAuth, restart);
@@ -23,32 +25,78 @@ module.exports = function (app) {
     app.post('/config/next', authentication, adminAuth, changeNextVersion);
 };
 
+/**
+ * POST /api/v2/config/{key}
+ * @tags Configuration
+ * @summary get config
+ * @param {string} key.path.required - key config ex: environment
+ * @param {PostBody} request.body - PostBody
+ * @param {string} authorization.headers - authorization
+ * @return {Config} 200 - success
+ */
 const getConfigV2 = async (req, res, next) => {
     try {
-        const config = await ServiceConfig.getConfigV2(req.params.key, req.body.PostBody);
+        let userInfo;
+        if (req.headers && req.headers.authorization) {
+            try {
+                userInfo = getDecodedToken(req.headers.authorization);
+                if (userInfo) userInfo = userInfo.info;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        const config = await ServiceConfig.getConfigV2(req.params.key, req.body.PostBody, userInfo);
         return res.json(config);
     } catch (e) {
         return next(e);
     }
 };
 
-async function save(req, res, next) {
+async function saveEnvFile(req, res, next) {
     try {
-        await ServiceConfig.saveConfig(req);
+        await ServiceConfig.saveEnvFile(req.body, req.files);
+        next();
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/**
+ * PUT /api/v2/config
+ * @summary save config
+ * @tags Configuration
+ * @param {Config} request.body - config
+ * @return {string} 200 - success | success | "success"
+ */
+async function saveEnvConfig(req, res, next) {
+    try {
+        await ServiceConfig.saveEnvConfig(req.body);
         return res.send('success');
     } catch (err) {
         return next(err);
     }
 }
 
+/**
+ * GET /api/config/{action}/{propertie}
+ * @tags Configuration
+ * @param {string} action.path.required - action
+ * @param {string} propertie.path.required - propertie
+ */
 const getConfig = async (req, res, next) => {
     try {
-        return res.json(await ServiceConfig.getConfig(req));
+        const {action, propertie} = req.params;
+        return res.json(await ServiceConfig.getConfig(action, propertie));
     } catch (err) {
         return next(err);
     }
 };
 
+/**
+ * POST /api/v2/config/sitename
+ * @summary get sitename from config
+ * @tags Configuration
+ */
 const getSiteName = async (req, res, next) => {
     try {
         return res.json(await ServiceConfig.getSiteName());
@@ -57,6 +105,10 @@ const getSiteName = async (req, res, next) => {
     }
 };
 
+/**
+ * GET /api/config/next
+ * @tags Configuration
+ */
 const getNextVersion = async (req, res, next) => {
     try {
         const datas = {};
@@ -91,6 +143,10 @@ const getNextVersion = async (req, res, next) => {
     }
 };
 
+/**
+ * POST /api/config/next
+ * @tags Configuration
+ */
 const changeNextVersion = async (req, res, next) => {
     try {
         const {nextVersion} = req.body;
@@ -108,6 +164,10 @@ const changeNextVersion = async (req, res, next) => {
     }
 };
 
+/**
+ * GET /api/restart
+ * @tags Configuration
+ */
 const restart = async (req, res, next) => {
     try {
         await packageManager.restart();
@@ -116,6 +176,10 @@ const restart = async (req, res, next) => {
     }
 };
 
+/**
+ * GET /api/config/data
+ * @tags Configuration
+ */
 const getConfigTheme = async (req, res, next) => {
     try {
         const _config = await Configuration.findOne({});
@@ -130,6 +194,10 @@ const getConfigTheme = async (req, res, next) => {
     }
 };
 
+/**
+ * GET /api/robot
+ * @tags Configuration
+ */
 async function getRobot(req, res) {
     try {
         if (await fs.access('robots.txt')) {
@@ -141,9 +209,19 @@ async function getRobot(req, res) {
     }
 }
 
+/**
+ * POST /api/robot
+ * @tags Configuration
+ * @param {PostBody} request.body
+ * @return {object} 200 - success | success | {
+ * "message": "success"
+ * }
+ */
 async function setRobot(req, res, next) {
     try {
-        await fs.writeFile('robots.txt', req.body.PostBody.text, 'utf8');
+        const {PostBody} = req.body;
+        if (!PostBody) throw NSErrors.PostBodyUndefined;
+        await fs.writeFile('robots.txt', PostBody.text, 'utf8');
         return res.json({message: 'success'});
     } catch (error) {
         next(error);

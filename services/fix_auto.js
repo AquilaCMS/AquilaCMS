@@ -4,7 +4,7 @@ const servicesLanguages = require('./languages');
 /**
  * @description Fix les incohérences des attributs pour les trier par ordre alphabetique
  */
-exports.sortAttribs = async function () {
+const sortAttribs = async () => {
     try {
         console.log('==><== Début du tri des attributs par order alphabetique ==><==');
 
@@ -39,7 +39,7 @@ exports.sortAttribs = async function () {
 /**
  * @description Fix les canonical (vide)
  */
-exports.fixCanonical = async function (product_id) {
+const fixCanonical = async (product_id) => {
     const languages = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
     const tabLang   = languages.datas.map((_lang) => _lang.code);
 
@@ -58,4 +58,9 @@ exports.fixCanonical = async function (product_id) {
         // End control par langue
     }
     // End liste des produits
+};
+
+module.exports = {
+    sortAttribs,
+    fixCanonical
 };

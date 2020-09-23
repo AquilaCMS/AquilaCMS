@@ -34,36 +34,36 @@
 </style>
 
 <div>
-    <div class="modal-header">
-        Ajouter un lien
+    <div class="modal-header" translate>
+        tinymce.modal.addLink
     </div>
     <div class="modal-body" style="padding:50px">
             <div class="row"style="margin-bottom:40px;">
                 <div style="float:left">
-                    <label >Type : </label>
+                    <label translate>tinymce.modal.type</label>
                 </div>
                 <div style="float:right">
                     <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
-                        ng-options="type.id as type.name for type in types" ng-model="typeSelected" ng-change="loadLinks(typeSelected)">
+                        ng-options="type.id as type.name for type in types" ng-model="typeSelected">
                     </select>
                 </div>
             </div>
             <div class="row" style="margin-bottom:40px;">
                 <div style="float:left">
-                    <label>Lien : </label>
+                    <label translate>tinymce.modal.link</label>
                 </div>
                 <div style="float:right">
-                    <select ng-if="pages" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
-                        ng-options="page.translation[lang].slug as page.translation[lang].title for page in pages" ng-model="selected.pageSelelected">
+                    <select ng-show="typeSelected === 'page'" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
+                        ng-options="page.translation[lang].slug as page.translation[lang].title group by getOptGroup(page.group) for page in pages | filter:exist" ng-model="selected.pageSelelected">
                     </select>
-                    <select ng-if="categories" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
+                    <select ng-show="typeSelected === 'cat'" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
                         ng-options="category.translation[lang].slug as category.translation[lang].name for category in categories" ng-model="selected.categorySelelected">
                     </select>
                 </div>
             </div>
             <div class="row">
                 <div style="float:left">
-                    <label>Nom du lien : </label>
+                    <label translate>tinymce.modal.nameLink</label>
                 </div>
                 <div style="float:right">
                     <input type="text" class="form-control ng-pristine ng-valid ng-not-empty ng-valid-required ng-touched" id="name"
@@ -73,8 +73,8 @@
     </div>
     
     <div class="modal-footer">
-        <button class="btn btn-default" ng-click="cancel()" translate>static.modal.cancel</button>
-        <button class="btn btn-default" ng-if="typeSelected ==='cat'" ng-disabled="!selected.categorySelelected" ng-click="ok(selected.categorySelelected,name)" translate>static.modal.add</button>
-        <button class="btn btn-default" ng-if="typeSelected ==='page'" ng-disabled="!selected.pageSelelected" ng-click="ok(selected.pageSelelected,name)" translate>static.modal.add</button>
+        <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
+        <button class="btn btn-default" ng-if="typeSelected ==='cat'" ng-disabled="!selected.categorySelelected" ng-click="ok(selected.categorySelelected,name)" translate>tinymce.modal.add</button>
+        <button class="btn btn-default" ng-if="typeSelected ==='page'" ng-disabled="!selected.pageSelelected" ng-click="ok(selected.pageSelelected,name)" translate>tinymce.modal.add</button>
     </div>
 </div>

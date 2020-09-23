@@ -1,15 +1,14 @@
-var currModule = {name: "modules"};
+var currModule = {name: 'modules'};
 
-angular.module('aq.' + currModule.name, ['aq.' + currModule.name + '.routes', //'aq.' + currModule.name + '.services',
-    'aq.' + currModule.name + '.controllers'
-    //'aq.' + currModule.name + '.directives'
+angular.module(`aq.${currModule.name}`, [`aq.${currModule.name}.routes`, // 'aq.' + currModule.name + '.services',
+    `aq.${currModule.name}.controllers`
+    // 'aq.' + currModule.name + '.directives'
 ]);
 
-angular.module('aq.' + currModule.name).constant("CstModules", {
-    name: currModule.name
+angular.module(`aq.${currModule.name}`).constant('CstModules', {
+    name : currModule.name
 });
 
-angular.module('aq.' + currModule.name).run(['CstModules', function (CstModules)
-{
+angular.module(`aq.${currModule.name}`).run(['CstModules', function (CstModules) {
     // Module initialized
 }]);

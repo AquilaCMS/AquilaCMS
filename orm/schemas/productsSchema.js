@@ -77,9 +77,10 @@ const ProductsSchema = new Schema({
     translation : {},
     pictos      : [{
         code     : String,
-        url      : String,
+        image    : String,
         title    : String,
-        location : String
+        location : String,
+        pictoId  : {type: ObjectId, ref: 'pictos'}
     }],
     reviews : {
         average    : {type: Number, default: 0},
@@ -228,7 +229,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
                     try {
-                        await fs.unlinkSync(`${require('../../utils/server').getUploadDirectory()}/${oldPrd.images[i].url}`);
+                        await fs.unlinkSync(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
                     } catch (error) {
                         console.log(error);
                     }

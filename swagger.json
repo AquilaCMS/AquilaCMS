@@ -1,0 +1,19 @@
+{
+    "info" : {
+        "version" : "2.0.0",
+        "title"   : "AquilaCMS",
+        "description":"description todo",
+        "licence" : {
+            "name" : "OSL3.0"
+        }
+    },
+    "security" : {
+        "api_key": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorization"
+        }
+    },
+    "filesPattern" : ["routes/*.js", "orm/schemas/*.js", "documentations/types.js"],
+    "schemes": ["http", "https"]
+}

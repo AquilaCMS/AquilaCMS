@@ -34,13 +34,15 @@ let server;
 // If an error occurred we exit the process because there is no point on continuing
 // if for any reason you want to handle error later, don't do that just fix your code
 process.on('uncaughtException', (err, origin) => {
-    console.log(`${origin}:`, err);
-    process.exit(1);
+    console.error('/!\\ Uncaught Exception origin /!\\', origin);
+    console.error('/!\\ Uncaught Exception err /!\\', err);
+    if (dev) process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.log('Unhandled rejection at ', promise, `reason: ${reason}`);
-    process.exit(1);
+    console.error('/!\\ Unhandled rejection promise /!\\', promise);
+    console.error('/!\\ Unhandled rejection reason /!\\', reason);
+    if (dev) process.exit(1);
 });
 
 const init = async () => {
@@ -56,6 +58,7 @@ const initDatabase = async () => {
         await require('./services/job').initAgendaDB();
         await utilsModules.modulesLoadInit(express);
         await require('./utils/database').initDBValues();
+        await require('./services/shortcodes').initDBValues();
     }
 };
 
