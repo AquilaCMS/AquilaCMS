@@ -568,8 +568,8 @@ class PageProduct extends NSPageProduct {
 
                                             <div className="product-price">
                                                 <strong>{(product.price.ati.normal || 0).toFixed(2)} €</strong>
-                                            </div>{/* <!-- /.price --> */}
-                                        </div>{/* <!-- /.popup__body --> */}
+                                            </div>
+                                        </div>
                                         <div className="form-footer">
                                             <button type="button" className="btn btn--red btn-cart" onClick={this.addToCart} aria-label={t('product:ajoutPanier')}>
                                                 <i className="ico-shopping-cart-white" />
