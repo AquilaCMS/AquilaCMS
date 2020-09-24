@@ -161,7 +161,7 @@ class CartSuccess extends React.Component {
                                                     <h5>
                                                         {t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
                                                     </h5>
-                                                    {`${order.addresses.delivery.lastname} ${order.addresses.delivery.firstname}`}
+                                                    {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
                                                     <br />
                                                     {order.addresses.delivery.line1}
                                                     {order.addresses.delivery.line2 && <br />}
