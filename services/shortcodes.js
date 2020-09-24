@@ -688,9 +688,34 @@ exports.initDBValues = async () => {
                             type        : 'text'
                         },
                         {
+                            props       : 'includeCss',
+                            description : 'Inclusion de la balise css (1 seule fois)',
+                            type        : 'list',
+                            attributs   : [
+                                {
+                                    description : 'Inclu la balise de style du css',
+                                    value       : 'true'
+                                },
+                                {
+                                    description : 'N\'inclu pas la balise de style',
+                                    value       : 'false'
+                                }
+                            ]
+                        },
+                        {
                             props       : 'gridDisplay',
-                            description : 'gridDisplay',
-                            type        : 'text'
+                            description : 'Mode d\'affichage',
+                            type        : 'list',
+                            attributs   : [
+                                {
+                                    description : 'Rendu en grille',
+                                    value       : 'true'
+                                },
+                                {
+                                    description : 'Rendu en liste',
+                                    value       : 'false'
+                                }
+                            ]
                         },
                         {
                             props       : 'type',
@@ -724,8 +749,18 @@ exports.initDBValues = async () => {
                         },
                         {
                             props       : 'gridDisplay',
-                            description : 'gridDisplay',
-                            type        : 'text'
+                            description : 'Mode d\'affichage',
+                            type        : 'list',
+                            attributs   : [
+                                {
+                                    description : 'Rendu en grille',
+                                    value       : 'true'
+                                },
+                                {
+                                    description : 'Rendu en liste',
+                                    value       : 'false'
+                                }
+                            ]
                         },
                         {
                             props       : 'type',

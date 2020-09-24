@@ -2,6 +2,7 @@
 
 ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3ac2a8b4b7ac4b6880b49d544fdabfcd)](https://app.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&utm_medium=referral&utm_content=AquilaCMS/AquilaCMS&utm_campaign=Badge_Grade_Dashboard)
+[![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 
 [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 

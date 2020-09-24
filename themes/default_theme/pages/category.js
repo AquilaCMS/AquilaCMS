@@ -172,7 +172,7 @@ class PageCategory extends NSPageCategory {
                                     <div className="content">
                                         <div className="products-grid" itemScope itemType="http://schema.org/ItemList">
                                             {
-                                                productsList.map((product, index) => <NSProductCard from="category" gridDisplay={gridDisplay} includeCss={index === 0} key={product._id} product={product} t={t} gNext={{ Head, Link, Router }} />)
+                                                productsList.map((product, index) => <NSProductCard from="category" gridDisplay={gridDisplay} includeCss={index === 0} key={product._id} type="data" value={product} t={t} gNext={{ Head, Link, Router }} />)
                                             }
                                             {
                                                 productsList.length === 0 && <p style={{ textAlign: 'center', width: '100%' }}>{t('aucunResultat')}</p>
