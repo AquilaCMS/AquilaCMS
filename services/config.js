@@ -85,7 +85,12 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
         }
     }
     let data = config;
-    if (key) data = {...config[key]};
+    if (key) {
+        data = {...config[key]};
+        if (Array.isArray(config[key])) {
+            data = config[key];
+        }
+    }
     return data;
 };
 
