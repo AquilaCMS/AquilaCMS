@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 const translationUtils = require('../../utils/translation');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {object} CmsBlocksSchema
+ * @property {string} code.required
+ * @property {string} group default:
+ * @property {string} description
+ * @property {object} translation
+ */
+
 const CmsBlocksSchema = new Schema({
     code        : {type: String, required: true, unique: true},
     group       : {type: String, default: ''},
