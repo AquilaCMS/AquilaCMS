@@ -154,13 +154,22 @@
                         {{order.addresses.delivery.zipcode}}&nbsp;{{order.addresses.delivery.city}}<br />
                         {{order.addresses.delivery.country}}
                     </div>
-                    <div ng-show="order.orderReceipt.method === 'withdrawal'">
+                    <div ng-show="order.orderReceipt.method === 'withdrawal' && order.point_of_sale">
                         <strong translate>order.detail.relayPoint</strong><br />
                         {{order.point_of_sale.name}}<br />
                         {{order.point_of_sale.address.line1}}<br />
                         {{order.point_of_sale.address.city}}<br />
                         {{order.point_of_sale.address.zipcode}}<br />
                         {{order.point_of_sale.address._country}}
+                    </div>
+                    <div ng-show="order.orderReceipt.method === 'withdrawal' && !order.point_of_sale">
+                        {{order.addresses.billing.firstname}}&nbsp;{{order.addresses.billing.lastname}}<br />
+                        {{order.addresses.delivery.line1}}<br />
+                        {{order.addresses.delivery.line2}}<br />
+                        {{order.addresses.delivery.phone}}<br />
+                        {{order.addresses.delivery.phone_mobile}}<br />
+                        {{order.addresses.delivery.zipcode}}&nbsp;{{order.addresses.delivery.city}}<br />
+                        {{order.addresses.delivery.country}}
                     </div>
                 </div>
             </div>
