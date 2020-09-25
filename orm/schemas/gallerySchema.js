@@ -1,17 +1,20 @@
 /**
- * @typedef Gallery
- * @property {String} code.required
- * @property {Number} initItemNumber.required eg: 6
- * @property {Number} maxColumnNumber.required eg: 3
- * @property {Array.<Object>} items
- * @property {ObjectId} items._itemId
- * @property {String} src eg: ""
- * @property {String} srcset
- * @property {String} sizes
- * @property {String} content eg: ""
- * @property {String} alt eg: ""
- * @property {Number} order eg: 0
- * @property {String} extension eg: .jpg
+ * @typedef {object} GallerySchema
+ * @property {string} code.required
+ * @property {number} initItemNumber.required default:6
+ * @property {number} maxColumnNumber.required default:3
+ * @property {array<GallerySchemaItems>} items
+ */
+/**
+ * @typedef {object} GallerySchemaItems
+ * @property {string} _itemId ObjectId
+ * @property {string} src default:
+ * @property {string} srcset
+ * @property {string} sizes
+ * @property {string} content default:
+ * @property {string} alt default:
+ * @property {number} order default:0
+ * @property {string} extension default:.jpg
  */
 
 const mongoose = require('mongoose');

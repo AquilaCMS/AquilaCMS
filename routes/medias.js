@@ -8,7 +8,7 @@ module.exports = function (app) {
     app.post('/v2/media', getMedia);
     app.put('/v2/media', authentication, adminAuth, saveMedia);
     app.delete('/v2/media/:_id', authentication, adminAuth, removeMedia);
-    app.post('/v2/medias/upload', uploadFiles);
+    app.post('/v2/medias/upload', authentication, adminAuth, uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/download/documents', authentication, adminAuth, downloadAllDocuments);
     app.post('/v2/medias/download/documents', authentication, adminAuth, uploadAllDocuments);

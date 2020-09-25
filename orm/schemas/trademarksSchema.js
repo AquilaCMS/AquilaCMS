@@ -3,6 +3,13 @@ const {slugify} = require('../../utils/utils');
 
 const Schema = mongoose.Schema;
 
+/**
+ * @typedef {object} TrademarksSchema
+ * @property {string} code
+ * @property {string} name.required
+ * @property {boolean} active default:true
+ * @property {string} creationDate Date - default:Date.now
+ */
 const TrademarksSchema = new Schema({
     code         : {type: String, unique: true},
     name         : {type: String, required: true, unique: true},

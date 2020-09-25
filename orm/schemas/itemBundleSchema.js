@@ -2,6 +2,16 @@ const mongoose      = require('mongoose');
 const Schema        = mongoose.Schema;
 const ObjectId      = Schema.ObjectId;
 
+/**
+ * @typedef {object} ItemBundleSchema
+ * @property {array<ItemBundleSelections>} selections
+ */
+
+/**
+ * @typedef {object} ItemBundleSelections
+ * @property {string} bundle_section_ref.required
+ * @property {string} products products ObjectId
+ */
 const ItemBundle = new Schema({
     selections : [{
         bundle_section_ref : {type: String, required: true},

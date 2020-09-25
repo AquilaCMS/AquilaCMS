@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {object} SuppliersSchema
+ * @property {string} code.required
+ * @property {string} name.required
+ * @property {string} type
+ * @property {string} contactPrenom
+ * @property {string} contactNom
+ * @property {string} addr_1
+ * @property {string} addr_2
+ * @property {string} cpostal
+ * @property {string} city
+ * @property {string} mail
+ * @property {number} phone
+ * @property {string} purchasing_manager
+ * @property {boolean} active default:true
+ * @property {string} creationDate Date - default:Date.now
+ */
 const SuppliersSchema = new Schema({
     code               : {type: String, required: true, unique: true},
     name               : {type: String, required: true},
