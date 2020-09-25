@@ -187,7 +187,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentId = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
-            const realProduct = await require('./products').getProductById(currentItem._id);
+            const realProduct = await require('./products').getProductById(currentItem.id._id);
             let link = '';
             if (realProduct) {
                 link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
@@ -249,7 +249,7 @@ exports.getTopCustomer = async function (granularity, periodeStart, periodeEnd) 
         {$sort: {value: -1}}
     ]);
 
-    datas = pushDatas(allOrders, datas);
+    datas = pushDatas(allOrders, datas, true);
 
     return {datas, datasObject: allOrders};
 };
@@ -334,12 +334,12 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
     return {datas, datasObject: allUsers};
 }
 
-function pushDatas(tab, datas) {
+function pushDatas(tab, datas, take_id = false) {
     for ( let i = 0, _len = tab.length; i < _len; i++ ) {
         const thisDate = moment(`${tab[i]._id.year}/${tab[i]._id.month}/${tab[i]._id.day}`, 'YYYY-MM-DD').toDate();
         datas.push({
             c : [
-                {v: thisDate},
+                {v: take_id ? tab[i]._id : thisDate},
                 {v: tab[i].value}
             ]
         });
