@@ -180,22 +180,25 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
         return;
     }
     try {
-        const accessSrc = await access(src);
-        if (accessSrc && fs.statSync(src).isDirectory()) {
+        if (
+            fs.existsSync(src)
+            && await access(src)
+            && fs.statSync(src).isDirectory()
+        ) {
             console.log(src);
             if (!(await access(dest))) {
                 await mkdir(dest, {recursive: true});
             }
-            (await readdir(src)).forEach(async (childItemName) => {
+            for (const childItemName of await readdir(src)) {
                 await copyRecursiveSync(
                     path.resolve(src, childItemName),
                     path.resolve(dest, childItemName),
                     override,
                     except
                 );
-            });
+            }
         } else {
-            if (!(await access(path.dirname(dest), fs.constants.W_OK))) {
+            if (!(fs.existsSync(path.dirname(dest)))) {
                 await mkdir(path.dirname(dest), {recursive: true});
             }
             if (override) {
