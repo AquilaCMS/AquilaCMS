@@ -346,11 +346,11 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         /**
          * NS PAS DELETE LA CODE COMMENTÉ EN DESSOUS
          */
-        /* try {
+        try {
             await ServiceMail.sendMailOrderToClient(_order._id);
         } catch (error) {
             console.error(error);
-        } */
+        }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
 };
