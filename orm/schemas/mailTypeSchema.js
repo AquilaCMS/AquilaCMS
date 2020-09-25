@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {object} MailTypeSchema
+ * @property {string} code
+ * @property {string} name.required
+ * @property {number} position default:1
+ */
 const MailTypeSchema = new Schema({
     code     : {type: String, unique: true, sparse: true},
     name     : {type: String, required: true},

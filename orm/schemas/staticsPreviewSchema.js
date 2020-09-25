@@ -3,6 +3,9 @@ const Statics  = require('./staticsSchema');
 const utilsDatabase = require('../../utils/database');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {StaticsSchema} StaticsPreviewSchema
+ */
 const StaticsPreviewSchema   = new Schema(Statics);
 StaticsPreviewSchema.statics = Statics.statics;
 

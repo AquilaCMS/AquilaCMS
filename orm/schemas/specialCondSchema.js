@@ -1,6 +1,17 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {object} SpecialCondSchema
+ * @property {number} price
+ * @property {string} priceType
+ * @property {string} supplier
+ * @property {number} startDate
+ * @property {number} endDate
+ * @property {string} active
+ * @property {string} product
+ * @property {string} user
+ */
 const SpecialCondSchema = new Schema({
     price     : Number,
     priceType : String,

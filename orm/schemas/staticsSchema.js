@@ -4,6 +4,16 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {object} StaticsSchema
+ * @property {string} code.required
+ * @property {string} type.required
+ * @property {boolean} active default:false
+ * @property {string} creationDate Date - default:Date.now
+ * @property {string} modifyDate Date - default:Date.now
+ * @property {string} group default:
+ * @property {object} translation
+ */
 const StaticsSchema = new Schema({
     code         : {type: String, required: true, unique: true},
     type         : {type: String, required: true},
