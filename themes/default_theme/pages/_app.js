@@ -207,16 +207,11 @@ class AquilaApp extends App {
             window.dispatchEvent(routeChange);
         };
 
-        const previousCallback = Router.onRouteChangeComplete;
-        Router.onRouteChangeComplete = (url) => {
-            if (typeof previousCallback === 'function') {
-                previousCallback();
-            }
-
+        Router.router.events.on('routeChangeComplete', (url) => {
             if (typeof window !== 'undefined' && window.location.hash === '') scrollToTop(1000);
             const onChangeLogPageView = new CustomEvent('logPageView', {detail: {url}});
             window.dispatchEvent(onChangeLogPageView);
-        };
+        });
 
         // Affectation de la langue dans le local storage en fonction de l'URL
         const { pageProps } = this.props;
