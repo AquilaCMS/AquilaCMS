@@ -95,42 +95,31 @@ const compareDependencies = (myModule, modulesActivated, install = true) => {
         theme : {}
     };
     for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
-        for (const moduleDependency of Object.values(myModule.packageDependencies[apiOrTheme])) {
-            const dependencyModule = moduleDependency.split('@');
-            if (dependencyModule[0] === '') {
-                dependencyModule.splice(0, 1);
-                dependencyModule[0] = `@${dependencyModule[0]}`;
-            }
-            if (!sameDependencies[apiOrTheme][dependencyModule[0]]) {
+        for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
+            if (!sameDependencies[apiOrTheme][name]) {
                 if (install) {
-                    sameDependencies[apiOrTheme][dependencyModule[0]] = new Set();
+                    sameDependencies[apiOrTheme][name] = new Set();
                 } else {
-                    sameDependencies[apiOrTheme][dependencyModule[0]] = [];
+                    sameDependencies[apiOrTheme][name] = [];
                 }
             }
             if (install) {
-                sameDependencies[apiOrTheme][dependencyModule[0]].add(moduleDependency);
+                sameDependencies[apiOrTheme][name].add(version);
             } else {
-                sameDependencies[apiOrTheme][dependencyModule[0]].push(moduleDependency);
+                sameDependencies[apiOrTheme][name].push(version);
             }
             if (modulesActivated.length > 0) {
                 for (const elem of modulesActivated) {
                     if (
                         elem.packageDependencies
                         && elem.packageDependencies[apiOrTheme]
-                        && elem.packageDependencies[apiOrTheme].length > 0
                     ) {
-                        for (const elemDependencies of elem.packageDependencies[apiOrTheme]) {
-                            const dependencyElem = elemDependencies.split('@');
-                            if (dependencyElem[0] === '') {
-                                dependencyElem.splice(0, 1);
-                                dependencyElem[0] = `@${dependencyElem[0]}`;
-                            }
-                            if (dependencyElem[0] === dependencyModule[0]) {
+                        for (const [name1, version1] of Object.entries(elem.packageDependencies[apiOrTheme])) {
+                            if (name1 === name) {
                                 if (install) {
-                                    sameDependencies[apiOrTheme][dependencyElem[0]].add(elemDependencies);
+                                    sameDependencies[apiOrTheme][name1].add(version1);
                                 } else {
-                                    sameDependencies[apiOrTheme][dependencyElem[0]].push(elemDependencies);
+                                    sameDependencies[apiOrTheme][name1].push(version1);
                                 }
                             }
                         }

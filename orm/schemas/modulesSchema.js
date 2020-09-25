@@ -1,6 +1,32 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
+/**
+ * @typedef {object} ModulesSchema
+ * @property {string} name
+ * @property {string} description
+ * @property {string} version
+ * @property {string} path
+ * @property {string} url
+ * @property {array<string>} cronNames
+ * @property {array<string>} mailTypeCode
+ * @property {boolean} loadApp default:true
+ * @property {boolean} loadTranslationBack default:false
+ * @property {boolean} loadTranslationFront default:false
+ * @property {array<string>} files
+ * @property {string} active default:false
+ * @property {object} config default:{}
+ * @property {ModulesSchemaPackageDependencies} packageDependencies
+ * @property {string} type
+ * @property {array<string>} moduleDependencies default:[]
+ * @property {string} component_template_front default:null
+ */
+
+/**
+ * @typedef {object} ModulesSchemaPackageDependencies
+ * @property {object} theme default:{}
+ * @property {object} api default:{}
+ */
 const ModulesSchema = new Schema({
     name                 : {type: String, index: true},
     description          : {type: String},
@@ -16,8 +42,8 @@ const ModulesSchema = new Schema({
     active               : {type: Boolean, default: false},
     config               : {type: Object, default: {}},
     packageDependencies  : {
-        theme : {type: [String], default: []},
-        api   : {type: [String], default: []}
+        theme : {type: {}, default: {}},
+        api   : {type: {}, default: {}}
     },
     type                     : {type: String},
     moduleDependencies       : {type: [String], default: []},
