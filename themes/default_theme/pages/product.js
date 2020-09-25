@@ -400,10 +400,10 @@ class PageProduct extends NSPageProduct {
                                             <h4>{t('crossSelling')}</h4>
                                         </header>{/* <!-- /.section__head --> */}
                                         <div className="hidden-xs">
-                                            <NSProductCardList ProductCard={NSProductCard} products={product.associated_prds} itemsperslides={5} t={t} gNext={{ Head, Link, Router }} />
+                                            <NSProductCardList ProductCard={NSProductCard} type="data" value={product.associated_prds} itemsperslides={5} t={t} gNext={{ Head, Link, Router }} />
                                         </div>
                                         <div className="hidden-lg">
-                                            <NSProductCardList ProductCard={NSProductCard} products={product.associated_prds} itemsperslides={1} t={t} gNext={{ Head, Link, Router }} />
+                                            <NSProductCardList ProductCard={NSProductCard} type="data" value={product.associated_prds} itemsperslides={1} t={t} gNext={{ Head, Link, Router }} />
                                         </div>
                                     </section>
                                 )
