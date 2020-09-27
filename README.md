@@ -56,7 +56,7 @@ Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS web
 - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your mongod.conf and change your bindIp by your network ip instead of 127.0.0.1)
 
 ## Documentations
-Find the swagger documentation on /api-docs or online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs).
+Find the swagger documentation on /api-docs or online at [aquila-cms.com/apidoc](https://www.aquila-cms.com/apidoc).
 Also check-out some tutorials on [our dedicated page](https://www.aquila-cms.com/ressources-documentation), or on [our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ).
 
 ## License
