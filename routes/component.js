@@ -6,7 +6,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/component/{componentName}/{code}
- * @summary This is the summary
+ * @summary TODO
  * @tags Component
  * @param {string} componentName.path.required - componentName always start with "ns-"
  * @param {string} code.path.required - code

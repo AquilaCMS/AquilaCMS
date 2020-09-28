@@ -106,7 +106,6 @@ const initExpress = async (server, passport) => {
     server.use(express.static(path.join(global.appRoot, 'acme'), {dotfiles: 'allow'}));
     server.use('/', express.static(path.join(global.appRoot, photoPath))); // Photos
     server.use('/bo', express.static(path.join(global.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
-    // server.use('/apidoc', express.static(path.join(global.appRoot, 'documentations/apidoc'))); // Documentations
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');

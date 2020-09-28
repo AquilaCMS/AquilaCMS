@@ -44,11 +44,11 @@ module.exports = class QueryBuilder {
     /**
      * Permet de retourner un objet PostBody valide
      *
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter=] filter
+     * @property {object} [PostBody.structure=] structure
+     * @property {object} [PostBody.populate=] populate
+     * @property {object} [PostBody.sort=] sort
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
@@ -79,11 +79,11 @@ module.exports = class QueryBuilder {
 
     /**
      * Fonction qui va constuire, verifier et lancer la requete
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter] filter
-     * @property {Object} [PostBody.structure] structure
-     * @property {Object} [PostBody.populate] populate
-     * @property {Object} [PostBody.sort] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter] filter
+     * @property {object} [PostBody.structure] structure
+     * @property {object} [PostBody.populate] populate
+     * @property {object} [PostBody.sort] sort
      * @property {number} [PostBody.limit] limit
      * @property {number} [PostBody.skip] skip
      *
@@ -111,18 +111,18 @@ module.exports = class QueryBuilder {
 
     /**
      * Fonction qui va constuire, verifier et lancer la requete
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter=] filter
+     * @property {object} [PostBody.structure=] structure
+     * @property {object} [PostBody.populate=] populate
+     * @property {object} [PostBody.sort=] sort
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [header_authorization=null] header_authorization
-     * @return {Object|mongoose.Model<this>} returns datas found and total of element
+     * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
     async findOne(PostBody = null, lean = false, header_authorization = null) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
@@ -145,18 +145,18 @@ module.exports = class QueryBuilder {
 
     /**
      * Fonction qui va constuire, verifier et lancer la requete
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter=] filter
+     * @property {object} [PostBody.structure=] structure
+     * @property {object} [PostBody.populate=] populate
+     * @property {object} [PostBody.sort=] sort
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [header_authorization=null] header_authorization
-     * @return {Object|mongoose.Model<this>} returns datas found and total of element
+     * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
     async findById(id, PostBody = null, header_authorization = null) {
         // création d'un objet PostBody avec des valeurs par défaut

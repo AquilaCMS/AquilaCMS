@@ -72,8 +72,8 @@ function validatePassword(password) {
  * @property {boolean} presentInLastImport
  * @property {array<string>} accessList
  * @property {object} details
- * @property {String} type
- * @property {String} preferredLanguage
+ * @property {string} type
+ * @property {string} preferredLanguage
  * @property {string} set_attributes setAttributes ObjectId
  * @property {array<UserSchemaAttributes>} attributes
  */

@@ -19,7 +19,7 @@ const getShipment = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
-const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
+const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
     let totalWeight = 0;
     cart            = await Cart.findOne({_id: cart._id});
     if (cart.items) {
@@ -28,12 +28,12 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
         }
     }
     if (PostBody) {
-        PostBody.filter    = {...PostBody.filter, countries: {$elemMatch: {country: withoutCountry}}};
+        PostBody.filter    = {...PostBody.filter, countries: {$elemMatch: {country: (withCountry.toUpperCase())}}};
         PostBody.structure = {...PostBody.structure, countries: 1, preparation: 1, freePriceLimit: 1};
     } else {
-        PostBody = {filter: {countries: {$elemMatch: {country: withoutCountry}}}, limit: 99, structure: {countries: 1, preparation: 1, freePriceLimit: 1}};
+        PostBody = {filter: {countries: {$elemMatch: {country: (withCountry.toUpperCase())}}}, limit: 99, structure: {countries: 1, preparation: 1, freePriceLimit: 1}};
     }
-    if (withoutCountry) {
+    if ((withCountry.toUpperCase())) {
         const price = 0;
 
         const shipments = (await getShipments(PostBody)).datas;
@@ -43,19 +43,22 @@ const getShipmentsFilter = async (cart, withoutCountry = null, PostBody) => {
         for (const shipment of shipments) {
             const index = shipment.countries.findIndex((country) => {
                 country = country.toObject();
-                return (country.country).toLowerCase() === (withoutCountry).toLowerCase();
+                return (country.country).toLowerCase() === (withCountry).toLowerCase();
             });
             const shipObject = shipment.countries[index].toObject();
             const range      = shipObject.prices.find((_price) => totalWeight >= _price.weight_min && totalWeight <= _price.weight_max);
-            if (shipment.freePriceLimit && cart.priceTotal && cart.priceTotal.ati && (shipment.freePriceLimit <= cart.priceTotal.ati.toFixed(2))) {
-                choices.push({shipment, price});
-            } else {
-                const priceR = range.price;
-                if (!priceR) choices.push({index: i, price: 0});
-                else choices.push({shipment, price: priceR});
+            if (range) {
+                if (shipment.freePriceLimit && cart.priceTotal && cart.priceTotal.ati && (shipment.freePriceLimit <= cart.priceTotal.ati.toFixed(2))) {
+                    choices.push({shipment, price});
+                } else {
+                    const priceR = range.price;
+                    if (!priceR) choices.push({index: i, price: 0});
+                    else choices.push({shipment, price: priceR});
+                }
             }
             i++;
         }
+        // on filtre les shipment pour retourner le plus interessant
         return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
     }
     let shipments = [];

@@ -19,7 +19,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/categories
- * @summary Fonction retournant un listing de categories
+ * @summary Listing of categories
  * @tags Category
  * @param {PostBody} request.body.required - PostBody
  */

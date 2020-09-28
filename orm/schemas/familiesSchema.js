@@ -3,7 +3,7 @@
  * @property {string} code.required
  * @property {string} name.required
  * @property {string} slug
- * @property {enum} type.required enum:universe,family,subfamily
+ * @property {string} type.required enum:universe,family,subfamily
  * @property {string} creationDate Date - default:Date.now
  * @property {array<FamiliesSchemaAncestors>} ancestors
  *  @property {string} slug

@@ -77,7 +77,7 @@ async function getUser(req, res, next) {
 /**
  * POST /api/v2/user/{id}
  * @tags User
- * @summary Fonction retournant un utilisateur
+ * @summary Get user by id
  * @param {string} authorization.headers - authorization
  * @param {PostBody} request.bod.required - PostBody
  * @param {string} id.path.required - user id
@@ -105,7 +105,7 @@ async function getUserById(req, res, next) {
 /**
  * POST /api/v2/user/active/account
  * @tags User
- * @summary Fonction retournant un utilisateur en fonction de son token d'activation
+ * @summary Get user by 'Activate Account Token'
  * @param {RequestAccountToken} request.body - activateAccountToken
  * @return {UserSchema} 200 - response success
  */
@@ -124,7 +124,7 @@ async function getUserByAccountToken(req, res, next) {
 /**
  * PUT /api/v2/user
  * @tags User
- * @summary Fonction pour ajouter ou mettre à jour un utilisateur
+ * @summary Add or update a user
  */
 async function setUser(req, res, next) {
     let isAdmin = false;
@@ -158,7 +158,7 @@ async function setUser(req, res, next) {
 /**
  * PUT /api/v2/user/addresses
  * @tags User
- * @summary Fonction pour mettre à jour les adresses d'un utilisateur
+ * @summary Update a user's addresses
  */
 async function setUserAddresses(req, res, next) {
     try {
@@ -171,7 +171,7 @@ async function setUserAddresses(req, res, next) {
 /**
  * DELETE /api/v2/user/{id}
  * @tags User
- * @summary Fonction supprimant un utilisateur
+ * @summary Delete a user
  */
 async function deleteUser(req, res, next) {
     try {
@@ -185,7 +185,7 @@ async function deleteUser(req, res, next) {
 /**
  * POST /api/v2/getUserTypes
  * @tags User
- * @summary Fonction retournant les types d'users
+ * @summary Get user types
  */
 async function getUserTypes(req, res, next) {
     try {

@@ -28,6 +28,11 @@ const defaultVAT    = 20;
  */
 
 /**
+ * @typedef {object} ItemSchema
+ * @property {string} TODO
+ */
+
+/**
  * @typedef {object} CartSchemaPromoProductsId
  * @property {string} productId.required products ObjectId
  * @property {number} discountATI default:null
