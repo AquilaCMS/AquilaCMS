@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const NSErrors = require('./errors/NSErrors');
+const mongoose     = require('mongoose');
+const NSErrors     = require('./errors/NSErrors');
 const servicesAuth = require('../services/auth');
 
 class PostBodyCheck {
@@ -44,11 +44,11 @@ module.exports = class QueryBuilder {
     /**
      * Permet de retourner un objet PostBody valide
      *
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter=] filter
+     * @property {object} [PostBody.structure=] structure
+     * @property {object} [PostBody.populate=] populate
+     * @property {object} [PostBody.sort=] sort
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
@@ -79,11 +79,11 @@ module.exports = class QueryBuilder {
 
     /**
      * Fonction qui va constuire, verifier et lancer la requete
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter] filter
-     * @property {Object} [PostBody.structure] structure
-     * @property {Object} [PostBody.populate] populate
-     * @property {Object} [PostBody.sort] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter] filter
+     * @property {object} [PostBody.structure] structure
+     * @property {object} [PostBody.populate] populate
+     * @property {object} [PostBody.sort] sort
      * @property {number} [PostBody.limit] limit
      * @property {number} [PostBody.skip] skip
      *
@@ -94,10 +94,10 @@ module.exports = class QueryBuilder {
      */
     async find(PostBody, lean = false, header_authorization = null) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
-        const postBodyChecked = this.verifyPostBody(PostBody);
+        const postBodyChecked                                  = this.verifyPostBody(PostBody);
         const {limit, skip, filter, populate, sort, structure} = postBodyChecked;
         // TODO P4 : FABRICE changer ce comportement => on lance les requetes une par une => lancer les deux a la fois
-        const count = await this.model.countDocuments(filter);
+        const count        = await this.model.countDocuments(filter);
         const addStructure = this.addToStructure(structure, sort);
         let datas;
         if (lean) {
@@ -111,25 +111,25 @@ module.exports = class QueryBuilder {
 
     /**
      * Fonction qui va constuire, verifier et lancer la requete
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter=] filter
+     * @property {object} [PostBody.structure=] structure
+     * @property {object} [PostBody.populate=] populate
+     * @property {object} [PostBody.sort=] sort
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [header_authorization=null] header_authorization
-     * @return {Object|mongoose.Model<this>} returns datas found and total of element
+     * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
     async findOne(PostBody = null, lean = false, header_authorization = null) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
         if (!PostBody.filter) throw NSErrors.PostBodyFilterUndefined;
         if (!Object.keys(PostBody.filter).length) throw NSErrors.PostBodyFilterUndefined;
         // création d'un objet PostBody avec des valeurs par défaut
-        const postBodyCheck = this.verifyPostBody(PostBody, 'findOne');
+        const postBodyCheck                 = this.verifyPostBody(PostBody, 'findOne');
         const {filter, populate, structure} = postBodyCheck;
         if (this.containRestrictedLabels(filter)) throw NSErrors.OperatorRestricted;
         const addStructure = this.addToStructure(structure);
@@ -145,26 +145,26 @@ module.exports = class QueryBuilder {
 
     /**
      * Fonction qui va constuire, verifier et lancer la requete
-     * @typedef {Object} PostBody
-     * @property {Object} [PostBody.filter=] filter
-     * @property {Object} [PostBody.structure=] structure
-     * @property {Object} [PostBody.populate=] populate
-     * @property {Object} [PostBody.sort=] sort
+     * @typedef {object} PostBody
+     * @property {object} [PostBody.filter=] filter
+     * @property {object} [PostBody.structure=] structure
+     * @property {object} [PostBody.populate=] populate
+     * @property {object} [PostBody.sort=] sort
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [header_authorization=null] header_authorization
-     * @return {Object|mongoose.Model<this>} returns datas found and total of element
+     * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
     async findById(id, PostBody = null, header_authorization = null) {
         // création d'un objet PostBody avec des valeurs par défaut
-        const postBodyCheck = this.verifyPostBody(PostBody, 'findById');
+        const postBodyCheck         = this.verifyPostBody(PostBody, 'findById');
         const {populate, structure} = postBodyCheck;
         if (!mongoose.Types.ObjectId.isValid(id)) throw NSErrors.InvalidObjectIdError;
         const addStructure = this.addToStructure(structure);
-        const datas = await this.model.findById(id, addStructure).populate(populate);
+        const datas        = await this.model.findById(id, addStructure).populate(populate);
         await this.removeFromStructure(structure, datas, header_authorization);
         return datas;
     }
@@ -182,12 +182,12 @@ module.exports = class QueryBuilder {
                     if (typeof sort[key] === 'object' && sort[key].$meta) structureAdd.push({[key]: value});
                 });
                 const defaultProjection = [...this.defaultFields, ...structureAdd];
-                const oProjection = {};
+                const oProjection       = {};
                 // On crée l'objet oProjection qui contiendra les champs a afficher
                 defaultProjection.forEach((struct) =>  {
                     if (typeof struct === 'object') {
                         // exemple : struct == {"score": {"$meta": "textScore"}} dans la projection
-                        const key = Object.keys(struct)[0];
+                        const key        = Object.keys(struct)[0];
                         oProjection[key] = struct[key];
                     }
                 });
@@ -201,12 +201,12 @@ module.exports = class QueryBuilder {
             else if (typeof structure[key] === 'object' && structure[key].$meta) structureAdd.push({[key]: value});
         });
         const defaultProjection = [...this.defaultFields, ...structureAdd];
-        const oProjection = {};
+        const oProjection       = {};
         // On crée l'objet oProjection qui contiendra les champs a afficher
         defaultProjection.forEach((struct) =>  {
             if (typeof struct === 'object') {
                 // exemple : struct == {"score": {"$meta": "textScore"}} dans la projection
-                const key = Object.keys(struct)[0];
+                const key        = Object.keys(struct)[0];
                 oProjection[key] = struct[key];
             } else oProjection[struct] = 1;
         });

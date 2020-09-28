@@ -1,10 +1,10 @@
-const path          = require('path');
-const themeServices = require('../services/themes');
-const fs            = require('../utils/fsp');
-const serverUtils   = require('../utils/server');
-const {themeCompile} = require('../utils/themes');
+const path                   = require('path');
+const themeServices          = require('../services/themes');
+const fs                     = require('../utils/fsp');
+const serverUtils            = require('../utils/server');
+const {themeCompile}         = require('../utils/themes');
 const {createListModuleFile} = require('../utils/modules');
-const NSErrors      = require('../utils/errors/NSErrors');
+const NSErrors               = require('../utils/errors/NSErrors');
 
 /**
  * If it's the first launch (/config/env.js exist or not), display the configurator
@@ -66,8 +66,8 @@ const postConfiguratorDatas = async (req) => {
         let envFile            = JSON.parse((await fs.readFile(datas.envPath)).toString());
         envFile[aquila_env].db = datas.databaseAdd;
         await fs.writeFile(path.join(global.appRoot, 'config/env.json'), JSON.stringify(envFile, null, 2));
-        envFile                = envFile[aquila_env];
-        global.envFile         = envFile;
+        envFile        = envFile[aquila_env];
+        global.envFile = envFile;
         console.log('Installer : finish writing env file');
 
         await require('../utils/database').connect();
@@ -130,7 +130,7 @@ const recoverConfiguration = async (req) => {
  * @param {Object} datas Datas to insert
  */
 const createConfiguration = async (datas) => {
-    datas.appUrl = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
+    datas.appUrl          = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
     const {Configuration} = require('../orm/models');
 
     return Configuration.create({

@@ -1,8 +1,8 @@
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
+const mongoose            = require('mongoose');
+const aquilaEvents        = require('../../utils/aquilaEvents');
 const {checkCustomFields} = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
-const Schema       = mongoose.Schema;
+const utilsDatabase       = require('../../utils/database');
+const Schema              = mongoose.Schema;
 
 /**
  * @typedef {object} PaymentMethodsSchema
@@ -53,7 +53,7 @@ PaymentMethodsSchema.statics.translationValidation = async function (query, self
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};
-        translationKeys = Object.keys(self.translation);
+        translationKeys                      = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {

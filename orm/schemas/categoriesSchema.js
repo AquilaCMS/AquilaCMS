@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const utils    = require('../../utils/utils');
+const mongoose         = require('mongoose');
+const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const utilsDatabase    = require('../../utils/database');
+const Schema           = mongoose.Schema;
+const ObjectId         = Schema.ObjectId;
 
 const CategoriesSchema = new Schema({
     code         : {type: String, required: true, unique: true},
@@ -63,7 +63,7 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
             self.translation[global.defaultLang] = {};
-            translationKeys = Object.keys(self.translation);
+            translationKeys                      = Object.keys(self.translation);
         }
         for (let i = 0; i < translationKeys.length; i++) {
             const lang = self.translation[translationKeys[i]];

@@ -1,9 +1,9 @@
-const path = require('path');
+const path     = require('path');
 const mongoose = require('mongoose');
-const fs = require('../utils/fsp');
+const fs       = require('../utils/fsp');
 
 const createModelData = async () => {
-    const schemas = [];
+    const schemas     = [];
     const themeFolder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}`);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');

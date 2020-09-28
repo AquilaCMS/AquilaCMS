@@ -6,7 +6,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/component/{componentName}/{code}
- * @summary This is the summary
+ * @summary TODO
  * @tags Component
  * @param {string} componentName.path.required - componentName always start with "ns-"
  * @param {string} code.path.required - code
@@ -19,7 +19,7 @@ module.exports = function (app) {
 async function getComponent(req, res, next) {
     try {
         const {componentName, code} = req.params;
-        const result = await ServiceComponent.getComponent(componentName, code, req.headers.authorization);
+        const result                = await ServiceComponent.getComponent(componentName, code, req.headers.authorization);
         return res.json(result);
     } catch (error) {
         return next(error);

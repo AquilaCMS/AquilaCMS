@@ -22,7 +22,6 @@
     "build:linux": "next build ./themes/${npm_config_theme}",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "docs": "apidoc -i routes/ -i utils/errors/ -i documentations/apidoc_def -o documentations/apidoc",
     "test": "exit 0"
   },
   "dependencies": {
@@ -89,9 +88,9 @@
     "wkhtmltopdf": "0.3.4"
   },
   "devDependencies": {
-    "apidoc": "0.23.0",
     "eslint": "7.3.1",
     "eslint-config-airbnb-base": "14.2.0",
+    "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-import": "2.21.2",
     "husky": "^4.2.5"
   },

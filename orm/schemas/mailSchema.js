@@ -1,8 +1,8 @@
 // const isEmail  = require('validator').isEmail;
-const mongoose = require('mongoose');
+const mongoose            = require('mongoose');
 const {checkCustomFields} = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
-const Schema   = mongoose.Schema;
+const utilsDatabase       = require('../../utils/database');
+const Schema              = mongoose.Schema;
 
 /**
  * @typedef {object} MailSchema
@@ -30,9 +30,9 @@ MailSchema.statics.translationValidation = async function (updateQuery, self) {
         }
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
-            const lang = await mongoose.model('languages').findOne({defaultLanguage: true});
+            const lang                  = await mongoose.model('languages').findOne({defaultLanguage: true});
             self.translation[lang.code] = {};
-            translationKeys = Object.keys(self.translation);
+            translationKeys             = Object.keys(self.translation);
         }
         for (let i = 0; i < translationKeys.length; i++) {
             const lang = self.translation[translationKeys[i]];

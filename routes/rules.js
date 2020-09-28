@@ -1,6 +1,6 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServicesRules               = require('../services/rules');
-const NSErrors         = require('../utils/errors/NSErrors');
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/rules', listRules);

@@ -23,7 +23,7 @@ async function getOrdersPayments(req, res, next) {
 async function getPaymentMethods(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServicePayment.getPaymentMethods(PostBody);
+        const result     = await ServicePayment.getPaymentMethods(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -33,7 +33,7 @@ async function getPaymentMethods(req, res, next) {
 async function getPaymentMethod(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServicePayment.getPaymentMethod(PostBody);
+        const result     = await ServicePayment.getPaymentMethod(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -56,23 +56,23 @@ async function savePaymentMethod(req, res, next) {
 // @deprecated : utiliser la route generic
 async function exportPayments(req, res, next) {
     // TODO : utiliser le service getOrdersPayments
-    const {Parser} = require('json2csv');
-    const fs = require('fs');
+    const {Parser}   = require('json2csv');
+    const fs         = require('fs');
     const exportPath = path.join(await require('../utils/server').getUploadDirectory(), 'exports');
-    const moment = require('moment');
+    const moment     = require('moment');
     moment.locale(global.defaultLang);
-    let conditions = {};
+    let conditions     = {};
     const condAndArray = [];
     let partDate;
 
     if (req.body.dateStart) {
-        partDate = req.body.dateStart.split('/');
+        partDate        = req.body.dateStart.split('/');
         const startDate = new Date(partDate[2], partDate[1] - 1, partDate[0]);
         // conditions.payment.creationDate = { '$gt': startDate };
         condAndArray.push( {'payment.creationDate': {$gte: startDate}} );
     }
     if (req.body.dateEnd) {
-        partDate = req.body.dateEnd.split('/');
+        partDate      = req.body.dateEnd.split('/');
         const endDate = new Date(partDate[2], partDate[1] - 1, partDate[0]);
         // conditions.payment.creationDate = { '$lt': endDate };
         condAndArray.push( {'payment.creationDate': {$lte: endDate}} );
@@ -120,7 +120,7 @@ async function exportPayments(req, res, next) {
             }
             try {
                 const parser = new Parser({fields: csvFields, del: ';'});
-                const csv = parser.parse(convOrders);
+                const csv    = parser.parse(convOrders);
                 if (err) console.log(err);
 
                 if (!fs.existsSync(exportPath)) fs.mkdirSync(exportPath);

@@ -6,15 +6,15 @@ const {SetOptions, Products} = require('../orm/models');
 const NSErrors               = require('../utils/errors/NSErrors');
 const QueryBuilder           = require('../utils/QueryBuilder');
 
-const restrictedFields       = [];
-const defaultFields          = ['_id'];
-const queryBuilder           = new QueryBuilder(SetOptions, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['_id'];
+const queryBuilder     = new QueryBuilder(SetOptions, restrictedFields, defaultFields);
 
 exports.getSetOptions = async function (PostBody) {
     return queryBuilder.find(PostBody);
 };
 
-exports.getSetOption = async function (PostBody) {
+exports.getSetOption     = async function (PostBody) {
     return queryBuilder.findOne(PostBody);
 };
 exports.getSetOptionById = async function (id, PostBody = null) {
@@ -22,9 +22,9 @@ exports.getSetOptionById = async function (id, PostBody = null) {
 };
 
 exports.createOrUpdateSetAttribute = async function (req) {
-    const code      = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
-    const name      = req.body.name;
-    const updateF   = req.body.update;
+    const code    = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
+    const name    = req.body.name;
+    const updateF = req.body.update;
 
     const setOption = await SetOptions.findOne({code});
     if (setOption && updateF) {

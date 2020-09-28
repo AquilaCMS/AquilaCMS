@@ -30,7 +30,7 @@ async function generateStatistics(req, res, next) {
 /**
  * GET /api/v2/statistics/globale
  * @tags Statistics
- * @summary Get Globale Stats (accueil admin)
+ * @summary Getting Globale Stats (accueil admin)
  */
 async function getGlobaleStats(req, res, next) {
     try {
@@ -44,12 +44,12 @@ async function getGlobaleStats(req, res, next) {
 /**
  * GET /api/v2/statistics/sell/canceledCart
  * @tags Statistics
- * @summary Nombre de panier abandonné
+ * @summary Number of abandoned cart
  */
 async function getCanceledCart(req, res, next) {
     try {
         const {periodeStart, periodeEnd} = convertDate(req.query.dateStart, req.query.dateEnd);
-        const result = await ServiceStatistics.getCanceledCart(req.query.granularity, periodeStart, periodeEnd);
+        const result                     = await ServiceStatistics.getCanceledCart(req.query.granularity, periodeStart, periodeEnd);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -59,12 +59,12 @@ async function getCanceledCart(req, res, next) {
 /**
  * GET /api/v2/statistics/sell/cag
  * @tags Statistics
- * @summary Chiffre d'affaire globale
+ * @summary Global profit
  */
 async function getCag(req, res, next) {
     try {
         const {periodeStart, periodeEnd} = convertDate(req.query.dateStart, req.query.dateEnd);
-        const result = await ServiceStatistics.getCag(req.query.granularity, periodeStart, periodeEnd);
+        const result                     = await ServiceStatistics.getCag(req.query.granularity, periodeStart, periodeEnd);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -74,12 +74,12 @@ async function getCag(req, res, next) {
 /**
  * GET /api/v2/statistics/sell/capp
  * @tags Statistics
- * @summary Chiffre d'affaire par produit
+ * @summary Profit by products
  */
 async function getCapp(req, res, next) {
     try {
         const {periodeStart, periodeEnd} = convertDate(req.query.dateStart, req.query.dateEnd);
-        const result = await ServiceStatistics.getCapp(req.query.granularity, periodeStart, periodeEnd);
+        const result                     = await ServiceStatistics.getCapp(req.query.granularity, periodeStart, periodeEnd);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -89,12 +89,12 @@ async function getCapp(req, res, next) {
 /**
  * GET /api/v2/statistics/sell/nbOrder
  * @tags Statistics
- * @summary Nombre de commande
+ * @summary Number of orders
  */
 async function getNbOrder(req, res, next) {
     try {
         const {periodeStart, periodeEnd} = convertDate(req.query.dateStart, req.query.dateEnd);
-        const result = await ServiceStatistics.getNbOrder(req.query.granularity, periodeStart, periodeEnd);
+        const result                     = await ServiceStatistics.getNbOrder(req.query.granularity, periodeStart, periodeEnd);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -104,12 +104,12 @@ async function getNbOrder(req, res, next) {
 /**
  * GET /api/v2/statistics/customer/topCustomer
  * @tags Statistics
- * @summary Get top customers stats
+ * @summary Getting top customers stats
  */
 async function getTopCustomer(req, res, next) {
     try {
         const {periodeStart, periodeEnd} = convertDate(req.query.dateStart, req.query.dateEnd);
-        const result = await ServiceStatistics.getTopCustomer(req.query.granularity, periodeStart, periodeEnd);
+        const result                     = await ServiceStatistics.getTopCustomer(req.query.granularity, periodeStart, periodeEnd);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -119,12 +119,12 @@ async function getTopCustomer(req, res, next) {
 /**
  * GET /api/v2/statistics/customer/newCustomer
  * @tags Statistics
- * @summary Get new customers stats
+ * @summary Getting new customers stats
  */
 async function getNewCustomer(req, res, next) {
     try {
         const {periodeStart, periodeEnd} = convertDate(req.query.dateStart, req.query.dateEnd);
-        const result = await ServiceStatistics.getNewCustomer(req.query.granularity, periodeStart, periodeEnd);
+        const result                     = await ServiceStatistics.getNewCustomer(req.query.granularity, periodeStart, periodeEnd);
         return res.json(result);
     } catch (error) {
         return next(error);

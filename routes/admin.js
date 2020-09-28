@@ -11,11 +11,9 @@ module.exports = (router, adminFront) => {
     adminFront.get('/login', renderLogin);
 };
 
-/**
- * GET /api/v2/adminInformation
- * @tags Admin
- * @summary Get admin information
- */
+// GET /api/v2/adminInformation
+// @tags Admin
+// @summary Get admin information
 async function getAdminInformation(req, res, next) {
     try {
         const result = await serviceAdminInformation.getAdminInformation();
@@ -25,11 +23,9 @@ async function getAdminInformation(req, res, next) {
     }
 }
 
-/**
- * GET /api/v2/adminInformation/{code}
- * @tags Admin
- * @summary Delete admin information
- */
+// GET /api/v2/adminInformation/{code}
+// @tags Admin
+// @summary Delete admin information
 function deleteAdminInformation(req, res, next) {
     try {
         serviceAdminInformation.deleteAdminInformation(req.params.code);
