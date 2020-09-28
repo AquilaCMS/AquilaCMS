@@ -59,5 +59,29 @@ Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS web
 Find the swagger documentation on /api-docs or online at [aquila-cms.com/apidoc](https://www.aquila-cms.com/apidoc).
 Also check-out some tutorials on [our dedicated page](https://www.aquila-cms.com/ressources-documentation), or on [our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ).
 
+
+## Changes for AWS EB Linux 2
+
+### Just to have a successful deploy
+
+1. Node version in package.json
+2. .npmrc for the node-gyp bypass permission
+3. Remove of all .ebextensions files except 00_change_file_permissions.config and 01_install_yarn.config
+4. Procfile with web: npm run start:aws inside
+
+/!\ We want a yarn install and not a npm install, but there is a default npm install near the prebuild step and we can't bypass it
+So, the package.json provide has no packages and with 03_cp_package_json.sh we copy the package.bkp.json to package.json in postdeploy step /!\
+
+5. cp_package_json.sh to yarn install packages after the deploy
+
+### To successfuly use Aquila once deployed
+
+1. predeploy/01_install_packages.sh to install system packages
+2. predeploy/02_install_yarn.sh to install yarn as system package (with the installation of a new nodejs)
+3. postdeploy/01_cp_package_json.sh to copy the real package.json with all npm packages and the node version in adequacy with the one installed in the previous script
+4. nginx/conf.d/max_body_size.conf to increase the requests body size to 1GB (to upload big files for example)
+5. nginx/conf.d/requests_timeout.conf to increase the requests timeout to 5min
+
+
 ## License
 AquilaCMS is licensed under OSL3.
