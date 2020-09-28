@@ -97,11 +97,7 @@ const compareDependencies = (myModule, modulesActivated, install = true) => {
     for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
         for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
             if (!sameDependencies[apiOrTheme][name]) {
-                if (install) {
-                    sameDependencies[apiOrTheme][name] = new Set();
-                } else {
-                    sameDependencies[apiOrTheme][name] = [];
-                }
+                sameDependencies[apiOrTheme][name] = install ? new Set() : [];
             }
             if (install) {
                 sameDependencies[apiOrTheme][name].add(version);

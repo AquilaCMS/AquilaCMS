@@ -226,9 +226,11 @@ ModulesControllers.controller('ModulesCheckVersionCtrl', [
             };
 
             for (const apiOrTheme of Object.keys($scope.alreadyInstalledPackages)) {
-                Object.keys($scope.alreadyInstalledPackages[apiOrTheme]).forEach((value) => {
-                    choosedVersion[apiOrTheme][value] = form[`${value}Version`].$modelValue;
-                });
+                for (const value of Object.keys($scope.alreadyInstalledPackages[apiOrTheme])) {
+                    if (form[`${value}Version`]) {
+                        choosedVersion[apiOrTheme][value] = form[`${value}Version`].$modelValue;
+                    }
+                }
             }
             $modalInstance.close({
                 toBeChanged : choosedVersion,

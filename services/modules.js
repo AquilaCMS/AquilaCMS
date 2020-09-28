@@ -343,8 +343,7 @@ const checkDependenciesAtUninstallation = async (idModule) => {
                         response.toBeChanged[apiOrTheme][name] = [];
                         response.toBeChanged[apiOrTheme][name].push(...versions);
                     } else if (versions.length === 1) {
-                        response.toBeRemoved[apiOrTheme][name] = [];
-                        response.toBeRemoved[apiOrTheme][name].push(...versions);
+                        response.toBeRemoved[apiOrTheme][name] = versions[0];
                     }
                 }
             }
@@ -357,6 +356,7 @@ const checkDependenciesAtUninstallation = async (idModule) => {
                 let installedDependencies;
                 if (apiOrTheme === 'api') {
                     installedDependencies = await npm.npmCommand('list', ['--json']);
+                    installedDependencies = installedDependencies.result._dependencies;
                 } else if (apiOrTheme === 'theme') {
                     installedDependencies = JSON.parse((await npm.npmCommand('list', ['--json'], true)).stdout);
                     installedDependencies = installedDependencies.dependencies;
@@ -364,7 +364,7 @@ const checkDependenciesAtUninstallation = async (idModule) => {
                 for (const [index, value] of Object.entries(installedDependencies)) {
                     for (const [index2] of Object.entries(result[apiOrTheme])) {
                         if (index === index2) {
-                            response.alreadyInstalled[apiOrTheme][index] = value.version;
+                            response.alreadyInstalled[apiOrTheme][index] = value.version ? value.version : value;
                         }
                     }
                 }
@@ -512,48 +512,67 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             throw NSErrors.ModuleNotFound;
         }
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
-        await removeModuleAddon(_module);
-        try {
-            await addOrRemoveThemeFiles(
-                path.resolve(global.appRoot, _module.path, 'theme_components'),
-                true,
-                _module.type ? `type: '${_module.type}'` : ''
-            );
-        } catch (error) {
-            console.error(error);
-        }
+        // await removeModuleAddon(_module);
+        // try {
+        //     await addOrRemoveThemeFiles(
+        //         path.resolve(global.appRoot, _module.path, 'theme_components'),
+        //         true,
+        //         _module.type ? `type: '${_module.type}'` : ''
+        //     );
+        // } catch (error) {
+        //     console.error(error);
+        // }
 
-        // Suppression des fichiers copiés
-        for (let i = 0; i < _module.files.length; i++) {
-            if (await fs.access(_module.files[i])) {
-                if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
-                    require('rimraf')(_module.files[i], (err) => {
-                        if (err) console.error(err);
-                    });
-                } else {
-                    try {
-                        await fs.unlink(_module.files[i]);
-                    } catch (err) {
-                        console.error('Error: ', err);
-                    }
-                }
-            }
-        }
+        // // Suppression des fichiers copiés
+        // for (let i = 0; i < _module.files.length; i++) {
+        //     if (await fs.access(_module.files[i])) {
+        //         if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
+        //             require('rimraf')(_module.files[i], (err) => {
+        //                 if (err) console.error(err);
+        //             });
+        //         } else {
+        //             try {
+        //                 await fs.unlink(_module.files[i]);
+        //             } catch (err) {
+        //                 console.error('Error: ', err);
+        //             }
+        //         }
+        //     }
+        // }
 
-        await Modules.updateOne({_id: idModule}, {files: [], active: false});
+        // await Modules.updateOne({_id: idModule}, {files: [], active: false});
 
         console.log('Removing dependencies of the module...');
         // On supprime les dépendances du module
-        for (const apiOrTheme of Object.keys(toBeRemoved)) {
+        for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
             let installPath;
+            let savePackagedependencies;
             if (apiOrTheme === 'api') {
                 installPath = global.appRoot;
+                savePackagedependencies = JSON.parse(
+                    await fs.readFile(path.join(global.appRoot, 'package-aquila.json'))
+                );
             } else if (apiOrTheme === 'theme') {
                 installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+                savePackagedependencies = JSON.parse(
+                    await fs.readFile(path.join(
+                        global.appRoot,
+                        'themes',
+                        global.envConfig.environment.currentTheme,
+                        'package-theme.json'
+                    ))
+                );
             }
             const packagePath = path.resolve(installPath, 'package.json');
             const packageJSON = JSON.parse(await fs.readFile(packagePath));
             console.log(packageJSON);
+            packageJSON.dependencies = {
+                ...savePackagedependencies.dependencies,
+                ...packageJSON.dependencies,
+                ...toBeChanged,
+                ...toBeRemoved
+
+            };
             // let allModulesToRemove = [];
             // for (const packageName of Object.values(toBeRemoved[apiOrTheme])) {
             //     const elem = packageName.split('@');
