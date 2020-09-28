@@ -1,0 +1,34 @@
+name: Update Aquila Version
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: |
+        export packageFile=`cat package.json`
+        export versionLine=`cat package.json | grep "version"`
+        export versionLeft=${versionLine:14}
+        export oldModuleVersion=${versionLeft::-2}
+
+        export todayDate=`date +%D | tr / .`
+        export dayMonth=`echo ${todayDate::-3}`
+        export newVersion=""
+        export newModuleVersion=$Version
+
+        #Enregistrement de la nouvelle version dans le info.json et push
+        newInfoFile=${packageFile/$oldModuleVersion/$newModuleVersion}
+        echo "$newInfoFile" > package.json
