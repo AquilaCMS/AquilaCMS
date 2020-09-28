@@ -3,8 +3,8 @@ const path     = require('path');
 const NSErrors = require('../utils/errors/NSErrors');
 
 const InitRoutes = (express, server) => {
-    const apiRouter         = express.Router(); // Route api for the front for client
-    const adminFrontRouter  = express.Router(); // Route for serving the front of the admin
+    const apiRouter        = express.Router(); // Route api for the front for client
+    const adminFrontRouter = express.Router(); // Route for serving the front of the admin
     server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
     server.use(`/${global.envConfig.environment.adminPrefix}`, adminFrontRouter);
     loadDynamicRoutes(apiRouter, adminFrontRouter);

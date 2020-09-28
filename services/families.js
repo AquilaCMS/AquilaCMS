@@ -2,9 +2,9 @@ const {Families, Products} = require('../orm/models');
 const QueryBuilder         = require('../utils/QueryBuilder');
 const NSErrors             = require('../utils/errors/NSErrors');
 
-const restrictedFields     = [];
-const defaultFields        = [];
-const queryBuilder         = new QueryBuilder(Families, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = [];
+const queryBuilder     = new QueryBuilder(Families, restrictedFields, defaultFields);
 
 const getFamilies = async (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -35,17 +35,17 @@ const deleteFamily = async (_id) => {
     // On supprime la famille de la famille parente
     await Families.updateOne({children: result._id}, {$pull: {children: result._id}});
 
-    const where = {};
+    const where  = {};
     const action = {};
     if (result.type === 'universe') {
         where.universe = result.slug;
-        action.$unset = {universe: '', family: '', subfamily: ''};
+        action.$unset  = {universe: '', family: '', subfamily: ''};
     } else if (result.type === 'family') {
-        where.family = result.slug;
+        where.family  = result.slug;
         action.$unset = {family: '', subfamily: ''};
     } else {
         where.subfamily = result.slug;
-        action.$unset = {subfamily: ''};
+        action.$unset   = {subfamily: ''};
     }
 
     await Products.updateMany(where, action);

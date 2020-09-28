@@ -1,5 +1,5 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
-const serviceThemeConfig = require('../services/themeConfig');
+const serviceThemeConfig          = require('../services/themeConfig');
 
 // Fichier themeConfig.json à la racine des thèmes
 

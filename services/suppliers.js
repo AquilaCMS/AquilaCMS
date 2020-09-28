@@ -2,9 +2,9 @@ const {Suppliers, Products} = require('../orm/models');
 const QueryBuilder          = require('../utils/QueryBuilder');
 const NSErrors              = require('../utils/errors/NSErrors');
 
-const restrictedFields      = [];
-const defaultFields         = ['*'];
-const queryBuilder          = new QueryBuilder(Suppliers, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['*'];
+const queryBuilder     = new QueryBuilder(Suppliers, restrictedFields, defaultFields);
 
 exports.listSuppliers = async function (PostBody) {
     return queryBuilder.find(PostBody);

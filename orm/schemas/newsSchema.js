@@ -1,10 +1,10 @@
-const mongoose     = require('mongoose');
-const utils        = require('../../utils/utils');
-const utilsDatabase = require('../../utils/database');
+const mongoose            = require('mongoose');
+const utils               = require('../../utils/utils');
+const utilsDatabase       = require('../../utils/database');
 const {checkCustomFields} = require('../../utils/translation');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const translation  = require('../../utils/translation');
-const Schema       = mongoose.Schema;
+const aquilaEvents        = require('../../utils/aquilaEvents');
+const translation         = require('../../utils/translation');
+const Schema              = mongoose.Schema;
 
 const NewsSchema = new Schema({
     isVisible   : {type: Boolean, default: false},
@@ -33,7 +33,7 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};
-        translationKeys = Object.keys(self.translation);
+        translationKeys                      = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -47,8 +47,8 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
             }
 
             if (updateQuery) {
-                const slugEdit = {translation: {}};
-                slugEdit.translation[translationKeys[i]] = {};
+                const slugEdit                                = {translation: {}};
+                slugEdit.translation[translationKeys[i]]      = {};
                 slugEdit.translation[translationKeys[i]].slug = lang.slug;
                 updateQuery.updateOne(slugEdit);
             }

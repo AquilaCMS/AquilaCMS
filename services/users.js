@@ -1,12 +1,12 @@
-const debug            = require('debug');
-const log              = debug('aquila:users');
-const crypto           = require('crypto');
-const mongoose         = require('mongoose');
-const {Users}          = require('../orm/models');
-const servicesMail     = require('./mail');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const aquilaEvents     = require('../utils/aquilaEvents');
-const NSErrors         = require('../utils/errors/NSErrors');
+const debug        = require('debug');
+const log          = debug('aquila:users');
+const crypto       = require('crypto');
+const mongoose     = require('mongoose');
+const {Users}      = require('../orm/models');
+const servicesMail = require('./mail');
+const QueryBuilder = require('../utils/QueryBuilder');
+const aquilaEvents = require('../utils/aquilaEvents');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['_slug'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
@@ -174,7 +174,7 @@ const getUserTypes = async (query) => {
 const generateTokenSendMail = async (email, lang) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
     log('- generateTokenSendMail - ', resetPassToken);
-    const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
+    const user = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
     log('- generateTokenSendMail - ', user);
     if (!user) {
         throw NSErrors.NotFound;

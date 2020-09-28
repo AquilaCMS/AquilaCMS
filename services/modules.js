@@ -1,16 +1,16 @@
-const AdmZip           = require('adm-zip');
-const path             = require('path');
-const mongoose         = require('mongoose');
-const rimraf           = require('rimraf');
-const packageManager   = require('../utils/packageManager');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const npm              = require('../utils/npm');
-const modulesUtils     = require('../utils/modules');
-const serverUtils      = require('../utils/server');
-const fs               = require('../utils/fsp');
-const NSErrors         = require('../utils/errors/NSErrors');
-const {Modules}        = require('../orm/models');
-const themesService    = require('./themes');
+const AdmZip         = require('adm-zip');
+const path           = require('path');
+const mongoose       = require('mongoose');
+const rimraf         = require('rimraf');
+const packageManager = require('../utils/packageManager');
+const QueryBuilder   = require('../utils/QueryBuilder');
+const npm            = require('../utils/npm');
+const modulesUtils   = require('../utils/modules');
+const serverUtils    = require('../utils/server');
+const fs             = require('../utils/fsp');
+const NSErrors       = require('../utils/errors/NSErrors');
+const {Modules}      = require('../orm/models');
+const themesService  = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -53,7 +53,7 @@ const setModuleConfigById = async (_id, config) => {
  */
 const setPartialConfig = async (name, field, value) => {
     require('../utils/utils').tmp_use_route('modules_service', 'setPartialConfig');
-    const upd = {};
+    const upd              = {};
     upd[`config.${field}`] = value;
     return Modules.updateOne({name}, {$set: upd}, {new: true});
 };
@@ -77,8 +77,8 @@ const initModule = async (zipFile) => {
         throw NSErrors.InvalidFile;
     }
     console.log('Upload module...');
-    const moduleFolder = 'modules/';
-    const zipFilePath = `${moduleFolder}${originalname}`;
+    const moduleFolder       = 'modules/';
+    const zipFilePath        = `${moduleFolder}${originalname}`;
     const extractZipFilePath = zipFilePath.replace('.zip', '/');
 
     // move the file from the temporary location to the intended location
@@ -92,7 +92,7 @@ const initModule = async (zipFile) => {
     await fs.unlink(path.resolve(global.appRoot, filepath));
 
     try {
-        const zip = new AdmZip(zipFilePath);
+        const zip      = new AdmZip(zipFilePath);
         const infojson = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
         if (!infojson) {
             throw NSErrors.ModuleInfoNotFound; // info.json not found in zip
@@ -134,11 +134,11 @@ const initModule = async (zipFile) => {
             throw NSErrors.ModuleInfoNotFound;
         }
         let infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'));
-        infoFile = infoFile.toString();
+        infoFile     = infoFile.toString();
         const {info} = JSON.parse(infoFile);
         console.log('Installing module...');
 
-        const myModule = await Modules.findOne({name: info.name});
+        const myModule  = await Modules.findOne({name: info.name});
         const newModule = await Modules.findOneAndUpdate({name: info.name}, {
             name                     : info.name,
             description              : info.description,
@@ -214,7 +214,7 @@ const checkDependenciesAtInstallation = async (idModule) => {
     };
     if (myModule.packageDependencies && (myModule.packageDependencies.api || myModule.packageDependencies.theme)) {
         const modulesActivated = await Modules.find({_id: {$ne: idModule}, active: true}, 'packageDependencies');
-        response.toBeChanged = modulesUtils.compareDependencies(myModule, modulesActivated, true);
+        response.toBeChanged   = modulesUtils.compareDependencies(myModule, modulesActivated, true);
 
         /**
          * We use npm because yarn currently can't return only installed package
@@ -306,7 +306,7 @@ const checkDependenciesAtUninstallation = async (idModule) => {
     };
     if (myModule.packageDependencies && (myModule.packageDependencies.api || myModule.packageDependencies.theme)) {
         const modulesActivated = await Modules.find({_id: {$ne: idModule}, active: true}, 'packageDependencies');
-        let result = {
+        let result             = {
             api   : {},
             theme : {}
         };
@@ -404,8 +404,8 @@ const activateModule = async (idModule, toBeChanged) => {
         const myModule = await Modules.findOne({_id: idModule});
         await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy  = path.resolve(`backoffice/app/${myModule.name}`);
-        const copyF = path.resolve(`modules/${myModule.name}/app/`);
+        const copy    = path.resolve(`backoffice/app/${myModule.name}`);
+        const copyF   = path.resolve(`modules/${myModule.name}/app/`);
         const copyTab = [];
         if (await fs.access(copyF, fs.constants.W_OK)) {
             try {
@@ -422,8 +422,8 @@ const activateModule = async (idModule, toBeChanged) => {
 
         if (myModule.loadTranslationBack) {
             console.log('Loading back translation for module...');
-            const src = path.resolve('modules', myModule.name, 'translations/back');
-            const dest  = path.resolve('backoffice/assets/translations/modules', myModule.name);
+            const src  = path.resolve('modules', myModule.name, 'translations/back');
+            const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
             if (fs.existsSync(src)) {
                 try {
                     await fs.copyRecursiveSync(
@@ -441,10 +441,10 @@ const activateModule = async (idModule, toBeChanged) => {
         if (myModule.loadTranslationFront) {
             console.log('Loading front translation for module...');
             const {currentTheme} = global.envConfig.environment;
-            const files = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
+            const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
             for (let i = 0; i < files.length; i++) {
-                const src = path.resolve('modules', myModule.name, 'translations/front', files[i]);
-                const dest  = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
+                const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
+                const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
                 if (fs.existsSync(src)) {
                     try {
                         await fs.copyRecursiveSync(src, dest, true);
@@ -461,15 +461,15 @@ const activateModule = async (idModule, toBeChanged) => {
         if (myModule.packageDependencies) {
             for (const apiOrTheme of Object.keys(toBeChanged)) {
                 let installPath = global.appRoot;
-                let position = 'aquila';
+                let position    = 'aquila';
                 let packagePath = path.resolve(installPath, 'package.json');
                 if (apiOrTheme === 'theme') {
                     installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-                    position = 'the theme';
+                    position    = 'the theme';
                     packagePath = path.resolve(installPath, 'package.json');
                 }
                 if (myModule.packageDependencies[apiOrTheme]) {
-                    const packageJSON = JSON.parse(await fs.readFile(packagePath));
+                    const packageJSON        = JSON.parse(await fs.readFile(packagePath));
                     packageJSON.dependencies = {
                         ...packageJSON.dependencies,
                         ...myModule.packageDependencies[apiOrTheme],
@@ -548,12 +548,12 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             let installPath;
             let savePackagedependencies;
             if (apiOrTheme === 'api') {
-                installPath = global.appRoot;
+                installPath             = global.appRoot;
                 savePackagedependencies = JSON.parse(
                     await fs.readFile(path.join(global.appRoot, 'package-aquila.json'))
                 );
             } else if (apiOrTheme === 'theme') {
-                installPath = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+                installPath             = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
                 savePackagedependencies = JSON.parse(
                     await fs.readFile(path.join(
                         global.appRoot,
@@ -690,9 +690,9 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         if (!file.startsWith('Module') || !file.endsWith('.js')) {
             continue;
         }
-        const info = await fs.readFile(path.resolve(savePath, 'info.json'));
-        let type = JSON.parse(info).info.type;
-        type = type ? `type: '${type}'` : '';
+        const info                  = await fs.readFile(path.resolve(savePath, 'info.json'));
+        let type                    = JSON.parse(info).info.type;
+        type                        = type ? `type: '${type}'` : '';
         const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleNomComposant.js ->nomcomposant
         const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
         const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
@@ -701,12 +701,12 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
             const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
-            const replaceListModules = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
+            const replaceListModules      = `export default ${exportDefaultListModule.slice(0, exportDefaultListModule.lastIndexOf(']'))} ${jsxModuleToImport}]`;
             await fs.writeFile(pathListModules, replaceListModules, {flags: 'w'});
         }
 
         // Copier les fichiers (du module) necessaire aux front
-        const copyTo = `./themes/${currentTheme}/modules/${file}`;
+        const copyTo  = `./themes/${currentTheme}/modules/${file}`;
         const copyTab = [`themes/${currentTheme}/modules/${file}`];
         // ON enregistre les fichiers theme components pour chaque theme pour pouvoir les supprimer
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
@@ -773,11 +773,11 @@ const activeFrontModule = async (pathModule, bRemove) => {
  */
 const removeImport = async (jsxModuleToImport, exportDefaultListModule, pathListModules) => {
     // On supprime les espaces
-    const objectToRemove    = jsxModuleToImport.replace(/\s+/g, '');
+    const objectToRemove = jsxModuleToImport.replace(/\s+/g, '');
     // On supprime les espaces des infos contenus dans le tableau de l'export
     exportDefaultListModule = exportDefaultListModule.replace(/\s+/g, '');
     // On replace par "" l'objet a supprimer de fichier
-    const result            = exportDefaultListModule.replace(objectToRemove, '');
+    const result = exportDefaultListModule.replace(objectToRemove, '');
     await fs.writeFile(pathListModules, `export default ${result}`);
 };
 
@@ -785,8 +785,8 @@ const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, t
     try {
         const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
-            const result = await fs.readFile(pathListModules, 'utf8');
-            const jsxModuleToImport = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
+            const result                  = await fs.readFile(pathListModules, 'utf8');
+            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
             const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
             await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
         }
@@ -837,7 +837,7 @@ const initComponentTemplate = async (model, component, moduleName) => {
     for (const elem of elements) {
         if (!elem.component_template || !elem.component_template.includes(component)) {
             let newComponentTemplate = elem.component_template || '';
-            newComponentTemplate += component;
+            newComponentTemplate    += component;
             await mongoose.model(model).updateOne(
                 {_id: elem._id},
                 {$set: {component_template: newComponentTemplate}}
@@ -851,7 +851,7 @@ const uninitComponentTemplate = async (model, component, moduleName, field) => {
     const elements = await mongoose.model(model).find({});
     for (const elem of elements) {
         let newComponentTemplate = elem.component_template || '';
-        newComponentTemplate = newComponentTemplate.replace(component, '');
+        newComponentTemplate     = newComponentTemplate.replace(component, '');
         await mongoose.model(model).updateOne(
             {_id: elem._id},
             {$unset: {[field]: ''}, $set: {component_template: newComponentTemplate}}

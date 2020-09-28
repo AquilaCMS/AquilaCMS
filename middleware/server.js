@@ -1,12 +1,12 @@
-const expressJSDocSwagger = require('@haegemonia/express-jsdoc-swagger');
-const cookieParser        = require('cookie-parser');
-const cors                = require('cors');
-const express             = require('express');
-const morgan              = require('morgan');
-const multer              = require('multer');
-const path                = require('path');
-const {v1: uuidv1}        = require('uuid');
-const {getDecodedToken}   = require('../services/auth');
+const expressJSDocSwagger             = require('@haegemonia/express-jsdoc-swagger');
+const cookieParser                    = require('cookie-parser');
+const cors                            = require('cors');
+const express                         = require('express');
+const morgan                          = require('morgan');
+const multer                          = require('multer');
+const path                            = require('path');
+const {v1: uuidv1}                    = require('uuid');
+const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
 
 const getUserFromRequest = (req) => {
@@ -35,7 +35,7 @@ const serverUseRequest = (req, res, next) => {
 
     res.json = function (json, keepOriginalAttribs = false) {
         const originalJson = json;
-        res.json = original;
+        res.json           = original;
 
         if (res.headersSent) {
             return res;
@@ -106,7 +106,6 @@ const initExpress = async (server, passport) => {
     server.use(express.static(path.join(global.appRoot, 'acme'), {dotfiles: 'allow'}));
     server.use('/', express.static(path.join(global.appRoot, photoPath))); // Photos
     server.use('/bo', express.static(path.join(global.appRoot, 'bo/build'))); // BackOffice V2 (proof of concept)
-    // server.use('/apidoc', express.static(path.join(global.appRoot, 'documentations/apidoc'))); // Documentations
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');

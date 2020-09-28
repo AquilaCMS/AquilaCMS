@@ -226,7 +226,7 @@ const deleteRecursiveSync = async (filePath) => {
         } else if (statFile.isDirectory()) {
             if (fs.existsSync(filePath) && await access(filePath)) {
                 for (const file of await readdir(filePath)) {
-                    const curPath = path.resolve(filePath, file);
+                    const curPath          = path.resolve(filePath, file);
                     const statSubDirectory = await lstat(curPath);
                     if (statSubDirectory.isDirectory()) { // recurse
                         await deleteRecursiveSync(curPath);
@@ -267,7 +267,7 @@ const moveFile = async (oldPath, newPath, options = {}) => {
         fs.rename(oldPath, newPath, (err) => {
             if (err) {
                 if (err.code === 'EXDEV') {
-                    const readStream = fs.createReadStream(oldPath);
+                    const readStream  = fs.createReadStream(oldPath);
                     const writeStream = fs.createWriteStream(newPath);
 
                     readStream.on('error', (err) => reject(err));

@@ -1,6 +1,6 @@
-const path = require('path');
-const moment = require('moment');
-const fs = require('../utils/fsp');
+const path                 = require('path');
+const moment               = require('moment');
+const fs                   = require('../utils/fsp');
 const {getUploadDirectory} = require('../utils/server');
 
 /**
@@ -8,7 +8,7 @@ const {getUploadDirectory} = require('../utils/server');
  */
 const removeTempFile = async () => {
     const tempFolder = path.resolve(getUploadDirectory(), 'temp');
-    const files = await fs.readdir(tempFolder);
+    const files      = await fs.readdir(tempFolder);
     for (const file of files) {
         const fileStat = await fs.stat(path.resolve(tempFolder, file));
         if (fileStat.isFile()) {

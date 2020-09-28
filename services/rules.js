@@ -1,5 +1,5 @@
-const debug            = require('debug');
-const log              = debug('aquila:rules');
+const debug        = require('debug');
+const log          = debug('aquila:rules');
 const {
     Rules,
     Users,
@@ -8,18 +8,18 @@ const {
     Products,
     Promo
 }                      = require('../orm/models');
-const utils            = require('../utils/utils');
-const promoUtils       = require('../utils/promo');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const NSErrors         = require('../utils/errors/NSErrors');
+const utils        = require('../utils/utils');
+const promoUtils   = require('../utils/promo');
+const QueryBuilder = require('../utils/QueryBuilder');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Rules, restrictedFields, defaultFields);
 
-const inSegment        = {};
+const inSegment = {};
 // colNames nom des collections: si le target d'une condition commence par 'colNames[i].' alors nous renvoyons false
-const colNames         = ['client', 'famille', 'categorie', 'panier'];
+const colNames = ['client', 'famille', 'categorie', 'panier'];
 
 const listRules = (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -38,7 +38,7 @@ const queryRule = (PostBody) => {
 const testUser = async (body) => {
     log('- testUser - ', body);
     const _rules = await Rules.find({owner_type: 'discount'});
-    const user = await Users.findOne({_id: body.user_id});
+    const user   = await Users.findOne({_id: body.user_id});
     const result = [];
     for (let i = 0; i < _rules.length; i++) {
         log('- testUser - ', `${i} / ${_rules.length}`);
@@ -198,9 +198,9 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
         const tCondition = [rule.operand];
         for (let j = 0; j < rule.conditions.length; j++) {
             const condition = rule.conditions[j];
-            let target = condition.target.replace('attr.', 'attributes.');
-            let isTrue = false;
-            const value = getValueFromCondition(condition);
+            let target      = condition.target.replace('attr.', 'attributes.');
+            let isTrue      = false;
+            const value     = getValueFromCondition(condition);
             // colNames est le nom des collections (c'est une variable en global)
             const tColNamesFound = colNames.filter((colName) => target.startsWith(`${colName}.`));
             // Si un colNames est trouvé dans le target alors ce n'est pas un champ produit
@@ -213,7 +213,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                         if (target.indexOf('attributes') > -1) {
                             const targetCode = target.split('.')[target.split('.').length - 1];
                             const targetLang = target.split('.')[target.split('.').length - 2];
-                            const attr = user.attributes.find((attr) => attr.code === targetCode);
+                            const attr       = user.attributes.find((attr) => attr.code === targetCode);
                             if (attr) {
                                 target = `translation.${targetLang}.value`;
                                 isTrue = conditionOperator(condition.operator, attr, target, value);
@@ -239,7 +239,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                     for (let i = 0; i < cart.items.length; i++) {
                         const targetCode = target.split('.')[target.split('.').length - 1];
                         const targetLang = target.split('.')[target.split('.').length - 2];
-                        const attr = cart.items[i].id.attributes.find((attr) => attr.code === targetCode);
+                        const attr       = cart.items[i].id.attributes.find((attr) => attr.code === targetCode);
                         if (attr) {
                             target = `translation.${targetLang}.value`;
                             isTrue = conditionOperator(condition.operator, attr, target, value);
@@ -247,7 +247,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                     }
                 } else {
                     let tItems = [];
-                    tItems = cart.items.filter((product) => conditionOperator(condition.operator, product.id, target, value));
+                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product.id, target, value));
                     if (tItems.length) isTrue = true;
                 }
             }
@@ -255,7 +255,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
         }
         if (rule.other_rules && rule.other_rules.length > 0) {
             for (let k = 0; k < rule.other_rules.length; k++) {
-                const other_rule = rule.other_rules[k];
+                const other_rule   = rule.other_rules[k];
                 const subCondition = await applyRecursiveRulesDiscount(other_rule, user, cart);
                 tCondition.push(subCondition);
             }
@@ -280,9 +280,9 @@ async function testRulesOnUser(rule, user, cart = undefined) {
         const validRules = [];
         for (let j = 0; j < rule.conditions.length; j++) {
             const condition = rule.conditions[j];
-            const target = condition.target.replace('attr.', 'attributes.');
-            let isTrue = true;
-            const value = getValueFromCondition(condition);
+            const target    = condition.target.replace('attr.', 'attributes.');
+            let isTrue      = true;
+            const value     = getValueFromCondition(condition);
             // colNames est le nom des collections (c'est une variable en global)
             const tColNamesFound = colNames.filter((colName) =>  target.startsWith(`${colName}.`));
             // Si un colNames est trouvé dans le target alors ce n'est pas un champ produit
@@ -315,7 +315,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
         }
         if (rule.other_rules && rule.other_rules.length > 0) {
             for (let k = 0; k < rule.other_rules.length; k++) {
-                const other_rule = rule.other_rules[k];
+                const other_rule   = rule.other_rules[k];
                 const subCondition = await applyRecursiveRulesDiscount(other_rule, user, cart);
                 tCondition.push(subCondition);
             }
@@ -361,10 +361,10 @@ async function applyRecursiveRules(_rules, query) {
 
         // Pour chaque condition de la règle
         for (let j = 0; j < rule.conditions.length; j++) {
-            const condition  = rule.conditions[j];
+            const condition = rule.conditions[j];
             // On récupère le champ target qui contient le champ à comparer et le champ value
-            let target     = condition.target;
-            let value = condition.value;
+            let target = condition.target;
+            let value  = condition.value;
             if (condition.type === 'number') {
                 value = Number(condition.value);
             } else if (condition.type === 'bool') {
@@ -374,11 +374,11 @@ async function applyRecursiveRules(_rules, query) {
 
             // Traitement spécial si c'est un attribut (contient attr.)
             if (target.includes('attr.')) {
-                target          = target.replace('attr.', '');
-                const attrLang  = target.split('.')[target.split('.').length - 2];
-                const attrCode  = target.split('.')[target.split('.').length - 1];
+                target         = target.replace('attr.', '');
+                const attrLang = target.split('.')[target.split('.').length - 2];
+                const attrCode = target.split('.')[target.split('.').length - 1];
                 // et tester la valeur de cet attribut
-                target          = 'attributes';
+                target = 'attributes';
                 if (Object.prototype.toString.call(value) !== '[object String]' && value.length !== undefined) {
                     value = {
                         $elemMatch : {
@@ -400,7 +400,7 @@ async function applyRecursiveRules(_rules, query) {
                 const cat = await Categories.findOne({[`${target}`]: value}).lean();
                 if (cat) {
                     target = '_id';
-                    value = {$in: cat.productsList.map((item) => item.id)};
+                    value  = {$in: cat.productsList.map((item) => item.id)};
                 }
             } else if (target === 'qty') {
                 target = 'stock.qty';
@@ -517,7 +517,7 @@ const execRules = async (owner_type, products = []) => {
             const _products = await Promise.all(productsPromise);
             if (_products.length <= 0) {
                 inSegment[owner_type] = false;
-                logValue = `\x1b[1m\x1b[32m${new Date()}) Aucune catégorisation(${owner_type}) automatique à faire\x1b[0m`;
+                logValue              = `\x1b[1m\x1b[32m${new Date()}) Aucune catégorisation(${owner_type}) automatique à faire\x1b[0m`;
                 console.log(logValue);
                 result.push(logValue);
             }
@@ -526,7 +526,7 @@ const execRules = async (owner_type, products = []) => {
                     const productsIds = _products[j].map((prd) => prd._id);
                     if (splittedRulesKeys[i] === 'category') {
                         const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, active: true});
-                        const cat = await Categories.findOneAndUpdate(
+                        const cat    = await Categories.findOneAndUpdate(
                             {_id: splittedRules[splittedRulesKeys[i]][j].owner_id},
                             {$set: {productsList: []}},
                             {new: true}
@@ -536,7 +536,7 @@ const execRules = async (owner_type, products = []) => {
                             // nous pourrons ainsi facilement trouver les produits
                             const oProductsListCat = {};
                             for (let k = 0; k < oldCat.productsList.length; k++) {
-                                const product = oldCat.productsList[k];
+                                const product                           = oldCat.productsList[k];
                                 oProductsListCat[product.id.toString()] = product;
                             }
                             for (let k = 0; k < productsIds.length; k++) {
@@ -567,12 +567,12 @@ const execRules = async (owner_type, products = []) => {
             }
 
             inSegment[owner_type] = false;
-            logValue = `${new Date()}) Fin de la catégorisation(${owner_type}) automatique`;
+            logValue              = `${new Date()}) Fin de la catégorisation(${owner_type}) automatique`;
             console.log('\x1b[1m\x1b[32m', logValue, '\x1b[0m');
             result.push(logValue);
         } catch (err) {
             inSegment[owner_type] = false;
-            logValue = `${new Date()}) Fin de la catégorisation(${owner_type}) automatique`;
+            logValue              = `${new Date()}) Fin de la catégorisation(${owner_type}) automatique`;
             console.log('\x1b[1m\x1b[31m', logValue, '\x1b[0m');
             result.push(logValue);
             console.error(err);
@@ -607,11 +607,11 @@ module.exports = {
 };
 
 async function checkCartPrdInCategory(cart, target, value, isTrue) {
-    const key = target.slice(target.indexOf('.') + 1);
+    const key  = target.slice(target.indexOf('.') + 1);
     const _cat = await Categories.findOne({[key]: value});
 
     if (_cat) {
-        let i = 0;
+        let i      = 0;
         const leni = cart.items.length;
 
         while (isTrue === false && i < leni) {
@@ -636,7 +636,7 @@ async function calculateCartTotal(cart) {
     for (let i = 0; i < cart.items.length; i++) {
         const item = await Products.findOne({code: cart.items[i].code});
         total.ati += (item.price.ati.special ? item.price.ati.special : item.price.ati.normal) * cart.items[i].quantity;
-        total.et += (item.price.et.special ? item.price.et.special : item.price.et.normal) * cart.items[i].quantity;
+        total.et  += (item.price.et.special ? item.price.et.special : item.price.et.normal) * cart.items[i].quantity;
     }
     return total;
 }

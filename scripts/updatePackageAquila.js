@@ -3,15 +3,12 @@
  * Before the copy, the dependencies are parsed in an array type.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs        = require('fs');
+const path      = require('path');
 const {isEqual} = require('../utils/utils');
 
-// const [node, script, rootpath, packageN] = process.argv;
-// console.log(rootpath, packageN);
-
 let aquilaRootPath = '';
-let packageName = '';
+let packageName    = '';
 if (process.argv[2] !== undefined) {
     aquilaRootPath = process.argv[2];
 } else {

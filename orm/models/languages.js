@@ -8,7 +8,7 @@
  * @property {string} status default: invisible
  */
 
-const mongoose = require('mongoose');
+const mongoose          = require('mongoose');
 const {LanguagesSchema} = require('../schemas');
 
 module.exports = mongoose.model('languages', LanguagesSchema);

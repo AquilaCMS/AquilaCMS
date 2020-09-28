@@ -42,13 +42,13 @@ const getConfig = async (action, propertie) => {
 };
 
 const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
-    PostBody = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
+    PostBody    = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
     let isAdmin = true;
     if (!user) {
         if (!user || !user.isAdmin) {
-            isAdmin = false;
-            PostBody.structure = undefined;
-            queryBuilder.defaultFields = [];
+            isAdmin                       = false;
+            PostBody.structure            = undefined;
+            queryBuilder.defaultFields    = [];
             queryBuilder.restrictedFields = [
                 'environment.adminPrefix',
                 'environment.authorizedIPs',
@@ -65,7 +65,7 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
     const config = (await queryBuilder.findOne(PostBody)).toObject();
     if (config.environment) {
         if (isAdmin) {
-            config.environment = {
+            config.environment          = {
                 ...config.environment,
                 ssl : global.envFile.ssl || {
                     active : false,
@@ -75,7 +75,7 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
                 databaseConnection : global.envFile.db
             };
             config.environment.ssl.cert = path.basename(config.environment.ssl.cert);
-            config.environment.ssl.key = path.basename(config.environment.ssl.key);
+            config.environment.ssl.key  = path.basename(config.environment.ssl.key);
         }
         if (config.environment.mailPass) {
             try {
@@ -151,7 +151,7 @@ const saveEnvFile = async (body, files) => {
 };
 
 const saveEnvConfig = async (body) => {
-    const oldConfig = await Configuration.findOne({});
+    const oldConfig                 = await Configuration.findOne({});
     const {environment, stockOrder} = body;
     if (environment) {
         if (environment.mailPass !== undefined && environment.mailPass !== '') {

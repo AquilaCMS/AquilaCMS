@@ -1,6 +1,6 @@
-const {News}           = require('../orm/models');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const NSErrors         = require('../utils/errors/NSErrors');
+const {News}       = require('../orm/models');
+const QueryBuilder = require('../utils/QueryBuilder');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
