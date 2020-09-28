@@ -19,7 +19,7 @@ class PageCart extends NSPageCart {
             lang, oCmsHeader, oCmsFooter, routerLang, sitename, t
         } = this.props;
         const {
-            cart, countries, estimatedFee, shipment, shipments, countryCode, taxDisplay
+            cart, countries, estimatedFee, shipment, countryCode, taxDisplay
         } = this.state;
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -273,105 +273,87 @@ class PageCart extends NSPageCart {
 
                                                 <div className="form__group">
                                                     {
-                                                        cart.items.length > 0 && shipments.length > 0
-                                                            ? (
-                                                                <>
-                                                                    <div className="form__head">
-                                                                        <h6>{t('page.delivery.select_delivery')}</h6>
-                                                                    </div>
-                                                                    {/* <!-- /.form__head --> */}
+                                                        cart.items.length > 0 && (
+                                                            <>
+                                                                <div className="form__head">
+                                                                    <h6>{t('page.delivery.select_delivery')}</h6>
+                                                                </div>
+                                                                {/* <!-- /.form__head --> */}
 
-                                                                    <div className="form__body" style={{ borderBottom: 'solid 1px #d5d5d5', marginBottom: '5px' }}>
-                                                                        <ul className="list-checkboxes">
-                                                                            {
-                                                                                shipments.map((ship, indexShip) => (
-                                                                                    <li key={ship._id}>
-                                                                                        <div className="checkbox" style={{ marginBottom: '5px' }}>
-                                                                                            <input
-                                                                                                hidden checked={shipment && shipment.code === ship.code} type="radio" name="field-delivery-option"
-                                                                                                id={`field-delivery-option2-${indexShip}`} onChange={() => this.changeEstimatedShipment(ship, countryCode)}
-                                                                                            />
-                                                                                            <label htmlFor={`field-delivery-option2-${indexShip}`}>{ship.name}</label>
-                                                                                        </div>
-                                                                                    </li>
-                                                                                ))
-                                                                            }
-                                                                        </ul>
-
-                                                                        <div className="form__row">
-                                                                            <label htmlFor="field-country" hidden className="form__label">{t('page.delivery.country')}</label>
-                                                                            <div className="form__controls">
-                                                                                <div className="select">
-                                                                                    <select name="field-country" id="field-country" value={countryCode} onChange={(e) => this.changeEstimatedShipment(undefined, e.target.value)}>
-                                                                                        {
-                                                                                            countries.map((c) => <option key={c._id} value={c.code}>{c.name}</option>)
-                                                                                        }
-                                                                                    </select>
-                                                                                </div>
-                                                                                {/* <!-- /.select --> */}
+                                                                <div className="form__body" style={{ borderBottom: 'solid 1px #d5d5d5', marginBottom: '5px' }}>
+                                                                    <div className="form__row">
+                                                                        <label htmlFor="field-country" hidden className="form__label">{t('page.delivery.country')}</label>
+                                                                        <div className="form__controls">
+                                                                            <div className="select">
+                                                                                <select name="field-country" id="field-country" value={countryCode} onChange={(e) => this.changeEstimatedShipment(undefined, e.target.value)}>
+                                                                                    {
+                                                                                        countries.map((c) => <option key={c._id} value={c.code}>{c.name}</option>)
+                                                                                    }
+                                                                                </select>
                                                                             </div>
-                                                                            {/* <!-- /.form__controls --> */}
-                                                                            <div style={{
-                                                                                fontSize     : '14px',
-                                                                                height       : '16px',
-                                                                                marginBottom : '10px',
-                                                                                color        : '#576fa1'
-                                                                            }}
-                                                                            >
-                                                                                {
-                                                                                    estimatedFee >= 0
-                                                                                        ? (
-                                                                                            <>
-                                                                                                <span style={{ float: 'left' }}>{t(`page.delivery.estimate_fee.${taxDisplay}`)}</span>
-                                                                                                <span style={{ float: 'right', fontWeight: 'bold' }}>{estimatedFee.toFixed(2)} €</span>
-                                                                                            </>
-                                                                                        )
-                                                                                        : <span>{t('page.delivery.no_shipment')}</span>
-                                                                                }
-                                                                            </div>
+                                                                            {/* <!-- /.select --> */}
+                                                                        </div>
+                                                                        {/* <!-- /.form__controls --> */}
+                                                                        <div style={{
+                                                                            fontSize     : '14px',
+                                                                            height       : '16px',
+                                                                            marginBottom : '10px',
+                                                                            color        : '#576fa1'
+                                                                        }}
+                                                                        >
                                                                             {
-                                                                                cart.additionnalFees[taxDisplay] > 0
-                                                                                    && (
-                                                                                        <div style={{
-                                                                                            fontSize     : '14px',
-                                                                                            height       : '16px',
-                                                                                            marginBottom : '10px',
-                                                                                            color        : '#576fa1'
-                                                                                        }}
-                                                                                        >
-                                                                                            <span style={{ float: 'left' }}>{t('page.cart.additionnal_fees')}</span>
-                                                                                            <span style={{ float: 'right', fontWeight: 'bold' }}>{cart.additionnalFees[taxDisplay].toFixed(2)} €</span>
-                                                                                        </div>
+                                                                                shipment && estimatedFee >= 0
+                                                                                    ? (
+                                                                                        <>
+                                                                                            <span style={{ float: 'left' }}>{t(`page.delivery.estimate_fee.${taxDisplay}`)}</span>
+                                                                                            <span style={{ float: 'right', fontWeight: 'bold' }}>{estimatedFee.toFixed(2)} €</span>
+                                                                                        </>
                                                                                     )
+                                                                                    : <span>{t('page.delivery.no_shipment')}</span>
                                                                             }
                                                                         </div>
-                                                                        {/* <!-- /.form__row --> */}
-                                                                    </div>
-
-                                                                    {/* <!-- /.form__body --> */}
-                                                                    <div className="form__actions">
                                                                         {
-                                                                            cart.quantityBreaks && cart.quantityBreaks.discountATI
-                                                                                ? (
+                                                                            cart.additionnalFees[taxDisplay] > 0
+                                                                                && (
                                                                                     <div style={{
-                                                                                        fontSize : '15px', marginBottom : '15px', height : '16px'
+                                                                                        fontSize     : '14px',
+                                                                                        height       : '16px',
+                                                                                        marginBottom : '10px',
+                                                                                        color        : '#576fa1'
                                                                                     }}
                                                                                     >
-                                                                                        <span style={{ float: 'left' }}>{t('page.cart.cart_discount')}</span>
-                                                                                        <span style={{ float: 'right' }}>-{cart.quantityBreaks.discountATI}€</span>
+                                                                                        <span style={{ float: 'left' }}>{t('page.cart.additionnal_fees')}</span>
+                                                                                        <span style={{ float: 'right', fontWeight: 'bold' }}>{cart.additionnalFees[taxDisplay].toFixed(2)} €</span>
                                                                                     </div>
-                                                                                ) : ''
+                                                                                )
                                                                         }
-                                                                        <div className="price price-total">
-                                                                            <span>{`${t('page.cart.total')} ${t(`common:price.${taxDisplay}`)}`}</span>
-                                                                            <strong style={{ whiteSpace: 'nowrap' }}>{this.getTotalPrice()} €</strong>
-                                                                        </div>
-                                                                        {/* <!-- /.price --> */}
-                                                                        <button type="submit" className="form__btn btn btn--block btn--red" onClick={() => this.validateCart(Router)}>{t('page.cart.toOrder')}</button>
                                                                     </div>
-                                                                </>
-                                                            )
-                                                            : (!shipments.length && (<p>{t('page.delivery.no_shipment')}</p>))
+                                                                    {/* <!-- /.form__row --> */}
+                                                                </div>
+
+                                                                {/* <!-- /.form__body --> */}
+                                                                <div className="form__actions">
+                                                                    {
+                                                                        cart.quantityBreaks && cart.quantityBreaks.discountATI
+                                                                            ? (
+                                                                                <div style={{
+                                                                                    fontSize : '15px', marginBottom : '15px', height : '16px'
+                                                                                }}
+                                                                                >
+                                                                                    <span style={{ float: 'left' }}>{t('page.cart.cart_discount')}</span>
+                                                                                    <span style={{ float: 'right' }}>-{cart.quantityBreaks.discountATI}€</span>
+                                                                                </div>
+                                                                            ) : ''
+                                                                    }
+                                                                    <div className="price price-total">
+                                                                        <span>{`${t('page.cart.total')} ${t(`common:price.${taxDisplay}`)}`}</span>
+                                                                        <strong style={{ whiteSpace: 'nowrap' }}>{this.getTotalPrice()} €</strong>
+                                                                    </div>
+                                                                    {/* <!-- /.price --> */}
+                                                                    { shipment && <button type="submit" className="form__btn btn btn--block btn--red" onClick={() => this.validateCart(Router)}>{t('page.cart.toOrder')}</button> }
+                                                                </div>
+                                                            </>
+                                                        )
                                                     }
                                                 </div>
                                             </div>
