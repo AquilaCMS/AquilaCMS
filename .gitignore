@@ -85,7 +85,6 @@ log
 !/backoffice/app/translate/
 !/backoffice/app/translation/
 !/backoffice/app/update/
-!/backoffice/app/WYSIWYG/
 !/backoffice/app/app.js
 !/backoffice/aquilaCmsBlocks/
 !/backoffice/aquilaComponents/
