@@ -29,8 +29,8 @@ const createIfStatement = (conditions, str = '( ') => {
             } else {
                 // On met l'operateur avant la condition et après (si les conditions sont respectées)
                 if (afterArray) {
-                    str += operator;
-                    str += condition;
+                    str       += operator;
+                    str       += condition;
                     afterArray = false;
                 } else {
                     // On met l'opérateur après la condition

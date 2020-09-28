@@ -65,8 +65,8 @@ async function getMail(req, res, next) {
 }
 async function sendMailActivationAccount(req, res, next) {
     try {
-        const {user_id, lang}  = req.params;
-        const result           = await ServiceMail.sendMailActivationAccount(user_id, lang);
+        const {user_id, lang} = req.params;
+        const result          = await ServiceMail.sendMailActivationAccount(user_id, lang);
         return res.json(result);
     } catch (error) {
         return next(error);

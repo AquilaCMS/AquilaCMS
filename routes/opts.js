@@ -49,13 +49,13 @@ const fOne = async (req, res, next) => {
 };
 
 const save = async (req, res, next) => {
-    const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
-    const name = req.body.name;
-    const columns = req.body.columns;
-    const values = req.body.values;
-    const updateF = req.body.update;
+    const code        = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
+    const name        = req.body.name;
+    const columns     = req.body.columns;
+    const values      = req.body.values;
+    const updateF     = req.body.update;
     const set_options = req.body.set_options;
-    const setToAdd = req.body.multiModifAdd;
+    const setToAdd    = req.body.multiModifAdd;
     const setToRemove = req.body.multiModifRemove;
 
     try {

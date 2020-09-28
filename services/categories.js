@@ -22,8 +22,8 @@ const generateFilters = async (res, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
     if (res && res.filters && res.filters.attributes && res.filters.attributes.length > 0) {
         const attributes = [];
-        const values = {};
-        const pictos = [];
+        const values     = {};
+        const pictos     = [];
         for (const filter of res.filters.attributes) {
             attributes.push(filter.id_attribut.toString());
         }
@@ -35,7 +35,7 @@ const generateFilters = async (res, lang = '') => {
                 path  : 'productsList.id',
                 match : {_visible: true, active: true}
             }).lean();
-            productsList = category.productsList;
+            productsList   = category.productsList;
         }
         for (const products of productsList) {
             let prd = null;
@@ -88,9 +88,9 @@ const generateFilters = async (res, lang = '') => {
         // On tri le tableau (distinct et sort)
         for (const key in values) {
             if (!values.hasOwnProperty(key)) continue;
-            emptyValues = false;
-            const obj = values[key];
-            values[key] = obj.sort((a, b) => {
+            emptyValues        = false;
+            const obj          = values[key];
+            values[key]        = obj.sort((a, b) => {
                 if (a > b) return 1;
                 if (a < b) return -1;
                 return 0;
@@ -144,7 +144,7 @@ const getCategoryById = async (id, PostBody = null) => {
     require('../utils/utils').tmp_use_route('categories_service', 'getCategoryById');
     return queryBuilder.findById(id, PostBody);
 };
-const setCategory = async (req) => {
+const setCategory     = async (req) => {
     return Categories.updateOne({_id: req.body._id}, req.body);
 };
 
@@ -191,12 +191,12 @@ const getCategoryChild = async (code, childConds, authorization = null) => {
 
     let projectionOptions = {};
     if (!isAdmin(authorization)) {
-        const date = new Date();
+        const date          = new Date();
         queryCondition.$and = [
             {openDate: {$lte: date}},
             {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
         ];
-        childConds.$and = [
+        childConds.$and     = [
             {openDate: {$lte: date}},
             {$or: [{closeDate: {$gte: date}}, {closeDate: {$eq: undefined}}]}
         ];
@@ -248,7 +248,7 @@ const setFilter = async (_id, filter) => {
     if (filter._id) {
         if (!mongoose.Types.ObjectId.isValid(filter._id)) throw NSErrors.InvalidIdObjectIdError;
         filter._id = filter.id_attribut;
-        result = await Categories.findOneAndUpdate(
+        result     = await Categories.findOneAndUpdate(
             {_id, 'filters._id': filter._id},
             {$set: {'filters.$': filter}},
             {new: true, runValidators: true}
@@ -257,7 +257,7 @@ const setFilter = async (_id, filter) => {
     } else {
         // Le filtre n'existe pas, alors on l'ajoute
         filter._id = filter.id_attribut;
-        result = await Categories.findByIdAndUpdate({_id}, {$push: {filters: filter}}, {new: true, runValidators: true});
+        result     = await Categories.findByIdAndUpdate({_id}, {$push: {filters: filter}}, {new: true, runValidators: true});
         if (!result) throw NSErrors.CategoryNotFound;
     }
     return result;
@@ -320,7 +320,7 @@ const execCanonical = async () => {
         }
 
         // Mettre le canonical à vide pour tous les produits non traité
-        const productsNotCanonicalised = await Products.find({_id: {$nin: products_canonicalised}});
+        const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
@@ -349,8 +349,8 @@ const getCompleteSlugs = async (categorie_id, tabLang) => {
     // /!\ Le slug de la langue par défaut ne contient pas le préfix de lang : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
     // Pour la catégorie courante
-    const current_category       = await Categories.findOne({_id: categorie_id});
-    const lang                   = ServiceLanguages.getDefaultLang();
+    const current_category = await Categories.findOne({_id: categorie_id});
+    const lang             = ServiceLanguages.getDefaultLang();
 
     if (typeof current_category !== 'undefined') {
         // On ajoute la catégorie courante à la liste des catégories à parcourrir

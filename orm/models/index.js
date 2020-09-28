@@ -43,7 +43,7 @@ const ProductSimple    = require('./productSimple');
 const ProductVirtual   = require('./productVirtual');
 const RelayPoint       = require('./relayPoint');
 const DownloadHistory  = require('./downloadHistory');
-const Shortcodes = require('./shortcodes');
+const Shortcodes       = require('./shortcodes');
 
 exports.AdminInformation = AdminInformation;
 exports.Attributes       = Attributes;

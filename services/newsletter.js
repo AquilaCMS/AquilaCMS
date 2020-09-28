@@ -1,5 +1,5 @@
 const QueryBuilder     = require('../utils/QueryBuilder');
-const {Newsletters} = require('../orm/models');
+const {Newsletters}    = require('../orm/models');
 const restrictedFields = [];
 const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Newsletters, restrictedFields, defaultFields);
@@ -13,10 +13,10 @@ exports.getNewsletter = async function (PostBody) {
 };
 
 exports.getDistinctNewsletters = async function (PostBody) {
-    const newsletterNames = await Newsletters.find(PostBody.filter).distinct('segment.name');
+    const newsletterNames      = await Newsletters.find(PostBody.filter).distinct('segment.name');
     const newsletterNamesCount = newsletterNames.length;
-    const newsCount = [];
-    const datas = newsletterNames.sort((a, b) => (PostBody.sort.reverse ? b - a : a - b)).slice((PostBody.page - 1) * PostBody.limit, PostBody.limit);
+    const newsCount            = [];
+    const datas                = newsletterNames.sort((a, b) => (PostBody.sort.reverse ? b - a : a - b)).slice((PostBody.page - 1) * PostBody.limit, PostBody.limit);
 
     for (const element of datas) {
         const a = await queryBuilder.find({PostBody : {filter: {'segment.name': element}}

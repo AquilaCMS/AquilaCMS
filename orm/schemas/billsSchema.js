@@ -152,7 +152,7 @@ BillsSchema.pre('save', async function (next) {
             this.facture = `F_${new Date().getFullYear()}_${this.id}`;
         }
     }
-    const obj = require('../../services/bills').cleanBillObject(this.toObject());
+    const obj     = require('../../services/bills').cleanBillObject(this.toObject());
     this.checksum = crypto.createHash('md5').update(obj, 'utf8').digest('hex');
     next();
 });

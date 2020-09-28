@@ -1,17 +1,17 @@
-const imagemin          = require('imagemin');
-const imageminGifsicle  = require('imagemin-gifsicle');
-const imageminJpegtran  = require('imagemin-jpegtran');
-const imageminMozjpeg   = require('imagemin-mozjpeg');
+const imagemin                    = require('imagemin');
+const imageminGifsicle            = require('imagemin-gifsicle');
+const imageminJpegtran            = require('imagemin-jpegtran');
+const imageminMozjpeg             = require('imagemin-mozjpeg');
 const {default: imageminPngquant} = require('imagemin-pngquant');
-const imageminSvgo      = require('imagemin-svgo');
-const path              = require('path');
-const fsp               = require('./fsp');
-const utilsModules      = require('./modules');
+const imageminSvgo                = require('imagemin-svgo');
+const path                        = require('path');
+const fsp                         = require('./fsp');
+const utilsModules                = require('./modules');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     const filePathOut = pathOut + path.basename(pathIn);
-    const extension = path.extname(filename);
-    const filePathIn = pathIn.replace(extension, '');
+    const extension   = path.extname(filename);
+    const filePathIn  = pathIn.replace(extension, '');
     if (quality > 90) {
         quality = 90;
     } else if (quality < 10) {

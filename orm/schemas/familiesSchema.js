@@ -80,7 +80,7 @@ FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slug
     const {Products} = require('../models');
 
     // Remove menu from family
-    const f = await this.findOne({code: familyCode});
+    const f           = await this.findOne({code: familyCode});
     const indexOfSlug = f.menus.indexOf(slugMenu);
     if ( f.menus !== undefined && (indexOfSlug > -1) ) {
         console.log(`removing ${slugMenu} from family ${familyCode}`);

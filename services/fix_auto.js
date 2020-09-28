@@ -1,4 +1,4 @@
-const {Products} = require('../orm/models');
+const {Products}        = require('../orm/models');
 const servicesLanguages = require('./languages');
 
 /**

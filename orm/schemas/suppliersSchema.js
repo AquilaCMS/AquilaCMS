@@ -38,9 +38,9 @@ const SuppliersSchema = new Schema({
 SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
     const res = await this.find({name: supplierName});
     if (res.length === 0) {
-        const s = {name: supplierName};
+        const s     = {name: supplierName};
         const Model = mongoose.model('suppliers', SuppliersSchema);
-        const sp = new Model(s);
+        const sp    = new Model(s);
         sp.save();
         cb(sp._id, res);
     }

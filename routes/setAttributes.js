@@ -1,5 +1,5 @@
-const setAttributeServices          = require('../services/setAttributes');
-const {authentication, adminAuth}   = require('../middleware/authentication');
+const setAttributeServices        = require('../services/setAttributes');
+const {authentication, adminAuth} = require('../middleware/authentication');
 
 module.exports = function (app) {
     app.post('/v2/setAttributes', getSetAttributes);

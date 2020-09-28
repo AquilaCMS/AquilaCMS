@@ -20,7 +20,7 @@ module.exports = function (app) {
 async function listLangs(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await servicesLanguages.getLanguages(PostBody);
+        const result     = await servicesLanguages.getLanguages(PostBody);
         return res.json(result);
     } catch (e) {
         next(e);

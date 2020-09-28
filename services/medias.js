@@ -1,7 +1,7 @@
-const AdmZip           = require('adm-zip');
-const moment           = require('moment');
-const path             = require('path');
-const mongoose         = require('mongoose');
+const AdmZip       = require('adm-zip');
+const moment       = require('moment');
+const path         = require('path');
+const mongoose     = require('mongoose');
 const {
     Medias,
     Products,
@@ -14,14 +14,14 @@ const {
     Opts,
     Mail
 }                      = require('../orm/models');
-const utils            = require('../utils/utils');
-const utilsModules     = require('../utils/modules');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const fsp              = require('../utils/fsp');
-const NSErrors         = require('../utils/errors/NSErrors');
-const server           = require('../utils/server');
-const utilsMedias      = require('../utils/medias');
-const {getChar}        = require('./cache');
+const utils        = require('../utils/utils');
+const utilsModules = require('../utils/modules');
+const QueryBuilder = require('../utils/QueryBuilder');
+const fsp          = require('../utils/fsp');
+const NSErrors     = require('../utils/errors/NSErrors');
+const server       = require('../utils/server');
+const utilsMedias  = require('../utils/medias');
+const {getChar}    = require('./cache');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -340,7 +340,7 @@ const uploadFiles = async (body, files) => {
         };
         await Products.updateOne({_id: body._id}, {$push: {images: image}});
         const product = await Products.findOne({_id: body._id});
-        image._id = product.images.find((img) => img.name === name + extension)._id;
+        image._id     = product.images.find((img) => img.name === name + extension)._id;
         return image;
     }
     case 'mail': {
@@ -407,7 +407,7 @@ const uploadFiles = async (body, files) => {
             return item;
         }
         const galleryNumber = await Gallery.findOne({_id: body._id});
-        let maxOrder = 0;
+        let maxOrder        = 0;
         if (galleryNumber.items.length !== 0) {
             maxOrder = Math.max.apply(null, galleryNumber.items.map((i) => i.order));
         }
@@ -422,7 +422,7 @@ const uploadFiles = async (body, files) => {
         };
         await Gallery.updateOne({_id: body._id}, {$push: {items: item}});
         const gallery = await Gallery.findOne({_id: body._id});
-        item._id = gallery.items.find((img) => img.src === target_path_full)._id;
+        item._id      = gallery.items.find((img) => img.src === target_path_full)._id;
         return item;
     }
     case 'slider': {
@@ -446,7 +446,7 @@ const uploadFiles = async (body, files) => {
             return item;
         }
         const sliderNumber = await Slider.findOne({_id: body._id});
-        let maxOrder = 0;
+        let maxOrder       = 0;
         if (sliderNumber.items.length !== 0 ) {
             maxOrder = Math.max.apply(null, sliderNumber.items.map((i) => i.order));
         }
@@ -460,7 +460,7 @@ const uploadFiles = async (body, files) => {
         };
         await Slider.updateOne({_id: body._id}, {$push: {items: item}});
         const slider = await Slider.findOne({_id: body._id});
-        item._id = slider.items.find((img) => img.src === target_path_full)._id;
+        item._id     = slider.items.find((img) => img.src === target_path_full)._id;
         return item;
     }
     case 'attribute': {
@@ -468,8 +468,8 @@ const uploadFiles = async (body, files) => {
             await utilsMedias.deleteFile(body.entity.value);
         }
 
-        const product = await Products.findOne({_id: body._id});
-        const index = product.attributes.findIndex(((attr) => attr.translation[body.lang].name === body.entity.name));
+        const product                                          = await Products.findOne({_id: body._id});
+        const index                                            = product.attributes.findIndex(((attr) => attr.translation[body.lang].name === body.entity.name));
         product.attributes[index].translation[body.lang].value = target_path_full;
         await Products.updateOne({_id: body._id}, {$set: {attributes: product.attributes}});
 
@@ -514,7 +514,7 @@ const saveMedia = async (media) => {
         const result = await Medias.findOneAndUpdate({link: media.link}, media);
         return result;
     }
-    media.name = utils.slugify(media.name);
+    media.name   = utils.slugify(media.name);
     const result = Medias.create(media);
     return result;
 };
@@ -531,7 +531,7 @@ const removeMedia = async (_id) => {
 };
 
 const getMediasGroups = async (query) => {
-    const medias = await Medias.find();
+    const medias       = await Medias.find();
     const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
     // s'il est la, on place "general" en premier index
     if (sortedGroups.includes('general')) {

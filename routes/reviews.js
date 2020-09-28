@@ -1,6 +1,6 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {getDecodedToken} = require('../services/auth');
-const ServiceReviews = require('../services/reviews');
+const {getDecodedToken}           = require('../services/auth');
+const ServiceReviews              = require('../services/reviews');
 
 module.exports = function (app) {
     app.post('/v2/product/reviews/aggregate', getAggregateReviews);
@@ -27,7 +27,7 @@ const setProductReview = async (req, res, next) => {
     // On ajoute le produit
     try {
         const {review, title, rate, lang, questions} = req.body;
-        let user = null;
+        let user                                     = null;
         if (req.headers && req.headers.authorization) {
             user = getDecodedToken(req.headers.authorization);
         }
