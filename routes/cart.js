@@ -26,7 +26,8 @@ module.exports = function (app) {
 /**
  * POST /api/v2/carts
  * @tags Cart
- * @summary Fonction retournant un listing panier
+ * @summary Listing of carts
+ * @param {PostBody} request.body.required - PostBody
  */
 const getCarts = async (req, res, next) => {
     try {
@@ -52,7 +53,7 @@ const getCartforClient = async (req, res, next) => {
 /**
  * Post /api/v2/cart/:id
  * @tags Cart
- * @summary Fonction retournant un panier
+ * @summary Get cart by id
  */
 const getCartById = async (req, res, next) => {
     try {

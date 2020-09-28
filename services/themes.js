@@ -265,6 +265,7 @@ const setCustomCss = async (cssName, cssValue) => {
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
+                return;
             }
         } catch (err) {
             console.error(err);
