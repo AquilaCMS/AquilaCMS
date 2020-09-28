@@ -116,9 +116,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
             });
         } else {
             if (require('moment')().toISOString() >= require('moment')(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
-                configuration.licence = {
-                    lastCheck : require('moment')().toISOString()
-                };
+                configuration.licence.lastCheck = require('moment')().toISOString();
                 await axios.post('https://shop.aquila-cms.com/api/v1/register/check', {
                     registryKey : configuration.licence.registryKey,
                     aquilaVersion,
