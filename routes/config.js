@@ -28,7 +28,7 @@ module.exports = function (app) {
 /**
  * POST /api/v2/config/{key}
  * @tags Configuration
- * @summary get config
+ * @summary Get config of the website
  * @param {string} key.path.required - key config ex: environment
  * @param {PostBody} request.body - PostBody
  * @param {string} authorization.headers - authorization
@@ -63,7 +63,7 @@ async function saveEnvFile(req, res, next) {
 
 /**
  * PUT /api/v2/config
- * @summary save config
+ * @summary Save config
  * @tags Configuration
  * @param {Config} request.body - config
  * @return {string} 200 - success | success | "success"
@@ -94,7 +94,7 @@ const getConfig = async (req, res, next) => {
 
 /**
  * POST /api/v2/config/sitename
- * @summary get sitename from config
+ * @summary Get sitename from config
  * @tags Configuration
  */
 const getSiteName = async (req, res, next) => {

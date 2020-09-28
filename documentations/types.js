@@ -67,7 +67,7 @@
 /**
  * @typedef {object} licence
  * @property {string} registryKey
- * @property {date} lastCheck
+ * @property {string} lastCheck (type date)
  */
 
 /**

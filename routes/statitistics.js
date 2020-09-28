@@ -26,7 +26,7 @@ async function generateStatistics(req, res, next) {
 }
 
 /**
- * Get Globale Stats (accueil admin)
+ * Getting Globale Stats (accueil admin)
  */
 async function getGlobaleStats(req, res, next) {
     try {
@@ -90,7 +90,7 @@ async function getNbOrder(req, res, next) {
 }
 
 /**
- * Get top customers stats
+ * Getting top customers stats
  */
 async function getTopCustomer(req, res, next) {
     try {
@@ -103,7 +103,7 @@ async function getTopCustomer(req, res, next) {
 }
 
 /**
- * Get new customers stats
+ * Getting new customers stats
  */
 async function getNewCustomer(req, res, next) {
     try {
