@@ -1,6 +1,6 @@
-const mongodb = require('mongodb');
-const NSError = require('../utils/errors/NSError');
-const NSErrors = require('../utils/errors/NSErrors');
+const mongodb      = require('mongodb');
+const NSError      = require('../utils/errors/NSError');
+const NSErrors     = require('../utils/errors/NSErrors');
 const errorMessage = require('../utils/translate/errors');
 
 const mongoErrorCodeToNsError = {

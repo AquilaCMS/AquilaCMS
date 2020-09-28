@@ -1,5 +1,5 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceShortcodes                 = require('../services/shortcodes');
+const ServiceShortcodes           = require('../services/shortcodes');
 
 module.exports = function (app) {
     app.get('/v2/shortcodes', authentication, adminAuth, getShortcodes);

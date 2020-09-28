@@ -1,8 +1,8 @@
-const aquilaEvents                  = require('../utils/aquilaEvents');
-const ServiceProduct                = require('../services/products');
-const {authentication, adminAuth}   = require('../middleware/authentication');
-const {securityForceActif}          = require('../middleware/security');
-const {getDecodedToken}             = require('../services/auth');
+const aquilaEvents                = require('../utils/aquilaEvents');
+const ServiceProduct              = require('../services/products');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const {securityForceActif}        = require('../middleware/security');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/products/searchObj', getProductsSearchObj);
@@ -33,7 +33,7 @@ async function getProductsListing(req, res, next) {
             },
             'bundle_sections.products.id'
         ];
-        const result = await ServiceProduct.getProductsListing(req, res);
+        const result               = await ServiceProduct.getProductsListing(req, res);
 
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
@@ -167,7 +167,7 @@ async function deleteProduct(req, res, next) {
 async function downloadProduct(req, res, next) {
     try {
         const fileBinary = await ServiceProduct.downloadProduct(req, res);
-        const val = aquilaEvents.emit('aqDownloadProduct', fileBinary, req, res, next);
+        const val        = aquilaEvents.emit('aqDownloadProduct', fileBinary, req, res, next);
         if (!val) {
             res.setHeader('Content-Length', fileBinary.length);
             res.write(fileBinary, 'binary');

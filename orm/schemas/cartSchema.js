@@ -1,5 +1,5 @@
-const mongoose          = require('mongoose');
-const fs                = require('../../utils/fsp');
+const mongoose = require('mongoose');
+const fs       = require('../../utils/fsp');
 
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
@@ -7,12 +7,12 @@ const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
 
-const utils             = require('../../utils/utils');
-const utilsDatabase     = require('../../utils/database');
-const aquilaEvents      = require('../../utils/aquilaEvents');
-const Schema            = mongoose.Schema;
-const ObjectId          = Schema.ObjectId;
-const defaultVAT        = 20;
+const utils         = require('../../utils/utils');
+const utilsDatabase = require('../../utils/database');
+const aquilaEvents  = require('../../utils/aquilaEvents');
+const Schema        = mongoose.Schema;
+const ObjectId      = Schema.ObjectId;
+const defaultVAT    = 20;
 
 /**
  * @typedef {object} CartSchemaPromo
@@ -203,7 +203,7 @@ itemsSchema.discriminator('bundle', ItemBundleSchema);
 itemsSchema.discriminator('virtual', ItemVirtualSchema);
 
 CartSchema.methods.calculateBasicTotal = function () {
-    const cart = this;
+    const cart       = this;
     const priceTotal = {et: 0, ati: 0};
     for (let i = 0, l = cart.items.length; i < l; i++) {
         const item = cart.items[i];
@@ -215,10 +215,10 @@ CartSchema.methods.calculateBasicTotal = function () {
                     ati : item.id.price.ati.special * ((item.price.vat.rate / 100) + 1)
                 };
             }
-            priceTotal.et += item.price.special.et * item.quantity;
+            priceTotal.et  += item.price.special.et * item.quantity;
             priceTotal.ati += item.price.special.ati * item.quantity;
         } else {
-            priceTotal.et += item.price.unit.et * item.quantity;
+            priceTotal.et  += item.price.unit.et * item.quantity;
             priceTotal.ati += item.price.unit.ati * item.quantity;
         }
     }
@@ -228,12 +228,12 @@ CartSchema.methods.calculateBasicTotal = function () {
 CartSchema.virtual('delivery.price').get(function () {
     const self = this;
     if (self.delivery && self.delivery.value) {
-        const priceTotal = this.calculateBasicTotal();
+        const priceTotal    = this.calculateBasicTotal();
         const deliveryPrice = {ati: 0, et: 0};
 
         if (!self.delivery.freePriceLimit || priceTotal.ati < self.delivery.freePriceLimit) {
             deliveryPrice.ati = self.delivery.value.ati;
-            deliveryPrice.et = utils.toET(self.delivery.value.ati, defaultVAT);
+            deliveryPrice.et  = utils.toET(self.delivery.value.ati, defaultVAT);
         }
         return deliveryPrice;
     }
@@ -250,7 +250,7 @@ CartSchema.virtual('additionnalFees').get(function () {
 });
 
 CartSchema.virtual('priceTotal').get(function () {
-    const self = this;
+    const self       = this;
     const priceTotal = this.calculateBasicTotal();
     if (self.discount && self.discount.length > 0) {
         if (self.discount[0].priceET) {
@@ -265,9 +265,9 @@ CartSchema.virtual('priceTotal').get(function () {
     if (self.promos && self.promos.length && self.promos[0].productsId) {
         for (let i = 0; i < self.promos[0].productsId.length; i++) {
             const promoProduct = self.promos[0].productsId[i];
-            const item = self.items.find((_item) => _item.id.id.toString() === promoProduct.productId.toString());
+            const item         = self.items.find((_item) => _item.id.id.toString() === promoProduct.productId.toString());
             if (item && priceTotal.et && priceTotal.ati) {
-                priceTotal.et -= promoProduct.discountET * item.quantity;
+                priceTotal.et  -= promoProduct.discountET * item.quantity;
                 priceTotal.ati -= promoProduct.discountATI * item.quantity;
             }
         }
@@ -283,14 +283,14 @@ CartSchema.virtual('priceTotal').get(function () {
     }
 
     if (self.orderReceipt && self.orderReceipt.method === 'delivery') {
-        priceTotal.et += self.delivery.price.et || 0;
+        priceTotal.et  += self.delivery.price.et || 0;
         priceTotal.ati += self.delivery.price.ati || 0;
     }
     // ajout additional
     if (global.envConfig.stockOrder.additionnalFees) {
         const {et, tax} = global.envConfig.stockOrder.additionnalFees;
         priceTotal.ati += et + (et * (tax / 100));
-        priceTotal.et += et;
+        priceTotal.et  += et;
     }
     return priceTotal;
 });
@@ -353,7 +353,7 @@ aquilaEvents.emit('cartSchemaInit', CartSchema);
 
 async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
-    const _modules = await Modules.find({active: true});
+    const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
         if (await fs.access(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
             const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);

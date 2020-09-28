@@ -229,7 +229,7 @@ UserSchema.methods.validPassword = async function (password) {
 // RGPD : suppression des données associées à un user (orders et bills)
 UserSchema.pre('remove', async function (next) {
     const {Orders, Bills} = require('../models');
-    const bills = await Bills.find({client: this._id});
+    const bills           = await Bills.find({client: this._id});
     for (let i = 0; i < bills.length; i++) {
         bills[i].client = undefined;
         bills[i].save();

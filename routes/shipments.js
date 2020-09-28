@@ -17,7 +17,7 @@ module.exports = function (app) {
 async function getShipments(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceShipment.getShipments(PostBody);
+        const result     = await ServiceShipment.getShipments(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -30,7 +30,7 @@ async function getShipments(req, res, next) {
 async function getShipment(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceShipment.getShipment(PostBody);
+        const result     = await ServiceShipment.getShipment(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);

@@ -1,10 +1,10 @@
-const {DownloadHistory}        = require('../orm/models');
-const QueryBuilder             = require('../utils/QueryBuilder');
-const NSErrors                 = require('../utils/errors/NSErrors');
+const {DownloadHistory} = require('../orm/models');
+const QueryBuilder      = require('../utils/QueryBuilder');
+const NSErrors          = require('../utils/errors/NSErrors');
 
-const restrictedFields         = [];
-const defaultFields            = ['user', 'product'];
-const queryBuilder             = new QueryBuilder(DownloadHistory, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['user', 'product'];
+const queryBuilder     = new QueryBuilder(DownloadHistory, restrictedFields, defaultFields);
 
 const getHistory = async (PostBody) => {
     return queryBuilder.find(PostBody);

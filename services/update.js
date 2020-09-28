@@ -1,11 +1,11 @@
-const axios                     = require('axios');
-const AdmZip                    = require('adm-zip');
-const path                      = require('path');
-const fsp                       = require('../utils/fsp');
-const packageManager            = require('../utils/packageManager');
-const {isProd}                  = require('../utils/server');
-const {Modules, Configuration}  = require('../orm/models');
-const tmpPath                   = path.resolve('./uploads/temp');
+const axios                    = require('axios');
+const AdmZip                   = require('adm-zip');
+const path                     = require('path');
+const fsp                      = require('../utils/fsp');
+const packageManager           = require('../utils/packageManager');
+const {isProd}                 = require('../utils/server');
+const {Modules, Configuration} = require('../orm/models');
+const tmpPath                  = path.resolve('./uploads/temp');
 
 /**
  * Compare local version with distant version
@@ -38,7 +38,7 @@ const verifyingUpdate = async () => {
 const update = async () => {
     console.log('Update Aquila...');
 
-    const _config = await Configuration.findOne({});
+    const _config   = await Configuration.findOne({});
     let maintenance = false;
     if (
         _config
@@ -47,7 +47,7 @@ const update = async () => {
         && _config.environment.maintenance === false
     ) {
         _config.environment.maintenance = true;
-        maintenance = true;
+        maintenance                     = true;
         await Configuration.updateOne(
             {_id: _config._id},
             {$set: {environment: _config.environment}}
@@ -57,9 +57,9 @@ const update = async () => {
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
     const version   = fsp.readFileSync(filePathV).toString().replace('\n', '').trim();
 
-    const fileURL   = `https://last-aquila.s3-eu-west-1.amazonaws.com/Aquila-${version}.zip`;
-    const filePath  = `${tmpPath}//Aquila-${version}.zip`;
-    let aquilaPath  = './';
+    const fileURL  = `https://last-aquila.s3-eu-west-1.amazonaws.com/Aquila-${version}.zip`;
+    const filePath = `${tmpPath}//Aquila-${version}.zip`;
+    let aquilaPath = './';
 
     const devMode = global.envFile.devMode;
     if (typeof devMode !== 'undefined') {
@@ -124,7 +124,7 @@ async function downloadURL(url, dest) {
         method       : 'GET',
         responseType : 'stream'
     });
-    const file = fsp.createWriteStream(dest);
+    const file    = fsp.createWriteStream(dest);
     request.data.pipe(file);
     return new Promise((resolve, reject) => {
         file.on('finish', () => {

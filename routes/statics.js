@@ -38,7 +38,7 @@ Get the french pages for slug "mon_slug" with the default fields except one fiel
 async function getStatics(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceStatic.getStatics(PostBody);
+        const result     = await ServiceStatic.getStatics(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -67,7 +67,7 @@ Get the page for code "mycode" with the default fields for default language :
  */
 async function getStatic(req, res, next) {
     try {
-        let result = {};
+        let result      = {};
         const {preview} = req.query;
         const postBody  = req.body.PostBody;
         if (preview) {

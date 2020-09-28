@@ -9,20 +9,20 @@ const getBreadcrumb = async (url) => {
         languages.push(languagesT[i].code);
     }
 
-    let keepL = '/';
+    let keepL   = '/';
     const index = url.indexOf('');
     if (index > -1) {
         url.splice(index, 1);
     }
 
     const defaultLanguage = await Languages.findOne({defaultLanguage: true}, 'code');
-    let lang = '';
+    let lang              = '';
     if (defaultLanguage !== null) {
         lang = defaultLanguage.code;
     }
 
     if (languages.includes(url[0])) {
-        lang = url[0];
+        lang  = url[0];
         keepL = `/${url[0]}/`;
         url.splice(0, 1);
     }
@@ -36,7 +36,7 @@ const getBreadcrumb = async (url) => {
     // Page statique
     if (!url.includes('blog') && url.length === 1) {
         const staticsServices = require('./statics');
-        const result = await staticsServices.getStatic({filter: {[`translation.${lang}.slug`]: url[0]}});
+        const result          = await staticsServices.getStatic({filter: {[`translation.${lang}.slug`]: url[0]}});
         if (result !== null) {
             parts.push({
                 text   : result.translation[lang].title,
@@ -95,9 +95,9 @@ const exportData = async (model, PostBody) => {
         PostBody.structure = !PostBody.structure            ? [] : PostBody.structure;
 
         const {filter, populate, sort, structure} = PostBody;
-        const addStructure = {};
+        const addStructure                        = {};
         structure.forEach((struct) => addStructure[struct] = 1);
-        const datas = await require('mongoose').model(model).find(filter, addStructure).sort(sort).populate(populate).lean();
+        const datas     = await require('mongoose').model(model).find(filter, addStructure).sort(sort).populate(populate).lean();
         const csvFields = datas.length > 0 ? Object.keys(datas[0]) : ['Aucune donnee'];
 
         return utils.json2csv(datas, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
@@ -107,7 +107,7 @@ const exportData = async (model, PostBody) => {
 const parseUrlPrdCat = async (parts, url, keepL, lang) => {
     for (let j = 0; j < url.length; j++) {
         const categoriesServices = require('./categories');
-        const result = await categoriesServices.getCategory({filter: {[`translation.${lang}.slug`]: url[j]}}, null, lang);
+        const result             = await categoriesServices.getCategory({filter: {[`translation.${lang}.slug`]: url[j]}}, null, lang);
         if (result !== null) {
             parts.push({
                 text   : result.translation[lang].name,
@@ -116,7 +116,7 @@ const parseUrlPrdCat = async (parts, url, keepL, lang) => {
             });
         } else {
             const productsServices = require('./products');
-            const result = await productsServices.getProduct({filter: {[`translation.${lang}.slug`]: url[j]}});
+            const result           = await productsServices.getProduct({filter: {[`translation.${lang}.slug`]: url[j]}});
             if (result !== null) {
                 parts.push({
                     text   : result.translation[lang].name,

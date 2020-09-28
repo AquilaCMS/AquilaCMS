@@ -101,8 +101,8 @@ async function fOne(req, res, next) {
 
 async function save(req, res, next) {
     try {
-        const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
-        const name = req.body.name;
+        const code    = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
+        const name    = req.body.name;
         const updateF = req.body.update;
 
         const setOption = await SetOptions.findOne({code});

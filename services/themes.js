@@ -55,9 +55,9 @@ const save = async (environment) => {
  */
 const uploadTheme = async (originalname, filepath) => {
     if (path.extname(originalname) === '.zip') {
-        const tmp_path          = filepath;
-        const target_path       = './themes/';
-        const target_path_full  = path.resolve(target_path, originalname);
+        const tmp_path         = filepath;
+        const target_path      = './themes/';
+        const target_path_full = path.resolve(target_path, originalname);
         console.log(`Uploading theme to : ${target_path_full}`);
 
         // move the file from the temporary location to the intended location
@@ -66,8 +66,8 @@ const uploadTheme = async (originalname, filepath) => {
 
         // Unzip
         console.log('Unziping new theme...');
-        const AdmZip = require('adm-zip');
-        const zip    = new AdmZip(target_path_full);
+        const AdmZip       = require('adm-zip');
+        const zip          = new AdmZip(target_path_full);
         const packageTheme = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
         if (!packageTheme) {
             throw NSErrors.ThemePackageNotFound; // info.json not found in zip
@@ -107,9 +107,9 @@ const uploadTheme = async (originalname, filepath) => {
 const setConfigTheme = async (theme) => {
     console.log('Setting configuration for the theme...');
     try {
-        const data = await fs.readFile(`./themes/${theme}/themeConfig.json`);
-        const info = data.toString();
-        const config = JSON.parse(info);
+        const data      = await fs.readFile(`./themes/${theme}/themeConfig.json`);
+        const info      = data.toString();
+        const config    = JSON.parse(info);
         const oldConfig = await ThemeConfig.findOne({name: theme});
         if (oldConfig) {
             const mergedConfig = {...config, ...oldConfig.config}; // On merge l'ancienne et la nouvelle config pour pas perdre les données
@@ -171,7 +171,7 @@ const deleteTheme = async (themePath) => {
  */
 const copyDatas = async (themePath, override = true, configuration = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
-    const data = [];
+    const data          = [];
     if (!fs.existsSync(themeDemoData)) {
         return {data, noDatas: true};
     }
@@ -186,7 +186,7 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
             file = require(value);
         } else if (path.extname(value) === '.json') {
             const fileContent = await fs.readFile(value, {encoding: 'UTF-8'});
-            file = JSON.parse(fileContent);
+            file              = JSON.parse(fileContent);
         } else {
             continue;
         }
@@ -280,8 +280,8 @@ const setCustomCss = async (cssName, cssValue) => {
  */
 const getAllCssComponentName = async () => {
     try {
-        const cssNames   = [];
-        const themePath  = getThemePath();
+        const cssNames  = [];
+        const themePath = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
             const fullPath = path.join('./themes', themePath, cssFolder);
             try {

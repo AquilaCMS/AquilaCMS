@@ -1,9 +1,9 @@
-const path      = require('path');
-const fs        = require('./fsp');
-const npm       = require('./npm');
-const utils     = require('./utils');
-const NSError   = require('./errors/NSError');
-const NSErrors  = require('./errors/NSErrors');
+const path     = require('path');
+const fs       = require('./fsp');
+const npm      = require('./npm');
+const utils    = require('./utils');
+const NSError  = require('./errors/NSError');
+const NSErrors = require('./errors/NSErrors');
 
 let loadedModules;
 
@@ -66,7 +66,7 @@ const errorModule = async (target_path_full) => {
 const cleanPackageVersion = async (dependencies) => {
     for (let i = 0; i < dependencies.length; i++) {
         let dependency = dependencies[i];
-        dependency = dependency.split('@');
+        dependency     = dependency.split('@');
         if (dependency.length !== 0 && dependency[dependency.length - 1] !== '') {
             if (dependency.length === 1) {
                 dependency.push('latest');
@@ -145,9 +145,9 @@ const compareDependencies = (myModule, modulesActivated, install = true) => {
 const checkModuleDepencendiesAtInstallation = async (module) => {
     if (module.moduleDependencies) {
         const missingDependencies = [];
-        const needActivation = [];
-        const {Modules} = require('../orm/models');
-        const allmodule = await Modules.find({}, {name: 1, active: 1});
+        const needActivation      = [];
+        const {Modules}           = require('../orm/models');
+        const allmodule           = await Modules.find({}, {name: 1, active: 1});
 
         for (const elem of module.moduleDependencies) {
             const found = allmodule.find((mod) => mod.name === elem);
@@ -174,8 +174,8 @@ const checkModuleDepencendiesAtInstallation = async (module) => {
 const checkModuleDepencendiesAtUninstallation = async (myModule) => {
     if (myModule.moduleDependencies) {
         const needDeactivation = [];
-        const {Modules} = require('../orm/models');
-        const allmodule = await Modules.find(
+        const {Modules}        = require('../orm/models');
+        const allmodule        = await Modules.find(
             {$and: [{name: {$ne: myModule.name}}, {active: true}]},
             {name: 1, moduleDependencies: 1}
         );
@@ -222,10 +222,10 @@ const cleanAndToBeChanged = async (dependencies, toBeChanged) => {
  * Module : Charge les fichiers init.js des modules si besoin
  */
 const modulesLoadInit = async (express) => {
-    const Modules = require('../orm/models/modules');
+    const Modules  = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1}).lean();
-    loadedModules = [..._modules];
-    loadedModules = loadedModules.map((lmod) => {return {...lmod, init: true, valid: false};});
+    loadedModules  = [..._modules];
+    loadedModules  = loadedModules.map((lmod) => {return {...lmod, init: true, valid: false};});
     if (loadedModules.length > 0) {
         console.log('Start init loading modules');
         console.log('Required modules :');

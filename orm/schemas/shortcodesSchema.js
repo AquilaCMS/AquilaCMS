@@ -3,8 +3,8 @@
  * @property {String} tag.required
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose     = require('mongoose');
+const Schema       = mongoose.Schema;
 const aquilaEvents = require('../../utils/aquilaEvents');
 /**
  * @typedef {object} ShortcodesSchema

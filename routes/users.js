@@ -1,8 +1,8 @@
-const debug                              = require('debug');
-const log                                = debug('aquila:users');
-const {authentication, adminAuth}        = require('../middleware/authentication');
-const authService                        = require('../services/auth');
-const usersServices                      = require('../services/users');
+const debug                       = require('debug');
+const log                         = debug('aquila:users');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const authService                 = require('../services/auth');
+const usersServices               = require('../services/users');
 
 module.exports = function (app) {
     app.post('/v2/users', authentication, adminAuth, getUsers);
@@ -36,7 +36,7 @@ async function getUsers(req, res, next) {
         log('- getUsers - ', 'call');
         const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
         log('- getUsers - ', PostBodyVerified);
-        const result           = await usersServices.getUsers(PostBodyVerified);
+        const result = await usersServices.getUsers(PostBodyVerified);
         log('- getUsers - ', result);
         return res.json(result);
     } catch (error) {
@@ -65,7 +65,7 @@ async function getUser(req, res, next) {
         log('- getUser - ', 'call');
         const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
         log('- getUser - ', PostBodyVerified);
-        const result           = await usersServices.getUser(PostBodyVerified);
+        const result = await usersServices.getUser(PostBodyVerified);
         log('- getUser - ', result);
         return res.json(result);
     } catch (error) {
@@ -88,7 +88,7 @@ async function getUserById(req, res, next) {
         log('- getUserById - ', 'call');
         const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
         log('- getUserById - ', PostBodyVerified);
-        const result           = await usersServices.getUserById(req.params.id, PostBodyVerified);
+        const result = await usersServices.getUserById(req.params.id, PostBodyVerified);
         log('- getUserById - ', result);
         return res.json(result);
     } catch (error) {
@@ -141,7 +141,7 @@ async function setUser(req, res, next) {
 
         // Edit
         if (req.body._id) {
-            const result  = await usersServices.setUser(req.body._id, req.body, isAdmin);
+            const result = await usersServices.setUser(req.body._id, req.body, isAdmin);
             return res.json({code: 'USER_UPDATE_SUCCESS', user: result});
         }
 

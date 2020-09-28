@@ -1,6 +1,6 @@
 const fs             = require('fs');
 const path           = require('path');
-const {fork} = require('child_process');
+const {fork}         = require('child_process');
 const packageManager = require('../utils/packageManager');
 const jobServices    = require('../services/job');
 const adminServices  = require('../services/admin');
@@ -8,11 +8,11 @@ const adminServices  = require('../services/admin');
 module.exports = (installRouter) => {
     installRouter.get('/', async (req, res, next) => {
         try {
-            let html = (fs.readFileSync(path.join(global.appRoot, '/installer/install.html'))).toString();
-            html     = html.replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`);
-            html     = html.replace('{{aquilaCMSVersion}}', JSON.parse(fs.readFileSync(path.resolve(global.appRoot, './package.json'))).version);
+            let html            = (fs.readFileSync(path.join(global.appRoot, '/installer/install.html'))).toString();
+            html                = html.replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`);
+            html                = html.replace('{{aquilaCMSVersion}}', JSON.parse(fs.readFileSync(path.resolve(global.appRoot, './package.json'))).version);
             let wkhtmlInstalled = false;
-            let sharpInstalled = false;
+            let sharpInstalled  = false;
             try {
                 wkhtmlInstalled = await (new Promise((resolve, reject) => {
                     const res = fork(path.resolve(global.appRoot, 'scripts/wkhtmltopdf.js'), [], {});

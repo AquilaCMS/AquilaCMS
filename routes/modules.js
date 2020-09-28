@@ -1,6 +1,6 @@
-const {authentication, adminAuth}   = require('../middleware/authentication');
-const serviceModule                 = require('../services/modules');
-const NSErrors                      = require('../utils/errors/NSErrors');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const serviceModule               = require('../services/modules');
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
@@ -87,7 +87,7 @@ const toggleActiveModule = async (req, res, next) => {
     req.setTimeout(300000);
     try {
         const {idModule, toBeChanged, toBeRemoved, active} = req.body;
-        let modules = [];
+        let modules                                        = [];
         if (active) {
             modules = await serviceModule.activateModule(idModule, toBeChanged);
         } else {

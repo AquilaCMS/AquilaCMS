@@ -7,8 +7,8 @@ const {
     adminAuth,
     generateJWTToken
 }                           = require('../middleware/authentication');
-const {middlewareServer}    = require('../middleware');
-const NSErrors              = require('../utils/errors/NSErrors');
+const {middlewareServer} = require('../middleware');
+const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/auth/login/:from?', login);

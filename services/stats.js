@@ -33,7 +33,7 @@ const addUserVisitReq = (req) => {
 const addUserVisitIP = async (ipClient) => {
     try {
         const thisStat = await StatsToday.findOne();
-        let existing = -1;
+        let existing   = -1;
 
         if (thisStat == null) {
             // Création de la collection si elle n'exite pas
@@ -105,8 +105,8 @@ const buildStats = async () => {
 async function insertType(type, nb) {
     try {
         const isoDate = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).toISOString();
-        const pushed = {};
-        pushed[type] = {$each: [{date: isoDate, count: nb}]};
+        const pushed  = {};
+        pushed[type]  = {$each: [{date: isoDate, count: nb}]};
         await StatsHistory.updateOne({}, {$push: pushed}, {upsert: true, new: true});
     } catch (error) {
         console.error(error);
