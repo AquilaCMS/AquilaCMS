@@ -227,6 +227,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     else
                     {
                         toastService.toast("success", "Produit sauvegardé !");
+                        $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
                         //     $scope.disableSave = false;

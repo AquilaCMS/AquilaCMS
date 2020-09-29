@@ -41,7 +41,7 @@ ProductBundleSchema.methods.updateData = async function (data, cb) {
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
     }
     try {
-        const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, updatedData, {new: true});
+        const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
         return cb(null, updPrd);
     } catch (err) {
         return cb(err);
