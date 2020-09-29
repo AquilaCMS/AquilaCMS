@@ -1,5 +1,3 @@
-const debug        = require('debug');
-const log          = debug('aquila:rules');
 const {
     Rules,
     Users,
@@ -36,21 +34,16 @@ const queryRule = (PostBody) => {
  * @return {Promise<array<{}>>} - Tableau des promo applicable sur le user en question
  */
 const testUser = async (body) => {
-    log('- testUser - ', body);
     const _rules = await Rules.find({owner_type: 'discount'});
     const user   = await Users.findOne({_id: body.user_id});
     const result = [];
     for (let i = 0; i < _rules.length; i++) {
-        log('- testUser - ', `${i} / ${_rules.length}`);
         const condition = await testRulesOnUser(_rules[i], user);
-        log('- testUser - ', eval(promoUtils.createIfStatement(condition)));
         if (eval(promoUtils.createIfStatement(condition))) {
             const promo = await Promo.findById(_rules[i].owner_id);
-            log('- testUser - ', promo);
             if (promo) result.push({...promo.toObject(), applyResult: condition});
         }
     }
-    log('- testUser - ', result);
     return result;
 };
 
