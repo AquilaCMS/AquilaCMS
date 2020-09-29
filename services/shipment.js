@@ -28,12 +28,17 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
         }
     }
     if (PostBody) {
-        PostBody.filter    = {...PostBody.filter, countries: {$elemMatch: {country: (withCountry.toUpperCase())}}};
+        if (withCountry) {
+            PostBody.filter = {...PostBody.filter, countries: {$elemMatch: {country: (withCountry.toUpperCase())}}};
+        }
         PostBody.structure = {...PostBody.structure, countries: 1, preparation: 1, freePriceLimit: 1};
     } else {
-        PostBody = {filter: {countries: {$elemMatch: {country: (withCountry.toUpperCase())}}}, limit: 99, structure: {countries: 1, preparation: 1, freePriceLimit: 1}};
+        PostBody = {limit: 99, structure: {countries: 1, preparation: 1, freePriceLimit: 1}};
+        if (withCountry) {
+            PostBody.filter = {countries: {$elemMatch: {country: withCountry.toUpperCase()}}};
+        }
     }
-    if ((withCountry.toUpperCase())) {
+    if (withCountry) {
         const price = 0;
 
         const shipments = (await getShipments(PostBody)).datas;

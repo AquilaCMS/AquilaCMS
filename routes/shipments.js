@@ -42,7 +42,7 @@ async function getShipment(req, res, next) {
  */
 async function getShipmentsFilter(req, res, next) {
     try {
-        const result = await ServiceShipment.getShipmentsFilter(req.body.cart, req.body.withoutCountry, req.body.PostBody);
+        const result = await ServiceShipment.getShipmentsFilter(req.body.cart, req.body.withCountry, req.body.PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
