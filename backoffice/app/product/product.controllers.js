@@ -276,8 +276,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "$rootScope",
-    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, $rootScope) {
+    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
+    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
 
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
@@ -347,6 +347,14 @@ ProductControllers.controller("nsProductGeneral", [
                     delete attr._id;
                     return attr;
                 });
+            });
+        };
+
+        $scope.preview = function () {
+            ProductsV2.preview($scope.product, function (response) {
+                if (response && response.url) {
+                    window.open(response.url)
+                }
             });
         };
     }

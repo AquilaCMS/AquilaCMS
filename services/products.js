@@ -1,5 +1,6 @@
 const moment                  = require('moment-business-days');
 const path                    = require('path');
+const URL                     = require('url');
 const mongoose                = require('mongoose');
 const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
@@ -17,9 +18,13 @@ const serviceReviews          = require('./reviews');
 const {
     Configuration,
     Products,
+    ProductsPreview,
     ProductSimple,
+    ProductSimplePreview,
     ProductBundle,
+    ProductBundlePreview,
     ProductVirtual,
+    ProductVirtualPreview,
     Categories,
     SetAttributes,
     Attributes,
@@ -30,7 +35,8 @@ const {
 let restrictedFields = ['price.purchase', 'downloadLink'];
 const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
 
-const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
+const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
+const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // si dans le config, on demande de ne pas retourner les champs de stock, on les ajoute au restrictedFields
 if (global.envConfig.stockOrder.returnStockToFront !== true) {
@@ -136,7 +142,13 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
  * @param keepReviews
  */
 const getProduct = async (PostBody, reqRes = undefined, keepReviews = false) => {
-    let product = await queryBuilder.findOne(PostBody);
+    let product;
+    if (reqRes && reqRes.req.query.preview) {
+        PostBody.filter = {_id: reqRes.req.query.preview};
+        product         = await queryBuilderPreview.findOne(PostBody);
+    } else {
+        product = await queryBuilder.findOne(PostBody);
+    }
     if (!product) {
         return product;
     }
@@ -608,8 +620,9 @@ const setProduct = async (req) => {
     // On met à jour le slug du produit
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     return new Promise((resolve, reject) => {
-        product.updateData(req.body, (err, result) => {
+        product.updateData(req.body, async (err, result) => {
             if (err) reject(NSErrors.ProductUpdateError);
+            await ProductsPreview.deleteOne({code: req.body.code});
             return resolve(result);
         });
     });
@@ -1466,6 +1479,39 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
+const preview = async (body) => {
+    let preview = {};
+    if (await ProductsPreview.findOne({code: body.code})) {
+        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
+    } else {
+        let newPreview;
+        switch (body.type) {
+        case 'simple':
+            newPreview      = new ProductSimplePreview(body);
+            newPreview.kind = 'SimpleProductPreview';
+            preview         = await newPreview.save();
+            break;
+        case 'bundle':
+            newPreview      = new ProductBundlePreview(body);
+            newPreview.kind = 'BundleProductPreview';
+            preview         = await newPreview.save();
+            break;
+        case 'virtual':
+            newPreview      = new ProductVirtualPreview(body);
+            newPreview.kind = 'VirtualProductPreview';
+            preview         = await newPreview.save();
+            break;
+        default:
+            break;
+        }
+    }
+    if (body.lang) {
+        return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
+    }
+    const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
+    return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
+};
+
 module.exports = {
     getProducts,
     getProduct,
@@ -1486,5 +1532,6 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields
+    restrictedFields,
+    preview
 };
