@@ -171,6 +171,29 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     }
 
     let translationKeys = Object.keys(self.translation);
+    if (translationKeys.length !== 0){
+        const languages = await mongoose.model('languages').find({ status: 'visible' });
+        for (const lang of languages) {
+            if (!translationKeys.includes(lang.code)) {
+                translationKeys.push(lang.code);
+                self.translation[lang.code] = { slug: utils.slugify(self.code) };
+            }
+        }
+    }
+
+    if (updateQuery && updateQuery.translation) {
+        for (const [key, value] of Object.entries(updateQuery.translation)) {
+            if (updateQuery.translation[key].slug === "") {
+                if (!updateQuery.translation[key].name){
+                    updateQuery.translation[key].slug = utils.slugify(updateQuery.code);
+                } else {
+                    updateQuery.translation[key].slug = utils.slugify(updateQuery.translation[key].name);
+                }
+            } else {
+                updateQuery.translation[key].slug = utils.slugify(updateQuery.translation[key].slug);
+            }
+        }
+    }
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};

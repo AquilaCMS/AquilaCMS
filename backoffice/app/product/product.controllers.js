@@ -316,7 +316,7 @@ ProductControllers.controller("nsProductGeneral", [
                             CategoryV2.canonical({}, {}, function () {
                                 toastService.toast('success', "Terminé")
                                 ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
-                                    $scope.product = response
+                                    $scope.product = response;
                                     $scope.product.active = true;
                                     ProductsV2.save({}, $scope.product, function (response) {
                                         window.location.reload()
