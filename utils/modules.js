@@ -1,6 +1,5 @@
 const path     = require('path');
 const fs       = require('./fsp');
-const npm      = require('./npm');
 const utils    = require('./utils');
 const NSError  = require('./errors/NSError');
 const NSErrors = require('./errors/NSErrors');
@@ -61,32 +60,6 @@ const errorModule = async (target_path_full) => {
     } catch (err) {
         console.error('Error: ', err);
     }
-};
-
-const cleanPackageVersion = async (dependencies) => {
-    for (let i = 0; i < dependencies.length; i++) {
-        let dependency = dependencies[i];
-        dependency     = dependency.split('@');
-        if (dependency.length !== 0 && dependency[dependency.length - 1] !== '') {
-            if (dependency.length === 1) {
-                dependency.push('latest');
-            }
-            if (dependency[0] === '') {
-                dependency.splice(0, 1);
-                dependency[0] = `@${dependency[0]}`;
-            }
-            const {result} = await npm.npmCommand('dist-tag', ['ls', dependency[0]]);
-            for (const [key, elem] of Object.entries(result)) {
-                if (dependency[1] === key) {
-                    dependency[1] = elem;
-                }
-            }
-            dependencies[i] = dependency.join('@');
-        } else if (dependencies[i].endsWith('@')) {
-            dependencies[i] = dependencies[i].slice(0, dependencies[i].length - 1);
-        }
-    }
-    return dependencies;
 };
 
 const compareDependencies = (myModule, modulesActivated, install = true) => {
@@ -183,27 +156,6 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
 };
 
 /**
- * cleanAndToBeChanged
- * @param {string[]} dependencies dependencies
- * @param {{api: {}, theme: {}}} toBeChanged toBeChanged
- */
-const cleanAndToBeChanged = async (dependencies, toBeChanged) => {
-    let allModules = [];
-    for (const dependency of await cleanPackageVersion(dependencies)) {
-        const packageName = dependency.split('@')[0];
-        if (toBeChanged[packageName]) {
-            const choosedVersionPackageName = toBeChanged[packageName].split('@')[0];
-            if (packageName === choosedVersionPackageName) {
-                allModules = [...allModules, toBeChanged[packageName]];
-            }
-        } else {
-            allModules = [...allModules, dependency];
-        }
-    }
-    return allModules;
-};
-
-/**
  * Module : Charge les fichiers init.js des modules si besoin
  */
 const modulesLoadInit = async (express) => {
@@ -284,11 +236,9 @@ module.exports = {
     createListModuleFile,
     displayListModule,
     errorModule,
-    cleanPackageVersion,
     compareDependencies,
     checkModuleDepencendiesAtInstallation,
     checkModuleDepencendiesAtUninstallation,
-    cleanAndToBeChanged,
     modulesLoadInit,
     modulesLoadInitAfter
 };

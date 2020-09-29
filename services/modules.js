@@ -4,7 +4,6 @@ const mongoose       = require('mongoose');
 const rimraf         = require('rimraf');
 const packageManager = require('../utils/packageManager');
 const QueryBuilder   = require('../utils/QueryBuilder');
-const npm            = require('../utils/npm');
 const modulesUtils   = require('../utils/modules');
 const serverUtils    = require('../utils/server');
 const fs             = require('../utils/fsp');
@@ -223,52 +222,35 @@ const checkDependenciesAtInstallation = async (idModule) => {
          */
         for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
             if (myModule.packageDependencies[apiOrTheme]) {
-                let installedDependencies;
+                let savePackagedependenciesPath;
                 if (apiOrTheme === 'api') {
-                    installedDependencies = await npm.npmCommand('list', ['--json']);
-                    installedDependencies = installedDependencies.result._dependencies;
+                    savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
                 } else if (apiOrTheme === 'theme') {
-                    installedDependencies = JSON.parse((await npm.npmCommand('list', ['--json'], true)).stdout);
-                    installedDependencies = installedDependencies.dependencies;
-                }
-                for (const [index, value] of Object.entries(installedDependencies)) {
-                    for (const [index2] of Object.entries(response.toBeChanged[apiOrTheme])) {
-                        if (index === index2) {
-                            if (apiOrTheme === 'theme') {
-                                response.alreadyInstalled[apiOrTheme][index] = value.version;
-                                response.toBeChanged[apiOrTheme][index].add(value.version);
-                            } else {
-                                response.alreadyInstalled[apiOrTheme][index] = value;
-                                response.toBeChanged[apiOrTheme][index].add(value);
-                            }
-                        }
-                    }
-                }
-                let savePackagedependencies;
-                if (apiOrTheme === 'api') {
-                    savePackagedependencies = JSON.parse(
-                        await fs.readFile(path.join(global.appRoot, 'package-aquila.json'))
-                    );
-                } else if (apiOrTheme === 'theme') {
-                    savePackagedependencies = JSON.parse(
-                        await fs.readFile(path.join(
-                            global.appRoot,
-                            'themes',
-                            global.envConfig.environment.currentTheme,
-                            'package-theme.json'
-                        ))
+                    savePackagedependenciesPath = path.join(
+                        global.appRoot,
+                        'themes',
+                        global.envConfig.environment.currentTheme,
+                        'package-theme.json'
                     );
                 }
+                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
                 for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                    for (const [index] of Object.entries(response.toBeChanged[apiOrTheme])) {
-                        if (name === index) {
-                            response.toBeChanged[apiOrTheme][index].add(version);
-                        }
+                    if (response.toBeChanged[apiOrTheme][name]) {
+                        response.toBeChanged[apiOrTheme][name].add(version);
+                        response.alreadyInstalled[apiOrTheme][name] = version;
                     }
                 }
             }
         }
-
+        for (const apiOrTheme of Object.keys(response.toBeChanged)) {
+            for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
+                if (response.toBeChanged[apiOrTheme][value].length > 1 && response.needUpgrade === false) {
+                    response.needUpgrade = true;
+                    break;
+                }
+            }
+            if (response.needUpgrade) break;
+        }
         for (const apiOrTheme of Object.keys(response.toBeChanged)) {
             for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
                 response.toBeChanged[apiOrTheme][value] = [...response.toBeChanged[apiOrTheme][value]];
@@ -278,10 +260,10 @@ const checkDependenciesAtInstallation = async (idModule) => {
                     && response.needUpgrade === false
                 ) {
                     response.needUpgrade = true;
-                    // break;
+                    break;
                 }
             }
-            // if (response.needUpgrade) break;
+            if (response.needUpgrade) break;
         }
     }
     return response;
@@ -317,26 +299,6 @@ const checkDependenciesAtUninstallation = async (idModule) => {
             result = modulesUtils.compareDependencies(myModule, modulesActivated, false);
         }
         for (const apiOrTheme of Object.keys(result)) {
-            if (myModule.packageDependencies[apiOrTheme]) {
-                let savePackagedependencies;
-                if (apiOrTheme === 'api') {
-                    savePackagedependencies = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package-aquila.json')));
-                } else if (apiOrTheme === 'theme') {
-                    savePackagedependencies = JSON.parse(
-                        await fs.readFile(
-                            path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'package-theme.json')
-                        )
-                    );
-                }
-                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                    for (const [name2, version2] of Object.entries(result[apiOrTheme])) {
-                        if (name === name2) {
-                            response.toBeChanged[apiOrTheme][name2] = [];
-                            response.toBeChanged[apiOrTheme][name2].push(...(new Set([...version2, version])));
-                        }
-                    }
-                }
-            }
             for (const [name, versions] of Object.entries(result[apiOrTheme])) {
                 if (!response.toBeChanged[apiOrTheme][name]) {
                     if (versions.length > 1) {
@@ -345,6 +307,7 @@ const checkDependenciesAtUninstallation = async (idModule) => {
                     } else if (versions.length === 1) {
                         response.toBeRemoved[apiOrTheme][name] = versions[0];
                     }
+                    break;
                 }
             }
             /**
@@ -353,19 +316,21 @@ const checkDependenciesAtUninstallation = async (idModule) => {
              * @see https://github.com/yarnpkg/yarn/issues/3569
              */
             if (myModule.packageDependencies[apiOrTheme]) {
-                let installedDependencies;
+                let savePackagedependenciesPath;
                 if (apiOrTheme === 'api') {
-                    installedDependencies = await npm.npmCommand('list', ['--json']);
-                    installedDependencies = installedDependencies.result._dependencies;
+                    savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
                 } else if (apiOrTheme === 'theme') {
-                    installedDependencies = JSON.parse((await npm.npmCommand('list', ['--json'], true)).stdout);
-                    installedDependencies = installedDependencies.dependencies;
+                    savePackagedependenciesPath = path.join(
+                        global.appRoot,
+                        'themes',
+                        global.envConfig.environment.currentTheme,
+                        'package-theme.json'
+                    );
                 }
-                for (const [index, value] of Object.entries(installedDependencies)) {
-                    for (const [index2] of Object.entries(result[apiOrTheme])) {
-                        if (index === index2) {
-                            response.alreadyInstalled[apiOrTheme][index] = value.version ? value.version : value;
-                        }
+                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
+                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
+                    if (result[apiOrTheme][name]) {
+                        response.alreadyInstalled[apiOrTheme][name] = version.version ? version.version : version;
                     }
                 }
             }
@@ -475,7 +440,7 @@ const activateModule = async (idModule, toBeChanged) => {
                         ...myModule.packageDependencies[apiOrTheme],
                         ...toBeChanged[apiOrTheme]
                     };
-                    await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 4));
+                    await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                     console.log(`Installing dependencies of the module in ${position}...`);
                     await packageManager.execCmd('yarn install', installPath);
                 }
@@ -512,101 +477,84 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             throw NSErrors.ModuleNotFound;
         }
         await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
-        // await removeModuleAddon(_module);
-        // try {
-        //     await addOrRemoveThemeFiles(
-        //         path.resolve(global.appRoot, _module.path, 'theme_components'),
-        //         true,
-        //         _module.type ? `type: '${_module.type}'` : ''
-        //     );
-        // } catch (error) {
-        //     console.error(error);
-        // }
+        await removeModuleAddon(_module);
+        try {
+            await addOrRemoveThemeFiles(
+                path.resolve(global.appRoot, _module.path, 'theme_components'),
+                true,
+                _module.type ? `type: '${_module.type}'` : ''
+            );
+        } catch (error) {
+            console.error(error);
+        }
 
-        // // Suppression des fichiers copiés
-        // for (let i = 0; i < _module.files.length; i++) {
-        //     if (await fs.access(_module.files[i])) {
-        //         if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
-        //             require('rimraf')(_module.files[i], (err) => {
-        //                 if (err) console.error(err);
-        //             });
-        //         } else {
-        //             try {
-        //                 await fs.unlink(_module.files[i]);
-        //             } catch (err) {
-        //                 console.error('Error: ', err);
-        //             }
-        //         }
-        //     }
-        // }
+        // Suppression des fichiers copiés
+        for (let i = 0; i < _module.files.length; i++) {
+            if (await fs.access(_module.files[i])) {
+                if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
+                    require('rimraf')(_module.files[i], (err) => {
+                        if (err) console.error(err);
+                    });
+                } else {
+                    try {
+                        await fs.unlink(_module.files[i]);
+                    } catch (err) {
+                        console.error('Error: ', err);
+                    }
+                }
+            }
+        }
 
-        // await Modules.updateOne({_id: idModule}, {files: [], active: false});
+        await Modules.updateOne({_id: idModule}, {files: [], active: false});
 
         console.log('Removing dependencies of the module...');
         // On supprime les dépendances du module
         for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
             let installPath;
-            let savePackagedependencies;
+            let savePackagedependenciesPath;
+            let packagePath;
             if (apiOrTheme === 'api') {
-                installPath             = global.appRoot;
-                savePackagedependencies = JSON.parse(
-                    await fs.readFile(path.join(global.appRoot, 'package-aquila.json'))
-                );
+                installPath                 = global.appRoot;
+                savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
+                packagePath                 = path.resolve(installPath, 'package.json');
             } else if (apiOrTheme === 'theme') {
-                installPath             = path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-                savePackagedependencies = JSON.parse(
-                    await fs.readFile(path.join(
-                        global.appRoot,
-                        'themes',
-                        global.envConfig.environment.currentTheme,
-                        'package-theme.json'
-                    ))
+                installPath                 = path.resolve(
+                    global.appRoot,
+                    'themes',
+                    global.envConfig.environment.currentTheme
                 );
+                savePackagedependenciesPath = path.join(installPath, 'package-theme.json');
+                packagePath                 = path.resolve(installPath, 'package.json');
             }
-            const packagePath = path.resolve(installPath, 'package.json');
-            const packageJSON = JSON.parse(await fs.readFile(packagePath));
-            console.log(packageJSON);
+            const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
+            const packageJSON             = JSON.parse(await fs.readFile(packagePath));
+            console.log('packageJSON');
             packageJSON.dependencies = {
-                ...savePackagedependencies.dependencies,
                 ...packageJSON.dependencies,
-                ...toBeChanged,
-                ...toBeRemoved
-
+                ...toBeChanged[apiOrTheme]
             };
-            // let allModulesToRemove = [];
-            // for (const packageName of Object.values(toBeRemoved[apiOrTheme])) {
-            //     const elem = packageName.split('@');
-            //     if (elem[0] === '') {
-            //         elem.splice(0, 1);
-            //         elem[0] = `@${elem[0]}`;
-            //     }
-            //     allModulesToRemove = [...allModulesToRemove, elem[0]];
-            // }
-            // if (allModulesToRemove.length > 0) {
-            //     if (apiOrTheme === 'theme') {
-            //         await packageManager.execCmd(
-            //             `yarn remove ${allModulesToRemove.join(' ')}`,
-            //             path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
-            //         );
-            //     } else if (apiOrTheme === 'api') {
-            //         await packageManager.execCmd(`yarn remove ${allModulesToRemove.join(' ')}`, './');
-            //     }
-            // }
-
-            // let allModulesAquila = [];
-            // for (const packageName of Object.values(toBeChanged[apiOrTheme])) {
-            //     allModulesAquila = [...allModulesAquila, packageName];
-            // }
-            // if (allModulesAquila.length > 0) {
-            //     if (apiOrTheme === 'theme') {
-            //         await packageManager.execCmd(
-            //             `yarn add ${allModulesAquila.join(' ')}`,
-            //             path.resolve(global.appRoot, 'themes', global.envConfig.environment.currentTheme)
-            //         );
-            //     } else if (apiOrTheme === 'api') {
-            //         await packageManager.execCmd(`yarn add ${allModulesAquila.join(' ')}`, './');
-            //     }
-            // }
+            const missing            = {};
+            for (const packageToDelete of Object.keys(toBeRemoved[apiOrTheme])) {
+                packageJSON.dependencies[packageToDelete] = undefined;
+            }
+            for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
+                let found = false;
+                for (const [name2] of Object.entries(packageJSON.dependencies)) {
+                    if (name === name2) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    missing[name] = version;
+                }
+            }
+            packageJSON.dependencies = {
+                ...packageJSON.dependencies,
+                ...missing
+            };
+            await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+            await packageManager.execCmd('yarn install', installPath);
         }
 
         console.log('Module desactivated');
