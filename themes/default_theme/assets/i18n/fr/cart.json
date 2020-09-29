@@ -24,6 +24,7 @@
             },
             "sousTotal": "SOUS-TOTAL",
             "total": "TOTAL",
+            "estimated_delivery": "Estimation de livraison",
             "additionnal_fees": "Frais sup. TTC",
             "toOrder": "PASSER LA COMMANDE",
             "condition_agree": "Accepter les conditions",

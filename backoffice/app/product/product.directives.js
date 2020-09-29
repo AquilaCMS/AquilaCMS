@@ -374,7 +374,11 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 };
 
                 $scope.removeImage = function (index) {
+                    let defaultImage = $scope.product.images[index].default;
                     $scope.product.images.sort((a, b) => a.position - b.position).splice(index, 1);
+                    if ($scope.product.images.length > 0 && defaultImage) {
+                        $scope.product.images[0].default = true;
+                    }
                 };
 
                 $scope.getImageUrl = function (image) {
