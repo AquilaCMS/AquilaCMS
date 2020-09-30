@@ -1,4 +1,4 @@
-const ProductsPreview        = require('./productsPreview');
-const {ProductVirtualSchema} = require('../schemas');
+const ProductsPreview               = require('./productsPreview');
+const {ProductVirtualPreviewSchema} = require('../schemas');
 
-module.exports = ProductsPreview.discriminator('VirtualProductPreview', ProductVirtualSchema);
+module.exports = ProductsPreview.discriminator('VirtualProductPreview', ProductVirtualPreviewSchema);
