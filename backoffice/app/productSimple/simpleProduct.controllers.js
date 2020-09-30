@@ -14,7 +14,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             {
                 text: 'product.general.preview',
                 onClick: function () {
-                    if($scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
+                    if($scope.product.translation && $scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
                         ProductsV2.preview($scope.product, function (response) {
                             if (response && response.url) {
                                 window.open(response.url)
