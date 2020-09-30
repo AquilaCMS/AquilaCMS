@@ -14,12 +14,15 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             {
                 text: 'product.general.preview',
                 onClick: function () {
-                    if(!$scope.product.translation[$scope.adminLang] && !$scope.product.translation[$scope.adminLang].canonical)
-                    ProductsV2.preview($scope.product, function (response) {
-                        if (response && response.url) {
-                            window.open(response.url)
-                        }
-                    });
+                    if($scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
+                        ProductsV2.preview($scope.product, function (response) {
+                            if (response && response.url) {
+                                window.open(response.url)
+                            }
+                        });
+                    } else {
+                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                    }
                 },
             }
         ]
