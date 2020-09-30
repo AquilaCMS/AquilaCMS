@@ -766,7 +766,6 @@ const controlAllProducts = async () => {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
         const _config     = await Configuration.findOne({}, {stockOrder: 1});
-        let fixCanonical  = false;
         let fixAttributs  = false;
         let returnErrors  = '';
         let returnWarning = '';
@@ -816,7 +815,7 @@ const controlAllProducts = async () => {
             }
             if (oneProduct.images.length > 0) {
                 for (let i = 0; i < oneProduct.images.length; i++) {
-                    if (!await utils.existsFile(decodeURIComponent(oneProduct.images[i].url))) {
+                    if (!await utilsMedias.existsFile(decodeURIComponent(oneProduct.images[i].url))) {
                         returnWarning += `<b>${oneProduct.code}</b> : Image ${i} not exist<br/>`;
                     }
                 }
@@ -872,7 +871,6 @@ const controlAllProducts = async () => {
             await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
                 if (typeof categories === 'undefined' || categories.length === 0) {
                     returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
-                    fixCanonical   = true;
                 }
             });
         }
@@ -883,8 +881,11 @@ const controlAllProducts = async () => {
         if (returnErrors.length === 0 && returnWarning.length === 0) returnErrors = 'All products are fine';
 
         // AutoFix :
-        if (fixCanonical) {await require('./fix_auto').fixCanonical();}
-        if (fixAttributs) {await require('./fix_auto').sortAttribs();}
+        try {
+            if (fixAttributs) {await require('./devScripts').sortAttribs();}
+        } catch (ee) {
+            returnErrors += `sortAttribs : ${ee.toString()}`;
+        }
 
         return returnErrors + returnWarning;
     } catch (error) {
