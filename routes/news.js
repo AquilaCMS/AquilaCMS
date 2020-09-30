@@ -1,6 +1,6 @@
-const {authentication, adminAuth}   = require('../middleware/authentication');
-const {securityForceFilter}         = require('../middleware/security');
-const servicesNews                  = require('../services/news');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const {securityForceFilter}       = require('../middleware/security');
+const servicesNews                = require('../services/news');
 
 module.exports = function (app) {
     app.post('/v2/site/news', securityForceFilter([{isVisible: true}]), getNews);

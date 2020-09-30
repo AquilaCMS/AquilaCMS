@@ -1,17 +1,17 @@
-const path               = require('path');
-const mongoose           = require('mongoose');
-const {Gallery}          = require('../orm/models');
-const utils              = require('../utils/utils');
-const mediasUtils        = require('../utils/medias');
-const NSErrors           = require('../utils/errors/NSErrors');
-const cacheService       = require('./cache');
+const path         = require('path');
+const mongoose     = require('mongoose');
+const {Gallery}    = require('../orm/models');
+const utils        = require('../utils/utils');
+const mediasUtils  = require('../utils/medias');
+const NSErrors     = require('../utils/errors/NSErrors');
+const cacheService = require('./cache');
 
 /**
  * @description Retourne toutes les galleries
  */
 const getGalleries = async () => {
     const resultTmp = await Gallery.find({});
-    const result = resultTmp.map((gallery) => {
+    const result    = resultTmp.map((gallery) => {
         gallery.itemCount = gallery.items.length;
         delete gallery.items;
         return gallery;
@@ -128,7 +128,7 @@ const deleteItemGallery = async (_id, _id_item) => {
         throw NSErrors.InvalidObjectIdError;
     }
     const gallery = await Gallery.findOne({_id});
-    const item = gallery.items.find((i) => i.id === _id_item);
+    const item    = gallery.items.find((i) => i.id === _id_item);
     await mediasUtils.deleteFile(item.src);
     cacheService.deleteCacheImage('gallery', {filename: path.basename(item.src).split('.')[0]});
     const doc = await Gallery.findByIdAndUpdate(_id, {$pull: {items: {_id: _id_item}}}, {new: true});

@@ -75,7 +75,7 @@ class CartDelivery extends React.Component {
 
         let shipments;
         try {
-            shipments = await getShipmentsCart(cart, lang);
+            shipments = await getShipmentsCart(cart, null, lang);
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
                 NSToast.error(err.response.data.message);

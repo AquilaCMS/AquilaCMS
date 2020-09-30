@@ -34,14 +34,14 @@ const ProductBundleSchema = new Schema({
 }); */
 
 ProductBundleSchema.methods.updateData = async function (data, cb) {
-    const updatedData = data;
+    const updatedData           = data;
     updatedData.price.priceSort = updatedData.price.et.special === undefined || updatedData.price.et.special === null ? updatedData.price.et.normal : updatedData.price.et.special;
     if (updatedData.autoSlug) {
         // On met à jour le slug du produit
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
     }
     try {
-        const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, updatedData, {new: true});
+        const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
         return cb(null, updPrd);
     } catch (err) {
         return cb(err);
@@ -57,7 +57,7 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
     // TODO P2: On ne peut pas avoir deux sections avec la même référence
     // On valide les produits qui sont reliés à des sections
     let isValid = true;
-    let i = 0;
+    let i       = 0;
     while (isValid && i < this.bundle_sections.length) {
         isValid = validateBySection(this.bundle_sections[i], item);
         i++;
@@ -80,12 +80,12 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
             }
         }
     }
-    item.price = {
+    item.price  = {
         // TODO P3 : se baser sur le produit normal pour ce schémas - Request somewhere later
         vat  : {rate: this.price.tax},
         unit : {et: this.price.et.normal, ati: this.price.ati.normal}
     };
-    item.type = 'bundle';
+    item.type   = 'bundle';
     const _cart = await this.basicAddToCart(cart, item);
     return _cart;
 };

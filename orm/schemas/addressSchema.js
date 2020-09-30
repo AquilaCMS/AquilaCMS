@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const Schema   = mongoose.Schema;
+const mongoose     = require('mongoose');
+const aquilaEvents = require('../../utils/aquilaEvents');
+const Schema       = mongoose.Schema;
 
 /**
  * @typedef {object} AddressSchema

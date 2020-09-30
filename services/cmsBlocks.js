@@ -1,6 +1,6 @@
-const {CmsBlocks}      = require('../orm/models');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const NSErrors         = require('../utils/errors/NSErrors');
+const {CmsBlocks}  = require('../orm/models');
+const QueryBuilder = require('../utils/QueryBuilder');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];
@@ -9,7 +9,7 @@ const queryBuilder     = new QueryBuilder(CmsBlocks, restrictedFields, defaultFi
 const getCMSBlocks = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
-const getCMSBlock = async (PostBody) => {
+const getCMSBlock  = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 

@@ -17,21 +17,21 @@ const getComponent = async (componentName, code, authorization = null) => {
     let PostBody;
     switch (componentName) {
     case 'menu':
-        models = require('../orm/models/categories');// categories/roots
+        models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
-        const X = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, authorization);
+        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, authorization);
         return X;
     case 'cms':
-        models = require('../orm/models/cmsBlocks');
+        models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
-        PostBody = {filter: {code}, structure: {content: 1, translation: 1}};
+        PostBody               = {filter: {code}, structure: {content: 1, translation: 1}};
         return cmsBlockServices.getCMSBlock(PostBody);
     case 'gallery':
-        models = require(`../orm/models/${componentName}`);
+        models               = require(`../orm/models/${componentName}`);
         const ServiceGallery = require(`./${componentName}`);
         return ServiceGallery.getItemsGallery(code);
     case 'agenda':
-        models = require(`../orm/models/${componentName}`);
+        models              = require(`../orm/models/${componentName}`);
         const ServiceAgenda = require(`./${componentName}`);
         return ServiceAgenda.getAgendaByCode(code);
     default:

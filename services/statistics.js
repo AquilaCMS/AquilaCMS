@@ -20,7 +20,7 @@ exports.setProductViews = function (product_id) {
  */
 exports.generateStatistics = function (data) {
     try {
-        const model = data.currentRoute;
+        const model     = data.currentRoute;
         const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
@@ -45,9 +45,9 @@ exports.getGlobaleStats = async function () {
  * Get Globale Stat (accueil admin)
  */
 async function getGlobalStat(periode) {
-    let datas           = {};
-    let periodeStart    = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
-    let periodeEnd      = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
+    let datas        = {};
+    let periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+    let periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
 
     if (periode === 'MONTH') {
         periodeStart = periodeStart.add(-30, 'days');
@@ -89,9 +89,9 @@ async function getGlobalStat(periode) {
     }
 
     // --- Fréquentation ---
-    let attendance       = 0;
+    let attendance = 0;
     if (periode === 'MONTH' || periode === 'YESTERDAY') {
-        const attendanceTab  = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
+        const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
         for ( let i = 0, _len = attendanceTab.length; i < _len; i++ ) {
             attendance += attendanceTab[i].value;
         }
@@ -127,8 +127,8 @@ exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd)
         granularityQuery.day = {$substr: ['$oldCart.date', 8, 2]};// {$dayOfMonth: "$oldCart.date"};
     }
 
-    const attendanceTab  = await serviceStats.getHistory('oldCart', periodeStart, periodeEnd, granularityQuery);
-    let datas = [];
+    const attendanceTab = await serviceStats.getHistory('oldCart', periodeStart, periodeEnd, granularityQuery);
+    let datas           = [];
 
     datas = pushDatas(attendanceTab, datas);
 
@@ -184,11 +184,11 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
         for ( let i = 0, _len = allOrders[ii].items.length; i < _len; i++ ) {
             const currentItem = allOrders[ii].items[i];
-            const currentId = currentItem.code;
+            const currentId   = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
             const realProduct = await require('./products').getProductById(currentItem.id._id);
-            let link = '';
+            let link          = '';
             if (realProduct) {
                 link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
             }
@@ -222,7 +222,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
                         {v: datas[index].c[7].v + (currentItem.price.unit.ati * currentItem.quantity)} // cattc
                     ]
                 };
-                datas[index] = currentData;
+                datas[index]      = currentData;
             }
         }
     }

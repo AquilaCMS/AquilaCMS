@@ -1,6 +1,6 @@
-const jwt  = require('jsonwebtoken');
-const NSErrors = require('../utils/errors/NSErrors');
-const {authenticate} = require('./passport');
+const jwt               = require('jsonwebtoken');
+const NSErrors          = require('../utils/errors/NSErrors');
+const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
 
 /**
@@ -14,7 +14,7 @@ const authentication = async (req, res, next) => {
 
         if (decoded.type === 'USER') {
             const user = await authenticate(req, res);
-            req.info = user.info;
+            req.info   = user.info;
             return next();
         }
         if (decoded.type === 'GUEST') {
@@ -56,7 +56,7 @@ const generateJWTToken = (res, user, isAdmin) => {
         }}, global.envFile.jwt.secret, {
         expiresIn : 172800 // 48 hours in second
     });
-    token = `JWT ${token}`;
+    token     = `JWT ${token}`;
 
     if (!isAdmin) {
         const currentDate = new Date();

@@ -20,9 +20,9 @@ const TrademarksSchema = new Schema({
 TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb ) {
     const res = await this.find({name: trademarkName});
     if (res.length === 0) {
-        const t = {name: trademarkName};
+        const t               = {name: trademarkName};
         const ModelTrademarks = mongoose.model('trademarks', TrademarksSchema);
-        const tm = new ModelTrademarks(t);
+        const tm              = new ModelTrademarks(t);
         tm.save();
     }
     cb(trademarkName, res);

@@ -13,7 +13,7 @@ const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
 const ServiceShipment   = require('./shipment');
-const ServicesProducts   = require('./products');
+const ServicesProducts  = require('./products');
 const ServiceAuth       = require('./auth');
 const servicesTerritory = require('./territory');
 
@@ -67,13 +67,13 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
  */
 const setCartAddresses = async (cartId, addresses) => {
     const addressesType = [{type: 'delivery', name: 'livraison'}, {type: 'billing', name: 'facturation'}];
-    const update = {};
+    const update        = {};
     let err;
     let addressType;
     let updAddress;
     for (let i = 0; i < addressesType.length; i++) {
         addressType = addressesType[i];
-        updAddress = addresses[addressType.type];
+        updAddress  = addresses[addressType.type];
         if (updAddress) {
             update[`addresses.${addressType.type}`] = updAddress;
         }
@@ -107,7 +107,7 @@ const deleteCartItem = async (cartId, itemId) => {
     if (itemIndex > -1) {
         if (global.envConfig.stockOrder.bookingStock === 'panier') {
             const ServicesProducts = require('./products');
-            const cartItem = cart.items[itemIndex];
+            const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
                 await ServicesProducts.updateStock(cartItem.id._id, cartItem.quantity);
             } else if (cartItem.type === 'bundle') {
@@ -164,7 +164,7 @@ const addItem = async (req) => {
             ) {
                 continue;
             } else {
-                req.body.item._id = cart.items[index]._id.toString();
+                req.body.item._id       = cart.items[index]._id.toString();
                 req.body.item.quantity += cart.items[index].quantity;
                 delete req.body.item.id;
                 delete req.body.item.weight;
@@ -175,9 +175,9 @@ const addItem = async (req) => {
     if (_product.translation[_lang.code]) {
         req.body.item.name = _product.translation[_lang.code].name;
     }
-    req.body.item.code = _product.code;
+    req.body.item.code  = _product.code;
     req.body.item.image = require('../utils/medias').getProductImageUrl(_product);
-    const idGift = mongoose.Types.ObjectId();
+    const idGift        = mongoose.Types.ObjectId();
     if (req.body.item.parent) {
         req.body.item._id = idGift;
     }
@@ -191,8 +191,8 @@ const addItem = async (req) => {
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
-    cart = data;
-    cart = await ServicePromo.checkForApplyPromo(user, cart, _lang.code);
+    cart           = data;
+    cart           = await ServicePromo.checkForApplyPromo(user, cart, _lang.code);
     const _newCart = await cart.save();
     if (req.body.item.parent) {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
@@ -210,7 +210,7 @@ const updateQty = async (req) => {
         throw NSErrors.InactiveCart;
     }
 
-    const item = cart.items.find((item) => item._id.toString() === req.body.item._id);
+    const item     = cart.items.find((item) => item._id.toString() === req.body.item._id);
     const _product = await Products.findOne({_id: item.id});
 
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
@@ -276,7 +276,7 @@ const checkCountryTax = async (_cart, _user) => {
     try {
         if (_cart.addresses && _cart.addresses.billing && _user.billing_address >= 0) {
             const countryCode = _cart.addresses.billing.isoCountryCode || _user.addresses[_user.billing_address].isoCountryCode;
-            const _country = await servicesTerritory.getTerritory({filter: {code: countryCode}});
+            const _country    = await servicesTerritory.getTerritory({filter: {code: countryCode}});
 
             if (_country) {
                 if (_country.taxeFree) { // Pas de taxe
@@ -322,13 +322,13 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                 // Si il y a des codes promo qui s'appliquent sur des items
                 if (_cart.promos[0].productsId && _cart.promos[0].productsId.length) {
                     for (let i = 0; i < _cart.promos[0].productsId.length; i++) {
-                        const discountProduct = _cart.promos[0].productsId[i];
+                        const discountProduct                      = _cart.promos[0].productsId[i];
                         const {discountATI, discountET, productId} = discountProduct;
-                        const itemFound = _cart.items.find((item) => item.id.toString() === productId.toString());
+                        const itemFound                            = _cart.items.find((item) => item.id.toString() === productId.toString());
                         if (itemFound) {
                             // Le priceTotal sera recalculé automatiquement
                             itemFound.price.unit.ati -= discountATI;
-                            itemFound.price.unit.et -= discountET;
+                            itemFound.price.unit.et  -= discountET;
                         }
                     }
                 }
@@ -353,7 +353,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                     for (let j = 0; j < cartItem.selections.length; j++) {
                         const section = cartItem.selections[j];
                         for (let k = 0; k < section.products.length; k++) {
-                            const productId = section.products[k];
+                            const productId        = section.products[k];
                             const _product_section = await Products.findOne({_id: productId.id});
                             if (_product_section.type === 'simple') {
                                 if ((_product_section.stock.orderable) === false) {
@@ -366,10 +366,10 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                 }
             }
         }
-        const cartObj = _cart.toObject();
-        const priceTotal = cartObj.priceTotal;
+        const cartObj       = _cart.toObject();
+        const priceTotal    = cartObj.priceTotal;
         const priceSubTotal = cartObj.priceSubTotal;
-        priceTotal.paidTax = await checkCountryTax(cartObj, _user);
+        priceTotal.paidTax  = await checkCountryTax(cartObj, _user);
 
         const newOrder = {
             items          : cartObj.items.filter((it) => it.quantity > 0),
@@ -464,7 +464,7 @@ const removeOldCarts = async () => {
             // On gère les stock et reservation panier
             if (bookingStock === 'panier') {
                 const ServicesProducts = require('./products');
-                const cartItem = carts[cartIndex].items[cartItemIndex];
+                const cartItem         = carts[cartIndex].items[cartItemIndex];
                 if (cartItem.type === 'simple') {
                     await ServicesProducts.updateStock(cartItem.id, cartItem.quantity);
                 } else if (cartItem.type === 'bundle') {
@@ -508,9 +508,9 @@ const linkCustomerToCart = async (cart, req) => {
                 email : user.info.email,
                 phone : user.info.phone
             };
-            const paidTax = await checkCountryTax(cart, user.info);
+            const paidTax  = await checkCountryTax(cart, user.info);
             await Cart.findOneAndUpdate({_id: cart._id}, {customer, paidTax}, {new: true});
-            cart.paidTax = paidTax;
+            cart.paidTax  = paidTax;
             cart.customer = customer;
         }
     }
@@ -518,19 +518,19 @@ const linkCustomerToCart = async (cart, req) => {
 };
 
 const updateDelivery = async (datas) => {
-    let {shipment} = datas;
+    let {shipment}                       = datas;
     const {lang, cartId, isoCountryCode} = datas;
-    const oCart = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
+    const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
     if (!shipment.countries || !shipment.preparation) {
         const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
-        shipment = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
+        shipment        = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
     }
-    const country = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
-    const delaysT = country.translation;
-    const delays = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
+    const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
+    const delaysT       = country.translation;
+    const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
     const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
-    const vat = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
-    const delivery = {
+    const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
+    const delivery      = {
         method : shipment._id,
         value  : {
             ati : arrayPrices[shipment.code] ? arrayPrices[shipment.code] : 0,
@@ -548,13 +548,13 @@ const updateDelivery = async (datas) => {
             unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
         }
     };
-    const cart = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
+    const cart          = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
     if (!cart) {
         throw NSErrors.CartInactive;
     }
     if (cart.orderReceipt.method === 'delivery') {
         cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
-        cart.addresses.billing = cart.customer.id.addresses[cart.customer.id.billing_address];
+        cart.addresses.billing  = cart.customer.id.addresses[cart.customer.id.billing_address];
         await cart.save();
     }
     return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
@@ -589,10 +589,10 @@ const _expireCarts = async () => {
     expiredCarts.forEach(function (currCart) {
         let nbItem = 0;
         currCart.items.forEach(async (item) => {
-            let where = {id: item.id, 'carted.id_cart': currCart._id, 'carted.qty': item.qty};
+            let where  = {id: item.id, 'carted.id_cart': currCart._id, 'carted.qty': item.qty};
             let action = {$pull: {carted: {id_cart: currCart._id}}};
             if (item.variation_id) {
-                where['carted.id_variation'] = item.variation_id;
+                where['carted.id_variation']     = item.variation_id;
                 action.$pull.carted.id_variation = item.variation_id;
             }
 
@@ -600,7 +600,7 @@ const _expireCarts = async () => {
             where = {id: item.product_id, qty: {$ne: null}};
             if (item.variation_id) {
                 where['variation_event._id'] = item.variation_id;
-                action = {$inc: {'variation_event.$.qty': item.qty}};
+                action                       = {$inc: {'variation_event.$.qty': item.qty}};
             } else {
                 action = {$inc: {qty: item.qty}};
             }

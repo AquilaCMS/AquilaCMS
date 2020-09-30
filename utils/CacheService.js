@@ -11,7 +11,7 @@ const NodeCache = require('node-cache');
 class CacheService {
     constructor(ttlSeconds) {
         this.cache = new NodeCache({stdTTL: ttlSeconds, useClones: false});
-        this.ttl = ttlSeconds;
+        this.ttl   = ttlSeconds;
     }
 
     async get(key, storeFunction) {

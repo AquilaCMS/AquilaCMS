@@ -1,5 +1,5 @@
-const {Territory}      = require('../orm/models');
-const QueryBuilder     = require('../utils/QueryBuilder');
+const {Territory}  = require('../orm/models');
+const QueryBuilder = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -9,7 +9,7 @@ exports.getTerritories = async function (PostBody) {
     return queryBuilder.find(PostBody);
 };
 
-exports.getTerritory = async function (PostBody) {
+exports.getTerritory     = async function (PostBody) {
     return queryBuilder.findOne(PostBody);
 };
 exports.getTerritoryById = async function (id, PostBody = null) {
@@ -31,7 +31,7 @@ exports.setTerritory = async function (territory) {
     if (territory._id) {
         delete territory._id;
     }
-    territory.type = 'country';
+    territory.type     = 'country';
     territory.children = [];
 
     if (typeof _id === 'undefined') {

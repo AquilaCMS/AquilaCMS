@@ -222,7 +222,7 @@ async function cancelOrderRequest(req, res, next) {
  * @deprecated
  */
 async function payOrder(req, res, next) {
-    const lang = ServiceLanguages.getDefaultLang(req.params.lang);
+    const lang  = ServiceLanguages.getDefaultLang(req.params.lang);
     const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
     if (!order) {
         return next(NSErrors.OrderNotFound);

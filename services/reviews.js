@@ -9,7 +9,7 @@ const getAggregateReviews = async (body) => {
     if (!body.page) {
         body.page = 1;
     }
-    const {Products} = require('../orm/models');
+    const {Products}    = require('../orm/models');
     const reviewsUnwind = await Products.aggregate([{
         $match : body.filter
     }, {
@@ -27,14 +27,14 @@ const getAggregateReviews = async (body) => {
     }, {
         $limit : limit
     }]);
-    const tCount = await Products.aggregate([{
+    const tCount        = await Products.aggregate([{
         $match : body.filter
     }, {
         $unwind : {path: '$reviews.datas'}
     }, {$match: body.match}, {
         $count : 'count'
     }]);
-    let count = 0;
+    let count           = 0;
     if (tCount.length) {
         count = tCount[0].count;
     }
@@ -50,7 +50,7 @@ const getAggregateReviews = async (body) => {
  */
 const setProductReview = async (idProduct, user = null, review, title, rate, lang, questions = [], ipClient = null) => {
     const {Products} = require('../orm/models');
-    const product = await Products.findById(idProduct);
+    const product    = await Products.findById(idProduct);
     if (!product) {
         throw NSErrors.NotFound;
     }
@@ -63,12 +63,12 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
             throw NSErrors.NotFound;
         }
     }
-    let name = 'Anonymous';
+    let name      = 'Anonymous';
     let id_client = null;
     if (user) {
-        name = '';
+        name                             = '';
         const {firstname, lastname, _id} = user.info;
-        id_client = _id;
+        id_client                        = _id;
         if (firstname) name += firstname;
         if (lastname) name += ` ${lastname.trim().substring(0, 1)}.`;
     }
@@ -162,7 +162,7 @@ const computeAverageRateAndCountReviews = async (product) => {
     // Permet pour chaque question de définir si elle a été set a true, si oui alors question.reviews_nb sera = a 0 et
     // on incrémentera son nombre pour chaque produit contenant cette question
     const oSumQuestion = {};
-    let count = 0;
+    let count          = 0;
     // On compte chaque review visible et verify
     for (let i = 0, l = product.reviews.datas.length; i < l; i++) {
         if (!product.reviews.datas[i].visible || !product.reviews.datas[i].verify) continue;
@@ -182,7 +182,7 @@ const computeAverageRateAndCountReviews = async (product) => {
                 oSumQuestion[question.idQuestion] = {reviews_nb: 0, sum: 0};
             }
             oSumQuestion[question.idQuestion].reviews_nb += 1;
-            oSumQuestion[question.idQuestion].sum += question.rate;
+            oSumQuestion[question.idQuestion].sum        += question.rate;
         }
     }
     if (product.reviews.questions && product.reviews.questions.length) {
@@ -190,13 +190,13 @@ const computeAverageRateAndCountReviews = async (product) => {
             const globalQuestion = product.reviews.questions[i];
             if (!oSumQuestion[globalQuestion.idQuestion.toString()]) continue;
             const {reviews_nb, sum} = oSumQuestion[globalQuestion.idQuestion];
-            globalQuestion.average = Number((sum / reviews_nb).toFixed(1));
+            globalQuestion.average  = Number((sum / reviews_nb).toFixed(1));
         }
     }
-    product.reviews.average = 0;
+    product.reviews.average    = 0;
     product.reviews.reviews_nb = 0;
     if (count) {
-        product.reviews.average = Number((sum / count).toFixed(1));
+        product.reviews.average    = Number((sum / count).toFixed(1));
         product.reviews.reviews_nb = count;
     }
 };

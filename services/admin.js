@@ -96,7 +96,7 @@ const controlAllDatas = async () => {
             // Detect duplicated
             if (utils.detectDuplicateInArray(category.children) && !fixChildrenDuplicated) {
                 fixChildrenDuplicated = true;
-                returnWarning += `<b>Category ${category.code}</b> contain duplicated children<br/>`;
+                returnWarning        += `<b>Category ${category.code}</b> contain duplicated children<br/>`;
             }
 
             // Verification des children (existe et valide)

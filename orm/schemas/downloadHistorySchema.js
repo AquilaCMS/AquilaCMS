@@ -1,6 +1,6 @@
-const mongoose      = require('mongoose');
-const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const mongoose = require('mongoose');
+const Schema   = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const DownloadHistory = new Schema({
     user : {

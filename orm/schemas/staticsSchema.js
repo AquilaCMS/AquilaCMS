@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const utils    = require('../../utils/utils');
+const mongoose            = require('mongoose');
+const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
-const Schema   = mongoose.Schema;
+const utilsDatabase       = require('../../utils/database');
+const Schema              = mongoose.Schema;
 
 /**
  * @typedef {object} StaticsSchema
@@ -43,7 +43,7 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};
-        translationKeys = Object.keys(self.translation);
+        translationKeys                      = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -57,8 +57,8 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
             }
 
             if (updateQuery) {
-                const slugEdit = {translation: {}};
-                slugEdit.translation[translationKeys[i]] = {};
+                const slugEdit                                = {translation: {}};
+                slugEdit.translation[translationKeys[i]]      = {};
                 slugEdit.translation[translationKeys[i]].slug = lang.slug;
                 updateQuery.updateOne(slugEdit);
             }
@@ -87,7 +87,7 @@ StaticsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 StaticsSchema.pre('save', async function (next) {
-    const errors = await StaticsSchema.statics.translationValidation(undefined, this);
+    const errors    = await StaticsSchema.statics.translationValidation(undefined, this);
     this.modifyDate = new Date();
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

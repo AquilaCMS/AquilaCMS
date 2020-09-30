@@ -45,7 +45,7 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
         // Reza de la qte
         await prdServices.updateStock(this._id, -item.quantity);
     }
-    item.type = 'simple';
+    item.type   = 'simple';
     const _cart = await this.basicAddToCart(cart, item, user, lang);
     return _cart;
 };

@@ -1,8 +1,8 @@
-const path = require('path');
-const nextBuild = require('next/dist/build').default;
+const path           = require('path');
+const nextBuild      = require('next/dist/build').default;
 const packageManager = require('./packageManager');
-const modulesUtils = require('./modules');
-const {isProd} = require('./server');
+const modulesUtils   = require('./modules');
+const {isProd}       = require('./server');
 
 /**
  * Compile the current theme
@@ -27,11 +27,11 @@ const loadTheme = async () => {
 
     // Language with i18n
     let i18nInstance = null;
-    let ns = null;
+    let ns           = null;
     try {
-        const oI18n = require(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n'));
+        const oI18n  = require(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n'));
         i18nInstance = oI18n.i18nInstance;
-        ns = oI18n.ns;
+        ns           = oI18n.ns;
     } catch (error) {
         console.error(error);
     }
