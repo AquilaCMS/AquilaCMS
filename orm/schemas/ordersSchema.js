@@ -1,15 +1,15 @@
-const autoIncrement     = require('mongoose-plugin-autoinc-fix');
+const autoIncrement = require('mongoose-plugin-autoinc-fix');
 
-const mongoose          = require('mongoose');
-const aquilaEvents      = require('../../utils/aquilaEvents');
+const mongoose     = require('mongoose');
+const aquilaEvents = require('../../utils/aquilaEvents');
 
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 
-const Schema            = mongoose.Schema;
-const ObjectId          = Schema.ObjectId;
+const Schema   = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const OrdersSchema = new Schema({
     number : {type: String, unique: true}, // pcf : W0000001 ++
@@ -256,11 +256,11 @@ docArray.discriminator('virtual', ItemVirtualSchema);
 OrdersSchema.plugin(autoIncrement.plugin, {model: 'orders', field: 'id', startAt: 1});
 
 OrdersSchema.pre('save', function (next) {
-    const s = `0000000${this.id}`;
+    const s     = `0000000${this.id}`;
     this.number = `W${s.substr(s.length - 7)}`;
 
     // On conserve certaines valeurs pour le post middleware
-    this.wasNew = this.isNew;
+    this.wasNew             = this.isNew;
     this.modifiedPathsArray = this.modifiedPaths();
 
     next();

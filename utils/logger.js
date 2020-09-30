@@ -1,8 +1,8 @@
 /* eslint-disable prefer-spread */
 /* eslint-disable prefer-rest-params */
-const winston = require('winston');
+const winston                      = require('winston');
 const {combine, timestamp, printf} = winston.format;
-const WinstonDailyRotateFile = require('winston-daily-rotate-file');
+const WinstonDailyRotateFile       = require('winston-daily-rotate-file');
 
 const transports = [];
 
@@ -43,13 +43,13 @@ module.exports = () => {
     if (global.envFile.logs && global.envFile.logs.override) {
         // https://stackoverflow.com/questions/56097580/override-console-logerror-with-winston-no-longer-working
         // Override the base console log with winston
-        console.log = function () {
+        console.log   = function () {
             return logger.info.apply(logger, arguments);
         };
         console.error = function () {
             return logger.error.apply(logger, arguments);
         };
-        console.info = function () {
+        console.info  = function () {
             return logger.warn.apply(logger, arguments);
         };
     }

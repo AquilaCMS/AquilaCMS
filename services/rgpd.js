@@ -45,7 +45,7 @@ const getOrdersByUser = async (id) => {
 const anonymizeOrdersByUser = async (id) => {
     const firstName = faker.name.firstName();
     const lastName  = faker.name.lastName();
-    const email  = faker.internet.email();
+    const email     = faker.internet.email();
     return Orders.updateMany({'customer.id': id}, {
         $set : {
             'customer.email'    : email,
@@ -65,7 +65,7 @@ const getCartsByUser = async (id) => {
 
 const getReviewsByUser = async (id) => {
     const products = await Products.find({'reviews.datas.id_client': id}).lean();
-    const datas = [];
+    const datas    = [];
     for (let i = 0; i < products.length; i++) {
         for (let j = 0; j < products[i].reviews.datas.length; j++) {
             if (products[i].reviews.datas[j].id_client.toString() === id.toString()) {
@@ -133,7 +133,7 @@ const anonymizeReviewsByUser = async (id) => {
 const anonymizeUser = async (id) => {
     const firstName = faker.name.firstName();
     const lastName  = faker.name.lastName();
-    const email  = faker.internet.email();
+    const email     = faker.internet.email();
     return Users.updateOne({_id: id}, {
         $set : {
             email,
@@ -176,7 +176,7 @@ const copyDatabase = async (cb) => {
 
 function mongodump(uri) {
     const data = MongoURI.parse(uri);
-    let cmd = createConnectionStringMongoose(data);
+    let cmd    = createConnectionStringMongoose(data);
     if (data.database) {
         cmd += ` --db ${data.database}`;
     }
@@ -193,7 +193,7 @@ function mongodump(uri) {
 
 function mongorestore(uri) {
     const data = MongoURI.parse(uri);
-    const cmd = createConnectionStringMongoose(data);
+    const cmd  = createConnectionStringMongoose(data);
     return new Promise((resolve, reject) => {
         exec(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`, (error, stdout) => {
             if (error) {
@@ -211,7 +211,7 @@ function mongorestore(uri) {
 const anonymizeDatabase = async (cb) => {
     // Connexion à la nouvelle database
     const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1];
-    const client = await MongoClient.connect(
+    const client       = await MongoClient.connect(
         global.envFile.db.replace(
             databaseName,
             `${databaseName}_anonymized`
@@ -221,15 +221,15 @@ const anonymizeDatabase = async (cb) => {
             useUnifiedTopology : true
         }
     );
-    const database = client.db(`${databaseName}_anonymized`);
+    const database     = client.db(`${databaseName}_anonymized`);
 
     // Génération d'un mot de passe commun
-    const hash = await bcrypt.hash('password', 10);
+    const hash  = await bcrypt.hash('password', 10);
     const users = await database.collection('users').find({}).toArray();
     for (let i = 0; i < users.length; i++) {
         const firstName = faker.name.firstName();
-        const lastName = faker.name.lastName();
-        const email = faker.internet.email();
+        const lastName  = faker.name.lastName();
+        const email     = faker.internet.email();
         await database.collection('newsletters').findOneAndUpdate({
             email : users[i].email
         }, {
@@ -305,7 +305,7 @@ const anonymizeDatabase = async (cb) => {
         const datas = products[i].reviews.datas;
         for (let j = 0; j < products[i].reviews.datas.length; j++) {
             datas[j].ip_client = faker.internet.ip();
-            datas[j].name = faker.name.firstName();
+            datas[j].name      = faker.name.firstName();
             await database.collection('products').findOneAndUpdate({_id: products[i]._id}, {
                 $set : {
                     'reviews.datas' : datas
@@ -350,14 +350,14 @@ const dropDatabase = async () => {
             useUnifiedTopology : true
         }
     );
-    const db = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
+    const db     = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
     await db.dropDatabase();
 };
 
 const deleteUserDatas = async (id) => {
     // User
     const thisUser = await Users.findOne({_id: id});
-    const email = thisUser.email;
+    const email    = thisUser.email;
     console.log(`User removed : ${email}`);
     await thisUser.remove();
 

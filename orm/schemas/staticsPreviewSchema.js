@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const Statics  = require('./staticsSchema');
+const mongoose      = require('mongoose');
+const Statics       = require('./staticsSchema');
 const utilsDatabase = require('../../utils/database');
-const Schema   = mongoose.Schema;
+const Schema        = mongoose.Schema;
 
 /**
  * @typedef {StaticsSchema} StaticsPreviewSchema
@@ -18,7 +18,7 @@ StaticsPreviewSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 StaticsPreviewSchema.pre('save', async function (next) {
-    const errors = await StaticsPreviewSchema.statics.translationValidation(undefined, this);
+    const errors    = await StaticsPreviewSchema.statics.translationValidation(undefined, this);
     this.modifyDate = new Date();
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

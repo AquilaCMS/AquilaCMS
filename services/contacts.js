@@ -1,7 +1,7 @@
-const {Contacts}     = require('../orm/models');
-const ServiceMail    = require('./mail');
-const QueryBuilder   = require('../utils/QueryBuilder');
-const queryBuilder   = new QueryBuilder(Contacts, [], []);
+const {Contacts}   = require('../orm/models');
+const ServiceMail  = require('./mail');
+const QueryBuilder = require('../utils/QueryBuilder');
+const queryBuilder = new QueryBuilder(Contacts, [], []);
 
 const getContacts = async (body) => {
     return queryBuilder.find(body.PostBody);

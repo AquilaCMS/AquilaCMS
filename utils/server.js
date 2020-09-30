@@ -1,9 +1,9 @@
-const path              = require('path');
-const spdy              = require('spdy');
-const mongoose          = require('mongoose');
-const {v4: uuidv4}      = require('uuid');
-const NSErrors          = require('./errors/NSErrors');
-const fs                = require('./fsp');
+const path         = require('path');
+const spdy         = require('spdy');
+const mongoose     = require('mongoose');
+const {v4: uuidv4} = require('uuid');
+const NSErrors     = require('./errors/NSErrors');
+const fs           = require('./fsp');
 
 /**
  * return current value of property
@@ -45,10 +45,10 @@ const getOrCreateEnvFile = async () => {
             envFile = JSON.parse(envFile);
             if (!envFile[getEnv('AQUILA_ENV')]) {
                 console.error('no correct NODE_ENV specified, generating new env in env.json');
-                const newEnv = generateNewEnv(envExample);
+                const newEnv                  = generateNewEnv(envExample);
                 envFile[getEnv('AQUILA_ENV')] = newEnv[getEnv('AQUILA_ENV')];
             }
-            const merged = deepObjectVerification(envFile[getEnv('AQUILA_ENV')], JSON.parse(envExample)['{{environnement}}']);
+            const merged                  = deepObjectVerification(envFile[getEnv('AQUILA_ENV')], JSON.parse(envExample)['{{environnement}}']);
             envFile[getEnv('AQUILA_ENV')] = merged;
         } else {
             envFile = generateNewEnv(envExample);
@@ -166,9 +166,9 @@ const getUploadDirectory = () => {
 
 const generateNewEnv = (envExample) => {
     let env = envExample;
-    env = env.toString();
-    env = env.replace('{{environnement}}', getEnv('AQUILA_ENV'));
-    env = env.replace('{{secretKey}}', uuidv4());
+    env     = env.toString();
+    env     = env.replace('{{environnement}}', getEnv('AQUILA_ENV'));
+    env     = env.replace('{{secretKey}}', uuidv4());
     return JSON.parse(env);
 };
 

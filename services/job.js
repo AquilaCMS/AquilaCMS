@@ -21,7 +21,7 @@ const initAgendaDB = async () => {
             }
             if (!tAgendaJobs) return;
 
-            const tJobsName = tAgendaJobs.map((job) => job.attrs.name);
+            const tJobsName   = tAgendaJobs.map((job) => job.attrs.name);
             const tJobsSystem = [
                 'Sitemap',
                 'Segmentation cat',
@@ -165,7 +165,7 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
     let query;
     if (_id) query = {_id: mongoose.Types.ObjectId(_id)};
     else query = {name};
-    const jobs = await agenda.jobs(query);
+    const jobs   = await agenda.jobs(query);
     const exists = !!jobs.length;
     if (exists && jobs[0].attrs.failReason) {
         // On réinitialise le failReason
@@ -178,7 +178,7 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
         // Permet de calculer le prochain lancement du cron si une erreur survient et que nextRunAt devient null suite a l'erreur
         if (jobs[0].attrs.nextRunAt == null || jobs[0].attrs.repeatInterval !== repeatInterval) {
             jobs[0].repeatEvery(repeatInterval);
-            jobs[0].attrs.lastRunAt = new Date();
+            jobs[0].attrs.lastRunAt      = new Date();
             jobs[0].attrs.lastFinishedAt = new Date();
             jobs[0].computeNextRunAt();
         }
@@ -187,12 +187,12 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
             // Si le job n'est pas créé par le serveur alors on autorise pas la modification du job de type system
             // On reprend donc les anciennes valeurs
             if (!fromServer) {
-                name = jobs[0].attrs.name;
-                api = jobs[0].attrs.data.api;
+                name    = jobs[0].attrs.name;
+                api     = jobs[0].attrs.data.api;
                 comment = jobs[0].attrs.data.comment;
-                method = jobs[0].attrs.data.method;
-                flag = jobs[0].attrs.data.flag;
-                params = jobs[0].attrs.data.params;
+                method  = jobs[0].attrs.data.method;
+                flag    = jobs[0].attrs.data.flag;
+                params  = jobs[0].attrs.data.params;
             } else {
                 // Si le serveur créé le job en appelant le service setJob alors on reprend lastExecutionResult
                 // car il ne sera pas passé en parametre du setJob, sans ca le lastExecutionResult sera effacé
@@ -204,7 +204,7 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
         }
         await jobs[0].save();
         // Nous devons a chaque fois recréer le job afin que "every" valide les nouvelles data saisies par l'utilisateur (cf:failReason si le repeatInterval est faux)
-        const oAgenda = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params});
+        const oAgenda          = await agenda.every(repeatInterval, name, {api, comment, method, flag, lastExecutionResult, params});
         oAgenda.attrs.disabled = jobs[0].attrs.disabled;
         return oAgenda;
     }
@@ -227,7 +227,7 @@ const setJob = async (_id, name, repeatInterval, api, comment = '', method = 'se
  * @param job : object : le job en BDD
  */
 const defineJobOnStartUp = async (job) => {
-    const {name, repeatInterval, disabled, data} = job.attrs;
+    const {name, repeatInterval, disabled, data}                    = job.attrs;
     const {api, comment, method, flag, lastExecutionResult, params} = data;
     // définition de la tâche que devra executer l'agenda
     await agendaDefine(name);
@@ -249,7 +249,7 @@ const defineJobOnStartUp = async (job) => {
  */
 const deleteJobById = async (_id) => {
     const query = {_id: mongoose.Types.ObjectId(_id)};
-    const jobs = await agenda.jobs(query);
+    const jobs  = await agenda.jobs(query);
     if (!jobs.length) throw NSErrors.JobNotFound;
     if (jobs[0].attrs.data.flag === 'system') throw NSErrors.JobAgendaCannotDeleteSystem;
     return agenda.cancel(query);
@@ -263,7 +263,7 @@ const deleteJobById = async (_id) => {
  */
 const deleteModuleJobByName = async (name) => {
     const query = {name};
-    const jobs = await agenda.jobs(query);
+    const jobs  = await agenda.jobs(query);
     if (!jobs.length) throw NSErrors.JobNotFound;
     return agenda.cancel(query);
 };
@@ -293,7 +293,7 @@ const getPlayImmediateJob = async (_id) => {
     try {
         if (foundJobs.length !== 1) throw NSErrors.JobNotFound;
         console.log(`${new Date()} -> Immediate - Début du job ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
-        const start = new Date();
+        const start                       = new Date();
         foundJobs[0].attrs.lastRunAt      = start;
         foundJobs[0].attrs.lastFinishedAt = start;
         await execDefine(foundJobs[0]);
@@ -314,15 +314,15 @@ const getPlayImmediateJob = async (_id) => {
  * @param {string} job.attrs.params
  */
 async function execDefine(job) {
-    let api      = job.attrs.data.api;
-    const params = job.attrs.data.params;
+    let api       = job.attrs.data.api;
+    const params  = job.attrs.data.params;
     let errorData = null;
     let result;
     // Nous devons appeler directement un service sans passer par une API
     if (api.startsWith('/services') || api.startsWith('/modules')) {
         try {
             if (api.endsWith('/')) api = api.substr(0, api.length - 1);
-            const funcName = api.substr(api.lastIndexOf('/') + 1);
+            const funcName   = api.substr(api.lastIndexOf('/') + 1);
             const modulePath = api.substr(0, api.lastIndexOf('/'));
             try {
                 result = await require(`..${modulePath}`)[funcName]();
@@ -340,7 +340,7 @@ async function execDefine(job) {
             throw error;
         }
     } else {
-        const {method} = job.attrs.data;
+        const {method}   = job.attrs.data;
         const httpMethod = method.toLowerCase();
         if (!['get', 'post'].includes(httpMethod)) {
             const error_method = {job, error: NSErrors.JobNotSupportedRequestMethod};

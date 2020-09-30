@@ -1,23 +1,23 @@
 require('dotenv').config();
-const express               = require('express');
-const passport              = require('passport');
-const path                  = require('path');
-const next                  = require('next').default;
-const i18nextMiddleware     = require('i18next-http-middleware');
-global.envPath              = null;
-global.envFile              = null;
-global.appRoot              = path.resolve(__dirname);
-global.port                 = process.env.PORT || 3010;
-global.defaultLang          = '';
-global.moduleExtend         = {};
-global.translate            = require('./utils/translate');
-const utils                 = require('./utils/utils');
-const npm                   = require('./utils/npm');
-const fs                    = require('./utils/fsp');
-const translation           = require('./utils/translation');
-const serverUtils           = require('./utils/server');
-const utilsModules          = require('./utils/modules');
-const utilsThemes           = require('./utils/themes');
+const express           = require('express');
+const passport          = require('passport');
+const path              = require('path');
+const next              = require('next').default;
+const i18nextMiddleware = require('i18next-http-middleware');
+global.envPath          = null;
+global.envFile          = null;
+global.appRoot          = path.resolve(__dirname);
+global.port             = process.env.PORT || 3010;
+global.defaultLang      = '';
+global.moduleExtend     = {};
+global.translate        = require('./utils/translate');
+const utils             = require('./utils/utils');
+const npm               = require('./utils/npm');
+const fs                = require('./utils/fsp');
+const translation       = require('./utils/translation');
+const serverUtils       = require('./utils/server');
+const utilsModules      = require('./utils/modules');
+const utilsThemes       = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -64,7 +64,7 @@ const initDatabase = async () => {
 
 const setEnvConfig = async () => {
     const {Configuration} = require('./orm/models');
-    global.envConfig = await Configuration.findOne();
+    global.envConfig      = await Configuration.findOne();
     if (!global.envConfig) {
         throw new Error('Configuration collection is missing');
     }
@@ -77,8 +77,8 @@ const initFrontFramework = async (server, themeFolder) => {
     const app = next({dev, dir: themeFolder});
     let handler;
     if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
-        const routes  = require(path.join(themeFolder, 'routes'));
-        handler = routes.getRequestHandler(app);
+        const routes = require(path.join(themeFolder, 'routes'));
+        handler      = routes.getRequestHandler(app);
     } else {
         handler = app.getRequestHandler();
     }
@@ -104,7 +104,7 @@ const initServer = async () => {
         await utils.checkOrCreateAquilaRegistryKey();
         console.log(`%s@@ Current theme : ${global.envConfig.environment.currentTheme}%s`, '\x1b[32m', '\x1b[0m');
         const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-        const compile = typeof global.envFile.devMode !== 'undefined'
+        const compile     = typeof global.envFile.devMode !== 'undefined'
             && typeof global.envFile.devMode.compile !== 'undefined'
             && !global.envFile.devMode.compile;
         if (!fs.existsSync(themeFolder) && !compile) {

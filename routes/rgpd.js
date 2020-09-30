@@ -24,11 +24,11 @@ async function exportData(req, res, next) {
     if (userVerified) {
         try {
             // On récupère les infos de l'user, ses commandes et ses factures
-            const userData = await rgpdServices.getUserById(userVerified);
-            const orders = await rgpdServices.getOrdersByUser(userVerified);
-            const bills = await rgpdServices.getBillsByUser(userVerified);
-            const carts = await rgpdServices.getCartsByUser(userVerified);
-            const reviews = await rgpdServices.getReviewsByUser(userVerified);
+            const userData  = await rgpdServices.getUserById(userVerified);
+            const orders    = await rgpdServices.getOrdersByUser(userVerified);
+            const bills     = await rgpdServices.getBillsByUser(userVerified);
+            const carts     = await rgpdServices.getCartsByUser(userVerified);
+            const reviews   = await rgpdServices.getReviewsByUser(userVerified);
             let modulesData = '';
 
             const _modules = await Modules.find({active: true});
@@ -36,8 +36,8 @@ async function exportData(req, res, next) {
                 for (const module of _modules) {
                     await new Promise(async (resolve, reject) => {
                         if (fs.existsSync(`${appdirname}/modules/${module.name}/rgpd.js`)) {
-                            const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
-                            const data = await rgpd.exportData(userData, resolve, reject);
+                            const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
+                            const data   = await rgpd.exportData(userData, resolve, reject);
                             modulesData += `\n\n${module.name} :\n`;
                             modulesData += JSON.stringify(data, null, 4).replace(/,\n/g, '\n').replace(/""/g, '\'\'').replace(/["]+/g, '');
                         }

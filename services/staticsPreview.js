@@ -1,5 +1,5 @@
-const ModelPreview     = require('../orm/models/staticsPreview');
-const QueryBuilder     = require('../utils/QueryBuilder');
+const ModelPreview = require('../orm/models/staticsPreview');
+const QueryBuilder = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'code', 'translation'];

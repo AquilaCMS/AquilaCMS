@@ -24,6 +24,7 @@ ProductServices.factory("ProductsV2", [
             searchObj  : {method: "POST", params: {type: "products", id: 'searchObj'}},
             getPromos: {method: "POST", params: {type: 'product', id: 'promos'}, isArray: false},
             getDownloadHistory: {method: "POST", params: {type: 'downloadHistory'}, isArray: false},
+            preview: {method: "POST", params: {type: 'product', id: 'preview'}, isArray: false},
         });
     }
 ]);

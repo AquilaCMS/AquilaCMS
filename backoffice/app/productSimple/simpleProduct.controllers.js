@@ -152,6 +152,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         toastService.toast("success", "Produit sauvegardé !");
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
+                            $scope.product = savedPrd;
                             genAttributes();
                         } else {
                             window.location.href = `#/products/${savedPrd.type}/${savedPrd.code}`;

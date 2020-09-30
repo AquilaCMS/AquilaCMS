@@ -76,9 +76,9 @@ const attributeCorrectOldTypeName = (type) => {
 
 const checkModuleRegistryKey = async (moduleName) => {
     try {
-        let registryFile = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
+        let registryFile    = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
         const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
-        registryFile = JSON.parse((await fs.readFile(registryFile)));
+        registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {
             const result = await axios.post('https://shop.aquila-cms.com/api/v1/register', {
                 registryKey : registryFile.code,
@@ -101,14 +101,14 @@ const checkModuleRegistryKey = async (moduleName) => {
 const checkOrCreateAquilaRegistryKey = async () => {
     try {
         const {Configuration, Users} = require('../orm/models');
-        const configuration = await Configuration.findOne({});
-        const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        const configuration          = await Configuration.findOne({});
+        const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
         if (!configuration.licence || !configuration.licence.registryKey) {
             configuration.licence = {
                 registryKey : uuidv4(),
                 lastCheck   : require('moment')().toISOString()
             };
-            const firstAdmin = await Users.findOne({isAdmin: true}, {_id: 1, isAdmin: 1, email: 1, firstname: 1, lastname: 1, fullname: 1});
+            const firstAdmin      = await Users.findOne({isAdmin: true}, {_id: 1, isAdmin: 1, email: 1, firstname: 1, lastname: 1, fullname: 1});
             await axios.post('https://shop.aquila-cms.com/api/v1/register', {
                 registryKey : configuration.licence.registryKey,
                 aquilaVersion,
@@ -116,9 +116,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
             });
         } else {
             if (require('moment')().toISOString() >= require('moment')(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
-                configuration.licence = {
-                    lastCheck : require('moment')().toISOString()
-                };
+                configuration.licence.lastCheck = require('moment')().toISOString();
                 await axios.post('https://shop.aquila-cms.com/api/v1/register/check', {
                     registryKey : configuration.licence.registryKey,
                     aquilaVersion,
@@ -161,14 +159,14 @@ const detectDuplicateInArray = (a) => {
 const downloadFile = async (url, dest) => {
     // on creer les dossier
     fs.mkdirSync(dest.replace(path.basename(dest), ''), {recursive: true});
-    const file = fs.createWriteStream(dest);
+    const file        = fs.createWriteStream(dest);
     const downloadDep = url.includes('https://') ? require('https') : require('http');
     return new Promise((resolve, reject) => {
         downloadDep.get(url, (res) => {
             if (res.statusCode !== 200) {
                 return reject('File is not found');
             }
-            const len = parseInt(res.headers['content-length'], 10);
+            const len      = parseInt(res.headers['content-length'], 10);
             let downloaded = 0;
             res.pipe(file);
             res.on('data', (chunk) => {

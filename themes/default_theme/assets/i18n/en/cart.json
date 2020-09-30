@@ -24,6 +24,7 @@
             },
             "sousTotal": "SUBTOTAL",
             "total": "TOTAL price",
+            "estimated_delivery": "Estimated delivery",
             "additionnal_fees": "Add. fees incl tax",
             "toOrder": "CONFIRM THE ORDER",
             "condition_agree": "Accept conditions",

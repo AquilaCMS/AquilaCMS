@@ -1,14 +1,14 @@
-const fs           = require('fs');
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const NSErrors     = require('../../utils/errors/NSErrors');
-const utils        = require('../../utils/utils');
+const fs                  = require('fs');
+const mongoose            = require('mongoose');
+const aquilaEvents        = require('../../utils/aquilaEvents');
+const NSErrors            = require('../../utils/errors/NSErrors');
+const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
-const translation  = require('../../utils/translation');
+const utilsDatabase       = require('../../utils/database');
+const translation         = require('../../utils/translation');
 
-const Schema       = mongoose.Schema;
-const ObjectId     = Schema.ObjectId;
+const Schema   = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -171,10 +171,33 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     }
 
     let translationKeys = Object.keys(self.translation);
+    if (translationKeys.length !== 0) {
+        const languages = await mongoose.model('languages').find({status: 'visible'});
+        for (const lang of languages) {
+            if (!translationKeys.includes(lang.code)) {
+                translationKeys.push(lang.code);
+                self.translation[lang.code] = {slug: utils.slugify(self.code)};
+            }
+        }
+    }
+
+    if (updateQuery && updateQuery.translation) {
+        for (const [key] of Object.entries(updateQuery.translation)) {
+            if (updateQuery.translation[key].slug === '') {
+                if (!updateQuery.translation[key].name) {
+                    updateQuery.translation[key].slug = utils.slugify(updateQuery.code);
+                } else {
+                    updateQuery.translation[key].slug = utils.slugify(updateQuery.translation[key].name);
+                }
+            } else {
+                updateQuery.translation[key].slug = utils.slugify(updateQuery.translation[key].slug);
+            }
+        }
+    }
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};
-        translationKeys = Object.keys(self.translation);
+        translationKeys                      = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -251,7 +274,7 @@ ProductsSchema.pre('updateOne', async function (next) {
 
 ProductsSchema.pre('save', async function (next) {
     this.price.priceSort = this.price.et.special === undefined || this.price.et.special === null ? this.price.et.normal : this.price.et.special;
-    const errors = await ProductsSchema.statics.translationValidation(undefined, this);
+    const errors         = await ProductsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
@@ -261,7 +284,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
         throw NSErrors.CartQuantityError;
     }
     const ServicePromo = require('../../services/promo');
-    const prd = await ServicePromo.checkPromoCatalog([item], user, lang);
+    const prd          = await ServicePromo.checkPromoCatalog([item], user, lang);
     if (prd && prd[0] && prd[0].price) {
         if (prd[0].price.et && prd[0].price.et.special !== undefined) {
             this.price.et.special = prd[0].price.et.special;

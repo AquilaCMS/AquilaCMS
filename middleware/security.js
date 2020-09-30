@@ -38,9 +38,9 @@ const securityForceFilter = (arrayFieldsToActivate) => {
             }
             // Active tous les champs "arrayFieldsToActivate"
             for (let index = 0; index < arrayFieldsToActivate.length; index++) {
-                const keyValue = arrayFieldsToActivate[index];
-                const key      = Object.keys(keyValue)[0];
-                const val      = Object.values(keyValue)[0];
+                const keyValue       = arrayFieldsToActivate[index];
+                const key            = Object.keys(keyValue)[0];
+                const val            = Object.values(keyValue)[0];
                 PostBody.filter[key] = val;
             }
         }

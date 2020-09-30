@@ -1,3 +1,3 @@
-const errors = require('./errors');
+const errors           = require('./errors');
 const additionnalError = {};
-module.exports = {...errors, ...additionnalError};
+module.exports         = {...errors, ...additionnalError};
