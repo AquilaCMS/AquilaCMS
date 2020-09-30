@@ -668,7 +668,8 @@ const createProduct = async (req) => {
         aquilaEvents.emit('aqProductCreated', result._id);
         return result;
     }
-    const res = await Products.create(req.body);
+    req.body.code = utils.slugify(req.body.code);
+    const res     = await Products.create(req.body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };
