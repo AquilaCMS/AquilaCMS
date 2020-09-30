@@ -239,22 +239,22 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     }
 
     if (updateQuery && updateQuery._id) {
-        //EDIT
+        // EDIT
         for (const lang of Object.keys(updateQuery.translation)) {
-            let translationPath = "translation." + lang + ".slug";
-            let filter = { _id: { $ne: updateQuery._id } };
+            const translationPath   = `translation.${lang}.slug`;
+            const filter            = {_id: {$ne: updateQuery._id}};
             filter[translationPath] = updateQuery.translation[lang].slug;
             if (await mongoose.model('products').countDocuments(filter) > 0) {
                 errors.push('slug déjà existant');
             }
         }
     } else {
-        //NEW
+        // NEW
         for (const lang of Object.keys(self.translation)) {
-            let translationPath = "translation."+lang+".slug"; 
-            let filter = { _id: { $ne: self._id }};
+            const translationPath   = `translation.${lang}.slug`;
+            const filter            = {_id: {$ne: self._id}};
             filter[translationPath] = self.translation[lang].slug;
-          if (await mongoose.model('products').countDocuments(filter) > 0) {
+            if (await mongoose.model('products').countDocuments(filter) > 0) {
                 errors.push('slug déjà existant');
             }
         }

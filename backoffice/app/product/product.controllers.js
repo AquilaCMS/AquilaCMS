@@ -349,13 +349,5 @@ ProductControllers.controller("nsProductGeneral", [
                 });
             });
         };
-
-        $scope.preview = function () {
-            ProductsV2.preview($scope.product, function (response) {
-                if (response && response.url) {
-                    window.open(response.url)
-                }
-            });
-        };
     }
 ]);

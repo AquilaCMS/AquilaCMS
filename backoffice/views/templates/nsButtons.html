@@ -6,6 +6,7 @@
         <div class="col-sm-7 col-sm-offset-3 text-right" style="margin-bottom: 1%">
             <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-disabled="disableSave" translate>ns.save</button>
             <button style="pointer-events:auto" type="button" class="btn btn-default" ng-click="saveAndQuit()" ng-disabled="disableSave" ng-hide="hideSaveAndQuit" translate>ns.saveQuit</button>
+            <button ng-repeat="btn in additionnalButtons" style="pointer-events:auto" type="button" class="btn btn-default" ng-class="btn.class" ng-disabled="btn.disableSave" ng-click="btn.onClick()" ng-style="btn.style" translate="{{btn.text}}"></button>
             <button style="pointer-events:auto" type="button" class="btn btn-default" ng-click="duplicateProduct()" ng-if="isEditMode && duplicateProduct" translate>ns.dup</button>
             <button style="pointer-events:auto" type="button" class="btn btn-danger" ng-click="remove()" ng-if="isEditMode" ng-hide="hideRemove" translate>ns.delete</button>
         </div>

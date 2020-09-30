@@ -3,13 +3,26 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi",
-    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi) {
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate",
+    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    if(!$scope.product.translation[$scope.adminLang] && !$scope.product.translation[$scope.adminLang].canonical)
+                    ProductsV2.preview($scope.product, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url)
+                        }
+                    });
+                },
+            }
+        ]
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
