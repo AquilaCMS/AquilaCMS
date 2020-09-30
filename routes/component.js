@@ -19,7 +19,7 @@ module.exports = function (app) {
 async function getComponent(req, res, next) {
     try {
         const {componentName, code} = req.params;
-        const result = await ServiceComponent.getComponent(componentName, code, req.headers.authorization);
+        const result                = await ServiceComponent.getComponent(componentName, code, req.headers.authorization);
         return res.json(result);
     } catch (error) {
         return next(error);

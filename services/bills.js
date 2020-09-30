@@ -109,8 +109,8 @@ const generatePDF = async (PostBody) => {
     const lang        = bill.lang || global.defaultLang;
     const oldChecksum = bill.checksum;
     delete bill.checksum;
-    const obj         = cleanBillObject(bill);
-    const checksum    = crypto.createHash('md5').update(obj, 'utf8').digest('hex');
+    const obj      = cleanBillObject(bill);
+    const checksum = crypto.createHash('md5').update(obj, 'utf8').digest('hex');
     if (oldChecksum !== checksum) {
         throw NSErrors.ChecksumInvoiceError;
     }
@@ -238,7 +238,7 @@ function cleanBillObject(bill) {
     if (bill.items) {
         for (let i = 0; i < bill.items.length; i++) {
             const keys = Object.keys(bill.items[i]).sort();
-            const z = {};
+            const z    = {};
             for (let j = 0; j < keys.length; j++) {
                 z[keys[j]] = bill.items[i][keys[j]];
             }
@@ -249,7 +249,7 @@ function cleanBillObject(bill) {
     if (bill.promos && bill.promos[0]) {
         for (let i = 0; i < bill.promos[0].productsId.length; i++) {
             const keys = Object.keys(bill.promos[0].productsId[i]).sort();
-            const z = {};
+            const z    = {};
             for (let j = 0; j < keys.length; j++) {
                 z[keys[j]] = bill.promos[0].productsId[i][keys[j]];
             }

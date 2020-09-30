@@ -154,7 +154,7 @@
                         <label for="name" class="col-sm-2 control-label"></label>
                         <div class="col-sm-6 col-lg-3">
                             <select name="countries" id="countries" class="form-control"
-                                    ng-options="country.code as country.name for country in countries.datas"
+                                    ng-options="country.code as country.translation[lang].name for country in countries.datas"
                                     ng-model="selectedCountry.code"
                                     ng-change="changeCountry()">
                                 <option value="" translate>shipment.detail.addPays</option>

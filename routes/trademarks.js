@@ -83,7 +83,7 @@ async function deleteTrademark(req, res, next) {
  */
 function update(req, res, next) {
     try {
-        const newData = {};
+        const newData           = {};
         newData[req.body.field] = req.body.value;
         let msg;
         try {

@@ -2,9 +2,9 @@ const {SetAttributes, Products} = require('../orm/models');
 const NSErrors                  = require('../utils/errors/NSErrors');
 const QueryBuilder              = require('../utils/QueryBuilder');
 
-const restrictedFields          = [];
-const defaultFields             = ['_id', 'code', 'name'];
-const queryBuilder              = new QueryBuilder(SetAttributes, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['_id', 'code', 'name'];
+const queryBuilder     = new QueryBuilder(SetAttributes, restrictedFields, defaultFields);
 
 exports.getSetAttributes = async function (PostBody) {
     if (!PostBody) {
@@ -52,9 +52,9 @@ exports.setSetAttribute = async function (code, name, attributes) {
 };
 
 exports.createOrUpdateSetAttribute = async function (req) {
-    const code = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
+    const code                                = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
     const {name, update : updateF, questions} = req.body;
-    const setAttribute = await SetAttributes.findOne({code});
+    const setAttribute                        = await SetAttributes.findOne({code});
     if (setAttribute && updateF) {
         const resSetAttribute = await SetAttributes.findOneAndUpdate({code}, {name, questions}, {new: true});
         if (!resSetAttribute) throw NSErrors.SetAttributeNotFound;

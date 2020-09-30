@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose         = require('mongoose');
 const translationUtils = require('../../utils/translation');
-const Schema   = mongoose.Schema;
+const Schema           = mongoose.Schema;
 
 /**
  * @typedef {object} CmsBlocksSchema
@@ -28,7 +28,7 @@ async function translationValidation(self) {
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};
-        translationKeys = Object.keys(self.translation);
+        translationKeys                      = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {

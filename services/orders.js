@@ -125,7 +125,7 @@ const paymentSuccess = async (query, updateObject) => {
         if (bookingStock === 'payment') {
             for (let i = 0; i < _order.items.length; i++) {
                 const orderItem = _order.items[i];
-                const _product = await Products.findOne({_id: orderItem.id});
+                const _product  = await Products.findOne({_id: orderItem.id});
                 if (_product.kind === 'SimpleProduct') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
@@ -136,7 +136,7 @@ const paymentSuccess = async (query, updateObject) => {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
                         for (let k = 0; k < section.products.length; k++) {
-                            const productId = section.products[k];
+                            const productId        = section.products[k];
                             const _product_section = await Products.findOne({_id: productId.id});
                             if (_product_section.type === 'simple') {
                                 if ((_product_section.stock.orderable) === false) {
@@ -309,7 +309,7 @@ const rma = async (orderId, returnData) => {
 
     if (returnData.sendMail) {
         const articles = [];
-        const datas = {
+        const datas    = {
             number    : _order.number,
             firstname : _order.customer.id.firstname,
             lastname  : _order.customer.id.lastname,
@@ -357,12 +357,12 @@ const infoPayment = async (orderId, returnData, sendMail) => {
 
 const duplicateItemsFromOrderToCart = async (req) => {
     const orderId = req.body.idOrder || null;
-    let cartId = req.body.idCart || null;
-    let products = [];
+    let cartId    = req.body.idCart || null;
+    let products  = [];
     // Si on envoi un id de commande, on récupère les items de cette commande, sinon on récupère les products envoyés directement (ex: foodOption)
     if (orderId) {
         const _order = await Orders.findOne({_id: orderId});
-        products = _order.items;
+        products     = _order.items;
     } else {
         // Exemple :
         // products = [{id: "59f1f626aaa3a904c3a15b7f", quantity: 2}, {id         : "59f1f627aaa3a904c3a15bff",
@@ -386,20 +386,20 @@ const duplicateItemsFromOrderToCart = async (req) => {
     let _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
     if (!_cart) {
         const params = {status: 'IN_PROGRESS'};
-        _cart = await Cart.create(params);
-        cartId = _cart._id;
+        _cart        = await Cart.create(params);
+        cartId       = _cart._id;
     }
-    let isErrorOccured = false;
+    let isErrorOccured      = false;
     let isErrorOccuredIndex = 0;
-    let itemsPushed = 0;
+    let itemsPushed         = 0;
     await ServiceCart.linkCustomerToCart(_cart, req);
     for (let i = 0; i < products.length; i++) {
-        _cart = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
+        _cart                   = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         const productThatExists = await Products.findOne({_id: products[i].id, active: true, _visible: true});
         // On teste que le produit existe, est visible et est actif
         if (productThatExists && productThatExists.bundle_sections && productThatExists.bundle_sections.length > 0) {
             // Code pour les menus
-            const item  = {id: productThatExists._id, quantity: products[i].quantity, weight: productThatExists.weight, selections: []};
+            const item = {id: productThatExists._id, quantity: products[i].quantity, weight: productThatExists.weight, selections: []};
             // On parcours les sections
             for (let j = 0; j < products[i].selections.length; j++) {
                 item.selections.push({
@@ -414,7 +414,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
                         item.selections[j].products.push(products[i].selections[j].products[k]);
                     } else {
                         // Sinon on met en erreur et on passe au produit suivant (on n'ajoute pas le menu)
-                        isErrorOccured = true;
+                        isErrorOccured      = true;
                         isErrorOccuredIndex = j;
                         break;
                     }
@@ -430,7 +430,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
                 item.code  = productThatExists.code;
                 item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-                let user = null;
+                let user   = null;
                 if (req.headers && req.headers.authorization) {
                     user = await ServiceAuth.getDecodedToken(req.headers.authorization);
                 }
@@ -450,7 +450,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
             }
             // Code pour les produits normaux
-            const item = {id: productThatExists._id, quantity: quantityToAdd, weight: productThatExists.weight};
+            const item  = {id: productThatExists._id, quantity: quantityToAdd, weight: productThatExists.weight};
             const _lang = await Languages.findOne({defaultLanguage: true});
             if (productThatExists.translation[_lang.code]) {
                 item.name = productThatExists.translation[_lang.code].name;
@@ -531,7 +531,7 @@ const addPackage = async (orderId, pkgData) => {
     await _order.save();
 
     const _country = Territory.findOne({code: _order.addresses.delivery.isoCountryCode});
-    let country = '';
+    let country    = '';
     if (_country && _country.name) {
         country = _country.name;
     } else if (_order.addresses.delivery.country) {
@@ -565,9 +565,9 @@ const updatePayment = async (body) => {
         _id           : body._id,
         'payment._id' : body.paymentId
     };
-    let msg = {status: true};
+    let msg             = {status: true};
     if (body.field !== '') {
-        const updateValue = {};
+        const updateValue                      = {};
         updateValue[`payment.$.${body.field}`] = body.value;
         try {
             const updOrder = await Orders.findOneAndUpdate(findCondition, {$set: updateValue}, {new: true});
@@ -595,7 +595,7 @@ const updateStatus = async (body, params) => {
 };
 
 const cancelOrderRequest = async (_id, authorizationToken) => {
-    const user = await ServiceAuth.getDecodedToken(authorizationToken);
+    const user  = await ServiceAuth.getDecodedToken(authorizationToken);
     const order = await Orders.findOne({_id, 'customer.email': user.info.email});
     if (order) {
         await setStatus(_id, 'ASK_CANCEL');

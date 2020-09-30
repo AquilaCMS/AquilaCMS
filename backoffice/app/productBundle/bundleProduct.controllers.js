@@ -12,6 +12,19 @@ BundleProductControllers.controller("BundleProductCtrl", [
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    ProductsV2.preview($scope.product, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url)
+                        }
+                    });
+                },
+            }
+        ]
 
         if($routeParams.code !== "new")
         {
@@ -227,6 +240,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     else
                     {
                         toastService.toast("success", "Produit sauvegardé !");
+                        $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
                         //     $scope.disableSave = false;
@@ -295,6 +309,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
             var clone = angular.copy($scope.product);
             clone.code = prompt("Saisir le code: ");
             delete clone._id;
+            for (const key of Object.keys(clone.translation)) {
+                clone.translation[key].slug += "-" + clone.code;
+            }  
             ProductsV2.save(clone, function (savedPrd)
             {
                 if(!savedPrd)
@@ -307,6 +324,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     if($scope.isEditMode)
                     {
                         $scope.disableSave = false;
+                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
                     }
                     else
                     {

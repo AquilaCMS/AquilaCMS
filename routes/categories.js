@@ -26,7 +26,7 @@ module.exports = function (app) {
 async function getCategories(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceCategory.getCategories(PostBody);
+        const result     = await ServiceCategory.getCategories(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -39,7 +39,7 @@ async function getCategories(req, res, next) {
 async function getCategory(req, res, next) {
     try {
         const {PostBody, withFilter, lang} = req.body;
-        const result   = await ServiceCategory.getCategory(PostBody, withFilter, lang);
+        const result                       = await ServiceCategory.getCategory(PostBody, withFilter, lang);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -52,7 +52,7 @@ async function getCategory(req, res, next) {
 async function getCategoryById(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceCategory.getCategoryById(req.params.id, PostBody);
+        const result     = await ServiceCategory.getCategoryById(req.params.id, PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);

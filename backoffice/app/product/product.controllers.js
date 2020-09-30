@@ -276,8 +276,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "$rootScope",
-    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, $rootScope) {
+    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
+    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
 
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
@@ -316,7 +316,7 @@ ProductControllers.controller("nsProductGeneral", [
                             CategoryV2.canonical({}, {}, function () {
                                 toastService.toast('success', "Terminé")
                                 ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
-                                    $scope.product = response
+                                    $scope.product = response;
                                     $scope.product.active = true;
                                     ProductsV2.save({}, $scope.product, function (response) {
                                         window.location.reload()

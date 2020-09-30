@@ -1,9 +1,9 @@
-const util          = require('util');
-const fs            = require('fs');
-const js2xmlparser  = require('js2xmlparser');
-const moment        = require('moment');
-const NSErrors      = require('../utils/errors/NSErrors');
-const fsWriteFile   = util.promisify(fs.writeFile);
+const util         = require('util');
+const fs           = require('fs');
+const js2xmlparser = require('js2xmlparser');
+const moment       = require('moment');
+const NSErrors     = require('../utils/errors/NSErrors');
+const fsWriteFile  = util.promisify(fs.writeFile);
 const {
     Languages,
     Statics,
@@ -12,8 +12,8 @@ const {
     News
 }                   = require('../orm/models');
 
-let inCrawl         = false;
-const sitemapConf   = {home: {frequency: 'daily', priority: '1.0'}, product: {frequency: 'weekly', priority: '0.5'}, category: {frequency: 'daily', priority: '0.8'}, blog: {frequency: 'weekly', priority: '0.5'}, other: {frequency: 'weekly', priority: '0.2'}};
+let inCrawl       = false;
+const sitemapConf = {home: {frequency: 'daily', priority: '1.0'}, product: {frequency: 'weekly', priority: '0.5'}, category: {frequency: 'daily', priority: '0.8'}, blog: {frequency: 'weekly', priority: '0.5'}, other: {frequency: 'weekly', priority: '0.2'}};
 
 const genSitemap = async () => {
     // Vérifier qu'on est pas en mode "demoMode"
@@ -27,8 +27,8 @@ const genSitemap = async () => {
         console.log(`\x1b[5m\x1b[33m ${new Date()} Début de la génération du sitemap\x1b[0m`);
         inCrawl = true;
 
-        const appUrl = global.envConfig.environment.appUrl;
-        const languages = await Languages.find({status: 'visible'});
+        const appUrl     = global.envConfig.environment.appUrl;
+        const languages  = await Languages.find({status: 'visible'});
         const _languages = {};
         for (let i = 0, leni = languages.length; i < leni; i++) {
             _languages[languages[i].code] = languages[i];
@@ -55,7 +55,7 @@ const genSitemap = async () => {
                 const lang    = _languages[languages[j].code];
                 if (_static.slug) {
                     const xhtml = [];
-                    const url = {
+                    const url   = {
                         loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '') + (page === 'home' ? '' : _static.slug),
                         lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf[page].frequency,
@@ -81,7 +81,7 @@ const genSitemap = async () => {
 
                 if (_category !== undefined && _category.slug) {
                     const xhtml = [];
-                    const url = {
+                    const url   = {
                         loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : 'c/') + _category.slug,
                         lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf.category.frequency,
@@ -108,9 +108,9 @@ const genSitemap = async () => {
                 const lang     = _languages[languages[j].code];
 
                 if (_product !== undefined && _product.canonical) {
-                    const xhtml = [];
+                    const xhtml        = [];
                     _product.canonical = _product.canonical[0] === '/' ? _product.canonical.slice(1) : _product.canonical;
-                    const url = {
+                    const url          = {
                         loc        : appUrl + (lang && lang.defaultLanguage === false ? '' : '') + _product.canonical,
                         lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf.product.frequency,
@@ -139,7 +139,7 @@ const genSitemap = async () => {
                 const lang     = _languages[languages[j].code];
                 if (_article.slug) {
                     const xhtml = [];
-                    const url = {
+                    const url   = {
                         loc        : `${appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '')}blog/${_article.slug}`,
                         lastmod    : moment().format('YYYY-MM-DD'),
                         changeFreq : sitemapConf.blog.frequency,
@@ -160,18 +160,18 @@ const genSitemap = async () => {
 
         if (languages.length > 1) {
             sitemap['@'].xmlnsxhtml = 'http://www.w3.org/1999/xhtml';
-            sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
+            sitemapString           = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
 
-            let find = '<xhtml>';
-            let re = new RegExp(find, 'g');
+            let find      = '<xhtml>';
+            let re        = new RegExp(find, 'g');
             sitemapString = sitemapString.replace(re, '<xhtml:link ');
 
-            find = '</xhtml>';
-            re = new RegExp(find, 'g');
+            find          = '</xhtml>';
+            re            = new RegExp(find, 'g');
             sitemapString = sitemapString.replace(re, '/>');
 
-            find = 'xmlnsxhtml';
-            re = new RegExp(find, 'g');
+            find          = 'xmlnsxhtml';
+            re            = new RegExp(find, 'g');
             sitemapString = sitemapString.replace(re, 'xmlns:xhtml');
         } else {
             sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});

@@ -33,7 +33,8 @@
         "titleDescCt": "Short description title",
         "descCt": "Short description",
         "canon": "Canonical",
-        "noAttribs": "No attributes"
+        "noAttribs": "No attributes",
+        "preview": "Preview"
     },
     "modal":{
         "activeProduct": "Activate a product",

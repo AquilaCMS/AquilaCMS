@@ -1,4 +1,4 @@
-const path = require('path');
+const path  = require('path');
 const sharp = require('sharp');
 
 process.on('message', async (appRoot) => {

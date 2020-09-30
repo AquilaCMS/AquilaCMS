@@ -1,6 +1,6 @@
 const {promisify} = require('util');
-const jwt      = require('jsonwebtoken');
-const NSErrors = require('../utils/errors/NSErrors');
+const jwt         = require('jsonwebtoken');
+const NSErrors    = require('../utils/errors/NSErrors');
 
 /**
  * Check if user is authenticate
@@ -32,7 +32,7 @@ const login = async (req, res, next) => {
     const {username, password} = req.body;
     try {
         const {Users} = require('../orm/models');
-        let user = await Users.findOne({email: {$regex: username, $options: 'i'}});
+        let user      = await Users.findOne({email: {$regex: username, $options: 'i'}});
 
         if (!user) throw NSErrors.BadLogin;
         if (req.params.from === 'admin') {
@@ -88,9 +88,9 @@ const validateUserIsAllowedWithoutPostBody = async (token, baseUrl, query, field
         if (!token) {
             throw NSErrors.AccessUnauthorized;
         }
-        const decoded = getDecodedToken(token);
+        const decoded         = getDecodedToken(token);
         const {Configuration} = require('../orm/models');
-        const _config = await Configuration.findOne({});
+        const _config         = await Configuration.findOne({});
         if (_config.environment.adminPrefix === undefined) {
             _config.environment.adminPrefix = 'admin';
         }

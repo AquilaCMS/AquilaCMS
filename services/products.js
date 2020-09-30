@@ -1,5 +1,6 @@
 const moment                  = require('moment-business-days');
 const path                    = require('path');
+const URL                     = require('url');
 const mongoose                = require('mongoose');
 const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
@@ -17,9 +18,13 @@ const serviceReviews          = require('./reviews');
 const {
     Configuration,
     Products,
+    ProductsPreview,
     ProductSimple,
+    ProductSimplePreview,
     ProductBundle,
+    ProductBundlePreview,
     ProductVirtual,
+    ProductVirtualPreview,
     Categories,
     SetAttributes,
     Attributes,
@@ -28,9 +33,10 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields    = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
 
-const queryBuilder = new QueryBuilder(Products, restrictedFields, defaultFields);
+const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
+const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
 // si dans le config, on demande de ne pas retourner les champs de stock, on les ajoute au restrictedFields
 if (global.envConfig.stockOrder.returnStockToFront !== true) {
@@ -50,7 +56,7 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
     let structure;
     if (PostBody && PostBody.structure) {
         // obligé d'avoir tous les champs pour les règles de promo
-        structure = PostBody.structure;
+        structure  = PostBody.structure;
         properties = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
         delete PostBody.structure;
@@ -82,8 +88,8 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
 
-    const prds = await Products.find(PostBody.filter);
-    const arrayPrice = {et: [], ati: []};
+    const prds              = await Products.find(PostBody.filter);
+    const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
     for (const prd of prds) {
         if (prd.price.et.special) {
@@ -108,7 +114,7 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = result;
-        result = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+        result            = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
 
     for (const prd of result.datas) {
@@ -136,7 +142,13 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
  * @param keepReviews
  */
 const getProduct = async (PostBody, reqRes = undefined, keepReviews = false) => {
-    let product = await queryBuilder.findOne(PostBody);
+    let product;
+    if (reqRes && reqRes.req.query.preview) {
+        PostBody.filter = {_id: reqRes.req.query.preview};
+        product         = await queryBuilderPreview.findOne(PostBody);
+    } else {
+        product = await queryBuilder.findOne(PostBody);
+    }
     if (!product) {
         return product;
     }
@@ -156,7 +168,7 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false) => 
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = product;
-        product = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+        product           = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
     return product;
 };
@@ -174,9 +186,9 @@ const getPromosByProduct = async (PostBody, reqRes = undefined) => {
     let datas = {};
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals = product;
+        reqRes.res.locals     = product;
         reqRes.res.keepPromos = true;
-        datas = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+        datas                 = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
     return datas;
 };
@@ -185,26 +197,26 @@ const getPromosByProduct = async (PostBody, reqRes = undefined) => {
  * Duplication de produit dans le back-office
  */
 const duplicateProduct = async (idProduct, newCode) => {
-    const doc = await Products.findById(idProduct);
-    doc._id = mongoose.Types.ObjectId();
-    doc.isNew = true;
-    doc.images = [];
+    const doc   = await Products.findById(idProduct);
+    doc._id     = mongoose.Types.ObjectId();
+    doc.isNew   = true;
+    doc.images  = [];
     doc.reviews = {
         average    : 0,
         reviews_nb : 0,
         questions  : [],
         datas      : []
     };
-    doc.stats = {
+    doc.stats   = {
         views : 0
     };
-    doc.stock = {
+    doc.stock   = {
         qty        : 0,
         qty_booked : 0,
         orderable  : false,
         status     : 'liv'
     };
-    doc.code = newCode;
+    doc.code    = newCode;
     await doc.save();
     return doc;
 };
@@ -292,7 +304,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
     if (_config.stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
-            const product = result.datas[i];
+            const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
             if (product.type === 'simple') {
                 // TODO P2 "shipping : business day" : ne marche plus, on met le jour même en dur
@@ -327,7 +339,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    let prds = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
+    let prds       = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
 
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
@@ -361,7 +373,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
             return false;
         });
-        prds = prds.filter((prd) => prdsPrices
+        prds       = prds.filter((prd) => prdsPrices
             .map((prdPri) => prdPri._id.toString())
             .indexOf(prd._id.toString()) !== -1);
         if (PostBody.sort && PostBody.sort['price.ati.normal']) {
@@ -379,7 +391,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    const arrayPrice = {et: [], ati: []};
+    const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
 
     for (const prd of prds) {
@@ -476,10 +488,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // }
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals.datas = tProducts;
+        reqRes.res.locals.datas  = tProducts;
         reqRes.req.body.PostBody = PostBody;
-        const productsDiscount = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-        tProducts = productsDiscount.datas;
+        const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
+        tProducts                = productsDiscount.datas;
         // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
         // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
         if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
@@ -525,23 +537,23 @@ const getProductById = async (id, PostBody = null) => {
 
 const calculateFilters = async (req, result) => {
     // On récupère les attributs, le dernier attribut sélectionné et si la valeur a été check ou non
-    const attributes = req.body.attributes;
+    const attributes            = req.body.attributes;
     const attributeLastSelected = req.body.attributeSelected ? req.body.attributeSelected.id_attribut : '';
-    const checked = req.body.checked;
+    const checked               = req.body.checked;
 
-    const products = result.datas;
-    const returnArray = {};
+    const products              = result.datas;
+    const returnArray           = {};
     const returnArrayAttributes = {};
-    const returnArrayToRemove = {};
+    const returnArrayToRemove   = {};
 
     // Pour chaque attribut
     for (let i = 0; i < attributes.length; i++) {
         const attrId = attributes[i]._id || attributes[i].id_attribut;
         // On recalcule uniquement si l'attribut bouclé est différent de celui sélectionné dans le front sauf si la valeur vient d'être uncheck dans le front
         if (attrId.toString() !== attributeLastSelected.toString() || (attrId.toString() === attributeLastSelected.toString() && checked)) {
-            returnArray[attrId] = [];
+            returnArray[attrId]           = [];
             returnArrayAttributes[attrId] = [];
-            returnArrayToRemove[attrId] = [];
+            returnArrayToRemove[attrId]   = [];
             // ON parcourt tout les produits et on va distinct les différentes valeurs des attributs
             const unique = [...new Set(products.map((item) => {
                 const index = item && item.attributes ? item.attributes.findIndex((att) => att.id.toString() === attrId) : -1;
@@ -571,7 +583,7 @@ const calculateFilters = async (req, result) => {
                 returnArrayAttributes[attrId] = [false, true];
             } else if (attributes[i].type === 'Champ texte' || attributes[i].type === 'textfield' || attributes[i].type === 'Couleur' || attributes[i].type === 'color') {
                 const prds = await require('../orm/models/products').find({});
-                const arr = [];
+                const arr  = [];
                 for (let i = 0; i < prds.length; i++) {
                     const item = prds[i];
                     for (let j = 0; j < item.attributes.length; j++) {
@@ -608,8 +620,9 @@ const setProduct = async (req) => {
     // On met à jour le slug du produit
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     return new Promise((resolve, reject) => {
-        product.updateData(req.body, (err, result) => {
+        product.updateData(req.body, async (err, result) => {
             if (err) reject(NSErrors.ProductUpdateError);
+            await ProductsPreview.deleteOne({code: req.body.code});
             return resolve(result);
         });
     });
@@ -633,16 +646,16 @@ const createProduct = async (req) => {
         break;
     }
     if (req.body.set_attributes === undefined) {
-        req.body.attributes = [];
-        const setAtt = await SetAttributes.findOne({code: 'defaut'});
+        req.body.attributes          = [];
+        const setAtt                 = await SetAttributes.findOne({code: 'defaut'});
         req.body.set_attributes_name = setAtt.name;
-        req.body.set_attributes = setAtt._id;
+        req.body.set_attributes      = setAtt._id;
         for (const attrs of setAtt.attributes) {
             const attr = await Attributes.findOne({_id: attrs});
             if (attr != null) {
                 let arrAttr = [];
-                arrAttr = JSON.parse(JSON.stringify(attr));
-                arrAttr.id = attr._id;
+                arrAttr     = JSON.parse(JSON.stringify(attr));
+                arrAttr.id  = attr._id;
                 req.body.attributes.push(arrAttr);
             }
         }
@@ -719,16 +732,16 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     if (typeof objstock.date_selling !== 'undefined'/* && objstock.date_selling > date.now() */) {
         datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
-        datas.delivery.dates[0]  = objstock.date_selling;
+        datas.delivery.dates[0] = objstock.date_selling;
     } else if (objstock.qty_real === 0 && objstock.status === 'epu') {
-        datas.selling.message   = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
+        datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
     } else if (objstock.qty_real <= change_lib_stock) {
         datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
-        datas.delivery.dates[0]  = 'today';
+        datas.delivery.dates[0] = 'today';
         datas.selling.sellable  = true;
     } else {
         datas.selling.message   = {code: 'Livrable', translation: {fr: 'Produit disponible', en: 'Available product'}};
-        datas.delivery.dates[0]  = 'today';
+        datas.delivery.dates[0] = 'today';
         datas.selling.sellable  = true;
     }
 
@@ -852,14 +865,14 @@ const controlAllProducts = async () => {
             // Control des attributs 3 : vérifie l'ordre des attributs
             if (!checkAttribsValidity(oneProduct.attributes)) {
                 returnWarning += `<b>${oneProduct.code}</b> : Unsorted attributes<br/>`;
-                fixAttributs = true;
+                fixAttributs   = true;
             }
 
             // Control de la catégorisation
             await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
                 if (typeof categories === 'undefined' || categories.length === 0) {
                     returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
-                    fixCanonical = true;
+                    fixCanonical   = true;
                 }
             });
         }
@@ -955,7 +968,7 @@ function getTaxDisplay(user) {
 }
 
 const downloadProduct = async (req, res) => {
-    let prd = {};
+    let prd    = {};
     const user = req.info;
 
     // si produit payant et que l'on passe par une commande
@@ -1010,7 +1023,7 @@ const downloadProduct = async (req, res) => {
             throw NSErrors.ProductDownloadLinkInvalid;
         }
     } else {
-        unlink = false;
+        unlink           = false;
         tmpFileLocalPath = path.resolve(
             utilsServer.getUploadDirectory(),
             'medias',
@@ -1077,9 +1090,9 @@ const getProductsListing = async (req, res) => {
 };
 const getProductsSearchObj = async (body, params) => {
     // Filtre de base
-    const filter = body.filter === undefined ? {} : body.filter;
+    const filter    = body.filter === undefined ? {} : body.filter;
     const searchObj = body.searchObj;
-    filter.$or = [];
+    filter.$or      = [];
 
     await Promise.all([
         new Promise(((resolve, reject) => {
@@ -1136,7 +1149,7 @@ const getProductsSearchObj = async (body, params) => {
                 // Recherche par mots cles
                 if (searchObj.nameId) {
                     let nameCode = searchObj.nameId.split(' ');
-                    nameCode = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
+                    nameCode     = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
                     filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
                 }
                 if (searchObj.type) {
@@ -1147,7 +1160,7 @@ const getProductsSearchObj = async (body, params) => {
                     return Languages.find({}).then(function (_languages) {
                         for (let i = 0; i < _languages.length; i++) {
                             if (searchObj.translation.name !== '') {
-                                const name = {};
+                                const name                                     = {};
                                 name[`translation.${_languages[i].code}.name`] = {
                                     $regex   : `^(?=.*${searchObj.translation.name.replace(/ /g, ')(?=.*')}).*$`,
                                     $options : 'i'
@@ -1228,7 +1241,7 @@ const getProductsSearchObj = async (body, params) => {
 
                 Languages.find({}).then(function (_languages) {
                     for (let i = 0; i < _languages.length; i++) {
-                        const orLang = {};
+                        const orLang                                     = {};
                         orLang[`translation.${_languages[i].code}.name`] = new RegExp('.*', 'i');
                         filter.$or.push(orLang);
                     }
@@ -1250,7 +1263,7 @@ const getProductsSearchObj = async (body, params) => {
         // on récupére la categorie afin de trier productsList par sortWeight
         const category = await Categories.findById(body.categoryId);
         for (let i = 0; i < category.productsList.length; i++) {
-            const catProduct = category.productsList[i];
+            const catProduct             = category.productsList[i];
             oIdCatProduct[catProduct.id] = catProduct.sortWeight;
         }
     }
@@ -1373,16 +1386,16 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
         if (qty2 === 0) {
             // qty1 = la quantité à retourné
             const qtyToReturn = qty1;
-            prd.stock.qty += qtyToReturn;
+            prd.stock.qty    += qtyToReturn;
         } else if (qty1 === 0) {
-            const qtyToSend = qty2;
-            prd.stock.qty += qtyToSend;
+            const qtyToSend       = qty2;
+            prd.stock.qty        += qtyToSend;
             prd.stock.qty_booked += qtyToSend;
         }
     } else {
         // dans le cas d'un ajout au panier, qty change ou d'une suppression d'item dans un panier
         const qtyToAddOrRemove = qty1;
-        prd.stock.qty_booked -= qtyToAddOrRemove;
+        prd.stock.qty_booked  -= qtyToAddOrRemove;
     }
     await prd.save();
 };
@@ -1405,15 +1418,15 @@ function make_pattern(search_string) {
 }
 
 const handleStock = async (item, _product, inStockQty) => {
-    const {Configuration}   = require('../orm/models');
-    const config = await Configuration.findOne({}, {stockOrder: 1});
+    const {Configuration} = require('../orm/models');
+    const config          = await Configuration.findOne({}, {stockOrder: 1});
     if (config.stockOrder.bookingStock === 'panier') {
         if (_product.stock && _product.stock.date_selling > new Date() && _product.stock.status !== 'dif') {
             const product_no_salable = {code: 'product_no_salable'};
             throw product_no_salable;
         }
         // Commandable et on gère la reservation du stock
-        const qtyAdded = inStockQty - item.quantity;
+        const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
         if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
@@ -1446,7 +1459,7 @@ const calculStock = async (params, product = undefined) => {
         date = product.stock.date_supply;
     }
     const stockLabelExists = stockLabels.find((label) => label.code === product.stock.label);
-    let label = '';
+    let label              = '';
     if (stockLabelExists) {
         label = date && stockLabelExists.translation[params.lang] && stockLabelExists.translation[params.lang].value
             ? stockLabelExists.translation[params.lang].value.replace('{date}', moment(date).format('DD/MM/YYYY'))
@@ -1464,6 +1477,39 @@ const calculStock = async (params, product = undefined) => {
         qty_real  : product.stock.qty_real,
         product
     };
+};
+
+const preview = async (body) => {
+    let preview = {};
+    if (await ProductsPreview.findOne({code: body.code})) {
+        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
+    } else {
+        let newPreview;
+        switch (body.type) {
+        case 'simple':
+            newPreview      = new ProductSimplePreview(body);
+            newPreview.kind = 'SimpleProductPreview';
+            preview         = await newPreview.save();
+            break;
+        case 'bundle':
+            newPreview      = new ProductBundlePreview(body);
+            newPreview.kind = 'BundleProductPreview';
+            preview         = await newPreview.save();
+            break;
+        case 'virtual':
+            newPreview      = new ProductVirtualPreview(body);
+            newPreview.kind = 'VirtualProductPreview';
+            preview         = await newPreview.save();
+            break;
+        default:
+            break;
+        }
+    }
+    if (body.lang) {
+        return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
+    }
+    const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
+    return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
 };
 
 module.exports = {
@@ -1486,5 +1532,6 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields
+    restrictedFields,
+    preview
 };

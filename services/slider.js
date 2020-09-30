@@ -1,17 +1,17 @@
-const path             = require('path');
-const mongoose         = require('mongoose');
-const {Slider}         = require('../orm/models');
-const utils            = require('../utils/utils');
-const mediasUtils      = require('../utils/medias');
-const NSErrors         = require('../utils/errors/NSErrors');
-const QueryBuilder     = require('../utils/QueryBuilder');
+const path         = require('path');
+const mongoose     = require('mongoose');
+const {Slider}     = require('../orm/models');
+const utils        = require('../utils/utils');
+const mediasUtils  = require('../utils/medias');
+const NSErrors     = require('../utils/errors/NSErrors');
+const QueryBuilder = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = [
     '_id', 'name', 'code', 'items', 'accessibility', 'arrows', 'autoplay', 'autoplaySpeed',
     'infinite', 'fade', 'lazyLoad', 'pauseOnHover', 'slidesToShow', 'slidesToScroll', 'speed', 'swipe'
 ];
-const queryBuilder = new QueryBuilder(Slider, restrictedFields, defaultFields);
+const queryBuilder     = new QueryBuilder(Slider, restrictedFields, defaultFields);
 
 // Voir plus d'informations sur react slick: https://react-slick.neostack.com/
 const getSliders = async (PostBody) => {
@@ -82,7 +82,7 @@ const deleteItemSlider = async (_id, _id_item) => {
         throw NSErrors.UnprocessableEntity;
     }
     const slider = await Slider.findOne({_id});
-    const doc = await Slider.findByIdAndUpdate(_id, {$pull: {items: {_id: _id_item}}}, {new: true});
+    const doc    = await Slider.findByIdAndUpdate(_id, {$pull: {items: {_id: _id_item}}}, {new: true});
     if (!doc) throw NSErrors.NotFound;
     const item = slider.items.find((i) => i.id === _id_item);
     await mediasUtils.deleteFile(item.src);

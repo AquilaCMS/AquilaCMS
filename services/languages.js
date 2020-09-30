@@ -1,7 +1,7 @@
-const fs               = require('fs');
-const {Languages}      = require('../orm/models');
-const NSErrors         = require('../utils/errors/NSErrors');
-const QueryBuilder     = require('../utils/QueryBuilder');
+const fs           = require('fs');
+const {Languages}  = require('../orm/models');
+const NSErrors     = require('../utils/errors/NSErrors');
+const QueryBuilder = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
@@ -55,7 +55,7 @@ const getDefaultLang = (language) => {
  * @param translateValue : Contenu à écrire dans le fichier
  */
 const translateSet = async (translateName, translateValue, lang) => {
-    const translatePath  = await getTranslatePath(lang);
+    const translatePath = await getTranslatePath(lang);
     if (!fs.existsSync(translatePath)) {
         fs.mkdirSync(translatePath);
     }
@@ -82,9 +82,9 @@ const translateGet = async (filePath, lang) => {
  */
 const translateList = async () => {
     try {
-        const lang = 'fr';
-        const translateList   = [];
-        const translatePath  = await getTranslatePath(lang);
+        const lang          = 'fr';
+        const translateList = [];
+        const translatePath = await getTranslatePath(lang);
 
         fs.readdirSync(translatePath).forEach((file) => {
             if (file.endsWith('.json')) {

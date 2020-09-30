@@ -120,7 +120,7 @@ const initDBValues = async () => {
         }
     });
 
-    const homePage = {code: 'home', type: 'page', active: true, translation: {}};
+    const homePage                           = {code: 'home', type: 'page', active: true, translation: {}};
     homePage.translation[global.defaultLang] = {name: 'home', slug: 'home'};
     if (!await Statics.findOne({code: 'home'})) {
         await Statics.create(homePage);
@@ -162,8 +162,8 @@ const initDBValues = async () => {
         }
     }
 
-    const imgTrans = '/medias/paiement-virement-logo.png';
-    const imgCheck = '/medias/paiement-cheque-logo.png ';
+    const imgTrans              = '/medias/paiement-virement-logo.png';
+    const imgCheck              = '/medias/paiement-cheque-logo.png ';
     const defaultPaymentMethods = [
         {code: 'transfer', translation: {fr: {name: 'Virement', urlLogo: imgTrans, description: 'Virement bancaire requis dans un délais de 5 jours'}, en: {name: 'Bank transfer', urlLogo: imgTrans}}, active: true, isDeferred: true},
         {code: 'cheque', translation: {fr: {name: 'Chèque', urlLogo: imgCheck, description: 'Paiement par chèque à nous envoyer dans les 5 jours'}, en: {name: 'Check', urlLogo: imgCheck}}, active: true, isDeferred: true},

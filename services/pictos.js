@@ -1,10 +1,10 @@
-const path             = require('path');
-const {Pictos}         = require('../orm/models');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const ServiceRules     = require('./rules');
-const utils            = require('../utils/utils');
-const mediasUtils      = require('../utils/medias');
-const NSErrors         = require('../utils/errors/NSErrors');
+const path         = require('path');
+const {Pictos}     = require('../orm/models');
+const QueryBuilder = require('../utils/QueryBuilder');
+const ServiceRules = require('./rules');
+const utils        = require('../utils/utils');
+const mediasUtils  = require('../utils/medias');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['code', 'filename', 'location', 'enabled', 'title', 'usedInFilters', '_id'];
@@ -36,7 +36,7 @@ const createPicto = async (picto) => {
         && picto.enabled !== undefined
         && picto.location !== undefined
     ) {
-        picto.code = utils.slugify(picto.code);
+        picto.code   = utils.slugify(picto.code);
         const result = await Pictos.create(picto);
         return result;
     }
