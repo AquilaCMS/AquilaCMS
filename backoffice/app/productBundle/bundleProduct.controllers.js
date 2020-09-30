@@ -296,6 +296,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
             var clone = angular.copy($scope.product);
             clone.code = prompt("Saisir le code: ");
             delete clone._id;
+            for (const key of Object.keys(clone.translation)) {
+                clone.translation[key].slug += "-" + clone.code;
+            }  
             ProductsV2.save(clone, function (savedPrd)
             {
                 if(!savedPrd)
@@ -308,6 +311,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     if($scope.isEditMode)
                     {
                         $scope.disableSave = false;
+                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
                     }
                     else
                     {
