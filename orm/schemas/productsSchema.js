@@ -238,6 +238,27 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
         }
     }
 
+    if (updateQuery && updateQuery._id) {
+        // EDIT
+        for (const lang of Object.keys(updateQuery.translation)) {
+            const translationPath   = `translation.${lang}.slug`;
+            const filter            = {_id: {$ne: updateQuery._id}};
+            filter[translationPath] = updateQuery.translation[lang].slug;
+            if (await mongoose.model('products').countDocuments(filter) > 0) {
+                errors.push('slug déjà existant');
+            }
+        }
+    } else {
+        // NEW
+        for (const lang of Object.keys(self.translation)) {
+            const translationPath   = `translation.${lang}.slug`;
+            const filter            = {_id: {$ne: self._id}};
+            filter[translationPath] = self.translation[lang].slug;
+            if (await mongoose.model('products').countDocuments(filter) > 0) {
+                errors.push('slug déjà existant');
+            }
+        }
+    }
     return errors;
 };
 
@@ -265,7 +286,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
             }
         }
     }
-    utilsDatabase.preUpdates(this, next, ProductsSchema);
+    await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('updateOne', async function (next) {

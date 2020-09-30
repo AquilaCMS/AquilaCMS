@@ -6,6 +6,19 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    ProductsV2.preview($scope.product, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url)
+                        }
+                    });
+                },
+            }
+        ]
 
         if ($routeParams.code === "new") {
             $scope.product.type = "virtual";

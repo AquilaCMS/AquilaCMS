@@ -4,7 +4,7 @@ const ServiceMail                 = require('../services/mail');
 module.exports = function (app) {
     app.get('/v2/mails', authentication, adminAuth, getMails);
     app.get('/v2/mail/:_id', authentication, adminAuth, getMail);
-    app.get('/v2/mail/activation/account/sent/:user_id/:lang?', authentication, adminAuth, sendMailActivationAccount);
+    app.get('/v2/mail/activation/account/sent/:user_id/:lang?', sendMailActivationAccount);
     app.put('/v2/mail', authentication, adminAuth, setMail);
     app.put('/v2/mail/removePdf', authentication, adminAuth, removePdf);
     app.post('/v2/mail/form/:lang?', sendContact);
