@@ -180,7 +180,7 @@ CartSchema.virtual('priceTotal').get(function () {
         }
     }
 
-    if (self.orderReceipt && self.orderReceipt.method === 'delivery') {
+    if (self.orderReceipt) {
         priceTotal.et  += self.delivery.price.et || 0;
         priceTotal.ati += self.delivery.price.ati || 0;
     }

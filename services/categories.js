@@ -332,8 +332,6 @@ const execCanonical = async () => {
             productsNotCanonicaliedString += `${productsNotCanonicalised[productNC].code}, `;
         }
 
-        require('./fix_auto').fixCanonical();
-
         return `${productsNotCanonicalised.length} products not canonicalised : ${productsNotCanonicaliedString}`;
     } catch (error) {
         return error.message;
