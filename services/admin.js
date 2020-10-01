@@ -102,17 +102,17 @@ const controlAllDatas = async () => {
             // Verification des children (existe et valide)
             for (const child of category.children) {
                 // Est ce que ce child existe bien ?
-                const logs     = await existAndValid(child, category, returnErrors, returnWarning, 'child');
-                returnErrors  += logs.returnErrors;
-                returnWarning += logs.returnWarning;
+                const logs    = await existAndValid(child, category, returnErrors, returnWarning, 'child');
+                returnErrors  = logs.returnErrors;
+                returnWarning = logs.returnWarning;
             }
 
             // Verification des ancestor (existe et valide)
             for (const ancestor of category.ancestors) {
             // Est ce que ce ancestor existe bien ?
-                const logs     = await existAndValid(ancestor, category, returnErrors, returnWarning, 'ancestor');
-                returnErrors  += logs.returnErrors;
-                returnWarning += logs.returnWarning;
+                const logs    = await existAndValid(ancestor, category, returnErrors, returnWarning, 'ancestor');
+                returnErrors  = logs.returnErrors;
+                returnWarning = logs.returnWarning;
             }
         }
 

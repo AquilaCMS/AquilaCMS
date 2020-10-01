@@ -528,9 +528,11 @@ const execRules = async (owner_type, products = []) => {
                             // On transforme la liste de produit en object dont la key est l'_id du produit
                             // nous pourrons ainsi facilement trouver les produits
                             const oProductsListCat = {};
-                            for (let k = 0; k < oldCat.productsList.length; k++) {
-                                const product                           = oldCat.productsList[k];
-                                oProductsListCat[product.id.toString()] = product;
+                            if (oldCat && oldCat.productsList) {
+                                for (let k = 0; k < oldCat.productsList.length; k++) {
+                                    const product                           = oldCat.productsList[k];
+                                    oProductsListCat[product.id.toString()] = product;
+                                }
                             }
                             for (let k = 0; k < productsIds.length; k++) {
                                 if (!oProductsListCat[productsIds[k].toString()]) {
