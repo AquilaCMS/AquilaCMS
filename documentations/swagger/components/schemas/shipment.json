@@ -1,0 +1,58 @@
+{
+    "shipmentSchema": {
+        "description": "",
+        "properties": {
+            "code"        : {"type": "string"},
+            "type"        : {"type": "string", "enum": ["DELIVERY", "RELAY_POINT"]},
+            "active"      : {"type": "boolean", "default": true},
+            "translation" : {},
+            "countries"   : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "country" : {"type": "string", "description": "Code territories"},
+                        "delay"   : {"type": "number", "description": "Anciennement dans translation"},
+                        "unit"    : {"type": "string", "description": "Anciennement dans translation"},
+                        "prices"  : {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "weight_min" : {"type": "number", "default": 0, "description": "Poids min"},
+                                    "weight_max" : {"type": "number", "default": 1, "description": "Poids max"},
+                                    "price"      : {"type": "number", "default": 0, "description": "ati ttc"}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "url_logo"    : {"type": "string"},
+            "preparation" : {
+                "type": "object",
+                "properties": {
+                    "delay" : {"type": "number", "default": 1},
+                    "unit"  : {"type": "string", "default": "day"}
+                }
+            },
+            "address" : {
+                "type": "object",
+                "properties": {
+                    "name"           : {"type": "string"},
+                    "line1"          : {"type": "string"},
+                    "line2"          : {"type": "string"},
+                    "zipcode"        : {"type": "string"},
+                    "city"           : {"type": "string"},
+                    "isoCountryCode" : {"type": "string"},
+                    "country"        : {"type": "string"}
+                }
+            },
+            "freePriceLimit"           : {"type": "number"},
+            "vat_rate"                 : {"type": "number"},
+            "forAllPos"                : {"type": "boolean", "default": false},
+            "component_template"       : {"type": "string"},
+            "component_template_front" : {"type": "string"}
+        }
+    }
+}

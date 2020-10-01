@@ -1,0 +1,17 @@
+{
+    "deliveryMethodSchema": {
+        "description": "",
+        "properties": {
+            "countries" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "isoCode" : {"type": "string"},
+                        "name"    : {"type": "string"}
+                    }
+                }
+            }
+        }
+    }
+}

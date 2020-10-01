@@ -1,0 +1,183 @@
+{
+    "productsSchema": {
+        "description": "",
+        "required": ["code"],
+        "properties": {
+            "code"               : {"type": "string"},
+            "trademark"          : {
+                "type": "object",
+                "properties": {
+                    "code": {"type": "string"},
+                    "name": {"type": "string"}
+                }
+            },
+            "supplier_ref"       : {"type": "string", "format": "ObjectId", "description": "ref suppliers"},
+            "type"               : {"type": "string", "enum": ["simple", "bundle", "virtual"]},
+            "active"             : {"type": "boolean", "default": true},
+            "_visible"           : {"type": "boolean", "default": false},
+            "universe"           : {"type": "string"},
+            "family"             : {"type": "string"},
+            "subfamily"          : {"type": "string"},
+            "slugMenus"          : {
+                "type": "array",
+                "items": {"type": "string"}
+            },
+            "component_template" : {"type": "string"},
+            "weight"             : {"type": "number", "default": 0, "description": "Le poids du produit"},
+            "creationDate"       : {"type": "string", "format": "date", "default": "Date.now"},
+            "price"              : {
+                "type": "object",
+                "properties": {
+                    "purchase" : {"type": "number"},
+                    "tax"      : {"type": "number"},
+                    "et"       : {
+                        "type": "object",
+                        "properties": {
+                            "normal"  : {"type": "number"},
+                            "special" : {"type": "number"}
+                        }
+                    },
+                    "ati" : {
+                        "type": "object",
+                        "properties": {
+                            "normal"  : {"type": "number"},
+                            "special" : {"type": "number"}
+                        }
+                    },
+                    "priceSort" : {"type": "number", "default": 0}
+                }
+            },
+            "presentInLastImport" : {
+                "type": "boolean",
+                "description": "true if product is still present in last import, set visible to false"
+            },
+            "specific"            : {
+                "type": "object",
+                "properties": {
+                    "custom_text1"            : {"type": "string"},
+                    "custom_text2"            : {"type": "string"},
+                    "custom_text3"            : {"type": "string"},
+                    "custom_supplier_code"    : {"type": "string"},
+                    "custom_traitement"       : {"type": "string"},
+                    "custom_code_fabrication" : {"type": "string"}
+                }
+            },
+            "associated_prds" : {
+                "type": "array",
+                "items": {"type": "string", "format": "ObjectId", "description": "ref products"}
+            },
+            "set_attributes"  : {"type": "string", "format": "ObjectId", "description": "ref setAttributes"},
+            "attributes"      : {
+                "type": "array",
+                "description": "Module Options",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id"          : {"type": "string", "format": "ObjectId", "description": "ref attributes"},
+                        "code"        : {"type": "string"},
+                        "values"      : {"type": "string"},
+                        "param"       : {"type": "string"},
+                        "type"        : {"type": "string", "default": "unset"},
+                        "translation" : {"type": "object"},
+                        "position"    : {"type": "number", "default": 1}
+                    }
+                }
+            },
+            "set_options" : {
+                "type": "string",
+                "format": "ObjectId",
+                "description": "ref setoptions"
+            },
+            "images"      : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "url"              : {"type": "string"},
+                        "name"             : {"type": "string"},
+                        "title"            : {"type": "string"},
+                        "alt"              : {"type": "string"},
+                        "position"         : {"type": "number"},
+                        "modificationDate" : {"type": "string"},
+                        "default"          : {"type": "boolean", "default": false},
+                        "extension"        : {"type": "string", "default": ".jpg"}
+                    }
+                }
+            },
+            "code_ean"    : {"type": "string"},
+            "is_new"      : {"type": "boolean", "default": false},
+            "translation" : {"type": "object"},
+            "pictos"      : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "code"     : {"type": "string"},
+                        "image"    : {"type": "string"},
+                        "title"    : {"type": "string"},
+                        "location" : {"type": "string"},
+                        "pictoId"  : {"type": "string", "format": "ObjectId", "description": "ref pictos"}
+                    }
+                }
+            },
+            "reviews" : {
+                "type": "object",
+                "properties": {
+                    "average"    : {"type": "number", "default": 0},
+                    "reviews_nb" : {"type": "number", "default": 0},
+                    "questions"  : {
+                        "type": "array",
+                        "description": "les questions actuellements en cours pour ce produit",
+                        "items": {
+                            "type": "object",
+                            "required": ["idQuestion"],
+                            "properties": {
+                                "translation" : {"type": "object"},
+                                "idQuestion"  : {"type": "string", "format": "ObjectId"},
+                                "average"     : {"type": "number", "default": 0}
+                            }
+                        }
+                    },
+                    "datas" : {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id_review"   : {"type": "string"},
+                                "name"        : {"type": "string"},
+                                "id_client"   : {"type": "string", "format": "ObjectId", "description": "Si on peut l’avoir avec avisverifies c’est cool"},
+                                "ip_client"   : {"type": "string"},
+                                "review_date" : {"type": "string", "format": "Date", "default": "Date.now"},
+                                "review"      : {"type": "string"},
+                                "lang"        : {"type": "string"},
+                                "rate"        : {"type": "number"},
+                                "order_ref"   : {"type": "string", "description": "Non affiché, juste pour 'stats'"},
+                                "title"       : {"type": "string", "description": "Ca existe avec avisverif ?"},
+                                "visible"     : {"type": "boolean", "default": true, "description": "Ne sert pas pour avisverif. Mettre à true par defo pr avisverif"},
+                                "verify"      : {"type": "boolean", "default": true, "description": "Ne sert pas pour avisverif. Mettre à true par defo pr avisverif"},
+                                "questions"   : {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": ["question", "idQuestion"],
+                                        "properties": {
+                                            "question"   : {"type": "string"},
+                                            "idQuestion" : {"type": "string", "format": "ObjectId"},
+                                            "rate"       : {"type": "number", "default": 0}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "stats" : {
+                "type": "object",
+                "properties": {
+                    "views" : {"type": "number", "default": 0}
+                }
+            }
+        }
+    }
+}

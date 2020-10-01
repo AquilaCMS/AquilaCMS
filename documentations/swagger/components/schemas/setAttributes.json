@@ -1,0 +1,32 @@
+{
+    "setAttributesSchema": {
+        "description": "",
+        "properties": {
+            "code"       : {"type": "string", "required": true},
+            "name"       : {"type": "string", "required": true},
+            "attributes" : {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "ObjectId",
+                    "description": "ref attributes"
+                }
+            },
+            "type"       : {
+                "type" : "string",
+                "enum" : ["products", "users"]
+            },
+            "questions" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "translation" : {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

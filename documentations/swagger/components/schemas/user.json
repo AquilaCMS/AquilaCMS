@@ -1,0 +1,98 @@
+{
+    "userSchema": {
+        "description": "",
+        "required": ["email", "password"],
+        "properties": {
+            "email" : {
+                "type"     : "string"
+            },
+            "password" : {
+                "type"     : "string",
+                "default"  : "generateUserPassword"
+            },
+            "code"     : {"type": "string"},
+            "active"   : {"type": "boolean"},
+            "civility" : {
+                "type" : "number",
+                "enum" : [0, 1],
+                "description": "0 pour homme, 1 pour femme"
+            },
+            "firstname"    : {"type": "string"},
+            "lastname"     : {"type": "string"},
+            "phone"        : {"type": "string"},
+            "phone_mobile" : {"type": "string"},
+            "company"      : {
+                "type": "object",
+                "properties": {
+                    "name"        : {"type": "string"},
+                    "siret"       : {"type": "string"},
+                    "intracom"    : {"type": "string"},
+                    "address"     : {"type": "string"},
+                    "postal_code" : {"type": "string"},
+                    "town"        : {"type": "string"},
+                    "country"     : {"type": "string"},
+                    "contact"     : {
+                        "type": "object",
+                        "properties": {
+                            "first_name" : {"type": "string"},
+                            "last_name"  : {"type": "string"},
+                            "email"      : {"type": "string"},
+                            "phone"      : {"type": "string"}
+                        }
+                    }
+                }
+            },
+            "status"           : {"type": "string"},
+            "creationDate"     : {"type": "string", "format": "Date", "default": "Date.now"},
+            "delivery_address" : {"type": "number", "default": -1, "description": "index définissant l'addresse de livraison dans users.addresses"},
+            "billing_address"  : {"type": "number", "default": -1, "description": "index définissant l'addresse de facturation dans users.addresses"},
+            "addresses"        : {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/addressSchema"
+                }
+            },
+            "isAdmin"          : {"type": "boolean", "default": false},
+            "campaign"         : {
+                "type": "object",
+                "properties": {
+                    "referer"      : {"type": "string"},
+                    "utm_campaign" : {"type": "string"},
+                    "utm_medium"   : {"type": "string"},
+                    "utm_source"   : {"type": "string"},
+                    "utm_content"  : {"type": "string"},
+                    "utm_term"     : {"type": "string"}
+                }
+            },
+            "price"                : {"type": "string"},
+            "taxDisplay"           : {"type": "boolean", "default": true},
+            "payementChoice"       : {"type": "string"},
+            "isActiveAccount"      : {"type": "boolean", "default": false},
+            "activateAccountToken" : {"type": "string"},
+            "resetPassToken"       : {"type": "string"},
+            "migrated"             : {"type": "boolean", "default": false},
+            "birthDate"            : {"type": "string", "format": "date"},
+            "presentInLastImport"  : {"type": "boolean"},
+            "accessList"           : {"type": "array", "items": {"type": "string"}},
+            "details"              : {},
+            "type"                 : {"type": "string"},
+            "preferredLanguage"    : {"type": "string"},
+            "set_attributes"       : {"type": "string", "format": "ObjectId", "description": "ref setAttributes"},
+            "attributes"           : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id"          : {"type": "string", "format": "ObjectId", "description": "ref attributes"},
+                        "code"        : {"type": "string"},
+                        "values"      : {"type": "string"},
+                        "param"       : {"type": "string"},
+                        "type"        : {"type": "string", "default": "unset"},
+                        "translation" : {"type": "object"},
+                        "position"    : {"type": "number", "default": 1}
+                    }
+                }
+            }
+        }
+    }
+}

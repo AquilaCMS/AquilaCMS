@@ -4,19 +4,6 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
 
-/**
- * @typedef {object} PaymentMethodsSchema
- * @property {string} code.required
- * @property {boolean} active default:false
- * @property {object} details
- * @property {string} component_template
- * @property {string} makePayment
- * @property {boolean} all_points_of_sale default:true
- * @property {boolean} isDeferred default:false
- * @property {number} sort default:0
- * @property {object} translation
- * @property {string} component_template_front default:null
- */
 const PaymentMethodsSchema = new Schema({
     code                     : {type: String, unique: true, required: true},
     active                   : {type: Boolean, default: false},

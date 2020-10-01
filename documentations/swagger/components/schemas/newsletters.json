@@ -1,0 +1,11 @@
+{
+    "newslettersSchema": {
+        "description": "",
+        "properties": {
+            "isVisible"   : {"type": "boolean", "default": false},
+            "img"         : {"type": "string", "default": ""},
+            "extension"   : {"type": "string", "default": ".jpg"},
+            "translation" : {"type": "object"}
+        }
+    }
+}

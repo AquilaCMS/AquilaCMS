@@ -1,0 +1,93 @@
+{
+    "downloadHistorySchema": {
+        "description": "",
+        "required": [
+            "email",
+            "firstDownloadDate",
+            "lastDownloadDate",
+            "countDownloads"
+        ],
+        "properties": {
+            "user" : {
+                "type": "object",
+                "properties": {
+                    "email"          : {"type": "String"},
+                    "lastname"       : {"type": "String"},
+                    "firstname"      : {"type": "String"},
+                    "civility"       : {"type": "number"},
+                    "details"        : {"type": "object"},
+                    "set_attributes" : {"type": "string", "format": "ObjectId", "description": "ref setAttributes"},
+                    "attributes"     : {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id"          : {"type": "string", "format": "ObjectId", "description": "ref attributes"},
+                                "code"        : {"type": "String"},
+                                "values"      : {"type": "String"},
+                                "param"       : {"type": "String"},
+                                "type"        : {"type": "String", "default": "unset"},
+                                "translation" : {"type": "object"},
+                                "position"    : {"type": "number", "default": 1}
+                            }
+                        }
+                    }
+                }
+            },
+            "product" : {
+                "type": "object",
+                "required": [
+                    "code",
+                    "type"
+                ],
+                "properties": {
+                    "code"           : {"type": "String"},
+                    "set_attributes" : {"type": "string", "format": "ObjectId", "description": "ref setAttributes"},
+                    "attributes"     : {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id"          : {"type": "string", "format": "ObjectId", "description": "ref attributes"},
+                                "code"        : {"type": "string"},
+                                "values"      : {"type": "string"},
+                                "param"       : {"type": "string"},
+                                "type"        : {"type": "String", "default": "unset"},
+                                "translation" : {"type": "object"},
+                                "position"    : {"type": "number", "default": 1}
+                            }
+                        }
+                    },
+                    "type"  : {"type": "String"},
+                    "price" : {
+                        "type": "object",
+                        "properties": {
+                            "purchase" : {"type": "number"},
+                            "tax"      : {"type": "number"},
+                            "et"       : {
+                                "type": "object",
+                                "properties": {
+                                    "normal"  : {"type": "number"},
+                                    "special" : {"type": "number"}
+                                }
+                            },
+                            "ati" : {
+                                "type": "object",
+                                "properties": {
+                                    "normal"  : {"type": "number"},
+                                    "special" : {"type": "number"}
+                                }
+                            },
+                            "priceSort" : {"type": "number", "default": 0}
+                        }
+                    },
+                    "code_ean"    : {"type": "string"},
+                    "translation" : {"type": "object"}
+                }
+            },
+            "firstDownloadDate" : {"type": "string", "format": "date", "default": "Date.now"},
+            "lastDownloadDate"  : {"type": "string", "format": "date"},
+            "countDownloads"    : {"type": "number", "default": 0}
+        }
+    }
+}
