@@ -10,6 +10,7 @@ module.exports = function (app) {
     app.post('/v2/mail/form/:lang?', sendContact);
     app.delete('/v2/mail/:_id', authentication, adminAuth, deleteMail);
     app.post('/v2/mail/test', authentication, adminAuth, sendTestEmail);
+    app.post('/v2/mail/error', sendError);
 };
 
 async function sendTestEmail(req, res, next) {
@@ -112,6 +113,22 @@ async function sendContact(req, res, next) {
     try {
         const result = await ServiceMail.sendContact(req.body, req.params.lang);
         return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * Send an email error (only for dev). Need to set manually (in db) the type of mail
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function sendError(req, res, next) {
+    try {
+        console.error('sendError', req.body);
+        await ServiceMail.sendError(req.body);
+        res.status(200).end();
     } catch (error) {
         return next(error);
     }
