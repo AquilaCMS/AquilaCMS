@@ -1,0 +1,33 @@
+{
+        "attributesSchema": {
+            "description": "",
+            "required": [
+                "code",
+                "type",
+                "param"
+            ],
+            "properties": {
+                "code"           : {"type": "string", "unique": true},
+                "type"           : {"type": "string"},
+                "_type"          : {
+                    "type": "string",
+                    "enum": ["products", "users"],
+                    "default": "products"
+                },
+                "param"          : {"type": "string"},
+                "set_attributes" : {
+                    "description": "ref to setAttributes",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "ObjectId"
+                    }
+                },
+                "position"       : {"type": "number", "default": 1},
+                "default_value"  : {"type": "object"},
+                "usedInRules"    : {"type": "boolean", "default": true},
+                "usedInFilters"  : {"type": "boolean", "default": false},
+                "translation"    : {"type": "object"}
+            }
+            }
+        }

@@ -1,0 +1,9 @@
+{
+    "statsHistorySchema": {
+        "description": "",
+        "properties": {
+            "visit"   : {"type": "array", "default": []},
+            "oldCart" : {"type": "array", "default": []}
+        }
+    }
+}

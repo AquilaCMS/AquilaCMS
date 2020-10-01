@@ -1,0 +1,11 @@
+{
+    "mediasSchema": {
+        "description": "",
+        "properties": {
+            "name"      : {"type": "string"},
+            "link"      : {"type": "string"},
+            "group"     : {"type": "string", "default": ""},
+            "extension" : {"type": "string", "default": ".jpg"}
+        }
+    }
+}

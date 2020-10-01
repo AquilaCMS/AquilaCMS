@@ -1,0 +1,49 @@
+{
+    "rulesSchema": {
+        "description": "",
+        "required": ["owner_id", "owner_type", "operand"],
+        "properties": {
+            "owner_id"   : {"type": "ObjectId"},
+            "owner_type" : {"type": "String"},
+            "operand"    : {"type": "String"},
+            "conditions" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "target",
+                        "type",
+                        "operator",
+                        "value"
+                    ],
+                    "properties": {
+                        "target"                : {"type": "string"},
+                        "type"                  : {"type": "string"},
+                        "operator"              : {"type": "string"},
+                        "value"                 : {},
+                        "id_parent_other_rules" : {
+                            "type": "string",
+                            "description": "une other_rules pourra faire reference a id_parent_other_rules afin d'indiquer son appartenance a cette condition"
+                        }
+                    }
+                }
+            },
+            "effects" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "qty",
+                        "type",
+                        "value"
+                    ],
+                    "properties": {
+                        "qty"   : {"type": "number"},
+                        "type"  : {"type": "string"},
+                        "value" : {"type": "number"}
+                    }
+                }
+            }
+        }
+    }
+}

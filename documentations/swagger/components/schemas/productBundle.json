@@ -1,0 +1,49 @@
+{
+    "productBundleSchema": {
+        "description": "",
+        "properties": {
+            "qty"             : {"type": "number"},
+            "bundle_sections" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["ref"],
+                    "properties": {
+                        "ref"         : {"type": "string"},
+                        "title"       : {"type": "string"},
+                        "displayMode" : {
+                            "type": "string",
+                            "enum": ["RADIO_BUTTON", "SELECT"],
+                            "description": "Ne sert que pour le type \"SINGLE\""
+                        },
+                        "type"        : {"type": "string", "enum": ["SINGLE", "MULTIPLE"]},
+                        "products"    : {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {"type": "string", "format": "ObjectId", "description": "ref products"},
+                                    "isDefault": {"type": "boolean"}
+                                }
+                            }
+                        },
+                        "isRequired"  : {"type": "boolean"},
+                        "minSelect"   : {"type": "number"},
+                        "maxSelect"   : {"type": "number"}
+                    }
+                }
+            },
+            "stock" : {
+                "type": "object",
+                "properties": {
+                    "date_selling" : {"type": "string", "format": "date"},
+                    "date_supply"  : {"type": "string", "format": "date"},
+                    "orderable"    : {"type": "boolean", "default": false},
+                    "status"       : {"type": "string", "default": "liv", "enum": ["liv", "dif", "epu"]},
+                    "label"        : {"type": "string"},
+                    "translation"  : {"type": "object"}
+                }
+            }
+        }
+    }
+}

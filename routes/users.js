@@ -180,10 +180,7 @@ async function getUserTypes(req, res, next) {
  * PUT /api/v2/user/resetpassword
  * @tags User
  * @summary Reset password
- * @param {oneOf|TokenSendMail|changePassword|resetPassword} request.body parameter - success | example | {
- * "email": "testmail@gmail.com",
- * "lang": "fr"
- * }
+ * @param {oneOf|TokenSendMail|changePassword|resetPassword} request.body parameter
  */
 async function resetpassword(req, res, next) {
     try {
