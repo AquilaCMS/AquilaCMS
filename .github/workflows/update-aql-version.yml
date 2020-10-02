@@ -2,7 +2,7 @@ name: Update Aquila Version
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ test-github-actions ]
   pull_request:
     branches: [ master ]
 
@@ -18,17 +18,29 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Add new version in package.json
     - run: |
         export packageFile=`cat package.json`
         export versionLine=`cat package.json | grep "version"`
         export versionLeft=${versionLine:14}
-        export oldModuleVersion=${versionLeft::-2}
+        export oldAquilaVersion=${versionLeft::-2}
+        echo "Old version :"
+        echo $oldAquilaVersion
 
         export todayDate=`date +%D | tr / .`
         export dayMonth=`echo ${todayDate::-3}`
-        export newVersion=""
-        export newModuleVersion=$Version
+        export todayVersion="1.0${dayMonth}"
+        echo "Today version :"
+        echo $todayVersion
+
+        if [[ $todayVersion = $oldAquilaVersion ]]; then export $newAquilaVersion="$todayVersion"
+
+        echo "New version :"
+        echo $newAquilaVersion
 
         #Enregistrement de la nouvelle version dans le info.json et push
         newInfoFile=${packageFile/$oldModuleVersion/$newModuleVersion}
         echo "$newInfoFile" > package.json
+
+    - run: |
+
