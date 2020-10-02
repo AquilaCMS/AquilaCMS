@@ -2,9 +2,9 @@ name: Update Aquila Version
 
 on:
   push:
-    branches: [ test-github-actions ]
+    branches: [ preprod ]
   pull_request:
-    branches: [ master ]
+    branches: [ preprod ]
 
 jobs:
   build:
@@ -67,5 +67,5 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: 'test-github-actions'
+        branch: 'preprod'
 
