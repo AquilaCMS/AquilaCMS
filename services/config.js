@@ -162,9 +162,7 @@ const saveEnvConfig = async (body) => {
             }
         }
         if (environment.photoPath) {
-            environment.photoPath = environment.photoPath
-                .replace(/^.?(\\\\|\\|\/?)/, '')
-                .replace(/(\\\\|\\|\/?)$/, '');
+            environment.photoPath = path.normalize(environment.photoPath);
         }
         await updateEnvFile();
         delete environment.databaseConnection;
