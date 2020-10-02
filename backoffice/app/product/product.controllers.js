@@ -339,6 +339,8 @@ ProductControllers.controller("nsProductGeneral", [
             });
         }
 
+        window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
+
 
         $scope.loadNewAttrs = function () {
             AttributesV2.list({PostBody: {filter: {set_attributes: $scope.product.set_attributes._id, _type: 'products'}, limit: 99}}, function ({datas}) {
