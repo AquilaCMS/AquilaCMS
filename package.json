@@ -1,6 +1,6 @@
 {
   "name": "aquila-cms",
-  "version": "1.010.01",
+  "version": "1.010.02",
   "description": "CMS e-commerce",
   "main": "server.js",
   "license": "OSL-3.0",
