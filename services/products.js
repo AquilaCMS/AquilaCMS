@@ -265,6 +265,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     lang = servicesLanguages.getDefaultLang(lang);
     // Si un productsList.id ne répond pas au match alors productsList.id === null
     menu.productsList = menu.productsList.filter((p) => p.id !== null);
+    menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
     if (PostBody.filter === undefined)  PostBody.filter = {};
     const _config = await Configuration.findOne({}, {stockOrder: 1});
     if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère

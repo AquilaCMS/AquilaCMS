@@ -15,7 +15,7 @@ class CartStructure extends React.Component {
         const {
             isClickable, oCmsHeader, oCmsFooter, step, t
         } = this.props;
-        const { routerLang } = this.context.state;
+        const routerLang = this.context.props ? this.context.props.routerlang : null;
         const progress = ['10%', '30%', '50%', '70%', '100%'];
         return (
             <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
