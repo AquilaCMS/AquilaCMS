@@ -5,6 +5,7 @@
         "sendMail":"Envoyer",
         "sendMailTest":"Envoyer un Email de Test",
         "test":"Tester",
+        "restart": "Redémarrer",
         "addressReceipe":"Adresse du destinataire : ",
         "informationsMail":"Pensez à sauvegarder les informations avant de tester.",
         "general": "Général",
