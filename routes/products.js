@@ -56,7 +56,12 @@ async function getProductsListing(req, res, next) {
  */
 async function getProduct(req, res, next) {
     try {
-        const result = await ServiceProduct.getProduct(req.body.PostBody, {req, res}, req.body.keepReviews);
+        const {
+            PostBody,
+            keepReviews,
+            lang
+        } = req.body;
+        const result = await ServiceProduct.getProduct(PostBody, {req, res}, keepReviews, lang);
         res.json(result);
     } catch (error) {
         return next(error);

@@ -49,7 +49,7 @@ const getBreadcrumb = async (url) => {
         if (index > -1) {
             url.splice(index, 1);
         }
-        parts = parseUrlPrdCat(parts, url, keepL, lang);
+        parts = await parseUrlPrdCat(parts, url, keepL, lang);
     } else if (url.includes('blog')) { // Blog
         const index = url.indexOf('blog');
         if (index > -1) {
@@ -79,7 +79,7 @@ const getBreadcrumb = async (url) => {
             isHome : false
         });
     } else if (!url.includes('c') && url.length > 1) { // Produit
-        parts = parseUrlPrdCat(parts, url, keepL, lang);
+        parts = await parseUrlPrdCat(parts, url, keepL, lang);
     }
     return parts;
 };
@@ -107,7 +107,9 @@ const exportData = async (model, PostBody) => {
 const parseUrlPrdCat = async (parts, url, keepL, lang) => {
     for (let j = 0; j < url.length; j++) {
         const categoriesServices = require('./categories');
-        const result             = await categoriesServices.getCategory({filter: {[`translation.${lang}.slug`]: url[j]}}, null, lang);
+        const result             = await categoriesServices.getCategory({
+            filter : {[`translation.${lang}.slug`]: url[j]}
+        }, null, lang);
         if (result !== null) {
             parts.push({
                 text   : result.translation[lang].name,
