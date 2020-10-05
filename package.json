@@ -5,7 +5,7 @@
   "main": "server.js",
   "license": "OSL-3.0",
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "@haegemonia/express-jsdoc-swagger": "^1.0.0",
+    "@haegemonia/express-jsdoc-swagger": "latest",
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
     "axios": "0.19.2",

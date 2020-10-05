@@ -62,10 +62,23 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git commit -m "[github actions] Updating automatically AquilaCMS version number"
+        git commit -m "[github actions] Updating automatically AquilaCMS version number (${newAquilaVersion})"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: 'preprod'
-
+    - name: Prepare AquilaCMS for AWS S3
+      run: |
+        export folderName="Aquila-${newAquilaVersion}"
+        rm -rf .git
+        zip -r $folderName.zip
+        mkdir tmp
+        mv $folderName.zip tmp/
+    - name: Send Aquila on AWS S3
+      uses: shallwefootball/s3-upload-action@master
+      with:
+        aws_key_id: ${{ secrets.AWS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+        aws_bucket: ${{ secrets.AWS_AQL_BUCKET }}
+        source_dir: 'tmp'
