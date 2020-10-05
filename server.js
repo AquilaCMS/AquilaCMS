@@ -24,8 +24,8 @@ const {
     middlewareServer
 }                           = require('./middleware');
 
-const dev = !serverUtils.isProd();
-let server;
+const dev    = !serverUtils.isProd();
+const server = express();
 
 // ATTENTION, ne pas require des services directement en haut de ce fichier
 // car cela cause des problèmes dans l'ordre d'appel des fichiers
@@ -56,7 +56,7 @@ const initDatabase = async () => {
     if (global.envFile.db) {
         await require('./utils/database').connect();
         await require('./services/job').initAgendaDB();
-        await utilsModules.modulesLoadInit(express);
+        await utilsModules.modulesLoadInit(server);
         await require('./utils/database').initDBValues();
         await require('./services/shortcodes').initDBValues();
     }
@@ -71,7 +71,7 @@ const setEnvConfig = async () => {
     global.envConfig = global.envConfig.toObject();
 };
 
-const initFrontFramework = async (server, themeFolder) => {
+const initFrontFramework = async (themeFolder) => {
     if (dev) await utilsThemes.themeCompile();
 
     const app = next({dev, dir: themeFolder});
@@ -98,12 +98,12 @@ const initFrontFramework = async (server, themeFolder) => {
 };
 
 const initServer = async () => {
-    server = express();
     if (global.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
-        console.log(`%s@@ Current theme : ${global.envConfig.environment.currentTheme}%s`, '\x1b[32m', '\x1b[0m');
-        const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+        const {currentTheme} = global.envConfig.environment;
+        console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
+        const themeFolder = path.join(global.appRoot, 'themes', currentTheme);
         const compile     = typeof global.envFile.devMode !== 'undefined'
             && typeof global.envFile.devMode.compile !== 'undefined'
             && !global.envFile.devMode.compile;
@@ -120,7 +120,7 @@ const initServer = async () => {
         if (compile) {
             console.log('devMode detected, no compilation');
         } else {
-            await initFrontFramework(server, themeFolder);
+            await initFrontFramework(themeFolder);
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation

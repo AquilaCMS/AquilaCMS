@@ -1,0 +1,84 @@
+name: Update Aquila Version
+
+on:
+  push:
+    branches: [ preprod ]
+  pull_request:
+    branches: [ preprod ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Add new version in package.json
+      run: |
+        export packageFile=`cat package.json`
+        export versionLine=`cat package.json | grep "version"`
+        export versionLeft=${versionLine:14}
+        export oldAquilaVersion=${versionLeft::-2}
+        echo "Old version :"
+        echo $oldAquilaVersion
+
+        export todayDate=`date +%D | tr / .`
+        export dayMonth=`echo ${todayDate::-3}`
+        export todayVersion="1.0${dayMonth}"
+        echo "Today version :"
+        echo $todayVersion
+
+        if [[ $todayVersion = $oldAquilaVersion ]]; then
+            export newAquilaVersion="${todayVersion}b"
+        elif [[ $todayVersion = ${oldAquilaVersion::-1} ]]; then
+            echo "Next suffixe processus"
+            export suffixe=(b c d e f g h i j k l m n o p q r s t u v w x y z)
+            for i in "${!suffixe[@]}"
+            do
+            if [[ ${oldAquilaVersion: -1} = ${suffixe[$i]} ]]; then
+                export j=$i+1
+                export newAquilaVersion="${todayVersion}${suffixe[$j]}"
+                break
+            fi
+            done
+        else
+            export newAquilaVersion=$todayVersion
+        fi
+
+        echo "New version :"
+        echo $newAquilaVersion
+
+        #Enregistrement de la nouvelle version dans le info.json et push
+        newInfoFile=${packageFile/$oldAquilaVersion/$newAquilaVersion}
+        echo "$newInfoFile" > package.json
+        git add --force package.json
+
+    - name: Commit file
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "[github actions] Updating automatically AquilaCMS version number (${newAquilaVersion})"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: 'preprod'
+    - name: Prepare AquilaCMS for AWS S3
+      run: |
+        export folderName="Aquila-${newAquilaVersion}"
+        rm -rf .git
+        zip -r $folderName.zip
+        mkdir tmp
+        mv $folderName.zip tmp/
+    - name: Send Aquila on AWS S3
+      uses: shallwefootball/s3-upload-action@master
+      with:
+        aws_key_id: ${{ secrets.AWS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+        aws_bucket: ${{ secrets.AWS_AQL_BUCKET }}
+        source_dir: 'tmp'
