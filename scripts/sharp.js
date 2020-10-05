@@ -12,9 +12,11 @@ process.on('message', async (appRoot) => {
 });
 
 process.on('uncaughtException', () => {
-    setTimeout(() => process.exit(1), 1000);
+    process.send(false);
+    setTimeout(() => process.exit(1), 2000);
 });
 
 process.on('unhandledRejection', () => {
-    setTimeout(() => process.exit(1), 1000);
+    process.send(false);
+    setTimeout(() => process.exit(1), 2000);
 });

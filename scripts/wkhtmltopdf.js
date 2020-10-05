@@ -10,9 +10,11 @@ process.on('message', () => {
 });
 
 process.on('uncaughtException', () => {
+    process.send(false);
     setTimeout(() => process.exit(1), 1000);
 });
 
 process.on('unhandledRejection', () => {
+    process.send(false);
     setTimeout(() => process.exit(1), 1000);
 });
