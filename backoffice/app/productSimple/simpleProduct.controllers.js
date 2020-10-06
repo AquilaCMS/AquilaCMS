@@ -44,7 +44,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         if ($routeParams.code !== "new") {
             $scope.isEditMode = true;
 
-            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: $routeParams.type}, structure: '*', populate: ["set_attributes"], withPromos: false}}, function (product) {
+            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: $routeParams.type}, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false}}, function (product) {
                 $scope.product = product;
 
                 if ($scope.product.set_options !== undefined) {
