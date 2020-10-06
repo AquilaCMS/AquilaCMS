@@ -944,8 +944,8 @@ const setConfig = async (name, newConfig) => {
  */
 const getModuleMd = async (body) => {
     if (!body.moduleName) throw NSErrors.InvalidParameters;
-    if (!fs.existsSync(`../modules/${body.moduleName}/README.md`)) return '';
-    const text = await fs.readFileSync(`../modules/${body.moduleName}/README.md`, 'utf8');
+    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
+    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
     return text;
 };
 
