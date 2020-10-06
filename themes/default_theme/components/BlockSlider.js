@@ -31,7 +31,7 @@ class BlockSlider extends React.Component {
                 }
             }
         });
-        const nsBlockSlider = this.context.state[`nsBlockSlider_${this.props['ns-code']}`];
+        const nsBlockSlider = this.context.props ? this.context.props[`nsBlockSlider_${this.props['ns-code']}`] : null;
         if (!nsBlockSlider) {
             return (
                 <div>{this.props.t('common:error.loadDataComponent', { component: 'BlockSlider' })}</div>

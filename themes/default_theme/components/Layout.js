@@ -79,12 +79,12 @@ class Layout extends React.Component {
         let themeConfig;
         if (
             this.context
-            && this.context.state
-            && this.context.state.messageCookie
-            && this.context.state.themeConfig
+            && this.context.props
+            && this.context.props.messageCookie
+            && this.context.props.themeConfig
         ) {
-            messageCookie = this.context.state.messageCookie;
-            themeConfig = this.context.state.themeConfig;
+            messageCookie = this.context.props.messageCookie;
+            themeConfig = this.context.props.themeConfig;
         }
         return (
             <>

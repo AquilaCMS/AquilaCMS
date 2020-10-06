@@ -215,7 +215,9 @@ UserSchema.virtual('fullname').get(function () {
 });
 
 UserSchema.post('validate', async function () {
-    this.password = await bcrypt.hash(this.password, 10);
+    if (this.isNew) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
 });
 
 UserSchema.methods.validPassword = async function (password) {

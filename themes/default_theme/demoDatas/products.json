@@ -223,8 +223,7 @@
       },
       "createdAt": "2020-05-13T09:07:33.753Z",
       "updatedAt": "2020-05-20T14:08:18.268Z",
-      "universe": "tshirts-tshirts",
-      "id": "5c667f8a28a49c049c5863c8"
+      "universe": "tshirts-tshirts"
     },
     {
       "stock": {
@@ -425,8 +424,7 @@
       },
       "createdAt": "2020-05-13T09:07:33.753Z",
       "updatedAt": "2020-05-20T14:02:13.859Z",
-      "universe": "tshirts-tshirts",
-      "id": "5c667ff128a49c049c5863c9"
+      "universe": "tshirts-tshirts"
     },
     {
       "stock": {
@@ -608,8 +606,7 @@
       },
       "createdAt": "2020-05-09T14:25:46.095Z",
       "updatedAt": "2020-05-20T13:58:34.550Z",
-      "universe": "tshirts-tshirts",
-      "id": "5d24a3e94aa9c1692db04ac7"
+      "universe": "tshirts-tshirts"
     },
     {
       "stock": {
@@ -787,8 +784,7 @@
       },
       "createdAt": "2020-05-09T14:27:06.739Z",
       "updatedAt": "2020-05-15T08:10:34.656Z",
-      "universe": "tshirts-tshirts",
-      "id": "5d24a43a4aa9c1692db04ad8"
+      "universe": "tshirts-tshirts"
     },
     {
       "stock": {
@@ -962,8 +958,7 @@
       },
       "createdAt": "2020-05-09T14:28:20.192Z",
       "updatedAt": "2020-05-20T14:03:38.375Z",
-      "universe": "tshirts-tshirts",
-      "id": "5d24a4844aa9c1692db04ae4"
+      "universe": "tshirts-tshirts"
     },
     {
       "stock": {
@@ -1155,8 +1150,7 @@
       },
       "createdAt": "2020-05-18T13:32:04.714Z",
       "updatedAt": "2020-05-22T12:34:57.736Z",
-      "universe": "chaussettes-chaussettes",
-      "id": "5d3074d44aa9c1692db0534d"
+      "universe": "chaussettes-chaussettes"
     },
     {
       "stock": {
@@ -1321,8 +1315,7 @@
       },
       "universe": "chaussettes-chaussettes",
       "createdAt": "2020-05-18T13:48:26.837Z",
-      "updatedAt": "2020-05-20T13:56:02.745Z",
-      "id": "5d3078aa4aa9c1692db05498"
+      "updatedAt": "2020-05-20T13:56:02.745Z"
     },
     {
       "stock": {
@@ -1485,8 +1478,7 @@
       },
       "universe": "sweats-sweats",
       "createdAt": "2020-05-18T13:53:34.892Z",
-      "updatedAt": "2020-05-18T14:06:14.961Z",
-      "id": "5d3079de4aa9c1692db0549d"
+      "updatedAt": "2020-05-18T14:06:14.961Z"
     },
     {
       "stock": {
@@ -1678,8 +1670,7 @@
       },
       "universe": "sweats-sweats",
       "createdAt": "2020-05-18T13:54:30.466Z",
-      "updatedAt": "2020-05-20T13:56:11.430Z",
-      "id": "5d307a164aa9c1692db054a4"
+      "updatedAt": "2020-05-20T13:56:11.430Z"
     },
     {
       "_id": "5eb2cfdb6cdf0b436c831f23",

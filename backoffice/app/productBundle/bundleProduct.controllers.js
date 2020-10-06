@@ -25,6 +25,8 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         });
                     } else {
                         toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        const event = new CustomEvent('displayCanonicalModal');
+                        window.dispatchEvent(event);
                     }
                 },
             }
