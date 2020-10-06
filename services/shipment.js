@@ -165,7 +165,7 @@ const getEstimatedFee = async (cartId, shipmentId, countryCode) => {
     if (shipmentId) {
         shipments.push(await Shipments.findOne({_id: shipmentId}));
     } else {
-        shipments = await Shipments.find({});
+        shipments = await Shipments.find({active: true, countries: {$elemMatch: {country: countryCode.toUpperCase()}}});
     }
     let ship  = null;
     let price = 0;
