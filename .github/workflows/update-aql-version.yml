@@ -88,6 +88,7 @@ jobs:
 
     - name: Prepare version.txt
       run: |
+        rm -rf tmp
         echo "${newAquilaVersion}" > version.txt
         mkdir tmp
         mv version.txt tmp/
