@@ -1,0 +1,179 @@
+{
+        "billsSchema": {
+            "description": "",
+            "required": [
+                "order_id",
+                "facture",
+                "montant",
+                "withTaxes",
+                "client",
+                "nom",
+                "prenom",
+                "email",
+                "isPaid"
+            ],
+            "properties": {
+                "order_id"     : {
+                    "type": "string",
+                    "format": "ObjectId",
+                    "description": "ref orders"
+                },
+                "facture"      : {
+                    "type": "string"
+                },
+                "montant"      : {
+                    "type": "string"
+                },
+                "withTaxes"    : {
+                    "type": "boolean"
+                },
+                "client"       : {
+                    "type": "string",
+                    "format": "ObjectId",
+                    "description": "ref users"
+                },
+                "nom"          : {
+                    "type": "string"
+                },
+                "prenom"       : {
+                    "type": "string"
+                },
+                "societe"      : {
+                    "type": "string"
+                },
+                "coordonnees"  : {
+                    "type": "string"
+                },
+                "email"        : {
+                    "type": "string"
+                },
+                "creationDate" : {
+                    "type": "string",
+                    "format": "date",
+                    "default": "Date.now"
+                },
+                "filename"     : {
+                    "type": "string"
+                },
+                "paymentDate"  : {
+                    "type": "string",
+                    "format": "date"
+                },
+                "checksum"     : {
+                    "type": "string"
+                },
+                "isPaid"       : {
+                    "type": "boolean"
+                },
+                "lang"         : {
+                    "type": "string"
+                },
+                "items"        : {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/itemSchema"
+                    }
+                },
+                "taxes"        : {
+                    "type": "object"
+                },
+                "address"      : {
+                    "$ref": "#/components/schemas/addressSchema"
+                },
+                "delivery"     : {
+                    "type": "object",
+                    "properties": {
+                        "price" : {
+                            "type": "object",
+                            "properties": {
+                                "ati" : {"type": "number"},
+                                "et"  : {"type": "number"},
+                                "vat" : {"type": "number"}
+                            }
+                        },
+                        "code" : {"type": "string"},
+                        "name" : {"type": "string"}
+                    }
+                },
+                "promos" : {
+                    "type": "object",
+                    "properties": {
+                        "promoId"     : {
+                            "type": "string",
+                            "format": "ObjectId",
+                            "ref": "promo"
+                        },
+                        "promoCodeId" : {
+                            "type": "string",
+                            "format": "ObjectId",
+                            "description": "L'id d'un promo.codes[i].code"
+                        },
+                        "discountATI" : {
+                            "type": "number",
+                            "default": null
+                        },
+                        "discountET"  : {
+                            "type": "number",
+                            "default": null
+                        },
+                        "name"        : {
+                            "type": "string"
+                        },
+                        "description" : {
+                            "type": "string"
+                        },
+                        "code"        : {
+                            "type": "string"
+                        },
+                        "productsId"  : {
+                            "type": "array",
+                            "description": "Si des items sont dans ce tableau alors la promo s'appliquera a ces produits",
+                            "items": {
+                                "productId"    : {
+                                    "type": "string",
+                                    "format": "ObjectId",
+                                    "description": "ref for products"
+                                },
+                                "discountATI"  : {
+                                    "type": "number",
+                                    "default": null,
+                                    "description": "Chaque produit a une discount différente car son prix est différent"
+                                },
+                                "discountET"   : {
+                                    "type": "number",
+                                    "default": null
+                                },
+                                "basePriceET"  : {
+                                    "type": "number",
+                                    "default": null
+                                },
+                                "basePriceATI" : {
+                                    "type": "number",
+                                    "default": null
+                                }
+                            }
+                        }
+                    }
+                },
+                "avoir"           : {
+                    "type": "boolean",
+                    "default": false
+                },
+                "additionnalFees" : {
+                    "type": "object",
+                    "properties": {
+                        "ati": {"type": "number", "default": 0},
+                        "et": {"type": "number", "default": 0},
+                        "tax": {"type": "number", "default": 0}
+                    }
+                },
+                "priceSubTotal"   : {
+                    "type": "object",
+                    "properties": {
+                        "ati": {"type": "number", "default": 0},
+                        "et": {"type": "number", "default": 0}
+                    }
+                }
+        }
+    }
+}

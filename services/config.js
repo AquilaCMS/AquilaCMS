@@ -160,11 +160,9 @@ const saveEnvConfig = async (body) => {
             } catch (err) {
                 console.error(err);
             }
-        } // ./uploads/__custom/cbo
+        }
         if (environment.photoPath) {
-            environment.photoPath = environment.photoPath
-                .replace(/^.?(\\\\|\\|\/?)/, '')
-                .replace(/(\\\\|\\|\/?)$/, '');
+            environment.photoPath = path.normalize(environment.photoPath);
         }
         await updateEnvFile();
         delete environment.databaseConnection;

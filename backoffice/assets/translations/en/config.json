@@ -3,6 +3,7 @@
         "t1": "Environment",
         "t2": "Warning!",
         "test": "Test",
+        "restart": "Restart",
         "sendMail": "Send",
         "sendMailTest": "Send a Test Mail",
         "addressReceipe": "Receipe Address : ",

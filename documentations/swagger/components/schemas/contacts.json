@@ -1,0 +1,9 @@
+{
+    "contactsSchema": {
+        "description": "",
+        "properties": {
+            "data"         : {"type": "object"},
+            "creationDate" : {"type": "string", "format": "date"}
+        }
+    }
+}

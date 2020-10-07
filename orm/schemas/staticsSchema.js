@@ -4,16 +4,6 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
 
-/**
- * @typedef {object} StaticsSchema
- * @property {string} code.required
- * @property {string} type.required
- * @property {boolean} active default:false
- * @property {string} creationDate Date - default:Date.now
- * @property {string} modifyDate Date - default:Date.now
- * @property {string} group default:
- * @property {object} translation
- */
 const StaticsSchema = new Schema({
     code         : {type: String, required: true, unique: true},
     type         : {type: String, required: true},
@@ -51,7 +41,7 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
 
         if (Object.keys(lang).length > 0) {
             if (lang.slug === undefined || lang.slug === '') {
-                lang.slug = utils.slugify(lang.name);
+                lang.slug = lang.title ? utils.slugify(lang.title) : utils.slugify(lang.code);
             } else {
                 lang.slug = utils.slugify(lang.slug);
             }
@@ -65,8 +55,6 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
 
             if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
                 errors.push('slug déjà existant');
-            } else if (lang.slug.length < 3) {
-                errors.push('le slug doit être composé de 3 caractères minimum');
             }
 
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [

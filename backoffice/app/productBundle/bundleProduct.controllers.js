@@ -25,6 +25,8 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         });
                     } else {
                         toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        const event = new CustomEvent('displayCanonicalModal');
+                        window.dispatchEvent(event);
                     }
                 },
             }
@@ -81,7 +83,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             angular.forEach($scope.product.attributes, function (attributeI)
             {
-                AttributesV2.query({PostBody: {filter: {_id: attributeI.id}, structure: '*'}}, function (attribute)
+                AttributesV2.query({PostBody: {filter: {_id: attributeI.id}, structure: '*', populate: ['associated_prds']}}, function (attribute)
                 {
                     var langKeys = Object.keys(attribute.translation);
 

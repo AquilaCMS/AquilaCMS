@@ -2,7 +2,7 @@ node_modules/
 /modules
 /updates
 /themes
-/documentations
+#/documentations
 /backoffice
 /bo
 /uploads

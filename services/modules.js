@@ -936,6 +936,19 @@ const setConfig = async (name, newConfig) => {
     return Modules.updateOne({name}, {$set: {config: newConfig}}, {new: true});
 };
 
+/**
+ * Permet définir la configuration (champ conf) d'un module
+ * @param body {object} corp de la requete
+ * @returns {Promise<*>} Retourne le contenu du fichier md corespondant au nom du module fourni
+ * @deprecated
+ */
+const getModuleMd = async (body) => {
+    if (!body.moduleName) throw NSErrors.InvalidParameters;
+    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
+    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
+    return text;
+};
+
 module.exports = {
     getModules,
     getModule,
@@ -958,5 +971,6 @@ module.exports = {
     uninitComponentTemplate,
     loadAdminModules,
     getConfig,
-    setConfig
+    setConfig,
+    getModuleMd
 };

@@ -1,0 +1,14 @@
+{
+    "staticsSchema": {
+        "description": "",
+        "properties": {
+            "code"         : {"type": "string", "required": true},
+            "type"         : {"type": "string", "required": true},
+            "active"       : {"type": "boolean", "default": false},
+            "creationDate" : {"type": "date", "default": "Date.now"},
+            "modifyDate"   : {"type": "date", "default": "Date.now"},
+            "group"        : {"type": "string", "default": ""},
+            "translation"  : {"type": "object"}
+        }
+    }
+}

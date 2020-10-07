@@ -26,7 +26,7 @@ On Windows you must download wkhtmltopdf : https://wkhtmltopdf.org/downloads.htm
 
 ## Installation
 
-You can download the source code from GitHub and run the following command-line to launch the installer.
+You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
 
 With npm :
 ```bash
