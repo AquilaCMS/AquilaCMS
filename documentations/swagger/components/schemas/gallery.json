@@ -1,0 +1,43 @@
+{
+    "gallerySchema": {
+        "description": "",
+        "required": [
+            "code",
+            "initItemNumber",
+            "maxColumnNumber"
+        ],
+        "properties": {
+            "code"            : {"type": "string"},
+            "initItemNumber"  : {"type": "number", "default": 6},
+            "maxColumnNumber" : {"type": "number", "default": 3},
+            "items"           : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "_itemId"   : {"type": "string", "format": "ObjectId"},
+                        "src"       : {"type": "string", "description": "trim automatically", "default": ""},
+                        "srcset"    : {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "trim automatically"
+                            }
+                        },
+                        "sizes"     : {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "trim automatically"
+                            }
+                        },
+                        "content"   : {"type": "string", "description": "trim automatically", "default": ""},
+                        "alt"       : {"type": "string", "default": ""},
+                        "order"     : {"type": "number", "default": 0},
+                        "extension" : {"type": "string", "default": ".jpg"}
+                    }
+                }
+            }
+        }
+    }
+}

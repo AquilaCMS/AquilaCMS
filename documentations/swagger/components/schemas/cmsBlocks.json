@@ -1,0 +1,12 @@
+{
+    "cmsBlocksSchema": {
+        "description": "",
+        "required": ["code"],
+        "properties": {
+            "code"        : {"type": "string"},
+            "group"       : {"type": "string", "default": ""},
+            "description" : {"type": "string"},
+            "translation" : {"type": "object"}
+        }
+    }
+}

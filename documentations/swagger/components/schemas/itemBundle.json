@@ -1,0 +1,25 @@
+{
+    "itemBundleSchema": {
+        "description": "",
+        "properties": {
+            "selections" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["bundle_section_ref"],
+                    "properties": {
+                        "bundle_section_ref" : {"type": "String"},
+                        "products"           : {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "ObjectId",
+                                "description": "ref products"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

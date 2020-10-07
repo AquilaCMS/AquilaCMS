@@ -1,0 +1,74 @@
+{
+    "categoriesSchema": {
+        "description": "",
+        "required": ["code"],
+        "properties": {
+                "code"         : {"type": "string", "unique": true},
+                "active"       : {"type": "boolean", "default": false},
+                "clickable"    : {"type": "boolean", "default": true},
+                "isDisplayed"  : {"type": "boolean", "default": true},
+                "action"       : {"type": "string", "default": "catalog"},
+                "colorName"    : {"type": "string"},
+                "openDate"     : {"type": "string", "format": "Date", "default": "Date.now"},
+                "closeDate"    : {"type": "string", "format": "Date"},
+                "creationDate" : {"type": "string", "format": "Date", "default": "Date.now"},
+                "ancestors"    : {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "ObjectId",
+                        "description": "ref categories"
+                    }
+                },
+                "children"     : {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "ObjectId",
+                        "description": "ref categories"
+                    }
+                },
+                "productsList" : {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id"         : {"type": "string", "format": "ObjectId", "description": "ref products"},
+                            "checked"    : {"type": "boolean", "default": true},
+                            "sortWeight" : {"type": "number", "default": 0}
+                        }
+                    }
+                },
+                "img"          : {"type": "string"},
+                "alt"          : {"type": "string"},
+                "displayOrder" : {"type": "number", "default": 99},
+                "filters"      : {
+                    "type": "object",
+                    "properties": {
+                        "attributes" : {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "id_attribut",
+                                    "type",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "id_attribut" : {"type": "ObjectId", "ref": "attributes"},
+                                    "type"        : {"type": "string"},
+                                    "code"        : {"type": "string"},
+                                    "position"    : {"type": "number"},
+                                    "translation" : {"type": "object"}
+                                }
+                            }
+                        },
+                        "attributesValues" : {"type": "object"},
+                        "pictos"           : {"type": "array"}
+                    }
+                },
+                "translation"      : {"type": "object"},
+                "canonical_weight" : {"type": "number", "default": 0}
+        }
+    }
+}

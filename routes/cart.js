@@ -27,6 +27,7 @@ module.exports = function (app) {
  * POST /api/v2/carts
  * @tags Cart
  * @summary Listing of carts
+ * @security api_key
  * @param {PostBody} request.body.required - PostBody
  */
 const getCarts = async (req, res, next) => {

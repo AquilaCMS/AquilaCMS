@@ -1,0 +1,22 @@
+{
+    "territorySchema": {
+        "description": "",
+        "properties": {
+            "translation" : {"type": "object"},
+            "code"        : {"type": "string", "required": true},
+            "type"        : {
+                "type": "string",
+                "enum": ["country", "district", "department", "city"]
+            },
+            "taxeFree"    : {"type": "boolean"},
+            "children"    : {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "ObjectId",
+                    "description": "ref territory"
+                }
+            }
+        }
+    }
+}

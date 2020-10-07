@@ -1,0 +1,46 @@
+{
+    "promoSchema": {
+        "description": "",
+        "properties": {
+            "dateStart"     : {"type": "Date"},
+            "dateEnd"       : {"type": "Date"},
+            "actif"         : {"type": "boolean", "default": false},
+            "type"          : {"type": "string", "enum": ["1", "2"], "required": true, "description": "Promo panier (type: 1) ou catalogue (type: 2)"},
+            "name"          : {"type": "string", "required": true},
+            "description"   : {"type": "string", "required": true},
+            "discountValue" : {"type": "number", "description": "en Euro ou en % -> Si discountType === null alors discountValue ne doit pas être set"},
+            "discountType"  : {"type": "string", "enum": ["Aet", "Aati", "P", "FVet", "FVati", "QtyB", null], "default": null, "description": "A pour montant, P pour pourcentage, FV pour valeur finale, QtyB pour quantitybreak"},
+            "rules_id"      : {"type": "string", "format": "ObjectId", "description": "ref rules, Regle pour appliquer ce prix"},
+            "gifts"         : {
+                "description": "Liste d'ObjectId de produit offert",
+                "type": "array",
+                "items": {"type": "string", "format": "ObjectId", "default": [], "description": "ref products"}
+            },
+            "codes"         : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["code"],
+                    "properties": {
+                        "code"         : {"type": "string"},
+                        "limit_total"  : {"type": "number", "default": null, "description": "Si null alors illimité -> ex: 10 bons de 50 euros seront offert"},
+                        "limit_client" : {"type": "number", "default": null, "description": "Si null alors illimité -> ex : 10 bons de 50 euros seront offert et 1 client pourra utiliser 10 bons (dans ce cas 1 client pourra utiliser tout les bons offert)"},
+                        "used"         : {"type": "number", "default": 0, "description": "nombre de fois ou le bon a été utilisé"},
+                        "client_used"  : {"type": "number", "default": 0, "description": "Nombre de client unique ayant utilisé le bon"}
+                    }
+                }
+            },
+            "priority"       : {"type": "number", "default": 0, "description": "priorité de la promo si cumulable, 0 étant le moins prioritaire"},
+            "applyNextRules" : {"type": "boolean", "default": false, "description": "true : applique les autres promos, false : applique uniquement une seule promo"},
+            "actions"        : {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "ObjectId",
+                    "default": [],
+                    "description": "ref rules"
+                }
+            }
+        }
+    }
+}

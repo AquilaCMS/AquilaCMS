@@ -146,8 +146,9 @@ const initExpress = async (server, passport) => {
     });
 
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
-    const swaggerFile = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'swagger.json')));
-    await expressJSDocSwagger(server)({...swaggerFile, baseDir: global.appRoot});
+    const configFile  = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')));
+    const swaggerFile = require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js'));
+    await expressJSDocSwagger(server)({...configFile, baseDir: global.appRoot}, swaggerFile);
 };
 
 const maintenance = async (req, res, next) => {

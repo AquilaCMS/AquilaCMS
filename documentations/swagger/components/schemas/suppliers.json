@@ -1,0 +1,21 @@
+{
+    "suppliersSchema": {
+        "description": "",
+        "properties": {
+            "code"               : {"type": "string", "required": true},
+            "name"               : {"type": "string", "required": true},
+            "type"               : {"type": "string"},
+            "contactPrenom"      : {"type": "string"},
+            "contactNom"         : {"type": "string"},
+            "addr_1"             : {"type": "string"},
+            "addr_2"             : {"type": "string"},
+            "cpostal"            : {"type": "string"},
+            "city"               : {"type": "string"},
+            "mail"               : {"type": "string"},
+            "phone"              : {"type": "number"},
+            "purchasing_manager" : {"type": "string"},
+            "active"             : {"type": "boolean", "default": true},
+            "creationDate"       : {"type": "string", "format": "date", "default": "Date.now"}
+        }
+    }
+}
