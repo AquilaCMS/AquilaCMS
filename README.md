@@ -24,7 +24,7 @@ On Windows you must download wkhtmltopdf : https://wkhtmltopdf.org/downloads.htm
 
 ## Installation
 
-You can download the source code from GitHub and run the following command-line to launch the installer.
+You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
 
 With npm :
 ```bash
@@ -41,8 +41,8 @@ npm run start:pm2
 
 With docker :
 ```bash
-docker pull nextsourcia/aquilacms
-docker run -p 127.0.0.1:3010:3010/tcp nextsourcia/aquilacms
+docker pull aquilacms/aquilacms
+docker run -p 127.0.0.1:3010:3010/tcp aquilacms/aquilacms
 ```
 
 At the first launch, there is an installation page. It allows you to create an env.json file in the config folder.
