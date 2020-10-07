@@ -58,6 +58,7 @@ jobs:
         echo "$newInfoFile" > package.json
         git add --force package.json
 
+        echo "::set-env name=newAquilaVersion::$newAquilaVersion"
     - name: Commit file
       run: |
         git config --local user.email "action@github.com"
@@ -72,7 +73,7 @@ jobs:
       run: |
         export folderName="Aquila-${newAquilaVersion}"
         rm -rf .git
-        zip -r $folderName.zip
+        zip -r $folderName.zip .
         mkdir tmp
         mv $folderName.zip tmp/
     - name: Send Aquila on AWS S3
