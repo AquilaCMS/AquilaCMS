@@ -34,7 +34,7 @@ jobs:
       run: |
         export scriptReturnPackageTheme=`node scripts/updatePackageAquila.js ./themes/default_theme package-theme.json`
         echo $scriptReturnPackageTheme
-        if [[ $scriptReturnPackageTheme = "File is replaced successfully" ]]; then echo "Update package theme done"; git add --force package-aquila.json; fi
+        if [[ $scriptReturnPackageTheme = "File is replaced successfully" ]]; then echo "Update package theme done"; git add --force themes/default_theme/package-theme.json; fi
     - name: Commit file
       run: |
         export gitStatus=$(git status | grep "nothing to commit, working tree clean")
