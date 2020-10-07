@@ -41,8 +41,8 @@ npm run start:pm2
 
 With docker :
 ```bash
-docker pull nextsourcia/aquilacms
-docker run -p 127.0.0.1:3010:3010/tcp nextsourcia/aquilacms
+docker pull aquilacms/aquilacms
+docker run -p 127.0.0.1:3010:3010/tcp aquilacms/aquilacms
 ```
 
 At the first launch, there is an installation page. It allows you to create an env.json file in the config folder.
