@@ -4,8 +4,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3ac2a8b4b7ac4b6880b49d544fdabfcd)](https://app.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&utm_medium=referral&utm_content=AquilaCMS/AquilaCMS&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 
-[![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
-
 # AquilaCMS
 
 [AquilaCMS](https://www.aquila-cms.com) is an Open-source e-commerce web application, 100% javascript with Node.js and MongoDB. Themes can be used with ReactJS and NextJS (for polymorphism). A complete Back office is available for managing your website. You can download some modules or themes in [Aquila's Shop](https://shop.aquila-cms.com).
