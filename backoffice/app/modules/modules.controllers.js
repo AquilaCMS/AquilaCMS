@@ -116,36 +116,35 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                         }
                     }
                 }
-                console.log('response: ', response);
-                // $http.post('/v2/modules/toggle', {
-                //     idModule    : id,
-                //     active      : state,
-                //     toBeChanged : response.data.toBeChanged,
-                //     toBeRemoved : response.data.toBeRemoved
-                // }).then(function (response) {
-                //     $scope.showModuleLoading = false;
-                //     $scope.restart(name, state, false);
-                // }).catch((err) => {
-                //     $scope.showModuleLoading = false;
-                //     if (err.data.datas && err.data.datas.missingDependencies && err.data.datas.needActivation) {
-                //         toastService.toast('danger',
-                //             `${err.data.message}<br>
-                //             ${err.data.datas.missingDependencies.length > 0 ? `missing dependencies :<br>
-                //             <b>${err.data.datas.missingDependencies.map((elem) => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}
-                //             ${err.data.datas.needActivation.length > 0 ? `need activation :<br>
-                //             <b>${err.data.datas.needActivation.map((elem) => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}`);
-                //     } else if (err.data.datas && err.data.datas.needDeactivation) {
-                //         toastService.toast('danger',
-                //             `${err.data.message}<br>
-                //             ${err.data.datas.needDeactivation.length > 0 ? `need deactivation :<br>
-                //             <b>${err.data.datas.needDeactivation.map((elem) => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}`);
-                //     } else {
-                //         toastService.toast('danger', err.data.message);
-                //     }
-                //     if (err.data.datas && err.data.datas.modules) {
-                //         $scope.modules = err.data.datas.modules;
-                //     }
-                // });
+                $http.post('/v2/modules/toggle', {
+                    idModule    : id,
+                    active      : state,
+                    toBeChanged : response.data.toBeChanged,
+                    toBeRemoved : response.data.toBeRemoved
+                }).then(function (response) {
+                    $scope.showModuleLoading = false;
+                    $scope.restart(name, state, false);
+                }).catch((err) => {
+                    $scope.showModuleLoading = false;
+                    if (err.data.datas && err.data.datas.missingDependencies && err.data.datas.needActivation) {
+                        toastService.toast('danger',
+                            `${err.data.message}<br>
+                            ${err.data.datas.missingDependencies.length > 0 ? `missing dependencies :<br>
+                            <b>${err.data.datas.missingDependencies.map((elem) => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}
+                            ${err.data.datas.needActivation.length > 0 ? `need activation :<br>
+                            <b>${err.data.datas.needActivation.map((elem) => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}`);
+                    } else if (err.data.datas && err.data.datas.needDeactivation) {
+                        toastService.toast('danger',
+                            `${err.data.message}<br>
+                            ${err.data.datas.needDeactivation.length > 0 ? `need deactivation :<br>
+                            <b>${err.data.datas.needDeactivation.map((elem) => elem = ` - ${elem}`).join('<br>')}</b><br>` : ''}`);
+                    } else {
+                        toastService.toast('danger', err.data.message);
+                    }
+                    if (err.data.datas && err.data.datas.modules) {
+                        $scope.modules = err.data.datas.modules;
+                    }
+                });
             }
         }).catch((err) => {
             $scope.showModuleLoading = false;
