@@ -69,7 +69,7 @@ function deleteFileCache(filePathCache) {
 
 const cacheSetting = () => {
     const CacheService = require('../utils/CacheService');
-    const cacheTTL     = global.envConfig.cacheTTL ? global.envConfig.cacheTTL : 0;
+    const cacheTTL     = global.envConfig.environment.cacheTTL ? global.envConfig.environment.cacheTTL : 0;
     utilsModules.modulesLoadFunctions('useCacheModule', {cacheTTL}, () => {
         global.cache = new CacheService(cacheTTL);
     });
