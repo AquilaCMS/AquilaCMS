@@ -84,10 +84,10 @@ const initDBValues = async () => {
         {$setOnInsert: {code: 'defaut', name: 'Défaut', type: 'products', attributes: []}},
         {new: true, upsert: true}
     );
-    await Statics.findOneAndUpdate({code: 'page'}, {
+    await Statics.findOneAndUpdate({code: 'home'}, {
         $setOnInsert : {
-            code        : 'page',
-            type        : 'page',
+            code        : 'home',
+            type        : 'home',
             active      : true,
             translation : {[global.defaultLang]: {name: 'home', slug: 'home'}}
         }
@@ -113,14 +113,14 @@ const initDBValues = async () => {
         await MailType.findOneAndUpdate({code: mailType.code}, {$setOnInsert: mailType}, {new: true, upsert: true});
     }
 
-    const imgTrans              = 'medias/paiement-virement-logo.png';
-    const imgCheck              = 'medias/paiement-cheque-logo.png ';
+    const imgTrans              = '/medias/paiement-virement-logo.png';
+    const imgCheck              = '/medias/paiement-cheque-logo.png ';
     const defaultPaymentMethods = [
         {
             code        : 'transfer',
             translation : {
                 fr : {name: 'Virement', urlLogo: imgTrans, description: 'Virement bancaire requis dans un délais de 5 jours'},
-                en : {name: 'Bank transfer', urlLogo: imgTrans}},
+                en : {name: 'Bank transfer', urlLogo: imgTrans, description: 'Bank transfer required within 5 days'}},
             active     : true,
             isDeferred : true
         },
@@ -128,7 +128,7 @@ const initDBValues = async () => {
             code        : 'cheque',
             translation : {
                 fr : {name: 'Chèque', urlLogo: imgCheck, description: 'Paiement par chèque à nous envoyer dans les 5 jours'},
-                en : {name: 'Check', urlLogo: imgCheck}},
+                en : {name: 'Check', urlLogo: imgCheck, description: 'Payment by check to be sent to us within 5 days'}},
             active     : true,
             isDeferred : true
         },

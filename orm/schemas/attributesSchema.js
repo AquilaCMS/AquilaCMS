@@ -4,20 +4,6 @@ const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 const ObjectId      = Schema.ObjectId;
 
-/**
- * @typedef {object} AttributesSchema
- * @property {string} code.required
- * @property {string} type.required
- * @property {string} _type enum:products,users - default:products
- * @property {string} param.required
- * @property {array<string>} set_attributes setAttributes objectId
- * @property {number} position default:1
- * @property {object} default_value
- * @property {boolean} usedInRules default:true
- * @property {boolean} usedInFilters default:false
- * @property {object} translation
- */
-
 const AttributesSchema = new Schema({
     code  : {type: String, required: true, unique: true},
     type  : {type: String, required: true},

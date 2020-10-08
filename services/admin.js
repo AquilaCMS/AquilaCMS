@@ -44,7 +44,7 @@ const welcome = async () => {
                 },
                 fr : {
                     title : 'Aquila',
-                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations necessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/ressources-documentation">aquila-cms.com</a>.'
+                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/ressources-documentation">aquila-cms.com</a>.'
                 }
             }
         });

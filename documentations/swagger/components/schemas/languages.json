@@ -1,0 +1,14 @@
+{
+    "languagesSchema": {
+        "description": "",
+        "required": ["code", "name"],
+        "properties": {
+            "code"            : {"type": "string"},
+            "name"            : {"type": "string"},
+            "img"             : {"type": "string"},
+            "position"        : {"type": "number", "default": 1},
+            "defaultLanguage" : {"type": "boolean", "default": false},
+            "status"          : {"type": "string", "enum": ["visible", "invisible", "removing"], "default": "invisible"}
+        }
+    }
+}

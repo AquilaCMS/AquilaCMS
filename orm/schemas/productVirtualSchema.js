@@ -3,11 +3,6 @@ const mongoose             = require('mongoose');
 const reviewService        = require('../../services/reviews');
 const Schema               = mongoose.Schema;
 
-/**
- * @typedef {object} ProductVirtualSchema
- * @property {string} downloadLink default:null
- * @property {string} downloadInfos default:null
- */
 const ProductVirtualSchema = new Schema({
     downloadLink  : {type: String, default: null},
     downloadInfos : {type: String, default: null}
