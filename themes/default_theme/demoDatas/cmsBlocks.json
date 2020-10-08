@@ -20,12 +20,12 @@
       "code": "header_cart",
       "translation": {
         "en": {
-          "content": "<header class=\"header\">\n<div class=\"shell\">\n<div class=\"header__inner\"><a href=\"en/\" class=\"logo\"> <img src=\"/images/medias/max-70/5d443d76ede1945f66028313/aquila-logo.png\" alt=\"AquilaCMS\" /> </a></div>\n</div>\n</header>",
+          "content": "<header class=\"header\">\n<div class=\"shell\">\n<div class=\"header__inner\"><a href=\"/en/\" class=\"logo\"> <img src=\"/images/medias/max-70/5d443d76ede1945f66028313/aquila-logo.png\" alt=\"AquilaCMS\" /> </a></div>\n</div>\n</header>",
           "description": "Header for cart"
         },
         "fr": {
           "description": "Entete du panier",
-          "content": "<header class=\"header\">\n<div class=\"shell\">\n<div class=\"header__inner\"><a href=\"/\" class=\"logo\"> <img src=\"/images/medias/max-70/5d443d76ede1945f66028313/aquila-logo.png\" alt=\"AquilaCMS\" /> </a></div>\n</div>\n</header>"
+          "content": "<header class=\"header\">\n<div class=\"shell\">\n<div class=\"header__inner\"><a href=\"/fr\" class=\"logo\"> <img src=\"/images/medias/max-70/5d443d76ede1945f66028313/aquila-logo.png\" alt=\"AquilaCMS\" /> </a></div>\n</div>\n</header>"
         }
       }
     },
