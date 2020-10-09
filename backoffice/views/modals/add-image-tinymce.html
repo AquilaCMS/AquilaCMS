@@ -59,7 +59,7 @@
             <div class="row" style="margin-top:20px">
             <!-- <div class="row" style="margin-bottom:30px;overflow:scroll; height:70vh;overflow-x: hidden;padding:15px 20px"> -->
                 <div ng-repeat="media in list">
-                    <div class="col-md-3" style="text-align: center;margin-bottom:20px">
+                    <div ng-if="media.extension === '.png' || media.extension === '.jpg'" class="col-md-3" style="text-align: center;margin-bottom:20px">
                         <button ng-if="imageId === media._id" style="box-shadow: 0px 0px 20px 5px #576fa1;"
                             ng-click="selectImage(media)"><img
                                 ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}"
