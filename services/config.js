@@ -143,7 +143,11 @@ const saveEnvFile = async (body, files) => {
             global.envFile.db = environment.databaseConnection;
         }
         if (environment.ssl && environment.ssl.active) {
-            global.envFile.ssl.active = Boolean(environment.ssl.active);
+            if (environment.ssl.active === 'false') {
+                global.envFile.ssl.active = false;
+            } else {
+                global.envFile.ssl.active = true;
+            }
         }
         await updateEnvFile();
         delete environment.databaseConnection;
@@ -164,7 +168,6 @@ const saveEnvConfig = async (body) => {
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
-        await updateEnvFile();
         delete environment.databaseConnection;
         // traitement spécifique
         if (environment.demoMode) {
