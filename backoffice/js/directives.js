@@ -384,6 +384,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $scope.changeTab = function (group) {
                                         $scope.currentTab = group;
                                         $scope.onPageChange(1);
+                                        $scope.imageSelected = null;
+                                        $scope.imageId = null;
                                     }
 
                                     $scope.mediaDetails = (media) => {
@@ -489,9 +491,16 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         return false;
                                     }
 
-                                    $scope.ok = function (slug, name) {
+                                    $scope.ok = function (slug, name, cat) {
                                         if(!name){
                                             name = slug;
+                                        }
+                                        if(cat){
+                                            $scope.categories.forEach(element => {
+                                                if (element.translation[lang].slug === slug && element.action === "catalog") {
+                                                    slug = 'c/' + slug;
+                                                }
+                                            });
                                         }
                                         $modalInstance.close({slug,name});
                                     };
@@ -509,12 +518,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         });
 
                         modalInstance.result.then(function (response) {
-                            if ($scope.id) {
                                 tinyMCE.get($scope.id).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
                                 $scope.text = tinyMCE.get($scope.id).getContent();
-                            } else {
-                                tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                            }
                         });
                     };
             }

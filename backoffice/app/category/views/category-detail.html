@@ -111,7 +111,7 @@
                             </td>
                             <td>
                                 <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched"
-                                    ng-options="page.translation[lang].slug as page.translation[lang].title group by getOptGroup(page.group) for page in pages | filter:exist"
+                                    ng-options="page.translation[lang].slug as (page.translation[lang].title + ' (' +page.translation[lang].title +')') group by getOptGroup(page.group) for page in pages | filter:exist"
                                     ng-model="category.translation[lang].pageSlug">
                                 </select>
                             </td>

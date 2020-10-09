@@ -54,10 +54,10 @@
                 </div>
                 <div style="float:right">
                     <select ng-show="typeSelected === 'page'" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
-                        ng-options="page.translation[lang].slug as page.translation[lang].title group by getOptGroup(page.group) for page in pages | filter:exist" ng-model="selected.pageSelelected">
+                        ng-options="page.translation[lang].slug as (page.translation[lang].title + ' (' + page.translation[lang].slug + ')') group by getOptGroup(page.group) for page in pages | filter:exist" ng-model="selected.pageSelelected">
                     </select>
                     <select ng-show="typeSelected === 'cat'" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" style="width:200px;"
-                        ng-options="category.translation[lang].slug as category.translation[lang].name for category in categories" ng-model="selected.categorySelelected">
+                        ng-options="category.translation[lang].slug as (category.translation[lang].name + ' (' + category.translation[lang].slug + ')') for category in categories" ng-model="selected.categorySelelected">
                     </select>
                 </div>
             </div>
@@ -70,12 +70,11 @@
                         style="width:200px; float:right" name="name" ng-model="name">
                 </div>
             </div>
-            <pre>{{categories}}</pre>
     </div>
     
     <div class="modal-footer">
         <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
-        <button class="btn btn-default" ng-if="typeSelected ==='cat'" ng-disabled="!selected.categorySelelected" ng-click="ok(selected.categorySelelected,name)" translate>tinymce.modal.add</button>
+        <button class="btn btn-default" ng-if="typeSelected ==='cat'" ng-disabled="!selected.categorySelelected" ng-click="ok(selected.categorySelelected,name, true)" translate>tinymce.modal.add</button>
         <button class="btn btn-default" ng-if="typeSelected ==='page'" ng-disabled="!selected.pageSelelected" ng-click="ok(selected.pageSelelected,name)" translate>tinymce.modal.add</button>
     </div>
 </div>
