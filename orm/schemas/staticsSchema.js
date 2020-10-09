@@ -29,7 +29,7 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
         while (updateQuery.translation === undefined) {
             updateQuery.translation = {};
         }
-        const languages       = await mongoose.model('languages').find({status: 'visible'});
+        const languages       = await mongoose.model('languages').find({});
         const translationKeys = Object.keys(updateQuery.translation);
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
@@ -53,7 +53,7 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
             self.translation = {};
         }
         const translationKeys = Object.keys(self.translation);
-        const languages       = await mongoose.model('languages').find({status: 'visible'});
+        const languages       = await mongoose.model('languages').find({});
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
