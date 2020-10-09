@@ -65,7 +65,7 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
     const config = (await queryBuilder.findOne(PostBody)).toObject();
     if (config.environment) {
         if (isAdmin) {
-            config.environment          = {
+            config.environment = {
                 ...config.environment,
                 ssl : global.envFile.ssl || {
                     active : false,
@@ -74,8 +74,6 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
                 },
                 databaseConnection : global.envFile.db
             };
-            config.environment.ssl.cert = path.basename(config.environment.ssl.cert);
-            config.environment.ssl.key  = path.basename(config.environment.ssl.key);
         }
         if (config.environment.mailPass) {
             try {
@@ -151,6 +149,7 @@ const saveEnvFile = async (body, files) => {
         }
         await updateEnvFile();
         delete environment.databaseConnection;
+        delete environment.ssl;
     }
 };
 
