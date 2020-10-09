@@ -248,21 +248,21 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 icon: "code-sample",
                                 tooltip: 'Add Shortcode',
                                 onAction: function () {
-                                    $scope.addShortcode($scope.lang);
+                                    $scope.addShortcode();
                                 }
                             });
                         }
                     };
 
-                $scope.addShortcode = function (lang) {
+                $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
                         keyboard: false,
                         templateUrl: 'views/modals/add-shortcode-tinymce.html',
-                        controller: ['$scope', '$modalInstance','$http',
-                            function ($scope, $modalInstance, $http) {
+                        controller: ['$scope', '$modalInstance', '$http', '$rootScope',
+                            function ($scope, $modalInstance, $http, $rootScope) {
                                 $scope.shortcodes = [];
-                                $scope.lang = lang;
+                                $scope.lang = $rootScope.adminLang;
                                 $scope.selected = false;
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
