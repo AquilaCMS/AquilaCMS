@@ -68,27 +68,41 @@ exports.initDBValues = async () => {
                     properties  : [
                         {
                             props       : 'container',
-                            description : 'Container',
+                            description : 'Accordion container class',
                             type        : 'text'
                         },
                         {
                             props       : 'section',
-                            description : 'Section',
+                            description : 'Class of different sections',
                             type        : 'text'
                         },
                         {
                             props       : 'head',
-                            description : 'Head',
+                            description : 'Clickable header class to open section',
                             type        : 'text'
                         },
                         {
                             props       : 'classexpand',
-                            description : 'classexpand',
+                            description : 'Class used to expand the body of the section',
                             type        : 'text'
                         },
                         {
                             props       : 'autoclose',
-                            description : 'autoclose',
+                            description : 'If at "1" = automatically closes the other section bodies when one is opened ("0" by default)',
+                            type        : 'list',
+                            attributs   : [
+                                {
+                                    description : 'Automatically closes',
+                                    value       : '1'
+                                }, {
+                                    description : 'Leave the others open',
+                                    value       : '0'
+                                }
+                            ]
+                        },
+                        {
+                            props       : 'body',
+                            description : 'Section body class',
                             type        : 'text'
                         }
                     ]
@@ -183,17 +197,17 @@ exports.initDBValues = async () => {
                         },
                         {
                             props       : 'adaptiveHeight',
-                            description : 'adaptiveHeight',
+                            description : 'Automatically adjust carousel height to blockcms',
                             type        : 'text'
                         },
                         {
                             props       : 'dots',
-                            description : 'dots',
+                            description : 'Display of scroll points',
                             type        : 'text'
                         },
                         {
                             props       : 'draggable',
-                            description : 'draggable',
+                            description : 'Enable click-drag scrolling',
                             type        : 'text'
                         }
                     ]
@@ -205,10 +219,10 @@ exports.initDBValues = async () => {
             tag         : 'ns-blog-articles',
             translation : {
                 fr : {
-                    description : 'Affiche le listing des articles/posts du blog', name : 'Listing d\'articles du blog'
+                    description : 'Affiche le listing des articles / posts du blog', name : 'Listing d\'articles du blog'
                 },
                 en : {
-                    description : 'description', name : 'Listing of articles'
+                    description : 'Displays the list of posts', name : 'Listing of articles'
                 }
             }
         },
@@ -232,7 +246,7 @@ exports.initDBValues = async () => {
                     description : 'Affichage du bouton de Login / Mon Compte', name : 'Bouton'
                 },
                 en : {
-                    description : 'description', name : 'Button'
+                    description : 'Display of the Login / My Account button', name : 'Button'
                 }
             }
         },
@@ -335,27 +349,37 @@ exports.initDBValues = async () => {
                     ]
                 },
                 en : {
-                    description : 'description',
+                    description : 'Displays the validation button of a contact form (form)',
                     name        : 'Block Slider',
                     properties  : [
                         {
                             props       : 'button-title',
-                            description : 'button-title',
+                            description : 'Text of the validation button',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classdiv',
+                            description : 'Class of the container div',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classinput',
+                            description : 'Button class',
                             type        : 'text'
                         },
                         {
                             props       : 'mode',
-                            description : 'mode',
+                            description : 'Send mode ("send" / "store + send" / "store")',
                             type        : 'list',
                             attributs   : [
                                 {
-                                    description : 'send',
+                                    description : 'Send an email',
                                     value       : 'send'
                                 }, {
-                                    description : 'store',
+                                    description : 'Save to base',
                                     value       : 'store'
                                 }, {
-                                    description : 'store+send',
+                                    description : 'Register in database and send an email',
                                     value       : 'store+send'
                                 }
                             ]
@@ -423,32 +447,38 @@ exports.initDBValues = async () => {
                             type        : 'text'
                         },
                         {
-                            props       : 'typenew',
-                            description : 'typenew',
-                            type        : 'text'
-                        },
-                        {
                             props       : 'type',
                             description : 'Type of value to enter in \'value\'',
                             type        : 'list',
                             attributs   : [
                                 {
-                                    description : 'id of one product',
+                                    description : 'Product id',
                                     value       : 'product_id'
                                 }, {
-                                    description : 'Code of one product',
+                                    description : 'Product code',
                                     value       : 'product_code'
                                 }, {
-                                    description : 'Code of one category',
+                                    description : 'Category code',
                                     value       : 'category'
                                 }, {
-                                    description : 'List of product\'s id',
+                                    description : 'Product id List',
                                     value       : 'list_id'
                                 }, {
-                                    description : 'List of product\'s code',
+                                    description : 'Product code list',
                                     value       : 'list_code'
+                                }, {
+                                    description : 'New products (no "value" required)',
+                                    value       : 'new'
+                                }, {
+                                    description : 'Objects array product',
+                                    value       : 'data'
                                 }
                             ]
+                        },
+                        {
+                            props       : 'itemsperslides',
+                            description : 'Number of products displayed',
+                            type        : 'text'
                         }
                     ]
                 }
@@ -628,47 +658,62 @@ exports.initDBValues = async () => {
                     properties  : [
                         {
                             props       : 'ns-code',
-                            description : 'ns-code: Code of the parent category',
-                            type        : 'text'
-                        },
-                        {
-                            props       : 'classbtnmobile',
-                            description : 'classbtnmobile',
-                            type        : 'text'
-                        },
-                        {
-                            props       : 'classbtnactivemobile',
-                            description : 'classbtnactivemobile',
+                            description : 'ns-code : Parent category code',
                             type        : 'text'
                         },
                         {
                             props       : 'classnav',
-                            description : 'classnav',
-                            type        : 'text'
-                        },
-                        {
-                            props       : 'classnavactivemobile',
-                            description : 'classnavactivemobile',
+                            description : 'CSS class <nav> tag',
                             type        : 'text'
                         },
                         {
                             props       : 'classnavul',
-                            description : 'classnavul',
+                            description : 'CSS class <ul> tag',
                             type        : 'text'
                         },
                         {
                             props       : 'classnavulli',
-                            description : 'classnavulli',
+                            description : 'CSS class <li> tag',
                             type        : 'text'
                         },
                         {
                             props       : 'classnavulliactive',
-                            description : 'classnavulliactive',
+                            description : 'CSS class active <li> tag',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classnavullia',
+                            description : 'CSS class <a> tag',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classnavulliaactive',
+                            description : 'CSS class active <a> tag',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classbtnmobile',
+                            description : 'CSS class of the burger on mobile',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classbtnactivemobile',
+                            description : 'CSS class of the burger active in mobile',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'classnavactivemobile',
+                            description : 'CSS class of the <nav> tag active in mobile',
                             type        : 'text'
                         },
                         {
                             props       : 'levelmax',
-                            description : 'levelmax',
+                            description : 'Maximum menu recursion level',
+                            type        : 'text'
+                        },
+                        {
+                            props       : 'css',
+                            description : 'Default CSS ("0" = no)',
                             type        : 'text'
                         }
                     ]
@@ -748,16 +793,31 @@ exports.initDBValues = async () => {
                             type        : 'text'
                         },
                         {
-                            props       : 'gridDisplay',
-                            description : 'Mode d\'affichage',
+                            props       : 'includeCss',
+                            description : 'Inclusion of the css tag (1 time only)',
                             type        : 'list',
                             attributs   : [
                                 {
-                                    description : 'Rendu en grille',
+                                    description : 'Include the css style tag',
                                     value       : 'true'
                                 },
                                 {
-                                    description : 'Rendu en liste',
+                                    description : 'Does not include the style tag',
+                                    value       : 'false'
+                                }
+                            ]
+                        },
+                        {
+                            props       : 'gridDisplay',
+                            description : 'Display mode',
+                            type        : 'list',
+                            attributs   : [
+                                {
+                                    description : 'Grid rendering',
+                                    value       : 'true'
+                                },
+                                {
+                                    description : 'List rendering',
                                     value       : 'false'
                                 }
                             ]
