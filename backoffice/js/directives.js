@@ -225,6 +225,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     }else{
                                         tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
                                     }
+                                    $('html,body').scrollTop(0);
                                 });
                             
                             editor.ui.registry.addButton('customAddImg', {
