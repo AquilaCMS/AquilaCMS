@@ -3149,6 +3149,9 @@ input:-webkit-autofill {
     .table .btn+.btn {
         margin-top: 10px;
     }
+    .toggle-off.btn {
+        margin-top: 0;
+    }
     .table .list-radios {
         margin-top: 10px;
     }
