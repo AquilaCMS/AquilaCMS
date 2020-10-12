@@ -1,0 +1,20 @@
+{
+        "companySchema": {
+            "description": "",
+            "properties": {
+                "name"        : {"type": "string"},
+                "siret"       : {"type": "string"},
+                "intracom"    : {"type": "string"},
+                "address"     : {"type": "string"},
+                "postal_code" : {"type": "string"},
+                "town"        : {"type": "string"},
+                "country"     : {"type": "string"},
+                "contact"     : {
+                    "first_name" : {"type": "string"},
+                    "last_name"  : {"type": "string"},
+                    "email"      : {"type": "string"},
+                    "phone"      : {"type": "string"}
+                }
+            }
+            }
+        }

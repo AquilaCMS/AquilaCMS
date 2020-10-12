@@ -1,23 +1,3 @@
-/**
- * @typedef {object} FamiliesSchema
- * @property {string} code.required
- * @property {string} name.required
- * @property {string} slug
- * @property {string} type.required enum:universe,family,subfamily
- * @property {string} creationDate Date - default:Date.now
- * @property {array<FamiliesSchemaAncestors>} ancestors
- *  @property {string} slug
- * @property {string} parent families ObjectId
- * @property {array<string>} children families ObjectId
- * @property {object} details
- */
-
-/**
- * @typedef {object} FamiliesSchemaAncestors
- * @property {string} code
- * @property {string} slug
- */
-
 const mongoose = require('mongoose');
 const helper   = require('../../utils/utils');
 const Schema   = mongoose.Schema;

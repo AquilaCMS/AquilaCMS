@@ -1,0 +1,15 @@
+{
+    "specialCondSchema": {
+        "description": "",
+        "properties": {
+            "price"     : {"type": "number"},
+            "priceType" : {"type": "string"},
+            "supplier"  : {"type": "string"},
+            "startDate" : {"type": "number"},
+            "endDate"   : {"type": "number"},
+            "active"    : {"type": "string"},
+            "product"   : {"type": "string"},
+            "user"      : {"type": "string"}
+        }
+    }
+}

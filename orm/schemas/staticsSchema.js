@@ -4,16 +4,6 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
 
-/**
- * @typedef {object} StaticsSchema
- * @property {string} code.required
- * @property {string} type.required
- * @property {boolean} active default:false
- * @property {string} creationDate Date - default:Date.now
- * @property {string} modifyDate Date - default:Date.now
- * @property {string} group default:
- * @property {object} translation
- */
 const StaticsSchema = new Schema({
     code         : {type: String, required: true, unique: true},
     type         : {type: String, required: true},
@@ -35,51 +25,58 @@ const StaticsSchema = new Schema({
 StaticsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    while (self.translation === undefined) {
-        self.translation = {};
-    }
-
-    let translationKeys = Object.keys(self.translation);
-
-    if (translationKeys.length === 0) {
-        self.translation[global.defaultLang] = {};
-        translationKeys                      = Object.keys(self.translation);
-    }
-
-    for (let i = 0; i < translationKeys.length; i++) {
-        const lang = self.translation[translationKeys[i]];
-
-        if (Object.keys(lang).length > 0) {
-            if (lang.slug === undefined || lang.slug === '') {
-                lang.slug = utils.slugify(lang.name);
+    if (updateQuery) {
+        while (updateQuery.translation === undefined) {
+            updateQuery.translation = {};
+        }
+        const languages       = await mongoose.model('languages').find({});
+        const translationKeys = Object.keys(updateQuery.translation);
+        for (const lang of languages) {
+            if (!translationKeys.includes(lang.code)) {
+                translationKeys.push(lang.code);
+                updateQuery.translation[lang.code] = {slug: utils.slugify(updateQuery.code)};
+            }
+            if (!updateQuery.translation[lang.code].slug) {
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? utils.slugify(updateQuery.translation[lang.code].title) : updateQuery.code;
             } else {
-                lang.slug = utils.slugify(lang.slug);
+                updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
-
-            if (updateQuery) {
-                const slugEdit                                = {translation: {}};
-                slugEdit.translation[translationKeys[i]]      = {};
-                slugEdit.translation[translationKeys[i]].slug = lang.slug;
-                updateQuery.updateOne(slugEdit);
-            }
-
-            if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
+            if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 errors.push('slug déjà existant');
-            } else if (lang.slug.length < 3) {
-                errors.push('le slug doit être composé de 3 caractères minimum');
             }
-
+            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+                {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
+            ]));
+        }
+    } else {
+        while (self.translation === undefined) {
+            self.translation = {};
+        }
+        const translationKeys = Object.keys(self.translation);
+        const languages       = await mongoose.model('languages').find({});
+        for (const lang of languages) {
+            if (!translationKeys.includes(lang.code)) {
+                translationKeys.push(lang.code);
+                self.translation[lang.code] = {slug: utils.slugify(self.code)};
+            }
+            if (!self.translation[lang.code].slug) {
+                self.translation[lang.code].slug = self.translation[lang.code].title ? utils.slugify(self.translation[lang.code].title) : updateQuery.code;
+            } else {
+                self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
+            }
+            if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
+                errors.push('slug déjà existant');
+            }
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
                 {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
             ]));
         }
     }
-
     return errors;
 };
 
 StaticsSchema.pre('updateOne', async function (next) {
-    utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 StaticsSchema.pre('findOneAndUpdate', async function (next) {

@@ -528,8 +528,8 @@ const removeMedia = async (_id) => {
     return result;
 };
 
-const getMediasGroups = async (query) => {
-    const medias       = await Medias.find();
+const getMediasGroups = async (query, filter = {}) => {
+    const medias       = await Medias.find(filter);
     const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
     // s'il est la, on place "general" en premier index
     if (sortedGroups.includes('general')) {

@@ -1,0 +1,15 @@
+{
+    "pictosSchema": {
+        "description": "",
+        "required": ["code"],
+        "properties": {
+            "_id"           : {"type": "string", "format": "ObjectId"},
+            "code"          : {"type": "string"},
+            "filename"      : {"type": "string"},
+            "title"         : {"type": "string"},
+            "location"      : {"type": "string", "description": "Lieux d'affichage du picto sur l'image du produit..."},
+            "enabled"       : {"type": "boolean", "default": false},
+            "usedInFilters" : {"type": "boolean", "default": false}
+        }
+    }
+}

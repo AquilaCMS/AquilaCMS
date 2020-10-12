@@ -1,6 +1,5 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
 const trademarkServices           = require('../services/trademarks');
-const {Trademarks, Products}      = require('../orm/models');
 
 module.exports = function (app) {
     app.post('/v2/trademarks',      authentication, adminAuth, getTrademarks);
@@ -8,8 +7,6 @@ module.exports = function (app) {
     app.post('/v2/trademark/:id',   authentication, adminAuth, getTrademarkById);
     app.put('/v2/trademark',        authentication, adminAuth, setTrademark);
     app.delete('/v2/trademark/:id', authentication, adminAuth, deleteTrademark);
-
-    app.post('/trademarks/update', authentication, adminAuth, update); // TODO RV2 : Utilisé dans /admin/#/trademarks/__code__ ==> Ne pas transformer en V2 !
 };
 
 /**
@@ -67,38 +64,5 @@ async function deleteTrademark(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
-    }
-}
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
- */
-function update(req, res, next) {
-    try {
-        const newData           = {};
-        newData[req.body.field] = req.body.value;
-        let msg;
-        try {
-            Trademarks.findOneAndUpdate({_id: req.body._id}, newData, {upsert: true, new: true});
-            msg = {status: true};
-        } catch (err) {
-            msg = {status: false, msg: err.errmsg};
-        }
-        res.json(msg);
-
-        // TODO should be called or not ?
-        if (req.body.field === 'name') {
-            Products.updateTrademark(req.body._id, req.body.value);
-        }
-    } catch (err) {
-        return next(err);
     }
 }

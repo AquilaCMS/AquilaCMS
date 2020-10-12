@@ -2,22 +2,6 @@ const mongoose     = require('mongoose');
 const aquilaEvents = require('../../utils/aquilaEvents');
 const Schema       = mongoose.Schema;
 
-/**
- * @typedef {object} AddressSchema
- * @property {string} firstname.required
- * @property {string} lastname.required
- * @property {string} companyName
- * @property {string} phone
- * @property {string} phone_mobile
- * @property {string} line1.required
- * @property {string} line2
- * @property {string} zipcode.required
- * @property {string} city.required
- * @property {string} isoCountryCode.required
- * @property {string} country.required
- * @property {string} complementaryInfo
- * @property {string} civility - 0 pour homme, 1 pour femme - enum:0,1
- */
 const AddressSchema = new Schema({
     firstname         : {type: String, require: true},
     lastname          : {type: String, require: true},

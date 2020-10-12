@@ -42,82 +42,6 @@ function validatePassword(password) {
     return validation.validate(password);
 }
 
-/**
- * @typedef {object} UserSchema
- * @property {string} email.required
- * @property {string} password.required
- * @property {string} code
- * @property {boolean} active
- * @property {number} civility
- * @property {string} firstname
- * @property {string} lastname
- * @property {string} phone
- * @property {string} phone_mobile
- * @property {UserSchemaCompany} company
- * @property {string} status
- * @property {string} creationDate Date - default:Date.now
- * @property {number} delivery_address default:-1
- * @property {number} billing_address default:-1
- * @property {array<AddressSchema>} addresses
- * @property {boolean} isAdmin default:false
- * @property {object} campaign
- * @property {string} price
- * @property {boolean} taxDisplay default:true
- * @property {string} payementChoice
- * @property {boolean} isActiveAccount default:false
- * @property {string} activateAccountToken
- * @property {string} resetPassToken
- * @property {boolean} migrated default:false
- * @property {string} birthDate Date
- * @property {boolean} presentInLastImport
- * @property {array<string>} accessList
- * @property {object} details
- * @property {string} type
- * @property {string} preferredLanguage
- * @property {string} set_attributes setAttributes ObjectId
- * @property {array<UserSchemaAttributes>} attributes
- */
-
-/**
- * @typedef {object} UserSchemaAttributes
- * @property {string} id attributes ObjectId
- * @property {string} code
- * @property {string} values
- * @property {string} param
- * @property {string} type default:unset
- * @property {object} translation
- * @property {number} position default:1
- */
-
-/**
- * @typedef {object} UserSchemaCompany
- * @property {string} name
- * @property {string} siret
- * @property {string} intracom
- * @property {string} address
- * @property {string} postal_code
- * @property {string} town
- * @property {string} country
- * @property {UserSchemaContact} contact
- */
-
-/**
- * @typedef {object} UserSchemaContact
- * @property {string} first_name
- * @property {string} last_name
- * @property {string} email
- * @property {string} phone
- */
-
-/**
- * @typedef {object} UserSchemaCampaign
- * @property {string} referer
- * @property {string} utm_campaign
- * @property {string} utm_medium
- * @property {string} utm_source
- * @property {string} utm_content
- * @property {string} utm_term
- */
 const UserSchema = new Schema({
     email : {
         type     : String,
@@ -214,9 +138,13 @@ UserSchema.virtual('fullname').get(function () {
     return `${this.firstname ? this.firstname : ''} ${this.lastname ? this.lastname : ''}`;
 });
 
+UserSchema.methods.hashPassword = async function () {
+    this.password = await bcrypt.hash(this.password, 10);
+};
+
 UserSchema.post('validate', async function () {
     if (this.isNew) {
-        this.password = await bcrypt.hash(this.password, 10);
+        this.hashPassword();
     }
 });
 

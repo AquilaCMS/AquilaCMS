@@ -1,0 +1,30 @@
+{
+    "modulesSchema": {
+        "description": "",
+        "properties": {
+            "name"                 : {"type": "string"},
+            "description"          : {"type": "string"},
+            "version"              : {"type": "string"},
+            "path"                 : {"type": "string"},
+            "url"                  : {"type": "string"},
+            "cronNames"            : {"type": "array", "items": {"type": "string"}},
+            "mailTypeCode"         : {"type": "array", "items": {"type": "string"}},
+            "loadApp"              : {"type": "boolean", "default": true},
+            "loadTranslationBack"  : {"type": "boolean", "default": false},
+            "loadTranslationFront" : {"type": "boolean", "default": false},
+            "files"                : {"type": "array", "items": {"type": "string"}},
+            "active"               : {"type": "boolean", "default": false},
+            "config"               : {"type": "object", "default": {}},
+            "packageDependencies"  : {
+                "type": "object",
+                "properties": {
+                    "theme" : {"type": "array", "items": {"type": "string"}, "default": []},
+                    "api"   : {"type": "array", "items": {"type": "string"}, "default": []}
+                }
+            },
+            "type"                     : {"type": "string"},
+            "moduleDependencies"       : {"type": "array", "items": {"type": "string"}, "default": []},
+            "component_template_front" : {"type": "string", "default": null}
+        }
+    }
+}

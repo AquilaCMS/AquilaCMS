@@ -1,0 +1,33 @@
+{
+    "familiesSchema": {
+        "description": "",
+        "required": [
+            "code",
+            "name",
+            "type"
+        ],
+        "properties": {
+            "code"         : {"type": "String"},
+            "name"         : {"type": "String"},
+            "type"         : {"type": "String", "enum": ["universe", "family", "subfamily"]},
+            "creationDate" : {"type": "Date", "default": "Date.now"},
+            "ancestors"    : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "code": {"type": "String"},
+                        "slug": {"type": "String"}
+                    }
+                }
+            },
+            "slug"         : {"type": "String"},
+            "parent"       : {"type": "string", "format": "ObjectId", "description": "ref families"},
+            "children"     : {
+                "type": "array",
+                "items": {"type": "string", "format": "ObjectId", "description": "ref families"}
+            },
+            "details"      : {"type": "object"}
+        }
+    }
+}

@@ -10,6 +10,7 @@ module.exports = function (app) {
     app.delete('/v2/media/:_id', authentication, adminAuth, removeMedia);
     app.post('/v2/medias/upload', authentication, adminAuth, uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
+    app.get('/v2/medias/groupsImg', getMediasGroupsImg);
     app.get('/v2/medias/download/documents', authentication, adminAuth, downloadAllDocuments);
     app.post('/v2/medias/download/documents', authentication, adminAuth, uploadAllDocuments);
     app.post('/v2/medias/download/medias', authentication, adminAuth, uploadAllMedias);
@@ -93,6 +94,24 @@ async function uploadFiles(req, res, next) {
 async function getMediasGroups(req, res, next) {
     try {
         const result = await mediasServices.getMediasGroups(req.query.query);
+        return res.json(result);
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function getMediasGroupsImg(req, res, next) {
+    try {
+        const filter = {
+            $or : [{extension: '.jpg'}, {extension: '.png'}]
+        };
+        const result = await mediasServices.getMediasGroups(req.query.query, filter);
         return res.json(result);
     } catch (error) {
         next(error);
