@@ -362,7 +362,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     }
 
                                     $scope.init = function () {
-                                        MediaApiV2.getGroups({}, function (groups) {
+                                        MediaApiV2.getGroupsImg({}, function (groups) {
                                             $scope.groups = groups;
                                             $scope.currentTab = $scope.groups[0];
 
