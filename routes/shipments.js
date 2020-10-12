@@ -1,6 +1,7 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const ServiceShipment             = require('../services/shipment');
+const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
@@ -10,7 +11,7 @@ module.exports = function (app) {
     app.delete('/v2/shipment/:id', authentication, adminAuth, deleteShipment);
 
     // Deprecated
-    app.post('/v2/shipments/fee', getEstimatedFee);
+    app.post('/v2/shipments/fee', middlewareServer.deprecatedRoute, getEstimatedFee);
 };
 
 /**
