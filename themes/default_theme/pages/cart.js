@@ -70,8 +70,8 @@ class PageCart extends NSPageCart {
                                                         {
                                                             cart && cart.items && cart.items.map((item, index) => {
                                                                 let basePriceATI = null;
-                                                                let descPromo = '';
-                                                                let descPromoT = '';
+                                                                let descPromo    = '';
+                                                                let descPromoT   = '';
                                                                 if (cart.quantityBreaks && cart.quantityBreaks.productsId && cart.quantityBreaks.productsId.length) {
                                                                     // On check si le produit courant a recu une promo
                                                                     const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
@@ -86,15 +86,15 @@ class PageCart extends NSPageCart {
                                                                     }
                                                                 }
                                                                 let imgDefault = imgDefaultBase64;
-                                                                let imgAlt = 'illustration produit';
+                                                                let imgAlt     = 'illustration produit';
                                                                 if (item.id.images && item.id.images.length) {
                                                                     const foundImg = item.id.images.find((img) => img.default);
                                                                     if (foundImg) {
                                                                         imgDefault = foundImg._id !== 'undefined' ? `/images/products/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                        imgAlt = foundImg.alt || imgAlt;
+                                                                        imgAlt     = foundImg.alt || imgAlt;
                                                                     } else {
                                                                         imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                        imgAlt = item.id.images[0].alt || imgAlt;
+                                                                        imgAlt     = item.id.images[0].alt || imgAlt;
                                                                     }
                                                                 }
                                                                 return (
@@ -285,7 +285,7 @@ class PageCart extends NSPageCart {
                                                                         <label htmlFor="field-country" hidden className="form__label">{t('cart:page.delivery.country')}</label>
                                                                         <div className="form__controls">
                                                                             <div className="select">
-                                                                                <select name="field-country" id="field-country" value={countryCode} onChange={(e) => this.changeEstimatedShipment(undefined, e.target.value)}>
+                                                                                <select name="field-country" id="field-country" value={countryCode} onChange={(e) => this.changeEstimatedShipment(e.target.value)}>
                                                                                     {
                                                                                         countries.map((c) => <option key={c._id} value={c.code}>{c.name}</option>)
                                                                                     }
