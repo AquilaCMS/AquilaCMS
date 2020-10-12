@@ -1,8 +1,6 @@
-const path                        = require('path');
 const {securityForceActif}        = require('../middleware/security');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServicePayment              = require('../services/payments');
-const {Orders}                    = require('../orm/models');
 
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);

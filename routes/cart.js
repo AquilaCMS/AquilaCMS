@@ -3,7 +3,6 @@ const NSErrors                    = require('../utils/errors/NSErrors');
 const ServiceCart                 = require('../services/cart');
 const {getDecodedToken}           = require('../services/auth');
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/carts',  authentication, adminAuth, getCarts);
