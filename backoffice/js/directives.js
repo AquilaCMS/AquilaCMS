@@ -294,7 +294,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     let string = "<" + shortcode.tag;
                                     Object.keys(tag).forEach(key => {
                                         if(tag[key]){
-                                            string += " " + key + "='" + tag[key] + "'" 
+                                            string += " " + key + "='" + tag[key].replace(/[',",<,>]/g, "") + "'" 
                                         }
                                     });
                                     string += "></" + shortcode.tag + ">";
