@@ -6,9 +6,11 @@ module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
     app.post('/v2/shipment', securityForceActif(['active']), getShipment);
     app.post('/v2/shipments/filter', getShipmentsFilter);
-    app.post('/v2/shipments/fee', getEstimatedFee);
     app.put('/v2/shipment', authentication, adminAuth, setShipment);
     app.delete('/v2/shipment/:id', authentication, adminAuth, deleteShipment);
+
+    // Deprecated
+    app.post('/v2/shipments/fee', getEstimatedFee);
 };
 
 /**
@@ -50,18 +52,6 @@ async function getShipmentsFilter(req, res, next) {
 }
 
 /**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
- */
-async function getEstimatedFee(req, res, next) {
-    try {
-        const result = await ServiceShipment.getEstimatedFee(req.body.cartId, req.body.shipmentId, req.body.countryCode);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-/**
  * Fonction pour ajouter ou mettre à jour un shipment
  */
 async function setShipment(req, res, next) {
@@ -78,6 +68,23 @@ async function setShipment(req, res, next) {
 async function deleteShipment(req, res, next) {
     try {
         const result = await ServiceShipment.deleteShipment(req.params.id);
+        return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+//= ====================================================================
+//= ========================== Deprecated ==============================
+//= ====================================================================
+
+/**
+ * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * @deprecated
+ */
+async function getEstimatedFee(req, res, next) {
+    try {
+        const result = await ServiceShipment.getEstimatedFee(req.body.cartId, req.body.shipmentId, req.body.countryCode);
         return res.json(result);
     } catch (error) {
         return next(error);

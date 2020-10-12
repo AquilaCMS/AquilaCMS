@@ -17,10 +17,6 @@ module.exports = function (app) {
     app.put('/v2/cart/addresses', updateAddresses);
     app.put('/v2/cart/delivery', authentication, updateDelivery);
     app.put('/v2/cart/comment', updateComment);
-
-    // Deprecated
-    app.get('/v2/cart/checkcart/expire', middlewareServer.deprecatedRoute, getJobExpireCarts);
-    app.put('/cart/comment', middlewareServer.deprecatedRoute, updateComment);
 };
 
 /**
@@ -161,25 +157,4 @@ async function removeDiscount(req, res, next) {
     } catch (err) {
         return next(err);
     }
-}
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
- * PUT /api/cart/comment
- * @tags Cart
- * @deprecated
- */
-
-/**
- * GET /api/v2/cart/checkcart/expire
- * @tags Cart
- * @deprecated
- */
-function getJobExpireCarts(req, res) {
-    console.log(`Paniers expirés -> Run at ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`);
-    ServiceCart._expireCarts();
-    return res.json({res: 'ok'});
 }
