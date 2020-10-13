@@ -24,6 +24,7 @@ const ProductsSchema = new Schema({
     component_template : String,
     weight             : {type: Number, default: 0}, // Le poids du produit
     creationDate       : {type: Date, default: Date.now},
+    inCartVisible      : {type: Boolean, default: true},
     price              : {
         purchase : Number,
         tax      : Number,
