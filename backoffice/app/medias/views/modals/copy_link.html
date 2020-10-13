@@ -1,46 +1,70 @@
 <form name="form" class="form-horizontal">
     <div class="modal-header">
-        <span style="font-weight: bold;" translate>addLang</span>
+        <span style="font-weight: bold;" translate>medias.modal.title</span>
     </div>
     <div class="modal-body">
         <div class="form-group">
-            <label class="control-label col-sm-5">Largeur en pixel *:</label>
+            <label class="control-label col-sm-5" translate>medias.modal.width</label>
             <div class="col-sm-7">
                 <input type="text" class="form-control" name="code" ng-model="info.largeur" ng-required="true">
             </div>
         </div>
             <div class="form-group">
-                <label class="control-label col-sm-5">Longueur en pixel *:{{index}}</label>
+                <label class="control-label col-sm-5" translate>medias.modal.height</label>
             <div class="col-sm-7">
                 <input type="text" class="form-control" name="format" ng-model="info.longueur" ng-required="true">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-sm-5">Qualité (de 0 à 100) *:</label>
+            <label class="control-label col-sm-5" translate>medias.modal.quality</label>
             <div class="col-sm-7">
                 <input type="text" class="form-control" name="code" ng-model="info.quality" ng-required="true">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-sm-5">Nom du média :</label>
+            <label class="control-label col-sm-5" translate>medias.modal.name</label>
             <div class="col-sm-7">
                 <input type="text" class="form-control" name="code" ng-model="info.name" ng-required="true">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-sm-5">Link :</label>
+            <label class="control-label col-sm-5" translate>medias.modal.background</label>
+            <div class="col-sm-7">
+                <ns-switch name="default_value" ng-model="info.background" ng-change="info.background ? false : true"></ns-switch>
+            </div>
+        </div>
+        <div ng-if="info.background === true" class="form-group">
+            <label class="control-label col-sm-5">Red :</label>
+            <div class="col-sm-7">
+                <input max="255" min="0" type="number" class="form-control" name="code" ng-model="info.r" ng-required="true">
+            </div>
+            <label class="control-label col-sm-5">Green :</label>
+            <div class="col-sm-7">
+                <input max="255" min="0" type="number" class="form-control" name="code" ng-model="info.g" ng-required="true">
+            </div>
+            <label class="control-label col-sm-5">Blue :</label>
+            <div class="col-sm-7">
+                <input max="255" min="0" type="number" class="form-control" name="code" ng-model="info.b" ng-required="true">
+            </div>
+            <label class="control-label col-sm-5">Alpha :</label>
+            <div class="col-sm-7">
+                <input type="number" max="1" min="0" step="0,1" class="form-control" name="code" ng-model="info.alpha" ng-required="true">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-5" translate>medias.modal.link</label>
             <div class="col-sm-7">
                     <input id="copy-link" type="text" ng-model="link" readonly>
             </div>
         </div>
         <div style="text-align: right;margin-top:30px">
             <button ng-if="link" type="button" class="btn btn-default"
-                ng-click="copierLien()">{{"medias.medias.cpLien" | translate}}</button>
+                ng-click="copierLien()" translate>medias.modal.copy</button>
         </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="cancel()" translate>translation.cancel</button>
 
-        <button ng-disabled="!(!info.longueur === false && !info.largeur === false && !info.quality === false)" type="button" class="btn btn-default" ng-click="generer()" >Générer</button>
+        <button type="button" class="btn btn-default" ng-click="generer()" translate>medias.modal.generate</button>
     </div>
 </form>
