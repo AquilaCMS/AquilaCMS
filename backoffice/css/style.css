@@ -1927,7 +1927,6 @@ input:-webkit-autofill {
     vertical-align: middle;
     padding: 2px;
     font-size: 0;
-    min-width: 132px;
 }
 
 .list-radios li {
