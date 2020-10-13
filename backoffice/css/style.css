@@ -3146,6 +3146,9 @@ input:-webkit-autofill {
     .table .cell-size3 {
         width: 40%;
     }
+    .toggle-off{
+        margin-top: 0 !important;
+    }
     .table .btn+.btn {
         margin-top: 10px;
     }

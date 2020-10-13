@@ -1,0 +1,74 @@
+{
+    "itemSchema": {
+        "description": "",
+        "required": ["id", "quantity"],
+        "properties": {
+            "id"     : {
+                "type": "string",
+                "format": "ObjectId",
+                "description": "ref products"
+            },
+            "status" : {
+                "type" : "string",
+                "enum" : [
+                    "PROCESSING",
+                    "DELIVERY_PROGRESS",
+                    "DELIVERY_PARTIAL_PROGRESS",
+                    "RETURNED",
+                    "RETURNED_PARTIAL"
+                ],
+                "default" : "PROCESSING"
+            },
+            "name"               : {"type": "string"},
+            "code"               : {"type": "string"},
+            "image"              : {"type": "string"},
+            "parent"             : {
+                "type": "string",
+                "format": "ObjectId",
+                "description": "ref products"
+            },
+            "children"           : {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "ObjectId",
+                    "description": "ref products"
+                }
+            },
+            "quantity"           : {"type": "number"},
+            "weight"             : {"type": "number", "default": 0},
+            "noRecalculatePrice" : {"type": "boolean", "default": false},
+            "price"              : {
+                "type": "object",
+                "properties": {
+                    "vat" : {
+                        "type": "object",
+                        "required": ["rate"],
+                        "properties": {
+                            "rate" : {"type": "number"}
+                        }
+                    },
+                    "unit" : {
+                        "type": "object",
+                        "required": ["et", "ati"],
+                        "properties": {
+                            "et"  : {"type": "number"},
+                            "ati" : {"type": "number"},
+                            "vat" : {"type": "number"}
+                        }
+                    },
+                    "special" : {
+                        "type": "object",
+                        "properties": {
+                            "et"  : {"type": "number"},
+                            "ati" : {"type": "number"},
+                            "vat" : {"type": "number"}
+                        }
+                    }
+                }
+            },
+            "atts" : {"type": "array"},
+            "opts" : {"type": "array"}
+        }
+    }
+}

@@ -4,15 +4,6 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
 
-/**
- * @typedef {object} MailSchema
- * @property {string} code.required
- * @property {string} type default:
- * @property {string} from.required
- * @property {string} fromName default:
- * @property {object} translation
- */
-
 const MailSchema = new Schema({
     code        : {type: String, required: true, unique: true},
     type        : {type: String, default: '', index: true}, // jointure entre type et code dans mail_type

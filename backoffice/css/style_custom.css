@@ -395,7 +395,7 @@ ns-product-location .dropdown-menu
 
 select optgroup option:before
 {
-    content: "";
+    /* content: ""; */
     margin-left: 10px;
 }
 

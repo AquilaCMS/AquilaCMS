@@ -1,0 +1,339 @@
+{
+    "ordersSchema": {
+        "description": "",
+        "properties": {
+            "number" : {"type": "string", "description": "pcf : W0000001 ++"},
+            "bills"  : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "billId" : {"type": "string", "ref": "bills"},
+                        "avoir"  : {"type": "boolean", "default": false}
+                    }
+                }
+            },
+            "invoiceFileName" : {"type": "string"},
+            "creationDate"    : {"type": "string", "format": "date", "default": "Date.now"},
+            "lang"            : {"type": "string", "description": "Permet de connaitre la langue utilisé lors de la commande"},
+            "cartId"          : {"type": "string", "format": "ObjectId", "ref": "cart"},
+            "promos"          : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "promoId",
+                        "promoCodeId",
+                        "name",
+                        "description",
+                        "code"
+                    ],
+                    "properties": {
+                        "promoId"     : {"type": "string", "format": "ObjectId", "ref": "promo"},
+                        "promoCodeId" : {"type": "string", "format": "ObjectId", "description": "L'id d'un promo.codes[i].code"},
+                        "discountATI" : {"type": "number", "default": null},
+                        "discountET"  : {"type": "number", "default": null},
+                        "name"        : {"type": "string"},
+                        "description" : {"type": "string"},
+                        "code"        : {"type": "string"},
+                        "gifts"       : {
+                            "type": "array",
+                            "items": {"$ref": "#/components/schemas/itemSchema"}
+                        },
+                        "productsId"  : {
+                            "type": "array",
+                            "description": "Si des items sont dans ce tableau alors la promo s'appliquera a ces produits",
+                            "items": {
+                                "type": "object",
+                                "required": ["productId"],
+                                "properties": {
+                                    "productId"    : {"type": "string", "format": "ObjectId", "ref": "products"},
+                                    "discountATI"  : {"type": "number", "default": null, "description": "Chaque produit a une discount différente car son prix est différent"},
+                                    "discountET"   : {"type": "number", "default": null},
+                                    "basePriceET"  : {"type": "number", "default": null},
+                                    "basePriceATI" : {"type": "number", "default": null}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "customer" : {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                    "id"       : {"type": "string", "format": "ObjectId", "ref": "users"},
+                    "email"    : {"type": "string"},
+                    "code"     : {"type": "string"},
+                    "fullname" : {"type": "string"},
+                    "phone"    : {"type": "string"},
+                    "civility" : {
+                        "type" : "number",
+                        "enum" : [0, 1],
+                        "description": "0 pour homme, 1 pour femme"
+                    },
+                    "phone_mobile" : {"type": "string"},
+                    "company"      : {
+                        "$ref": "#/components/schemas/companySchema"
+                    },
+                    "status"   : {"type": "string"},
+                    "campaign" : {
+                        "type": "object",
+                        "properties": {
+                            "referer"      : {"type": "string"},
+                            "utm_campaign" : {"type": "string"},
+                            "utm_medium"   : {"type": "string"},
+                            "utm_source"   : {"type": "string"},
+                            "utm_content"  : {"type": "string"},
+                            "utm_term"     : {"type": "string"}
+                        }
+                    },
+                    "birthDate" : {"type": "string", "format": "date"},
+                    "details"   : {"type": "object"},
+                    "type"      : {"type": "string", "description": "garder sous cette forme, sinon il croit qu'on définit le type de \"customer\""}
+                }
+            },
+            "historyStatus" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["status"],
+                    "properties": {
+                        "date"   : {"type": "string", "format": "date", "default": "Date.now"},
+                        "status" : {"type": "string"}
+                    }
+                }
+            },
+            "status" : {
+                "type" : "string",
+                "enum" : [
+                    "PAYMENT_PENDING",
+                    "PAYMENT_RECEIPT_PENDING",
+                    "PAYMENT_CONFIRMATION_PENDING",
+                    "PAID",
+                    "PROCESSING",
+                    "PROCESSED",
+                    "BILLED",
+                    "DELIVERY_PROGRESS",
+                    "DELIVERY_PARTIAL_PROGRESS",
+                    "FINISHED",
+                    "CANCELED",
+                    "ASK_CANCEL",
+                    "RETURNED"
+                ],
+                "default" : "PAYMENT_PENDING"
+            },
+            "priceTotal" : {
+                "type": "object",
+                "required": ["ati"],
+                "properties": {
+                    "vat"     : {"type": "number"},
+                    "ati"     : {"type": "number"},
+                    "et"      : {"type": "number"},
+                    "paidTax" : {"type": "boolean"}
+                }
+            },
+            "priceSubTotal" : {
+                "type": "object",
+                "required": ["ati"],
+                "properties": {
+                    "ati" : {"default": 0, "type": "number"},
+                    "et"  : {"default": 0, "type": "number"}
+                }
+            },
+            "comment"  : {"type": "string"},
+            "items"    : {"type": "array", "items": {"$ref": "#/components/schemas/itemSchema"}},
+            "discount" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["priceATI"],
+                    "properties": {
+                        "code"        : {"type": "string"},
+                        "type"        : {"type": "string", "enum": ["PERCENT", "PRICE", "FREE_DELIVERY"]},
+                        "value"       : {"type": "number"},
+                        "description" : {"type": "string"},
+                        "priceATI"    : {"type": "number"}
+                    }
+                }
+            },
+            "addresses" : {
+                "type": "object",
+                "properties": {
+                    "delivery" : {
+                        "type": "object",
+                        "properties": {
+                            "firstname"         : {"type": "string"},
+                            "lastname"          : {"type": "string"},
+                            "companyName"       : {"type": "string"},
+                            "phone"             : {"type": "string"},
+                            "phone_mobile"      : {"type": "string"},
+                            "line1"             : {"type": "string"},
+                            "line2"             : {"type": "string"},
+                            "zipcode"           : {"type": "string"},
+                            "city"              : {"type": "string"},
+                            "isoCountryCode"    : {"type": "string"},
+                            "country"           : {"type": "string"},
+                            "complementaryInfo" : {"type": "string"}
+                        }
+                    },
+                    "billing" : {
+                        "type": "object",
+                        "properties": {
+                            "firstname"      : {"type": "string"},
+                            "lastname"       : {"type": "string"},
+                            "companyName"    : {"type": "string"},
+                            "phone"          : {"type": "string"},
+                            "phone_mobile"   : {"type": "string"},
+                            "line1"          : {"type": "string"},
+                            "line2"          : {"type": "string"},
+                            "zipcode"        : {"type": "string"},
+                            "city"           : {"type": "string"},
+                            "isoCountryCode" : {"type": "string"},
+                            "country"        : {"type": "string"}
+                        }
+                    }
+                }
+            },
+            "delivery" : {
+                "type": "object",
+                "properties": {
+                    "method" : {"type": "string", "format": "ObjectId", "description": "ref shipments"},
+                    "price"  : {
+                        "type": "object",
+                        "properties": {
+                            "ati" : {"type": "number"},
+                            "et"  : {"type": "number"},
+                            "vat" : {"type": "number"}
+                        }
+                    },
+                    "code"         : {"type": "string"},
+                    "name"         : {"type": "string"},
+                    "url"          : {"type": "string"},
+                    "date"         : {"type": "string", "format": "date"},
+                    "dateDelivery" : {
+                        "type": "object",
+                        "properties": {
+                            "delayDelivery"    : {"type": "number"},
+                            "unitDelivery"     : {"type": "string"},
+                            "delayPreparation" : {"type": "number"},
+                            "unitPreparation"  : {"type": "string"}
+                        }
+                    },
+                    "package" : {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["tracking"],
+                            "properties": {
+                                "date"     : {"type": "string", "format": "date", "default": "Date.now"},
+                                "tracking" : {"type": "string"},
+                                "products" : {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": ["product_id", "product_code", "qty_shipped"],
+                                        "properties": {
+                                            "product_id"   : {"type": "string", "format": "ObjectId", "description": "ref products"},
+                                            "product_code" : {"type": "string"},
+                                            "qty_shipped"  : {"type": "number"},
+                                            "selections"   : {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "bundle_section_ref" : {"type": "string"},
+                                                        "products"           : {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string",
+                                                                "format": "ObjectId",
+                                                                "description": "ref products"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "payment" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["mode"],
+                    "properties": {
+                        "type"          : {"type": "string", "enum": ["DEBIT", "CREDIT"]},
+                        "creationDate"  : {"type": "string", "format": "date", "default": "Date.now"},
+                        "operationDate" : {"type": "string", "format": "date"},
+                        "status"        : {"type": "string", "enum": ["TODO", "DONE", "CANCELED", "FAILED"]},
+                        "mode"          : {"type": "string"},
+                        "transactionId" : {"type": "string"},
+                        "amount"        : {"type": "number"},
+                        "comment"       : {"type": "string"}
+                    }
+                }
+            },
+            "orderReceipt" : {
+                "type": "object",
+                "properties": {
+                    "method"        : {"type": "string", "enum": ["delivery", "withdrawal"]},
+                    "date"          : {"type": "string", "format": "date"},
+                    "confirmedDate" : {"type": "string", "format": "date"}
+                }
+            },
+            "details" : {"type": "object"},
+            "rma"     : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "date"     : {"type": "string", "format": "date", "default": "Date.now"},
+                        "comment"  : {"type": "string"},
+                        "in_stock" : {"type": "boolean", "required": true},
+                        "refund"   : {"type": "number", "required": true},
+                        "products" : {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": ["product_id", "product_code", "qty_returned"],
+                                "properties": {
+                                    "product_id"   : {"type": "string", "format": "ObjectId", "description": "ref products"},
+                                    "product_code" : {"type": "string"},
+                                    "qty_returned" : {"type": "number"},
+                                    "selections"   : {
+                                        "type": "array",
+                                        "items": {
+                                            "bundle_section_ref" : {"type": "string"},
+                                            "products"           : {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "format": "ObjectId",
+                                                    "description": "ref products"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "additionnalFees" : {
+                "type": "object",
+                "properties": {
+                    "ati" : {"type": "number", "default": 0},
+                    "et"  : {"type": "number", "default": 0},
+                    "tax" : {"type": "number", "default": 0}
+                }
+            }
+        }
+    }
+}

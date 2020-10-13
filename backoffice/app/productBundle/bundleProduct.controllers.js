@@ -12,6 +12,25 @@ BundleProductControllers.controller("BundleProductCtrl", [
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    if($scope.product.translation && $scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
+                        ProductsV2.preview($scope.product, function (response) {
+                            if (response && response.url) {
+                                window.open(response.url)
+                            }
+                        });
+                    } else {
+                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        const event = new CustomEvent('displayCanonicalModal');
+                        window.dispatchEvent(event);
+                    }
+                },
+            }
+        ]
 
         if($routeParams.code !== "new")
         {
@@ -64,7 +83,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             angular.forEach($scope.product.attributes, function (attributeI)
             {
-                AttributesV2.query({PostBody: {filter: {_id: attributeI.id}, structure: '*'}}, function (attribute)
+                AttributesV2.query({PostBody: {filter: {_id: attributeI.id}, structure: '*', populate: ['associated_prds']}}, function (attribute)
                 {
                     var langKeys = Object.keys(attribute.translation);
 
@@ -296,6 +315,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
             var clone = angular.copy($scope.product);
             clone.code = prompt("Saisir le code: ");
             delete clone._id;
+            for (const key of Object.keys(clone.translation)) {
+                clone.translation[key].slug += "-" + clone.code;
+            }  
             ProductsV2.save(clone, function (savedPrd)
             {
                 if(!savedPrd)
@@ -308,6 +330,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     if($scope.isEditMode)
                     {
                         $scope.disableSave = false;
+                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
                     }
                     else
                     {

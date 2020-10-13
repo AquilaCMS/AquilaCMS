@@ -339,6 +339,8 @@ ProductControllers.controller("nsProductGeneral", [
             });
         }
 
+        window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
+
 
         $scope.loadNewAttrs = function () {
             AttributesV2.list({PostBody: {filter: {set_attributes: $scope.product.set_attributes._id, _type: 'products'}, limit: 99}}, function ({datas}) {
@@ -347,14 +349,6 @@ ProductControllers.controller("nsProductGeneral", [
                     delete attr._id;
                     return attr;
                 });
-            });
-        };
-
-        $scope.preview = function () {
-            ProductsV2.preview($scope.product, function (response) {
-                if (response && response.url) {
-                    window.open(response.url)
-                }
             });
         };
     }

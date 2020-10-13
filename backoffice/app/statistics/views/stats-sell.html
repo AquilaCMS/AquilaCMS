@@ -11,7 +11,7 @@
     
         <div class="row">
             <div class="col-lg-2">
-                <label class="control-label">Granularité</label>
+                <label class="control-label"translate>stats.Granularity</label>
                 <select class="form-control" ng-model="filter.granularity" style="min-height:40px;border-radius: 10px">
                     <option value="day" selected>Jour</option>
                     <!-- <option value="week">Semaine</option> --> 
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="col-lg-2">
-                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()">Valider</button>
+                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()"translate>stats.Valider</button>
             </div>
             <div class="col-lg-4" style="text-align:right">
                 <i class="fa fa-download fa-2x" aria-hidden="true" ng-click="downloadDatas()" style="cursor:pointer"></i>
@@ -51,10 +51,10 @@
 
     
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#looseCart" target="_self" ng-click="changeTab('canceledCart');">Abandons de paniers</a></li>
-            <li><a data-toggle="tab" href="#cag" target="_self" ng-click="changeTab('cag',$event)">Chiffre affaire global</a></li>
-            <li><a data-toggle="tab" href="#capp" target="_self" ng-click="changeTab('capp',$event)">Chiffre affaire par produit</a></li>
-            <li><a data-toggle="tab" href="#nbOrder" target="_self" ng-click="changeTab('nbOrder',$event)">Nombre de commandes</a></li>
+            <li class="active"><a data-toggle="tab" href="#looseCart" target="_self" ng-click="changeTab('canceledCart');" translate>stats.canceledCart</a></li>
+            <li><a data-toggle="tab" href="#cag" target="_self" ng-click="changeTab('cag',$event)" translate>stats.cag</a></li>
+            <li><a data-toggle="tab" href="#capp" target="_self" ng-click="changeTab('capp',$event)" translate>stats.capp</a></li>
+            <li><a data-toggle="tab" href="#nbOrder" target="_self" ng-click="changeTab('nbOrder',$event)" translate>stats.orders</a></li>
         </ul>
 
 

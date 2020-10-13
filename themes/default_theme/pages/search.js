@@ -154,7 +154,7 @@ class PageSearch extends NSPageSearch {
                                     <div className="content">
                                         <div className="products-grid" itemScope itemType="http://schema.org/ItemList">
                                             {
-                                                products.map((product) => <NSProductCard from="search" gridDisplay={gridDisplay} key={product._id} product={product} t={t} gNext={{ Head, Link, Router }} />)
+                                                products.map((product) => <NSProductCard from="search" gridDisplay={gridDisplay} key={product._id} type="data" value={product} t={t} gNext={{ Head, Link, Router }} />)
                                             }
                                             {
                                                 products.length === 0 && <p style={{ textAlign: 'center', width: '100%' }}>{t('aucunResultat')}</p>

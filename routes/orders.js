@@ -227,12 +227,9 @@ async function payOrder(req, res, next) {
     if (!order) {
         return next(NSErrors.OrderNotFound);
     }
-
-    const query = {active: true};
+    const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
+    query.active = true;
     // Si la commande est associée à un point de vente, alors on recupere les modes de paiement de ce point de vente
-    if (order.schema.path('point_of_sale') && order.point_of_sale) {
-        query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
-    }
     // Sinon, on recupere tous les modes de paiement actifs
     try {
         const paymentMethods = await PaymentMethods.find(query);

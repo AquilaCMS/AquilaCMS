@@ -1,0 +1,12 @@
+{
+    "trademarksSchema": {
+        "description": "",
+        "required": ["name"],
+        "properties": {
+            "code"         : {"type": "string"},
+            "name"         : {"type": "string"},
+            "active"       : {"type": "boolean", "default": true},
+            "creationDate" : {"type": "string", "format": "date", "default": "Date.now"}
+        }
+    }
+}

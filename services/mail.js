@@ -892,6 +892,20 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 }
 
+const sendError = async (error) => {
+    const errorMail = await Mail.findOne({type: 'error'});
+
+    if (!errorMail) {
+        return; // We don't want to generate an error
+    }
+
+    const lang     = determineLanguage();
+    const content  = errorMail.translation[lang].content ? errorMail.translation[lang].content : '';
+    const subject  = errorMail.translation[lang].subject ? errorMail.translation[lang].subject : 'Error';
+    const htmlBody = content + JSON.stringify(error);
+    sendMail({subject, htmlBody, mailTo: errorMail.from, mailFrom: errorMail.from, fromName: errorMail.fromName});
+};
+
 module.exports = {
     getMailDataByTypeAndLang,
     generateHTML,
@@ -915,5 +929,6 @@ module.exports = {
     sendMail,
     sendGeneric,
     sendContact,
-    sendMailOrderRequestCancel
+    sendMailOrderRequestCancel,
+    sendError
 };

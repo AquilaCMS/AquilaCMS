@@ -4,7 +4,7 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
         packages : ["corechart"],
         language : "fr"
     }
-}).controller("StatisticsCtrl", ["$scope", "$http", "$location"/* , "googleChartApiPromise" */,"toastService","Statistics", function ($scope, $http, $location/* , googleChartApiPromise */,toastService,Statistics) {
+}).controller("StatisticsCtrl", ["$scope", "$http", "$location"/* , "googleChartApiPromise" */,"toastService","Statistics","$translate", function ($scope, $http, $location/* , googleChartApiPromise */,toastService,Statistics,$translate) {
     $scope.obj                   = {};
     $scope.obj.loading           = true;
     $scope.filter                = {};
@@ -13,6 +13,9 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
     $scope.filter.dateEnd        = moment();
     const isPageSell               = $location.path().endsWith("sells");
     let currentRoute             = isPageSell ? "canceledCart" : "newCustomer";
+
+    
+
     //$scope.downloadLink = '';
 
 
@@ -120,21 +123,19 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
     if (!loadGlobalStats()) { // On charge les data global si besoin
         $scope.loadDatas(); // Sinon les autres
     }
-
-
     $scope.charts = {
         clients : {
             newCustomer : {
                 type    : "ColumnChart",
                 options : {
                     curveType : 'function',
-                    title     : "Nombre de créations de compte",
+                    title     : $translate.instant("stats.newCustomer"),
                     legend    : "none",
                     hAxis     : {
                         title : "Date"
                     },
                     vAxis : {
-                        title      : "Comptes",
+                        title      : $translate.instant("stats.comptes"),
                         format     : "#,###",
                         minValue   : 0,
                         viewWindow : {
@@ -168,8 +169,8 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
                 },
                 data : {
                     cols : [
-                        {id: "customer", label: "Customer", type: "string"},
-                        {id: "canet", label: "CA Net €", type: "number"}
+                        {id: "customer", label: $translate.instant("stats.customer"), type: "string"},
+                        {id: "canet", label: $translate.instant("stats.CAnet")+" €", type: "number"}
                     ],
                     rows : []
                 }
@@ -177,18 +178,19 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
             // End topCustomer
         },
         // End Clients
+        
         orders : {
             canceledCart : {
                 type    : "ColumnChart",
                 options : {
                     curveType : 'function',
-                    title     : "Abandons de paniers",
+                    title     : $translate.instant("stats.canceledCart"),
                     legend    : "none",
                     hAxis     : {
                         title : "Date"
                     },
                     vAxis : {
-                        title      : "Paniers",
+                        title      : $translate.instant("stats.cart"),
                         format     : "#.#",
                         minValue   : 0,
                         viewWindow : {
@@ -209,13 +211,13 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
                 type    : "LineChart", // LineChart | ColumnChart | Table
                 options : {
                     curveType : 'function',
-                    title     : "Chiffre affaire global",
+                    title     : $translate.instant("stats.globalTurnover"),
                     legend    : "none",
                     hAxis     : {
                         title : "Date"
                     },
                     vAxis : {
-                        title      : "CA Net €",
+                        title      : $translate.instant("stats.TurnoverNet")+" €",
                         format     : "#,###",
                         minValue   : 0,
                         viewWindow : {
@@ -243,14 +245,14 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
                 },
                 data : {
                     cols : [
-                        {id: "id", label: "id", type: "string"},
-                        {id: "name", label: "Product name", type: "string"},
-                        {id: "photo", label: "Image", type: "string"},
-                        {id: "puht", label: "PU HT €", type: "number"},
-                        {id: "puttc", label: "PU TTC €", type: "number"},
-                        {id: "nbordered", label: "Nombre cdé", type: "number"},
-                        {id: "caht", label: "CA HT €", type: "number"},
-                        {id: "cattc", label: "CA TTC €", type: "number"}
+                        {id: "id", label: $translate.instant("stats.id"), type: "string"},
+                        {id: "name", label: $translate.instant("stats.ProductName"), type: "string"},
+                        {id: "photo", label: $translate.instant("stats.image"), type: "string"},
+                        {id: "puht", label: $translate.instant("stats.puHT")+" €", type: "number"},
+                        {id: "puttc", label: $translate.instant("stats.puTTC")+" €", type: "number"},
+                        {id: "nbordered", label: $translate.instant("stats.nbcmd"), type: "number"},
+                        {id: "caht", label: $translate.instant("stats.caHT")+" €", type: "number"},
+                        {id: "cattc", label: $translate.instant("stats.caTTC")+" €", type: "number"}
                     ],
                     rows : []
                 }
@@ -260,13 +262,13 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
                 type    : "LineChart",
                 options : {
                     // curveType: 'function',
-                    title  : "Nombre de commandes",
+                    title  : $translate.instant("stats.orders"),
                     legend : "none",
                     hAxis  : {
                         title : "Date"
                     },
                     vAxis : {
-                        title      : "Commandes",
+                        title      : $translate.instant("stats.commandes"),
                         format     : "#,###",
                         minValue   : 0,
                         viewWindow : {

@@ -792,7 +792,7 @@ const initComponentTemplate = async (model, component, moduleName) => {
             );
         }
     }
-    console.log(`${moduleName}: Ajout du champ component_template = ${component} nombre de champs ajouté: ${elements.length}`);
+    console.log(`${moduleName}: Added field component_template = ${component} number of fields added: ${elements.length}`);
 };
 
 const uninitComponentTemplate = async (model, component, moduleName, field) => {
@@ -805,7 +805,7 @@ const uninitComponentTemplate = async (model, component, moduleName, field) => {
             {$unset: {[field]: ''}, $set: {component_template: newComponentTemplate}}
         );
     }
-    console.log(`${moduleName}: Suppression du champ component_template = ${component} nombre de champs supprimé: ${elements.length}`);
+    console.log(`${moduleName}: Delete field component_template = ${component} number of fields deleted: ${elements.length}`);
 };
 
 /**
@@ -871,6 +871,19 @@ const setConfig = async (name, newConfig) => {
     return Modules.updateOne({name}, {$set: {config: newConfig}}, {new: true});
 };
 
+/**
+ * Permet définir la configuration (champ conf) d'un module
+ * @param body {object} corp de la requete
+ * @returns {Promise<*>} Retourne le contenu du fichier md corespondant au nom du module fourni
+ * @deprecated
+ */
+const getModuleMd = async (body) => {
+    if (!body.moduleName) throw NSErrors.InvalidParameters;
+    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
+    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
+    return text;
+};
+
 module.exports = {
     getModules,
     getModule,
@@ -893,5 +906,6 @@ module.exports = {
     uninitComponentTemplate,
     loadAdminModules,
     getConfig,
-    setConfig
+    setConfig,
+    getModuleMd
 };

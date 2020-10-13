@@ -158,7 +158,7 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
 /**
  * Module : Charge les fichiers init.js des modules si besoin
  */
-const modulesLoadInit = async (express) => {
+const modulesLoadInit = async (server) => {
     const Modules  = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1}).lean();
     loadedModules  = [..._modules];
@@ -177,7 +177,7 @@ const modulesLoadInit = async (express) => {
                     throw new Error('Error checking licence');
                 }
                 loadedModules[i].valid = true;
-                require(initModuleFile)(express, global.appRoot, global.envFile);
+                require(initModuleFile)(server);
                 process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;

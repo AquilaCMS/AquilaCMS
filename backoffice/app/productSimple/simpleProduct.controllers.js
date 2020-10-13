@@ -3,13 +3,31 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi",
-    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi) {
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate",
+    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    if($scope.product.translation && $scope.product.translation[$scope.adminLang] && $scope.product.translation[$scope.adminLang].canonical) {
+                        ProductsV2.preview($scope.product, function (response) {
+                            if (response && response.url) {
+                                window.open(response.url)
+                            }
+                        });
+                    } else {
+                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        const event = new CustomEvent('displayCanonicalModal');
+                        window.dispatchEvent(event);
+                    }
+                },
+            }
+        ]
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
@@ -26,7 +44,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         if ($routeParams.code !== "new") {
             $scope.isEditMode = true;
 
-            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: $routeParams.type}, structure: '*', populate: ["set_attributes"], withPromos: false}}, function (product) {
+            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: $routeParams.type}, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false}}, function (product) {
                 $scope.product = product;
 
                 if ($scope.product.set_options !== undefined) {
@@ -200,6 +218,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             if (newCode) {
                 const newPrd = {...$scope.product, code: newCode};
                 delete newPrd._id;
+                for (const key of Object.keys(newPrd.translation)) {
+                    newPrd.translation[key].slug += "-" + newPrd.code;
+                }  
                 const query = ProductsV2.save(newPrd);
                 query.$promise.then(function (savedPrd) {
                     toastService.toast("success", "Produit dupliqué !");

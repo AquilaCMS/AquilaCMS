@@ -230,12 +230,14 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                 // alors la condition sera vrai car c'est sur l'ensemble des produits du panier que ces conditions sont verifiées
                 if (target.indexOf('attributes') > -1) {
                     for (let i = 0; i < cart.items.length; i++) {
-                        const targetCode = target.split('.')[target.split('.').length - 1];
-                        const targetLang = target.split('.')[target.split('.').length - 2];
-                        const attr       = cart.items[i].id.attributes.find((attr) => attr.code === targetCode);
-                        if (attr) {
-                            target = `translation.${targetLang}.value`;
-                            isTrue = conditionOperator(condition.operator, attr, target, value);
+                        if (cart.items[i].id.attributes) {
+                            const targetCode = target.split('.')[target.split('.').length - 1];
+                            const targetLang = target.split('.')[target.split('.').length - 2];
+                            const attr       = cart.items[i].id.attributes.find((attr) => attr.code === targetCode);
+                            if (attr) {
+                                target = `translation.${targetLang}.value`;
+                                isTrue = conditionOperator(condition.operator, attr, target, value);
+                            }
                         }
                     }
                 } else {
@@ -528,9 +530,11 @@ const execRules = async (owner_type, products = []) => {
                             // On transforme la liste de produit en object dont la key est l'_id du produit
                             // nous pourrons ainsi facilement trouver les produits
                             const oProductsListCat = {};
-                            for (let k = 0; k < oldCat.productsList.length; k++) {
-                                const product                           = oldCat.productsList[k];
-                                oProductsListCat[product.id.toString()] = product;
+                            if (oldCat && oldCat.productsList) {
+                                for (let k = 0; k < oldCat.productsList.length; k++) {
+                                    const product                           = oldCat.productsList[k];
+                                    oProductsListCat[product.id.toString()] = product;
+                                }
                             }
                             for (let k = 0; k < productsIds.length; k++) {
                                 if (!oProductsListCat[productsIds[k].toString()]) {

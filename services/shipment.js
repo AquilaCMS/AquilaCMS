@@ -149,46 +149,6 @@ function getShippingDate(cart, shipment) {
     return {delay: Math.ceil(finalDelay._millieconds / 3600000), unit: "hour"}; */
 }
 
-const getEstimatedFee = async (cartId, shipmentId, countryCode) => {
-    let cartTotalWeight = 0;
-    let catTotalPrice   = 0;
-    if (!cartId) throw new Error('No cart id');
-    const cart = await Cart.findOne({_id: cartId});
-    if (!cart.items || cart.items.length === 0) return {shipment: {}, price: {et: 0, ati: 0}};
-    if (cart.items) {
-        for (const item of cart.items) {
-            cartTotalWeight += item.weight ? item.weight * item.quantity : 0;
-            catTotalPrice   += item.price.special && item.price.special.ati ? item.price.special.ati * item.quantity : item.price.unit.ati * item.quantity;
-        }
-    }
-    let shipments = [];
-    if (shipmentId) {
-        shipments.push(await Shipments.findOne({_id: shipmentId}));
-    } else {
-        shipments = await Shipments.find({});
-    }
-    let ship  = null;
-    let price = 0;
-    for (let i = 0; i < shipments.length; i++) {
-        const shipment = shipments[i];
-        if (shipment.freePriceLimit !== null && shipment.freePriceLimit < catTotalPrice) return {shipment, price: {ati: 0, et: 0}};
-        const shipmentCountry = shipment.countries.find((country) => (country.country).toUpperCase() === countryCode.toUpperCase());
-        if (shipmentCountry) {
-            for (let j = 0; j < shipmentCountry.prices.length; j++) {
-                const priceAndWeight = shipmentCountry.prices[j];
-                if ((priceAndWeight.weight_min <= cartTotalWeight) && (cartTotalWeight <= priceAndWeight.weight_max) && (priceAndWeight.price < price || price === 0)) {
-                    price = priceAndWeight.price;
-                    ship  = shipment;
-                }
-            }
-        }
-    }
-    if (ship) {
-        return {shipment: ship, price: {ati: price, et: price / (1 + (ship.vat_rate / 100))}};
-    }
-    return {shipment: null, price: {ati: 0, et: 0}};
-};
-
 /**
  * @description Retourne le shipment venant d'étre ajouté ou modifié
  * @param body : body de la requête, il permettra de mettre à jour le shipment ou de le créer
@@ -216,6 +176,50 @@ const deleteShipment = async (_id) => {
     const doc = await Shipments.findOneAndRemove({_id});
     if (!doc) throw NSErrors.ShipmentNotFound;
     return doc;
+};
+
+/**
+ * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * @deprecated
+ */
+const getEstimatedFee = async (cartId, shipmentId, countryCode) => {
+    let cartTotalWeight = 0;
+    let catTotalPrice   = 0;
+    if (!cartId) throw new Error('No cart id');
+    const cart = await Cart.findOne({_id: cartId});
+    if (!cart.items || cart.items.length === 0) return {shipment: {}, price: {et: 0, ati: 0}};
+    if (cart.items) {
+        for (const item of cart.items) {
+            cartTotalWeight += item.weight ? item.weight * item.quantity : 0;
+            catTotalPrice   += item.price.special && item.price.special.ati ? item.price.special.ati * item.quantity : item.price.unit.ati * item.quantity;
+        }
+    }
+    let shipments = [];
+    if (shipmentId) {
+        shipments.push(await Shipments.findOne({_id: shipmentId}));
+    } else {
+        shipments = await Shipments.find({active: true, countries: {$elemMatch: {country: countryCode.toUpperCase()}}});
+    }
+    let ship  = null;
+    let price = 0;
+    for (let i = 0; i < shipments.length; i++) {
+        const shipment = shipments[i];
+        if (shipment.freePriceLimit !== null && shipment.freePriceLimit < catTotalPrice) return {shipment, price: {ati: 0, et: 0}};
+        const shipmentCountry = shipment.countries.find((country) => (country.country).toUpperCase() === countryCode.toUpperCase());
+        if (shipmentCountry) {
+            for (let j = 0; j < shipmentCountry.prices.length; j++) {
+                const priceAndWeight = shipmentCountry.prices[j];
+                if ((priceAndWeight.weight_min <= cartTotalWeight) && (cartTotalWeight <= priceAndWeight.weight_max) && (priceAndWeight.price < price || price === 0)) {
+                    price = priceAndWeight.price;
+                    ship  = shipment;
+                }
+            }
+        }
+    }
+    if (ship) {
+        return {shipment: ship, price: {ati: price, et: price / (1 + (ship.vat_rate / 100))}};
+    }
+    return {shipment: null, price: {ati: 0, et: 0}};
 };
 
 module.exports = {

@@ -259,11 +259,9 @@ const downloadImage = async (type, _id, size, extension, quality = 80) => {
 };
 
 const uploadFiles = async (body, files) => {
-    const pathUpload = server.getUploadDirectory();
-    const pathFinal  = `${pathUpload}/`;
-    const tmp_path   = files[0].path;
-    const extension  = body.extension;
-
+    const pathFinal = `${server.getUploadDirectory()}/`;
+    const tmp_path  = files[0].path;
+    const extension = body.extension;
     let target_path = `medias/${body.type}/`;
 
     switch (body.type) {
@@ -311,14 +309,14 @@ const uploadFiles = async (body, files) => {
         extension
     }, async () => {
         // Check if the name is already used
-        if (!(await fsp.existsSync(path.join(pathFinal, target_path_full)))) {
+        if (!(await fsp.existsSync(pathFinal, target_path_full))) {
             target_path_full = pathFinal + target_path_full;
         } else {
             name             = `${files[0].originalname}_${Date.now()}`;
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        await fsp.copyRecursiveSync(tmp_path, path.normalize(target_path_full));
+        await fsp.copyRecursiveSync(tmp_path, target_path_full);
         if ((await fsp.stat(tmp_path)).isDirectory()) {
             await fsp.deleteRecursiveSync(tmp_path);
         } else {
@@ -530,8 +528,8 @@ const removeMedia = async (_id) => {
     return result;
 };
 
-const getMediasGroups = async (query) => {
-    const medias       = await Medias.find();
+const getMediasGroups = async (query, filter = {}) => {
+    const medias       = await Medias.find(filter);
     const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
     // s'il est la, on place "general" en premier index
     if (sortedGroups.includes('general')) {

@@ -45,13 +45,12 @@ if (global.envConfig.stockOrder.returnStockToFront !== true) {
 
 /**
  * Lors de la recupération d'un produit on y ajout aussi le prix min et max des produits trouvés par le queryBuilder
- * @param {*} PostBody
+ * @param {PostBody} PostBody
  * @param {Express.Request} reqRes
- * @param {*} lang
- * @param {*} keepStructure
+ * @param {string} lang
  */
 // eslint-disable-next-line no-unused-vars
-const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
+const getProducts = async (PostBody, reqRes, lang) => {
     let properties = [];
     let structure;
     if (PostBody && PostBody.structure) {
@@ -135,13 +134,14 @@ const getProducts = async (PostBody, reqRes, lang, keepStructure = true) => {
 
     return result;
 };
+
 /**
  * On récupére le produit correspondant au filtre du PostBody
  * @param {*} PostBody
  * @param reqRes
  * @param keepReviews
  */
-const getProduct = async (PostBody, reqRes = undefined, keepReviews = false) => {
+const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lang = global.defaultLang) => {
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
@@ -170,8 +170,12 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false) => 
         reqRes.res.locals = product;
         product           = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
     }
+    if (product.associated_prds) {
+        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
+    }
     return product;
 };
+
 /**
  * On récupére les promos correspondant au produit demandé
  * @param {*} PostBody
@@ -265,6 +269,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     lang = servicesLanguages.getDefaultLang(lang);
     // Si un productsList.id ne répond pas au match alors productsList.id === null
     menu.productsList = menu.productsList.filter((p) => p.id !== null);
+    menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
     if (PostBody.filter === undefined)  PostBody.filter = {};
     const _config = await Configuration.findOne({}, {stockOrder: 1});
     if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
@@ -663,7 +668,8 @@ const createProduct = async (req) => {
         aquilaEvents.emit('aqProductCreated', result._id);
         return result;
     }
-    const res = await Products.create(req.body);
+    req.body.code = utils.slugify(req.body.code);
+    const res     = await Products.create(req.body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };
@@ -766,7 +772,6 @@ const controlAllProducts = async () => {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
         const _config     = await Configuration.findOne({}, {stockOrder: 1});
-        let fixCanonical  = false;
         let fixAttributs  = false;
         let returnErrors  = '';
         let returnWarning = '';
@@ -816,7 +821,7 @@ const controlAllProducts = async () => {
             }
             if (oneProduct.images.length > 0) {
                 for (let i = 0; i < oneProduct.images.length; i++) {
-                    if (!await utils.existsFile(decodeURIComponent(oneProduct.images[i].url))) {
+                    if (!await utilsMedias.existsFile(decodeURIComponent(oneProduct.images[i].url))) {
                         returnWarning += `<b>${oneProduct.code}</b> : Image ${i} not exist<br/>`;
                     }
                 }
@@ -872,7 +877,6 @@ const controlAllProducts = async () => {
             await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
                 if (typeof categories === 'undefined' || categories.length === 0) {
                     returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
-                    fixCanonical   = true;
                 }
             });
         }
@@ -883,8 +887,11 @@ const controlAllProducts = async () => {
         if (returnErrors.length === 0 && returnWarning.length === 0) returnErrors = 'All products are fine';
 
         // AutoFix :
-        if (fixCanonical) {await require('./fix_auto').fixCanonical();}
-        if (fixAttributs) {await require('./fix_auto').sortAttribs();}
+        try {
+            if (fixAttributs) {await require('./devScripts').sortAttribs();}
+        } catch (ee) {
+            returnErrors += `sortAttribs : ${ee.toString()}`;
+        }
 
         return returnErrors + returnWarning;
     } catch (error) {
@@ -976,7 +983,11 @@ const downloadProduct = async (req, res) => {
         // on check que la commande et le produit existe
 
         // require('./orders') : need to use require there because circular reference is detected
-        const order = await require('./orders').getOrder({filter: {'customer.id': user._id.toString(), 'items._id': req.query.op_id}, structure: '*', populate: 'items.id'});
+        const order = await require('./orders').getOrder({
+            filter    : {'customer.id': user._id.toString(), 'items._id': req.query.op_id},
+            structure : '*',
+            populate  : 'items.id'
+        });
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
@@ -990,7 +1001,7 @@ const downloadProduct = async (req, res) => {
         }
         // si produit (p_id)
     } else if (req.query.p_id) {
-        prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res});
+        prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res}, undefined);
         // on check qu'il soit bien virtuel, et que sont prix est egal a 0
         if (!prd || prd.kind !== 'VirtualProduct') {
             throw NSErrors.ProductNotFound;

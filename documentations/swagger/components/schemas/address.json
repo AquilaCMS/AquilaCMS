@@ -1,0 +1,33 @@
+{
+    "addressSchema": {
+        "description": "",
+        "required": [
+            "firstname",
+            "lastname",
+            "line1",
+            "zipcode",
+            "city",
+            "isoCountryCode",
+            "country"
+        ],
+        "properties": {
+            "firstname"         : {"type": "string"},
+            "lastname"          : {"type": "string"},
+            "companyName"       : {"type": "string"},
+            "phone"             : {"type": "string"},
+            "phone_mobile"      : {"type": "string"},
+            "line1"             : {"type": "string"},
+            "line2"             : {"type": "string"},
+            "zipcode"           : {"type": "string"},
+            "city"              : {"type": "string"},
+            "isoCountryCode"    : {"type": "string"},
+            "country"           : {"type": "string"},
+            "complementaryInfo" : {"type": "string"},
+            "civility"          : {
+                "type": "number",
+                "enum": [0, 1],
+                "description": "0 pour homme, 1 pour femme"
+            }
+        }
+    }
+}
