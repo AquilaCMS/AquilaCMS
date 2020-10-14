@@ -144,7 +144,7 @@ UserSchema.methods.hashPassword = async function () {
 
 UserSchema.post('validate', async function () {
     if (this.isNew) {
-        this.hashPassword();
+        await this.hashPassword();
     }
 });
 
