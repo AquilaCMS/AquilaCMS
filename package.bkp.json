@@ -5,7 +5,7 @@
   "main": "server.js",
   "license": "OSL-3.0",
   "engines": {
-    "node": "12.18.3"
+    "node": "12.19.0"
   },
   "repository": {
     "type": "git",
