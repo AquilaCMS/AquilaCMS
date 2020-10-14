@@ -34,7 +34,8 @@
         "descCt": "Short description",
         "canon": "Canonical",
         "noAttribs": "No attributes",
-        "preview": "Preview"
+        "preview": "Preview",
+        "inCartVisible": "Visible in cart/order"
     },
     "modal":{
         "activeProduct": "Activate a product",

@@ -2,7 +2,7 @@ const {Orders, PaymentMethods} = require('../orm/models');
 const QueryBuilder             = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
-const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation'];
+const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
 const queryBuilder     = new QueryBuilder(PaymentMethods, restrictedFields, defaultFields);
 
 exports.getOrdersPayments = async function (postBody) {
