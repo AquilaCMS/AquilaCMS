@@ -32,5 +32,16 @@
         "name": "Nom",
         "alt": "Balise alt",
         "picture": "Image :"
+    },
+    "modal": {
+        "title":"Copier le lien",
+        "width":"Largeur en pixel :",
+        "height":"Hauteur en pixel :",
+        "quality":"Qualité (0 à 100) :",
+        "name":"Nom :",
+        "copy":"Copier le lien",
+        "background":"Couleur de fond :",
+        "link":"Lien",
+        "generate":"Générer"
     }
 }

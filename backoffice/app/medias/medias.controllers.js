@@ -196,9 +196,14 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
     function ($scope, toastService, $modalInstance, media) {
         $scope.media = media;
         $scope.info = {
+            background:false,
             largeur: "",
             longueur: "",
             quality: "",
+            r:255,
+            g:255,
+            b:255,
+            alpha:1
         };
         if (media.name) {
             $scope.info.name = media.name;
@@ -216,19 +221,20 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                 filename = $scope.media.link.replace(`medias/`, "");
             }
 
-
-            if (
-                $scope.info.largeur === null
-                || $scope.info.longueur === null
-                || $scope.info.largeur == 0
-                || $scope.info.longueur == 0
-                || quality === null
-                || quality == 0
-            ) {
+            let background = ''; 
+            if ((!$scope.info.largeur || !$scope.info.longueur || !quality) || ($scope.info.background && (!$scope.info.r || !$scope.info.g || !$scope.info.b || !($scope.info.alpha >= 0 && $scope.info.alpha <= 1)))) {
                 toastService.toast("warning", "Veuillez saisir toutes les valeurs.");
             } else {
+                if ($scope.info.background) {
+                    if ($scope.info.alpha) {
+                        if ($scope.info.alpha > 1) {
+                            $scope.info.alpha = 1;
+                        }
+                    }
+                    background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
+                }
                 toastService.toast("success", "Lien généré");
-                $scope.link = `${window.location.origin}/images/medias/${size}-${quality}/${$scope.media._id}/${filename}`;
+                $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${background}/${$scope.media._id}/${filename}`;
                 const elem = document.getElementById("copy-link");
                 elem.focus();
                 elem.select();
