@@ -4,20 +4,6 @@ const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 const ObjectId      = Schema.ObjectId;
 
-/**
- * @typedef {object} AttributesSchema
- * @property {string} code.required
- * @property {string} type.required
- * @property {string} _type enum:products,users - default:products
- * @property {string} param.required
- * @property {array<string>} set_attributes setAttributes objectId
- * @property {number} position default:1
- * @property {object} default_value
- * @property {boolean} usedInRules default:true
- * @property {boolean} usedInFilters default:false
- * @property {object} translation
- */
-
 const AttributesSchema = new Schema({
     code  : {type: String, required: true, unique: true},
     type  : {type: String, required: true},
@@ -46,7 +32,7 @@ AttributesSchema.statics.translationValidation = async function (self) {
 
     if (translationKeys.length === 0) {
         self.translation[global.defaultLang] = {};
-        translationKeys = Object.keys(self.translation);
+        translationKeys                      = Object.keys(self.translation);
     }
 
     for (let i = 0; i < translationKeys.length; i++) {
@@ -58,7 +44,7 @@ AttributesSchema.statics.translationValidation = async function (self) {
             }
 
             const {checkCustomFields} = require('../../utils/translation');
-            errors = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+            errors                    = errors.concat(checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                 {key: 'name'},
                 {key: 'values', type: 'object'}
             ]));
@@ -75,7 +61,7 @@ AttributesSchema.statics.translationValidation = async function (self) {
 AttributesSchema.post('remove', async function (doc, next) {
     try {
         // On supprime du tableau categorie.filters.attributes l'objet attribut correspondant à l'attribut venant d'être supprimé
-        const {_id} = doc;
+        const {_id}        = doc;
         const {Categories} = require('../models');
         await Categories.updateMany({'filters.attributes._id': _id}, {$pull: {'filters.attributes': {_id}}}, {new: true, runValidators: true});
     } catch (error) {
@@ -98,7 +84,7 @@ AttributesSchema.post('updateOne', async function ({next}) {
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {
-            const filters = {
+            const filters      = {
                 'filters.attributes.$.position'    : attribute.position,
                 'filters.attributes.$.type'        : attribute.type,
                 'filters.attributes.$.translation' : attribute.translation

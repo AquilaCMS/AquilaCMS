@@ -75,7 +75,7 @@ class CartDelivery extends React.Component {
 
         let shipments;
         try {
-            shipments = await getShipmentsCart(cart, lang);
+            shipments = await getShipmentsCart(cart, null, lang);
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
                 NSToast.error(err.response.data.message);
@@ -102,20 +102,6 @@ class CartDelivery extends React.Component {
             // true ou false
             this.setState({ relayPointAddressSaved: e.detail });
         });
-    }
-
-    getDeliveryDate = (ship) => {
-        const { cart } = this.state;
-        const countryFound = ship.countries.find((country) => cart.addresses.delivery.isoCountryCode === country.country);
-        if (!countryFound) return;
-        const momentDate = moment()
-            .add(Number(ship.preparation.delay), ship.preparation.unit)
-            .add(Number(countryFound.delay), countryFound.unit);
-        // We can't deliver on sunday
-        if (new Date(momentDate._d).getDay() === 0) {
-            return momentDate.add(1, 'days').format('L');
-        }
-        return momentDate.format('L');
     }
 
     onChangeSelect = async (e, index) => {

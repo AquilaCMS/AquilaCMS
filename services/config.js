@@ -42,13 +42,13 @@ const getConfig = async (action, propertie) => {
 };
 
 const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
-    PostBody = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
+    PostBody    = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
     let isAdmin = true;
     if (!user) {
         if (!user || !user.isAdmin) {
-            isAdmin = false;
-            PostBody.structure = undefined;
-            queryBuilder.defaultFields = [];
+            isAdmin                       = false;
+            PostBody.structure            = undefined;
+            queryBuilder.defaultFields    = [];
             queryBuilder.restrictedFields = [
                 'environment.adminPrefix',
                 'environment.authorizedIPs',
@@ -74,8 +74,6 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
                 },
                 databaseConnection : global.envFile.db
             };
-            config.environment.ssl.cert = path.basename(config.environment.ssl.cert);
-            config.environment.ssl.key = path.basename(config.environment.ssl.key);
         }
         if (config.environment.mailPass) {
             try {
@@ -143,15 +141,20 @@ const saveEnvFile = async (body, files) => {
             global.envFile.db = environment.databaseConnection;
         }
         if (environment.ssl && environment.ssl.active) {
-            global.envFile.ssl.active = Boolean(environment.ssl.active);
+            if (environment.ssl.active === 'false') {
+                global.envFile.ssl.active = false;
+            } else {
+                global.envFile.ssl.active = true;
+            }
         }
         await updateEnvFile();
         delete environment.databaseConnection;
+        delete environment.ssl;
     }
 };
 
 const saveEnvConfig = async (body) => {
-    const oldConfig = await Configuration.findOne({});
+    const oldConfig                 = await Configuration.findOne({});
     const {environment, stockOrder} = body;
     if (environment) {
         if (environment.mailPass !== undefined && environment.mailPass !== '') {
@@ -160,13 +163,10 @@ const saveEnvConfig = async (body) => {
             } catch (err) {
                 console.error(err);
             }
-        } // ./uploads/__custom/cbo
-        if (environment.photoPath) {
-            environment.photoPath = environment.photoPath
-                .replace(/^.?(\\\\|\\|\/?)/, '')
-                .replace(/(\\\\|\\|\/?)$/, '');
         }
-        await updateEnvFile();
+        if (environment.photoPath) {
+            environment.photoPath = path.normalize(environment.photoPath);
+        }
         delete environment.databaseConnection;
         // traitement spécifique
         if (environment.demoMode) {

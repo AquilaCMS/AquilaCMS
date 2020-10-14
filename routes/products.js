@@ -1,8 +1,8 @@
-const aquilaEvents                  = require('../utils/aquilaEvents');
-const ServiceProduct                = require('../services/products');
-const {authentication, adminAuth}   = require('../middleware/authentication');
-const {securityForceActif}          = require('../middleware/security');
-const {getDecodedToken}             = require('../services/auth');
+const aquilaEvents                = require('../utils/aquilaEvents');
+const ServiceProduct              = require('../services/products');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const {securityForceActif}        = require('../middleware/security');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/products/searchObj', getProductsSearchObj);
@@ -12,6 +12,7 @@ module.exports = function (app) {
     app.post('/v2/product/duplicate', authentication, adminAuth, duplicateProduct);
     app.get('/v2/product/download', authentication, downloadProduct);
     app.post('/v2/product/calculStock', calculStock);
+    app.post('/v2/product/preview', authentication, adminAuth, preview);
     app.post('/v2/product/:id', getProductById);
     app.post('/v2/products/category/:id', getProductsByCategoryId);
     app.put('/v2/product', authentication, adminAuth, setProduct);
@@ -33,7 +34,7 @@ async function getProductsListing(req, res, next) {
             },
             'bundle_sections.products.id'
         ];
-        const result = await ServiceProduct.getProductsListing(req, res);
+        const result               = await ServiceProduct.getProductsListing(req, res);
 
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
@@ -55,7 +56,12 @@ async function getProductsListing(req, res, next) {
  */
 async function getProduct(req, res, next) {
     try {
-        const result = await ServiceProduct.getProduct(req.body.PostBody, {req, res}, req.body.keepReviews);
+        const {
+            PostBody,
+            keepReviews,
+            lang
+        } = req.body;
+        const result = await ServiceProduct.getProduct(PostBody, {req, res}, keepReviews, lang);
         res.json(result);
     } catch (error) {
         return next(error);
@@ -167,7 +173,7 @@ async function deleteProduct(req, res, next) {
 async function downloadProduct(req, res, next) {
     try {
         const fileBinary = await ServiceProduct.downloadProduct(req, res);
-        const val = aquilaEvents.emit('aqDownloadProduct', fileBinary, req, res, next);
+        const val        = aquilaEvents.emit('aqDownloadProduct', fileBinary, req, res, next);
         if (!val) {
             res.setHeader('Content-Length', fileBinary.length);
             res.write(fileBinary, 'binary');
@@ -212,5 +218,20 @@ async function getProductsSearchObj(req, res, next) {
         return res.json(result);
     } catch (error) {
         next(error);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function preview(req, res, next) {
+    try {
+        const url = await ServiceProduct.preview(req.body);
+        return res.json({url});
+    } catch (err) {
+        next(err);
     }
 }

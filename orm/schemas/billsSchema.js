@@ -9,82 +9,6 @@ const aquilaEvents     = require('../../utils/aquilaEvents');
 const Schema           = mongoose.Schema;
 const ObjectId         = Schema.ObjectId;
 
-/**
- * @typedef {object} BillsSchema
- * @property {string} order_id.required order objectId
- * @property {string} facture.required
- * @property {string} montant.required
- * @property {boolean} withTaxes.required
- * @property {string} client.required users objectId
- * @property {string} nom.required
- * @property {string} prenom.required
- * @property {string} societe
- * @property {string} coordonnees
- * @property {string} email.required
- * @property {string} creationDate default:Date.now
- * @property {string} filename
- * @property {string} paymentDate
- * @property {string} checksum
- * @property {string} isPaid.required
- * @property {string} lang
- * @property {string} items
- * @property {string} taxes
- * @property {AddressSchema} address
- * @property {BillsSchemaDelivery} delivery
- * @property {BillsSchemaPromos} promos
- * @property {boolean} avoir default:false
- * @property {BillsSchemaAdditionnalFees} additionnalFees
- * @property {BillsSchemaPriceSubTotal} priceSubTotal
- */
-
-/**
- * @typedef {object} BillsSchemaPromos
- * @property {} promoId promo ObjectId
- * @property {} promoCodeId ObjectId
- * @property {number} discountATI default:null
- * @property {number} discountET default:null
- * @property {string} name
- * @property {string} description
- * @property {string} code
- * @property {array<BillsSchemaProductsId>} productsId
- */
-
-/**
- * @typedef {object} BillsSchemaProductsId
- * @property {number} productId products ObjectId
- * @property {number} discountATI default:null
- * @property {number} discountET default:null
- * @property {number} basePriceET default:null
- * @property {number} basePriceATI default:null
- */
-
-/**
- * @typedef {object} BillsSchemaAdditionnalFees
- * @property {number} ati default:0
- * @property {number} et default:0
- * @property {number} tax default:0
- */
-
-/**
- * @typedef {object} BillsSchemaPriceSubTotal
- * @property {number} ati default:0
- * @property {number} et default:0
- */
-
-/**
- * @typedef {object} BillsSchemaDelivery
- * @property {BillsSchemaPrice} price
- * @property {string} code
- * @property {string} name
- */
-
-/**
- * @typedef {object} BillsSchemaPrice
- * @property {number} ati
- * @property {number} et
- * @property {number} vat
- */
-
 const BillsSchema = new Schema({
     order_id     : {type: ObjectId, ref: 'orders', required: true},
     facture      : {type: String, required: true},
@@ -152,7 +76,7 @@ BillsSchema.pre('save', async function (next) {
             this.facture = `F_${new Date().getFullYear()}_${this.id}`;
         }
     }
-    const obj = require('../../services/bills').cleanBillObject(this.toObject());
+    const obj     = require('../../services/bills').cleanBillObject(this.toObject());
     this.checksum = crypto.createHash('md5').update(obj, 'utf8').digest('hex');
     next();
 });

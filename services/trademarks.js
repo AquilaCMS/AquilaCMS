@@ -2,14 +2,14 @@ const {Trademarks, Products} = require('../orm/models');
 const QueryBuilder           = require('../utils/QueryBuilder');
 const NSErrors               = require('../utils/errors/NSErrors');
 
-const restrictedFields       = [];
-const defaultFields          = ['_id', 'name', '_slug'];
-const queryBuilder           = new QueryBuilder(Trademarks, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['_id', 'name', '_slug'];
+const queryBuilder     = new QueryBuilder(Trademarks, restrictedFields, defaultFields);
 
-exports.getTrademarks = async function (PostBody) {
+exports.getTrademarks    = async function (PostBody) {
     return queryBuilder.find(PostBody);
 };
-exports.getTrademark = async function (PostBody) {
+exports.getTrademark     = async function (PostBody) {
     return queryBuilder.findOne(PostBody);
 };
 exports.getTrademarkById = async function (id, PostBody = null) {

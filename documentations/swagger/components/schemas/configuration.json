@@ -1,0 +1,95 @@
+{
+    "configurationSchema": {
+        "description": "",
+        "properties": {
+            "name"    : {"type": "string"},
+            "licence" : {
+                "type": "object",
+                "properties": {
+                    "registryKey" : {"type": "string"},
+                    "lastCheck"   : {"type": "string", "format": "date"}
+                }
+            },
+            "environment" : {
+                "type": "object",
+                "required": [
+                    "adminPrefix",
+                    "appUrl",
+                    "currentTheme",
+                    "port",
+                    "siteName",
+                    "websiteCountry"
+                ],
+                "properties": {
+                    "adminPrefix"       : {"type": "string", "minlength": 1},
+                    "analytics"         : {"type": "string"},
+                    "appUrl"            : {"type": "string"},
+                    "authorizedIPs"     : {"type": "string", "default": ""},
+                    "autoMaintenance"   : {"type": "boolean", "default": false},
+                    "billsPattern"      : {"type": "string"},
+                    "cacheTTL"          : {"type": "number"},
+                    "currentTheme"      : {"type": "string"},
+                    "demoMode"          : {"type": "boolean", "default": true},
+                    "exchangeFilesPath" : {"type": "string"},
+                    "invoicePath"       : {"type": "string"},
+                    "mailHost"          : {"type": "string"},
+                    "mailPass"          : {"type": "string"},
+                    "mailPort"          : {"type": "number"},
+                    "mailUser"          : {"type": "string"},
+                    "mailSecure"        : {"type": "boolean", "default": false},
+                    "mailIsSendmail"    : {"type": "boolean", "default": false},
+                    "maintenance"       : {"type": "boolean", "default": false},
+                    "overrideSendTo"    : {"type": "string"},
+                    "photoPath"         : {"type": "string"},
+                    "port"              : {"type": "number"},
+                    "siteName"          : {"type": "string"},
+                    "websiteCountry"    : {"type": "string"},
+                    "websiteTimezone"   : {"type": "string"}
+                }
+            },
+            "taxerate" : {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["rate"],
+                    "properties": {
+                        "rate": {"type": "number"}
+                    }
+                }
+            },
+            "stockOrder" : {
+                "type": "object",
+                "required": [
+                    "cartExpireTimeout",
+                    "pendingOrderCancelTimeout",
+                    "bookingStock"
+                ],
+                "properties": {
+                    "cartExpireTimeout"         : {"type": "number"},
+                    "pendingOrderCancelTimeout" : {"type": "number"},
+                    "bookingStock"              : {"type": "string", "enum": ["commande", "panier", "none", "payment"]},
+                    "labels"                    : {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["code"],
+                            "properties": {
+                                "code"        : {"type": "string"},
+                                "translation" : {"type": "object"}
+                            }
+                        }
+                    },
+                    "additionnalFees" : {
+                        "type": "object",
+                        "properties": {
+                            "tax" : {"type": "number", "default": 0},
+                            "et"  : {"type": "number", "default": 0}
+                        }
+                    },
+                    "returnStockToFront" : {"type": "boolean", "default": false},
+                    "automaticBilling"   : {"type": "boolean", "default": false}
+                }
+            }
+        }
+    }
+}

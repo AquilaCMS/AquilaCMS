@@ -16,7 +16,7 @@ class Login extends NSLogin {
         const {
             emailResetPassword, step, stepMobile, user, address, countries, subUser, subscribeNL
         } = this.state;
-        const { cmsLogin } = this.context.state;
+        const { cmsLogin } = this.context.props ? this.context.props : '';
         return (
             <section className="section-sign-in shell">
                 <Head>

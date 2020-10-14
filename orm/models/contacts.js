@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose         = require('mongoose');
 const {ContactsSchema} = require('../schemas');
 
 ContactsSchema.pre('save', function (next) {

@@ -1,9 +1,9 @@
-const path                 = require('path');
-const fileSystemBackend    = require('i18next-fs-backend');
+const path              = require('path');
+const fileSystemBackend = require('i18next-fs-backend');
 
 const initI18n = async (i18nInstance, ns) => {
     const {Languages} = require('../orm/models');
-    const langs = (await Languages.find({}, {code: 1, _id: 0})).map((elem) => elem.code);
+    const langs       = (await Languages.find({}, {code: 1, _id: 0})).map((elem) => elem.code);
     i18nInstance.use(fileSystemBackend).init({
         languages   : langs,
         preload     : langs,
@@ -77,7 +77,7 @@ const assignTranslation = (json, lang) => {
     if (result.translation) {
         if (result.translation[lang] && result.translation[lang].slug) {
             const translationKeys = Object.keys(result.translation);
-            result.slug = {};
+            result.slug           = {};
             for (let i = 0; i < translationKeys.length; i++) {
                 result.slug[translationKeys[i]] = result.translation[translationKeys[i]].slug;
                 delete result.translation[translationKeys[i]].slug;
@@ -100,7 +100,7 @@ function checkCustomFields(customObject, parent, fields) {
     const errorsType = {
         string : 'une chaine de caractère'
     };
-    const errors = [];
+    const errors     = [];
     const customKeys = Object.keys(customObject);
 
     for (let i = 0; i < customKeys.length; i++) {

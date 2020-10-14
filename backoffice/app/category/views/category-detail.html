@@ -3,6 +3,8 @@
 <div ng-controller="CategoryIncludeCtrl">
     <form name="formMenu" ng-submit="save()"> 
         <div align="right" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
+            <button style="position:sticky;top:115px;z-index:1000;pointer-events:auto;float:left" type="button"
+                class="btn btn-default ng-scope" ng-click="setEditCat()" translate>category.list.back</button>
             <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()"
                     translate>category.detail.delete
             </button>
@@ -109,7 +111,7 @@
                             </td>
                             <td>
                                 <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched"
-                                    ng-options="page.translation[lang].slug as page.translation[lang].title group by getOptGroup(page.group) for page in pages | filter:exist"
+                                    ng-options="page.translation[lang].slug as (page.translation[lang].title + ' (' +page.translation[lang].title +')') group by getOptGroup(page.group) for page in pages | filter:exist"
                                     ng-model="category.translation[lang].pageSlug">
                                 </select>
                             </td>
@@ -180,7 +182,7 @@
                                 category.detail.textSupp1
                             </td>
                             <td>
-                                <ns-tinymce id="'1'" lang="lang" text="category.translation[lang].extraText"></ns-tinymce>
+                                <ns-tinymce lang="lang" text="category.translation[lang].extraText"></ns-tinymce>
                                 <br />
                             </td>
                         </tr>
@@ -189,7 +191,7 @@
                                 category.detail.textSupp2
                             </td>
                             <td>
-                            <ns-tinymce  id="'2'" lang="lang" text="category.translation[lang].extraText2"></ns-tinymce>
+                            <ns-tinymce lang="lang" text="category.translation[lang].extraText2"></ns-tinymce>
                             </td>
                         </tr>
                         <tr id="text3">
@@ -197,7 +199,7 @@
                                 category.detail.textSupp3
                             </td>
                             <td>
-                                <ns-tinymce lang="lang" id="'3'" text="category.translation[lang].extraText3"></ns-tinymce>
+                                <ns-tinymce lang="lang" text="category.translation[lang].extraText3"></ns-tinymce>
                             </td>
                         </tr>
                     </tbody>

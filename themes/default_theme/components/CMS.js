@@ -22,7 +22,9 @@ class CMS extends React.Component {
     replace = ({
         type, name, attribs, children
     }) => {
-        const { appurl } = this.context.state;
+        const { props } = this.context;
+        if (!props) { return; }
+        const { appurl } = props;
         // Composant Next Sourcia : <ns-[...]>
         if (name && type === 'tag' && nsComponents[name] !== undefined && nsComponents[name]) {
             const component = React.cloneElement(
@@ -138,7 +140,7 @@ class CMS extends React.Component {
     }
 
     render() {
-        const content = this.props.content !== '' ? this.props.content : (this.context.state[`nsCms_${this.props['ns-code']}`] ? this.context.state[`nsCms_${this.props['ns-code']}`].content : '');
+        const content = this.props.content !== '' ? this.props.content : (this.context.props && this.context.props[`nsCms_${this.props['ns-code']}`] ? this.context.props[`nsCms_${this.props['ns-code']}`].content : '');
         return content ? (
             <>{ parse(content, { replace: (obj) => this.replace(obj) }) }</> // Customisation du parse HTML via la fonction "replace"
         ) : (

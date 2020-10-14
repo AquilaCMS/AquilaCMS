@@ -22,21 +22,21 @@ const cleanCache = async (subfolder = undefined) => {
 };
 
 const deleteCacheImage = (type, datas) => {
-    const _path = require('../utils/server').getUploadDirectory();
+    const _path       = require('../utils/server').getUploadDirectory();
     const cacheFolder = `${_path}/cache/`;
-    let fileName = '';
+    let fileName      = '';
     let filePathCache = '';
 
     switch (type) {
     // si une image produit est supprimée
     case 'products':
-        fileName = `${datas.code}_${datas._id}`;
+        fileName      = `${datas.code}_${datas._id}`;
         filePathCache = `${cacheFolder}products/${getChar(datas.code, 0)}/${getChar(datas.code, 1)}/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
         // si un media est requêté
     case 'medias':
-        fileName = datas.filename;
+        fileName      = datas.filename;
         filePathCache = `${cacheFolder}medias/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
@@ -45,7 +45,7 @@ const deleteCacheImage = (type, datas) => {
     case 'blog':
     case 'picto':
     case 'category':
-        fileName = datas.filename;
+        fileName      = datas.filename;
         filePathCache = `${cacheFolder}${type}/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
@@ -69,7 +69,7 @@ function deleteFileCache(filePathCache) {
 
 const cacheSetting = () => {
     const CacheService = require('../utils/CacheService');
-    const cacheTTL = global.envConfig.cacheTTL ? global.envConfig.cacheTTL : 0;
+    const cacheTTL     = global.envConfig.environment.cacheTTL ? global.envConfig.environment.cacheTTL : 0;
     utilsModules.modulesLoadFunctions('useCacheModule', {cacheTTL}, () => {
         global.cache = new CacheService(cacheTTL);
     });

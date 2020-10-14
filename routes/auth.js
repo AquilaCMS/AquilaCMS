@@ -1,14 +1,13 @@
 const {
     login,
     IsAuthenticate
-}                           = require('../services/auth');
+}                        = require('../services/auth');
 const {
     authentication,
-    adminAuth,
     generateJWTToken
-}                           = require('../middleware/authentication');
-const {middlewareServer}    = require('../middleware');
-const NSErrors              = require('../utils/errors/NSErrors');
+}                        = require('../middleware/authentication');
+const {middlewareServer} = require('../middleware');
+const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/auth/login/:from?', login);
@@ -18,10 +17,7 @@ module.exports = function (app) {
     app.post('/v2/auth/loginAdminAsClient', authentication, loginAdminAsClient);
 
     // Deprecied
-    app.get('/isauthenticated', middlewareServer.deprecatedRoute, authentication, adminAuth, IsAuthenticate);
     app.get('/auth/logout', middlewareServer.deprecatedRoute, logout);
-    app.post('/auth/login', middlewareServer.deprecatedRoute, login);
-    app.get('/v2/logout', middlewareServer.deprecatedRoute, logout);
 };
 
 const logout = (req, res) => {

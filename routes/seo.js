@@ -1,5 +1,5 @@
 const {authentication} = require('../middleware/authentication');
-const seoServices = require('../services/seo');
+const seoServices      = require('../services/seo');
 
 module.exports = function (app) {
     app.post('/v2/seo/genSitemap', authentication, genSitemap);

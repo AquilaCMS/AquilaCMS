@@ -1,6 +1,7 @@
-const {authentication, adminAuth}   = require('../middleware/authentication');
-const serviceModule                 = require('../services/modules');
-const NSErrors                      = require('../utils/errors/NSErrors');
+const showdown                    = require('showdown');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const serviceModule               = require('../services/modules');
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
@@ -8,6 +9,7 @@ module.exports = function (app) {
     app.put('/v2/module/config/:id', authentication, adminAuth, setModuleConfigById);
     app.post('/v2/modules/upload',   authentication, adminAuth, uploadModule);
     app.post('/v2/modules/toggle',   authentication, adminAuth, toggleActiveModule);
+    app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
 };
@@ -87,7 +89,7 @@ const toggleActiveModule = async (req, res, next) => {
     req.setTimeout(300000);
     try {
         const {idModule, toBeChanged, toBeRemoved, active} = req.body;
-        let modules = [];
+        let modules                                        = [];
         if (active) {
             modules = await serviceModule.activateModule(idModule, toBeChanged);
         } else {
@@ -105,5 +107,15 @@ const removeModule = async (req, res, next) => {
         res.send({status: true});
     } catch (error) {
         return next(error);
+    }
+};
+
+const getModuleMd = async (req, res, next) => {
+    try {
+        const result    = await serviceModule.getModuleMd(req.body);
+        const converter = new showdown.Converter();
+        res.json({html: converter.makeHtml(result)});
+    } catch (error) {
+        next(error);
     }
 };

@@ -1,6 +1,6 @@
-const {Statics}        = require('../orm/models');
-const QueryBuilder     = require('../utils/QueryBuilder');
-const NSErrors         = require('../utils/errors/NSErrors');
+const {Statics}    = require('../orm/models');
+const QueryBuilder = require('../utils/QueryBuilder');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];

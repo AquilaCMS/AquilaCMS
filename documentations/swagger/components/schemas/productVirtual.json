@@ -1,0 +1,9 @@
+{
+    "productVirtualSchema": {
+        "description": "",
+        "properties": {
+            "downloadLink"  : {"type": "string", "default": null},
+            "downloadInfos" : {"type": "string", "default": null}
+        }
+    }
+}

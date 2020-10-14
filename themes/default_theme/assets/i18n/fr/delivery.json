@@ -2,7 +2,7 @@
     "livraison": "Livraison",
     "livraisonApartir": "Livraison à partir du ",
     "error_input_delivery":"Erreur lors de la saisie du transporteur",
-    "choose_relay_point":"Veuillez choisir un point relay et le sauvegarder",
+    "choose_relay_point":"Veuillez choisir un point relais et le sauvegarder",
     "choose_delivery_mode":"Veuillez choisir un mode de livraison",
     "not_logged_payment":"Vous devez être connecté pour continuer vers le paiement",
     "no_cart":"Vous n'avez pas de panier",

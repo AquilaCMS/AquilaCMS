@@ -1,0 +1,20 @@
+{
+    "productSimpleSchema": {
+        "description": "",
+        "properties": {
+            "stock" : {
+                "type": "object",
+                "properties": {
+                    "qty"          : {"type": "number", "default": 0},
+                    "qty_booked"   : {"type": "number", "default": 0},
+                    "date_selling" : {"type": "string", "format": "date"},
+                    "date_supply"  : {"type": "string", "format": "date"},
+                    "orderable"    : {"type": "boolean", "default": false},
+                    "status"       : {"type": "string", "default": "liv", "enum": ["liv", "dif", "epu"]},
+                    "label"        : {"type": "string"},
+                    "translation"  : {"type": "object"}
+                }
+            }
+        }
+    }
+}

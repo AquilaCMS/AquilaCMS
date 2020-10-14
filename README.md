@@ -4,8 +4,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3ac2a8b4b7ac4b6880b49d544fdabfcd)](https://app.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&utm_medium=referral&utm_content=AquilaCMS/AquilaCMS&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 
-[![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
-
 # AquilaCMS
 
 [AquilaCMS](https://www.aquila-cms.com) is an Open-source e-commerce web application, 100% javascript with Node.js and MongoDB. Themes can be used with ReactJS and NextJS (for polymorphism). A complete Back office is available for managing your website. You can download some modules or themes in [Aquila's Shop](https://shop.aquila-cms.com).
@@ -14,7 +12,7 @@
 
 ## Server configuration
 
-To install the latest AquilaCMS, you need a web server running node.js 12.18.1+ and mongoDB 4.2.5+.
+To install the latest AquilaCMS, you need a web server running node.js 12.19.0+ and mongoDB 4.2.5+.
 The package manager yarn 1.22.4+ is required.
 
 ### System packages
@@ -26,7 +24,7 @@ On Windows you must download wkhtmltopdf : https://wkhtmltopdf.org/downloads.htm
 
 ## Installation
 
-You can download the source code from GitHub and run the following command-line to launch the installer.
+You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
 
 With npm :
 ```bash
@@ -56,7 +54,7 @@ Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS web
 - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your mongod.conf and change your bindIp by your network ip instead of 127.0.0.1)
 
 ## Documentations
-Find the swagger documentation on /api-docs or online at [aquila-cms.com/apidoc](https://www.aquila-cms.com/apidoc).
+Find the swagger documentation on /api-docs or online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs).
 Also check-out some tutorials on [our dedicated page](https://www.aquila-cms.com/ressources-documentation), or on [our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ).
 
 

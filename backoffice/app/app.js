@@ -342,6 +342,22 @@ adminCatagenApp.config(function (treeConfig, paginationConfig)
 adminCatagenApp.controller("PrincipalCtrl", [ "$http", "$rootScope", "$scope",
     function ($http, $rootScope, $scope)
     {
+        if (!$rootScope.content_style){
+            let content_style = "";
+            $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
+                $scope.shortcodes = response.data;
+                for (const element of response.data) {
+                    content_style += element.tag + ", ";
+                }
+                content_style = content_style.substring(0, content_style.length - 2) + " {border:1px solid #CCC;padding:3px;background-color:#576fa1} ";
+                for (const element of response.data) {
+                    content_style += element.tag + ":before{content:'" + element.tag + "'} ";
+                }
+                $rootScope.content_style = content_style;
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+        }
 
         $scope.modules = [];
         if(!Array.prototype.find)

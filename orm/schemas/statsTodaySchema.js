@@ -3,7 +3,7 @@ const Schema   = mongoose.Schema;
 
 /**
  * @typedef {object} StatsTodaySchema
- * @property {array} visit default:[]
+ * @property {object[]} visit default:[]
  * @property {number} oldCart default:0
  */
 const StatsTodaySchema = new Schema({

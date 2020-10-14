@@ -1,17 +1,7 @@
-const mongoose      = require('mongoose');
-const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const mongoose = require('mongoose');
+const Schema   = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
-/**
- * @typedef {object} ItemBundleSchema
- * @property {array<ItemBundleSelections>} selections
- */
-
-/**
- * @typedef {object} ItemBundleSelections
- * @property {string} bundle_section_ref.required
- * @property {string} products products ObjectId
- */
 const ItemBundle = new Schema({
     selections : [{
         bundle_section_ref : {type: String, required: true},
@@ -58,7 +48,7 @@ ItemBundle.methods.rollbackStock = async function (cb) {
 
 ItemBundle.methods.populateItem = async function () {
     const {Products} = require('../models');
-    const self = this;
+    const self       = this;
     for (const selection of self.selections) {
         for (const [index, _product] of Object.entries(selection.products)) {
             if (selection.products[index]._id === undefined) {

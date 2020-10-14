@@ -1,15 +1,18 @@
 const {ThemeConfig, Configuration} = require('../orm/models');
 const QueryBuilder                 = require('../utils/QueryBuilder');
+const NSErrors                     = require('../utils/errors/NSErrors');
 
-const restrictedFields             = [];
-const defaultFields                = ['_id', 'name', 'config'];
-const queryBuilder                 = new QueryBuilder(ThemeConfig, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['_id', 'name', 'config'];
+const queryBuilder     = new QueryBuilder(ThemeConfig, restrictedFields, defaultFields);
 
 /**
  * @description Permet de récupérer la configuration du thème courant
  * @return Retourne la configuration du thème
  */
 const getThemeConfig = async (PostBody) => {
+    if (!PostBody) throw NSErrors.PostBodyUndefined;
+
     const config    = await Configuration.findOne({});
     PostBody.filter = {name: config.environment.currentTheme};
     return queryBuilder.findOne(PostBody);
@@ -32,9 +35,9 @@ const getThemeConfigByKey = async (key) => {
  * @param body {object} la nouvelle configuration du thème
  */
 const setThemeConfig = async (body) => {
-    const nameTheme      = global.envConfig.environment.currentTheme;
+    const nameTheme = global.envConfig.environment.currentTheme;
     delete body.lang;
-    const oldConfig      = await ThemeConfig.findOne({name: nameTheme});
+    const oldConfig = await ThemeConfig.findOne({name: nameTheme});
     if (oldConfig && oldConfig.config) {
         const newConfig = await ThemeConfig.findOneAndUpdate(
             {name: nameTheme},

@@ -1,13 +1,13 @@
-const mongoose           = require('mongoose');
+const mongoose                                                 = require('mongoose');
 const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
-const QueryBuilder       = require('../utils/QueryBuilder');
-const NSErrors           = require('../utils/errors/NSErrors');
-const utils              = require('../utils/utils');
-const utilsMedia         = require('../utils/medias');
+const QueryBuilder                                             = require('../utils/QueryBuilder');
+const NSErrors                                                 = require('../utils/errors/NSErrors');
+const utils                                                    = require('../utils/utils');
+const utilsMedia                                               = require('../utils/medias');
 
-const restrictedFields   = [];
-const defaultFields      = ['_id', 'code', 'type', 'values', 'param', 'set_attributes', 'translation'];
-const queryBuilder       = new QueryBuilder(Attributes, restrictedFields, defaultFields);
+const restrictedFields = [];
+const defaultFields    = ['_id', 'code', 'type', 'values', 'param', 'set_attributes', 'translation'];
+const queryBuilder     = new QueryBuilder(Attributes, restrictedFields, defaultFields);
 
 const getAllAttributes = async (PostBody) => {
     if (!PostBody) {
@@ -74,7 +74,7 @@ const setAttribute = async (body) => {
             await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
             for (let i = 0; i < body.set_attributes.length; i++) {
                 const {code, param, position, _id: id, type} = att;
-                const product_attributes = {id, code, param, position, translation: body.translation, type};
+                const product_attributes                     = {id, code, param, position, translation: body.translation, type};
                 if (attribute.default_value !== undefined) {
                     product_attributes.value    = att.default_value;
                     product_attributes.position = position;
@@ -122,8 +122,8 @@ const setAttribute = async (body) => {
 const updateObjectAttribute = async (list, attr, path) => {
     try {
         for (let j = 0; j < list.length; j++) {
-            const obj = list[j].toObject();
-            const attrIndex = getAttribsFromPath(obj, path).findIndex((_attr) => _attr.code === attr.code);
+            const obj                                         = list[j].toObject();
+            const attrIndex                                   = getAttribsFromPath(obj, path).findIndex((_attr) => _attr.code === attr.code);
             getAttribsFromPath(obj, path)[attrIndex].code     = attr.code;
             getAttribsFromPath(obj, path)[attrIndex].param    = attr.param;
             getAttribsFromPath(obj, path)[attrIndex].type     = attr.type;
@@ -158,7 +158,7 @@ const updateObjectAttribute = async (list, attr, path) => {
 
 const getAttribsFromPath = (obj, path) => {
     const splittedPath = path.split('.');
-    let value = obj;
+    let value          = obj;
     for (let i = 0; i < splittedPath.length; i++) {
         value = value[splittedPath[i]];
     }
@@ -182,7 +182,7 @@ async function applyAttribChanges(tab, attribute, model) {
         let isEdit = false;
         // on recupere l'attribut altéré du produit via son code
         const attrIndex = tab[i].attributes.findIndex((attr) => attr.code === attribute.code);
-        const langs = Object.keys(tab[i].attributes[attrIndex].translation);
+        const langs     = Object.keys(tab[i].attributes[attrIndex].translation);
         // on boucle sur chacune des langues de l'attribut
         for (let ii = 0; ii < langs.length; ii++) {
         // on check que les valeurs du produit existe toujours les valeurs
@@ -202,7 +202,7 @@ async function applyAttribChanges(tab, attribute, model) {
 }
 
 const remove = async (_id) => {
-    _id = mongoose.Types.ObjectId(_id);
+    _id             = mongoose.Types.ObjectId(_id);
     const attribute = await Attributes.findOne({_id});
     if (!attribute) {
         throw NSErrors.NotFound;

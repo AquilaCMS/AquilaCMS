@@ -1,31 +1,31 @@
 require('dotenv').config();
-const express               = require('express');
-const passport              = require('passport');
-const path                  = require('path');
-const next                  = require('next').default;
-const i18nextMiddleware     = require('i18next-http-middleware');
-global.envPath              = null;
-global.envFile              = null;
-global.appRoot              = path.resolve(__dirname);
-global.port                 = process.env.PORT || 3010;
-global.defaultLang          = '';
-global.moduleExtend         = {};
-global.translate            = require('./utils/translate');
-const utils                 = require('./utils/utils');
-const npm                   = require('./utils/npm');
-const fs                    = require('./utils/fsp');
-const translation           = require('./utils/translation');
-const serverUtils           = require('./utils/server');
-const utilsModules          = require('./utils/modules');
-const utilsThemes           = require('./utils/themes');
+const express           = require('express');
+const passport          = require('passport');
+const path              = require('path');
+const next              = require('next').default;
+const i18nextMiddleware = require('i18next-http-middleware');
+global.envPath          = null;
+global.envFile          = null;
+global.appRoot          = path.resolve(__dirname);
+global.port             = process.env.PORT || 3010;
+global.defaultLang      = '';
+global.moduleExtend     = {};
+global.translate        = require('./utils/translate');
+const utils             = require('./utils/utils');
+const npm               = require('./utils/npm');
+const fs                = require('./utils/fsp');
+const translation       = require('./utils/translation');
+const serverUtils       = require('./utils/server');
+const utilsModules      = require('./utils/modules');
+const utilsThemes       = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
     middlewareServer
 }                           = require('./middleware');
 
-const dev = !serverUtils.isProd();
-let server;
+const dev    = !serverUtils.isProd();
+const server = express();
 
 // ATTENTION, ne pas require des services directement en haut de ce fichier
 // car cela cause des problèmes dans l'ordre d'appel des fichiers
@@ -56,7 +56,7 @@ const initDatabase = async () => {
     if (global.envFile.db) {
         await require('./utils/database').connect();
         await require('./services/job').initAgendaDB();
-        await utilsModules.modulesLoadInit(express);
+        await utilsModules.modulesLoadInit(server);
         await require('./utils/database').initDBValues();
         await require('./services/shortcodes').initDBValues();
     }
@@ -64,21 +64,21 @@ const initDatabase = async () => {
 
 const setEnvConfig = async () => {
     const {Configuration} = require('./orm/models');
-    global.envConfig = await Configuration.findOne();
+    global.envConfig      = await Configuration.findOne();
     if (!global.envConfig) {
         throw new Error('Configuration collection is missing');
     }
     global.envConfig = global.envConfig.toObject();
 };
 
-const initFrontFramework = async (server, themeFolder) => {
+const initFrontFramework = async (themeFolder) => {
     if (dev) await utilsThemes.themeCompile();
 
     const app = next({dev, dir: themeFolder});
     let handler;
     if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
-        const routes  = require(path.join(themeFolder, 'routes'));
-        handler = routes.getRequestHandler(app);
+        const routes = require(path.join(themeFolder, 'routes'));
+        handler      = routes.getRequestHandler(app);
     } else {
         handler = app.getRequestHandler();
     }
@@ -98,13 +98,13 @@ const initFrontFramework = async (server, themeFolder) => {
 };
 
 const initServer = async () => {
-    server = express();
     if (global.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
-        console.log(`%s@@ Current theme : ${global.envConfig.environment.currentTheme}%s`, '\x1b[32m', '\x1b[0m');
-        const themeFolder = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-        const compile = typeof global.envFile.devMode !== 'undefined'
+        const {currentTheme} = global.envConfig.environment;
+        console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
+        const themeFolder = path.join(global.appRoot, 'themes', currentTheme);
+        const compile     = typeof global.envFile.devMode !== 'undefined'
             && typeof global.envFile.devMode.compile !== 'undefined'
             && !global.envFile.devMode.compile;
         if (!fs.existsSync(themeFolder) && !compile) {
@@ -120,7 +120,7 @@ const initServer = async () => {
         if (compile) {
             console.log('devMode detected, no compilation');
         } else {
-            await initFrontFramework(server, themeFolder);
+            await initFrontFramework(themeFolder);
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation

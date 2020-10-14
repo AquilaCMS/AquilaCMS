@@ -1,7 +1,5 @@
-const {Languages}                 = require('../orm/models');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceFilter}       = require('../middleware/security');
-const {middlewareServer}          = require('../middleware');
 const servicesLanguages           = require('../services/languages');
 
 module.exports = function (app) {
@@ -12,15 +10,12 @@ module.exports = function (app) {
     app.get('/V2/translate', translateList);
     app.get('/V2/translate/:lang/:currentTranslate', translateGet);
     app.post('/V2/translate/:lang/:currentTranslate', translateSet);
-
-    // Deprecated
-    app.get('/languages', middlewareServer.deprecatedRoute, list);
 };
 
 async function listLangs(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await servicesLanguages.getLanguages(PostBody);
+        const result     = await servicesLanguages.getLanguages(PostBody);
         return res.json(result);
     } catch (e) {
         next(e);
@@ -84,28 +79,5 @@ async function translateSet(req, res, next) {
         return res.status(200).json();
     } catch (error) {
         return next(error);
-    }
-}
-
-//= ====================================================================
-//= ========================== Deprecated ==============================
-//= ====================================================================
-
-/**
- * @deprecated
- * @param {Express.Request} req req
- * @param {Express.Response} res res
- * @param {Function} next next
- */
-async function list(req, res, next) {
-    const condition = req.query;
-    if (condition.status === 'active') {
-        condition.status = {$ne: 'removing'};
-    }
-    try {
-        const result = await Languages.find(condition).sort({position: 1});
-        res.status(200).json(result);
-    } catch (err) {
-        return next(err);
     }
 }

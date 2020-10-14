@@ -1,14 +1,17 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const ServiceShipment             = require('../services/shipment');
+const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
     app.post('/v2/shipment', securityForceActif(['active']), getShipment);
     app.post('/v2/shipments/filter', getShipmentsFilter);
-    app.post('/v2/shipments/fee', getEstimatedFee);
     app.put('/v2/shipment', authentication, adminAuth, setShipment);
     app.delete('/v2/shipment/:id', authentication, adminAuth, deleteShipment);
+
+    // Deprecated
+    app.post('/v2/shipments/fee', middlewareServer.deprecatedRoute, getEstimatedFee);
 };
 
 /**
@@ -17,7 +20,7 @@ module.exports = function (app) {
 async function getShipments(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceShipment.getShipments(PostBody);
+        const result     = await ServiceShipment.getShipments(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -30,7 +33,7 @@ async function getShipments(req, res, next) {
 async function getShipment(req, res, next) {
     try {
         const {PostBody} = req.body;
-        const result   = await ServiceShipment.getShipment(PostBody);
+        const result     = await ServiceShipment.getShipment(PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -42,19 +45,7 @@ async function getShipment(req, res, next) {
  */
 async function getShipmentsFilter(req, res, next) {
     try {
-        const result = await ServiceShipment.getShipmentsFilter(req.body.cart, req.body.withoutCountry, req.body.PostBody);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-/**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
- */
-async function getEstimatedFee(req, res, next) {
-    try {
-        const result = await ServiceShipment.getEstimatedFee(req.body.cartId, req.body.shipmentId, req.body.countryCode);
+        const result = await ServiceShipment.getShipmentsFilter(req.body.cart, req.body.withCountry, req.body.PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -78,6 +69,23 @@ async function setShipment(req, res, next) {
 async function deleteShipment(req, res, next) {
     try {
         const result = await ServiceShipment.deleteShipment(req.params.id);
+        return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+//= ====================================================================
+//= ========================== Deprecated ==============================
+//= ====================================================================
+
+/**
+ * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * @deprecated
+ */
+async function getEstimatedFee(req, res, next) {
+    try {
+        const result = await ServiceShipment.getEstimatedFee(req.body.cartId, req.body.shipmentId, req.body.countryCode);
         return res.json(result);
     } catch (error) {
         return next(error);

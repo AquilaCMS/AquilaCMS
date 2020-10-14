@@ -13,7 +13,7 @@ adminCatagenControllers.controller("wrapperCtrl", [
         $scope.menus = MenusList;
 
         function getLanguages() {
-            LanguagesApiV2.list({PostBody: {filter: {status: "visible"}, limit: 99}}, function (languages)
+            LanguagesApiV2.list({PostBody: {filter: {}, limit: 99}}, function (languages)
             {
                 $scope.languages = languages.datas;
                 $rootScope.languages = languages.datas;

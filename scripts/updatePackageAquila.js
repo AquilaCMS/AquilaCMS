@@ -3,9 +3,9 @@
  * Before the copy, the dependencies are parsed in an array type.
  */
 
-const fs = require('fs');
+const fs           = require('fs');
 let aquilaRootPath = '';
-let packageName = '';
+let packageName    = '';
 if (process.argv[2] !== undefined) {
     aquilaRootPath = process.argv[2];
 } else {
@@ -19,7 +19,7 @@ if (process.argv[3] !== undefined) {
 const packagePath       = `${aquilaRootPath}/package.json`;
 const packageAquilaPath = `${aquilaRootPath}/${packageName}`;
 
-const packageContent = fs.readFileSync(packagePath, 'utf-8', function (err) {
+const packageContent           = fs.readFileSync(packagePath, 'utf-8', function (err) {
     if (err) throw err;
 });
 const packageObj               = JSON.parse(packageContent);

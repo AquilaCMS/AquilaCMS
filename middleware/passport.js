@@ -17,14 +17,14 @@ let passport;
  * @param {passport.PassportStatic} pp
  */
 const init = async (pp) => {
-    passport = pp;
+    passport       = pp;
     const strategy = new Strategy({
         secretOrKey    : global.envFile.jwt.secret,
         jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme('jwt')
     }, async (payload, done) => {
         try {
             const {Users} = require('../orm/models');
-            const user = await Users.findById(payload.userId, '-password');
+            const user    = await Users.findById(payload.userId, '-password');
             if (!user) {
                 throw NSErrors.BadLogin;
             }
@@ -52,7 +52,7 @@ const init = async (pp) => {
         let usr;
         try {
             const {Users} = require('../orm/models');
-            usr = await Users.findOne({_id: user._id});
+            usr           = await Users.findOne({_id: user._id});
         } catch (err) {
             error = err;
         }

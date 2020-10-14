@@ -1,9 +1,10 @@
-const path = require('path');
-const mongoose = require('mongoose');
-const fs = require('../utils/fsp');
+const path       = require('path');
+const mongoose   = require('mongoose');
+const fs         = require('../utils/fsp');
+const {Products} = require('../orm/models');
 
 const createModelData = async () => {
-    const schemas = [];
+    const schemas     = [];
     const themeFolder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}`);
     for (const modelName of mongoose.modelNames()) {
         const model = await mongoose.model(modelName).find({}, '-__v');
@@ -50,6 +51,42 @@ const createModelData = async () => {
     );
 };
 
+/**
+ * @description Fix les incohérences des attributs pour les trier par ordre alphabetique
+ */
+const sortAttribs = async () => {
+    try {
+        console.log('==><== Début du tri des attributs par order alphabetique ==><==');
+
+        const _products = await Products.find({});
+
+        for (let i = 0, leni = _products.length; i < leni; i++) {
+            // console.log(`${i}/${_products.length}`);
+            // const attribs = _products[i].attributes;
+
+            _products[i].attributes.sort(function (first, second) {
+                if (first.code < second.code) {
+                    return -1;
+                }
+                if (first.code > second.code) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            await _products[i].save();
+            // await Products.updateOne({_id: _products[i]._id}, {attributes: attribs});
+        }
+
+        console.log('==><== Fin du tri ==><==');
+        return {message: 'ok'};
+    } catch (err) {
+        console.log('==><== Erreur lors du tri ==><==');
+        throw err;
+    }
+};
+
 module.exports = {
-    createModelData
+    createModelData,
+    sortAttribs
 };

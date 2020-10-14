@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
-import {NSSidebarAccount, NSContext, NSToast, logoutUser} from 'aqlrc';
+import React from 'react';
+import { NSSidebarAccount, NSContext, NSToast, logoutUser } from 'aqlrc';
+import { Link } from 'routes';
 
-export default class SidebarAccount extends NSSidebarAccount {
+class SidebarAccount extends NSSidebarAccount {
     constructor(props, context) {
         super(props, context)
         this.state = {};
@@ -9,7 +10,7 @@ export default class SidebarAccount extends NSSidebarAccount {
 
     logout = async () => {
         const { gNext } = this.props;
-        const { routerLang, urlLang } = this.context.state;
+        const routerLang = this.context.props ? this.context.props.routerlang : null;
         const Router = (gNext && gNext.Router) || undefined;
 
         // Déconnexion de l'utilisateur
@@ -17,11 +18,7 @@ export default class SidebarAccount extends NSSidebarAccount {
             await logoutUser();
             // HOOK => onLogout
             if(this.context.props.hooksFunctions && this.context.props.hooksFunctions.onLogout) this.context.props.hooksFunctions.onLogout.map(func => func())
-            if (Router !== undefined) {
-                Router.pushRoute('home', { lang: routerLang });
-            } else {
-                window.location.pathname = urlLang;
-            }
+            Router.pushRoute('home', { lang: routerLang });
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
                 NSToast.error(err.response.data.message);
@@ -33,51 +30,32 @@ export default class SidebarAccount extends NSSidebarAccount {
     }
 
     render() {
-        const { gNext, t } = this.props;
-        const { urlLang, routerLang } = this.context.state;
-        const Link = (gNext && gNext.Link) || undefined;
+        const { t } = this.props;
+        const routerLang = this.context.props ? this.context.props.routerlang : null;
         return (
             <aside className="sidebar sidebar--spaced-top sidebar--alt">
                 <div className="widget-links">
-                    <h5>{t('sidebar.account')}</h5>
+                    <h5>{t('account:sidebar.account')}</h5>
                     <ul>
                         <li>
                             {
                                 this.props.active === 'infos'
-                                    ? <strong>{t('sidebar.coordinates')}</strong>
-                                    : (
-                                        Link !== undefined ? (
-                                            <Link route="account" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('sidebar.coordinates')}</a></Link>
-                                        ) : (
-                                            <a href={`${urlLang}/account`} style={{ textDecoration: 'none' }}>{t('sidebar.coordinates')}</a>
-                                        )
-                                    )
+                                    ? <strong>{t('account:sidebar.coordinates')}</strong>
+                                    : <Link route="account" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('account:sidebar.coordinates')}</a></Link>
                             }
                         </li>
                         <li>
                             {
                                 this.props.active === 'addresses'
-                                    ? <strong>{t('sidebar.addresses')}</strong>
-                                    : (
-                                        Link !== undefined ? (
-                                            <Link route="addresses" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('sidebar.addresses')}</a></Link>
-                                        ) : (
-                                            <a href={`${urlLang}/account/addresses`} style={{ textDecoration: 'none' }}>{t('sidebar.addresses')}</a>
-                                        )
-                                    )
+                                    ? <strong>{t('account:sidebar.addresses')}</strong>
+                                    : <Link route="addresses" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('account:sidebar.addresses')}</a></Link>
                             }
                         </li>
                         <li>
                             {
                                 this.props.active === 'rgpd'
-                                    ? <strong>{t('sidebar.GDPR')}</strong>
-                                    : (
-                                        Link !== undefined ? (
-                                            <Link route="rgpd" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('sidebar.GDPR')}</a></Link>
-                                        ) : (
-                                            <a href={`${urlLang}/account/rgpd`} style={{ textDecoration: 'none' }}>{t('sidebar.GDPR')}</a>
-                                        )
-                                    )
+                                    ? <strong>{t('account:sidebar.GDPR')}</strong>
+                                    : <Link route="rgpd" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('account:sidebar.GDPR')}</a></Link>
                             }
                         </li>
                     </ul>
@@ -87,19 +65,13 @@ export default class SidebarAccount extends NSSidebarAccount {
                         <li>
                             {
                                 this.props.active === 'orders'
-                                    ? <strong>{t('sidebar.orders')}</strong>
-                                    : (
-                                        Link !== undefined ? (
-                                            <Link route="orders" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('sidebar.orders')}</a></Link>
-                                        ) : (
-                                            <a href={`${urlLang}/account/orders`} style={{ textDecoration: 'none' }}>{t('sidebar.orders')}</a>
-                                        )
-                                    )
+                                    ? <strong>{t('account:sidebar.orders')}</strong>
+                                    : <Link route="orders" params={{ lang: routerLang }}><a style={{ textDecoration: 'none' }}>{t('account:sidebar.orders')}</a></Link>
                             }
                         </li>
                     </ul>
                     <footer className="widget__foot">
-                        <button type="button" onClick={this.logout} className="btn btn--red">{t('sidebar.logout')}</button>
+                        <button type="button" onClick={this.logout} className="btn btn--red">{t('account:sidebar.logout')}</button>
                     </footer>{/* <!-- /.widget__foot --> */}
                 </div> {/* <!-- /.widget-links --> */}
             </aside>
@@ -108,3 +80,5 @@ export default class SidebarAccount extends NSSidebarAccount {
 
     static contextType = NSContext;
 }
+
+export default withI18next(['account'])(SidebarAccount);
