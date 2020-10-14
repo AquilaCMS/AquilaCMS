@@ -10,7 +10,7 @@
     
         <div class="row">
             <div class="col-lg-2">
-                <label class="control-label">Granularité</label>
+                <label class="control-label"translate>stats.Granularity</label>
                 <select class="form-control" ng-model="filter.granularity" style="min-height:40px;border-radius: 10px">
                     <option value="day" selected>Jour</option>
                     <!-- <option value="week">Semaine</option> --> 
@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="col-lg-2">
-                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()">Valider</button>
+                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()"translate>stats.Valider</button>
             </div>
             <div class="col-lg-4" style="text-align:right">
                 <i class="fa fa-download fa-2x" aria-hidden="true" ng-click="downloadDatas()" style="cursor:pointer"></i>
@@ -50,8 +50,8 @@
 
     
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#newCustomer" target="_self" ng-click="changeTab('newCustomer')">Nombre de créations de compte</a></li>
-            <li><a data-toggle="tab" href="#topClient" target="_self" ng-click="changeTab('topCustomer')">Top clients par CA</a></li>
+            <li class="active"><a data-toggle="tab" href="#newCustomer" target="_self" ng-click="changeTab('newCustomer')"translate>stats.newCustomer</a></li>
+            <li><a data-toggle="tab" href="#topClient" target="_self" ng-click="changeTab('topCustomer')"translate>stats.topCustomer</a></li>
         </ul>
     
     

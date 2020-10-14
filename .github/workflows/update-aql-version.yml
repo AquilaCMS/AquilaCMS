@@ -3,8 +3,6 @@ name: Update Aquila Version
 on:
   push:
     branches: [ preprod ]
-  pull_request:
-    branches: [ preprod ]
 
 jobs:
   build:

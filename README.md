@@ -12,7 +12,7 @@
 
 ## Server configuration
 
-To install the latest AquilaCMS, you need a web server running node.js 12.18.1+ and mongoDB 4.2.5+.
+To install the latest AquilaCMS, you need a web server running node.js 12.19.0+ and mongoDB 4.2.5+.
 The package manager yarn 1.22.4+ is required.
 
 ### System packages

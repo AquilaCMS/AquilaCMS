@@ -1,7 +1,12 @@
-const moment = require('moment-business-days');
-const utils  = require('../utils/utils');
+const moment   = require('moment-business-days');
+const utils    = require('../utils/utils');
+const NSErrors = require('../utils/errors/NSErrors');
 
 const getBreadcrumb = async (url) => {
+    if (!url) {
+        throw NSErrors.BadRequest;
+    }
+
     const {Languages, News} = require('../orm/models');
     const languagesT        = await Languages.find({}, 'code').lean();
     const languages         = [];

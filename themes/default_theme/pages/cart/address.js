@@ -37,8 +37,7 @@ class CartAddress extends React.Component {
             isBilling       : false,
             selectedCountry : {},
             useSameAddress  : false,
-            selectedIndex   : -1,
-            gNext           : { Link, Router }
+            selectedIndex   : -1
         };
     }
 
@@ -88,7 +87,7 @@ class CartAddress extends React.Component {
                         <div className="container--flex align-top">
                             { cart.items.length > 0 && (
                                 <>
-                                    <NSAddressMultiple t={t} />
+                                    <NSAddressMultiple t={t} gNext={{ Router }} />
                                     <NSCartResume t={t} gNext={{ Link }} />
                                 </>
                             )}

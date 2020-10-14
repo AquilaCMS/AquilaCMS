@@ -149,6 +149,39 @@ function getShippingDate(cart, shipment) {
     return {delay: Math.ceil(finalDelay._millieconds / 3600000), unit: "hour"}; */
 }
 
+/**
+ * @description Retourne le shipment venant d'étre ajouté ou modifié
+ * @param body : body de la requête, il permettra de mettre à jour le shipment ou de le créer
+ * @param _id : string : ObjectId du shipment, si null alors on est en mode création
+ */
+const setShipment = async (_id = null, body) => {
+    let result;
+    if (_id) {
+        // Update
+        if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
+        result = await Shipments.findOneAndUpdate({_id}, body, {new: true, runValidators: true});
+        if (!result) throw NSErrors.ShipmentUpdateError;
+    } else {
+        // Create
+        result = await Shipments.create(body);
+    }
+    return result;
+};
+
+/**
+ * Retourne le shipment venant d'étre supprimé en fonction de son _id
+ */
+const deleteShipment = async (_id) => {
+    if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
+    const doc = await Shipments.findOneAndRemove({_id});
+    if (!doc) throw NSErrors.ShipmentNotFound;
+    return doc;
+};
+
+/**
+ * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * @deprecated
+ */
 const getEstimatedFee = async (cartId, shipmentId, countryCode) => {
     let cartTotalWeight = 0;
     let catTotalPrice   = 0;
@@ -187,35 +220,6 @@ const getEstimatedFee = async (cartId, shipmentId, countryCode) => {
         return {shipment: ship, price: {ati: price, et: price / (1 + (ship.vat_rate / 100))}};
     }
     return {shipment: null, price: {ati: 0, et: 0}};
-};
-
-/**
- * @description Retourne le shipment venant d'étre ajouté ou modifié
- * @param body : body de la requête, il permettra de mettre à jour le shipment ou de le créer
- * @param _id : string : ObjectId du shipment, si null alors on est en mode création
- */
-const setShipment = async (_id = null, body) => {
-    let result;
-    if (_id) {
-        // Update
-        if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-        result = await Shipments.findOneAndUpdate({_id}, body, {new: true, runValidators: true});
-        if (!result) throw NSErrors.ShipmentUpdateError;
-    } else {
-        // Create
-        result = await Shipments.create(body);
-    }
-    return result;
-};
-
-/**
- * Retourne le shipment venant d'étre supprimé en fonction de son _id
- */
-const deleteShipment = async (_id) => {
-    if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-    const doc = await Shipments.findOneAndRemove({_id});
-    if (!doc) throw NSErrors.ShipmentNotFound;
-    return doc;
 };
 
 module.exports = {
