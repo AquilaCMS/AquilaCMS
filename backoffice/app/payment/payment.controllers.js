@@ -101,27 +101,5 @@ PaymentControllers.controller("PaymentListCtrl", [
             $scope.getPayments();
         }, 100);
 
-        $scope.exportPayments = function () {
-            const {start, end} = $scope.exportDates;
-
-            $http({
-                url: '/v2/payments/export',
-                method: "POST",
-                data: {
-                    dateStart: moment(start).format('L'),
-                    dateEnd: moment(end).format('L'),
-                },
-                responseType: 'blob'
-            }).then(function (response) {
-                var data = response.data;
-                var blob = new Blob([data], { type: 'file/csv' });
-                var downloadLink = angular.element('<a></a>');
-                downloadLink.attr('href',window.URL.createObjectURL(blob));
-                downloadLink.attr('download', 'payments.csv');
-			    downloadLink[0].click();
-            }).catch(function (response) {
-              console.log('Unable to download the file')
-            });
-        }
     }
 ]);

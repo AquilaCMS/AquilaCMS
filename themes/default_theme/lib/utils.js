@@ -74,7 +74,7 @@ function listModulePage(type) {
  */
 async function getModulesHookFunctionsByType(type = 'all') {
     let modulesFileTheme = nsModules.map((m) => m.jsx);
-    if (type !== 'all') modulesFileTheme = nsModules.filter((m) => m.type === type).map((m) => m.jsx);
+    if (type !== 'all') modulesFileTheme = nsModules ? nsModules.filter((m) => m.type === type).map((m) => m.jsx) : [];
     const hooksFunctions = {};
     for (const moduleFileTheme of modulesFileTheme) {
         const nsModuleKeys = Object.keys(moduleFileTheme).filter((key) => key !== 'default');

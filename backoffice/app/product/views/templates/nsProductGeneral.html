@@ -109,7 +109,7 @@
 </div> -->
 
 <div class="form-group">
-    <div ng-if="product.translation[lang].canonical" class="col-sm-11">
+    <div ng-if="product.translation[lang].canonical" class="productSwitches col-sm-11">
             <label for="active" class="col-sm-2 control-label" translate>product.general.actif</label>
             <div class="col-sm-2">
                 <ns-switch id="active" ng-model="product.active" name="active"></ns-switch>
@@ -120,7 +120,17 @@
                 <ns-switch id="visible" ng-model="product._visible" name="visible"></ns-switch>
             </div>
 
+            <label for="inCartVisible" class="col-sm-2 control-label" translate>product.general.inCartVisible</label>
+            <div class="col-sm-2">
+                <ns-switch id="inCartVisible" ng-model="product.inCartVisible" name="inCartVisible"></ns-switch>
+            </div>
+
             <div bind-html-compile="product.component_template"></div>
+            <style>
+                .productSwitches .col-sm-2 {
+                    margin-bottom: 20px;
+                }
+            </style>
     </div>
 
     <div ng-if="!product.translation[lang].canonical" class="col-sm-11">
@@ -144,6 +154,11 @@
                 </ul>
                 
             </div>
+        </div>
+
+        <label for="inCartVisible" class="col-sm-2 control-label" translate>product.general.inCartVisible</label>
+        <div class="col-sm-2">
+            <ns-switch id="inCartVisible" ng-model="product.inCartVisible" name="inCartVisible"></ns-switch>
         </div>
     
     

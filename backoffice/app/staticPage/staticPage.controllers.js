@@ -76,7 +76,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                 }
                 return $location.path(`/staticPage/${response.code}`);
             }, function (err) {
-                toastService.toast("danger", err.data);
+                toastService.toast("danger", err.data.message);
             });
         };
 
@@ -142,7 +142,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                     $location.path("/staticPage");
                 }
             }, function (err) {
-                toastService.toast("success", err.data);
+                    toastService.toast("danger", err.data.message);
             });
         };
 

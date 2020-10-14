@@ -13,5 +13,6 @@ MediasServices.factory("MediaApi", ["$resource", function ($resource) {
 		save: {method: "PUT", params: {type: 'media'}},
 		delete: {method: "DELETE", params: {type: 'media'}},
 		getGroups: {method: "GET", params: {type: 'medias', id: "groups"}, isArray: true},
+		getGroupsImg: {method: "GET", params: {type: 'medias', id: "groupsImg"}, isArray: true},
 	});
 }]);

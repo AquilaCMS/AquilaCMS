@@ -485,5 +485,13 @@ module.exports = {
     ThemeAquilaVersionNotSatisfied : {
         fr : 'Version du theme Aquila non satisfaite',
         en : 'Aquila theme version not satisfied'
+    },
+    ModuleNameMissmatch : {
+        fr : 'Le nom du theme, nom du dossier ou du zip du module ne corespondent pas',
+        en : 'EN-Le nom du theme, nom du dossier ou du zip du module ne corespondent pas'
+    },
+    ThemeNameMissmatch : {
+        fr : 'Le nom du theme, nom du dossier ou du zip du theme ne corespondent pas',
+        en : 'EN-Le nom du theme, nom du dossier ou du zip du theme ne corespondent pas'
     }
 };

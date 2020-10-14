@@ -138,9 +138,13 @@ UserSchema.virtual('fullname').get(function () {
     return `${this.firstname ? this.firstname : ''} ${this.lastname ? this.lastname : ''}`;
 });
 
+UserSchema.methods.hashPassword = async function () {
+    this.password = await bcrypt.hash(this.password, 10);
+};
+
 UserSchema.post('validate', async function () {
     if (this.isNew) {
-        this.password = await bcrypt.hash(this.password, 10);
+        this.hashPassword();
     }
 });
 

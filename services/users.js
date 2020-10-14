@@ -202,6 +202,7 @@ const resetPassword = async (token, password) => {
     if (user) {
         try {
             user.password = password;
+            await user.hashPassword();
             await user.save();
             await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
             // await Users.updateOne({_id: user._id}, {$set: {password}, $unset: {resetPassToken: 1}}, {

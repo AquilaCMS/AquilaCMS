@@ -153,6 +153,8 @@ class NSErrors {
     static get InternalError() { return new NSError(500, 'InternalError'); }
     static get PaymentFailed() { return new NSError(500, 'PaymentFailed'); }
     static get TranslateDeleteError() { return this.makeErrorAlias(NSErrors.InternalError, 'TranslateDeleteError'); }
+    static get ModuleNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ModuleNameMissmatch'); }
+    static get ThemeNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ThemeNameMissmatch'); }
 
     static get ServiceUnavailable() { return new NSError(503, 'ServiceUnavailable'); }
 
