@@ -98,7 +98,7 @@ class PageCart extends NSPageCart {
                                                                     }
                                                                 }
                                                                 return (
-                                                                    <div key={item._id} hidden={!item.id.inCartVisible} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
+                                                                    <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
                                                                         <div className="product__image">
                                                                             <button style={{ border: '0', background: 'transparent', height: '100%' }} type="button">
                                                                                 <img src={imgDefault} alt={imgAlt} />

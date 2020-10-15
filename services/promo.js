@@ -532,7 +532,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     const cart = await Cart.findById({_id: idCart}).populate('items.id');
     if (!cart) throw NSErrors.CartInactiveNotFound;
     // On cherche si un code promo correspondant a 'code' existe est actif et est de type panier (type: "1")
-    const promo = await Promo.findOne({'codes.code': code, actif: true, type: '1'});
+    const promo = await Promo.findOne({'codes.code': {$regex: code, $options: 'i'}, actif: true, type: '1'});
     if (!promo) {
         // Le code promo entré est mauvais alors on supprime l'ancien code promo
         await removePromoFromCart(cart);
@@ -548,7 +548,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
         throw NSErrors.PromoCodePromoInvalid;
     }
 
-    const newCode = promo.codes.filter((codeFound) => code === codeFound.code);
+    const newCode = promo.codes.filter((codeFound) => (code).toLowerCase() === (codeFound.code).toLowerCase());
     // On check si le nombre total de fois ou le code a été utilisé est inférieur a la limit de fois ou le code est utilisable
     if (newCode[0].limit_total !== null && (newCode[0].used >= newCode[0].limit_total)) {
         await removePromoFromCart(cart);
