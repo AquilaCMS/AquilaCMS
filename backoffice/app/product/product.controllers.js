@@ -304,9 +304,9 @@ ProductControllers.controller("nsProductGeneral", [
                             $scope.adminUrl = $scope.config.adminPrefix;
                     });
 
-                        CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
-                            $scope.cat = categoriesLink.datas.length !== 0;
-                        });
+                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
+                        $scope.cat = categoriesLink.datas.length !== 0;
+                    });
                     
                     $scope.cancel = function () {
                         $modalInstance.dismiss('cancel');
