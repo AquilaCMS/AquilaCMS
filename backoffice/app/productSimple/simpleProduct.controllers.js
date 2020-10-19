@@ -207,9 +207,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         };
 
         $scope.getCategoriesLink = function () {
-            CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink) {
-                $scope.categoriesLink = categoriesLink.datas;
-            });
+            if($scope.product._id) {
+                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink) {
+                    $scope.categoriesLink = categoriesLink.datas;
+                });
+            }
         };
 
         $scope.duplicateProduct = function () {

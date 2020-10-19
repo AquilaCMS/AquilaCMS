@@ -293,7 +293,7 @@ ProductDirectives.directive("nsProductPrice", function () {
                 $scope.recalculate = function (target) {
                     const prices = $scope.product.price;
                     const fields = target.split(".");
-                    const vat = prices.tax / 100 + 1;
+                    const vat = prices.tax.rate / 100 + 1;
 
                     if (fields.length > 1) {
                         let removeFields = false;
