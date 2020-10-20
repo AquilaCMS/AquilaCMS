@@ -1914,6 +1914,7 @@ input:-webkit-autofill {
     border-radius: 3px;
     padding: 0 10px;
     color: #777;
+    max-width: 100%;
 }
 
 /* ------------------------------------------------------------ *\
