@@ -4,11 +4,11 @@
     <div class="col-sm-11">
         <label for="supplier_ref" class="col-sm-2 control-label" translate>product.marketing.refFourn</label>
         <div class="col-sm-4">
-            <input type="text" class="form-control" id="supplier_ref" name="supplier_ref" ng-model="product.supplier_code" ng-disabled="true">
+            <input type="text" class="form-control" id="supplier_ref" name="supplier_ref" ng-model="product.supplier_code">
         </div>
         <label class="col-sm-2 control-label" translate>product.marketing.nomFourn</label>
         <div class="col-sm-4">
-            <select class="form-control" ng-options="item._id as item.name for item in supplierList | orderBy: ['name']" ng-model="product.supplier_ref" ng-change="updateSupplierField()">
+            <select class="form-control" ng-options="item._id as item.name for item in supplierList | orderBy: ['name']" ng-model="product.supplier_ref">
                 <option value="" translate>product.marketing.selectFourn</option>
             </select>
         </div>
@@ -28,6 +28,15 @@
         </div>
     </div>
 </div>
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="code_ean" class="col-sm-2 control-label" translate>product.general.ean13</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="code_ean" name="code_ean" ng-model="product.code_ean">
+        </div>
+    </div>
+</div>
+
 
 <h3 translate>product.marketing.infoMark</h3>
 <div class="form-group">

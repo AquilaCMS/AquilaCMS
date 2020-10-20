@@ -244,6 +244,17 @@
                         <span translate>bundle.product.idFirst</span>
                     </span>
                     <div class="form-group" style="margin-top: 20px;" ng-show="product.code != null">
+                        <div class="form-group" ng-show="product.code != null">
+                            <div class="col-sm-11">
+                                <label for="set_attributes" class="col-sm-2 control-label" translate>product.general.jeuAttr</label>
+                                <div class="col-sm-6">
+                                    <select id="set_attributes" name="set_attributes" class="form-control"
+                                        ng-options="setAttr as setAttr.name for setAttr in setAttributes track by setAttr.code"
+                                        ng-model="product.set_attributes" ng-change="loadNewAttrs()">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         <ns-attributes ng-show="product.attributes && product.attributes.length" class="col-sm-11" ng-if="att.type" ng-repeat="att in product.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
                         <p ng-show="!product.attributes || !product.attributes.length" class="col-sm-11" style="margin-top: 20px;"><em>Pas d'attributes</em></p>
                     </div>

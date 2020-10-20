@@ -2,15 +2,40 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2)
-    {
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2)
+    {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
-        $scope.promos = []
+        $scope.promos = [];
         $scope.displayModes = BundleSectionDisplayModes;
         $scope.nsUploadFiles = {
             isSelected: false
+        };
+
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+            $scope.setAttributes = datas;
+            if ($scope.product && $scope.product.set_attributes === undefined) {
+                const set_attributes = datas.find(function (setAttr) {
+                    return setAttr.code === "defaut";
+                });
+                if (set_attributes) {
+                    $scope.product.set_attributes = set_attributes;
+                    $scope.loadNewAttrs();
+                }
+            }
+        });
+
+        
+
+        $scope.loadNewAttrs = function () {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+                $scope.product.attributes = datas.map(function (attr) {
+                    attr.id = attr._id;
+                    delete attr._id;
+                    return attr;
+                });
+            });
         };
         
         $scope.additionnalButtons = [
