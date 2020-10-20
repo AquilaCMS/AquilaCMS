@@ -498,7 +498,7 @@
                     <div class="form-group">
                         <label for="attrSet" class="col-sm-2 control-label">Set d'attribut</label>
                         <div class="col-sm-3">
-                            <select class="form-control" ng-model="client.set_attributes" >
+                            <select class="form-control" ng-model="client.set_attributes" ng-change="loadNewAttrs()">
                                 <option ng-repeat="item in setAttributes" value="{{item._id}}">{{item.name}}</option>
                             </select>
                         </div>

@@ -126,6 +126,17 @@
 
                 <div id="attributes" class="tab-pane fade">
                     <h3 style="display: inline" translate>simple.attrJeu</h3>
+                    <div class="form-group" ng-show="product.code != null">
+                        <div class="col-sm-11">
+                            <label for="set_attributes" class="col-sm-2 control-label" translate>product.general.jeuAttr</label>
+                            <div class="col-sm-6">
+                                <select id="set_attributes" name="set_attributes" class="form-control"
+                                    ng-options="setAttr as setAttr.name for setAttr in setAttributes track by setAttr.code"
+                                    ng-model="product.set_attributes" ng-change="loadNewAttrs()">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <span ng-show="product.code == null" style="color: red;">
                         <br /><br />
                         <span translate>simple.beforeConfig</span>

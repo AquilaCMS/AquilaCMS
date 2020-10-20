@@ -277,7 +277,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
                     if(msg.user)
                     {
                         toastService.toast("success", "Informations sauvegardées !");
-                        $location.path("/list");
+                        $location.path('/list/detail/' + msg.user.id);
                     }
                     else
                     {

@@ -304,9 +304,9 @@ ProductControllers.controller("nsProductGeneral", [
                             $scope.adminUrl = $scope.config.adminPrefix;
                     });
 
-                        CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
-                            $scope.cat = categoriesLink.datas.length !== 0;
-                        });
+                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
+                        $scope.cat = categoriesLink.datas.length !== 0;
+                    });
                     
                     $scope.cancel = function () {
                         $modalInstance.dismiss('cancel');
@@ -341,15 +341,5 @@ ProductControllers.controller("nsProductGeneral", [
 
         window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
 
-
-        $scope.loadNewAttrs = function () {
-            AttributesV2.list({PostBody: {filter: {set_attributes: $scope.product.set_attributes._id, _type: 'products'}, limit: 99}}, function ({datas}) {
-                $scope.product.attributes = datas.map(function (attr) {
-                    attr.id = attr._id;
-                    delete attr._id;
-                    return attr;
-                });
-            });
-        };
     }
 ]);

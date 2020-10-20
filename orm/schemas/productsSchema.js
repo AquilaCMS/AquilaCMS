@@ -14,6 +14,7 @@ const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
     trademark          : {code: String, name: String},
     supplier_ref       : {type: ObjectId, ref: 'suppliers'},
+    supplier_code      : {type: String},
     type               : {type: String, enum: ['simple', 'bundle', 'virtual']},
     active             : {type: Boolean, default: true},
     _visible           : {type: Boolean, default: false},
