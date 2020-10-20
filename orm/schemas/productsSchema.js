@@ -167,7 +167,7 @@ ProductsSchema.index({
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    if (!self._collection.collectionName.includes('preview')) {
+    if (self._collection && !self._collection.collectionName.includes('preview')) {
         if (updateQuery) {
             while (updateQuery.translation === undefined) {
                 updateQuery.translation = {};
