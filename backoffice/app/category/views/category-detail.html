@@ -4,7 +4,7 @@
     <form name="formMenu" ng-submit="save()"> 
         <div align="right" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
             <button style="position:sticky;top:115px;z-index:1000;pointer-events:auto;float:left" type="button"
-                class="btn btn-default ng-scope" ng-click="setEditCat()" translate>category.list.back</button>
+                class="btn btn-default ng-scope" ng-click="setEditCat(formMenu)" translate>category.list.back</button>
             <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()"
                     translate>category.detail.delete
             </button>
@@ -165,7 +165,7 @@
                             <td>
                                 <img ng-show="category.img" class="boxShadow" src="{{getImage(category)}}" alt="" />
 
-                                <ns-upload-files accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
+                                <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
                                    images="category.image" showalt="true" after-function="close(category)"></ns-upload-files>
                                 <button ng-show="category.img" type="button" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
                                     category.detail.delete
