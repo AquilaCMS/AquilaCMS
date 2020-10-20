@@ -3220,7 +3220,34 @@ input:-webkit-autofill {
 /* Mobile */
 
 @media (max-width: 767px) {
-    .table td,
+
+    .table thead{
+        display: none;
+        height: 10px;
+    }
+
+
+    .table th{
+        display: none;
+        height: 10px;
+    }
+
+    .table tr{
+        display: block;
+        margin-bottom: 350px;
+    }
+
+    .table td {
+        display: block;
+        text-align: right;
+    }
+
+    .table td:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+    /*.table td,
     .table th {
         width: 100%;
         float: left;
@@ -3292,7 +3319,7 @@ input:-webkit-autofill {
     .table .cell-size10,
     .table .cell-size11 {
         width: 100%;
-    }
+    }*/
 }
 
 /* ------------------------------------------------------------ *\
