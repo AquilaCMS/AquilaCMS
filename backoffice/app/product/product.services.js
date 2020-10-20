@@ -103,7 +103,7 @@ ProductServices.service("ProductColumns", function () {
                 component_template :  "<span translate>product.list2.picture</span>"
             },
             inter : {component_template: ""},
-            cell  : {component_template: "<img ng-src='/{{getImage(product.images)}}' class='no-product-image' style='width:120px;height:90px' />"}
+            cell  : {label : "IMG :",component_template: "<img ng-src='/{{getImage(product.images)}}' class='no-product-image' style='width:120px;height:90px' />"}
         },
         {
             filter : {
@@ -114,7 +114,7 @@ ProductServices.service("ProductColumns", function () {
                     + "</a>"
             },
             inter : {component_template: "<input ng-model='searchObj.translation.name' ng-change='getProducts(1)' ng-model-options='{debounce: 500}' translate translate-attr='{placeholder: \"product.list2.name\"}' class='form-control' type='text'>"},
-            cell  : {component_template: "{{product.translation[defaultLang].name}}"}
+            cell  : {label : "Name :",component_template: "{{product.translation[defaultLang].name}}"}
         },
         {
             filter : {
@@ -125,7 +125,7 @@ ProductServices.service("ProductColumns", function () {
                     + "</a>"
             },
             inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.priceSaleMin' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.priceSaleMax' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
-            cell  : {class: "text-right", component_template: "{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? product.price.ati.normal + ' €' : 'N/A'}}"}
+            cell  : {label : "Price :",class: "text-right", component_template: "{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? product.price.ati.normal + ' €' : 'N/A'}}"}
         },
         {
             filter : {
@@ -136,7 +136,7 @@ ProductServices.service("ProductColumns", function () {
                     + "</a>"
             },
             inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.qtyMin' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.qtyMax' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
-            cell  : {class: "text-right", component_template: "{{product.stock.qty !== undefined && product.stock.qty != null ? product.stock.qty : 'N/A'}}"}
+            cell  : {label : "Quantity :",class: "text-right", component_template: "{{product.stock.qty !== undefined && product.stock.qty != null ? product.stock.qty : 'N/A'}}"}
         }
     ];
 });
