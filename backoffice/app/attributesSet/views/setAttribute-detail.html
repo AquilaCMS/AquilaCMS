@@ -2,14 +2,16 @@
     <form name="form" class="form-horizontal" role="form" ng-submit="save(setAttribute)">
         <ns-buttons is-edit-mode="true" save-and-quit="save(setAttribute, true)" disable-save="disableSave" return-path="/{{type}}/setAttributes"
             remove="remove(setAttribute._id)" hide-remove="setAttribute.code == 'defaut'" form="form">
-            <ul class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" target="_self" ng-click="changeTab('setAttributes')" translate>setAttribute.detail.tab.setAttr</a>
-                </li>
-                <li ng-show="type === 'products'">
-                    <a data-toggle="tab" target="_self" ng-click="changeTab('setQuestions')" translate>setAttribute.detail.tab.question</a>
-                </li>
-            </ul>
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" target="_self" ng-click="changeTab('setAttributes')" translate>setAttribute.detail.tab.setAttr</a>
+                    </li>
+                    <li ng-show="type === 'products'">
+                        <a data-toggle="tab" target="_self" ng-click="changeTab('setQuestions')" translate>setAttribute.detail.tab.question</a>
+                    </li>
+                </ul>
+            </div>
             <div class="tab-content">
                 <div ng-show="tabActive === 'setAttributes'">
                     <div class="form-group">

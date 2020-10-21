@@ -11,17 +11,19 @@
                     disable-save="disableSave"
                     additionnal-buttons="additionnalButtons">
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>bundle.product.gen</a></li>
-                <li><a data-toggle="tab" href="#marketing" target="_self" translate>bundle.product.mark</a></li>
-                <li><a data-toggle="tab" href="#bundle_sections" target="_self" translate>bundle.product.compo</a></li>
-                <li><a data-toggle="tab" href="#prix" target="_self" translate>bundle.product.price</a></li>
-                <li><a data-toggle="tab" href="#photos" target="_self" translate>bundle.product.pics</a></li>
-                <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>bundle.product.cs</a></li>
-                <li><a data-toggle="tab" href="#promos" target="_self" translate>bundle.product.promos</a></li>
-                <li><a data-toggle="tab" href="#attributes" target="_self" translate>bundle.product.specAttr</a></li>
-                <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>bundle.product.linkedCat</a></li>
-            </ul>
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>bundle.product.gen</a></li>
+                    <li><a data-toggle="tab" href="#marketing" target="_self" translate>bundle.product.mark</a></li>
+                    <li><a data-toggle="tab" href="#bundle_sections" target="_self" translate>bundle.product.compo</a></li>
+                    <li><a data-toggle="tab" href="#prix" target="_self" translate>bundle.product.price</a></li>
+                    <li><a data-toggle="tab" href="#photos" target="_self" translate>bundle.product.pics</a></li>
+                    <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>bundle.product.cs</a></li>
+                    <li><a data-toggle="tab" href="#promos" target="_self" translate>bundle.product.promos</a></li>
+                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>bundle.product.specAttr</a></li>
+                    <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>bundle.product.linkedCat</a></li>
+                </ul>
+            </div>
             <div class="tab-content">
                 <div id="general" class="tab-pane fade in active">
                     <ns-product-general product="product" lang="lang" is-edit-mode="isEditMode" product-type="'bundle'" form="form"></ns-product-general>

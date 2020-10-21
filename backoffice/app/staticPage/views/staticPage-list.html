@@ -7,10 +7,12 @@
                 </div>
             </div>
         </div>
-        <ul class="nav nav-tabs" style="margin-top: 20px;">
-            <li ng-show="search === ''" class="{{currentTab === group ? 'active' : ''}}" ng-repeat="group in groups | filterListGeneral"><a href="" ng-click="changeTab(group)" target="_self">{{group}}</a></li>
-            <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>static.list.search</a></li>
-        </ul>
+        <div class= "scrollmenu">
+            <ul class="nav nav-tabs" style="margin-top: 20px;">
+                <li ng-show="search === ''" class="{{currentTab === group ? 'active' : ''}}" ng-repeat="group in groups | filterListGeneral"><a href="" ng-click="changeTab(group)" target="_self">{{group}}</a></li>
+                <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>static.list.search</a></li>
+            </ul>
+        </div>
         <div ng-repeat="group in groups | filterListGeneral:group" ng-show="currentTab === group && search === ''" id="{{group}}" class="tab-pane fade in {{currentTab === group ? 'active' : ''}}">
             <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                 <thead>

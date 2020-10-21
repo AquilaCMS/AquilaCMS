@@ -13,14 +13,15 @@
         </div>
 
         <ns-buttons is-edit-mode="isEditMode" remove="remove(client._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/clients" form="form">
-            
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>client.detail.tab.general</a></li>
-                <li ng-if="isEditMode"><a data-toggle="tab" href="#orders" target="_self" translate>client.detail.tab.orders</a></li>
-                <li ng-if="isEditMode"><a data-toggle="tab" href="#discount" target="_self" translate>client.detail.tab.discount</a></li>
-                <li ng-if="isEditMode"><a data-toggle="tab" href="#attributs" target="_self" translate>client.detail.tab.attributs</a></li>
-                <li ng-if="isEditMode"><a data-toggle="tab" href="#downloadHistory" target="_self" ng-click="getDownloadHistory(downloadHistoryPage)" translate>client.detail.downloadHistory</a></li>
-            </ul>
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>client.detail.tab.general</a></li>
+                    <li ng-if="isEditMode"><a data-toggle="tab" href="#orders" target="_self" translate>client.detail.tab.orders</a></li>
+                    <li ng-if="isEditMode"><a data-toggle="tab" href="#discount" target="_self" translate>client.detail.tab.discount</a></li>
+                    <li ng-if="isEditMode"><a data-toggle="tab" href="#attributs" target="_self" translate>client.detail.tab.attributs</a></li>
+                    <li ng-if="isEditMode"><a data-toggle="tab" href="#downloadHistory" target="_self" ng-click="getDownloadHistory(downloadHistoryPage)" translate>client.detail.downloadHistory</a></li>
+                </ul>
+            </div>
             
             <br />
 

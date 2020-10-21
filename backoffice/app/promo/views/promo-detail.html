@@ -7,21 +7,22 @@
         
         <ns-buttons is-edit-mode="isEditMode" remove="remove(promo._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/promos"
                     form="form">
-
-            <ul class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" target="_self" ng-click="changeTab('general')" translate>promo.detail.gen</a>
-                </li>
-                <li>
-                    <a ng-show="isEditMode && promo.type === '1'" data-toggle="{{promo.type === '2' ? '' : 'tab'}}" target="_self" ng-click="changeTab('code_promo')" translate>promo.detail.codePromo</a>
-                </li>
-                <li ng-show="promo.discountType !== 'QtyB'">
-                    <a ng-show="isEditMode" data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self" ng-click="changeTab('segmentation')" translate>promo.detail.seg</a>
-                </li>
-                <li>
-                    <a ng-show="isEditMode" data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self" ng-click="changeTab('action')" translate>promo.detail.action</a>
-                </li>
-            </ul>
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" target="_self" ng-click="changeTab('general')" translate>promo.detail.gen</a>
+                    </li>
+                    <li>
+                        <a ng-show="isEditMode && promo.type === '1'" data-toggle="{{promo.type === '2' ? '' : 'tab'}}" target="_self" ng-click="changeTab('code_promo')" translate>promo.detail.codePromo</a>
+                    </li>
+                    <li ng-show="promo.discountType !== 'QtyB'">
+                        <a ng-show="isEditMode" data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self" ng-click="changeTab('segmentation')" translate>promo.detail.seg</a>
+                    </li>
+                    <li>
+                        <a ng-show="isEditMode" data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self" ng-click="changeTab('action')" translate>promo.detail.action</a>
+                    </li>
+                </ul>
+            </div>
             <div class="tab-content">
                 <div id="general" class="tab-pane fade in active" ng-show="tabActive === 'general'">
                     <div class="form-group">

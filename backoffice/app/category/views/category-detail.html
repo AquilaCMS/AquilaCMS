@@ -18,21 +18,22 @@
 
         <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
         <br/>
-
-        <ul class="nav nav-tabs">
-            <li class="active">
-                <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
-            </li>
-        </ul>
+        <div class = "scrollmenu">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
+                </li>
+            </ul>
+        </div>
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
 

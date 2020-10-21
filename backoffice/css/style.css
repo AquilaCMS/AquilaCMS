@@ -1237,35 +1237,41 @@ blockquote:last-child {
     }
 }
 
-/*@media (max-width: 767px) {*/
-    div.scrollmenu {
-     /* background-color: #333;*/
-      overflow: auto;
-      white-space: nowrap;
-    }
+@media (max-width: 767px) {
 
-    div.scrollmenu a {
-      display: inline-block;
-      color: black;
-      text-align: center;
-      padding: 14px;
-      text-decoration: none;
-    }
+}
 
-    /*div.scrollmenu a:hover {
-      background-color: #777;
-    }
+
+/*    les onglets s'adapte a la taille de l'ecran */
+
+div.scrollmenu {
+ /* background-color: #333;*/
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  color: black;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+/*div.scrollmenu a:hover {
+  background-color: #777;
+}
 */
-    .nav-tabs > li {
-        float: none;
-        margin-bottom: -1px;
-    }
-    .nav > li {
-        position: relative;
-        display: inline;
-    }
+.nav-tabs > li {
+    float: none;
+    margin-bottom: -1px;
+}
+.nav > li {
+    position: relative;
+    display: inline;
+}
 
-    
+
 
 
 
