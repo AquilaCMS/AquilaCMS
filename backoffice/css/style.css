@@ -1295,7 +1295,7 @@ img.ico{
     button.btn img {
         margin-bottom: 5px;
     }
-    
+
     a.ico span {
         display : none;
         visibility: hidden;
@@ -3335,6 +3335,12 @@ input:-webkit-autofill {
         float: left;
         font-weight: bold;
     }
+
+    .shortTable tr{
+        display: block;
+        margin-bottom: 50px;
+    }
+
     /*.table td,
     .table th {
         width: 100%;
