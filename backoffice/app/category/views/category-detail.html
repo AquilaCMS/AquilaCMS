@@ -4,12 +4,11 @@
     <form name="formMenu" ng-submit="save()"> 
         <div align="right" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
             <button style="position:sticky;top:115px;z-index:1000;pointer-events:auto;float:left" type="button"
-                class="btn btn-default ng-scope" ng-click="setEditCat(formMenu)" translate>category.list.back</button>
-            <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()"
-                    translate>category.detail.delete
+                class="btn btn-default ng-scope" ng-click="setEditCat(formMenu)" ><span translate>category.list.back</span><img class="ico" src="css/images/return.ico"></button>
+            <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()">
+            <span translate>category.detail.delete</span><img class="ico" src="css/images/trash.ico">
             </button>
-            <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"
-                    translate>category.detail.save2
+            <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"  ><span translate>category.detail.save2</span><img class="ico" src="css/images/save.ico">
             </button>
             <br />
             <br />
