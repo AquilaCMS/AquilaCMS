@@ -983,6 +983,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PARTIAL_PROGRESS";
                     $scope.statusObj.isDanger =
                         $scope.status === "CANCELED" ||
+                        $scope.status === "PAYMENT_FAILED" ||
                         $scope.status === "RETURNED";
                     $scope.statusObj.isBlue =
                         $scope.status === "DELIVERY_PROGRESS";
