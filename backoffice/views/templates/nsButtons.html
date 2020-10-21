@@ -4,11 +4,11 @@
             <ns-return-button is-selected="isSelected"  style="pointer-events:auto" form="form" return-path="{{returnPath}}" ng-hide="hideReturn"></ns-return-button>
         </div>
         <div class="col-sm-7 col-sm-offset-3 text-right" style="margin-bottom: 1%; display: inline;">
-            <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-disabled="disableSave"><span translate>ns.save</span><img class="ico" src="css/images/save.ico" width="25px" height="25px"></button>
+            <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-disabled="disableSave"><span translate>ns.save</span><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
             <button style="pointer-events:auto" type="button" class="btn btn-default btn-s&q" ng-click="saveAndQuit()" ng-disabled="disableSave" ng-hide="hideSaveAndQuit" translate>ns.saveQuit</button>
-            <button ng-repeat="btn in additionnalButtons" style="pointer-events:auto" type="button" class="btn btn-default" ng-class="btn.class" ng-click="btn.onClick()" ng-style="btn.style"><span translate="{{btn.text}}"></span><img class="ico" src="css/images/preview.ico" width="25px" height="25px"></button>
-            <button style="pointer-events:auto" type="button" class="btn btn-default" ng-click="duplicateProduct()" ng-if="isEditMode && duplicateProduct"><span translate>ns.dup</span><img class="ico" src="css/images/duplicate.ico" width="25px" height="25px"></button>
-            <button style="pointer-events:auto" type="button" class="btn btn-danger" ng-click="remove()" ng-if="isEditMode" ng-hide="hideRemove" ><span translate>ns.delete</span><img class="ico" src="css/images/trash.ico" width="25px" height="25px"></button>
+            <button ng-repeat="btn in additionnalButtons" style="pointer-events:auto" type="button" class="btn btn-default" ng-class="btn.class" ng-click="btn.onClick()" ng-style="btn.style"><span translate="{{btn.text}}"></span><i class="fa fa-eye" aria-hidden="true"></i></button>
+            <button style="pointer-events:auto" type="button" class="btn btn-default" ng-click="duplicateProduct()" ng-if="isEditMode && duplicateProduct"><span translate>ns.dup</span><i class="fa fa-clone" aria-hidden="true"></i></button>
+            <button style="pointer-events:auto" type="button" class="btn btn-danger" ng-click="remove()" ng-if="isEditMode" ng-hide="hideRemove" ><span translate>ns.delete</span><i class="fa fa-trash" aria-hidden="true"></i></button>
         </div>
     </div>
 
