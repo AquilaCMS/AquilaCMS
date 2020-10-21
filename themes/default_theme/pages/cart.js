@@ -15,6 +15,8 @@ import { listModulePage } from 'lib/utils';
 
 class PageCart extends NSPageCart {
     render() {
+        console.log(this.props)
+        console.log(this.state)
         const {
             lang, oCmsHeader, oCmsFooter, routerLang, sitename, t
         } = this.props;
@@ -98,7 +100,7 @@ class PageCart extends NSPageCart {
                                                                     }
                                                                 }
                                                                 return (
-                                                                    <div key={item._id} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
+                                                                    <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
                                                                         <div className="product__image">
                                                                             <button style={{ border: '0', background: 'transparent', height: '100%' }} type="button">
                                                                                 <img src={imgDefault} alt={imgAlt} />

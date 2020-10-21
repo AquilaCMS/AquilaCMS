@@ -38,8 +38,9 @@ const itemsSchema = new Schema({
             vat : {type: Number}
         }
     },
-    atts : [],
-    opts : []
+    atts        : [],
+    opts        : [],
+    typeDisplay : {type: String, default: undefined}
 }, {discriminatorKey: 'type'});
 
 itemsSchema.set('toJSON', {virtuals: true});

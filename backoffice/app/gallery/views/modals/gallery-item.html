@@ -3,14 +3,16 @@
         <h3 translate>gallery.item.addMedia</h3>
     </div>
     <div class="modal-body">
-        <ul class="nav nav-tabs">
-            <li ng-show="!isEditMode || isEditMode && item.src" ng-class="{'active': !isEditMode || isEditMode && item.src}" ng-click="item.type = 'photo'">
-                <a data-toggle="tab" href="#photo" target="_self">{{isEditMode ? "gallery.item.edit" : "gallery.item.add" | translate}} <span translate>gallery.item.uneImg</span></a>
-            </li>
-            <li ng-show="!isEditMode || isEditMode && item.content" ng-class="{'active': isEditMode && item.content}" ng-click="item.type = 'video'">
-                <a data-toggle="tab" href="#video" target="_self">{{isEditMode ? "gallery.item.edit" : "gallery.item.add" | translate}} <span translate>gallery.item.uneVideo</span></a>
-            </li>
-        </ul>
+        <div class="scrollmenu">
+            <ul class="nav nav-tabs">
+                <li ng-show="!isEditMode || isEditMode && item.src" ng-class="{'active': !isEditMode || isEditMode && item.src}" ng-click="item.type = 'photo'">
+                    <a data-toggle="tab" href="#photo" target="_self">{{isEditMode ? "gallery.item.edit" : "gallery.item.add" | translate}} <span translate>gallery.item.uneImg</span></a>
+                </li>
+                <li ng-show="!isEditMode || isEditMode && item.content" ng-class="{'active': isEditMode && item.content}" ng-click="item.type = 'video'">
+                    <a data-toggle="tab" href="#video" target="_self">{{isEditMode ? "gallery.item.edit" : "gallery.item.add" | translate}} <span translate>gallery.item.uneVideo</span></a>
+                </li>
+            </ul>
+        </div>
         <div class="tab-content">
             <div id="photo" class="tab-pane fade" ng-class="{'in active': !isEditMode || isEditMode && item.src}">
                 <div class="row">

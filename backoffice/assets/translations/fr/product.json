@@ -32,9 +32,11 @@
         "descLg": "Description longue",
         "titleDescCt": "Titre description courte",
         "descCt": "Description courte",
+        "metaDesc": "Meta description",
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs",
-        "preview": "Aperçu"
+        "preview": "Aperçu",
+        "inCartVisible": "Visible dans le panier/order"
     },
     "modal":{
         "activeProduct": "Activer un  produit",

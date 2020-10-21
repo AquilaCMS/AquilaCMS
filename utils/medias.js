@@ -12,8 +12,8 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     const filePathOut = pathOut + path.basename(pathIn);
     const extension   = path.extname(filename);
     const filePathIn  = pathIn.replace(extension, '');
-    if (quality > 90) {
-        quality = 90;
+    if (quality > 100) {
+        quality = 100;
     } else if (quality < 10) {
         quality = 10;
     }

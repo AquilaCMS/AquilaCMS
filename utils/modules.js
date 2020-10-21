@@ -160,12 +160,15 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
  */
 const modulesLoadInit = async (server) => {
     const Modules  = require('../orm/models/modules');
-    const _modules = await Modules.find({active: true}, {name: 1}).lean();
-    loadedModules  = [..._modules];
-    loadedModules  = loadedModules.map((lmod) => {return {...lmod, init: true, valid: false};});
+    const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
+    loadedModules  = [..._modules].map((lmod) => {return {...lmod, init: true, valid: false};});
+    for (let i = 0; i < loadedModules.length; i++) {
+        if (i === 0) console.log('Required modules :');
+        console.log(`- ${loadedModules[i].name}`);
+        if (i === loadedModules.length - 1) console.log('');
+    }
     if (loadedModules.length > 0) {
         console.log('Start init loading modules');
-        console.log('Required modules :');
     }
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);

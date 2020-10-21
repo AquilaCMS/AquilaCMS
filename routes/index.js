@@ -54,14 +54,28 @@ const manageExceptionsRoutes = async (req, res, next) => {
     } else if (req.url === '/sitemap.xml' || req.url === '/robots.txt') {
         res.sendFile(path.join(global.appRoot, req.url));
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
-        const type      = req.url.split('/')[2];
+        const type = req.url.split('/')[2];
+
+        const options = req.url.split('/')[3];
+        let quality;
+        let background;
+        if (options.split('-').length > 2) {
+            quality    = options.split('-')[1];
+            background = options.split('-')[2];
+        } else if (options.split('-').length > 1) {
+            if (options.split('-')[1].includes(',')) {
+                background = options.split('-')[1];
+            } else {
+                quality = options.split('-')[1];
+            }
+        }
+
         const size      = req.url.split('/')[3].split('-')[0];
-        const quality   = req.url.split('/')[3].split('-')[1];
         const _id       = req.url.split('/')[4];
         const extension = path.extname(req.url).replace('.', '');
         if (type && size && extension && _id) {
             try {
-                const image = await require('../services/medias').downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined);
+                const image = await require('../services/medias').downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined, background || undefined );
                 res.set('Content-Type', `image/${extension}`);
                 fs.createReadStream(image, {autoClose: true}).pipe(res);
             } catch (e) {

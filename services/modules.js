@@ -95,6 +95,8 @@ const initModule = async (zipFile) => {
         const infojson = zip.getEntry(`${originalname.replace('.zip', '/')}info.json`);
         if (!infojson) {
             throw NSErrors.ModuleInfoNotFound; // info.json not found in zip
+        } else if (originalname.replace('.zip', '') !== JSON.parse(infojson.getData().toString()).info.name) {
+            throw NSErrors.ModuleNameMissmatch;
         }
         const moduleAquilaVersion = JSON.parse(infojson.getData().toString()).info.aquilaVersion;
         if (moduleAquilaVersion) {
