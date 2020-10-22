@@ -1,5 +1,5 @@
 <ns-box data-title="gallery.list.t1" title-icon="fa fa-picture-o fa-lg" new-href="#/component/gallery/new">
-    <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+    <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
         <thead>
             <tr>
                 <th translate>gallery.list.code</th>
@@ -10,8 +10,8 @@
             <tr class="pointer"
             ng-click="goToGalleryDetails(gallery._id)"
             ng-repeat="gallery in galleries | orderBy:'code'">
-                <td>{{gallery.code}}</td>
-                <td>{{gallery.items.length}}</td>
+                <td data-label="Code :">{{gallery.code}}</td>
+                <td data-label="Images :">{{gallery.items.length}}</td>
             </tr>
         </tbody>
     </table>

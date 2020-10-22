@@ -3,7 +3,7 @@
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
 
 
-            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
+            <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
                 aria-describedby="DataTables_Table_0_info">
                 <thead>
                     <tr role="row">
@@ -57,11 +57,11 @@
                 </thead>
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                     <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="cart in carts | filter: filterOnLength" class="pointer" ng-click="goToCartDetails(cart._id)">
-                        <td>{{cart._id}}</td>
-                        <td>{{cart.updatedAt | date:'dd/MM/yyyy HH:mm'}}</td>
-                        <td class="text-right">{{cart.priceTotal.ati | number:2}} €</td>
-                        <td>{{cart.customer.id ? cart.customer.id.fullname : 'Anonyme'}}</td>
-                        <td>{{cart.customer.id.email}}</td>
+                        <td data-label="ID :">{{cart._id}}</td>
+                        <td data-label="Date :">{{cart.updatedAt | date:'dd/MM/yyyy HH:mm'}}</td>
+                        <td data-label="Prix TTC :" class="text-right">{{cart.priceTotal.ati | number:2}} €</td>
+                        <td data-label="Nom :">{{cart.customer.id ? cart.customer.id.fullname : 'Anonyme'}}</td>
+                        <td data-label="Email :">{{cart.customer.id.email}}</td>
                     </tr>
                 </tbody>
             </table>

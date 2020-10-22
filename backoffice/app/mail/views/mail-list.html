@@ -1,6 +1,6 @@
 <ns-box data-title="mail.list.t1" title-icon="fa fa-envelope fa-lg" new-href="#/mails/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-        <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+        <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
                 <tr role="row">
                     <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
@@ -31,9 +31,9 @@
 
                 <tr class="{{mail.data.flag == 'system' ? 'disabled disabledcolor pointer' : 'pointer' }}" ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-click="detail(mail)" ng-repeat="mail in mails|orderBy:sortPlay.type:sortPlay.reverse">
-                    <td class=" ">{{mail.code}}</td>
-                    <td class=" ">{{mail.translation[defaultLang].subject}}</td>
-                    <td class=" ">{{mail.type}}</td>
+                    <td data-label="Code :" class=" ">{{mail.code}}</td>
+                    <td data-label="Objet :" class=" ">{{mail.translation[defaultLang].subject}}</td>
+                    <td data-label="Action :" class=" ">{{mail.type}}</td>
                 </tr>
             </tbody>
         </table>

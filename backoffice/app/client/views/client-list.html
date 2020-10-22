@@ -15,7 +15,7 @@
                             <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('users')" style="cursor: pointer" ></i>
                     </div>
                 </div>
-                <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                     <thead>
                     <tr role="row" class="pointer">
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Email: activate to sort column descending">
@@ -64,12 +64,12 @@
                         ng-class-odd="'odd'" ng-class-even="'even'"
                         ng-click="goToClientDetails(client._id)"
                         ng-repeat="client in clients|orderBy:sort.type:sort.reverse">
-                        <td style="width: 15%">{{client.email}}</td>
-                        <td style="width: 15%">{{client.lastname || client.company.contact.last_name}}</td>
-                        <td style="width: 15%">{{client.firstname || client.company.contact.first_name}}</td>
-                        <td style="width: 15%">{{client.company.name}}</td>
-                        <td style="width: 15%">{{client.creationDate | date:"dd/MM/yyyy"}}</td>
-                        <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
+                        <td data-label="Email :" style="width: 15%">{{client.email}}</td>
+                        <td data-label="Nom :" style="width: 15%">{{client.lastname || client.company.contact.last_name}}</td>
+                        <td data-label="Prénom :" style="width: 15%">{{client.firstname || client.company.contact.first_name}}</td>
+                        <td data-label="Société :" style="width: 15%">{{client.company.name}}</td>
+                        <td data-label="Date de création :" style="width: 15%">{{client.creationDate | date:"dd/MM/yyyy"}}</td>
+                        <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                         <!--<td style="width: 25%">
                             <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">
                                 <i class="ico-magnifier-primary"></i>

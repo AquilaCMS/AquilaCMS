@@ -1,6 +1,6 @@
 <ns-box data-title="invoices-list.t1" title-icon="fa fa-usd fa-lg">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
-        <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+        <table class=" mediumTable table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
             <tr role="row">
                 <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
@@ -73,12 +73,12 @@
             <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-repeat="invoice in invoices">
-                    <td>{{invoice.facture}}</td>
-                    <td style="cursor: pointer;" ng-click="goToOrder(invoice)">{{invoice.order_id ? invoice.order_id.number : 'N/A'}}</td>
-                    <td>{{invoice.nom}} {{invoice.prenom}}</td>
-                    <td>{{invoice.creationDate | date:'dd/MM/yyyy HH:mm'}}</td>
-                    <td align="right">{{invoice.montant | number:2}} € {{invoice.withTaxes ? "TTC" : "HT"}}</td>
-                    <td align="center" translate>{{invoice.type}}</td>
+                    <td data-label="Facture :">{{invoice.facture}}</td>
+                    <td data-label="N° de commande :" style="cursor: pointer;" ng-click="goToOrder(invoice)">{{invoice.order_id ? invoice.order_id.number : 'N/A'}}</td>
+                    <td data-label="Client :">{{invoice.nom}} {{invoice.prenom}}</td>
+                    <td data-label="Date :">{{invoice.creationDate | date:'dd/MM/yyyy HH:mm'}}</td>
+                    <td data-label="Prix TTC :" align="right">{{invoice.montant | number:2}} € {{invoice.withTaxes ? "TTC" : "HT"}}</td>
+                    <td data-label="Type :" align="center" translate>{{invoice.type}}</td>
                     <td><button class="btn btn-blue" ng-click="generatePDF(invoice)" ng-disabled="disabledButton">PDF</button></td>
                     <td style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                 </tr>

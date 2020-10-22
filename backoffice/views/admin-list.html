@@ -1,5 +1,5 @@
 <ns-box data-title="admin-list.t3" title-icon="fa fa-shield fa-lg" new-href="#/list/new">
-    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div id="DataTables_Table_0_wrapper" class="shortTable dataTables_wrapper form-inline" role="grid">
         <div class="row">
             <div class="col-lg-12">
                 <div class="dataTables_filter">
@@ -46,10 +46,10 @@
                    infinite-scroll-immediate-check="true"
                    infinite-scroll-disabled='scroller.busy'>
             <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="client in clients| filter: query.search | orderBy:sortType:sortReverse">
-                <td class="  sorting_1">{{client.email}}</td>
-                <td class=" ">{{client.lastname}}</td>
-                <td class=" ">{{client.firstname}}</td>
-                <td style="text-align:center">
+                <td data-label="Email :" class="  sorting_1">{{client.email}}</td>
+                <td data-label="Nom :" class=" ">{{client.lastname}}</td>
+                <td data-label="Prénom :" class=" ">{{client.firstname}}</td>
+                <td data-label="Actions :" style="text-align:center">
                     <a href="#/list/detail/{{client._id}}" class="btn btn-blue btn-with-icon">
                         <i class="ico-magnifier-primary"></i>
                         <span class="text" translate>admin-list.edit</span>

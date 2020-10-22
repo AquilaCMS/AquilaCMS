@@ -3333,6 +3333,15 @@ input:-webkit-autofill {
         font-weight: bold;
     }
 
+    .bigTable tr{
+        display: block;
+        margin-bottom: 200px;
+    }
+
+    .mediumTable tr{
+        display: block;
+        margin-bottom: 100px;
+    }
     .shortTable tr{
         display: block;
         margin-bottom: 50px;

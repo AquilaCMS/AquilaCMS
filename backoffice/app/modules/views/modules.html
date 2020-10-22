@@ -26,7 +26,7 @@
     </div>
     <br/>
     <div>
-        <table class="table table-striped table-bordered">
+        <table class="shortTable table table-striped table-bordered">
             <thead>
                 <tr style="cursor: pointer">
                     <th style="width: 200px;" translate>
@@ -48,20 +48,20 @@
             </thead>
             <tbody>
                 <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="module in modules">
-                    <td>
+                    <td data-label="Nom :" >
                         {{module.name}}
                     </td>
-                    <td>
+                    <td data-label="Description :" >
                         {{module.description}}
                     </td>
-                    <td>
+                    <td data-label="Version :" >
                         {{module.version}}
                     </td>
-                    <td>
+                    <td data-label="Actif :" >
                         <toggle ng-model="module.active" ng-change="toggleActive(module._id, module.name, module.active)" on="Activé" off="Désactivé"
                             onstyle="btn btn-success btnsuccess" offstyle="btn btn-red"></toggle>
                     </td>
-                    <td>
+                    <td data-label="Action :" >
                         <a href="#/{{module.url}}" class="btn btn-blue btn-with-icon" ng-disabled="!module.active || !module.url">
                             <i class="ico-magnifier-primary"></i>
                             <span class="text" translate>modules.config</span>

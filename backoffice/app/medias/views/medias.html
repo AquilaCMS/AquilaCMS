@@ -14,7 +14,7 @@
             </ul>
         </div>
         <div ng-show="local.search === '' && currentTab === group" class="tab-content" ng-repeat="group in groups | filterListGeneral">
-            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
+            <table class="shortTable table table-striped table-bordered bootstrap-datatable datatable dataTable"
                    id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                 <thead>
                 <tr role="row" class="pointer">
@@ -33,13 +33,13 @@
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-repeat="media in list" ng-click="mediaDetails(media)">
-                    <td class="  sorting_1">
+                    <td data-label="Code :" class="  sorting_1">
                         {{media.name}}
                     </td>
-                    <td class="  sorting_1">
+                    <td data-label="Lien :" class="  sorting_1">
                         {{config.appUrl}}{{media.link}}&nbsp;
                     </td>
-                    <td>
+                    <td data-label="Miniature :">
                         <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
                         <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
                     </td>

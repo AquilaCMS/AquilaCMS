@@ -181,7 +181,7 @@
             <div class="box subbox">
                 <div class="box-header"><h2 translate>order.detail.orderDet</h2></div>
                 <div class="box-content">
-                    <table class="table order-cart">
+                    <table class="mediumTable table order-cart">
                         <thead>
                             <tr class="order-emphase">
                                 <td><strong translate>order.detail.refArt</strong></td>
@@ -196,10 +196,10 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="item in order.items">
-                                <td class="order-cart-img" width="126">
+                                <td class="order-cart-img" width="126" data-label="Code :">
                                     {{item.code}}
                                 </td>
-                                <td width="300">
+                                <td width="300" data-label="Description :">
                                     <div class="details-box">
                                         <div style="font-size: 20px" class="name">{{item.name}}<span ng-show="item.parent"> - {{getParentItem(item.parent)}}</span></div>
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->
@@ -208,25 +208,25 @@
                                         <!--<a ng-href="#/products/{{(item.item_details.itemType ? item.item_details.itemType : 'simple')}}/{{item.item_details._slug}}" target="_blank" class="btn btn-default">Voir</a>-->
                                     </div>
                                 </td>
-                                <td class="text-center order-text-big">
+                                <td class="text-center order-text-big" data-label="Quantité :">
                                     {{item.quantity}}
                                 </td>
 
-                                <td class="text-right order-text-big">
+                                <td class="text-right order-text-big" data-label="Pu HT :">
                                     {{getUnitPriceEt(item) | number:2}} €
                                 </td>
-                                <td class="text-right order-text-big">
+                                <td class="text-right order-text-big" data-label="Pu TTC :">
                                     <span ng-show="oldPrice(item)" class="old-price"><del><span>{{oldPrice(item) | number:2}} €</span></del><br /></span>
                                     {{getUnitPrice(item) | number:2}} €
                                 </td>
-                                <td class="text-right order-text-big">
+                                <td class="text-right order-text-big" data-label="Montant TVA :">
                                     {{getUnitPrice(item) - getUnitPriceEt(item) | number:2}} €
                                 </td>
-                                <td class="text-right order-text-big">
+                                <td class="text-right order-text-big" data-label="Total TTC :">
                                     <span ng-show="oldPrice(item)" class="old-price"><del><span>{{oldPrice(item) * item.quantity | number:2}} €</span></del><br /></span>
                                     {{getUnitPrice(item) * item.quantity | number:2}} €
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center" data-label="Statut :">
                                     {{itemStatus[item.status]}}
                                 </td>
                             </tr>
@@ -241,10 +241,10 @@
                                 <td style="width: 130px;"><strong translate>order.detail.fdp</strong></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-text-big">{{order.delivery.price.et | number:2}}</td>
-                                <td class="text-right order-text-big">{{order.delivery.price.ati | number:2}}</td>
-                                <td class="text-right order-text-big">{{order.delivery.price.ati - order.delivery.price.et | number:2}} €</td>
-                                <td class="text-right order-text-big">{{order.delivery.price.ati | number:2}} €</td>
+                                <td class="text-right order-text-big" data-label="Pu HT :">{{order.delivery.price.et | number:2}}</td>
+                                <td class="text-right order-text-big" data-label="Pu TTC :">{{order.delivery.price.ati | number:2}}</td>
+                                <td class="text-right order-text-big" data-label="TVA :">{{order.delivery.price.ati - order.delivery.price.et | number:2}} €</td>
+                                <td class="text-right order-text-big" data-label="Total TTC :">{{order.delivery.price.ati | number:2}} €</td>
                                 <td></td>
                             </tr>
                             <tr ng-if="order.quantityBreaks && order.quantityBreaks.discountATI">
@@ -254,26 +254,26 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase">- {{order.quantityBreaks.discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.quantityBreaks.discountATI.toFixed(2)}} €</td>
                             </tr>
                             <tr ng-if="order.promos[0]">
                                 <td><strong translate>order.detail.reduc</strong></td>
                                 <td class="text-left order-emphase">{{order.promos[0].name}}</td>
                                 <td></td>
-                                <td class="text-right order-emphase">- {{order.promos[0].discountET.toFixed(2)}} €</td>
-                                <td class="text-right order-emphase">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
-                                <td class="text-right order-emphase">- {{(order.promos[0].discountATI - order.promos[0].discountET).toFixed(2)}} €</td>
-                                <td class="text-right order-emphase">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">- {{order.promos[0].discountET.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="PU TTC :">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="TVA :">- {{(order.promos[0].discountATI - order.promos[0].discountET).toFixed(2)}} €</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :">- {{order.promos[0].discountATI.toFixed(2)}} €</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td><strong translate>order.detail.total</strong></td>
                                 <td></td>
                                 <td></td>
-                                <td class="text-right order-emphase">{{order.priceTotal.et.toFixed(2)}}€</td>
-                                <td class="text-right order-emphase">{{order.priceTotal.ati.toFixed(2)}}€</td>
-                                <td class="text-right order-emphase">{{(order.priceTotal.ati - order.priceTotal.et).toFixed(2)}}€</td>
-                                <td class="text-right order-emphase"><strong>{{order.priceTotal.ati.toFixed(2) }}€</strong></td>
+                                <td class="text-right order-emphase" data-label="Pu HT :">{{order.priceTotal.et.toFixed(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Pu TTC :">{{order.priceTotal.ati.toFixed(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="TVA :">{{(order.priceTotal.ati - order.priceTotal.et).toFixed(2)}}€</td>
+                                <td class="text-right order-emphase" data-label="Total TTC :"><strong>{{order.priceTotal.ati.toFixed(2) }}€</strong></td>
                                 <td class="text-center">
                                     <span ng-show="order.priceTotal.paidTax === undefined || order.priceTotal.paidTax" translate>order.detail.paidTax</span>
                                     <span ng-show="order.priceTotal.paidTax === false" translate>order.detail.taxFree</span>
@@ -367,7 +367,7 @@
                     <a ng-click="addInfoPayment()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
                 </div>
                 <div class="box-content">
-                    <table class="table">
+                    <table class="mediumTable table">
                         <thead>
                             <tr>
                                 <td><strong translate>order.detail.type</strong></td>
@@ -382,28 +382,28 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="payment in order.payment">
-                                <td>
+                                <td data-label="Type :">
                                     {{payment.type | paymentType}}
                                 </td>
-                                <td>
+                                <td data-label="ID :">
                                     {{payment.transactionId}}
                                 </td>
-                                <td>
+                                <td data-label="Etat :">
                                     {{payment.status | paymentStatus}}
                                 </td>
-                                <td>
+                                <td data-label="Commentaire :">
                                     {{payment.comment}}
                                 </td>
-                                <td>
+                                <td data-label="Crée le :">
                                     {{payment.creationDate | date:'dd/MM/yyyy'}}
                                 </td>
-                                <td>
+                                <td data-label="Date :">
                                     {{payment.operationDate | date:'dd/MM/yyyy'}}
                                 </td>
-                                <td>
+                                <td data-label="Mode :">
                                     {{payment.mode | paymentMode}}
                                 </td>
-                                <td>
+                                <td data-label="Montant :">
                                     {{payment.amount | number: 2}} €
                                 </td>
                             </tr>
