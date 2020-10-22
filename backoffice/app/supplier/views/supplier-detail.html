@@ -2,10 +2,12 @@
     <ns-box data-title="supplier.detail.t1" title-icon="fa fa-industry fa-lg" close-href="#/suppliers">    
         <ns-buttons is-edit-mode="isEditMode" remove="remove(supplier._id)" save-and-quit="save(supplier, true)"
                     disable-save="disableSave" return-path="/suppliers" form="form">
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#detail" target="_self" translate>supplier.detail.details</a></li>
-                <li><a data-toggle="tab" href="#products" target="_self"  translate>supplier.detail.pdtsLinked</a></li>
-            </ul>
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#detail" target="_self" translate>supplier.detail.details</a></li>
+                    <li><a data-toggle="tab" href="#products" target="_self"  translate>supplier.detail.pdtsLinked</a></li>
+                </ul>
+            </div>
 
             <div class="tab-content">
                 <div id="detail" class="tab-pane fade in active">

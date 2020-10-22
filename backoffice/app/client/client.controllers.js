@@ -61,7 +61,7 @@ ClientControllers.controller("ClientCtrl", [
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
             });
-            
+
         };
         $scope.search = function () {
             $scope.onClientsPageChange(1);
@@ -117,14 +117,13 @@ ClientControllers.controller("ClientDetailCtrl", [
         }
 
         getAttributesClient = function(){
-            SetAttributesV2.list({PostBody: {filter: { type: 'users' }, limit: 99}}, function ({datas}) {
+            SetAttributesV2.list({PostBody: {filter: { type: 'users' }, limit: 99, structure: '*', populate: ['attributes']}}, function ({datas}) {
                 $scope.setAttributes = datas;
 
                 if ($scope.client && $scope.client.set_attributes === undefined) {
                     const set_attributes = datas.find(function (setAttr) {
                         return setAttr.code === "defautUser";
                     });
-
                     if (set_attributes) {
                         $scope.client.set_attributes = set_attributes._id;
                         $scope.loadNewAttrs();
@@ -136,7 +135,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         }
 
         getAttributesClient();
-        
+
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item.type;
         };
@@ -194,7 +193,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                         }
                     }
                 });
-                
+
                 {
                     //On récupére le nom des pays des adresses
                     for(let i = 0; i < $scope.client.addresses.length; i++)
@@ -227,10 +226,9 @@ ClientControllers.controller("ClientDetailCtrl", [
 
                 $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
                 $scope.downloadHistoryQueryKey =`product.translation.${$rootScope.adminLang}.name`
-                        
+
                 $scope.getDownloadHistory = function (page = 1) {
                     ProductsV2.getDownloadHistory({PostBody: {filter: $scope.downloadHistoryFilters, limit: $scope.downloadHistoryItemsPerPage, page: page, structure: '*'}}, function (response) {
-                        console.log(response)
                         $scope.downloadHistory = response.datas
                         $scope.downloadHistoryCount = response.count
                         $scope.downloadHistoryPage = response.page
@@ -373,13 +371,18 @@ ClientControllers.controller("ClientDetailCtrl", [
 
         $scope.loadNewAttrs = async function () {
             AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 99}}, function ({datas}) {
-                    $scope.client.attributes = datas.map(function (attr) {
-                        attr.id = attr._id;
-                        delete attr._id;
-                        return attr;
-                    });
+                console.log(datas)
+                $scope.client.attributes = datas.map(function (attr) {
+                    attr.id = attr._id;
+                    delete attr._id;
+                    return attr;
+                });
             });
         };
+
+        $scope.applyAttributes = function () {
+            $scope.client.attributes = $scope.setAttributes.attributes
+        }
 
         function genAttributes() {
             angular.forEach($scope.client.attributes, function (attributeI) {

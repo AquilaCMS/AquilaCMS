@@ -227,7 +227,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     }
                                     $('html,body').scrollTop(0);
                                 });
-                            
+
                             editor.ui.registry.addButton('customAddImg', {
                                 //text: 'Ajouter une image',
                                 icon: "gallery",
@@ -294,13 +294,13 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     let string = "<" + shortcode.tag;
                                     Object.keys(tag).forEach(key => {
                                         if(tag[key]){
-                                            string += " " + key + "='" + tag[key].replace(/[',",<,>]/g, "") + "'" 
+                                            string += " " + key + "='" + tag[key].replace(/[',",<,>]/g, "") + "'"
                                         }
                                     });
                                     string += "></" + shortcode.tag + ">";
                                     $modalInstance.close({ string });
                                 }
-                                
+
 
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
@@ -399,7 +399,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                         }
                                         return false
                                     }
-                                
+
                                 $scope.size = {};
                                 $scope.size.max = true;
 
@@ -661,11 +661,11 @@ adminCatagenDirectives.directive("nsBox", function ()
             scope.hasClose = attrs.closeHref || attrs.closeClick;
             scope.hasNew = attrs.newHref || attrs.newClick;
             scope.hasEdit = attrs.editHref || attrs.editClick;
-            
+
             let type;
             let translation;
             let translationValues;
-         
+
             scope.hideAdvice = function(type){
                 let filter = window.localStorage.getItem("help");
                 if(!filter){
@@ -783,15 +783,12 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
             switch(scope.att.type)
             {
                 case "date":
-                case "Date":
                     el.append("<div class='col-sm-10'><ns-datepicker name='value' ng-model='att.translation[lang].value'></ns-datepicker></div>");
                     break;
                 case "textfield":
-                case "Champ texte":
                     el.append("<div class='col-sm-10'><input class='form-control' type='text' ng-model='att.translation[lang].value'/></div>");
                     break;
                 case "number":
-                case "Nombre":
                     if(scope.att.param == "Non") {
                         el.append("<div class='col-sm-10'><input class='form-control' numericbinding type='number' ng-model='att.translation[lang].value'/></div>");
                     } else if (scope.att.param == "Oui") {
@@ -799,15 +796,12 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                     }
                     break;
                 case "textarea":
-                case "Zone de texte":
                     el.append("<div class='col-sm-10'><div class='tinyeditor-small'><ns-tinymce lang='lang' text='att.translation[lang].value'></ns-tinymce></div></div>");
                     break;
                 case "bool":
-                case "Booléen (oui/non)":
                     el.append("<div class='col-sm-10'><label><ns-switch name='{{att.code}}' ng-model='att.translation[lang].value'></ns-switch></div>");
                     break;
                 case "list":
-                case "Liste déroulante":
                     el.append("<div class='col-sm-10'>" +
                         "    <select class='form-control' ng-model='att.translation[lang].value'>" +
                         "        <option value='' disabled>Choix dans la liste déroulante</option>" +
@@ -816,7 +810,6 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                         "</div>");
                     break;
                 case "multiselect":
-                case "Sélection multiple":
                     el.append("<div class='col-sm-10'>" +
                         "    <select class='form-control' ng-model='att.translation[lang].value' size='10' multiple>" +
                         "        <option value='' disabled>Choix dans la liste</option>" +
@@ -825,7 +818,6 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                         "</div>");
                     break;
                 case "interval":
-                case "Intervalle":
                     el.append("<div class='col-sm-10'>" +
                         "    <span class='col-sm-offset-1 col-sm-2'>Minimum</span>" +
                         "    <div class='col-sm-1'>" +
@@ -838,14 +830,12 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                         "</div>");
                     break;
                 case "doc/pdf":
-                case "Fichier PDF":
                     el.append(
                         "<div class='col-sm-2' style='margin-top: 3px;'><input readonly type='text' class='form-control' ng-model='att.translation[lang].value'></div><div class='col-sm-2'><a target='_blank' href='{{ att.translation[lang].value }}' class='btn btn-info' ng-show='att.translation[lang].value != null'>Afficher le PDF</a></div>" +
                         "<div class=\"col-sm-5\"><ns-upload-files lang=\"lang\" style-prop=\"{height: '35px', margin: '0px 0px 12px 0px'}\" accepttype=\"application/pdf\" multiple=\"false\" code=\"att.id\" type=\"attribute\" id=\"product._id\" entity=\"att.translation[lang]\"></ns-upload-files></div>" +
                         "<div class=\"col-sm-1\"><button type=\"button\" class=\"btn btn-danger\" ng-click=\"removeImage(att.translation[lang].value); att.translation[lang].value = null\" style=\"min-width: 10px; float: right;\"><i class=\"fa fa-trash\"/></div>");
                     break;
                 case "image":
-                case "Image":
                     el.append(
                         '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2"><a title="Image" data-trigger="hover" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<img src=\'{{ att.translation[lang].value }}\' width=\'250\' height=\'200\'>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher l\'image</a></div>' +
                         '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="image/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
@@ -853,14 +843,12 @@ adminCatagenDirectives.directive("nsAttributes", function ($compile)
                     );
                     break;
                 case "video":
-                case "Vidéo":
                     el.append(
                         '<div class="col-sm-2" style="margin-top: 3px;"><input readonly type="text" class="form-control" ng-model="att.translation[lang].value"></div><div class="col-sm-2 popVideo"><a title="Vidéo" data-placement="bottom" data-html="true" data-toggle="popover" data-content="<video width=\'800\' controls><source src=\'{{ att.translation[lang].value }}\'>Votre navigateur ne supporte pas les vidéos HTML5.</video>" class="btn btn-info" ng-show="att.translation[lang].value != null">Afficher la vidéo</a></div>' +
                         '<div class="col-sm-5"><ns-upload-files lang="lang" style-prop="{height: \'35px\', margin: \'0px 0px 12px 0px\'}" accepttype="video/*" multiple="false" code="att.id" type="attribute" id="product._id" entity="att.translation[lang]"></ns-upload-files></div>' +
                         '<div class="col-sm-1"><button type="button" class="btn btn-danger" ng-click="removeImage(att.translation[lang].value); att.translation[lang].value = null" style="min-width: 10px; float: right;"><i class="fa fa-trash"/></div>');
                     break;
                 case "color":
-                case "Couleur":
                     el.append("<div class=\"col-sm-10\" style=\"display: flex\">"+
                             "<color-picker ng-model=\"att.translation[lang].value\" options=\"optionColor\"></color-picker>"+
                             "<button style=\"height: 20px; padding: 0 5px;\" ng-click=\"att.translation[lang].value = ''\" type=\"button\"><i class=\"fa fa-times\"/></button>"+
@@ -889,7 +877,6 @@ adminCatagenDirectives.directive("nsOptions", function ($compile)
                         "<input class='form-control' type='text' ng-model='value[line.name]'/>"
                     );
                     break;
-                case "number":
                 case "Nombre":
                     el.append(
                         "<input class='form-control' numericbinding type='number' ng-model='value[line.name]'/>"
@@ -900,7 +887,6 @@ adminCatagenDirectives.directive("nsOptions", function ($compile)
                         "<textarea ng-model='value[line.name]' rows='3' style=' font-size: 14px; width: 100%;'></textarea>"
                     );
                     break;
-                case "image":
                 case "Image":
                     scope.lineIndex = attrs.index;
                     el.append(
@@ -983,6 +969,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PARTIAL_PROGRESS";
                     $scope.statusObj.isDanger =
                         $scope.status === "CANCELED" ||
+                        $scope.status === "PAYMENT_FAILED" ||
                         $scope.status === "RETURNED";
                     $scope.statusObj.isBlue =
                         $scope.status === "DELIVERY_PROGRESS";
@@ -1475,25 +1462,18 @@ adminCatagenDirectives.directive("nsRule", [
                                 switch(type)
                                 {
                                     case "textfield":
-                                    case "Champ texte":
                                         return "text";
                                     case "date":
-                                    case "Date":
                                         return "date";
                                     case "number":
-                                    case "Nombre":
                                         return "number";
                                     case "bool":
-                                    case "Booléen (oui/non)":
                                         return "bool";
                                     case "list":
-                                    case "Liste déroulante":
                                         return "select";
                                     case "multiselect":
-                                    case "Sélection multiple":
                                         return "multiselect";
                                     case "interval":
-                                    case "Intervalle":
                                         return "number";
                                     default:
                                         return "text";
@@ -1695,25 +1675,18 @@ adminCatagenDirectives.directive("nsRule", [
                                     switch(type)
                                     {
                                         case "textfield":
-                                        case "Champ texte":
                                             return "text";
                                         case "date":
-                                        case "Date":
                                             return "date";
                                         case "number":
-                                        case "Nombre":
                                             return "number";
                                         case "bool":
-                                        case "Booléen (oui/non)":
                                             return "bool";
                                         case "list":
-                                        case "Liste déroulante":
                                             return "select";
                                         case "multiselect":
-                                        case "Sélection multiple":
                                             return "multiselect";
                                         case "interval":
-                                        case "Intervalle":
                                             return "number";
                                         default:
                                             return "text";
@@ -2111,42 +2084,6 @@ adminCatagenDirectives.directive("nsRule", [
                         }
                     }
                 };
-
-                function convertOperator (operator) {
-                    switch(operator) {
-                        case "Contient":
-                            return "contains";
-                        case "Ne contient pas":
-                            return "ncontains";
-                        case "Egal à":
-                            return "eq";
-                        case "Différent de":
-                            return "neq";
-                        case "Commence par":
-                            return "startswith";
-                        case "Fini par":
-                            return "endswith";
-                        case "Plus grand ou egal à":
-                            return "gte";
-                        case "Plus grand que": 
-                            return "gt";
-                        case "Plus petit ou egal à":
-                            return "lte";
-                        case "Plus petit que":
-                            return "lt";
-                        default:
-                            return operator;
-                    }
-                }
-
-                function convertRules() {
-                    if ($scope.rule && $scope.rule.conditions) {
-                        for (let condition of $scope.rule.conditions) {
-                            condition.operator = convertOperator(condition.operator);
-                        }
-                    }
-                }
-                convertRules();
             }
         };
     }

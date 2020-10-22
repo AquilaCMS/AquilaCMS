@@ -2,16 +2,19 @@ const showdown                    = require('showdown');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const serviceModule               = require('../services/modules');
 const NSErrors                    = require('../utils/errors/NSErrors');
+const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
     app.post('/v2/module',           authentication, adminAuth, getModule);
-    app.put('/v2/module/config/:id', authentication, adminAuth, setModuleConfigById);
     app.post('/v2/modules/upload',   authentication, adminAuth, uploadModule);
     app.post('/v2/modules/toggle',   authentication, adminAuth, toggleActiveModule);
     app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
+
+    // Deprecated
+    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, authentication, adminAuth, setModuleConfigById);
 };
 
 const checkDependencies = async (req, res, next) => {
@@ -54,21 +57,6 @@ async function getAllModules(req, res, next) {
 async function getModule(req, res, next) {
     try {
         const result = await serviceModule.getModule(req.body.PostBody);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-/**
- * Permet de mettre a jour la configuration du module dont l'id est passé en parametre
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
-async function setModuleConfigById(req, res, next) {
-    try {
-        const result = await serviceModule.setModuleConfigById(req.params.id, req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -119,3 +107,19 @@ const getModuleMd = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Permet de mettre a jour la configuration du module dont l'id est passé en parametre
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ * @deprecated
+ */
+async function setModuleConfigById(req, res, next) {
+    try {
+        const result = await serviceModule.setModuleConfigById(req.params.id, req.body);
+        return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}

@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="col-lg-2">
-                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()"translate>stats.Valider</button>
+                <button style="pointer-events:auto;margin-top:25px" type="button" class="btn btn-default" ng-click="loadDatas()" ><span translate>stats.Valider</span><i class="fa fa-check" aria-hidden="true"></i></button>
             </div>
             <div class="col-lg-4" style="text-align:right">
                 <i class="fa fa-download fa-2x" aria-hidden="true" ng-click="downloadDatas()" style="cursor:pointer"></i>
@@ -49,13 +49,14 @@
 
 
 
-    
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#looseCart" target="_self" ng-click="changeTab('canceledCart');" translate>stats.canceledCart</a></li>
-            <li><a data-toggle="tab" href="#cag" target="_self" ng-click="changeTab('cag',$event)" translate>stats.cag</a></li>
-            <li><a data-toggle="tab" href="#capp" target="_self" ng-click="changeTab('capp',$event)" translate>stats.capp</a></li>
-            <li><a data-toggle="tab" href="#nbOrder" target="_self" ng-click="changeTab('nbOrder',$event)" translate>stats.orders</a></li>
-        </ul>
+        <div class="scrollmenu">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#looseCart" target="_self" ng-click="changeTab('canceledCart');" translate>stats.canceledCart</a></li>
+                <li><a data-toggle="tab" href="#cag" target="_self" ng-click="changeTab('cag',$event)" translate>stats.cag</a></li>
+                <li><a data-toggle="tab" href="#capp" target="_self" ng-click="changeTab('capp',$event)" translate>stats.capp</a></li>
+                <li><a data-toggle="tab" href="#nbOrder" target="_self" ng-click="changeTab('nbOrder',$event)" translate>stats.orders</a></li>
+            </ul>
+        </div>
 
 
 

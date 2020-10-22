@@ -584,9 +584,9 @@ const calculateFilters = async (req, result) => {
             }
             const attr = await Attributes.findOne({_id: attrId});
             // On récupère toutes les valeurs possibles pour un attribut
-            if (attributes[i].type === 'Booléen (oui/non)' || attributes[i].type === 'bool') {
+            if (attributes[i].type === 'bool') {
                 returnArrayAttributes[attrId] = [false, true];
-            } else if (attributes[i].type === 'Champ texte' || attributes[i].type === 'textfield' || attributes[i].type === 'Couleur' || attributes[i].type === 'color') {
+            } else if (attributes[i].type === 'textfield' || attributes[i].type === 'color') {
                 const prds = await require('../orm/models/products').find({});
                 const arr  = [];
                 for (let i = 0; i < prds.length; i++) {

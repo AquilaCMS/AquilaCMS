@@ -182,14 +182,6 @@ ProductDirectives.directive("nsProductMarketing", [
                         SuppliersV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function ({datas}) {
                             scope.supplierList = datas;
 
-                            if (scope.product.supplier_ref !== undefined) {
-                                const supplier_ref = datas.find(function (supplier) {
-                                    return scope.product.supplier_ref === supplier._id;
-                                });
-                                if (supplier_ref !== undefined) {
-                                    scope.product.supplier_code = supplier_ref.code;
-                                }
-                            }
                         });
                     }
                 };
@@ -208,13 +200,6 @@ ProductDirectives.directive("nsProductMarketing", [
                         $scope.familyList = $filter("filter")(datas, {type: "family"}, true);
                         $scope.subfamilyList = $filter("filter")(datas, {type: "subfamily"}, true);
                     });
-
-                    $scope.updateSupplierField = function () {
-                        $scope.supplier = SuppliersV2.query({PostBody: {filter: {_id: $scope.product.supplier_ref}, structure: '*'}}, function (resp) {
-                            $scope.product.supplier_ref = resp._id;
-                            $scope.product.supplier_code = resp.code;
-                        });
-                    };
 
                     $scope.updateListFamily = function (listDest, type, origine) {
                         if ($scope.product[origine] != null) {

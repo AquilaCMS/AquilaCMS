@@ -52,11 +52,11 @@ exports.setSetAttribute = async function (code, name, attributes) {
 };
 
 exports.createOrUpdateSetAttribute = async function (req) {
-    const code                                = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
-    const {name, update : updateF, questions} = req.body;
-    const setAttribute                        = await SetAttributes.findOne({code});
+    const code                                      = req.body.code.replace(/[^A-Z0-9]+/ig, '_');
+    const {name, update : updateF, questions, type} = req.body;
+    const setAttribute                              = await SetAttributes.findOne({code});
     if (setAttribute && updateF) {
-        const resSetAttribute = await SetAttributes.findOneAndUpdate({code}, {name, questions}, {new: true});
+        const resSetAttribute = await SetAttributes.findOneAndUpdate({code}, {name, questions, type}, {new: true});
         if (!resSetAttribute) throw NSErrors.SetAttributeNotFound;
         let tQuestions = [];
         if (resSetAttribute.questions.length) {
@@ -66,7 +66,7 @@ exports.createOrUpdateSetAttribute = async function (req) {
         return {status: true};
     }
     if (setAttribute && !updateF) return {alreadyExist: true};
-    await SetAttributes.create({code, name, questions});
+    await SetAttributes.create({code, name, questions, type});
     return {status: true};
 };
 exports.deleteSetAttribute = async function (req) {
