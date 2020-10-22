@@ -1280,9 +1280,7 @@ img.ico{
 
 @media screen and (max-width: 767px) {
 
-    .btn-success, .btn-default, .btn-danger, .btn-warnin {
-        width : 45px;
-    }
+    
     button.btn-s\&q {
         display : none;
         visibility: hidden;
