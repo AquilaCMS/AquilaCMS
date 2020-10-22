@@ -3302,6 +3302,12 @@ input:-webkit-autofill {
     }
 }
 
+@media (min-width: 767px) {
+    .tdSize{
+        width: 15%
+    }
+}
+
 /* Mobile */
 
 @media (max-width: 767px) {
@@ -3345,6 +3351,9 @@ input:-webkit-autofill {
     .shortTable tr{
         display: block;
         margin-bottom: 50px;
+    }
+    .tdSize{
+        width: 100%
     }
 
     /*.table td,

@@ -64,11 +64,11 @@
                         ng-class-odd="'odd'" ng-class-even="'even'"
                         ng-click="goToClientDetails(client._id)"
                         ng-repeat="client in clients|orderBy:sort.type:sort.reverse">
-                        <td data-label="Email :" style="width: 15%">{{client.email}}</td>
-                        <td data-label="Nom :" style="width: 15%">{{client.lastname || client.company.contact.last_name}}</td>
-                        <td data-label="Prénom :" style="width: 15%">{{client.firstname || client.company.contact.first_name}}</td>
-                        <td data-label="Société :" style="width: 15%">{{client.company.name}}</td>
-                        <td data-label="Date de création :" style="width: 15%">{{client.creationDate | date:"dd/MM/yyyy"}}</td>
+                        <td data-label="Email :" class="tdSize">{{client.email}}</td>
+                        <td data-label="Nom :" class="tdSize">{{client.lastname || client.company.contact.last_name}}</td>
+                        <td data-label="Prénom :" class="tdSize">{{client.firstname || client.company.contact.first_name}}</td>
+                        <td data-label="Société :" class="tdSize">{{client.company.name}}</td>
+                        <td data-label="Date de création :" class="tdSize">{{client.creationDate | date:"dd/MM/yyyy"}}</td>
                         <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                         <!--<td style="width: 25%">
                             <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">
