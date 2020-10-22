@@ -3302,7 +3302,7 @@ input:-webkit-autofill {
     }
 }
 
-@media (min-width: 767px) {
+@media (min-width: 768px) {
     .tdSize{
         width: 15%
     }
@@ -4162,3 +4162,19 @@ a.ui-button:active,
     }
 }
 
+@media (min-width: 768px) {
+    .position {
+        position:sticky;
+        top:115px;
+        z-index:1000;
+        pointer-events:none;
+    }
+}
+@media (max-width: 767px) {
+    .position {
+        position:sticky;
+        top:5px;
+        z-index:1000;
+        pointer-events:none;
+    }
+}
