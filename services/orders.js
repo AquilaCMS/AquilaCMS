@@ -159,6 +159,11 @@ const paymentSuccess = async (query, updateObject) => {
     }
 };
 
+const paymentFail = async (query, update) => {
+    update.$push = {historyStatus: 'PAYMENT_FAILED'};
+    return Orders.findOneAndUpdate(query, update);
+};
+
 const cancelOrder = async (orderId) => {
     const order = await Orders.findOne({
         _id    : orderId,
@@ -623,6 +628,7 @@ module.exports = {
     setOrder,
     setStatus,
     paymentSuccess,
+    paymentFail,
     cancelOrder,
     cancelOrders,
     rma,

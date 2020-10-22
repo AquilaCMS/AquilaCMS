@@ -1292,9 +1292,6 @@ img.ico{
         display : none;
         visibility: hidden;
     }
-    button.btn img {
-        margin-bottom: 5px;
-    }
 
     a.ico span {
         display : none;
@@ -1309,11 +1306,11 @@ img.ico{
 
 @media screen and (min-width: 768px) {
     
-    button.btn img {
+    button.btn i {
         display : none;
         visibility: hidden;
     }
-    a.ico img {
+    a.ico i {
         display : none;
         visibility: hidden;
     }
