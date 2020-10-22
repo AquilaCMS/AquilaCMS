@@ -75,7 +75,14 @@ class CartDelivery extends React.Component {
 
         let shipments;
         try {
-            shipments = await getShipmentsCart(cart, null, lang);
+            const PostBody = {
+                limit     : 999999,
+                structure : {
+                    component_template_front : 1,
+                    config                   : 1
+                }
+            };
+            shipments = await getShipmentsCart(cart, null, lang, PostBody);
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
                 NSToast.error(err.response.data.message);
