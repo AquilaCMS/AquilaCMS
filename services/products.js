@@ -1493,24 +1493,28 @@ const calculStock = async (params, product = undefined) => {
 const preview = async (body) => {
     let preview = {};
     if (await ProductsPreview.findOne({code: body.code})) {
-        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
+        body.updatedAt = new Date();
+        preview        = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
     } else {
         let newPreview;
         switch (body.type) {
         case 'simple':
-            newPreview      = new ProductSimplePreview(body);
-            newPreview.kind = 'SimpleProductPreview';
-            preview         = await newPreview.save();
+            newPreview           = new ProductSimplePreview(body);
+            newPreview.kind      = 'SimpleProductPreview';
+            newPreview.updatedAt = new Date();
+            preview              = await newPreview.save();
             break;
         case 'bundle':
-            newPreview      = new ProductBundlePreview(body);
-            newPreview.kind = 'BundleProductPreview';
-            preview         = await newPreview.save();
+            newPreview           = new ProductBundlePreview(body);
+            newPreview.kind      = 'BundleProductPreview';
+            newPreview.updatedAt = new Date();
+            preview              = await newPreview.save();
             break;
         case 'virtual':
-            newPreview      = new ProductVirtualPreview(body);
-            newPreview.kind = 'VirtualProductPreview';
-            preview         = await newPreview.save();
+            newPreview           = new ProductVirtualPreview(body);
+            newPreview.kind      = 'VirtualProductPreview';
+            newPreview.updatedAt = new Date();
+            preview              = await newPreview.save();
             break;
         default:
             break;
