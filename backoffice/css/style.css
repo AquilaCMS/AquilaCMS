@@ -1237,6 +1237,89 @@ blockquote:last-child {
     }
 }
 
+@media (max-width: 767px) {
+
+}
+
+
+/*    les onglets s'adapte a la taille de l'ecran */
+
+div.scrollmenu {
+ /* background-color: #333;*/
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  color: black;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+/*div.scrollmenu a:hover {
+  background-color: #777;
+}
+*/
+.nav-tabs > li {
+    float: none;
+    margin-bottom: -1px;
+}
+.nav > li {
+    position: relative;
+    display: inline;
+}
+
+img.ico{
+    width : 25px;
+    height: 25px;
+    max-width: none;
+    margin-left: -5px;
+}
+
+@media screen and (max-width: 767px) {
+
+    .btn-success, .btn-default, .btn-danger, .btn-warnin {
+        width : 45px;
+    }
+    button.btn-s\&q {
+        display : none;
+        visibility: hidden;
+    }
+    
+    button.btn span {
+        display : none;
+        visibility: hidden;
+    }
+
+    a.ico span {
+        display : none;
+        visibility: hidden;
+    }
+    
+    /*.btn-success {
+        visibility: hidden;
+    }*/
+
+}
+
+@media screen and (min-width: 768px) {
+    
+    button.btn i {
+        display : none;
+        visibility: hidden;
+    }
+    a.ico i {
+        display : none;
+        visibility: hidden;
+    }
+    /*.btn-success {
+        visibility: hidden;
+    }*/
+
+}
+
 /* ------------------------------------------------------------ *\
         II.  Regions
 \* ------------------------------------------------------------ */
@@ -1573,12 +1656,14 @@ blockquote:last-child {
 .btn-with-icon i+span {
     margin-left: 5px;
 }
+@media (min-width: 768px){
 
-.btn-success,
-.btn-default,
-.btn-danger,
-.btn-warning {
-    min-width: 162px;
+    .btn-success,
+    .btn-default,
+    .btn-danger,
+    .btn-warning {
+        min-width: 162px;
+    }
 }
 
 .btn-default {
@@ -1914,6 +1999,7 @@ input:-webkit-autofill {
     border-radius: 3px;
     padding: 0 10px;
     color: #777;
+    max-width: 100%;
 }
 
 /* ------------------------------------------------------------ *\
@@ -3219,7 +3305,40 @@ input:-webkit-autofill {
 /* Mobile */
 
 @media (max-width: 767px) {
-    .table td,
+
+    .table thead{
+        display: none;
+        height: 10px;
+    }
+
+
+    .table th{
+        display: none;
+        height: 10px;
+    }
+
+    .table tr{
+        display: block;
+        margin-bottom: 350px;
+    }
+
+    .table td {
+        display: block;
+        text-align: right;
+    }
+
+    .table td:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+
+    .shortTable tr{
+        display: block;
+        margin-bottom: 50px;
+    }
+
+    /*.table td,
     .table th {
         width: 100%;
         float: left;
@@ -3291,7 +3410,7 @@ input:-webkit-autofill {
     .table .cell-size10,
     .table .cell-size11 {
         width: 100%;
-    }
+    }*/
 }
 
 /* ------------------------------------------------------------ *\

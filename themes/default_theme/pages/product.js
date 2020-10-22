@@ -331,7 +331,7 @@ class PageProduct extends NSPageProduct {
                                                                         </tr>
                                                                     );
                                                                 }
-                                                                if (attrib.type === 'Champ texte' || attrib.type === 'textfield' || attrib.type === 'Zone de texte' || attrib.type === 'textarea') {
+                                                                if (attrib.type === 'textfield' || attrib.type === 'textarea') {
                                                                     return (
                                                                         <tr key={attrib.code}>
                                                                             <td style={{ width: '30%' }}>
@@ -343,7 +343,7 @@ class PageProduct extends NSPageProduct {
                                                                         </tr>
                                                                     );
                                                                 }
-                                                                if (attrib.type === 'Couleur' || attrib.type === 'color') {
+                                                                if (attrib.type === 'color') {
                                                                     return (
                                                                         <tr key={attrib.code}>
                                                                             <td style={{ width: '30%' }}>

@@ -12,68 +12,6 @@ const {v4: uuidv4}   = require('uuid');
 const mongoose       = require('mongoose');
 const fs             = require('./fsp');
 
-const attributeCorrectNewTypeName = (type) => {
-    switch (type) {
-    case 'Champ texte':
-        return 'textfield';
-    case 'Zone de texte':
-        return 'textarea';
-    case 'Date':
-        return 'date';
-    case 'Booléen (oui/non)':
-        return 'bool';
-    case 'Liste déroulante':
-        return 'list';
-    case 'Sélection multiple':
-        return 'multiselect';
-    case 'Intervalle':
-        return 'interval';
-    case 'Image':
-        return 'image';
-    case 'Vidéo':
-        return 'video';
-    case 'Fichier PDF':
-        return 'doc/pdf';
-    case 'Nombre':
-        return 'number';
-    case 'Couleur':
-        return 'color';
-    default:
-        return type;
-    }
-};
-
-const attributeCorrectOldTypeName = (type) => {
-    switch (type) {
-    case 'textfield':
-        return 'Champ texte';
-    case 'textarea':
-        return 'Zone de texte';
-    case 'date':
-        return 'Date';
-    case 'bool':
-        return 'Booléen (oui/non)';
-    case 'list':
-        return 'Liste déroulante';
-    case 'multiselect':
-        return 'Sélection multiple';
-    case 'interval':
-        return 'Intervalle';
-    case 'image':
-        return 'Image';
-    case 'video':
-        return 'Vidéo';
-    case 'doc/pdf':
-        return 'Fichier PDF';
-    case 'number':
-        return 'Nombre';
-    case 'color':
-        return 'Couleur';
-    default:
-        return type;
-    }
-};
-
 const checkModuleRegistryKey = async (moduleName) => {
     try {
         let registryFile    = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
@@ -303,8 +241,6 @@ module.exports = {
     // utils/utils : Taxes
     toET,
     // utils/utils : Retrocompatibilité
-    attributeCorrectNewTypeName,
-    attributeCorrectOldTypeName,
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,

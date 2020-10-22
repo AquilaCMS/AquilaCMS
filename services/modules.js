@@ -334,7 +334,7 @@ const checkDependenciesAtUninstallation = async (idModule) => {
                 elem.packageDependencies.theme = await modulesUtils.cleanPackageVersion([...elem.packageDependencies.theme]);
             }
         }
-        let result;
+        let result = {};
         if (
             (myModule.packageDependencies.api && myModule.packageDependencies.api.length > 0)
             || (myModule.packageDependencies.theme && myModule.packageDependencies.theme.length > 0)

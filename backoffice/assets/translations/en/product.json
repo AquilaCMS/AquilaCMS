@@ -31,6 +31,7 @@
         "titleDescLg": "Long description title",
         "descLg": "Long description",
         "titleDescCt": "Short description title",
+        "metaDesc":"Meta description",
         "descCt": "Short description",
         "canon": "Canonical",
         "noAttribs": "No attributes",

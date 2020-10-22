@@ -14,6 +14,7 @@ const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
     trademark          : {code: String, name: String},
     supplier_ref       : {type: ObjectId, ref: 'suppliers'},
+    supplier_code      : {type: String},
     type               : {type: String, enum: ['simple', 'bundle', 'virtual']},
     active             : {type: Boolean, default: true},
     _visible           : {type: Boolean, default: false},
@@ -166,68 +167,70 @@ ProductsSchema.index({
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
-    if (updateQuery) {
-        while (updateQuery.translation === undefined) {
-            updateQuery.translation = {};
-        }
-        const languages       = await mongoose.model('languages').find({});
-        const translationKeys = Object.keys(updateQuery.translation);
-        for (const lang of languages) {
-            if (!translationKeys.includes(lang.code)) {
-                translationKeys.push(lang.code);
-                updateQuery.translation[lang.code] = {slug: utils.slugify(updateQuery.code)};
+    if (self._collection && !self._collection.collectionName.includes('preview')) {
+        if (updateQuery) {
+            while (updateQuery.translation === undefined) {
+                updateQuery.translation = {};
             }
-            if (!updateQuery.translation[lang.code].slug) {
-                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
-            } else {
-                updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
-            }
-            if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
-            }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
-                {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
-            ]));
+            const languages       = await mongoose.model('languages').find({});
+            const translationKeys = Object.keys(updateQuery.translation);
+            for (const lang of languages) {
+                if (!translationKeys.includes(lang.code)) {
+                    translationKeys.push(lang.code);
+                    updateQuery.translation[lang.code] = {slug: utils.slugify(updateQuery.code)};
+                }
+                if (!updateQuery.translation[lang.code].slug) {
+                    updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
+                } else {
+                    updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
+                }
+                if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
+                    errors.push('slug déjà existant');
+                }
+                errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+                    {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
+                ]));
 
-            if (updateQuery.translation[lang.code].description1) {
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                if (updateQuery.translation[lang.code].description1) {
+                    errors = translation.checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
+                    errors = translation.checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                }
+                if (updateQuery.translation[lang.code].description2) {
+                    errors = translation.checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
+                    errors = translation.checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                }
             }
-            if (updateQuery.translation[lang.code].description2) {
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+        } else {
+            while (self.translation === undefined) {
+                self.translation = {};
             }
-        }
-    } else {
-        while (self.translation === undefined) {
-            self.translation = {};
-        }
-        const translationKeys = Object.keys(self.translation);
-        const languages       = await mongoose.model('languages').find({});
-        for (const lang of languages) {
-            if (!translationKeys.includes(lang.code)) {
-                translationKeys.push(lang.code);
-                self.translation[lang.code] = {slug: utils.slugify(self.code)};
-            }
-            if (!self.translation[lang.code].slug) {
-                self.translation[lang.code].slug = self.translation[lang.code].name ? utils.slugify(self.translation[lang.code].name) : updateQuery.code;
-            } else {
-                self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
-            }
-            if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
-            }
-            errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
-                {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
-            ]));
+            const translationKeys = Object.keys(self.translation);
+            const languages       = await mongoose.model('languages').find({});
+            for (const lang of languages) {
+                if (!translationKeys.includes(lang.code)) {
+                    translationKeys.push(lang.code);
+                    self.translation[lang.code] = {slug: utils.slugify(self.code)};
+                }
+                if (!self.translation[lang.code].slug) {
+                    self.translation[lang.code].slug = self.translation[lang.code].name ? utils.slugify(self.translation[lang.code].name) : updateQuery.code;
+                } else {
+                    self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
+                }
+                if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
+                    errors.push('slug déjà existant');
+                }
+                errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
+                    {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
+                ]));
 
-            if (self.translation[lang.code].description1) {
-                errors = translation.checkTranslations(self.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(self.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
-            }
-            if (self.translation[lang.code].description2) {
-                errors = translation.checkTranslations(self.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(self.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                if (self.translation[lang.code].description1) {
+                    errors = translation.checkTranslations(self.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
+                    errors = translation.checkTranslations(self.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                }
+                if (self.translation[lang.code].description2) {
+                    errors = translation.checkTranslations(self.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
+                    errors = translation.checkTranslations(self.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                }
             }
         }
     }
@@ -238,9 +241,6 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        // for (let attributes of this.attributes) {
-        //     attributes = utils.attributeCorrectNewTypeName(this.type);
-        // }
         for (let i = 0; i < oldPrd.images.length; i++) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {

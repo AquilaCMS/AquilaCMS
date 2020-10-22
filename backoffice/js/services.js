@@ -16,6 +16,7 @@ adminCatagenServices.service("NSConstants", function () {
                 translation: {
                     fr:[
                         { code: "PAYMENT_PENDING", name: "En attente de paiement" },
+                        { code: "PAYMENT_FAILED", name: "Echec de paiment" },
                         { code: "PAYMENT_RECEIPT_PENDING", name: "En attente de réception de paiement" },
                         { code: "PAYMENT_CONFIRMATION_PENDING", name: "En attente de confirmation de paiement" },
                         { code: "PAID", name: "Payé" },
@@ -31,6 +32,7 @@ adminCatagenServices.service("NSConstants", function () {
                     ],
                     en:[
                         { code: "PAYMENT_PENDING", name: "Waiting for payment" },
+                        { code: "PAYMENT_FAILED", name: "Payment failed" },
                         { code: "PAYMENT_RECEIPT_PENDING", name: "Waiting for payment reception" },
                         { code: "PAYMENT_CONFIRMATION_PENDING", name: "Waiting for payment confirmation" },
                         { code: "PAID", name: "Paid" },
@@ -58,7 +60,7 @@ adminCatagenServices.service("NSConstants", function () {
         paymentStatus: [
             {name: "DONE", displayName: "Effectué"},
             {name: "TODO", displayName: "A effectuer"},
-            {name: "FAILED", displayName: "Non effectué"},
+            {name: "FAILED", displayName: "Echoué"},
             {name: "CANCELED", displayName: "Annulé"}
         ],
         paymentModes: [

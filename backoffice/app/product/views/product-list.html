@@ -45,7 +45,7 @@
                 <tr role="row">
                     <th role="columnheader" style="width: 8%;">
                         <a ng-click="local.sortType = 'code'; local.sortReverse = !local.sortReverse; getProducts();">
-                            <span translate>product.list2.code</span>
+                            <span id="1" translate>product.list2.code</span>
                             <span ng-show="local.sortType == 'code' && !local.sortReverse" class="ico-chevron-down"></span>
                             <span ng-show="local.sortType == 'code' && local.sortReverse" class="ico-chevron-up"></span>
                         </a>
@@ -53,7 +53,7 @@
                     <th ng-repeat="column in columns" bind-html-compile="column.filter.component_template"></th>
                     <th role="columnheader" style="width: 10%;">
                         <a ng-click="local.sortType = 'type'; local.sortReverse = !local.sortReverse; getProducts();">
-                            <span translate>product.list2.typePdt</span>
+                            <span id="2" translate>product.list2.typePdt</span>
                             <span ng-show="local.sortType == 'type' && !local.sortReverse" class="ico-chevron-down"></span>
                             <span ng-show="local.sortType == 'type' && local.sortReverse" class="ico-chevron-up"></span>
                         </a>
@@ -67,14 +67,14 @@
                     </th> -->
                     <th role="columnheader" style="width: 10%;">
                         <a ng-click="local.sortType = 'active'; local.sortReverse = !local.sortReverse; getProducts();">
-                            <span translate>product.list2.actif</span>
+                            <span id="3" translate>product.list2.actif</span>
                             <span ng-show="local.sortType == 'active' && !local.sortReverse" class="ico-chevron-down"></span>
                             <span ng-show="local.sortType == 'active' && local.sortReverse" class="ico-chevron-up"></span>
                         </a>
                     </th>
                     <th role="columnheader" style="width: 10%;">
                         <a ng-click="local.sortType = '_visible'; local.sortReverse = !local.sortReverse; getProducts();">
-                            <span translate>product.list2.visible</span>
+                            <span id="4" translate>product.list2.visible</span>
                             <span ng-show="local.sortType == '_visible' && !local.sortReverse" class="ico-chevron-down"></span>
                             <span ng-show="local.sortType == '_visible' && local.sortReverse" class="ico-chevron-up"></span>
                         </a>
@@ -113,14 +113,14 @@
             <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" ng-mouseover="setCurrProduct(product._id, product.slugMenus)"
                 ng-click="goToProductDetails(product.type, product.code)" style="height: 80px; cursor: pointer">
-                    <td class="text-center" style="vertical-align: middle">{{product.code}}</td>
-                    <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template" ng-class="column.cell.class" class="text-center" style="vertical-align: middle"></td>
-                    <td class="text-center" style="vertical-align: middle">{{ product.type | nsProductTypeName }}</td>
+                    <td data-label="Code :" class="text-center" style="vertical-align: middle">{{product.code}}</td>
+                    <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template" ng-class="column.cell.class" class="text-center" style="vertical-align: middle" data-label={{column.cell.label}}></td>
+                    <td data-label="Type :" class="text-center" style="vertical-align: middle">{{ product.type | nsProductTypeName }}</td>
                     <!-- <td>{{momentDate(product.creationDate)}}</td> -->
-                    <td class="text-center" style="vertical-align: middle">
+                    <td data-label="Active :" class="text-center" style="vertical-align: middle">
                         <span style="font-size: 16px" ng-bind-html='product.active | checked'></span>
                     </td>
-                    <td class="text-center" style="vertical-align: middle">
+                    <td data-label="Visible :" class="text-center" style="vertical-align: middle">
                         <span style="font-size: 16px" ng-bind-html='product._visible | checked'></span>
                     </td> 
                 </tr>
