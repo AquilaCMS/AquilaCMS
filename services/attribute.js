@@ -24,9 +24,7 @@ const getAllAttributes = async (PostBody) => {
         PostBody.filter._type = {$in: ['products', null]};
     }
 
-    const result = await queryBuilder.find(PostBody);
-    result.datas.map((value) => value.type = utils.attributeCorrectOldTypeName(value.type));
-    return result;
+    return queryBuilder.find(PostBody);
 };
 
 const getAttribute = async (PostBody, lean) => {
@@ -95,7 +93,7 @@ const setAttribute = async (body) => {
             }
             await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
             await Users.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
-            if (body.type === 'Sélection multiple' || body.type === 'multiselect') {
+            if (body.type === 'multiselect') {
                 await editValues(att);
             }
             return att;

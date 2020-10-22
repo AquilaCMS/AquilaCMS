@@ -61,7 +61,7 @@ ClientControllers.controller("ClientCtrl", [
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
             });
-            
+
         };
         $scope.search = function () {
             $scope.onClientsPageChange(1);
@@ -135,7 +135,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         }
 
         getAttributesClient();
-        
+
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item.type;
         };
@@ -193,7 +193,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                         }
                     }
                 });
-                
+
                 {
                     //On récupére le nom des pays des adresses
                     for(let i = 0; i < $scope.client.addresses.length; i++)
@@ -226,7 +226,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
                 $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
                 $scope.downloadHistoryQueryKey =`product.translation.${$rootScope.adminLang}.name`
-                        
+
                 $scope.getDownloadHistory = function (page = 1) {
                     ProductsV2.getDownloadHistory({PostBody: {filter: $scope.downloadHistoryFilters, limit: $scope.downloadHistoryItemsPerPage, page: page, structure: '*'}}, function (response) {
                         $scope.downloadHistory = response.datas

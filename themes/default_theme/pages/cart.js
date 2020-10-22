@@ -15,8 +15,6 @@ import { listModulePage } from 'lib/utils';
 
 class PageCart extends NSPageCart {
     render() {
-        console.log(this.props)
-        console.log(this.state)
         const {
             lang, oCmsHeader, oCmsFooter, routerLang, sitename, t
         } = this.props;

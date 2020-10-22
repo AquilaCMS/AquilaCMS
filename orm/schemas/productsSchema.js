@@ -241,9 +241,6 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        // for (let attributes of this.attributes) {
-        //     attributes = utils.attributeCorrectNewTypeName(this.type);
-        // }
         for (let i = 0; i < oldPrd.images.length; i++) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
