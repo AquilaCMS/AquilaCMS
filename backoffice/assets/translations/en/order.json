@@ -5,6 +5,7 @@
         "PAYMENT_PENDING": "Pending payment",
         "PAYMENT_RECEIPT_PENDING": "Pending receipt of payment",
         "PAYMENT_CONFIRMATION_PENDING": "Pending confirmation of payment",
+        "PAYMENT_FAILED": "Payment failed",
         "PAID": "Paid",
         "PROCESSING": "Processing",
         "PROCESSED": "Processed", 

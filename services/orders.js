@@ -160,7 +160,11 @@ const paymentSuccess = async (query, updateObject) => {
 };
 
 const paymentFail = async (query, update) => {
-    update.$push = {historyStatus: 'PAYMENT_FAILED'};
+    if (update.$push) {
+        update.$push = {historyStatus: {status: 'PAYMENT_FAILED', date: Date.now()}, ...update.$push};
+    } else {
+        update.$push = {historyStatus: {status: 'PAYMENT_FAILED', date: Date.now()}};
+    }
     return Orders.findOneAndUpdate(query, update);
 };
 

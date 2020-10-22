@@ -5,6 +5,7 @@
         "PAYMENT_PENDING":"En attente de paiement",
         "PAYMENT_RECEIPT_PENDING":"En attente de réception de paiement",
         "PAYMENT_CONFIRMATION_PENDING":"En attente de confirmation de paiement",
+        "PAYMENT_FAILED":"Echec de paiment",
         "PAID":"Payé",
         "PROCESSING":"En cours de traitement",
         "PROCESSED":"Préparé",
