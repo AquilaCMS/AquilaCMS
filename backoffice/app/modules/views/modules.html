@@ -58,8 +58,14 @@
                         {{module.version}}
                     </td>
                     <td>
-                        <toggle ng-model="module.active" ng-change="toggleActive(module._id, module.name, module.active)" on="Activé" off="Désactivé"
-                            onstyle="btn btn-success btnsuccess" offstyle="btn btn-red"></toggle>
+                        <toggle
+                            ng-model="module.active"
+                            ng-change="toggleActive(module._id, module.name, module.active)"
+                            on="Activé"
+                            off="Désactivé"
+                            onstyle="btn btn-success btnsuccess"
+                            offstyle="btn btn-red"
+                        ></toggle>
                     </td>
                     <td>
                         <a href="#/{{module.url}}" class="btn btn-blue btn-with-icon" ng-disabled="!module.active || !module.url">
@@ -76,6 +82,7 @@
         </table>
     </div>
 </ns-box>
+
 <ns-box data-title="modules.t1" title-icon="css/images/ico-cogwheel-large.png" ng-show="showLoading">
     <div style="text-align: center;">
         <h1>{{message}}</h1>

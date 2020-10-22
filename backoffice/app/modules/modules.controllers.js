@@ -2,10 +2,10 @@ var ModulesControllers = angular.module('aq.modules.controllers', ['ui.toggle', 
 
 ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal) {
     $scope.showModuleLoading = false;
-    $scope.nsUploadFiles = {
+    $scope.nsUploadFiles     = {
         isSelected : false
     };
-    $scope.getDatas = function ()  {
+    $scope.getDatas          = function ()  {
         $http.post('/v2/modules', {
             PostBody : {
                 filter    : {},
@@ -17,7 +17,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                 page      : null
             }
         }).then(function (response) {
-            $scope.modules = response.data.datas;
+            $scope.modules           = response.data.datas;
             $scope.showModuleLoading = false;
         });
     };
@@ -108,11 +108,11 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
             } else {
                 for (const apiOrTheme of Object.keys(response.data.toBeChanged)) {
                     for (const [key, index] of Object.entries(response.data.toBeChanged[apiOrTheme])) {
-                        response.data.toBeChanged[apiOrTheme][key] = response.data.toBeChanged[apiOrTheme][index[0]];
+                        response.data.toBeChanged[apiOrTheme][key] = Array.isArray(index) ? index[0] : index;
                     }
                     if (response.data.toBeRemoved && response.data.toBeRemoved[apiOrTheme]) {
                         for (const [key, index] of Object.entries(response.data.toBeRemoved[apiOrTheme])) {
-                            response.data.toBeRemoved[apiOrTheme][key] = response.data.toBeRemoved[apiOrTheme][index[0]];
+                            response.data.toBeRemoved[apiOrTheme][key] = Array.isArray(index) ? index[0] : index;
                         }
                     }
                 }
@@ -184,7 +184,6 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
     $scope.restart = function (nomModule, active, deleteBool) {
         $scope.config = ConfigV2.environment(function () {
             $scope.showLoading = true;
-            $scope.progressValue = 0;
             $http.get('/restart').catch((err) => {});
             if (active && !deleteBool) {
                 $scope.message = `Activation du module ${nomModule} en cours, merci de patienter ...`;
@@ -196,10 +195,11 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
 
             $interval(() => {
                 $http.get('/serverIsUp').then(() => {
-                    if ($scope.config.appUrl.slice(-1) != '/') {
+                    if ($scope.config.appUrl.slice(-1) !== '/') {
                         $scope.config.appUrl += '/';
                     }
-                    location.href = window.location = $scope.config.appUrl + $scope.config.adminPrefix;
+                    window.location = $scope.config.appUrl + $scope.config.adminPrefix;
+                    location.href   = $scope.config.appUrl + $scope.config.adminPrefix;
                 });
             }, 10000);
         });
@@ -215,7 +215,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
 ModulesControllers.controller('ModulesCheckVersionCtrl', [
     '$scope', '$http', 'toastService', '$modal', '$modalInstance', 'checkModule', 'changeModuleActive',
     function ($scope, $http, toastService, $modal, $modalInstance, checkModule, changeModuleActive) {
-        $scope.checkModule = checkModule;
+        $scope.checkModule              = checkModule;
         $scope.alreadyInstalledPackages = angular.copy(checkModule.alreadyInstalled);
 
         $scope.save = function (form) {

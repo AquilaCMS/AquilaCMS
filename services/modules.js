@@ -2,6 +2,7 @@ const AdmZip         = require('adm-zip');
 const path           = require('path');
 const mongoose       = require('mongoose');
 const rimraf         = require('rimraf');
+const semver         = require('semver');
 const packageManager = require('../utils/packageManager');
 const QueryBuilder   = require('../utils/QueryBuilder');
 const modulesUtils   = require('../utils/modules');
@@ -102,7 +103,7 @@ const initModule = async (zipFile) => {
         if (moduleAquilaVersion) {
             const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
             const aquilaVersion = JSON.parse(packageAquila).version;
-            if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+            if (!semver.satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
                 throw NSErrors.ModuleAquilaVersionNotSatisfied;
             }
         }
@@ -507,58 +508,58 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
-        await Modules.updateOne({_id: idModule}, {files: [], active: false});
-
         console.log('Removing dependencies of the module...');
         // On supprime les dépendances du module
-        for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
-            let installPath;
-            let savePackagedependenciesPath;
-            let packagePath;
-            if (apiOrTheme === 'api') {
-                installPath                 = global.appRoot;
-                savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
-                packagePath                 = path.resolve(installPath, 'package.json');
-            } else if (apiOrTheme === 'theme') {
-                installPath                 = path.resolve(
-                    global.appRoot,
-                    'themes',
-                    global.envConfig.environment.currentTheme
-                );
-                savePackagedependenciesPath = path.join(installPath, 'package-theme.json');
-                packagePath                 = path.resolve(installPath, 'package.json');
-            }
-            const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
-            const packageJSON             = JSON.parse(await fs.readFile(packagePath));
-            console.log('packageJSON');
-            packageJSON.dependencies = {
-                ...packageJSON.dependencies,
-                ...toBeChanged[apiOrTheme]
-            };
-            const missing            = {};
-            for (const packageToDelete of Object.keys(toBeRemoved[apiOrTheme])) {
-                packageJSON.dependencies[packageToDelete] = undefined;
-            }
-            for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
-                let found = false;
-                for (const [name2] of Object.entries(packageJSON.dependencies)) {
-                    if (name === name2) {
-                        found = true;
-                        break;
+        if (_module.packageDependencies) {
+            for (const apiOrTheme of Object.keys(_module.packageDependencies)) {
+                let installPath;
+                let savePackagedependenciesPath;
+                let packagePath;
+                if (apiOrTheme === 'api') {
+                    installPath                 = global.appRoot;
+                    savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
+                    packagePath                 = path.resolve(installPath, 'package.json');
+                } else if (apiOrTheme === 'theme') {
+                    installPath                 = path.resolve(
+                        global.appRoot,
+                        'themes',
+                        global.envConfig.environment.currentTheme
+                    );
+                    savePackagedependenciesPath = path.join(installPath, 'package-theme.json');
+                    packagePath                 = path.resolve(installPath, 'package.json');
+                }
+                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
+                const packageJSON             = JSON.parse(await fs.readFile(packagePath));
+                packageJSON.dependencies      = {
+                    ...packageJSON.dependencies,
+                    ...toBeChanged[apiOrTheme]
+                };
+                const missing                 = {};
+                for (const packageToDelete of Object.keys(toBeRemoved[apiOrTheme])) {
+                    packageJSON.dependencies[packageToDelete] = undefined;
+                }
+                for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
+                    let found = false;
+                    for (const [name2] of Object.entries(packageJSON.dependencies)) {
+                        if (name === name2) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        missing[name] = version;
                     }
                 }
-                if (!found) {
-                    missing[name] = version;
-                }
+                packageJSON.dependencies = {
+                    ...packageJSON.dependencies,
+                    ...missing
+                };
+                await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                await packageManager.execCmd('yarn install', installPath);
             }
-            packageJSON.dependencies = {
-                ...packageJSON.dependencies,
-                ...missing
-            };
-            await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-            await packageManager.execCmd('yarn install', installPath);
         }
 
+        await Modules.updateOne({_id: idModule}, {files: [], active: false});
         console.log('Module desactivated');
         return Modules.find({});
     } catch (err) {
