@@ -198,7 +198,6 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         };
 
         $scope.getCountryByCode = function (code) {
-            debugger;
             if ($scope.countries && $scope.countries.datas) {
                 const country = $scope.countries.datas.find((country) => country.code === code)
                 if(country){
@@ -211,7 +210,6 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         };
 
         $scope.changeCountry = function () {
-            debugger;
             $scope.selectedCountry.country = $scope.countries.datas.find(function (country) {
                 return country.code === $scope.selectedCountry.code;
             });
