@@ -14,7 +14,7 @@
             </ul>
         </div>
         <div ng-show="search === '' && currentTab === group" ng-repeat="group in groups | filterListGeneral:group" class="tab-content">
-            <table class="table table-bordered table-hover">
+            <table class="shortTable table table-bordered table-hover">
                 <thead>
                     <tr>
                         <th translate>
@@ -30,8 +30,8 @@
                         ng-class-odd="'odd'" ng-class-even="'even'"
                         ng-repeat="block in cmsBlocks | filterListGeneral:group | orderBy:sortType:sortReverse | filter:search"
                         ng-click="goToCmsBlockDetails(block.code)">
-                        <td>{{block.code}}</td>
-                        <td>{{block.translation[defaultLang].description}}</td>
+                        <td data-label="Code :" >{{block.code}}</td>
+                        <td data-label="Description :" >{{block.translation[defaultLang].description}}</td>
                     </tr>
                 </tbody>
             </table>

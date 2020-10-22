@@ -1271,9 +1271,54 @@ div.scrollmenu a {
     display: inline;
 }
 
+img.ico{
+    width : 25px;
+    height: 25px;
+    max-width: none;
+    margin-left: -5px;
+}
 
+@media screen and (max-width: 767px) {
 
+    .btn-success, .btn-default, .btn-danger, .btn-warnin {
+        width : 45px;
+    }
+    button.btn-s\&q {
+        display : none;
+        visibility: hidden;
+    }
+    
+    button.btn span {
+        display : none;
+        visibility: hidden;
+    }
 
+    a.ico span {
+        display : none;
+        visibility: hidden;
+    }
+    
+    /*.btn-success {
+        visibility: hidden;
+    }*/
+
+}
+
+@media screen and (min-width: 768px) {
+    
+    button.btn i {
+        display : none;
+        visibility: hidden;
+    }
+    a.ico i {
+        display : none;
+        visibility: hidden;
+    }
+    /*.btn-success {
+        visibility: hidden;
+    }*/
+
+}
 
 /* ------------------------------------------------------------ *\
         II.  Regions
@@ -1611,12 +1656,14 @@ div.scrollmenu a {
 .btn-with-icon i+span {
     margin-left: 5px;
 }
+@media (min-width: 768px){
 
-.btn-success,
-.btn-default,
-.btn-danger,
-.btn-warning {
-    min-width: 162px;
+    .btn-success,
+    .btn-default,
+    .btn-danger,
+    .btn-warning {
+        min-width: 162px;
+    }
 }
 
 .btn-default {
@@ -3285,6 +3332,12 @@ input:-webkit-autofill {
         float: left;
         font-weight: bold;
     }
+
+    .shortTable tr{
+        display: block;
+        margin-bottom: 50px;
+    }
+
     /*.table td,
     .table th {
         width: 100%;
