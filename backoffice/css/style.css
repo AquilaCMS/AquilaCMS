@@ -1280,9 +1280,7 @@ img.ico{
 
 @media screen and (max-width: 767px) {
 
-    .btn-success, .btn-default, .btn-danger, .btn-warnin {
-        width : 45px;
-    }
+    
     button.btn-s\&q {
         display : none;
         visibility: hidden;
@@ -2412,7 +2410,25 @@ input:-webkit-autofill {
     .nav-access {
         padding-top: 0;
     }
+    .ico-tittle-mobile{
+        display : inline;
+        float : right;
+    }
+    
+    .ico-tittle-pc{
+        visibility: hidden;
+    }
+    .pull-right{
+        float : none !important;
+    }
 }
+
+@media (min-width: 768px) {
+    .ico-tittle-mobile{
+        visibility: hidden;
+    }
+}
+
 
 /* ------------------------------------------------------------ *\
         Nav Fixed
@@ -2423,7 +2439,7 @@ input:-webkit-autofill {
     /*height: 100vh;*/
     top: 60px;
     height: 100vh;
-    z-index: 1000;
+    z-index: 10000;
     left: 0;
     width: 55px;
     background: #576fa1;
@@ -3302,6 +3318,12 @@ input:-webkit-autofill {
     }
 }
 
+@media (min-width: 768px) {
+    .tdSize{
+        width: 15%
+    }
+}
+
 /* Mobile */
 
 @media (max-width: 767px) {
@@ -3333,9 +3355,21 @@ input:-webkit-autofill {
         font-weight: bold;
     }
 
+    .bigTable tr{
+        display: block;
+        margin-bottom: 200px;
+    }
+
+    .mediumTable tr{
+        display: block;
+        margin-bottom: 100px;
+    }
     .shortTable tr{
         display: block;
         margin-bottom: 50px;
+    }
+    .tdSize{
+        width: 100%
     }
 
     /*.table td,
@@ -4144,3 +4178,19 @@ a.ui-button:active,
     }
 }
 
+@media (min-width: 768px) {
+    .position {
+        position:sticky;
+        top:115px;
+        z-index:1000;
+        pointer-events:none;
+    }
+}
+@media (max-width: 767px) {
+    .position {
+        position:sticky;
+        top:5px;
+        z-index:1000;
+        pointer-events:none;
+    }
+}

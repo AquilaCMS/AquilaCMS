@@ -5,9 +5,26 @@
                 <i class="{{titleIcon}} i-title-style"></i>
             </span>
             <span translate translate-values="translateValues">{{title}}</span>
+            <ul class="list-actions  ico-tittle-mobile">
+                <li ng-if="hasClose">
+                    <a ng-href="{{closeHref}}" ng-click="closeClick()"><i class="ico-close"></i></a>
+                </li>
+                <li ng-if="hasEdit">
+                    <a ng-href="{{editHref}}" ng-click="editClick()"><i class="ico-pen"></i></a>
+                </li>
+                <li ng-if="hasAdd">
+                    <a ng-href="{{addHref}}" ng-click="addClick()"><i class="ico-add"></i></a>
+                </li>
+                <li ng-if="hasNew">
+                    <a class="btn btn-transparent btn-setting" ng-href="{{newHref}}" ng-click="newClick()">
+                        <i class="ico-plus-small"></i>
+                        <span translate>ns.new</span>
+                    </a>
+                </li>
+            </ul>
         </h2>
         <div class="box-header-actions">
-            <ul class="list-actions">
+            <ul class="list-actions  ico-tittle-pc">
                 <li ng-if="hasClose">
                     <a ng-href="{{closeHref}}" ng-click="closeClick()"><i class="ico-close"></i></a>
                 </li>
