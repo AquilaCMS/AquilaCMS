@@ -10,7 +10,7 @@ import {
 import ReactPagination from 'react-js-pagination';
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
-import { Link, Router } from 'routes';
+import routes, { Link, Router } from 'routes';
 import CMS from 'components/CMS';
 import Error from './_error';
 
@@ -58,7 +58,7 @@ class PageCategory extends NSPageCategory {
 
                         <div className="main">
                             <div className="shell">
-                                <NSBreadcrumb />
+                                <NSBreadcrumb gNext={{ routes, Link }} />
 
                                 { nsCms_extraText2 && nsCms_extraText2.content !== '' && <div style={{ marginBottom: '20px' }}><CMS content={nsCms_extraText2.content} hide_error="1" /></div> }
 
