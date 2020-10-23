@@ -2417,6 +2417,7 @@ input:-webkit-autofill {
     
     .ico-tittle-pc{
         visibility: hidden;
+        display: none;
     }
     .pull-right{
         float : none !important;
@@ -2426,6 +2427,7 @@ input:-webkit-autofill {
 @media (min-width: 768px) {
     .ico-tittle-mobile{
         visibility: hidden;
+        display: none;
     }
 }
 
@@ -2439,7 +2441,7 @@ input:-webkit-autofill {
     /*height: 100vh;*/
     top: 60px;
     height: 100vh;
-    z-index: 10000;
+    z-index: 9000;
     left: 0;
     width: 55px;
     background: #576fa1;

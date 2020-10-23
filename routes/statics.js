@@ -3,7 +3,7 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const {StaticsPreview}            = require('../orm/models');
 const ServiceStatic               = require('../services/statics');
-const ServiceStaticPreview        = require('../services/staticsPreview');
+const ServiceStaticPreview        = require('../services/preview');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
