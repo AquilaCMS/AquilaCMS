@@ -1,7 +1,7 @@
 <ns-box data-title="setAttribute.list.t1" title-icon="fa fa-align-justify fa-lg" new-href="#/{{type}}/setAttributes/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
 
-        <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+        <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
                id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
                 <tr role="row" class="pointer">
@@ -31,8 +31,8 @@
                     ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-click="goToSetAttributesDetails(setAttribute.code)"
                     ng-repeat="setAttribute in setAttributes | orderBy:sortType:sortReverse">
-                    <td class="sorting_1">{{setAttribute.code}}</td>
-                    <td class="sorting_1">{{setAttribute.name}}</td>
+                    <td data-label="Code :" class="sorting_1">{{setAttribute.code}}</td>
+                    <td data-label="Nom :" class="sorting_1">{{setAttribute.name}}</td>
                     <!--<td class=" ">
                         <a href="#/setAttributes/{{setAttribute.code}}" class="btn btn-blue btn-with-icon">
                             <i class="ico-magnifier-primary"></i>

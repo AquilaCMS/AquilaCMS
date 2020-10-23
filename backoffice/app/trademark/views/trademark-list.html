@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>-->
-        <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
+        <table class="shortTable table table-striped table-bordered bootstrap-datatable datatable dataTable"
                id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
             <tr role="row" style="cursor: pointer">
@@ -40,8 +40,8 @@
                 ng-repeat="trademark in trademarks | orderBy:sortType:sortReverse"
                 ng-click="editTrademark(trademark)"
                 style="cursor: pointer;">
-                <td class="  sorting_1">{{trademark.name}}</td>
-                <td class=" ">
+                <td data-label="Nom :" class="  sorting_1">{{trademark.name}}</td>
+                <td data-label="Etat :" class=" ">
                     <span ng-bind-html='trademark.active | checked'></span>
                 </td>
             </tr>

@@ -1,6 +1,27 @@
 (function ($, window, document, undefined)
 {
     var $doc = $(document);
+    var isMobile = {
+        Android() {
+            return navigator.userAgent.match(/Android/i);
+        },
+        BlackBerry() {
+            return navigator.userAgent.match(/BlackBerry/i);
+        },
+        iOS() {
+            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+        },
+        Opera() {
+            return navigator.userAgent.match(/Opera Mini/i);
+        },
+        Windows() {
+            return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+        },
+        any() {
+            return (typeof window !== 'undefined' ? isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows() : null) !== null;
+        },
+    };
+
 
     $doc.ready(function ()
     {
@@ -41,7 +62,7 @@
         $('.main .content').toggleClass('boxShrinkM');
         $('.fsbox').toggleClass('fsboxM');
 
-        if (window.matchMedia("(max-width: 767px)").matches)
+        if (isMobile.any())
         {
             $('.menuClick').on('click', function ()
             {

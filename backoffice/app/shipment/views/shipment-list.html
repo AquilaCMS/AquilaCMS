@@ -2,7 +2,7 @@
 
     <div id="deliveryList" class="tab-pane fade in active">
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+            <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                 <thead>
                 <tr role="row">
                     <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 150px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
@@ -33,12 +33,12 @@
                 <tr class="pointer"
                     ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-repeat="shipment in shipments | orderBy:sort.type:sort.reverse">
-                    <td ng-click="goToShipmentDetails(shipment._id)"><img ng-src="{{shipment.url_logo}}" alt="{{shipment.translation[lang].name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
-                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.type | shipmentTypeName}}</td>
-                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
-                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation[lang].name}}</td>
-                    <td ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
-                    <td style="vertical-align: middle"><span ng-bind-html='shipment.active | checked'></span></td>
+                    <td data-label="Logo :" ng-click="goToShipmentDetails(shipment._id)"><img ng-src="{{shipment.url_logo}}" alt="{{shipment.translation[lang].name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
+                    <td data-label="Type :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.type | shipmentTypeName}}</td>
+                    <td data-label="Code :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
+                    <td data-label="Nom :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation[lang].name}}</td>
+                    <td data-label="Minimum d'achat :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
+                    <td data-label="Actif :" style="vertical-align: middle"><span ng-bind-html='shipment.active | checked'></span></td>
                 </tr>
                 </tbody>
             </table>

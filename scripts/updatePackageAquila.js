@@ -3,7 +3,10 @@
  * Before the copy, the dependencies are parsed in an array type.
  */
 
-const fs           = require('fs');
+const fs        = require('fs');
+const path      = require('path');
+const {isEqual} = require('../utils/utils');
+
 let aquilaRootPath = '';
 let packageName    = '';
 if (process.argv[2] !== undefined) {
@@ -16,49 +19,45 @@ if (process.argv[3] !== undefined) {
 } else {
     packageName = 'package-aquila.json';
 }
-const packagePath       = `${aquilaRootPath}/package.json`;
-const packageAquilaPath = `${aquilaRootPath}/${packageName}`;
+const packagePath       = path.resolve(`${aquilaRootPath}/package.json`);
+const packageAquilaPath = path.resolve(`${aquilaRootPath}/${packageName}`);
 
-const packageContent           = fs.readFileSync(packagePath, 'utf-8', function (err) {
+fs.readFile(packagePath, 'utf-8', function (err, packageContent) {
     if (err) throw err;
-});
-const packageObj               = JSON.parse(packageContent);
-const newDependencies          = packageObj.dependencies;
-const newDependenciesTab       = [];
-let newDependenciesLineContent = '';
 
-for (const key of Object.keys(newDependencies)) {
-    newDependenciesLineContent = `${key}@${newDependencies[key]}`;
-    newDependenciesTab.push(newDependenciesLineContent);
-}
+    const newPackageContent = JSON.stringify({
+        dependencies : JSON.parse(packageContent).dependencies
+    }, null, 4);
 
-const newPackage        = {dependencies: newDependenciesTab};
-const newPackageContent = JSON.stringify(newPackage, null, 4);
-
-/*
- * If there is a change between new and old dependencies, package-aquila.json is removed
- * and a new package-aquila.json is create with the new array of dependencies
- */
-try {
-    if (fs.existsSync(packageAquilaPath)) {
-        const oldPackageContent = fs.readFileSync(packageAquilaPath, 'utf8', function (err) {
-            if (err) throw err;
+    /*
+     * If there is a change between new and old dependencies, package-aquila.json is removed
+     * and a new package-aquila.json is create with the new array of dependencies
+     */
+    try {
+        fs.readFile(packageAquilaPath, 'utf8', function (err, oldPackageContent) {
+            if (err) {
+                if (err.code !== 'ENOENT') throw err;
+                fs.writeFile(packageAquilaPath, newPackageContent, function (err) {
+                    if (err) throw err;
+                    console.log('File is replaced successfully');
+                });
+            } else {
+                // eslint-disable-next-line eqeqeq
+                if (isEqual(oldPackageContent, newPackageContent)) {
+                    console.log(`No change in ${packageName}`);
+                    process.exit(0);
+                } else {
+                    fs.unlink(packageAquilaPath, function (err) {
+                        if (err) throw err;
+                        fs.writeFile(packageAquilaPath, newPackageContent, function (err) {
+                            if (err) throw err;
+                            console.log('File is replaced successfully');
+                        });
+                    });
+                }
+            }
         });
-        // eslint-disable-next-line eqeqeq
-        if (oldPackageContent == newPackageContent) {
-            console.log(`No change in ${packageName}`);
-            process.exit(0);
-        } else {
-            fs.unlink(packageAquilaPath, function (err) {
-                if (err) throw err;
-            });
-        }
+    } catch (err) {
+        console.error(err);
     }
-
-    fs.writeFile(packageAquilaPath, newPackageContent, function (err) {
-        if (err) throw err;
-        console.log('File is replaced successfully');
-    });
-} catch (err) {
-    console.error(err);
-}
+});
