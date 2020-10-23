@@ -65,7 +65,7 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', 'Vide le cache des images', 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove temp file') {
                             await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', 'Remove temporary files', 'service', 'user', '', true, '');
-                        } else if (tJobsSystem[i] === 'Remove preview') {
+                        } else if (tJobsSystem[i] === 'Remove previews') {
                             await setJob(undefined, tJobsSystem[12], '0 0 0 0 0', '/services/devScripts/removePreviews', 'Remove previews', 'service', 'user', '', true, '');
                         }
                     } catch (error) {
