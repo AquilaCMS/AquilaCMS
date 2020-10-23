@@ -2439,7 +2439,7 @@ input:-webkit-autofill {
     /*height: 100vh;*/
     top: 60px;
     height: 100vh;
-    z-index: 1000;
+    z-index: 10000;
     left: 0;
     width: 55px;
     background: #576fa1;
