@@ -1,6 +1,5 @@
 const path     = require('path');
 const fs       = require('./fsp');
-const npm      = require('./npm');
 const utils    = require('./utils');
 const NSError  = require('./errors/NSError');
 const NSErrors = require('./errors/NSErrors');
@@ -63,74 +62,33 @@ const errorModule = async (target_path_full) => {
     }
 };
 
-const cleanPackageVersion = async (dependencies) => {
-    for (let i = 0; i < dependencies.length; i++) {
-        let dependency = dependencies[i];
-        dependency     = dependency.split('@');
-        if (dependency.length !== 0 && dependency[dependency.length - 1] !== '') {
-            if (dependency.length === 1) {
-                dependency.push('latest');
-            }
-            if (dependency[0] === '') {
-                dependency.splice(0, 1);
-                dependency[0] = `@${dependency[0]}`;
-            }
-            const {result} = await npm.npmCommand('dist-tag', ['ls', dependency[0]]);
-            for (const [key, elem] of Object.entries(result)) {
-                if (dependency[1] === key) {
-                    dependency[1] = elem;
-                }
-            }
-            dependencies[i] = dependency.join('@');
-        } else if (dependencies[i].endsWith('@')) {
-            dependencies[i] = dependencies[i].slice(0, dependencies[i].length - 1);
-        }
-    }
-    return dependencies;
-};
-
 const compareDependencies = (myModule, modulesActivated, install = true) => {
     const sameDependencies = {
         api   : {},
         theme : {}
     };
     for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
-        for (const moduleDependency of Object.values(myModule.packageDependencies[apiOrTheme])) {
-            const dependencyModule = moduleDependency.split('@');
-            if (dependencyModule[0] === '') {
-                dependencyModule.splice(0, 1);
-                dependencyModule[0] = `@${dependencyModule[0]}`;
-            }
-            if (!sameDependencies[apiOrTheme][dependencyModule[0]]) {
-                if (install) {
-                    sameDependencies[apiOrTheme][dependencyModule[0]] = new Set();
-                } else {
-                    sameDependencies[apiOrTheme][dependencyModule[0]] = [];
-                }
+        for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
+            if (!sameDependencies[apiOrTheme][name]) {
+                sameDependencies[apiOrTheme][name] = install ? new Set() : [];
             }
             if (install) {
-                sameDependencies[apiOrTheme][dependencyModule[0]].add(moduleDependency);
+                sameDependencies[apiOrTheme][name].add(version);
             } else {
-                sameDependencies[apiOrTheme][dependencyModule[0]].push(moduleDependency);
+                sameDependencies[apiOrTheme][name].push(version);
             }
             if (modulesActivated.length > 0) {
                 for (const elem of modulesActivated) {
                     if (
                         elem.packageDependencies
                         && elem.packageDependencies[apiOrTheme]
-                        && elem.packageDependencies[apiOrTheme].length > 0
                     ) {
-                        for (const elemDependencies of elem.packageDependencies[apiOrTheme]) {
-                            const dependencyElem = elemDependencies.split('@');
-                            if (dependencyElem[0] === '') {
-                                dependencyElem.splice(0, 1);
-                                dependencyElem[0] = `@${dependencyElem[0]}`;
-                            }
-                            if (dependencyElem[0] === dependencyModule[0]) {
+                        for (const [name1, version1] of Object.entries(elem.packageDependencies[apiOrTheme])) {
+                            if (name1 === name) {
                                 if (install) {
-                                    sameDependencies[apiOrTheme][dependencyElem[0]].add(elemDependencies);
+                                    sameDependencies[apiOrTheme][name1].add(version1);
                                 } else {
-                                    sameDependencies[apiOrTheme][dependencyElem[0]].push(elemDependencies);
+                                    sameDependencies[apiOrTheme][name1].push(version1);
                                 }
                             }
                         }
@@ -195,27 +153,6 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
             throw error;
         }
     }
-};
-
-/**
- * cleanAndToBeChanged
- * @param {string[]} dependencies dependencies
- * @param {{api: {}, theme: {}}} toBeChanged toBeChanged
- */
-const cleanAndToBeChanged = async (dependencies, toBeChanged) => {
-    let allModules = [];
-    for (const dependency of await cleanPackageVersion(dependencies)) {
-        const packageName = dependency.split('@')[0];
-        if (toBeChanged[packageName]) {
-            const choosedVersionPackageName = toBeChanged[packageName].split('@')[0];
-            if (packageName === choosedVersionPackageName) {
-                allModules = [...allModules, toBeChanged[packageName]];
-            }
-        } else {
-            allModules = [...allModules, dependency];
-        }
-    }
-    return allModules;
 };
 
 /**
@@ -302,11 +239,9 @@ module.exports = {
     createListModuleFile,
     displayListModule,
     errorModule,
-    cleanPackageVersion,
     compareDependencies,
     checkModuleDepencendiesAtInstallation,
     checkModuleDepencendiesAtUninstallation,
-    cleanAndToBeChanged,
     modulesLoadInit,
     modulesLoadInitAfter
 };

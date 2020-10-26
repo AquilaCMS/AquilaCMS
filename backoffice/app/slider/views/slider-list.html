@@ -1,5 +1,5 @@
 <ns-box data-title="slider.list.t1" title-icon="fa fa-film fa-lg" new-href="#/component/slider/new">
-    <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+    <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
         <thead>
             <tr>
                 <th translate>slider.list.code</th>
@@ -8,8 +8,8 @@
         </thead>
         <tbody>
             <tr class="pointer" ng-repeat="slider in sliders | orderBy:'code'" ng-click="goToSliderDetails(slider._id)">
-                <td>{{slider.code}}</td>
-                <td>{{slider.items.length}}</td>
+                <td data-label="Code :">{{slider.code}}</td>
+                <td data-label="Images :">{{slider.items.length}}</td>
             </tr>
         </tbody>
     </table>

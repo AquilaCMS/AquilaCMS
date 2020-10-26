@@ -6,7 +6,7 @@
         </div>
         <br/>
 
-        <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable table-hover"
+        <table class="shortTable table table-striped table-bordered bootstrap-datatable datatable dataTable table-hover"
                id="DataTables_Table_0">
             <thead>
             <tr role="row">
@@ -28,16 +28,16 @@
             <tbody>
             <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
                 ng-repeat="territory in territoriesList">
-                <td ng-click="detail(territory)">
+                <td data-label="Nom :" ng-click="detail(territory)">
                     {{territory.translation[firstLang].name}}
                 </td>
-                <td ng-click="detail(territory)">
+                <td data-label="Code :" ng-click="detail(territory)">
                     {{territory.code}}
                 </td>
-                <td ng-click="detail(territory)">
+                <td data-label="Type :" ng-click="detail(territory)">
                     {{territory.type}}
                 </td>
-                <td ng-click="detail(territory)">
+                <td data-label="Enfants :" ng-click="detail(territory)">
                     {{territory.children.length}}
                 </td>
                 <td style="width:110px;">

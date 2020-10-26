@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+        <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
                 <tr role="row">
                     <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
@@ -74,14 +74,14 @@
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr class="pointer" ng-click="detail(promo)" ng-repeat="promo in promos" ng-class-odd="'odd'" ng-class-even="'even'">
-                    <td>{{promo.name}}</td>
-                    <td>{{promo.type === "1" ? "Panier" : "Catalogue"}}</td>
-                    <td>{{ momentDate(promo.dateStart) }}</td>
-                    <td>{{ momentDate(promo.dateEnd) }}</td>
-                    <td>{{ momentDate(promo.createdAt) }}</td>
-                    <td>{{promo.priority}}</td>
-                    <td>{{promo.applyNextRules ? "Oui" : "Non"}}</td>
-                    <td>{{promo.actif ? "Actif" : "Non actif"}}</td>
+                    <td data-label="Nom :">{{promo.name}}</td>
+                    <td data-label="Type :">{{promo.type === "1" ? "Panier" : "Catalogue"}}</td>
+                    <td data-label="Date début :">{{ momentDate(promo.dateStart) }}</td>
+                    <td data-label="Date fin :">{{ momentDate(promo.dateEnd) }}</td>
+                    <td data-label="Date Création :">{{ momentDate(promo.createdAt) }}</td>
+                    <td data-label="Priorité :">{{promo.priority}}</td>
+                    <td data-label="Appliquer promo de priorité inférieur :">{{promo.applyNextRules ? "Oui" : "Non"}}</td>
+                    <td data-label="Actif :">{{promo.actif ? "Actif" : "Non actif"}}</td>
                 </tr>
             </tbody>
         </table>

@@ -30,8 +30,8 @@
                 </thead>
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                     <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="contact in contacts" class="pointer" ng-click="details(contact._id)">
-                        <td>{{contact._id}}</td>
-                        <td ng-repeat="col in cols">
+                        <td data-label="Id :">{{contact._id}}</td>
+                        <td ng-repeat="col in cols" data-label="{{col}} :">
                             {{contact.data[col]}}
                         </td>
                     </tr>
