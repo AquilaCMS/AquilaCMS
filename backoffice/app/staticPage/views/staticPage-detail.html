@@ -1,6 +1,6 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="saveStatic()" role="form">
     <ns-box data-title="static.detail.t1" title-icon="fa fa-file-text fa-lg" close-href="#/staticPage">
-        <ns-buttons form="form" return-path="/staticPage" is-edit-mode="true" remove="removePage(static)" save-and-quit="saveStatic(true)" hide-remove="static.code === 'home'">
+        <ns-buttons form="form" return-path="/staticPage" is-edit-mode="true" remove="removePage(static)" additionnal-buttons="additionnalButtons" save-and-quit="saveStatic(true)" hide-remove="static.code === 'home'">
             
             <div class="form-group">
                 <div class="col-sm-12">
