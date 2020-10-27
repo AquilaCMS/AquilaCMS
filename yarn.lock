@@ -47,13 +47,6 @@
   dependencies:
     cross-fetch "3.0.5"
 
-"@aquilacms/sendcloud@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@aquilacms/sendcloud/-/sendcloud-1.0.0.tgz#6538139981d9a5c5d27da80a6526374c2afefa4e"
-  integrity sha512-Tk5iQJMJ+JWdM9W519UyGPic5QItdwjoEyKe+IDt0u2QRG8WopXoctrQ4N5aQEwETh6WWuQXQNRVgMYG/1wrPA==
-  dependencies:
-    axios "^0.20.0"
-
 "@babel/code-frame@7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.8.3.tgz#33e25903d7481181534e12ec0a25f16b6fcf419e"
@@ -1048,7 +1041,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@haegemonia/express-jsdoc-swagger@latest":
+"@haegemonia/express-jsdoc-swagger@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@haegemonia/express-jsdoc-swagger/-/express-jsdoc-swagger-1.0.2.tgz#e4d326960b5e5c4f674c37d956ee4cea72f9ab5c"
   integrity sha512-DPWqK+IiNClR5NHa5V8jCXDI/QFk9yPWbiZJeaSfjqJcSvmzwBUaF7No4JzFXkq+C+b6LSFXiEeuJTsZTLUkDQ==
@@ -1881,13 +1874,6 @@ axios@0.19.2, axios@^0.19.0:
   integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
   dependencies:
     follow-redirects "1.5.10"
-
-axios@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
-  integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
-  dependencies:
-    follow-redirects "^1.10.0"
 
 babel-code-frame@^6.22.0:
   version "6.26.0"
@@ -4102,6 +4088,11 @@ eslint-plugin-align-assignments@^1.1.2:
   resolved "https://registry.yarnpkg.com/eslint-plugin-align-assignments/-/eslint-plugin-align-assignments-1.1.2.tgz#83e1a8a826d4adf29e82b52d0bb39c88b301b576"
   integrity sha512-I1ZJgk9EjHfGVU9M2Ex8UkVkkjLL5Y9BS6VNnQHq79eHj2H4/Cgxf36lQSUTLgm2ntB03A2NtF+zg9fyi5vChg==
 
+eslint-plugin-angular@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-angular/-/eslint-plugin-angular-4.0.1.tgz#f6c01d2a1e549d603e29eceb8615b5a989863a5e"
+  integrity sha512-OaW5G461C2lIkOG+/bhnBoXB9UQm/r0Dj2Qf9uiIN0/ncvf2Llp30L0q1tqWkN8/CxyBwQKh1v0hpCLLDjaIKQ==
+
 eslint-plugin-import@^2.22.1:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.22.1.tgz#0896c7e6a0cf44109a2d97b95903c2bb689d7702"
@@ -4750,11 +4741,6 @@ follow-redirects@1.5.10:
   integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
   dependencies:
     debug "=3.1.0"
-
-follow-redirects@^1.10.0:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.0.tgz#b42e8d93a2a7eea5ed88633676d6597bc8e384db"
-  integrity sha512-aq6gF1BEKje4a9i9+5jimNFIpq4Q1WiwBToeRK5NvZBd/TRsmW8BsJfOEGkr76TbOyPVD3OVDN910EcUNtRYEA==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -10916,9 +10902,9 @@ swagger-ui-express@^4.1.4:
     swagger-ui-dist "^3.18.1"
 
 systeminformation@^4.23.3:
-  version "4.27.3"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.3.tgz#3fc00b34425807915294f4ed3e86bbc7c85ee1b8"
-  integrity sha512-0Nc8AYEK818h7FI+bbe/kj7xXsMD5zOHvO9alUqQH/G4MHXu5tHQfWqC/bzWOk4JtoQPhnyLgxMYncDA2eeSBw==
+  version "4.27.11"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.11.tgz#6dbe96e48091444f80dab6c05ee1901286826b60"
+  integrity sha512-U7bigXbOnsB8k1vNHS0Y13RCsRz5/UohiUmND+3mMUL6vfzrpbe/h4ZqewowB+B+tJNnmGFDj08Z8xGfYo45dQ==
 
 table@^5.2.3:
   version "5.4.6"
