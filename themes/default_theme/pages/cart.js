@@ -45,7 +45,7 @@ class PageCart extends NSPageCart {
                                             <div className="section__body">
                                                 <div className="products-cart">
                                                     <div className="products__head">
-                                                        <span className="counter">{cart && cart.items ? cart.items.length : 0} {t('cart:page.cart.products')}</span>
+                                                        <span className="counter">{cart && cart.items ? cart.items.filter(item => !item.typeDisplay).length : 0} {t('cart:page.cart.products')}</span>
 
                                                         <div className="products__labels">
                                                             <ul>
@@ -68,7 +68,7 @@ class PageCart extends NSPageCart {
 
                                                     <div className="products__body">
                                                         {
-                                                            cart && cart.items && cart.items.map((item, index) => {
+                                                            cart && cart.items && cart.items.filter(item => !item.typeDisplay).map((item, index) => {
                                                                 let basePriceATI = null;
                                                                 let descPromo    = '';
                                                                 let descPromoT   = '';
