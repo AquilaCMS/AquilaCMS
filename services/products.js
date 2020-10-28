@@ -763,7 +763,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
  * Controle la cohérence de chaque produit
  * @returns {object}  Informations sur les produits incohérent
  */
-const controlAllProducts = async () => {
+const controlAllProducts = async (option) => {
     try {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
@@ -771,8 +771,12 @@ const controlAllProducts = async () => {
         let fixAttributs  = false;
         let returnErrors  = '';
         let returnWarning = '';
-
-        const productsList = await Products.find({});
+        let productsList;
+        if (option) {
+            productsList = [await Products.findOne({_id: mongoose.Types.ObjectId(option)})];
+        } else {
+            productsList = await Products.find({});
+        }
         for (const oneProduct of productsList) {
             // Control du code
             if (typeof oneProduct.code === 'undefined' || oneProduct.code === '') {
