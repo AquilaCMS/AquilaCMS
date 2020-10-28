@@ -2667,6 +2667,8 @@ figure.product__image {text-align: center;}
 
 .product .product__image img:hover { transform:scale(1.25); }
 
+.product .product__entry { width: 60% }
+
 /*  Product Price  */
 
 .product-price { height: 50px; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; margin-bottom: 5px; }
@@ -2773,6 +2775,7 @@ figure.product__image {text-align: center;}
 
     .product .product__image { width: 100px; padding-right: 20px; display: block; min-height: 0; }
     .product .product__content { position: relative; text-align: left; padding-left: 0; width: calc(100% - 100px); padding-right: 34px; }
+    .product .product__entry { width: 50%; }
 
     .product p,
     .product .product-qty,
