@@ -10902,9 +10902,9 @@ swagger-ui-express@^4.1.4:
     swagger-ui-dist "^3.18.1"
 
 systeminformation@^4.23.3:
-  version "4.27.3"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.3.tgz#3fc00b34425807915294f4ed3e86bbc7c85ee1b8"
-  integrity sha512-0Nc8AYEK818h7FI+bbe/kj7xXsMD5zOHvO9alUqQH/G4MHXu5tHQfWqC/bzWOk4JtoQPhnyLgxMYncDA2eeSBw==
+  version "4.27.11"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.11.tgz#6dbe96e48091444f80dab6c05ee1901286826b60"
+  integrity sha512-U7bigXbOnsB8k1vNHS0Y13RCsRz5/UohiUmND+3mMUL6vfzrpbe/h4ZqewowB+B+tJNnmGFDj08Z8xGfYo45dQ==
 
 table@^5.2.3:
   version "5.4.6"
