@@ -2667,7 +2667,7 @@ figure.product__image {text-align: center;}
 
 .product .product__image img:hover { transform:scale(1.25); }
 
-.product .product__entry { width: 60% }
+.product--horizontal .product__entry { width: 60% }
 
 /*  Product Price  */
 
