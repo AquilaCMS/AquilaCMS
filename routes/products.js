@@ -1,5 +1,6 @@
 const aquilaEvents                = require('../utils/aquilaEvents');
 const ServiceProduct              = require('../services/products');
+const ProductPreview              = require('../services/preview');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const {getDecodedToken}           = require('../services/auth');
@@ -229,7 +230,7 @@ async function getProductsSearchObj(req, res, next) {
  */
 async function preview(req, res, next) {
     try {
-        const url = await ServiceProduct.preview(req.body);
+        const url = await ProductPreview.preview(req.body);
         return res.json({url});
     } catch (err) {
         next(err);

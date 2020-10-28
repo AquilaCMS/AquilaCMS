@@ -1,6 +1,5 @@
 const moment                  = require('moment-business-days');
 const path                    = require('path');
-const URL                     = require('url');
 const mongoose                = require('mongoose');
 const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
@@ -20,11 +19,8 @@ const {
     Products,
     ProductsPreview,
     ProductSimple,
-    ProductSimplePreview,
     ProductBundle,
-    ProductBundlePreview,
     ProductVirtual,
-    ProductVirtualPreview,
     Categories,
     SetAttributes,
     Attributes,
@@ -1490,43 +1486,6 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
-const preview = async (body) => {
-    let preview = {};
-    if (await ProductsPreview.findOne({code: body.code})) {
-        body.updatedAt = new Date();
-        preview        = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
-    } else {
-        let newPreview;
-        switch (body.type) {
-        case 'simple':
-            newPreview           = new ProductSimplePreview(body);
-            newPreview.kind      = 'SimpleProductPreview';
-            newPreview.updatedAt = new Date();
-            preview              = await newPreview.save();
-            break;
-        case 'bundle':
-            newPreview           = new ProductBundlePreview(body);
-            newPreview.kind      = 'BundleProductPreview';
-            newPreview.updatedAt = new Date();
-            preview              = await newPreview.save();
-            break;
-        case 'virtual':
-            newPreview           = new ProductVirtualPreview(body);
-            newPreview.kind      = 'VirtualProductPreview';
-            newPreview.updatedAt = new Date();
-            preview              = await newPreview.save();
-            break;
-        default:
-            break;
-        }
-    }
-    if (body.lang) {
-        return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
-    }
-    const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-    return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
-};
-
 module.exports = {
     getProducts,
     getProduct,
@@ -1547,6 +1506,5 @@ module.exports = {
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields,
-    preview
+    restrictedFields
 };

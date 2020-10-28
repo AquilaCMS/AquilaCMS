@@ -11,17 +11,19 @@
                     disable-save="disableSave"
                     additionnal-buttons="additionnalButtons">
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
-                <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
-                <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
-                <li><a data-toggle="tab" href="#photos" target="_self" translate>simple.pics</a></li>
-                <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
-                <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
-                <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
-                <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
-                <li><a data-toggle="tab" href="#downloadHistory" target="_self" ng-click="getDownloadHistory(downloadHistoryPage)" translate>product.virtual.downloadHistory</a></li>
-            </ul>
+            <div class="scrollmenu ng-scope">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
+                    <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
+                    <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
+                    <li><a data-toggle="tab" href="#photos" target="_self" translate>simple.pics</a></li>
+                    <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
+                    <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
+                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
+                    <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
+                    <li><a data-toggle="tab" href="#downloadHistory" target="_self" ng-click="getDownloadHistory(downloadHistoryPage)" translate>product.virtual.downloadHistory</a></li>
+                </ul>
+            </div>
             <div class="tab-content">
                 <div id="general" class="tab-pane fade in active">
                     <ns-product-general product="product" lang="lang" is-edit-mode="isEditMode" product-type="'virtual'" form="form"></ns-product-general>
