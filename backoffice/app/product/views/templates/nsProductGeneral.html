@@ -6,13 +6,22 @@
         </div>
     </div>
 </div> -->
-<span class="label label-info pull-right">
-    <span translate>product.general.pdtType</span> :
-    <span class="badge">{{productTypeName}}</span>
+<span class="pull-right" style="position:absolute;right:5%;">
+    <span class="label label-info" style="display:inline; margin-bottom: 10px;">
+        <span translate>product.general.pdtType</span> :
+        <span class="badge">{{productTypeName}}</span>
+    </span>
+    <span bind-html-compile="t.component_template" ng-repeat="t in test" style="display:inline;"></span>
 </span>
-
+<style>
+    .col-sm-11{
+        width:70%;
+    }
+    .form-goup{
+        display: inline;
+    }
+</style>
 <h3 translate>product.general.infoGen</h3>
-
 <div class="form-group">
     <div class="col-sm-11">
         <label for="code" class="col-sm-2 control-label" translate>product.general.code</label>
@@ -33,6 +42,15 @@
             <div class="ns-error-message">
                 <div ng-show="(form.name.$dirty || form.nsSubmitted) && form.name.$error.required" translate>product.general.fieldReq</div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="code_ean" class="col-sm-2 control-label" translate>product.general.ean13</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="code_ean" name="code_ean" ng-model="product.code_ean">
         </div>
     </div>
 </div>
@@ -77,6 +95,16 @@
     </div>
 </div>
 
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="set_attributes" class="col-sm-2 control-label" translate>product.general.jeuAttr</label>
+        <div class="col-sm-6">
+            <select id="set_attributes" name="set_attributes" class="form-control"
+                    ng-options="setAttr as setAttr.name for setAttr in setAttributes track by setAttr.code" ng-model="product.set_attributes" ng-change="loadNewAttrs()">
+            </select>
+        </div>
+    </div>
+</div>
 
 <!-- <div class="form-group">
     <div class="col-sm-11">
@@ -112,13 +140,13 @@
                 <ul class="list-radios">
                     <li>
                         <div class="radio">
-                            <input disabled type="radio" class="switch-radio" ng-value="true" ng-init="disableActifVisible=false" ng-model="disableActifVisible">
+                            <input disabled type="radio" class="switch-radio" ng-value="true" ng-model="false">
                             <label class="form-label">Oui</label>
                         </div>
                     </li>
                     <li>
                         <div class="radio">
-                            <input disabled type="radio" class="switch-radio" ng-value="false" ng-init="disableActifVisible=false" ng-model="disableActifVisible">
+                            <input disabled type="radio" class="switch-radio" ng-value="false" ng-model="false">
                             <label class="form-label">Non</label>
                         </div>
                     </li>
@@ -131,16 +159,6 @@
         <div bind-html-compile="product.component_template"></div>
     </div>
 
-</div>
-
-<div class="form-group">
-    <div class="col-sm-11">
-        <label for="slug" class="col-sm-2 control-label" translate>product.general.metaDesc</label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="metadesc" name="metadesc"
-                ng-model="product.translation[lang].metaDesc">
-        </div>
-    </div>
 </div>
 
 <div class="form-group">

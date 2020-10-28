@@ -276,10 +276,10 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
-    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
+    "$scope", "$filter", "ProductSeo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
+    function ($scope, $filter, ProductSeo, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
-
+        $scope.test = ProductSeo;
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
             $scope.setAttributes = datas;
 

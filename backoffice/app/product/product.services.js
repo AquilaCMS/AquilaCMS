@@ -96,6 +96,11 @@ ProductServices.factory("ProductService", [
     }
 ]);
 
+ProductServices.service('ProductSeo', function ()
+{
+    return [];
+});
+
 ProductServices.service("ProductColumns", function () {
     return [
         {
