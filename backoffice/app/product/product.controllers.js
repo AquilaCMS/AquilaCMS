@@ -294,6 +294,32 @@ ProductControllers.controller("nsProductGeneral", [
             }
         });
 
+        $scope.productCoherence = function (product){
+            $modal.open({
+                templateUrl: 'app/product/views/modals/coherence.html',
+                controller: function ($scope, $modalInstance, JobPlayImmediate, $sce, ExecRules, ProductsV2) {
+                    $scope.product = product;
+                    JobPlayImmediate.play({ _id : '5f7c28b661048278876d8f3f', option : $scope.product.id}, function(response){
+                        $scope.modal = response;
+                    });
+                    $scope.trustHtml = function(){
+                        return $sce.trustAsHtml($scope.modal.data.lastExecutionResult);
+                    }
+                    $scope.cancel = function () {
+                        $modalInstance.close('cancel');
+                    };
+                },
+                resolve: {
+                    product: function () {
+                        return product;
+                    },
+                    
+                }
+            }).result.then(function () {
+
+            });
+        }
+
         $scope.changeActiveVisible = function(product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',

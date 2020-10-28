@@ -7,11 +7,14 @@
     </div>
 </div> -->
 <span class="pull-right" style="position:absolute;right:5%;">
-    <span class="label label-info" style="display:inline; margin-bottom: 10px;">
+    <span class="label label-info" ng-click="productCoherence(product)" style="cursor:pointer;display:block;margin-bottom:10px;margin-top:10px;">
+        <span translate>product.general.coherenceTitle</span>
+    </span>
+    <span class="label label-info" style="display:block; margin-bottom: 10px;margin-top:10px;">
         <span translate>product.general.pdtType</span> :
         <span class="badge">{{productTypeName}}</span>
     </span>
-    <span bind-html-compile="t.component_template" ng-repeat="t in test" style="display:inline;"></span>
+    <span bind-html-compile="t.component_template" ng-repeat="t in test" style="display:block;"></span>
 </span>
 <style>
     .col-sm-11{
