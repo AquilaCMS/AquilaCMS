@@ -10,7 +10,7 @@
                         <div class="col-sm-12">
                             <label for="type" class="col-sm-3 control-label" translate>mail.detail.type</label>
                             <div class="col-sm-9">
-                                <select name="type" class="form-control" id="type" ng-model="mail.type">
+                                <select name="type" class="form-control" id="type" ng-model="mail.type" ng-change="updateMailType()">
                                     <option ng-repeat="option in mailTypes" value="{{option.code}}">{{option.name}}</option>
                                 </select>
                             </div>
@@ -101,78 +101,166 @@
             
 
             <div class="form-group">
-                <div class="col-sm-11">
-                    <label class="col-sm-12"><span translate>mail.detail.varDispo</span><br />
-                        <span style="font-size:11px;font-weight: normal"><span translate>mail.detail.deuxAcc </span> {{variable}}</span>
+                <div ng-if="!mail.type" style="text-align:center">
+                    <b translate>mail.desc.empty<b>
+                </div>
+                <div ng-if="mail.type" class="col-sm-4">
+                    <label><span translate>mail.detail.varDispo</span><br />
+                        <span style="font-size:11px;font-weight: normal"><span translate>mail.detail.deuxAcc </span>
+                            {{variable}}</span>
                     </label>
-                    <div class="col-sm-12"><br />
-                        <table class="variabledispo">
-                            <tr>
-                                <td translate>mail.detail.newclient</td>
-                                <td><i>login, firstname, lastname, fullname, company, activate_account_token</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.newclientForAdmin</td>
-                                <td><i>login, firstname, lastname, fullname, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.activateAccount</td>
-                                <td><i>activate_account_token, firstname, lastname, fullname, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.orderSucceed</td>
-                                <td><i>taxdisplay, fullname, lastname, firstname, number, dateReceipt, hourReceipt, address, totalamount, orderdata, appUrl, payment_type, delivery_type, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.orderDiff</td>
-                                <td><i>taxdisplay, fullname, lastname, firstname, number, dateReceipt, hourReceipt, address, totalamount, orderdata, appUrl, payment_type, delivery_type, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.orderSucceedEnt</td>
-                                <td><i>fullname, lastname, firstname, taxdisplay, number, dateReceipt, hourReceipt, orderdata, address, totalamount, appUrl, customer_mobile_phone, payment_type, delivery_type, shipment, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.recupMdp</td>
-                                <td><i>fullname, firstname, lastname, tokenlink, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.statusChanged</td>
-                                <td><i>appUrl, number, fullname, firstname, lastname, status, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.mailContact</td>
-                                <td><i>formDatas</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.receptRetour</td>
-                                <td><i>number, date, articles, refund, firstname, lastname, fullname</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.envoiColis</td>
-                                <td><i>number, trackingUrl, date, transporterName, address, fullname, company</i></td>
-                            </tr>
-                            <tr>
-                                <td translate>mail.detail.all</td>
-                                <td><i>appUrl</i></td>
-                            </tr>
-                            <div bind-html-compile="component_template"></div>
-                        </table>
-                        <style>
-                            .variabledispo tr td:first-child
-                            {
-                                width: 35%;
-                                text-align: right;
-                                padding-right: 15px
-                            }
-
-                            .variabledispocomponenttemplate
-                            {
-                                width: 35%;
-                                text-align: right;
-                                padding-right: 15px
-                            }
-
-                        </style>
+                </div>
+                <div class="col-sm-8">
+                    <div ng-if="mail.type">
+                        <label translate>mail.detail.type</label> :
+                        <label>{{typeName}}</label>
+                    </div>
+                    <br>
+                    <div bind-html-compile="component_template"></div>
+                    <div ng-if="mail.type === 'register'">
+                        <b>login </b> : <span translate>mail.desc.loginMailDesc</span> <br>
+                        <b>firstname </b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+                        <b>activate_account_token</b> : <span translate>mail.desc.activateAccountTokenMailDesc</span> <br>
+                    </div>
+                    <div ng-if="mail.type === 'sendRegisterForAdmin'">
+                        <b>login</b> : <span translate>mail.desc.loginMailDesc</span> <br>
+                        <b>firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+                    </div>
+            
+                    <div ng-if="mail.type === 'activationAccount'">
+                        <b>activate_account_token</b> : <span translate>mail.desc.activateAccountTokenMailDesc</span> <br>
+                        <b>firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'orderSuccess'">
+                        <b>taxdisplay</b> : <span translate>mail.desc.taxdisplayMailDesc</span> <br>
+                        <b>order.customer.fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>order.customer.lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>order.customer.firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>order.customer.company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+                        <b>order.number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+                        <b>order.dateReceipt</b> : <span translate>mail.desc.dateReceiptMailDesc</span> <br>
+                        <b>order.hourReceipt</b> : <span translate>mail.desc.hourReceiptMailDesc</span> <br>
+                        <b>address.line1</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.line2</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.companyName</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.complementaryInfo</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.zipcode</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.city</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.country</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>totalamount</b> : <span translate>mail.desc.totalamountMailDesc</span> <br>
+                        <b>orderdata</b> : <span translate>mail.desc.orderdataMailDesc</span> <br>
+                        <b>appUrl</b> : <span translate>mail.desc.appUrlMailDesc</span> <br>
+                        <b>order.paymentMode</b> : <span translate>mail.desc.payment_typeMailDesc</span> <br>
+                        <b>order.paymentDescription</b> : <span translate>mail.desc.payment_typeMailDesc</span> <br>
+                        <b>order.shipment</b> : <span translate>mail.desc.delivery_typeMailDesc</span> <br>
+                    </div>
+                    <div ng-if="mail.type === 'orderSuccessDeferred'">
+                        <b>taxdisplay</b> : <span translate>mail.desc.taxdisplayMailDesc</span> <br>
+                        <b>order.customer.fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>order.customer.lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>order.customer.firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>order.customer.company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+                        <b>order.number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+                        <b>order.dateReceipt</b> : <span translate>mail.desc.dateReceiptMailDesc</span> <br>
+                        <b>order.hourReceipt</b> : <span translate>mail.desc.hourReceiptMailDesc</span> <br>
+                        <b>address.line1</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.line2</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.companyName</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.complementaryInfo</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.zipcode</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.city</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.country</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>totalamount</b> : <span translate>mail.desc.totalamountMailDesc</span> <br>
+                        <b>orderdata</b> : <span translate>mail.desc.orderdataMailDesc</span> <br>
+                        <b>appUrl</b> : <span translate>mail.desc.appUrlMailDesc</span> <br>
+                        <b>order.paymentMode</b> : <span translate>mail.desc.payment_typeMailDesc</span> <br>
+                        <b>order.paymentDescription</b> : <span translate>mail.desc.payment_typeMailDesc</span> <br>
+                        <b>order.shipment</b> : <span translate>mail.desc.delivery_typeMailDesc</span> <br>
+                        <b>payment.instruction</b> : <span translate>mail.desc.delivery_typeMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'orderSuccessCompany'">
+                        <b>order.customer.fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>order.customer.lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>order.customer.firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>order.customer.company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+                        <b>taxdisplay</b> : <span translate>mail.desc.taxdisplayMailDesc</span> <br>
+                        <b>order.number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+                        <b>order.dateReceipt</b> : <span translate>mail.desc.dateReceiptMailDesc</span> <br>
+                        <b>order.hourReceipt</b> : <span translate>mail.desc.hourReceiptMailDesc</span> <br>
+                        <b>address.line1</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.line2</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.companyName</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.complementaryInfo</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.zipcode</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.city</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>address.country</b> : <span translate>mail.desc.addressMailDesc</span> <br> <b>totalamount</b> : <span
+                            translate>mail.desc.totalamountMailDesc</span> <br>
+                        <b>appUrl</b> : <span translate>mail.desc.appUrlMailDesc</span> <br>
+                        <b>order.paymentMode</b> : <span translate>mail.desc.payment_typeMailDesc</span> <br>
+                        <b>order.paymentDescription</b> : <span translate>mail.desc.payment_typeMailDesc</span> <br>
+                        <b>order.shipment</b> : <span translate>mail.desc.shipmentMailDesc</span> <br>
+                        <b>totalamount</b> : <span translate>mail.desc.totalamountMailDesc</span> <br>
+                    </div>
+                    <div ng-if="mail.type === 'passwordRecovery'">
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>tokenlink</b> : <span translate>mail.desc.tokenlinkMailDesc</span> <br>
+                        <b>company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'changeOrderStatus'">
+                        <b>appUrl</b> : <span translate>mail.desc.appUrlMailDesc</span> <br>
+                        <b>number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>status</b> : <span translate>mail.desc.statusMailDesc</span> <br>
+                        <b>company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'contactMail'">
+            
+                        <b>formDatas</b> : <span translate>mail.desc.formDatasMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'rmaOrder'">
+                        <b>number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+                        <b>date</b> : <span translate>mail.desc.dateMailRmaDesc</span> <br>
+                        <b>articles</b> : <span translate>mail.desc.articlesMailDesc</span> <br>
+                        <b>refund</b> : <span translate>mail.desc.refundMailDesc</span> <br>
+                        <b>firstname</b> : <span translate>mail.desc.firstnameMailDesc</span> <br>
+                        <b>lastname</b> : <span translate>mail.desc.lastnameMailDesc</span> <br>
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'orderSent'">
+                        <b>number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+                        <b>trackingUrl</b> : <span translate>mail.desc.trackingUrlMailDesc</span> <br>
+                        <b>date</b> : <span translate>mail.desc.dateMailDesc</span> <br>
+                        <b>transporterName</b> : <span translate>mail.desc.transporterNameMailDesc</span> <br>
+                        <b>address</b> : <span translate>mail.desc.addressMailDesc</span> <br>
+                        <b>fullname</b> : <span translate>mail.desc.fullnameMailDesc</span> <br>
+                        <b>company</b> : <span translate>mail.desc.companyMailDesc</span> <br>
+            
+                    </div>
+                    <div ng-if="mail.type === 'requestCancelOrderNotify'">
+            
+                        <b>appUrl</b> : <span translate>mail.desc.appUrlMailDesc</span> <br>
+                        <b>number</b> : <span translate>mail.desc.numberMailDesc</span> <br>
+            
+            
                     </div>
                 </div>
             </div>

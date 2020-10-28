@@ -1,5 +1,4 @@
-const adminCatagenDirectives = angular.module('aq.translation');
-
+// var adminCatagenDirectives = angular.module('adminCatagenDirectives');
 adminCatagenDirectives.directive('nsTranslation', [
     '$rootScope', function ($rootScope) {
         return {

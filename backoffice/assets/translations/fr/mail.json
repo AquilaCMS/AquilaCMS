@@ -40,5 +40,37 @@
         "envoie": "Envoie Test",
         "titre" : "Veuillez remplir les informations afin de tester le mail.",
         "null": "Pas de templates existant pour ce type de mail."
-    }
+    },
+    "desc": {
+        "availble":"Variables disponibles pour le type de mail : ",
+        "empty":"Choisir un type de mail pour voir les variables disponibles",
+        "loginMailDesc": "Identifiant du nouveau client",
+        "activateAccountTokenMailDesc": "Lien d'activation du compte",
+        "taxdisplayMailDesc": "HT ou TTC",
+        "dateReceiptMailDesc": "Date de la commande",
+        "hourReceiptMailDesc": "Heure de la commande",
+        "orderdataMailDesc": "Détail de la commande",
+        "totalamountMailDesc": "Prix total",
+        "customerMobilePhoneMailDesc": "Téléphone client",
+        "payment_typeMailDesc": "Type de paiment",
+        "paymentDescriptionMailTest": "Description du paiement",
+        "delivery_typeMailDesc": "Type de livraison",
+        "shipmentMailDesc": "Transporteur",
+        "tokenlinkMailDesc": "Lien pour remplacer le mot de passe",
+        "statusMailDesc": "Status de la commande",
+        "formDatasMailDesc": "Ensemble des informations du formulaires de contact",
+        "articlesMailDesc": "Articles retournés",
+        "refundMailDesc": "Type de remboursement",
+        "firstnameMailDesc": "Prénom du client",
+        "lastnameMailDesc": "Nom du client",
+        "numberMailDesc": "Numéro de commande",
+        "trackingUrlMailDesc": "Lien de suivis de colis",
+        "dateMailRmaDesc": "Date de retour",
+        "dateMailDesc": "Date d'envoi",
+        "transporterNameMailDesc": "Nom du transporteur",
+        "addressMailDesc": "Adresse du client",
+        "fullnameMailDesc": "Nom et prénom du client",
+        "companyMailDesc": "Nom de la société",
+        "appUrlMailDesc": "URL du site"
+     }
 }

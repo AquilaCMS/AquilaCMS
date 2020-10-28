@@ -40,5 +40,35 @@
         "envoie": "Send Test",
         "titre": "Please fill all the fields to test mail.",
         "null": "No template exisiting for this mail type."
-    }
+    },
+    "desc": {
+        "loginMailDesc": "New client Identifiant",
+        "activateAccountTokenMailDesc": "Account activation link",
+        "taxdisplayMailDesc": "Exclu Tax or Inclu Tax",
+        "dateReceiptMailDesc": "Order date",
+        "hourReceiptMailDesc": "Order date in hours",
+        "orderdataMailDesc": "Order details",
+        "totalamountMailDesc": "Total price",
+        "customerMobilePhoneMailDesc": "Customer phone",
+        "payment_typeMailDesc": "Payment type",
+        "paymentDescriptionMailTest": "Payment description",
+        "delivery_typeMailDesc": "Delivery",
+        "shipmentMailDesc": "Shipment",
+        "tokenlinkMailDesc": "Recovery password link",
+        "statusMailDesc": "Order status",
+        "formDatasMailDesc": "All the information in the contact form",
+        "articlesMailDesc": "Returned articles",
+        "refundMailDesc": "Refund type",
+        "firstnameMailDesc": "Customer firstname",
+        "lastnameMailDesc": "Customer lastname",
+        "numberMailDesc": "Order number",
+        "trackingUrlMailDesc": "Traking order URL",
+        "dateMailRmaDesc": "Return date",
+        "dateMailDesc": "Send date",
+        "transporterNameMailDesc": "Shipment name",
+        "addressMailDesc": "Customer addresse",
+        "fullnameMailDesc": "Customer fullname",
+        "companyMailDesc": "Company Name",
+        "appUrlMailDesc": "Website URL"
+     }
 }

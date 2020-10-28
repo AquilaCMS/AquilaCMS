@@ -471,8 +471,8 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
-        $scope.cloneDiscount = async function () {
-            await $scope.save(false);
+        $scope.cloneDiscount = function () {
+            $scope.save();
             PromoClone.clone({_id: $scope.promo._id}, function (response) {
                 if (response) {
                     toastService.toast("success", "Promotion clonée !");
