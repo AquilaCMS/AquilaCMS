@@ -3948,3 +3948,5 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle-upper { /*transform: translate
         top: -14px !important;
     }
 }
+
+.ns-breadcrumb { margin: 20px 0; }

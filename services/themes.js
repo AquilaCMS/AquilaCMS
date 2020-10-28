@@ -71,8 +71,6 @@ const uploadTheme = async (originalname, filepath) => {
         const packageTheme = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
         if (!packageTheme) {
             throw NSErrors.ThemePackageNotFound; // info.json not found in zip
-        } else if (JSON.parse(packageTheme.getData().toString()).name !== originalname.replace('.zip', '')) {
-            throw NSErrors.ThemeNameMissmatch;
         }
         const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
         if (moduleAquilaVersion) {

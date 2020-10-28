@@ -2,9 +2,7 @@ const path     = require('path');
 const mongoose = require('mongoose');
 const fs       = require('../utils/fsp');
 const {
-    Products,
-    StaticsPreview,
-    ProductsPreview
+    Products
 }                = require('../orm/models');
 
 const createModelData = async () => {
@@ -90,16 +88,7 @@ const sortAttribs = async () => {
     }
 };
 
-/**
- * remove all products or statics previews that are older of more that 1 day
- */
-const removePreviews = async () => {
-    const date = new Date();
-    await StaticsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
-    await ProductsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
-};
 module.exports = {
     createModelData,
-    sortAttribs,
-    removePreviews
+    sortAttribs
 };

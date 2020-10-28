@@ -1,7 +1,7 @@
 const StaticPageControllers = angular.module("aq.staticPage.controllers", []);
 
 StaticPageControllers.controller("StaticPageListCtrl", [
-    "$scope", "$location", "$routeParams", "StaticV2", "$http", "$window", function ($scope, $location, $routeParams, StaticV2, $http, $window) {
+    "$scope", "$location", "$routeParams", "StaticV2", "$http", "$rootScope", function ($scope, $location, $routeParams, StaticV2, $http, $rootScope) {
         function init() {
             $scope.sortType = "name"; // set the default sort type
             $scope.sortReverse = false;  // set the default sort order
@@ -49,6 +49,20 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
         $scope.static = {type: "page", group: ""};
         $scope.groups = [];
         $scope.selectedDropdownItem = "";
+
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    $scope.static.lang = $rootScope.adminLang;
+                    StaticV2.preview($scope.static, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url);
+                        }
+                    });
+                },
+            }
+        ]
         
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
@@ -79,23 +93,29 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                 toastService.toast("danger", err.data.message);
             });
         };
-
-        $scope.preview = function () {
-            StaticV2.preview($scope.static, function (response) {
-                if (response && response.url) {
-                    window.open(response.url);
-                }
-            });
-        };
     }
 ]);
 
 StaticPageControllers.controller("StaticPageDetailCtrl", [
-    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$modal", function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $modal) {
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope) {
         $scope.local = {url: ""};
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
         $scope.groups = [];
+
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    $scope.static.lang = $rootScope.adminLang;
+                    StaticV2.preview($scope.static, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url);
+                        }
+                    });
+                },
+            }
+        ]
 
         StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
             $scope.static = staticPage;
