@@ -299,9 +299,11 @@ ProductControllers.controller("nsProductGeneral", [
                 templateUrl: 'app/product/views/modals/coherence.html',
                 controller: function ($scope, $modalInstance, JobPlayImmediate, $sce, ExecRules, ProductsV2) {
                     $scope.product = product;
+
                     JobPlayImmediate.play({ _id : '5f7c28b661048278876d8f3f', option : $scope.product.id}, function(response){
                         $scope.modal = response;
                     });
+                    $scope.modal = {data : {lastExecutionResult : ''}};
                     $scope.trustHtml = function(){
                         return $sce.trustAsHtml($scope.modal.data.lastExecutionResult);
                     }
