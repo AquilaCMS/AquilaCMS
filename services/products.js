@@ -622,7 +622,11 @@ const setProduct = async (req) => {
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     return new Promise((resolve, reject) => {
         product.updateData(req.body, async (err, result) => {
-            if (err) reject(NSErrors.ProductUpdateError);
+            if (err && err.message === 'slug trop court') {
+                reject(NSErrors.ProductUpdateSlugError);
+            } else if (err) {
+                reject(NSErrors.ProductUpdateError);
+            }
             await ProductsPreview.deleteOne({code: req.body.code});
             return resolve(result);
         });
