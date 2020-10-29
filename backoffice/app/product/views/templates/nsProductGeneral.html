@@ -51,15 +51,6 @@
 
 <div class="form-group">
     <div class="col-sm-11">
-        <label for="code_ean" class="col-sm-2 control-label" translate>product.general.ean13</label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="code_ean" name="code_ean" ng-model="product.code_ean">
-        </div>
-    </div>
-</div>
-
-<div class="form-group">
-    <div class="col-sm-11">
         <label for="slug" class="col-sm-2 control-label" translate>product.general.slug</label>
         <div class="col-sm-6">
             <input type="text" class="form-control" id="slug" name="slug" ng-model="product.translation[lang].slug">
@@ -98,17 +89,6 @@
     </div>
 </div>
 
-<div class="form-group">
-    <div class="col-sm-11">
-        <label for="set_attributes" class="col-sm-2 control-label" translate>product.general.jeuAttr</label>
-        <div class="col-sm-6">
-            <select id="set_attributes" name="set_attributes" class="form-control"
-                    ng-options="setAttr as setAttr.name for setAttr in setAttributes track by setAttr.code" ng-model="product.set_attributes" ng-change="loadNewAttrs()">
-            </select>
-        </div>
-    </div>
-</div>
-
 <!-- <div class="form-group">
     <div class="col-sm-11">
         <label for="set_options" class="col-sm-2 control-label" translate>product.general.jeuOpt</label>
@@ -143,13 +123,15 @@
                 <ul class="list-radios">
                     <li>
                         <div class="radio">
-                            <input disabled type="radio" class="switch-radio" ng-value="true" ng-model="false">
+                            <input disabled type="radio" class="switch-radio" ng-value="true" ng-init="disableActifVisible=false"
+                                ng-model="disableActifVisible">
                             <label class="form-label">Oui</label>
                         </div>
                     </li>
                     <li>
                         <div class="radio">
-                            <input disabled type="radio" class="switch-radio" ng-value="false" ng-model="false">
+                            <input disabled type="radio" class="switch-radio" ng-value="false" ng-init="disableActifVisible=false"
+                                ng-model="disableActifVisible">
                             <label class="form-label">Non</label>
                         </div>
                     </li>
@@ -162,6 +144,16 @@
         <div bind-html-compile="product.component_template"></div>
     </div>
 
+</div>
+
+<div class="form-group">
+    <div class="col-sm-11">
+        <label for="slug" class="col-sm-2 control-label" translate>product.general.metaDesc</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="metadesc" name="metadesc"
+                ng-model="product.translation[lang].metaDesc">
+        </div>
+    </div>
 </div>
 
 <div class="form-group">
