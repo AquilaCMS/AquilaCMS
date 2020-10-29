@@ -54,6 +54,14 @@ ProductServices.factory("ProductSearch", [
     }
 ]);
 
+ProductServices.factory("ProductCoherence", [
+    "$resource", function ($resource) {
+        return $resource("v2/product/getCoherence/:id", {}, {
+            getCoherence : {method: "GET", params: {}}
+        });
+    }
+]);
+
 ProductServices.factory("ProductPagination", [
     "$resource", function ($resource) {
         return $resource("products/pagination/:page/:limit", {}, {

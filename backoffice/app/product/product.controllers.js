@@ -297,15 +297,15 @@ ProductControllers.controller("nsProductGeneral", [
         $scope.productCoherence = function (product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/coherence.html',
-                controller: function ($scope, $modalInstance, JobPlayImmediate, $sce, ExecRules, ProductsV2) {
+                controller: function ($scope, $modalInstance, $sce, ProductCoherence) {
                     $scope.product = product;
 
-                    JobPlayImmediate.play({ _id : '5f7c28b661048278876d8f3f', option : $scope.product.id}, function(response){
-                        $scope.modal = response;
+                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                        $scope.modal.data = response.content;
                     });
-                    $scope.modal = {data : {lastExecutionResult : ''}};
+                    $scope.modal = {data : ''};
                     $scope.trustHtml = function(){
-                        return $sce.trustAsHtml($scope.modal.data.lastExecutionResult);
+                        return $sce.trustAsHtml($scope.modal.data);
                     }
                     $scope.cancel = function () {
                         $modalInstance.close('cancel');
