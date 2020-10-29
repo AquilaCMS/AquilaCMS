@@ -276,10 +276,10 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
-    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
+    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
+    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
-
+        $scope.hookInfo = HookProductInfo;
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
             $scope.setAttributes = datas;
 
@@ -293,6 +293,34 @@ ProductControllers.controller("nsProductGeneral", [
                 }
             }
         });
+
+        $scope.productCoherence = function (product){
+            $modal.open({
+                templateUrl: 'app/product/views/modals/coherence.html',
+                controller: function ($scope, $modalInstance, $sce, ProductCoherence) {
+                    $scope.product = product;
+
+                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                        $scope.modal.data = response.content;
+                    });
+                    $scope.modal = {data : ''};
+                    $scope.trustHtml = function(){
+                        return $sce.trustAsHtml($scope.modal.data);
+                    }
+                    $scope.cancel = function () {
+                        $modalInstance.close('cancel');
+                    };
+                },
+                resolve: {
+                    product: function () {
+                        return product;
+                    },
+                    
+                }
+            }).result.then(function () {
+
+            });
+        }
 
         $scope.changeActiveVisible = function(product){
             $modal.open({

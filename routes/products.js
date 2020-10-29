@@ -18,7 +18,16 @@ module.exports = function (app) {
     app.post('/v2/products/category/:id', getProductsByCategoryId);
     app.put('/v2/product', authentication, adminAuth, setProduct);
     app.delete('/v2/product/:id', authentication, adminAuth, deleteProduct);
+    app.get('/v2/product/getCoherence/:id', authentication, adminAuth, getCoherence);
 };
+
+async function getCoherence(req, res, next) {
+    try {
+        return  res.json({content: await ServiceProduct.controlAllProducts(req.params.id)});
+    } catch (error) {
+        return next(error);
+    }
+}
 
 /**
  * Fonction retournant un listing de produits

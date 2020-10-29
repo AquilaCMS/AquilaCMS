@@ -1,6 +1,6 @@
-const adminCatagenDirectives = angular.module('aq.translation');
+const adminTranslateDirectives = angular.module('aq.translation');
 
-adminCatagenDirectives.directive('nsTranslation', [
+adminTranslateDirectives.directive('nsTranslation', [
     '$rootScope', function ($rootScope) {
         return {
             restrict : 'E',

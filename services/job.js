@@ -291,7 +291,7 @@ const getPlayJob = async (_id) => {
  * @param {string} _id : id du job dans la collection agendaJob
  * @return {Agenda.Job} cron job
  */
-const getPlayImmediateJob = async (_id) => {
+const getPlayImmediateJob = async (_id, option) => {
     const foundJobs = await agenda.jobs({_id: mongoose.Types.ObjectId(_id)});
     try {
         if (foundJobs.length !== 1) throw NSErrors.JobNotFound;
@@ -299,11 +299,19 @@ const getPlayImmediateJob = async (_id) => {
         const start                       = new Date();
         foundJobs[0].attrs.lastRunAt      = start;
         foundJobs[0].attrs.lastFinishedAt = start;
-        await execDefine(foundJobs[0]);
+        if (option.option) {
+            await execDefine(foundJobs[0], option.option);
+        } else {
+            await execDefine(foundJobs[0]);
+        }
         console.log(`${new Date()} -> Immediate - Fin du job ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
         return foundJobs[0];
     } catch (err) {
-        console.log(`${new Date()} -> Immediate - Fin du job avec erreur ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
+        let sError = `${new Date()} -> Immediate - Fin du job`;
+        if (foundJobs && foundJobs[0] && foundJobs[0].attrs && foundJobs[0].attrs.data) {
+            sError += ` avec erreur ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `;
+        }
+        console.error(sError);
         throw err;
     }
 };
@@ -316,7 +324,7 @@ const getPlayImmediateJob = async (_id) => {
  * @param {string} job.attrs.api
  * @param {string} job.attrs.params
  */
-async function execDefine(job) {
+async function execDefine(job, option) {
     let api       = job.attrs.data.api;
     const params  = job.attrs.data.params;
     let errorData = null;
@@ -328,7 +336,7 @@ async function execDefine(job) {
             const funcName   = api.substr(api.lastIndexOf('/') + 1);
             const modulePath = api.substr(0, api.lastIndexOf('/'));
             try {
-                result = await require(`..${modulePath}`)[funcName]();
+                result = await require(`..${modulePath}`)[funcName](option);
             } catch (error) {
                 // Si le service retourne une erreur alors nous devons l'écrire dans job.attrs.data.lastExecutionResult et
                 // le sauvegarder afin d'avoir une erreur persistante coté front
