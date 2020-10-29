@@ -307,7 +307,11 @@ const getPlayImmediateJob = async (_id, option) => {
         console.log(`${new Date()} -> Immediate - Fin du job ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
         return foundJobs[0];
     } catch (err) {
-        console.log(`${new Date()} -> Immediate - Fin du job avec erreur ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `);
+        let sError = `${new Date()} -> Immediate - Fin du job`;
+        if (foundJobs && foundJobs[0] && foundJobs[0].attrs && foundJobs[0].attrs.data) {
+            sError += ` avec erreur ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `;
+        }
+        console.error(sError);
         throw err;
     }
 };
