@@ -104,7 +104,7 @@ ProductServices.factory("ProductService", [
     }
 ]);
 
-ProductServices.service('ProductSeo', function ()
+ProductServices.service('HookProductInfo', function ()
 {
     return [];
 });
