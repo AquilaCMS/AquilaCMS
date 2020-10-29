@@ -247,21 +247,12 @@ const checkDependenciesAtInstallation = async (idModule) => {
         }
         for (const apiOrTheme of Object.keys(response.toBeChanged)) {
             for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
-                if (response.toBeChanged[apiOrTheme][value].length > 1 && response.needUpgrade === false) {
-                    response.needUpgrade = true;
-                    break;
-                }
+                response.toBeChanged[apiOrTheme][value] = [...response.toBeChanged[apiOrTheme][value]];
             }
-            if (response.needUpgrade) break;
         }
         for (const apiOrTheme of Object.keys(response.toBeChanged)) {
             for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
-                response.toBeChanged[apiOrTheme][value] = [...response.toBeChanged[apiOrTheme][value]];
-                if (
-                    (response.alreadyInstalled[apiOrTheme][value] === ''
-                    || response.toBeChanged[apiOrTheme][value].length > 1)
-                    && response.needUpgrade === false
-                ) {
+                if (response.toBeChanged[apiOrTheme][value].length > 1 && response.needUpgrade === false) {
                     response.needUpgrade = true;
                     break;
                 }
