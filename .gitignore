@@ -1,31 +1,44 @@
 node_modules
 
 *.swp
+.tmp
+
+# YARN
 .pnp*
 .yarn
 yarn.lock
 yarn-error.log
 .yarnrc
-.tmp
+
+# IDE
 .babel-test-build
 .vscode/
 .DS_Store
 \.idea/
-.history/*
-**/.history
+.history
+
+# NEXT.JS
 .next/
-ecosystem.config.js
+
+# AquilaCMS
 sitemap.xml
 robots.txt
+
 **/*.bck
+
+# SSL
 **/*.pem
 **/*.crt
+**/*.cert
+**/*.key
+
+# Environment
+ecosystem.config.js
 nodemon.json
 .env
 env.json
 config/dynamic_langs.js
 
-/documentations/apidoc
 /config/envPath
 /uploads
 /modules
@@ -34,6 +47,7 @@ log
 /logs
 /exports
 
+# Backoffice
 /backoffice/*.*
 /backoffice/app/*
 /backoffice/exports/
@@ -42,6 +56,7 @@ log
 /backoffice/medias/
 /backoffice/front/img/slide/
 
+# Backoffice exceptions
 !/backoffice/app/attribute/
 !/backoffice/app/attributesSet/
 !/backoffice/app/cart/
@@ -95,13 +110,15 @@ log
 !/backoffice/vendor/
 !/backoffice/views/
 
+# Themes
 /themes/*/out
 /themes/*
 /themes/**/fakeDatas/files/cache
 /themes/**/demoDatas/files/cache
 /themes/default_theme/modules/list_modules.js
 /themes/default_theme/assets/i18n/*/modules/
-# Exceptions
+
+# Themes exceptions
 !/themes/default_theme
 !/themes/README.md
 !/themes/.gitignore
