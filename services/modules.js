@@ -486,9 +486,10 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         for (let i = 0; i < _module.files.length; i++) {
             if (await fs.access(_module.files[i])) {
                 if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
-                    require('rimraf')(_module.files[i], (err) => {
+                    await new Promise((resolve) => rimraf(_module.files[i], (err) => {
                         if (err) console.error(err);
-                    });
+                        resolve();
+                    }));
                 } else {
                     try {
                         await fs.unlink(_module.files[i]);
