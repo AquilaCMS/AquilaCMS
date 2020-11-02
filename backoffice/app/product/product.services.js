@@ -21,7 +21,7 @@ ProductServices.factory("ProductsV2", [
             query        : {method: "POST", params: {type: "product"}},
             save       : {method: "PUT", params: {type: "product"}},
             delete  : {method: "DELETE", params: {type: "product"}},
-            searchObj  : {method: "POST", params: {type: "products", id: 'searchObj'}},
+            adminList: { method: "POST", params: { type: "products", id: 'adminList'}},
             getPromos: {method: "POST", params: {type: 'product', id: 'promos'}, isArray: false},
             getDownloadHistory: {method: "POST", params: {type: 'downloadHistory'}, isArray: false},
             preview: {method: "POST", params: {type: 'product', id: 'preview'}, isArray: false},

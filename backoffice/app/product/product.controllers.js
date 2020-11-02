@@ -213,7 +213,7 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            ProductsV2.searchObj(params, function (res) {
+            ProductsV2.adminList(params, function (res) {
                 getProductImg(0, res.products);
 
                 $scope.products = res.products;

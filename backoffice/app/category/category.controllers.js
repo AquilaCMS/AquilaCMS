@@ -240,7 +240,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                 }
             }
 
-            ProductsV2.searchObj(params, function (response)
+            ProductsV2.adminList(params, function (response)
             {
                 if(angular.isArray(response.products))
                 {

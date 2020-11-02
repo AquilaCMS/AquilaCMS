@@ -75,7 +75,7 @@ ProductDirectives.directive("nsProductsList", function () {
                         const filter = angular.copy($scope.queryFilter);
                         // Si pagination avec recherche
                         if ($scope.f.nameFilter.length > 0) {
-                            ProductsV2.searchObj({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
+                            ProductsV2.adminList({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
                                 $scope.products = products;
                                 $scope.totalItems = count;
                             });
@@ -133,7 +133,7 @@ ProductDirectives.directive("nsProductsList", function () {
                         delete filter.supplier_ref;
                     }
                     if ($scope.f.nameFilter.length > 0 || $scope.f.codeFilter.length > 0) {
-                        ProductsV2.searchObj({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
+                        ProductsV2.adminList({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
                             $scope.products = res.products;
                             $scope.totalItems = res.count;
                             $scope.currentPage = 1;
