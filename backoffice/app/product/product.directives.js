@@ -302,10 +302,10 @@ ProductDirectives.directive("nsProductPrice", function () {
                             delete prices.ati[fields[1]];
                         }
                     } else {
-                        if (prices.et.normal !== undefined && prices.et.normal != null) {
+                        if (prices.et && prices.et.normal !== undefined && prices.et.normal != null) {
                             prices.ati.normal = parseFloat((prices.et.normal * vat).toFixed(2));
                         }
-                        if (prices.et.special !== undefined && prices.et.special != null) {
+                        if (prices.et && prices.et.special !== undefined && prices.et.special != null) {
                             prices.ati.special = parseFloat((prices.et.special * vat).toFixed(2));
                         }
                     }
@@ -324,7 +324,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
         restrict : "E",
         scope    : {
             form : "=",
-            isSelected: "=" 
+            isSelected: "="
         },
         require     : "ngModel",
         templateUrl : "app/product/views/templates/nsProductPhoto.html",
