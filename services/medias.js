@@ -131,29 +131,54 @@ const uploadAllDocuments = async (reqFile) => {
  * @param {string} extension - extension du fichier (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
-const downloadImage = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
-    if (typeof quality !== 'number') {
-        background = quality;
-        quality    = 80;
+// const downloadImage = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
+const downloadImage = async (type, _id, size, extension, quality = 80, options = {}) => {
+    // if (typeof quality !== 'number') {
+    //     // options.background = quality;
+    //     quality = 80;
+    // }
+
+    const sharpOptions = {};
+
+    if (options.position) {
+        sharpOptions.position = options.position;
+    } else if (options.background) {
+        const background        = options.background.split(',');
+        sharpOptions.background = {};
+        sharpOptions.fit        = 'contain';
+        sharpOptions.background = {
+            r     : parseFloat(background[0]),
+            g     : parseFloat(background[1]),
+            b     : parseFloat(background[2]),
+            alpha : parseFloat(background[3])
+        };
+    } else {
+        sharpOptions.fit        = 'contain';
+        sharpOptions.background = {
+            r     : 255,
+            g     : 255,
+            b     : 255,
+            alpha : 1
+        };
     }
 
-    background = background.split(',');
+    let _path          = server.getUploadDirectory();
+    _path              = path.join(process.cwd(), _path);
+    const cacheFolder  = path.join(_path, '/cache/');
+    let filePath       = '';
+    let filePathCache  = '';
+    let fileName       = '';
+    let imageObj       = {};
+    let relativePath   = '';
+    let fileNameOption = '';
 
-    const color = {
-        r     : parseFloat(background[0]),
-        g     : parseFloat(background[1]),
-        b     : parseFloat(background[2]),
-        alpha : parseFloat(background[3])
-    };
-
-    let _path         = server.getUploadDirectory();
-    _path             = path.join(process.cwd(), _path);
-    const cacheFolder = path.join(_path, '/cache/');
-    let filePath      = '';
-    let filePathCache = '';
-    let fileName      = '';
-    let imageObj      = {};
-    let relativePath  = '';
+    if (options.position) {
+        fileNameOption = options.position.replace(/ /g, '_');
+    } else if (options.background) {
+        fileNameOption = options.background;
+    } else {
+        fileNameOption = '';
+    }
     switch (type) {
     // si une image produit est requêtée
     case 'products':
@@ -163,17 +188,17 @@ const downloadImage = async (type, _id, size, extension, quality = 80, backgroun
         fileName      = path.basename(imageObj.url);
         relativePath  = imageObj.url;
         filePath      = path.join(_path, imageObj.url);
-        fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${background}${path.extname(fileName)}`;
+        fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
         filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
         createFolderIfNotExist(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)));
         break;
-    // si un media est requêté
+        // si un media est requêté
     case 'medias':
         imageObj      = await Medias.findOne({_id});
         fileName      = path.basename(imageObj.link, `.${extension}`);
         relativePath  = imageObj.link;
         filePath      = path.join(_path, imageObj.link);
-        fileName      = `${fileName}_${size}_${quality}_${background}.${extension}`;
+        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache = path.join(cacheFolder, 'medias', fileName);
         createFolderIfNotExist(path.join(cacheFolder, 'medias'));
         break;
@@ -184,7 +209,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, backgroun
         fileName      = path.basename(imageObj.src, `.${extension}`);
         relativePath  = imageObj.src;
         filePath      = path.resolve(_path, imageObj.src);
-        fileName      = `${fileName}_${size}_${quality}_${background}.${extension}`;
+        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache = path.resolve(cacheFolder, type, fileName);
         createFolderIfNotExist(path.join(cacheFolder, type));
         break;
@@ -193,7 +218,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, backgroun
         fileName      = path.basename(blog.img, `.${extension}`);
         relativePath  = blog.img;
         filePath      = path.join(_path, blog.img);
-        fileName      = `${fileName}_${size}_${quality}_${background}.${extension}`;
+        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache = path.join(cacheFolder, type, fileName);
         createFolderIfNotExist(path.join(cacheFolder, type));
         break;
@@ -202,7 +227,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, backgroun
         fileName       = path.basename(category.img, `.${extension}`);
         relativePath   = category.img;
         filePath       = path.join(_path, category.img);
-        fileName       = `${fileName}_${size}_${quality}_${background}.${extension}`;
+        fileName       = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache  = path.join(cacheFolder, type, fileName);
         createFolderIfNotExist(path.join(cacheFolder, type));
         break;
@@ -211,13 +236,14 @@ const downloadImage = async (type, _id, size, extension, quality = 80, backgroun
         fileName      = path.basename(picto.filename, path.extname(picto.filename));
         relativePath  = path.join('medias/picto', picto.filename);
         filePath      = path.join(_path, 'medias/picto', picto.filename);
-        fileName      = `${fileName}_${size}_${quality}_${background}${path.extname(picto.filename)}`;
+        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
         filePathCache = path.join(cacheFolder, type, fileName);
         createFolderIfNotExist(path.join(cacheFolder, type));
         break;
     default:
         return null;
     }
+
     // global aux sections
     // ./global aux sections
     // si le dossier de cache n'existe pas, on le créé
@@ -244,14 +270,21 @@ const downloadImage = async (type, _id, size, extension, quality = 80, backgroun
             });
 
             try {
+                sharpOptions.width  = Number(size.split('x')[0]);
+                sharpOptions.height = Number(size.split('x')[1]);
+                // sharpOptions.fit    = 'cover';
                 await require('sharp')(filePath)
-                    .resize({
-                        width      : Number(size.split('x')[0]),
-                        height     : Number(size.split('x')[1]),
-                        fit        : 'contain',
-                        background : color
-                    })
-                    .toFile(filePathCache);
+                    .resize(sharpOptions).toFile(filePathCache);
+                // width    : Number(size.split('x')[0]),
+                // height   : Number(size.split('x')[1]),
+                // position : 'top',
+                // fit      : 'contain'
+
+                // Avec Background
+                // width      : Number(size.split('x')[0]),
+                // height     : Number(size.split('x')[1]),
+                // fit        : 'contain',
+                // background : color
             } catch (exc) {
                 console.error('Image not resized : Sharp may not be installed');
 
