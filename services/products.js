@@ -196,8 +196,12 @@ const getPromosByProduct = async (PostBody, reqRes = undefined) => {
  * Duplication de produit dans le back-office
  */
 const duplicateProduct = async (idProduct, newCode) => {
-    const doc   = await Products.findById(idProduct);
-    doc._id     = mongoose.Types.ObjectId();
+    const doc       = await Products.findById(idProduct);
+    doc._id         = mongoose.Types.ObjectId();
+    const languages = await mongoose.model('languages').find({});
+    for (const lang of languages) {
+        doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
+    }
     doc.isNew   = true;
     doc.images  = [];
     doc.reviews = {

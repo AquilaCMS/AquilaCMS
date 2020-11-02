@@ -95,7 +95,7 @@ async function getPromosByProduct(req, res, next) {
  */
 async function duplicateProduct(req, res, next) {
     try {
-        const result = await ServiceProduct.duplicateProduct(req.body.idProduct, req.body.newCode);
+        const result = await ServiceProduct.duplicateProduct(req.body.id, req.body.code);
         res.json(result);
     } catch (error) {
         return next(error);

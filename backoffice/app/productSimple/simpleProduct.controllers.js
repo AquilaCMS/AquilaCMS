@@ -240,15 +240,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         };
 
         $scope.duplicateProduct = function () {
-            const idProduct = $scope.product._id;
             const newCode = prompt("Saisir le code du nouveau produit : ");
             if (newCode) {
                 const newPrd = {...$scope.product, code: newCode};
                 delete newPrd._id;
-                for (const key of Object.keys(newPrd.translation)) {
-                    newPrd.translation[key].slug += "-" + newPrd.code;
-                }  
-                const query = ProductsV2.save(newPrd);
+                const query = ProductsV2.duplicate(newPrd);
                 query.$promise.then(function (savedPrd) {
                     toastService.toast("success", "Produit dupliqué !");
                     $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
