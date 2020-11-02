@@ -200,6 +200,9 @@ const duplicateProduct = async (idProduct, newCode) => {
     doc._id         = mongoose.Types.ObjectId();
     const languages = await mongoose.model('languages').find({});
     for (const lang of languages) {
+        if (!doc.translation[lang.code]) {
+            doc.translation[lang.code] = {};
+        }
         doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
     }
     doc.isNew   = true;
