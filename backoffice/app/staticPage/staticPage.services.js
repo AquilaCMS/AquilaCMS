@@ -9,3 +9,8 @@ StaticPageServices.factory('StaticV2', ['$resource', function ($resource) {
         preview : {method: 'POST', params: {type: 'static', id: "preview"}}
     });
 }]);
+
+StaticPageServices.service('HookPageInfo', function ()
+{
+    return [];
+});

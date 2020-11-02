@@ -110,11 +110,6 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                     for (const [key, index] of Object.entries(response.data.toBeChanged[apiOrTheme])) {
                         response.data.toBeChanged[apiOrTheme][key] = Array.isArray(index) ? index[0] : index;
                     }
-                    if (response.data.toBeRemoved && response.data.toBeRemoved[apiOrTheme]) {
-                        for (const [key, index] of Object.entries(response.data.toBeRemoved[apiOrTheme])) {
-                            response.data.toBeRemoved[apiOrTheme][key] = Array.isArray(index) ? index[0] : index;
-                        }
-                    }
                 }
                 $http.post('/v2/modules/toggle', {
                     idModule    : id,
