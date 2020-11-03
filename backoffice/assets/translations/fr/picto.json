@@ -19,7 +19,8 @@
         "botRight": "Bas droit",
         "actif": "Actif",
         "dispoFiltres": "Disponible dans les filtres automatiques :",
-        "pictorisation": "Effectuer la pictorisation"
+        "pictorisation": "Effectuer la pictorisation",
+        "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"
     },
     "list": {
         "t1": "Pictogrammes",

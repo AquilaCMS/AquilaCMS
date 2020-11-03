@@ -71,8 +71,8 @@ const setAttribute = async (body) => {
             await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
             await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
             for (let i = 0; i < body.set_attributes.length; i++) {
-                const {code, param, position, _id: id, type} = att;
-                const product_attributes                     = {id, code, param, position, translation: body.translation, type};
+                const {code, param, position, _id: id, type, visible, translation} = att;
+                const product_attributes                                           = {id, code, param, position, translation, type, visible};
                 if (attribute.default_value !== undefined) {
                     product_attributes.value    = att.default_value;
                     product_attributes.position = position;
@@ -107,7 +107,7 @@ const setAttribute = async (body) => {
     await SetAttributes.updateMany({_id: {$in: body.set_attributes}}, {$push: {attributes: att._id}});
 
     for (let i = 0; i < body.set_attributes.length; i++) {
-        const product_attributes = {id: att._id, code: att.code, param: att.param, position: att.position, translation: att.translation, values: att.values, type: att.type};
+        const product_attributes = {id: att._id, code: att.code, param: att.param, position: att.position, translation: att.translation, values: att.values, type: att.type, visible: att.visible};
         if (att.default_value !== undefined) {
             product_attributes.value = att.default_value;
         }
@@ -125,6 +125,7 @@ const updateObjectAttribute = async (list, attr, path) => {
             getAttribsFromPath(obj, path)[attrIndex].code     = attr.code;
             getAttribsFromPath(obj, path)[attrIndex].param    = attr.param;
             getAttribsFromPath(obj, path)[attrIndex].type     = attr.type;
+            getAttribsFromPath(obj, path)[attrIndex].visible  = attr.visible;
             getAttribsFromPath(obj, path)[attrIndex].position = attr.position;
             for (let k = 0; k < Object.keys(attr.translation).length; k++) {
                 const lng = Object.keys(attr.translation)[k];

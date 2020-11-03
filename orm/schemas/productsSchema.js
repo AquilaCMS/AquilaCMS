@@ -57,7 +57,8 @@ const ProductsSchema = new Schema({
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
-            position    : {type: Number, default: 1}
+            position    : {type: Number, default: 1},
+            visible     : {type: Boolean, default: true}
         }
     ], // Module Options
     set_options : {type: ObjectId, ref: 'setoptions'}, // Fin Module Options
