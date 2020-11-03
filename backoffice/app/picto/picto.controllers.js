@@ -54,7 +54,6 @@ PictoControllers.controller('PictoDetailsCtrl', [
                 onClick: function () {
                     PictoApi.update({id : $scope.picto._id}, function(response){
                         toastService.toast('success', 'Pictorisation : done');
-                        toastService.toast('success', response);
                     });
                 },
             }
