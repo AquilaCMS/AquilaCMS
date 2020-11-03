@@ -30,7 +30,8 @@
         "dispoFiltresAuto": "Disponible dans les filtres automatiques :",
         "valeurs": "Valeurs",
         "addValeur": "Ajouter une valeur",
-        "color": "Couleur"
+        "color": "Couleur",
+        "visible": "Visible"
     },
 
     "list": {

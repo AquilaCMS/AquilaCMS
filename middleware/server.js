@@ -40,7 +40,8 @@ const serverUseRequest = (req, res, next) => {
         if (res.headersSent) {
             return res;
         }
-        if (req.baseUrl.indexOf(`/${global.envConfig.environment.adminPrefix}`) === 0 || res.statusCode >= 400) {
+        console.log(user && user.isAdmin);
+        if ((user && user.isAdmin) || req.baseUrl.indexOf(`/${global.envConfig.environment.adminPrefix}`) === 0 || res.statusCode >= 400) {
             return original.call(res, json);
         }
 
@@ -53,10 +54,28 @@ const serverUseRequest = (req, res, next) => {
             if (json.collection && json.collection.collectionName) {
                 json = translation.translateDocument(json, lang, keepOriginalAttribs);
                 json = restrictProductFields(json, req.originalUrl);
+                // remove hidden attributes from document
+                if (json.attributes) {
+                    for (let i = 0; i < json.attributes.length; i++) {
+                        if (!json.attributes[i].visible) {
+                            json.attributes.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
             } else if (json.datas !== undefined) {
                 for (let i = 0; i < json.datas.length; i++) {
                     json.datas[i] = translation.translateDocument(json.datas[i], lang, keepOriginalAttribs);
                     json.datas[i] = restrictProductFields(json.datas[i], req.originalUrl);
+                    // remove hidden attributes from document
+                    if (json.datas[i].attributes) {
+                        for (let j = 0; j < json.datas[i].attributes.length; j++) {
+                            if (!json.datas[i].attributes[j].visible) {
+                                json.datas[i].attributes.splice(j, 1);
+                                j--;
+                            }
+                        }
+                    }
                 }
                 if (json.filters !== undefined) {
                     for (let i = 0; i < Object.keys(json.filters).length; i++) {
