@@ -78,8 +78,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                                         return $scope.product;
                                     },
                                 }
-                            }).result.then(function () {
-                
                             });
                         },
                 moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',

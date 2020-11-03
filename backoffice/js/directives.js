@@ -612,6 +612,10 @@ adminCatagenDirectives.directive("nsButtons", function ()
         templateUrl: "views/templates/nsButtons.html",
         link: function (scope)
         {
+            scope.statechangeMoreButtons = false;
+            scope.changeMoreButtons = function(){
+                scope.statechangeMoreButtons  = !scope.statechangeMoreButtons;
+            }
             if(scope.onLoad)
             {
                 scope.onLoad();
