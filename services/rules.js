@@ -476,7 +476,7 @@ async function applyRecursiveRules(_rules, query) {
 }
 
 // eslint-disable-next-line no-unused-vars
-const execRules = async (owner_type, optionPictoId = undefined) => {
+const execRules = async (owner_type, products = [], optionPictoId = undefined) => {
     const result = [];
     let logValue = '';
     // La catégorisation est-elle en cours ?
