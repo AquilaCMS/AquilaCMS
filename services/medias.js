@@ -133,11 +133,6 @@ const uploadAllDocuments = async (reqFile) => {
  */
 // const downloadImage = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
 const downloadImage = async (type, _id, size, extension, quality = 80, options = {}) => {
-    // if (typeof quality !== 'number') {
-    //     // options.background = quality;
-    //     quality = 80;
-    // }
-
     const sharpOptions = {};
 
     if (options.position) {
@@ -190,7 +185,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePath      = path.join(_path, imageObj.url);
         fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
         filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
-        createFolderIfNotExist(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)));
+        await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
         break;
         // si un media est requêté
     case 'medias':
@@ -200,7 +195,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePath      = path.join(_path, imageObj.link);
         fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache = path.join(cacheFolder, 'medias', fileName);
-        createFolderIfNotExist(path.join(cacheFolder, 'medias'));
+        await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
         break;
     case 'slider':
     case 'gallery':
@@ -211,7 +206,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePath      = path.resolve(_path, imageObj.src);
         fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache = path.resolve(cacheFolder, type, fileName);
-        createFolderIfNotExist(path.join(cacheFolder, type));
+        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
         break;
     case 'blog':
         const blog    = await mongoose.model('news').findOne({_id});
@@ -220,7 +215,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePath      = path.join(_path, blog.img);
         fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache = path.join(cacheFolder, type, fileName);
-        createFolderIfNotExist(path.join(cacheFolder, type));
+        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
         break;
     case 'category':
         const category = await mongoose.model('categories').findOne({_id});
@@ -229,7 +224,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePath       = path.join(_path, category.img);
         fileName       = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
         filePathCache  = path.join(cacheFolder, type, fileName);
-        createFolderIfNotExist(path.join(cacheFolder, type));
+        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
         break;
     case 'picto':
         const picto   = await mongoose.model('pictos').findOne({_id});
@@ -238,7 +233,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePath      = path.join(_path, 'medias/picto', picto.filename);
         fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
         filePathCache = path.join(cacheFolder, type, fileName);
-        createFolderIfNotExist(path.join(cacheFolder, type));
+        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
         break;
     default:
         return null;
@@ -247,7 +242,8 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
     // global aux sections
     // ./global aux sections
     // si le dossier de cache n'existe pas, on le créé
-    createFolderIfNotExist(cacheFolder);
+    await fsp.mkdir(cacheFolder, {recursive: true});
+
     // si l'image demandée est deja en cache, on la renvoie direct
     if (fsp.existsSync(filePathCache)) {
         return filePathCache;
@@ -272,19 +268,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
             try {
                 sharpOptions.width  = Number(size.split('x')[0]);
                 sharpOptions.height = Number(size.split('x')[1]);
-                // sharpOptions.fit    = 'cover';
-                await require('sharp')(filePath)
-                    .resize(sharpOptions).toFile(filePathCache);
-                // width    : Number(size.split('x')[0]),
-                // height   : Number(size.split('x')[1]),
-                // position : 'top',
-                // fit      : 'contain'
-
-                // Avec Background
-                // width      : Number(size.split('x')[0]),
-                // height     : Number(size.split('x')[1]),
-                // fit        : 'contain',
-                // background : color
+                await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
             } catch (exc) {
                 console.error('Image not resized : Sharp may not be installed');
 
@@ -587,13 +571,6 @@ const getMediasGroups = async (query, filter = {}) => {
     }
     return sortedGroups;
 };
-
-function createFolderIfNotExist(dir) {
-    if (!fsp.existsSync(dir)) {
-        createFolderIfNotExist(path.join(dir, '..'));
-        fsp.mkdirSync(dir);
-    }
-}
 
 const deleteFileAndCacheFile = async (link, type) => {
     if (link && path.basename(link).includes('.')) {
