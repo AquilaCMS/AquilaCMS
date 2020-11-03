@@ -341,11 +341,9 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             var clone = angular.copy($scope.product);
             clone.code = prompt("Saisir le code: ");
+            clone.id = clone._id;
             delete clone._id;
-            for (const key of Object.keys(clone.translation)) {
-                clone.translation[key].slug += "-" + clone.code;
-            }  
-            ProductsV2.save(clone, function (savedPrd)
+            ProductsV2.duplicate(clone, function (savedPrd)
             {
                 if(!savedPrd)
                 {
