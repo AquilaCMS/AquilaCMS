@@ -476,7 +476,7 @@ async function applyRecursiveRules(_rules, query) {
 }
 
 // eslint-disable-next-line no-unused-vars
-const execRules = async (owner_type, products = [], optionPictoId) => {
+const execRules = async (owner_type, optionPictoId = undefined) => {
     const result = [];
     let logValue = '';
     // La catégorisation est-elle en cours ?
@@ -551,7 +551,7 @@ const execRules = async (owner_type, products = [], optionPictoId) => {
                         }
                     } else if (splittedRulesKeys[i] === 'picto') {
                         let picto;
-                        if (optionPictoId) {
+                        if (!optionPictoId) {
                             picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
                         } else {
                             picto = await Pictos.findOne({_id: optionPictoId, enabled: true});
