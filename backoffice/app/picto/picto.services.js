@@ -10,7 +10,8 @@ PictoServices.service('PictoApi', [
                 list: { method: 'POST', params: {}, isArray: false },
                 query: { method: 'POST', params: {}, isArray: false },
                 save: { method: 'PUT', params: {}, isArray: false },
-                delete: { method: 'DELETE', params: {}, isArray: false }
+                delete: { method: 'DELETE', params: {}, isArray: false },
+                update : {method: 'POST', params: {id : 'execRules'}, isArray: false}
             }
         );
     }

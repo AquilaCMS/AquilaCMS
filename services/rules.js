@@ -476,7 +476,7 @@ async function applyRecursiveRules(_rules, query) {
 }
 
 // eslint-disable-next-line no-unused-vars
-const execRules = async (owner_type, products = []) => {
+const execRules = async (owner_type, products = [], option) => {
     const result = [];
     let logValue = '';
     // La catégorisation est-elle en cours ?
@@ -550,10 +550,12 @@ const execRules = async (owner_type, products = []) => {
                             await cat.save();
                         }
                     } else if (splittedRulesKeys[i] === 'picto') {
-                        const picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
-                        if (picto) {
-                            const pictoData = {code: picto.code, image: picto.filename, pictoId: picto._id, title: picto.title, location: picto.location};
-                            await Products.updateMany({_id: {$in: productsIds}, pictos: {$ne: pictoData}}, {$push: {pictos: pictoData}});
+                        if (!option || option && option === splittedRules[splittedRulesKeys[i]][j].owner_id) {
+                            const picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
+                            if (picto) {
+                                const pictoData = {code: picto.code, image: picto.filename, pictoId: picto._id, title: picto.title, location: picto.location};
+                                await Products.updateMany({_id: {$in: productsIds}, pictos: {$ne: pictoData}}, {$push: {pictos: pictoData}});
+                            }
                         }
                     } else {
                         logValue = `=== owner_type(${splittedRulesKeys[i]}) inconnu ===`;
