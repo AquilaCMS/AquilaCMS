@@ -18,7 +18,8 @@
         "botCenter": "Bas centré",
         "botRight": "Bas droit",
         "actif": "Actif",
-        "dispoFiltres": "Disponible dans les filtres automatiques :"
+        "dispoFiltres": "Disponible dans les filtres automatiques :",
+        "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"
     },
     "list": {
         "t1": "Pictogrammes",
