@@ -19,8 +19,7 @@
         "botRight": "Bottom right",
         "actif": "Active",
         "dispoFiltres": "Available in automatic filters:",
-        "pictorisation": "Perform pictorization",
-        "infoDispoFiltres": "Allows an attribute selection category to be visible in filters"
+        "pictorisation": "Perform pictorization"
     },
     "list": {
         "t1": "Pictograms",

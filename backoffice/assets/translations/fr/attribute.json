@@ -31,7 +31,8 @@
         "valeurs": "Valeurs",
         "addValeur": "Ajouter une valeur",
         "color": "Couleur",
-        "visible": "Visible dans la fiche produit"
+        "visible": "Visible dans la fiche produit",
+        "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"
     },
 
     "list": {
