@@ -261,8 +261,8 @@ ProductDirectives.directive("nsProductPrice", function () {
                 $scope.langs = $rootScope.languages;
 
                 ConfigV2.taxerate(function (taxerate) {
-                    $scope.taxerate = taxerate;
-                    if ($scope.taxerate.length > 0 && ($scope.product === undefined || $scope.product.price === undefined || $scope.product.price.tax === undefined)) {
+                    $scope.taxerate = taxerate.map(t => t.rate);
+                    if ($scope.taxerate.length > 0 && $scope.product && $scope.product.price && !$scope.product.price.tax) {
                         // $scope.product.price.tax = $scope.taxerate[$scope.taxerate.length - 1].rate;
                         $scope.product.price.tax = 0;
                     }
