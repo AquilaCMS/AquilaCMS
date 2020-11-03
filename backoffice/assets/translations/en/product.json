@@ -70,13 +70,13 @@
         "coefficient": "Coefficient",
         "et": {
             "normal": "Sale excl tax",
-            "special": "Special excl tax*"
+            "special": "Special excl tax"
         },
         "ati": {
             "normal": "Sale incl tax",
-            "special": "Special incl tax*"
+            "special": "Special incl tax"
         },
-        "ifPrice": "* If a special price is defined, it will have priority on the price sale.",
+        "ifPrice": "If a special price is defined, it will have priority on the price sale",
         "tax": "VAT (%)",
         "margin": "Margin"
     },

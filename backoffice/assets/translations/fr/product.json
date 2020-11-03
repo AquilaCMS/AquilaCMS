@@ -70,13 +70,13 @@
         "coefficient": "Coefficient",
         "et": {
             "normal": "Vente HT",
-            "special": "Spécial HT *"
+            "special": "Spécial HT"
         },
         "ati": {
             "normal": "Vente TTC",
-            "special": "Spécial TTC *"
+            "special": "Spécial TTC"
         },
-        "ifPrice": "* Si un prix spécial est défini, il sera prioritaire par rapport au prix de vente.",
+        "ifPrice": "Si un prix special est defini, il sera prioritaire par rapport au prix de vente",
         "tax": "TVA (%)",
         "margin": "Marge"
     },
