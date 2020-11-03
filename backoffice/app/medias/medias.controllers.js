@@ -258,7 +258,15 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
 
             let background  = ''; 
             let crop        = '';
-            if ((!$scope.info.largeur || !$scope.info.longueur || !quality) || ($scope.info.background && (!$scope.info.r || !$scope.info.g || !$scope.info.b || !($scope.info.alpha >= 0 && $scope.info.alpha <= 1)))) {
+            if (
+                (!$scope.info.largeur || !$scope.info.longueur || !quality)
+                || (
+                    $scope.info.background
+                    && (
+                        !$scope.info.r || !$scope.info.g || !$scope.info.b ||
+                        !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
+                )
+            ) {
                 toastService.toast("warning", "Veuillez saisir toutes les valeurs.");
             } else {
                 if ($scope.info.background) {
