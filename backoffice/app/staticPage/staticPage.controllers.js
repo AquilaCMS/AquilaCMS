@@ -97,12 +97,12 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 ]);
 
 StaticPageControllers.controller("StaticPageDetailCtrl", [
-    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope) {
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo) {
         $scope.local = {url: ""};
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
         $scope.groups = [];
-
+        $scope.hookPageInfo = HookPageInfo;
         $scope.additionnalButtons = [
             {
                 text: 'product.general.preview',

@@ -42,6 +42,17 @@
         "copy":"Copier le lien",
         "background":"Couleur de fond :",
         "link":"Lien",
-        "generate":"Générer"
+        "crop":"Rogner :",
+        "position":"Position :",
+        "generate":"Générer",
+        "center":"Centre",
+        "top":"Haut",
+        "bottom":"Bas",
+        "left":"Gauche",
+        "right":"Droite",
+        "topLeft":"Haut gauche",
+        "topRight":"Haut droite",
+        "bottomLeft":"Bas gauche",
+        "bottomRight":"Bas droite"
     }
 }

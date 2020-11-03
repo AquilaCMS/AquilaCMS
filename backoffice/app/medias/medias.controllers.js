@@ -195,7 +195,42 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
 MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media",
     function ($scope, toastService, $modalInstance, media) {
         $scope.media = media;
+        $scope.positions = [
+            { pos: "center",
+              id: "center"
+            },
+            { pos: "top",
+              id: "top"
+            },
+            { pos: "bottom",
+              id: "bottom"
+            },
+            { pos: "left",
+              id: "left"
+            },
+            { pos: "right",
+                id: "right"
+            },
+            { pos: "top-left",
+              id: "topLeft"
+            },
+            { pos: "top-right",
+              id: "topRight"
+            },
+            { pos: "bottom-left",
+              id: "bottomLeft"
+            },
+            { pos: "bottom-right",
+              id: "bottomRight"
+            }
+        ];
+
+        $scope.getTranslation = function(pos){
+            return `medias.modal.${pos}`;
+        }
         $scope.info = {
+            crop:false,
+            position:"center",
             background:false,
             largeur: "",
             longueur: "",
@@ -221,8 +256,17 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                 filename = $scope.media.link.replace(`medias/`, "");
             }
 
-            let background = ''; 
-            if ((!$scope.info.largeur || !$scope.info.longueur || !quality) || ($scope.info.background && (!$scope.info.r || !$scope.info.g || !$scope.info.b || !($scope.info.alpha >= 0 && $scope.info.alpha <= 1)))) {
+            let background  = ''; 
+            let crop        = '';
+            if (
+                (!$scope.info.largeur || !$scope.info.longueur || !quality)
+                || (
+                    $scope.info.background
+                    && (
+                        !$scope.info.r || !$scope.info.g || !$scope.info.b ||
+                        !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
+                )
+            ) {
                 toastService.toast("warning", "Veuillez saisir toutes les valeurs.");
             } else {
                 if ($scope.info.background) {
@@ -233,8 +277,11 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                     }
                     background = `-${$scope.info.r},${$scope.info.g},${$scope.info.b},${$scope.info.alpha}`;
                 }
+                if ($scope.info.crop) {
+                    crop = `-crop-${$scope.info.position}`;
+                }
                 toastService.toast("success", "Lien généré");
-                $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${background}/${$scope.media._id}/${filename}`;
+                $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                 const elem = document.getElementById("copy-link");
                 elem.focus();
                 elem.select();

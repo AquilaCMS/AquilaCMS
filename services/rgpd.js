@@ -161,10 +161,16 @@ const anonymizeUser = async (id) => {
 const copyDatabase = async (cb) => {
     // Connexion à la database
     try {
-        await rimraf('dump');
+        await new Promise((resolve, reject) => rimraf('dump', (err) => {
+            if (err) return reject(err);
+            resolve();
+        }));
         await mongodump(global.envFile.db);
         await mongorestore(global.envFile.db);
-        await rimraf('dump');
+        await new Promise((resolve, reject) => rimraf('dump', (err) => {
+            if (err) return reject(err);
+            resolve();
+        }));
 
         // Anonymisation de la base de données copiée
         await anonymizeDatabase(cb);

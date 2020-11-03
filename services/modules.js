@@ -267,8 +267,8 @@ const checkDependenciesAtUninstallation = async (idModule) => {
     const myModule = (await Modules.findById(idModule)).toObject();
     const response = {
         toBeRemoved : {
-            api   : {},
-            theme : {}
+            api   : [],
+            theme : []
         },
         toBeChanged : {
             api   : {},
@@ -282,64 +282,66 @@ const checkDependenciesAtUninstallation = async (idModule) => {
     };
     if (myModule.packageDependencies && (myModule.packageDependencies.api || myModule.packageDependencies.theme)) {
         const modulesActivated = await Modules.find({_id: {$ne: idModule}, active: true}, 'packageDependencies');
-        let result             = {
+        const result           = {
             api   : {},
             theme : {}
         };
-        if (
-            myModule.packageDependencies.api
-            || myModule.packageDependencies.theme
-        ) {
-            result = modulesUtils.compareDependencies(myModule, modulesActivated, false);
-        }
-        for (const apiOrTheme of Object.keys(result)) {
+
+        for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
+            for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
+                if (!result[apiOrTheme][name]) {
+                    result[apiOrTheme][name] = [];
+                }
+                result[apiOrTheme][name].push(version);
+            }
+
+            for (const pkg of modulesActivated) {
+                if (pkg.packageDependencies && pkg.packageDependencies[apiOrTheme]) {
+                    for (const [name, version] of Object.entries(pkg.packageDependencies[apiOrTheme])) {
+                        if (result[apiOrTheme][name]) {
+                            result[apiOrTheme][name].push(version);
+                        }
+                    }
+                }
+            }
             for (const [name, versions] of Object.entries(result[apiOrTheme])) {
                 if (!response.toBeChanged[apiOrTheme][name]) {
                     if (versions.length > 1) {
                         response.toBeChanged[apiOrTheme][name] = [];
-                        response.toBeChanged[apiOrTheme][name].push(...versions);
+                        response.toBeChanged[apiOrTheme][name].push(...[...new Set(versions)]);
                     } else if (versions.length === 1) {
-                        response.toBeRemoved[apiOrTheme][name] = versions[0];
+                        response.toBeRemoved[apiOrTheme].push(name);
                     }
-                    break;
                 }
             }
-            /**
-             * We use npm because yarn currently can't return only installed package
-             * from package.json but from all dependencies of all packages
-             * @see https://github.com/yarnpkg/yarn/issues/3569
-             */
             if (myModule.packageDependencies[apiOrTheme]) {
-                let savePackagedependenciesPath;
+                let packageDependenciesPath;
                 if (apiOrTheme === 'api') {
-                    savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
+                    packageDependenciesPath = path.join(global.appRoot, 'package.json');
                 } else if (apiOrTheme === 'theme') {
-                    savePackagedependenciesPath = path.join(
+                    packageDependenciesPath = path.join(
                         global.appRoot,
                         'themes',
                         global.envConfig.environment.currentTheme,
-                        'package-theme.json'
+                        'package.json'
                     );
                 }
-                const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
+                const savePackagedependencies = JSON.parse(await fs.readFile(packageDependenciesPath));
                 for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
                     if (result[apiOrTheme][name]) {
                         response.alreadyInstalled[apiOrTheme][name] = version.version ? version.version : version;
                     }
                 }
             }
-            for (const name of Object.keys(response.toBeChanged[apiOrTheme])) {
-                if (response.alreadyInstalled[name] && response.toBeChanged[apiOrTheme][name].length === 2) {
-                    const pos = response.toBeChanged[apiOrTheme][name].indexOf(response.alreadyInstalled[apiOrTheme][name]);
-                    if (pos !== -1) {
-                        response.toBeChanged[apiOrTheme][name].splice(pos, 1);
-                    } else {
-                        response.toBeChanged[apiOrTheme][name].push(response.alreadyInstalled[apiOrTheme][name]);
-                    }
+            for (const [name, versions] of Object.entries(response.toBeChanged[apiOrTheme])) {
+                if (
+                    response.alreadyInstalled[name]
+                    && versions.indexOf(response.alreadyInstalled[apiOrTheme][name]) === -1
+                ) {
+                    response.toBeChanged[apiOrTheme][name].push(response.alreadyInstalled[apiOrTheme][name]);
                 }
             }
         }
-
         for (const apiOrTheme of Object.keys(response.toBeChanged)) {
             for (const value of Object.keys(response.toBeChanged[apiOrTheme])) {
                 if (response.toBeChanged[apiOrTheme][value].length > 1 && response.needUpgrade === false) {
@@ -434,9 +436,11 @@ const activateModule = async (idModule, toBeChanged) => {
                         ...myModule.packageDependencies[apiOrTheme],
                         ...toBeChanged[apiOrTheme]
                     };
+
+                    packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                     await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                     console.log(`Installing dependencies of the module in ${position}...`);
-                    await packageManager.execCmd('yarn install', installPath);
+                    await packageManager.execCmd('yarn install --force', installPath);
                 }
             }
         }
@@ -486,9 +490,10 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         for (let i = 0; i < _module.files.length; i++) {
             if (await fs.access(_module.files[i])) {
                 if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
-                    require('rimraf')(_module.files[i], (err) => {
+                    await new Promise((resolve) => rimraf(_module.files[i], (err) => {
                         if (err) console.error(err);
-                    });
+                        resolve();
+                    }));
                 } else {
                     try {
                         await fs.unlink(_module.files[i]);
@@ -525,9 +530,8 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
                     ...packageJSON.dependencies,
                     ...toBeChanged[apiOrTheme]
                 };
-                const missing                 = {};
-                for (const packageToDelete of Object.keys(toBeRemoved[apiOrTheme])) {
-                    packageJSON.dependencies[packageToDelete] = undefined;
+                for (const packageToDelete of toBeRemoved[apiOrTheme]) {
+                    delete packageJSON.dependencies[packageToDelete];
                 }
                 for (const [name, version] of Object.entries(savePackagedependencies.dependencies)) {
                     let found = false;
@@ -537,16 +541,12 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
                             break;
                         }
                     }
-                    if (!found) {
-                        missing[name] = version;
-                    }
+                    if (!found) packageJSON.dependencies[name] = version;
                 }
-                packageJSON.dependencies = {
-                    ...packageJSON.dependencies,
-                    ...missing
-                };
+
+                packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await packageManager.execCmd('yarn install', installPath);
+                await packageManager.execCmd('yarn install --force', installPath);
             }
         }
 
@@ -558,6 +558,14 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         err.datas.modules = await Modules.find({});
         throw err;
     }
+};
+
+const orderPackages = (dependencies) => {
+    const ordered = {};
+    for (const pkg of Object.keys(dependencies).sort()) {
+        ordered[pkg] = dependencies[pkg];
+    }
+    return ordered;
 };
 
 /**
