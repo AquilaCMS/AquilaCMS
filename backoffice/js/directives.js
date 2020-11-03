@@ -606,7 +606,8 @@ adminCatagenDirectives.directive("nsButtons", function ()
             hideRemove: "=", //Si on est en Edit Mode mais qu'on ne veut pas la suppresion pour autant (par exemple sur un ou plusieurs éléments)
             onLoad: "&?",
             isSelected: "=",
-            additionnalButtons: "=?"
+            additionnalButtons: "=?",
+            moreButtons: "=?"
         },
         templateUrl: "views/templates/nsButtons.html",
         link: function (scope)

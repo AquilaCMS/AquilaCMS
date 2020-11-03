@@ -50,8 +50,41 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         window.dispatchEvent(event);
                     }
                 },
+                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
-        ]
+        ];
+
+        $scope.moreButtons = [
+            {
+                text: 'product.general.coherenceTitle',
+                onClick: function () {
+                            $modal.open({
+                                templateUrl: 'app/product/views/modals/coherence.html',
+                                controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                                    $scope.product = productSolv;
+                                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                                        $scope.modal.data = response.content;
+                                    });
+                                    $scope.modal = {data : ''};
+                                    $scope.trustHtml = function(){
+                                        return $sce.trustAsHtml($scope.modal.data);
+                                    }
+                                    $scope.cancel = function () {
+                                        $modalInstance.close('cancel');
+                                    };
+                                },
+                                resolve: {
+                                    productSolv: function () {
+                                        return $scope.product;
+                                    },
+                                }
+                            }).result.then(function () {
+                
+                            });
+                        },
+                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
+            }
+        ];
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
