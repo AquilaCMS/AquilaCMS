@@ -239,7 +239,9 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
-    let matchCategory = {_visible: true, active: true};
+    const {environment, stockOrder} = global.envConfig;
+    lang                            = servicesLanguages.getDefaultLang(lang);
+    let matchCategory               = {_visible: true, active: true};
     // Si admin alors on populate tout les documents sans restriction de visibilité ou d'actif
     if (isAdmin) {
         matchCategory = {};
@@ -267,8 +269,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     menu.productsList = menu.productsList.filter((p) => p.id !== null);
     menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
     if (PostBody.filter === undefined)  PostBody.filter = {};
-    const _config = await Configuration.findOne({}, {stockOrder: 1});
-    if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
+    if (stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
         PostBody.structure.stock = 1;
     }
 
@@ -292,18 +293,25 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const result = await queryBuilder.find(PostBody, true);
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         // On ajoute le sortWeight correspondant au produit dans le doc produit
-        productListSorted.forEach((product) => {
-            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id._id.toString());
+        for (let i = 0; i < productListSorted.length; i++) {
+            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === productListSorted[i].id._id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (ProdFound) {
-                ProdFound.sortWeight = product.sortWeight;
+                ProdFound.sortWeight = productListSorted[i].sortWeight;
             }
-        });
+        }
+        // productListSorted.forEach((product) => {
+        //     const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id._id.toString());
+        //     // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
+        //     if (ProdFound) {
+        //         ProdFound.sortWeight = product.sortWeight;
+        //     }
+        // });
         // On trie les produits par poids
         result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
         result.count = menu.productsList.length;
     }
-    if (_config.stockOrder.bookingStock !== 'none') {
+    if (stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
             const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
@@ -340,60 +348,75 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    let prds       = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
-    let prdsPrices = JSON.parse(JSON.stringify(prds));
-
-    prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
-    if (priceFilter) {
-        prdsPrices = prdsPrices.filter((prd) => {
-            if (priceFilter.$or[1]['price.ati.special']) {
-                if (prd.price.ati.special) {
-                    if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
-                        && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
-                        return true;
-                    }
-                } else {
-                    if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
-                        && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
-                        return true;
-                    }
-                }
-            } else if (priceFilter.$or[1]['price.et.special']) {
-                if (prd.price.et.special) {
-                    if (prd.price.et.special <= priceFilter.$or[1]['price.et.special'].$lte
-                        && prd.price.et.special >= priceFilter.$or[1]['price.et.special'].$gte) {
-                        return true;
-                    }
-                } else {
-                    if (prd.price.et.normal <= priceFilter.$or[0]['price.et.normal'].$lte
-                        && prd.price.et.normal >= priceFilter.$or[0]['price.et.normal'].$gte) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        });
-        prds       = prds.filter((prd) => prdsPrices
-            .map((prdPri) => prdPri._id.toString())
-            .indexOf(prd._id.toString()) !== -1);
-        if (PostBody.sort && PostBody.sort['price.ati.normal']) {
-            prds = prds.sort((a, b) => {
-                let priceA = a.price.ati.normal;
-                let priceB = a.price.ati.normal;
-                if (a.price.ati.special) priceA = a.price.ati.special;
-                if (b.price.ati.special) priceB = b.price.ati.special;
-                let result;
-                const sort = Number(PostBody.sort['price.ati.normal']);
-                if (sort === 1) result = priceA - priceB;
-                if (sort === -1) result = priceB - priceA;
-                return result;
-            });
-        }
-    }
+    let prds = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
 
     const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
+
+    if (!environment.optimizedPrice) {
+        let prdsPrices = JSON.parse(JSON.stringify(prds));
+        prdsPrices     = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
+        if (priceFilter) {
+            prdsPrices = prdsPrices.filter((prd) => {
+                if (priceFilter.$or[1]['price.ati.special']) {
+                    if (prd.price.ati.special) {
+                        if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
+                            && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
+                            return true;
+                        }
+                    } else {
+                        if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
+                            && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
+                            return true;
+                        }
+                    }
+                } else if (priceFilter.$or[1]['price.et.special']) {
+                    if (prd.price.et.special) {
+                        if (prd.price.et.special <= priceFilter.$or[1]['price.et.special'].$lte
+                            && prd.price.et.special >= priceFilter.$or[1]['price.et.special'].$gte) {
+                            return true;
+                        }
+                    } else {
+                        if (prd.price.et.normal <= priceFilter.$or[0]['price.et.normal'].$lte
+                            && prd.price.et.normal >= priceFilter.$or[0]['price.et.normal'].$gte) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            });
+            prds       = prds.filter((prd) => prdsPrices
+                .map((prdPri) => prdPri._id.toString())
+                .indexOf(prd._id.toString()) !== -1);
+            if (PostBody.sort && PostBody.sort['price.ati.normal']) {
+                prds = prds.sort((a, b) => {
+                    let priceA = a.price.ati.normal;
+                    let priceB = a.price.ati.normal;
+                    if (a.price.ati.special) priceA = a.price.ati.special;
+                    if (b.price.ati.special) priceB = b.price.ati.special;
+                    let result;
+                    const sort = Number(PostBody.sort['price.ati.normal']);
+                    if (sort === 1) result = priceA - priceB;
+                    if (sort === -1) result = priceB - priceA;
+                    return result;
+                });
+            }
+        }
+
+        for (const prd of prdsPrices) {
+            if (prd.price.et.special) {
+                arraySpecialPrice.et.push(prd.price.et.special);
+            } else {
+                arraySpecialPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arraySpecialPrice.ati.push(prd.price.ati.special);
+            } else {
+                arraySpecialPrice.ati.push(prd.price.ati.normal);
+            }
+        }
+    }
 
     for (const prd of prds) {
         if (prd.price.et.special) {
@@ -408,24 +431,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    const priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
-    const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
-
-    for (const prd of prdsPrices) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
-        }
-    }
-
-    const specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    const specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+    const priceMin        = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
+    const priceMax        = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
+    const specialPriceMin = {et: Math.min(...arraySpecialPrice.et) || 0, ati: Math.min(...arraySpecialPrice.ati) || 0};
+    const specialPriceMax = {et: Math.max(...arraySpecialPrice.et) || 0, ati: Math.max(...arraySpecialPrice.ati) || 0};
 
     // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
     for (let i = 0; i < result.datas.length; i++) {
@@ -528,7 +537,13 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     return {
-        ...result, count : prds.length, datas : tProducts, priceMin, priceMax, specialPriceMin, specialPriceMax
+        ...result,
+        count : prds.length,
+        datas : tProducts,
+        priceMin,
+        priceMax,
+        specialPriceMin,
+        specialPriceMax
     };
 };
 

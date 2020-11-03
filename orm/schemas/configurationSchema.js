@@ -32,7 +32,8 @@ const ConfigurationSchema = new Schema({
         port              : {type: Number, required: true},
         siteName          : {type: String, required: true},
         websiteCountry    : {type: String, required: true},
-        websiteTimezone   : {type: String}
+        websiteTimezone   : {type: String},
+        optimizedPrice    : {type: Boolean, default: false}
     },
     taxerate : {
         type : [
