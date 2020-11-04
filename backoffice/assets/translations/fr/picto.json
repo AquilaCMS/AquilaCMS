@@ -18,7 +18,8 @@
         "botCenter": "Bas centré",
         "botRight": "Bas droit",
         "actif": "Actif",
-        "dispoFiltres": "Disponible dans les filtres automatiques :"
+        "dispoFiltres": "Disponible dans les filtres automatiques :",
+        "pictorisation": "Effectuer la pictorisation"
     },
     "list": {
         "t1": "Pictogrammes",
