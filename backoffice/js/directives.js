@@ -218,15 +218,15 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
-                                editor.id = $scope.id;
-                                editor.on('init', () => {
-                                    if (!$scope.text){
-                                        tinyMCE.get($scope.id).selection.setContent("",  { no_events: false } );
-                                    }else{
-                                        tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
-                                    }
-                                    $('html,body').scrollTop(0);
-                                });
+                                // editor.id = $scope.id;
+                                // editor.on('init', () => {
+                                //     if (!$scope.text){
+                                //         tinyMCE.get($scope.id).selection.setContent("",  { no_events: false } );
+                                //     }else{
+                                //         tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
+                                //     }
+                                //     $('html,body').scrollTop(0);
+                                // });
 
                             editor.ui.registry.addButton('customAddImg', {
                                 //text: 'Ajouter une image',
