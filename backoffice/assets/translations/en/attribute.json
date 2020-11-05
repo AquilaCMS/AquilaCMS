@@ -30,7 +30,9 @@
         "dispoFiltresAuto": "Available in automatic filters:",
         "valeurs": "Values",
         "addValeur": "Add a value",
-        "color": "Color"
+        "color": "Color",
+        "visible": "Visible in product",
+        "infoDispoFiltres": "Allows an attribute selection category to be visible in filters"
     },
 
     "list": {

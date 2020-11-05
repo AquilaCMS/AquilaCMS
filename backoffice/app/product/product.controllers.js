@@ -213,7 +213,7 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            ProductsV2.searchObj(params, function (res) {
+            ProductsV2.adminList(params, function (res) {
                 getProductImg(0, res.products);
 
                 $scope.products = res.products;
@@ -294,33 +294,6 @@ ProductControllers.controller("nsProductGeneral", [
             }
         });
 
-        $scope.productCoherence = function (product){
-            $modal.open({
-                templateUrl: 'app/product/views/modals/coherence.html',
-                controller: function ($scope, $modalInstance, $sce, ProductCoherence) {
-                    $scope.product = product;
-
-                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
-                        $scope.modal.data = response.content;
-                    });
-                    $scope.modal = {data : ''};
-                    $scope.trustHtml = function(){
-                        return $sce.trustAsHtml($scope.modal.data);
-                    }
-                    $scope.cancel = function () {
-                        $modalInstance.close('cancel');
-                    };
-                },
-                resolve: {
-                    product: function () {
-                        return product;
-                    },
-                    
-                }
-            }).result.then(function () {
-
-            });
-        }
 
         $scope.changeActiveVisible = function(product){
             $modal.open({

@@ -75,7 +75,7 @@ ProductDirectives.directive("nsProductsList", function () {
                         const filter = angular.copy($scope.queryFilter);
                         // Si pagination avec recherche
                         if ($scope.f.nameFilter.length > 0) {
-                            ProductsV2.searchObj({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
+                            ProductsV2.adminList({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
                                 $scope.products = products;
                                 $scope.totalItems = count;
                             });
@@ -133,7 +133,7 @@ ProductDirectives.directive("nsProductsList", function () {
                         delete filter.supplier_ref;
                     }
                     if ($scope.f.nameFilter.length > 0 || $scope.f.codeFilter.length > 0) {
-                        ProductsV2.searchObj({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
+                        ProductsV2.adminList({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
                             $scope.products = res.products;
                             $scope.totalItems = res.count;
                             $scope.currentPage = 1;
@@ -261,8 +261,8 @@ ProductDirectives.directive("nsProductPrice", function () {
                 $scope.langs = $rootScope.languages;
 
                 ConfigV2.taxerate(function (taxerate) {
-                    $scope.taxerate = taxerate;
-                    if ($scope.taxerate.length > 0 && ($scope.product === undefined || $scope.product.price === undefined || $scope.product.price.tax === undefined)) {
+                    $scope.taxerate = taxerate.map(t => t.rate);
+                    if ($scope.taxerate.length > 0 && $scope.product && $scope.product.price && !$scope.product.price.tax) {
                         // $scope.product.price.tax = $scope.taxerate[$scope.taxerate.length - 1].rate;
                         $scope.product.price.tax = 0;
                     }
@@ -302,10 +302,10 @@ ProductDirectives.directive("nsProductPrice", function () {
                             delete prices.ati[fields[1]];
                         }
                     } else {
-                        if (prices.et.normal !== undefined && prices.et.normal != null) {
+                        if (prices.et && prices.et.normal !== undefined && prices.et.normal != null) {
                             prices.ati.normal = parseFloat((prices.et.normal * vat).toFixed(2));
                         }
-                        if (prices.et.special !== undefined && prices.et.special != null) {
+                        if (prices.et && prices.et.special !== undefined && prices.et.special != null) {
                             prices.ati.special = parseFloat((prices.et.special * vat).toFixed(2));
                         }
                     }
@@ -324,7 +324,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
         restrict : "E",
         scope    : {
             form : "=",
-            isSelected: "=" 
+            isSelected: "="
         },
         require     : "ngModel",
         templateUrl : "app/product/views/templates/nsProductPhoto.html",

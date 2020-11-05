@@ -218,15 +218,15 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
-                                editor.id = $scope.id;
-                                editor.on('init', () => {
-                                    if (!$scope.text){
-                                        tinyMCE.get($scope.id).selection.setContent("",  { no_events: false } );
-                                    }else{
-                                        tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
-                                    }
-                                    $('html,body').scrollTop(0);
-                                });
+                                // editor.id = $scope.id;
+                                // editor.on('init', () => {
+                                //     if (!$scope.text){
+                                //         tinyMCE.get($scope.id).selection.setContent("",  { no_events: false } );
+                                //     }else{
+                                //         tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
+                                //     }
+                                //     $('html,body').scrollTop(0);
+                                // });
 
                             editor.ui.registry.addButton('customAddImg', {
                                 //text: 'Ajouter une image',
@@ -606,11 +606,16 @@ adminCatagenDirectives.directive("nsButtons", function ()
             hideRemove: "=", //Si on est en Edit Mode mais qu'on ne veut pas la suppresion pour autant (par exemple sur un ou plusieurs éléments)
             onLoad: "&?",
             isSelected: "=",
-            additionnalButtons: "=?"
+            additionnalButtons: "=?",
+            moreButtons: "=?"
         },
         templateUrl: "views/templates/nsButtons.html",
         link: function (scope)
         {
+            scope.statechangeMoreButtons = false;
+            scope.changeMoreButtons = function(){
+                scope.statechangeMoreButtons  = !scope.statechangeMoreButtons;
+            }
             if(scope.onLoad)
             {
                 scope.onLoad();

@@ -50,8 +50,39 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         window.dispatchEvent(event);
                     }
                 },
+                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
-        ]
+        ];
+
+        $scope.moreButtons = [
+            {
+                text: 'product.general.coherenceTitle',
+                onClick: function () {
+                            $modal.open({
+                                templateUrl: 'app/product/views/modals/coherence.html',
+                                controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                                    $scope.product = productSolv;
+                                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                                        $scope.modal.data = response.content;
+                                    });
+                                    $scope.modal = {data : ''};
+                                    $scope.trustHtml = function(){
+                                        return $sce.trustAsHtml($scope.modal.data);
+                                    }
+                                    $scope.cancel = function () {
+                                        $modalInstance.close('cancel');
+                                    };
+                                },
+                                resolve: {
+                                    productSolv: function () {
+                                        return $scope.product;
+                                    },
+                                }
+                            });
+                        },
+                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
+            }
+        ];
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
@@ -240,15 +271,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         };
 
         $scope.duplicateProduct = function () {
-            const idProduct = $scope.product._id;
             const newCode = prompt("Saisir le code du nouveau produit : ");
             if (newCode) {
                 const newPrd = {...$scope.product, code: newCode};
                 delete newPrd._id;
-                for (const key of Object.keys(newPrd.translation)) {
-                    newPrd.translation[key].slug += "-" + newPrd.code;
-                }  
-                const query = ProductsV2.save(newPrd);
+                const query = ProductsV2.duplicate(newPrd);
                 query.$promise.then(function (savedPrd) {
                     toastService.toast("success", "Produit dupliqué !");
                     $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);

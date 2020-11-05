@@ -5,7 +5,7 @@
     "download": "Télécharger",
     "verifying" : "Vérification d'une mise à jour...",
     "maintenance": "Maintenance",
-    "authorizedIPs": "IP authorisées (séparées par ';')",
+    "authorizedIPs": "IP autorisées (séparées par ';')",
     "maj":"Mise à jour",
     "automatic": "Activer la maintenance automatiquement après une mise à jour"
 }
