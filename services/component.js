@@ -16,6 +16,7 @@ const getComponent = async (componentName, code, authorization = null) => {
     let models;
     let PostBody;
     switch (componentName) {
+    case 'megamenu':
     case 'menu':
         models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
