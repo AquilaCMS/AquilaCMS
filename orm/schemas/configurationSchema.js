@@ -33,7 +33,7 @@ const ConfigurationSchema = new Schema({
         siteName          : {type: String, required: true},
         websiteCountry    : {type: String, required: true},
         websiteTimezone   : {type: String},
-        optimizedPrice    : {type: Boolean, default: false}
+        optimizedPrice    : {type: Boolean, default: true}
     },
     taxerate : {
         type : [

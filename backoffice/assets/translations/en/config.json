@@ -76,7 +76,11 @@
             "active": "Activate",
             "cert": "certificate",
             "key": "private key"
-        }
+        },
+        "infoOptimizedPrice": "Allows to optimize prices at the expense of query loading time",
+        "optimizedPriceTitle": "Optimized price",
+        "optimizedPrice": "Optimized price",
+        "robotTXT": "Robot.txt"
     },
     "import": {
         "t1": "Products imports",

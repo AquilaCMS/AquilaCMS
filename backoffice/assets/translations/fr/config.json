@@ -76,7 +76,11 @@
             "active": "Activée",
             "cert": "certificat",
             "key": "clé privée"
-        }
+        },
+        "infoOptimizedPrice": "Permet d'optimiser les prix au detriment du temps de chargement des requetes dans une categorie",
+        "optimizedPriceTitle": "Optimisation prix",
+        "optimizedPrice": "Optimisation prix",
+        "robotTXT": "Robot.txt"
     },
     "import": {
         "t1": "Imports des produits",
