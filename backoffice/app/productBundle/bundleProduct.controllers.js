@@ -2,15 +2,40 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2)
-    {
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2)
+    {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
-        $scope.promos = []
+        $scope.promos = [];
         $scope.displayModes = BundleSectionDisplayModes;
         $scope.nsUploadFiles = {
             isSelected: false
+        };
+
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+            $scope.setAttributes = datas;
+            if ($scope.product && $scope.product.set_attributes === undefined) {
+                const set_attributes = datas.find(function (setAttr) {
+                    return setAttr.code === "defaut";
+                });
+                if (set_attributes) {
+                    $scope.product.set_attributes = set_attributes;
+                    $scope.loadNewAttrs();
+                }
+            }
+        });
+
+        
+
+        $scope.loadNewAttrs = function () {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+                $scope.product.attributes = datas.map(function (attr) {
+                    attr.id = attr._id;
+                    delete attr._id;
+                    return attr;
+                });
+            });
         };
         
         $scope.additionnalButtons = [
@@ -304,21 +329,21 @@ BundleProductControllers.controller("BundleProductCtrl", [
 
         $scope.getCategoriesLink = function ()
         {
-            CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink)
-            {
-                $scope.categoriesLink = categoriesLink.datas;
-            });
+            if($scope.product._id) {
+                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink)
+                {
+                    $scope.categoriesLink = categoriesLink.datas;
+                });
+            }
         };
 
         $scope.duplicateProduct = function ()
         {
             var clone = angular.copy($scope.product);
             clone.code = prompt("Saisir le code: ");
+            clone.id = clone._id;
             delete clone._id;
-            for (const key of Object.keys(clone.translation)) {
-                clone.translation[key].slug += "-" + clone.code;
-            }  
-            ProductsV2.save(clone, function (savedPrd)
+            ProductsV2.duplicate(clone, function (savedPrd)
             {
                 if(!savedPrd)
                 {

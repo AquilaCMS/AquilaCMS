@@ -138,7 +138,7 @@ const deleteCartItem = async (cartId, itemId) => {
 };
 
 const addItem = async (req) => {
-    let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'});
+    let cart = await Cart.findOne({_id: req.body.cartId, status: 'IN_PROGRESS'}).populate('items.id');
     if (!cart) {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }

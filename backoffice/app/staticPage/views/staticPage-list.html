@@ -7,12 +7,14 @@
                 </div>
             </div>
         </div>
-        <ul class="nav nav-tabs" style="margin-top: 20px;">
-            <li ng-show="search === ''" class="{{currentTab === group ? 'active' : ''}}" ng-repeat="group in groups | filterListGeneral"><a href="" ng-click="changeTab(group)" target="_self">{{group}}</a></li>
-            <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>static.list.search</a></li>
-        </ul>
+        <div class= "scrollmenu">
+            <ul class="nav nav-tabs" style="margin-top: 20px;">
+                <li ng-show="search === ''" class="{{currentTab === group ? 'active' : ''}}" ng-repeat="group in groups | filterListGeneral"><a href="" ng-click="changeTab(group)" target="_self">{{group}}</a></li>
+                <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>static.list.search</a></li>
+            </ul>
+        </div>
         <div ng-repeat="group in groups | filterListGeneral:group" ng-show="currentTab === group && search === ''" id="{{group}}" class="tab-pane fade in {{currentTab === group ? 'active' : ''}}">
-            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+            <table class=" shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                 <thead>
                 <tr role="row" style="cursor: pointer">
                     <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1">
@@ -36,10 +38,10 @@
                     ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-repeat="static in statics | filterListGeneral:group | orderBy:sortType:sortReverse"
                     ng-click="goToStaticPageDetails(static.code)">
-                    <td class="sorting_1">
+                    <td class="sorting_1" data-label="Code :">
                         {{static.code}}
                     </td>
-                    <td>
+                    <td data-label="Visible :">
                         <span ng-bind-html='static.active | checked'></span>
                     </td>
                 </tr>

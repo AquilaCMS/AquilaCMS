@@ -1,6 +1,6 @@
 <ns-box data-title="picto.list.t1" title-icon="fa fa-gratipay fa-2x" new-href="#/picto/new">
 
-    <table class="table table-bordered">
+    <table class="shortTable table table-bordered">
         <thead>
             <tr>
                 <th translate>
@@ -22,16 +22,16 @@
         </thead>
         <tbody>
             <tr ng-repeat="picto in pictos" style="cursor: pointer;" ng-click="detailsPicto(picto._id)" ng-show="pictos.length > 0">
-                <td>
+                <td data-label="IMG :">
                     <img style="max-width: 100px;max-height:50px" ng-src="/medias/picto/{{picto.filename}}" ng-if="picto.filename !== ''" alt="{{picto.filename}}">
                     <p ng-show="picto.filename === ''" translate>picto.list.noImg</p>
                 </td>
-                <td>{{picto.code}}</td>
-                <td>{{picto.title}}</td>
-                <td>
+                <td data-label="Code :">{{picto.code}}</td>
+                <td data-label="Titre :">{{picto.title}}</td>
+                <td data-label="Utilisé dans les filtres :">
                     <ns-status-label type="picto" status="picto.usedInFilters"></ns-status-label>
                 </td>
-                <td>
+                <td data-label="Actif :">
                     <ns-status-label type="picto" status="picto.enabled"></ns-status-label>
                 </td>
             </tr>

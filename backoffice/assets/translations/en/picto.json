@@ -18,7 +18,8 @@
         "botCenter": "Bottom center",
         "botRight": "Bottom right",
         "actif": "Active",
-        "dispoFiltres": "Available in automatic filters:"
+        "dispoFiltres": "Available in automatic filters:",
+        "pictorisation": "Perform pictorization"
     },
     "list": {
         "t1": "Pictograms",

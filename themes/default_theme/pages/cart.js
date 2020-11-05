@@ -45,7 +45,7 @@ class PageCart extends NSPageCart {
                                             <div className="section__body">
                                                 <div className="products-cart">
                                                     <div className="products__head">
-                                                        <span className="counter">{cart && cart.items ? cart.items.length : 0} {t('cart:page.cart.products')}</span>
+                                                        <span className="counter">{cart && cart.items ? cart.items.filter(item => !item.typeDisplay).length : 0} {t('cart:page.cart.products')}</span>
 
                                                         <div className="products__labels">
                                                             <ul>
@@ -68,7 +68,7 @@ class PageCart extends NSPageCart {
 
                                                     <div className="products__body">
                                                         {
-                                                            cart && cart.items && cart.items.map((item, index) => {
+                                                            cart && cart.items && cart.items.filter(item => !item.typeDisplay).map((item, index) => {
                                                                 let basePriceATI = null;
                                                                 let descPromo    = '';
                                                                 let descPromoT   = '';
@@ -98,7 +98,7 @@ class PageCart extends NSPageCart {
                                                                     }
                                                                 }
                                                                 return (
-                                                                    <div key={item._id} hidden={!item.id.inCartVisible} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
+                                                                    <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
                                                                         <div className="product__image">
                                                                             <button style={{ border: '0', background: 'transparent', height: '100%' }} type="button">
                                                                                 <img src={imgDefault} alt={imgAlt} />

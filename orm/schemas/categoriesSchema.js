@@ -74,6 +74,10 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
                 } else {
                     lang.slug = utils.slugify(lang.slug);
                 }
+                if (lang.slug.length <= 2) {
+                    errors.push('slug trop court');
+                    return errors;
+                }
                 if (updateQuery) {
                     self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
                 }

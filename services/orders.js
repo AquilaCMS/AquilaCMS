@@ -159,6 +159,16 @@ const paymentSuccess = async (query, updateObject) => {
     }
 };
 
+const paymentFail = async (query, update) => {
+    if (update.status) { delete update.status; }
+    if (update.$set && update.$set.status) {
+        update.$set.status = 'PAYMENT_FAILED';
+    } else {
+        update.$set = {status: 'PAYMENT_FAILED'};
+    }
+    return Orders.findOneAndUpdate(query, update);
+};
+
 const cancelOrder = async (orderId) => {
     const order = await Orders.findOne({
         _id    : orderId,
@@ -623,6 +633,7 @@ module.exports = {
     setOrder,
     setStatus,
     paymentSuccess,
+    paymentFail,
     cancelOrder,
     cancelOrders,
     rma,

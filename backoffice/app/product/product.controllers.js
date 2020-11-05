@@ -213,7 +213,7 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            ProductsV2.searchObj(params, function (res) {
+            ProductsV2.adminList(params, function (res) {
                 getProductImg(0, res.products);
 
                 $scope.products = res.products;
@@ -276,10 +276,10 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
-    function ($scope, $filter, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
+    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
+    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
-
+        $scope.hookInfo = HookProductInfo;
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
             $scope.setAttributes = datas;
 
@@ -294,6 +294,7 @@ ProductControllers.controller("nsProductGeneral", [
             }
         });
 
+
         $scope.changeActiveVisible = function(product){
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',
@@ -304,9 +305,9 @@ ProductControllers.controller("nsProductGeneral", [
                             $scope.adminUrl = $scope.config.adminPrefix;
                     });
 
-                        CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
-                            $scope.cat = categoriesLink.datas.length !== 0;
-                        });
+                    CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
+                        $scope.cat = categoriesLink.datas.length !== 0;
+                    });
                     
                     $scope.cancel = function () {
                         $modalInstance.dismiss('cancel');
@@ -341,15 +342,5 @@ ProductControllers.controller("nsProductGeneral", [
 
         window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
 
-
-        $scope.loadNewAttrs = function () {
-            AttributesV2.list({PostBody: {filter: {set_attributes: $scope.product.set_attributes._id, _type: 'products'}, limit: 99}}, function ({datas}) {
-                $scope.product.attributes = datas.map(function (attr) {
-                    attr.id = attr._id;
-                    delete attr._id;
-                    return attr;
-                });
-            });
-        };
     }
 ]);

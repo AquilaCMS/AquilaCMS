@@ -331,6 +331,10 @@ module.exports = {
         fr : 'Impossible de mettre à jour le produit',
         en : 'Cannot update this product'
     },
+    ProductUpdateSlugError : {
+        fr : 'Impossible de mettre à jour le produit, le slug est trop court',
+        en : 'Cannot update this product, slug is too short'
+    },
     ProductIdExisting : {
         fr : 'ID produit déjà existant',
         en : 'Product id already exists'

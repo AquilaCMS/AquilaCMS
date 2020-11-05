@@ -18,6 +18,7 @@
 .nav > li > a
 {
     background-color: #eeeeee;
+    margin:0px
 }
 
 .modal-body

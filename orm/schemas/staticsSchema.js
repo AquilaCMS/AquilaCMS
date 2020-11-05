@@ -41,6 +41,10 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
             } else {
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
             }
+            if (updateQuery.translation[lang.code].slug.length <= 2) {
+                errors.push('slug trop court');
+                return errors;
+            }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 errors.push('slug déjà existant');
             }
@@ -60,9 +64,13 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
                 self.translation[lang.code] = {slug: utils.slugify(self.code)};
             }
             if (!self.translation[lang.code].slug) {
-                self.translation[lang.code].slug = self.translation[lang.code].title ? utils.slugify(self.translation[lang.code].title) : updateQuery.code;
+                self.translation[lang.code].slug = self.translation[lang.code].title ? utils.slugify(self.translation[lang.code].title) : self.code;
             } else {
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
+            }
+            if (self.translation[lang.code].slug.length <= 2) {
+                errors.push('slug trop court');
+                return errors;
             }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
                 errors.push('slug déjà existant');

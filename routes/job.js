@@ -60,7 +60,7 @@ async function getPlayJob(req, res, next) {
 async function getPlayImmediateJob(req, res, next) {
     req.setTimeout(300000);
     try {
-        const result = await ServiceJob.getPlayImmediateJob(req.params._id);
+        const result = await ServiceJob.getPlayImmediateJob(req.params._id, req.query);
         return res.json(result);
     } catch (error) {
         return next(error);

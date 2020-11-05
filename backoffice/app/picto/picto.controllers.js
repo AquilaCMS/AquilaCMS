@@ -48,6 +48,16 @@ PictoControllers.controller('PictoDetailsCtrl', [
                 $location.url('/picto');
             }
         );
+        $scope.moreButtons = [
+            {
+                text: 'picto.details.pictorisation',
+                onClick: function () {
+                    PictoApi.update({id : $scope.picto._id}, function(response){
+                        toastService.toast('success', 'Pictorisation : done');
+                    });
+                },
+            }
+        ]
         RulesV2.query({PostBody: {filter: {owner_id: $routeParams.id}, structure: '*'}}, function (rule) {
             if (rule.operand === undefined) {
                 Object.assign($scope.rule, {

@@ -14,6 +14,7 @@ const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
     trademark          : {code: String, name: String},
     supplier_ref       : {type: ObjectId, ref: 'suppliers'},
+    supplier_code      : {type: String},
     type               : {type: String, enum: ['simple', 'bundle', 'virtual']},
     active             : {type: Boolean, default: true},
     _visible           : {type: Boolean, default: false},
@@ -24,7 +25,6 @@ const ProductsSchema = new Schema({
     component_template : String,
     weight             : {type: Number, default: 0}, // Le poids du produit
     creationDate       : {type: Date, default: Date.now},
-    inCartVisible      : {type: Boolean, default: true},
     price              : {
         purchase : Number,
         tax      : Number,
@@ -57,7 +57,8 @@ const ProductsSchema = new Schema({
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
-            position    : {type: Number, default: 1}
+            position    : {type: Number, default: 1},
+            visible     : {type: Boolean, default: true}
         }
     ], // Module Options
     set_options : {type: ObjectId, ref: 'setoptions'}, // Fin Module Options
@@ -167,6 +168,7 @@ ProductsSchema.index({
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
+    // if (self._collection && !self._collection.collectionName.includes('preview')) {
     if (updateQuery) {
         while (updateQuery.translation === undefined) {
             updateQuery.translation = {};
@@ -182,6 +184,10 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
             } else {
                 updateQuery.translation[lang.code].slug = utils.slugify(updateQuery.translation[lang.code].slug);
+            }
+            if (updateQuery.translation[lang.code].slug.length <= 2) {
+                errors.push('slug trop court');
+                return errors;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
                 errors.push('slug déjà existant');
@@ -215,6 +221,10 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
             } else {
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
+            if (self.translation[lang.code].slug.length <= 2) {
+                errors.push('slug trop court');
+                return errors;
+            }
             if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
                 errors.push('slug déjà existant');
             }
@@ -232,6 +242,7 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
             }
         }
     }
+    // }
     return errors;
 };
 
@@ -239,9 +250,6 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
-        // for (let attributes of this.attributes) {
-        //     attributes = utils.attributeCorrectNewTypeName(this.type);
-        // }
         for (let i = 0; i < oldPrd.images.length; i++) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {

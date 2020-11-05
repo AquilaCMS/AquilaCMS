@@ -52,7 +52,7 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group" ng-if="attribute.type === 'Booléen (oui/non)' || attribute.type === 'bool'">
+            <div class="form-group" ng-if="attribute.type === 'bool'">
                 <label for="param" class="col-sm-3 control-label" translate>attribute.detail.valeurDefaut</label>
                 <div class="col-sm-6">
                     <ns-switch name="default_value" ng-model="attribute.default_value"></ns-switch>
@@ -62,7 +62,6 @@
                 <label class="col-sm-3 control-label" translate>attribute.detail.jeuAttrLie {{ setName }}</label>
             </div>-->
             <div class="form-group">
-            <!-- <div class="form-group"> -->
                 <label class="col-sm-3 control-label" translate>attribute.detail.presJeuxAttr</label>
                 <div class="col-sm-6">
                     <select name="set_attributes" class="form-control" ng-model="attribute.set_attributes" multiple>
@@ -78,13 +77,19 @@
                 </div>
             </div>
             <div class="form-group" ng-show="_type === 'products'">
-                <label class="col-sm-3 control-label" translate>attribute.detail.dispoFiltresAuto</label>
+                <label class="col-sm-3 control-label" translate>attribute.detail.dispoFiltresAuto</label><i style="display:table" class="fa fa-question-circle" popover="{{'attribute.detail.infoDispoFiltres' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
                 <div class="col-sm-6">
                     <ns-switch name="used_in_filters" ng-model="attribute.usedInFilters"></ns-switch>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" translate>attribute.detail.visible</label>
+                <div class="col-sm-6">
+                    <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>
+                </div>
+            </div>
             <div ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
-            <div ng-show="attribute.type === 'Liste déroulante' || attribute.type === 'Sélection multiple' || attribute.type === 'list' || attribute.type === 'multiselect'" class="form-group">
+            <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect'" class="form-group">
                 <label for="type" class="col-sm-3 control-label" translate>attribute.detail.valeurs</label>
                 <div class="col-sm-6">
                     <div class="row form-group" ng-repeat="value in attribute.translation[lang].values track by $index">

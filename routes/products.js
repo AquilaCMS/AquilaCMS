@@ -1,11 +1,12 @@
 const aquilaEvents                = require('../utils/aquilaEvents');
 const ServiceProduct              = require('../services/products');
+const ProductPreview              = require('../services/preview');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
-    app.post('/v2/products/searchObj', getProductsSearchObj);
+    app.post('/v2/products/adminList', authentication, adminAuth, getProductsAdminList);
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
@@ -17,7 +18,16 @@ module.exports = function (app) {
     app.post('/v2/products/category/:id', getProductsByCategoryId);
     app.put('/v2/product', authentication, adminAuth, setProduct);
     app.delete('/v2/product/:id', authentication, adminAuth, deleteProduct);
+    app.get('/v2/product/getCoherence/:id', authentication, adminAuth, getCoherence);
 };
+
+async function getCoherence(req, res, next) {
+    try {
+        return  res.json({content: await ServiceProduct.controlAllProducts(req.params.id)});
+    } catch (error) {
+        return next(error);
+    }
+}
 
 /**
  * Fonction retournant un listing de produits
@@ -85,7 +95,7 @@ async function getPromosByProduct(req, res, next) {
  */
 async function duplicateProduct(req, res, next) {
     try {
-        const result = await ServiceProduct.duplicateProduct(req.body.idProduct, req.body.newCode);
+        const result = await ServiceProduct.duplicateProduct(req.body.id, req.body.code);
         res.json(result);
     } catch (error) {
         return next(error);
@@ -212,9 +222,9 @@ TODO
  * @apiUse ProductStats
  * @apiUse ErrorPostBody
  */
-async function getProductsSearchObj(req, res, next) {
+async function getProductsAdminList(req, res, next) {
     try {
-        const result = await ServiceProduct.getProductsSearchObj(req.body, req.params);
+        const result = await ServiceProduct.getProductsAdminList(req.body, req.params);
         return res.json(result);
     } catch (error) {
         next(error);
@@ -229,7 +239,7 @@ async function getProductsSearchObj(req, res, next) {
  */
 async function preview(req, res, next) {
     try {
-        const url = await ServiceProduct.preview(req.body);
+        const url = await ProductPreview.preview(req.body);
         return res.json({url});
     } catch (err) {
         next(err);

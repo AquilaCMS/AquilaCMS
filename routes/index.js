@@ -54,14 +54,49 @@ const manageExceptionsRoutes = async (req, res, next) => {
     } else if (req.url === '/sitemap.xml' || req.url === '/robots.txt') {
         res.sendFile(path.join(global.appRoot, req.url));
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
-        const type      = req.url.split('/')[2];
+        const type    = req.url.split('/')[2];
+        let quality;
+        const option  = {};
+        const options = req.url.split('/')[3];
+
+        if (options.includes('crop')) {
+            if (options.split('-crop')[0].split('-').length > 1) {
+                quality = options.split('-')[1];
+            } else {
+                quality = 80;
+            }
+            for (let i = options.split('-').length; options.split('-')[i - 1] !== 'crop'; i--) {
+                if (option.position) {
+                    option.position += `${options.split('-')[i - 1]} `;
+                } else {
+                    option.position = `${options.split('-')[i - 1]} `;
+                }
+            }
+
+            if (!option.position) {
+                option.position = 'center';
+            } else {
+                option.position = option.position.slice(0, -1);
+            }
+        } else {
+            if (options.split('-').length > 2) {
+                quality           = options.split('-')[1];
+                option.background = options.split('-')[2];
+            } else if (options.split('-').length > 1) {
+                if (options.split('-')[1].includes(',')) {
+                    option.background = options.split('-')[1];
+                } else {
+                    quality = options.split('-')[1];
+                }
+            }
+        }
+
         const size      = req.url.split('/')[3].split('-')[0];
-        const quality   = req.url.split('/')[3].split('-')[1];
         const _id       = req.url.split('/')[4];
         const extension = path.extname(req.url).replace('.', '');
         if (type && size && extension && _id) {
             try {
-                const image = await require('../services/medias').downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined);
+                const image = await require('../services/medias').downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
                 res.set('Content-Type', `image/${extension}`);
                 fs.createReadStream(image, {autoClose: true}).pipe(res);
             } catch (e) {

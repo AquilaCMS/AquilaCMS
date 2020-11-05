@@ -16,6 +16,7 @@ const AttributesSchema = new Schema({
     set_attributes : [{type: ObjectId, ref: 'setAttributes'}],
     position       : {type: Number, default: 1},
     default_value  : {},
+    visible        : {type: Boolean, default: true},
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
     translation    : {}

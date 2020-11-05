@@ -1,8 +1,10 @@
 <ns-box data-title="attribute.list.t1" title-icon="fa fa-align-center fa-lg" new-href="#/{{_type}}/attributes/new">
-    <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#classes" target="_self" translate>attribute.list.attrClasses</a></li>
-        <li><a data-toggle="tab" href="#orphelins" target="_self" translate>attribute.list.attrOrph</a></li>
-    </ul>
+    <div class = "scrollmenu">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#classes" target="_self" translate>attribute.list.attrClasses</a></li>
+            <li><a data-toggle="tab" href="#orphelins" target="_self" translate>attribute.list.attrOrph</a></li>
+        </ul>
+    </div>
     <div class="tab-content">
         <div id="classes" class="tab-pane fade in active">
             <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
@@ -10,7 +12,7 @@
                     <input style="margin: 20px 0;" class="form-control" placeholder="Nom/Name" type="text" ng-model="local.search" ng-change="getAttributesClassed()" ng-model-options="{debounce: 1000}">
                 </div>
 
-                <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+                <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
                        id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                     <thead>
                     <tr role="row" class="pointer">
@@ -45,10 +47,10 @@
                     <tr class="pointer"
                         ng-class-odd="'odd'" ng-class-even="'even'"
                         ng-repeat="attribute in attributesClassed | orderBy:sortType:sortReverse">
-                        <td ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.code}}</td>
-                        <td ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.translation[adminLang].name}}</td>
-                        <td ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.type}}</td>
-                        <td class=" ">
+                        <td data-label="Code :" ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.code}}</td>
+                        <td data-label="Nom :" ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.translation[adminLang].name}}</td>
+                        <td data-label="Type :" ng-click="goToAttributeDetails(attribute.code)" class="sorting_1">{{attribute.type}}</td>
+                        <td data-label="Jeux d'attributs :" class=" ">
                             <button popover-ns type="button" class="btn btn-default" data-toggle="popover"
                                     data-placement="right" data-html="true" title="Jeux d'Attributs (à trad)" data-content=
                                         '<table class="table table-condensed"><tbody><tr ng-repeat="setAtt in attribute.set_attributes"><td ng-bind="setAtt.name"></td></tr></tbody></table>' translate>

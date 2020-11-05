@@ -1,7 +1,9 @@
-const path       = require('path');
-const mongoose   = require('mongoose');
-const fs         = require('../utils/fsp');
-const {Products} = require('../orm/models');
+const path     = require('path');
+const mongoose = require('mongoose');
+const fs       = require('../utils/fsp');
+const {
+    Products
+}                = require('../orm/models');
 
 const createModelData = async () => {
     const schemas     = [];

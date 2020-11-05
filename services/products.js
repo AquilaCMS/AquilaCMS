@@ -1,6 +1,5 @@
 const moment                  = require('moment-business-days');
 const path                    = require('path');
-const URL                     = require('url');
 const mongoose                = require('mongoose');
 const fs                      = require('../utils/fsp');
 const aquilaEvents            = require('../utils/aquilaEvents');
@@ -20,15 +19,11 @@ const {
     Products,
     ProductsPreview,
     ProductSimple,
-    ProductSimplePreview,
     ProductBundle,
-    ProductBundlePreview,
     ProductVirtual,
-    ProductVirtualPreview,
     Categories,
     SetAttributes,
     Attributes,
-    Territory,
     Languages
 }                             = require('../orm/models');
 
@@ -201,8 +196,15 @@ const getPromosByProduct = async (PostBody, reqRes = undefined) => {
  * Duplication de produit dans le back-office
  */
 const duplicateProduct = async (idProduct, newCode) => {
-    const doc   = await Products.findById(idProduct);
-    doc._id     = mongoose.Types.ObjectId();
+    const doc       = await Products.findById(idProduct);
+    doc._id         = mongoose.Types.ObjectId();
+    const languages = await mongoose.model('languages').find({});
+    for (const lang of languages) {
+        if (!doc.translation[lang.code]) {
+            doc.translation[lang.code] = {};
+        }
+        doc.translation[lang.code].slug = utils.slugify(doc._id.toString());
+    }
     doc.isNew   = true;
     doc.images  = [];
     doc.reviews = {
@@ -584,9 +586,9 @@ const calculateFilters = async (req, result) => {
             }
             const attr = await Attributes.findOne({_id: attrId});
             // On récupère toutes les valeurs possibles pour un attribut
-            if (attributes[i].type === 'Booléen (oui/non)' || attributes[i].type === 'bool') {
+            if (attributes[i].type === 'bool') {
                 returnArrayAttributes[attrId] = [false, true];
-            } else if (attributes[i].type === 'Champ texte' || attributes[i].type === 'textfield' || attributes[i].type === 'Couleur' || attributes[i].type === 'color') {
+            } else if (attributes[i].type === 'textfield' || attributes[i].type === 'color') {
                 const prds = await require('../orm/models/products').find({});
                 const arr  = [];
                 for (let i = 0; i < prds.length; i++) {
@@ -626,7 +628,11 @@ const setProduct = async (req) => {
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     return new Promise((resolve, reject) => {
         product.updateData(req.body, async (err, result) => {
-            if (err) reject(NSErrors.ProductUpdateError);
+            if (err && err.message === 'slug trop court') {
+                reject(NSErrors.ProductUpdateSlugError);
+            } else if (err) {
+                reject(NSErrors.ProductUpdateError);
+            }
             await ProductsPreview.deleteOne({code: req.body.code});
             return resolve(result);
         });
@@ -767,7 +773,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
  * Controle la cohérence de chaque produit
  * @returns {object}  Informations sur les produits incohérent
  */
-const controlAllProducts = async () => {
+const controlAllProducts = async (option) => {
     try {
         const languages   = await servicesLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang     = languages.datas.map((_lang) => _lang.code);
@@ -775,8 +781,12 @@ const controlAllProducts = async () => {
         let fixAttributs  = false;
         let returnErrors  = '';
         let returnWarning = '';
-
-        const productsList = await Products.find({});
+        let productsList;
+        if (option) {
+            productsList = [await Products.findOne({_id: mongoose.Types.ObjectId(option)})];
+        } else {
+            productsList = await Products.find({});
+        }
         for (const oneProduct of productsList) {
             // Control du code
             if (typeof oneProduct.code === 'undefined' || oneProduct.code === '') {
@@ -1099,7 +1109,7 @@ const getProductsListing = async (req, res) => {
     }
     return result;
 };
-const getProductsSearchObj = async (body, params) => {
+const getProductsAdminList = async (body, params) => {
     // Filtre de base
     const filter    = body.filter === undefined ? {} : body.filter;
     const searchObj = body.searchObj;
@@ -1185,11 +1195,6 @@ const getProductsSearchObj = async (body, params) => {
                     });
                 }
 
-                // Recherche par nombre de jours
-                if (searchObj.numberDays && searchObj.numberDays.length > 0) {
-                    filter.number_days = {$in: searchObj.numberDays};
-                }
-
                 // Recherche par quantite min et quantite vente max
                 if (searchObj['stock.qty']) {
                     filter['stock.qty'] = searchObj['stock.qty'];
@@ -1204,47 +1209,7 @@ const getProductsSearchObj = async (body, params) => {
                     filter['stock.qty'].$lte = searchObj.qtyMax;
                 }
 
-                // Recherche par nombre de participants
-                // Plus utilisé
-                // if(searchObj.nbParticipants) {
-                //     filter["order_qty.min"] = {$not: {$gt: searchObj.nbParticipants}};
-                //     filter["order_qty.max"] = {$not: {$lt: searchObj.nbParticipants}};
-                // }
-
-                // Recherche par la date de l'evenement
-                if (searchObj.dateAvailability) {
-                    filter.variation_event = {$elemMatch: {start: {$gte: searchObj.dateAvailability}, qty: {$gt: 0}}};
-                }
-
-                // Recherche par ville
-                // Plus utilisé car la ville est un ObjectId maintenant
-                // if(searchObj.town) filter['location.town'] = new RegExp('^' + searchObj.town, 'i');
-
-                if (searchObj.postal_code) {
-                    Territory.findOne({code: 'FR', type: 'country'}, (err, country) => {
-                        if (err) {
-                            return reject(err);
-                        }
-
-                        if (searchObj.postal_code === 'Europe') {
-                            filter['location.country'] = {$ne: country._id, $exists: true};
-                        } else {
-                            filter['location.country'] = country._id;
-
-                            if (new RegExp('Côte d\'Azur', 'i').test(searchObj.postal_code)) {
-                                filter['location.postal_code'] = {$in: [/^06/, /^83/]};
-                            } else if (new RegExp('Paris', 'i').test(searchObj.postal_code)) {
-                                filter['location.postal_code'] = {$in: [/^75/, /^77/, /^78/, /^91/, /^92/, /^93/, /^94/, /^98/]};
-                            } else if (new RegExp('Lyon', 'i').test(searchObj.postal_code)) {
-                                filter['location.postal_code'] = {$regex: /^69/};
-                            }
-                        }
-
-                        resolve();
-                    });
-                } else {
-                    resolve();
-                }
+                resolve();
             } else {
                 if (body.q) {
                     filter.$text = {$search: body.q};
@@ -1339,37 +1304,6 @@ const getProductsSearchObj = async (body, params) => {
                     resolve(minProd.price.ati.normal);
                 }
             });
-        })), new Promise(((resolve, reject) => {
-            if (params.trademark !== undefined) {
-                if (filter['trademark.name'] !== undefined) {
-                    delete filter['trademark.name'];
-                }
-
-                Products.find(filter).exec((err, mark) => {
-                    if (err) {
-                        return reject(err);
-                    }
-
-                    if (!mark) {
-                        resolve(0);
-                    } else {
-                        const _trademarks = [];
-
-                        for (let i = 0; i < mark.length; i++) {
-                            if (
-                                _trademarks.find((_mark) => _mark.name === mark[i].trademark.name) === undefined
-                                && mark[i].trademark.name !== undefined
-                            ) {
-                                _trademarks.push(mark[i].trademark);
-                            }
-                        }
-
-                        resolve(_trademarks);
-                    }
-                });
-            } else {
-                resolve();
-            }
         }))
     ]);
 
@@ -1490,39 +1424,6 @@ const calculStock = async (params, product = undefined) => {
     };
 };
 
-const preview = async (body) => {
-    let preview = {};
-    if (await ProductsPreview.findOne({code: body.code})) {
-        preview = await ProductsPreview.findOneAndUpdate({code: body.code}, body, {new: true});
-    } else {
-        let newPreview;
-        switch (body.type) {
-        case 'simple':
-            newPreview      = new ProductSimplePreview(body);
-            newPreview.kind = 'SimpleProductPreview';
-            preview         = await newPreview.save();
-            break;
-        case 'bundle':
-            newPreview      = new ProductBundlePreview(body);
-            newPreview.kind = 'BundleProductPreview';
-            preview         = await newPreview.save();
-            break;
-        case 'virtual':
-            newPreview      = new ProductVirtualPreview(body);
-            newPreview.kind = 'VirtualProductPreview';
-            preview         = await newPreview.save();
-            break;
-        default:
-            break;
-        }
-    }
-    if (body.lang) {
-        return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[body.lang].canonical}?preview=${preview._id}`);
-    }
-    const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-    return URL.resolve(global.envConfig.environment.appUrl, `${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].canonical}?preview=${preview._id}`);
-};
-
 module.exports = {
     getProducts,
     getProduct,
@@ -1539,10 +1440,9 @@ module.exports = {
     applyTranslatedAttribs,
     downloadProduct,
     getProductsListing,
-    getProductsSearchObj,
+    getProductsAdminList,
     updateStock,
     handleStock,
     calculStock,
-    restrictedFields,
-    preview
+    restrictedFields
 };

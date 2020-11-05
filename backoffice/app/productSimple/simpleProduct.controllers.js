@@ -3,13 +3,37 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate",
-    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate) {
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2",
+    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.nsUploadFiles = {
             isSelected: false
         };
+
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
+            $scope.setAttributes = datas;
+            if ($scope.product && $scope.product.set_attributes === undefined) {
+                const set_attributes = datas.find(function (setAttr) {
+                    return setAttr.code === "defaut";
+                });
+                if (set_attributes) {
+                    $scope.product.set_attributes = set_attributes;
+                    $scope.loadNewAttrs();
+                }
+            }
+        });
+
+        $scope.loadNewAttrs = function () {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes._id, _type: 'products' }, limit: 99 } }, function ({ datas }) {
+                $scope.product.attributes = datas.map(function (attr) {
+                    attr.id = attr._id;
+                    delete attr._id;
+                    return attr;
+                });
+            });
+        };
+
         $scope.additionnalButtons = [
             {
                 text: 'product.general.preview',
@@ -26,8 +50,39 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         window.dispatchEvent(event);
                     }
                 },
+                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
-        ]
+        ];
+
+        $scope.moreButtons = [
+            {
+                text: 'product.general.coherenceTitle',
+                onClick: function () {
+                            $modal.open({
+                                templateUrl: 'app/product/views/modals/coherence.html',
+                                controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                                    $scope.product = productSolv;
+                                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                                        $scope.modal.data = response.content;
+                                    });
+                                    $scope.modal = {data : ''};
+                                    $scope.trustHtml = function(){
+                                        return $sce.trustAsHtml($scope.modal.data);
+                                    }
+                                    $scope.cancel = function () {
+                                        $modalInstance.close('cancel');
+                                    };
+                                },
+                                resolve: {
+                                    productSolv: function () {
+                                        return $scope.product;
+                                    },
+                                }
+                            });
+                        },
+                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
+            }
+        ];
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
@@ -170,6 +225,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         toastService.toast("success", "Produit sauvegardé !");
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
+                            savedPrd.set_attributes = $scope.product.set_attributes;
                             $scope.product = savedPrd;
                             genAttributes();
                         } else {
@@ -207,21 +263,19 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         };
 
         $scope.getCategoriesLink = function () {
-            CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink) {
-                $scope.categoriesLink = categoriesLink.datas;
-            });
+            if($scope.product._id) {
+                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink) {
+                    $scope.categoriesLink = categoriesLink.datas;
+                });
+            }
         };
 
         $scope.duplicateProduct = function () {
-            const idProduct = $scope.product._id;
             const newCode = prompt("Saisir le code du nouveau produit : ");
             if (newCode) {
                 const newPrd = {...$scope.product, code: newCode};
                 delete newPrd._id;
-                for (const key of Object.keys(newPrd.translation)) {
-                    newPrd.translation[key].slug += "-" + newPrd.code;
-                }  
-                const query = ProductsV2.save(newPrd);
+                const query = ProductsV2.duplicate(newPrd);
                 query.$promise.then(function (savedPrd) {
                     toastService.toast("success", "Produit dupliqué !");
                     $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);

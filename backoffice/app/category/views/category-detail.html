@@ -4,12 +4,11 @@
     <form name="formMenu" ng-submit="save()"> 
         <div align="right" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
             <button style="position:sticky;top:115px;z-index:1000;pointer-events:auto;float:left" type="button"
-                class="btn btn-default ng-scope" ng-click="setEditCat()" translate>category.list.back</button>
-            <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()"
-                    translate>category.detail.delete
+                class="btn btn-default ng-scope" ng-click="setEditCat(formMenu)" ><span translate>category.list.back</span><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+            <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()">
+            <span translate>category.detail.delete</span><i class="fa fa-trash" aria-hidden="true"></i>
             </button>
-            <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"
-                    translate>category.detail.save2
+            <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"  ><span translate>category.detail.save2</span><i class="fa fa-floppy-o" aria-hidden="true"></i>
             </button>
             <br />
             <br />
@@ -18,21 +17,22 @@
 
         <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
         <br/>
-
-        <ul class="nav nav-tabs">
-            <li class="active">
-                <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
-            </li>
-        </ul>
+        <div class = "scrollmenu">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#general" target="_self" translate>category.detail.general</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#listProduct" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.listPdt</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#filters" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.filtres</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#rules" target="_self" ng-if="category.action == 'catalog'" translate>category.detail.segmentation</a>
+                </li>
+            </ul>
+        </div>
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
 
@@ -71,7 +71,7 @@
                     </tbody>
                 </table>
 
-                <table class="table table-bordered table-striped ns-table-grey" style="clear: both">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both">
                     <tbody>
                         <tr id="type">
                             <td width="30%" translate>
@@ -125,7 +125,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="table table-bordered table-striped ns-table-grey" style="clear: both">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both">
                     <tbody>
                         <tr id="createDate">
                             <td translate>category.detail.creationDate</td>
@@ -148,7 +148,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;" id="headerImage">
                     <tbody>
                         <tr>
                             <td width="30%" translate>category.detail.nameColor</td>
@@ -165,7 +165,7 @@
                             <td>
                                 <img ng-show="category.img" class="boxShadow" src="{{getImage(category)}}" alt="" />
 
-                                <ns-upload-files accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
+                                <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
                                    images="category.image" showalt="true" after-function="close(category)"></ns-upload-files>
                                 <button ng-show="category.img" type="button" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
                                     category.detail.delete
@@ -175,7 +175,7 @@
                     </tbody>
                 </table>
                 <br />
-                <table class="table table-bordered table-striped ns-table-grey" style="clear: both;">
+                <table class="shortTable table table-bordered table-striped ns-table-grey" style="clear: both;">
                     <tbody>
                         <tr id="text1">
                             <td translate>
@@ -206,7 +206,7 @@
                 </table>
             </div>
             <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'">
-                <table class="table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
+                <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
                        aria-describedby="DataTables_Table_0_info">
                     <thead>
                         <tr role="row">

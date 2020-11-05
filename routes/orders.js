@@ -38,7 +38,10 @@ module.exports = function (app) {
 async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
-        const result           = await ServiceOrder.getOrders(PostBodyVerified);
+        if (!ServiceAuth.isAdmin(req.headers.authorization)) {
+            PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
+        }
+        const result = await ServiceOrder.getOrders(PostBodyVerified);
         return res.json(result);
     } catch (error) {
         next(error);

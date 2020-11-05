@@ -32,5 +32,27 @@
         "name": "Name",
         "alt": "Alt tag",
         "picture": "Picture :"
+    },
+    "modal": {
+        "title": "Copy link",
+        "width": "Width in pixel :",
+        "height": "Height in pixel :",
+        "quality": "Quality (0 to 100) :",
+        "name": "Name :",
+        "copy": "Copy link",
+        "background": "Background color :",
+        "link": "Link",
+        "generate": "Generate",
+        "crop": "Crop :",
+        "position": "Position :",
+        "center": "Center",
+        "top": "Top",
+        "bottom": "Bottom",
+        "left": "Left",
+        "right": "Right",
+        "topLeft": "Top left",
+        "topRight": "Top right",
+        "bottomLeft": "Bottom left",
+        "bottomRight": "Bottom right"
     }
 }

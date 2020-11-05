@@ -10,18 +10,21 @@
                     duplicate-product="duplicateProduct()"
                     disable-save="disableSave"
                     additionnal-buttons="additionnalButtons"
+                    more-buttons="moreButtons"
                     >
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
-                <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
-                <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
-                <li><a data-toggle="tab" href="#photos" target="_self" translate>simple.pics</a></li>
-                <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
-                <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
-                <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
-                <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
-            </ul>
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs" >
+                    <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>simple.gen</a></li>
+                    <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
+                    <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
+                    <li><a data-toggle="tab" href="#photos" target="_self" translate>simple.pics</a></li>
+                    <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
+                    <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
+                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
+                    <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
+                </ul>
+            </div>
             <div class="tab-content">
                 <div id="general" class="tab-pane fade in active">
                     <ns-product-general product="product" lang="lang" is-edit-mode="isEditMode" product-type="'simple'" form="form"></ns-product-general>
@@ -126,6 +129,17 @@
 
                 <div id="attributes" class="tab-pane fade">
                     <h3 style="display: inline" translate>simple.attrJeu</h3>
+                    <div class="form-group" ng-show="product.code != null">
+                        <div class="col-sm-11">
+                            <label for="set_attributes" class="col-sm-2 control-label" translate>product.general.jeuAttr</label>
+                            <div class="col-sm-6">
+                                <select id="set_attributes" name="set_attributes" class="form-control"
+                                    ng-options="setAttr as setAttr.name for setAttr in setAttributes track by setAttr.code"
+                                    ng-model="product.set_attributes" ng-change="loadNewAttrs()">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <span ng-show="product.code == null" style="color: red;">
                         <br /><br />
                         <span translate>simple.beforeConfig</span>

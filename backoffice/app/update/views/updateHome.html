@@ -3,13 +3,15 @@
         <form name="form" ng-submit="validate(tab)" ng-show="!showLoading" role="form">
             <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
                 <div class="box-content">
-                    <ul class="nav nav-tabs">
-                        <li ng-click="onTabSelect('maj')" class="active"><a data-toggle="tab" href="#maj"
-                                target="_self" translate>update.maj</a></li>
-                        <li ng-click="onTabSelect('maintenance')"><a data-toggle="tab" href="#maintenance" target="_self"
-                                translate>update.maintenance</a></li>
-                        <!-- <li><a data-toggle="tab" href="#auth" target="_self" translate>config.environment.menu.third-party-auth</a></li> -->
-                    </ul>
+                    <div class="scrollmenu">
+                        <ul class="nav nav-tabs">
+                            <li ng-click="onTabSelect('maj')" class="active"><a data-toggle="tab" href="#maj"
+                                    target="_self" translate>update.maj</a></li>
+                            <li ng-click="onTabSelect('maintenance')"><a data-toggle="tab" href="#maintenance" target="_self"
+                                    translate>update.maintenance</a></li>
+                            <!-- <li><a data-toggle="tab" href="#auth" target="_self" translate>config.environment.menu.third-party-auth</a></li> -->
+                        </ul>
+                    </div>
                     <div class="tab-content">
                         Aquila version : {{local.currentVersion}}
                         <div id="maj" class="tab-pane fade in active" ng-if="tab === 'maj'">

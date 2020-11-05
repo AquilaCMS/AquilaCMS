@@ -32,16 +32,18 @@
         "descLg": "Description longue",
         "titleDescCt": "Titre description courte",
         "descCt": "Description courte",
+        "metaDesc": "Meta description",
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs",
         "preview": "Aperçu",
-        "inCartVisible": "Visible dans le panier/order"
+        "coherenceTitle":"Cohérence du produit"
     },
     "modal":{
         "activeProduct": "Activer un  produit",
         "close": "Fermer",
         "help": "Ce produit n'est pas activable car il ne possède pas de 'canonical' (URL unique).</br>Pour se faire, vous devez : </br></br><span ng-if='!cat'>- <a target='_blank' href='{{admin}}#/categories'>Ajouter ce produit à une catégorie</a> ou <a target='_blank' href='{{admin}}#/jobs'>générer une catégorisation</a></br></br></span><span>- <a target='_blank' href='{{admin}}#/jobs'>Générer la 'canonicalisation'</a></span>",
-        "runCanonicalisation": "- Lancer \"Catégorisation\" puis \"Canonicalisation\""
+        "runCanonicalisation": "- Lancer \"Catégorisation\" puis \"Canonicalisation\"",
+        "coherenceTitle":"Voici les problèmes de ce produit :"
     },
     "marketing": {
         "fournisseur": "Fournisseur",
@@ -67,13 +69,13 @@
         "coefficient": "Coefficient",
         "et": {
             "normal": "Vente HT",
-            "special": "Spécial HT *"
+            "special": "Spécial HT"
         },
         "ati": {
             "normal": "Vente TTC",
-            "special": "Spécial TTC *"
+            "special": "Spécial TTC"
         },
-        "ifPrice": "* Si un prix spécial est défini, il sera prioritaire par rapport au prix de vente.",
+        "ifPrice": "Si un prix special est defini, il sera prioritaire par rapport au prix de vente",
         "tax": "TVA (%)",
         "margin": "Marge"
     },

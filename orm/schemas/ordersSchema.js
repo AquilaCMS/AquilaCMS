@@ -93,6 +93,7 @@ const OrdersSchema = new Schema({
             'PAYMENT_PENDING',
             'PAYMENT_RECEIPT_PENDING',
             'PAYMENT_CONFIRMATION_PENDING',
+            'PAYMENT_FAILED',
             'PAID',
             'PROCESSING',
             'PROCESSED', // Préparé. A ne pas à confondre avec Finished (Traité)

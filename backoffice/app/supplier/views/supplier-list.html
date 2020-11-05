@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>
-        <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+        <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
                id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
             <tr role="row" style="cursor: pointer">
@@ -41,8 +41,8 @@
                 ng-class-odd="'odd'" ng-class-even="'even'"
                 ng-click="goToSupplierDetails(supplier.code)"
                 ng-repeat="supplier in suppliers | orderBy:sortType:sortReverse">
-                <td class="  sorting_1">{{supplier.name}}</td>
-                <td class=" ">
+                <td data-label="Nom :" class="  sorting_1">{{supplier.name}}</td>
+                <td data-label="Etat :" class=" ">
                     <span ng-bind-html='supplier.active | checked'></span>
                 </td>
                 <!--<td class=" ">

@@ -403,7 +403,7 @@ ConfigControllers.controller("RobotTxtCtrl", [
                 text = "";
             }
             $http.post('/robot', {PostBody: {text}}).then((response) => {
-                toastService.toast("success", "Le fichier robot.txt à été modifié.");
+                toastService.toast("success", "Le fichier robot.txt a été modifié.");
                 $scope.close();
             });
         };

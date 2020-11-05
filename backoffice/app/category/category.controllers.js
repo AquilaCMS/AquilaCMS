@@ -240,7 +240,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                 }
             }
 
-            ProductsV2.searchObj(params, function (response)
+            ProductsV2.adminList(params, function (response)
             {
                 if(angular.isArray(response.products))
                 {
@@ -658,6 +658,10 @@ CategoryControllers.controller("CategoryListCtrl", [
     function ($scope, $modal, $q, toastService, $translate, $modal, CategoryV2)
     {
         var selectedLang = "";
+
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
         
         getMenus();
 
@@ -705,9 +709,40 @@ CategoryControllers.controller("CategoryListCtrl", [
             });
         }
 
-        $scope.setEditCat = function() {
-            $scope.editCat = false;
+        $scope.setEditCat = function(form) {
+            if ($scope.nsUploadFiles.isSelected === true) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
+            if (form.$dirty) {
+                if (confirm("Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?")){
+                    $scope.editCat = false;
+                }else{
+                    $scope.editCat = true;
+                }
+            }else{
+                $scope.editCat = false;
+            }
         }
+
+        $scope.return = function () {
+            if ($scope.isSelected === true) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
+            if ($scope.form.$dirty) {
+                if (
+                    confirm(
+                        "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
+                    )
+                ) {
+                    $location.path($scope.returnPath);
+                }
+            }
+            else {
+                $location.path($scope.returnPath);
+            }
+        };
 
         $scope.listChildren = function (cat, scope)
         {
