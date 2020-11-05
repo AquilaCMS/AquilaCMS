@@ -471,7 +471,7 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
-        $scope.cloneDiscount = async function () {
+        const cloneDiscount = async function () {
             await $scope.save(false);
             PromoClone.clone({_id: $scope.promo._id}, function (response) {
                 if (response) {
@@ -480,6 +480,16 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
             });
         };
+
+        $scope.additionnalButtons = [
+            {
+                text: 'ns.dup',
+                onClick: function () {
+                    cloneDiscount();
+                },
+                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+            }
+        ];
     }
 ]);
 

@@ -58,29 +58,29 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             {
                 text: 'product.general.coherenceTitle',
                 onClick: function () {
-                            $modal.open({
-                                templateUrl: 'app/product/views/modals/coherence.html',
-                                controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
-                                    $scope.product = productSolv;
-                                    ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
-                                        $scope.modal.data = response.content;
-                                    });
-                                    $scope.modal = {data : ''};
-                                    $scope.trustHtml = function(){
-                                        return $sce.trustAsHtml($scope.modal.data);
-                                    }
-                                    $scope.cancel = function () {
-                                        $modalInstance.close('cancel');
-                                    };
-                                },
-                                resolve: {
-                                    productSolv: function () {
-                                        return $scope.product;
-                                    },
-                                }
+                    $modal.open({
+                        templateUrl: 'app/product/views/modals/coherence.html',
+                        controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                            $scope.product = productSolv;
+                            ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                                $scope.modal.data = response.content;
                             });
+                            $scope.modal = {data : ''};
+                            $scope.trustHtml = function(){
+                                return $sce.trustAsHtml($scope.modal.data);
+                            }
+                            $scope.cancel = function () {
+                                $modalInstance.close('cancel');
+                            };
                         },
-                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
+                        resolve: {
+                            productSolv: function () {
+                                return $scope.product;
+                            },
+                        }
+                    });
+                },
+                moreText: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
             }
         ];
 
