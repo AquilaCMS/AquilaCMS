@@ -388,12 +388,14 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                     $scope.$watch("product.code", function (newVal, oldVal) {
                         if (newVal) {
                             ProductsV2.list({PostBody: {filter: {_id: {$in: $scope.product.associated_prds}}, structure: '*', limit: 99}}, function ({datas, count}) {
+                                for (let prd of datas) {
+                                    prd.images = prd.images.filter(i => i.default)
+                                }
                                 $scope.associatedPrds = datas;
                             });
                         }
                     });
                 }
-
 
                 $scope.selectProducts = function () {
                     const modalInstance = $modal.open({
