@@ -76,11 +76,17 @@ ProductDirectives.directive("nsProductsList", function () {
                         // Si pagination avec recherche
                         if ($scope.f.nameFilter.length > 0) {
                             ProductsV2.adminList({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
-                                $scope.products = products;
+                                for (let prd of datas) {
+                                    prd.images = prd.images.filter(i => i.default)
+                                }
+                                $scope.products = datas;
                                 $scope.totalItems = count;
                             });
                         } else {
                             ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
+                                for (let prd of datas) {
+                                    prd.images = prd.images.filter(i => i.default)
+                                }
                                 $scope.products = datas;
                                 $scope.totalItems = count;
                             });
@@ -91,6 +97,9 @@ ProductDirectives.directive("nsProductsList", function () {
                 };
                 $scope.changeTri = function () {
                     ProductTri.search($scope.pagination, function (productsList) {
+                        for (let prd of productsList) {
+                            prd.images = prd.images.filter(i => i.default)
+                        }
                         $scope.products = productsList;
                     });
                 };
@@ -134,6 +143,9 @@ ProductDirectives.directive("nsProductsList", function () {
                     }
                     if ($scope.f.nameFilter.length > 0 || $scope.f.codeFilter.length > 0) {
                         ProductsV2.adminList({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
+                            for (let prd of res.products) {
+                                prd.images = prd.images.filter(i => i.default)
+                            }
                             $scope.products = res.products;
                             $scope.totalItems = res.count;
                             $scope.currentPage = 1;
@@ -142,6 +154,9 @@ ProductDirectives.directive("nsProductsList", function () {
                         filter.page = 1;
                         filter.limit = $scope.nbItemsPerPage;
                         ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page: 1}}, function (res) {
+                            for (let prd of res.datas) {
+                                prd.images = prd.images.filter(i => i.default)
+                            }
                             $scope.products = res.datas;
                             $scope.totalItems = res.count;
                             $scope.currentPage = 1;
