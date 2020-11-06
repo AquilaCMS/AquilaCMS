@@ -316,6 +316,10 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     $scope.config.ssl.key = $scope.config.ssl.key.name;
                 }
             }
+            debugger;
+            if(!$scope.config.cacheTTL) {
+                $scope.config.cacheTTL = "";
+            }
 
             ConfigV2.environment(function (oldAdmin) {
                 $scope.showThemeLoading = true;

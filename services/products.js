@@ -349,11 +349,11 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    let prds = Products.find(PostBody.filter).sort(PostBody.sort);
+    const prdsQuery = Products.find(PostBody.filter).sort(PostBody.sort);
     if (!environment.optimizedPrice) {
-        prds.limit(limit).skip(skip);
+        prdsQuery.limit(limit).skip(skip);
     }
-    prds           = await prds.lean({virtuals: true});
+    let prds       = await prdsQuery.lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
 
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);

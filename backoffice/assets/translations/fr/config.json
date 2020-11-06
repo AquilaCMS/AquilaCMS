@@ -77,9 +77,9 @@
             "cert": "certificat",
             "key": "clé privée"
         },
-        "infoOptimizedPrice": "Permet d'optimiser les prix au detriment du temps de chargement des requetes dans une categorie",
-        "optimizedPriceTitle": "Optimisation prix",
-        "optimizedPrice": "Optimisation prix",
+        "infoOptimizedPrice": "Activation de l'algorithme de tri des prix avec promotion. Attention en activant cette option, les performances du site peuvent etre degrade lorsque le tri ou filtre par prix est utilise (avec des promotions catalogue actives).",
+        "optimizedPriceTitle": "Optimisation",
+        "optimizedPrice": "Tri des prix avec promotion",
         "robotTXT": "Robot.txt"
     },
     "import": {

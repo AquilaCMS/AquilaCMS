@@ -77,9 +77,9 @@
             "cert": "certificate",
             "key": "private key"
         },
-        "infoOptimizedPrice": "Allows to optimize prices at the expense of query loading time",
-        "optimizedPriceTitle": "Optimized price",
-        "optimizedPrice": "Optimized price",
+        "infoOptimizedPrice": "Enabled price sorting algorithm with promotion. Be careful by activating this option, website performance may be degraded when sorting or filtering by price (with active catalog discount)",
+        "optimizedPriceTitle": "Optimization",
+        "optimizedPrice": "Price sorting with promotion",
         "robotTXT": "Robot.txt"
     },
     "import": {
