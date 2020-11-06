@@ -350,7 +350,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
     const prdsQuery = Products.find(PostBody.filter).sort(PostBody.sort);
-    if (!environment.optimizedPrice) {
+    if (!environment.performSortPriceWithDiscount) {
         prdsQuery.limit(limit).skip(skip);
     }
     let prds       = await prdsQuery.lean({virtuals: true});
@@ -463,7 +463,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
     let products = prds;
-    if (environment.optimizedPrice) {
+    if (environment.performSortPriceWithDiscount) {
         products = prds.slice(skip, limit + skip);
     }
     // On transforme les produits en produit mongoose afin que la translation puisse être effectué après le res.json()
