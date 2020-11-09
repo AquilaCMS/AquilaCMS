@@ -1,12 +1,8 @@
 <form name="form" class="form-horizontal" ng-submit="save(false)" role="form">
     <ns-box data-title="promo.detail.t1" title-icon="fa fa-percent fa-lg" close-href="#/promos">
         
-        <div style="position: absolute;left:500px;" ng-if="isEditMode">
-            <button ng-click="cloneDiscount()" class="btn btn-default pull-right" type="button">Dupliquer</button>
-        </div>
-        
         <ns-buttons is-edit-mode="isEditMode" remove="remove(promo._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/promos"
-                    form="form">
+                    form="form" additionnal-buttons="additionnalButtons">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
                     <li class="active">
