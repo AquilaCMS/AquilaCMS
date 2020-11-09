@@ -4,6 +4,9 @@
         "cancel": "Cancel",
         "valider": "Submit"
     },
+    "button":{
+        "dup": "Duplicate"
+    },
     "cross-selling": {
         "pdtsAssoc": "Cross-Selling",
         "add": "Add",

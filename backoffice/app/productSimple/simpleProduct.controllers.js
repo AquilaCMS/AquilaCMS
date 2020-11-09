@@ -83,7 +83,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                 moreText: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
             },
             {
-                text: 'ns.dup',
+                text: 'product.button.dup',
                 onClick: function () {
                     const newCode = prompt("Saisir le code du nouveau produit : ");
                     if (newCode) {
