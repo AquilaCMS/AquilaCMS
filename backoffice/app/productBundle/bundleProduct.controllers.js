@@ -336,38 +336,45 @@ BundleProductControllers.controller("BundleProductCtrl", [
                 });
             }
         };
-
-        $scope.duplicateProduct = function ()
-        {
-            var clone = angular.copy($scope.product);
-            clone.code = prompt("Saisir le code: ");
-            clone.id = clone._id;
-            delete clone._id;
-            ProductsV2.duplicate(clone, function (savedPrd)
+        
+        $scope.moreButtons = [
             {
-                if(!savedPrd)
-                {
-                    $location.path("/products");
-                }
-                else
-                {
-                    toastService.toast("success", "Produit sauvegardé !");
-                    if($scope.isEditMode)
+                text: 'product.button.dup',
+                onClick: function (){
+                    var clone = angular.copy($scope.product);
+                    clone.code = prompt("Saisir le code: ");
+                    clone.id = clone._id;
+                    delete clone._id;
+                    ProductsV2.duplicate(clone, function (savedPrd)
                     {
+                        if(!savedPrd)
+                        {
+                            $location.path("/products");
+                        }
+                        else
+                        {
+                            toastService.toast("success", "Produit sauvegardé !");
+                            if($scope.isEditMode)
+                            {
+                                $scope.disableSave = false;
+                                $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
+                            }
+                            else
+                            {
+                                $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
+                            }
+                        }
+                    }, function (err)
+                    {
+                        toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
                         $scope.disableSave = false;
-                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
-                    }
-                    else
-                    {
-                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
-                    }
-                }
-            }, function (err)
-            {
-                toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
-                $scope.disableSave = false;
-            });
-        };
+                    });
+                },
+                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
+            }
+        ];
+
 
 
         $scope.momentDate = function (date) {
