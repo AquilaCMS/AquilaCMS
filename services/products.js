@@ -518,23 +518,47 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    if (PostBody.sort && PostBody.sort['price.priceSort']) {
+    if (PostBody.sort && PostBody.sort['price.priceSort.et']) {
         if (PostBody.sort['price.priceSort'] === '1') {
             tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort > b.price.priceSort) {
+                if (a.price.priceSort.et > b.price.priceSort.et) {
                     return 1;
                 }
-                if (b.price.priceSort > a.price.priceSort) {
+                if (b.price.priceSort.et > a.price.priceSort.et) {
                     return -1;
                 }
                 return 0;
             });
         } else {
             tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort > b.price.priceSort) {
+                if (a.price.priceSort.et > b.price.priceSort.et) {
                     return -1;
                 }
-                if (b.price.priceSort > a.price.priceSort) {
+                if (b.price.priceSort.et > a.price.priceSort.et) {
+                    return 1;
+                }
+                return 0;
+            });
+        }
+    }
+
+    if (PostBody.sort && PostBody.sort['price.priceSort.ati']) {
+        if (PostBody.sort['price.priceSort'] === '1') {
+            tProducts = tProducts.sort((a, b) => {
+                if (a.price.priceSort.ati > b.price.priceSort.ati) {
+                    return 1;
+                }
+                if (b.price.priceSort.ati > a.price.priceSort.ati) {
+                    return -1;
+                }
+                return 0;
+            });
+        } else {
+            tProducts = tProducts.sort((a, b) => {
+                if (a.price.priceSort.ati > b.price.priceSort.ati) {
+                    return -1;
+                }
+                if (b.price.priceSort.ati > a.price.priceSort.ati) {
                     return 1;
                 }
                 return 0;

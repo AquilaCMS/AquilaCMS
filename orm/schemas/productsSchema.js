@@ -36,7 +36,16 @@ const ProductsSchema = new Schema({
             normal  : Number,
             special : Number
         },
-        priceSort : {type: Number, default: 0}
+        priceSort : {
+            et : {
+                type    : Number,
+                default : 0
+            },
+            ati : {
+                type    : Number,
+                default : 0
+            }
+        }
     },
     presentInLastImport : {type: Boolean},    // True if product is still present in last import, set visible to false
     specific            : {
@@ -275,7 +284,10 @@ ProductsSchema.pre('updateOne', async function (next) {
 });
 
 ProductsSchema.pre('save', async function (next) {
-    this.price.priceSort = this.price.et.special === undefined || this.price.et.special === null ? this.price.et.normal : this.price.et.special;
+    this.price.priceSort = {
+        et  : this.price.et.special || this.price.et.normal,
+        ati : this.price.ati.special || this.price.ati.normal
+    };
     const errors         = await ProductsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

@@ -78,7 +78,13 @@
                                     "special" : {"type": "number"}
                                 }
                             },
-                            "priceSort" : {"type": "number", "default": 0}
+                            "priceSort" : {
+                                "type": "object",
+                                "properties": {
+                                    "et"  : {"type": "number", "default": 0},
+                                    "ati" : {"type": "number", "default": 0}
+                                }
+                            }
                         }
                     },
                     "code_ean"    : {"type": "string"},

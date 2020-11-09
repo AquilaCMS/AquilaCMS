@@ -211,7 +211,12 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         if (products[i].id) {
             products[i].relevantDiscount = [];
             if (products[i].price === undefined) {
-                products[i].price = {tax: 0, priceSort: 0, et: {}, ati: {}};
+                products[i].price = {
+                    tax       : 0,
+                    priceSort : {et: 0, ati: 0},
+                    et        : {},
+                    ati       : {}
+                };
             }
             if (products[i].price.tax === undefined) {
                 products[i].price.tax = products[i].id.price.tax;
@@ -306,7 +311,10 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
                 product.price.et.special  = newDiscountPrice.discountET;
                 product.price.ati.special = newDiscountPrice.discountATI;
             }
-            product.price.priceSort = product.price.et.special;
+            product.price.priceSort = {
+                et  : product.price.et.special,
+                ati : product.price.ati.special
+            };
             product.id.price        = product.price;
         }
 
