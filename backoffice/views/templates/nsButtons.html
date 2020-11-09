@@ -11,7 +11,7 @@
             <button style="pointer-events:auto;padding-top:3px;min-width:0px;" ng-if="!statechangeMoreButtons" type="button" class="btn btn-default" ng-click="changeMoreButtons()" ><i class="fa fa-plus fa-2x" style="visibility:visible!important;display:inline-block!important" ng-style="btn.dispStyle" aria-hidden="true"></i></button>
             <button style="pointer-events:auto;padding-top:3px;min-width:0px;" ng-if="statechangeMoreButtons" type="button" class="btn btn-default" ng-click="changeMoreButtons()" ><i class="fa fa-minus fa-2x" style="visibility:visible!important;display:inline-block!important" ng-style="btn.dispStyle" aria-hidden="true"></i></button>
             <span ng-if="statechangeMoreButtons" class="pull-right" style="position:absolute;right:2%;display:block">
-                <button ng-repeat="oneBtn in moreButtons" style="margin-top:2px;pointer-events:auto;display:block" type="button" class="btn btn-default" ng-class="oneBtn.class" ng-style="btn.dispStyle" ng-click="oneBtn.onClick()"><span translate="{{oneBtn.text}}"></span><span bind-html-compile="oneBtn.moreText"></span></button>                
+                <button ng-repeat="oneBtn in moreButtons" style="margin-top:2px;pointer-events:auto;display:block" type="button" ng-if="oneBtn.isDisplayed" class="btn btn-default" ng-class="oneBtn.class" ng-style="btn.dispStyle" ng-click="oneBtn.onClick()"><span translate="{{oneBtn.text}}"></span><span bind-html-compile="oneBtn.moreText"></span></button>                
             </span> 
         </span>  
     </div>
