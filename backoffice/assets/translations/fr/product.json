@@ -4,6 +4,9 @@
         "cancel": "Annuler",
         "valider": "Valider"
     },
+    "button":{
+        "dup": "Dupliquer"
+    },
     "cross-selling": {
         "pdtsAssoc": "Produits associés",
         "add": "Ajouter",
