@@ -5,7 +5,6 @@
         <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-disabled="disableSave"><span translate>ns.save</span><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
         <button style="pointer-events:auto" type="button" class="btn btn-default btn-s&q" ng-click="saveAndQuit()" ng-disabled="disableSave" ng-hide="hideSaveAndQuit" translate>ns.saveQuit</button>
         <button ng-repeat="btn in additionnalButtons" style="pointer-events:auto" type="button" class="btn btn-default" ng-class="btn.class" ng-click="btn.onClick()" ng-style="btn.style"><span translate="{{btn.text}}"></span><span bind-html-compile="btn.moreText"></span></button>
-        <button style="pointer-events:auto" type="button" class="btn btn-default" ng-click="duplicateProduct()" ng-if="isEditMode && duplicateProduct"><span translate>ns.dup</span><i class="fa fa-clone" aria-hidden="true"></i></button>
         <button style="pointer-events:auto" type="button" class="btn btn-danger" ng-click="remove()" ng-if="isEditMode" ng-hide="hideRemove" ><span translate>ns.delete</span><i class="fa fa-trash" aria-hidden="true"></i></button>
         <span ng-if="moreButtons">
             <button style="pointer-events:auto;padding-top:3px;min-width:0px;" ng-if="!statechangeMoreButtons" type="button" class="btn btn-default" ng-click="changeMoreButtons()" ><i class="fa fa-plus fa-2x" style="visibility:visible!important;display:inline-block!important" ng-style="btn.dispStyle" aria-hidden="true"></i></button>

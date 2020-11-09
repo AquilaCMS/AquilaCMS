@@ -81,6 +81,25 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     });
                 },
                 moreText: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
+            },
+            {
+                text: 'ns.dup',
+                onClick: function () {
+                    const newCode = prompt("Saisir le code du nouveau produit : ");
+                    if (newCode) {
+                        const newPrd = {...$scope.product, code: newCode};
+                        delete newPrd._id;
+                        const query = ProductsV2.duplicate(newPrd);
+                        query.$promise.then(function (savedPrd) {
+                            toastService.toast("success", "Produit dupliqué !");
+                            $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
+                        }).catch(function (e) {
+                            toastService.toast("danger", "Le code existe déjà");
+                        });
+                    }
+                },
+                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
             }
         ];
 
@@ -270,20 +289,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             }
         };
 
-        $scope.duplicateProduct = function () {
-            const newCode = prompt("Saisir le code du nouveau produit : ");
-            if (newCode) {
-                const newPrd = {...$scope.product, code: newCode};
-                delete newPrd._id;
-                const query = ProductsV2.duplicate(newPrd);
-                query.$promise.then(function (savedPrd) {
-                    toastService.toast("success", "Produit dupliqué !");
-                    $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
-                }).catch(function (e) {
-                    toastService.toast("danger", "Le code existe déjà");
-                });
-            }
-        };
 
         $scope.momentDate = function (date) {
             if (date === null) {
