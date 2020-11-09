@@ -2,17 +2,7 @@
     <ns-box data-title="{{isEditMode ? 'client.detail.t1' : 'client.detail.t2'}}" title-icon="fa fa-users fa-lg"
             close-href="#/clients">
 
-        <div style="position: absolute;left:500px;" ng-if="isEditMode">
-            <button ng-click="loginAdminAsClient()" class="btn btn-default pull-right" type="button" translate>client.detail.connectAs</button>
-            <button ng-click="submitResetRequest()" class="btn btn-default pull-right" type="button" style="margin:auto 5px"
-                    translate>client.detail.resetMdp
-            </button>
-            <button ng-click="submitActiveAccountRequest()" class="btn btn-default pull-right" type="button"
-                    ng-disabled="client.isActiveAccount" translate>client.detail.activeAccount
-            </button>
-        </div>
-
-        <ns-buttons is-edit-mode="isEditMode" remove="remove(client._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/clients" form="form">
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(client._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/clients" form="form" additionnal-buttons="additionnalButtons" more-buttons="moreButtons">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>client.detail.tab.general</a></li>
