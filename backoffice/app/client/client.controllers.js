@@ -179,6 +179,8 @@ ClientControllers.controller("ClientDetailCtrl", [
                 $scope.rules = result;
             });
 
+            $scope.client = {};
+
             ClientV2.query({PostBody: {filter: {_id: $routeParams.clientId}, structure: '*', limit: 1}}, function (response) {
                 if (response._id === undefined) {
                     toastService.toast("danger", "Ce client n'existe pas");
@@ -371,7 +373,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
         $scope.loadNewAttrs = async function () {
             AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 99}}, function ({datas}) {
-                console.log(datas)
+                //console.log(datas)
                 $scope.client.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -434,15 +436,16 @@ ClientControllers.controller("ClientDetailCtrl", [
                     submitResetRequest();
                 },
                 moreText: '<i class="fa fa-eraser" aria-hidden="true"></i>',
+                isDisplayed: true
             },
             {
                 text: 'client.detail.activeAccount',
                 onClick: function () {
-                    if(!$scope.client.isActiveAccount) {
-                        submitActiveAccountRequest();
-                    }
+                    submitActiveAccountRequest();
+                    //pas de controle de succes/erreur ? de toast ?
                 },
                 moreText: '<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>',
+                isDisplayed: !$scope.client.isActiveAccount
             }
         ];
 
