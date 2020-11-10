@@ -60,10 +60,7 @@ const setAttribute = async (body) => {
         // Si le usedInFilters est changé et passe de true a false
             if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
             // Alors on supprime les categories.filtres dont l'_id est l'_id de l'attribut modifié
-                await Categories.updateMany(
-                    {'filters._id': attribute._id}, {$pull: {filters: {_id: attribute._id}}},
-                    {new: true, runValidators: true}
-                );
+                await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
             }
             const code = body.code;
             delete body.code;
