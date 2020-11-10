@@ -376,15 +376,15 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const arraySpecialPrice = {et: [], ati: []};
 
     for (const prd of prds) {
-        if (prd.price.priceSort[getTaxDisplay(user)]) {
-            arrayPrice.et.push(prd.price.priceSort[getTaxDisplay(user)]);
+        if (prd.price.priceSort.et) {
+            arrayPrice.et.push(prd.price.priceSort.et);
         } else {
-            arrayPrice.et.push(prd.price.priceSort[getTaxDisplay(user)]);
+            arrayPrice.et.push(prd.price.priceSort.et);
         }
-        if (prd.price.priceSort[getTaxDisplay(user)]) {
-            arrayPrice.ati.push(prd.price.priceSort[getTaxDisplay(user)]);
+        if (prd.price.priceSort.ati) {
+            arrayPrice.ati.push(prd.price.priceSort.ati);
         } else {
-            arrayPrice.ati.push(prd.price.priceSort[getTaxDisplay(user)]);
+            arrayPrice.ati.push(prd.price.priceSort.ati);
         }
     }
 
@@ -480,14 +480,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         if (PostBody.filter.$and && PostBody.filter.$and[0]) {
             tProducts = tProducts.filter((prd) =>  {
                 const pr = prd.price.priceSort[getTaxDisplay(user)];
-                return pr >= (
-                    PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$gte
-                    || PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$gte
-                )
-                && pr <= (
-                    PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$lte
-                    || PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$lte
-                );
+                return pr >= PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$gte
+                && pr <= PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$lte;
             });
         }
     }
