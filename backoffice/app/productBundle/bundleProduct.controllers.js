@@ -327,17 +327,43 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $location.path("/products");
         };
 
-        $scope.getCategoriesLink = function ()
-        {
+        $scope.getCategoriesLink = function (){
             if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink)
-                {
+                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
                     $scope.categoriesLink = categoriesLink.datas;
                 });
             }
         };
         
         $scope.moreButtons = [
+            {
+                text: 'product.general.coherenceTitle',
+                onClick: function () {
+                    $modal.open({
+                        templateUrl: 'app/product/views/modals/coherence.html',
+                        controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                            $scope.product = productSolv;
+                            ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                                $scope.modal.data = response.content;
+                            });
+                            $scope.modal = {data : ''};
+                            $scope.trustHtml = function(){
+                                return $sce.trustAsHtml($scope.modal.data);
+                            }
+                            $scope.cancel = function () {
+                                $modalInstance.close('cancel');
+                            };
+                        },
+                        resolve: {
+                            productSolv: function () {
+                                return $scope.product;
+                            },
+                        }
+                    });
+                },
+                icon: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
+            },
             {
                 text: 'product.button.dup',
                 onClick: function (){
