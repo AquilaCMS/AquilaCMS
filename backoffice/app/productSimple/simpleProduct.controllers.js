@@ -265,8 +265,15 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.getCategoriesLink = function () {
             if($scope.product._id) {
                 CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink) {
-                    $scope.categoriesLink = categoriesLink.datas;
-                });
+                    let number = 0;
+                    for(let idCategorie of categoriesLink.datas){
+                        CategoryV2.get({PostBody: {filter: {_id: idCategorie._id}, structure: '*'}}, function (response) {
+                            categoriesLink.datas[number].active = response.active;
+                            number++;
+                            $scope.categoriesLink = categoriesLink.datas;
+                        });
+                    }
+                });  
             }
         };
 
