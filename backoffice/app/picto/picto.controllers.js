@@ -56,7 +56,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
                         toastService.toast('success', 'Pictorisation : done');
                     });
                 },
-                isDisplayed: true
+                icon: '<i class="fa fa-picture-o" aria-hidden="true"></i>',
             }
         ]
         RulesV2.query({PostBody: {filter: {owner_id: $routeParams.id}, structure: '*'}}, function (rule) {

@@ -81,7 +81,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     });
                 },
                 icon: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
-                isDisplayed: true
             }
         ];
 

@@ -436,7 +436,6 @@ ClientControllers.controller("ClientDetailCtrl", [
                     submitResetRequest();
                 },
                 icon: '<i class="fa fa-eraser" aria-hidden="true"></i>',
-                isDisplayed: true
             },
             {
                 text: 'client.detail.activeAccount',
@@ -444,7 +443,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                     submitActiveAccountRequest();
                     //pas de controle de succes/erreur ? de toast ?
                 },
-                icon: '<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-envelope-o" aria-hidden="true"></i>',
                 isDisplayed: !$scope.client.isActiveAccount
             }
         ];
