@@ -490,55 +490,38 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         tProducts                = productsDiscount.datas;
         // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
         // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
+        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0]) {
             tProducts = tProducts.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte) && pr <= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte);
+                const pr = prd.price.special || prd.price[getTaxDisplay(user)].normal;
+                return pr >= (
+                    PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.special`].$gte
+                    || PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.normal`].$gte
+                )
+                && pr <= (
+                    PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.special`].$lte
+                    || PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.normal`].$lte
+                );
             });
         }
     }
 
-    if (PostBody.sort && PostBody.sort['price.priceSort.et']) {
-        if (PostBody.sort['price.priceSort'] === '1') {
+    if (PostBody.sort && PostBody.sort[`price.priceSort.${getTaxDisplay(user)}`]) {
+        if (PostBody.sort[`price.priceSort.${getTaxDisplay(user)}`] === '1') {
             tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort.et > b.price.priceSort.et) {
+                if (a.price.priceSort[getTaxDisplay(user)] > b.price.priceSort[getTaxDisplay(user)]) {
                     return 1;
                 }
-                if (b.price.priceSort.et > a.price.priceSort.et) {
+                if (b.price.priceSort[getTaxDisplay(user)] > a.price.priceSort[getTaxDisplay(user)]) {
                     return -1;
                 }
                 return 0;
             });
         } else {
             tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort.et > b.price.priceSort.et) {
+                if (a.price.priceSort[getTaxDisplay(user)] > b.price.priceSort[getTaxDisplay(user)]) {
                     return -1;
                 }
-                if (b.price.priceSort.et > a.price.priceSort.et) {
-                    return 1;
-                }
-                return 0;
-            });
-        }
-    }
-
-    if (PostBody.sort && PostBody.sort['price.priceSort.ati']) {
-        if (PostBody.sort['price.priceSort'] === '1') {
-            tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort.ati > b.price.priceSort.ati) {
-                    return 1;
-                }
-                if (b.price.priceSort.ati > a.price.priceSort.ati) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else {
-            tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort.ati > b.price.priceSort.ati) {
-                    return -1;
-                }
-                if (b.price.priceSort.ati > a.price.priceSort.ati) {
+                if (b.price.priceSort[getTaxDisplay(user)] > a.price.priceSort[getTaxDisplay(user)]) {
                     return 1;
                 }
                 return 0;
