@@ -391,21 +391,21 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
     const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
-    // for (const prd of prdsPrices) {
-    //     if (prd.price.et.special) {
-    //         arraySpecialPrice.et.push(prd.price.et.special);
-    //     } else {
-    //         arraySpecialPrice.et.push(prd.price.et.normal);
-    //     }
-    //     if (prd.price.ati.special) {
-    //         arraySpecialPrice.ati.push(prd.price.ati.special);
-    //     } else {
-    //         arraySpecialPrice.ati.push(prd.price.ati.normal);
-    //     }
-    // }
+    for (const prd of prdsPrices) {
+        if (prd.price.sortSort.et) {
+            arraySpecialPrice.et.push(prd.price.sortSort.et);
+        } else {
+            arraySpecialPrice.et.push(prd.price.sortSort.et);
+        }
+        if (prd.price.sortSort.ati) {
+            arraySpecialPrice.ati.push(prd.price.sortSort.ati);
+        } else {
+            arraySpecialPrice.ati.push(prd.price.sortSort.ati);
+        }
+    }
 
-    const specialPriceMin = priceMin || {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    const specialPriceMax = priceMax || {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+    const specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
+    const specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
     // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
     for (let i = 0; i < result.datas.length; i++) {
