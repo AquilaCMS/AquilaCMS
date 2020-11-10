@@ -359,45 +359,25 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
     if (priceFilter) {
         prdsPrices = prdsPrices.filter((prd) => {
-            if (priceFilter.$or[1]['price.ati.special']) {
-                if (prd.price.ati.special) {
-                    if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
-                        && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
-                        return true;
-                    }
-                } else {
-                    if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
-                        && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
-                        return true;
-                    }
-                }
-            } else if (priceFilter.$or[1]['price.et.special']) {
-                if (prd.price.et.special) {
-                    if (prd.price.et.special <= priceFilter.$or[1]['price.et.special'].$lte
-                        && prd.price.et.special >= priceFilter.$or[1]['price.et.special'].$gte) {
-                        return true;
-                    }
-                } else {
-                    if (prd.price.et.normal <= priceFilter.$or[0]['price.et.normal'].$lte
-                        && prd.price.et.normal >= priceFilter.$or[0]['price.et.normal'].$gte) {
-                        return true;
-                    }
-                }
+            if (
+                prd.price.priceSort[getTaxDisplay(user)] <= priceFilter[`price.priceSort.${getTaxDisplay(user)}`].$lte
+                && prd.price.priceSort[getTaxDisplay(user)] >= priceFilter[`price.priceSort.${getTaxDisplay(user)}`].$gte
+            ) {
+                return true;
             }
-
             return false;
         });
         prds       = prds.filter((prd) => prdsPrices
             .map((prdPri) => prdPri._id.toString())
             .indexOf(prd._id.toString()) !== -1);
-        if (PostBody.sort && PostBody.sort['price.ati.normal']) {
+        if (PostBody.sort && PostBody.sort[`price.priceSort.${getTaxDisplay(user)}`]) {
             prds = prds.sort((a, b) => {
                 let priceA = a.price.ati.normal;
                 let priceB = a.price.ati.normal;
                 if (a.price.ati.special) priceA = a.price.ati.special;
                 if (b.price.ati.special) priceB = b.price.ati.special;
                 let result;
-                const sort = Number(PostBody.sort['price.ati.normal']);
+                const sort = Number(PostBody.sort[`price.priceSort.${getTaxDisplay(user)}`]);
                 if (sort === 1) result = priceA - priceB;
                 if (sort === -1) result = priceB - priceA;
                 return result;
