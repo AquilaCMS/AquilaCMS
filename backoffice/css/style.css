@@ -2441,7 +2441,7 @@ input:-webkit-autofill {
     /*height: 100vh;*/
     top: 60px;
     height: 100vh;
-    z-index: 9000;
+    z-index: 1039;
     left: 0;
     width: 55px;
     background: #576fa1;
