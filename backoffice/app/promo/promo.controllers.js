@@ -487,7 +487,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                 onClick: function () {
                     cloneDiscount();
                 },
-                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-clone" aria-hidden="true"></i>',
             }
         ];
     }

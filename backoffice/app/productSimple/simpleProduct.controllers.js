@@ -50,7 +50,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         window.dispatchEvent(event);
                     }
                 },
-                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
         ];
 
@@ -80,7 +80,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         }
                     });
                 },
-                moreText: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
             },
             {
                 text: 'product.button.dup',
@@ -98,7 +98,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         });
                     }
                 },
-                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-clone" aria-hidden="true"></i>',
                 isDisplayed: $scope.isEditMode
             }
         ];

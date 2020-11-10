@@ -423,7 +423,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 onClick: function () {
                     loginAdminAsClient();
                 },
-                moreText: '<i class="fa fa-user-secret" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-user-secret" aria-hidden="true"></i>',
             }
         ];
 
@@ -433,7 +433,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 onClick: function () {
                     submitResetRequest();
                 },
-                moreText: '<i class="fa fa-eraser" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-eraser" aria-hidden="true"></i>',
             },
             {
                 text: 'client.detail.activeAccount',
@@ -442,7 +442,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                         submitActiveAccountRequest();
                     }
                 },
-                moreText: '<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>',
             }
         ];
 
