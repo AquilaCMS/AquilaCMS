@@ -219,7 +219,18 @@ BundleProductControllers.controller("BundleProductCtrl", [
             {
                 section.products = section.products.map(function (item)
                 {
-                    return {id: item.id, isDefault: item.isDefault};
+                    const prd = {id: item.id, isDefault: item.isDefault};
+                    if (item.modifier_price && item.modifier_price.ati) {
+                        prd.modifier_price = item.modifier_price;
+                    } else {
+                        prd.$unset = {modifier_price: ""}
+                    }
+                    if (item.modifier_weight) {
+                        prd.modifier_weight = item.modifier_weight;
+                    } else {
+                        prd.$unset = {modifiers_weight: ""}
+                    }
+                    return prd;
                 });
             });
 

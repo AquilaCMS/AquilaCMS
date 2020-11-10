@@ -41,7 +41,7 @@
                         </button>
                     </div>
 
-                    <div ng-repeat="section in product.bundle_sections">
+                    <div ng-repeat="section in product.bundle_sections track by $index">
                         <hr style="border-top: 2px solid #000000" />
                         <div class="form-group">
                             <button type="button" class="btn btn-danger" ng-click="removeBundleSection(section)" translate>bundle.product.delSec</button>
@@ -124,20 +124,32 @@
                                         <input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/>
                                     </th>-->
                                     <th translate>bundle.product.pdt</th>
+                                    <th translate>bundle.product.modifier_price.et</th>
+                                    <th translate>bundle.product.modifier_price.ati</th>
+                                    <th translate>bundle.product.modifier_weight</th>
                                     <!--<th>Valeur par défaut</th>-->
                                     <th translate>bundle.product.act</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="product in section.products">
+                                <tr ng-repeat="__product in section.products">
                                     <td>
-                                        {{product.id.translation[lang].name}}
+                                        {{__product.id.translation[lang].name}}
+                                    </td>
+                                    <td>
+                                        <input type="number" name="modifier_price_et_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.et">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="modifier_price_ati_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.ati">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="modifier_weight_{{$index}}_{{__product._id}}" ng-model="__product.modifier_weight">
                                     </td>
                                     <!--<td>
                                         <input type="{{section.type === 'SINGLE' ? 'radio' : 'checkbox'}}" name="section_products_{{$parent.$index}}" ng-model="product.isDefault" />
                                     </td>-->
                                     <td>
-                                        <a ng-click="removeBundleProduct(section, product)" class="btn btn-red">
+                                        <a ng-click="removeBundleProduct(section, __product)" class="btn btn-red">
                                             <i class="ico-trash"></i>
                                         </a>
                                     </td>

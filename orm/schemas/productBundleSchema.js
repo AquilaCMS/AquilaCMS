@@ -12,10 +12,19 @@ const ProductBundleSchema = new Schema({
             title       : {type: String},
             displayMode : {type: String, enum: ['RADIO_BUTTON', 'SELECT']}, // Ne sert que pour le type 'SINGLE'
             type        : {type: String, enum: ['SINGLE', 'MULTIPLE']},
-            products    : [{id: {type: ObjectId, ref: 'products'}, isDefault: Boolean}],
-            isRequired  : Boolean,
-            minSelect   : Number,
-            maxSelect   : Number
+            products    : [{
+                id             : {type: ObjectId, ref: 'products'},
+                isDefault      : Boolean,
+                modifier_price : {
+                    ati : {type: Number},
+                    et  : {type: Number}
+                },
+                modifier_weight : {type: Number}
+
+            }],
+            isRequired : Boolean,
+            minSelect  : Number,
+            maxSelect  : Number
         }
     ],
     stock : {
@@ -80,14 +89,35 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
             }
         }
     }
-    item.price  = {
+    const modifiers = this.getBundlePrdsModifiers(item.selections);
+    item.price      = {
         // TODO P3 : se baser sur le produit normal pour ce schémas - Request somewhere later
         vat  : {rate: this.price.tax},
-        unit : {et: this.price.et.normal, ati: this.price.ati.normal}
+        unit : {et: this.price.et.normal += modifiers.price.et, ati: this.price.ati.normal += modifiers.price.ati}
     };
-    item.type   = 'bundle';
-    const _cart = await this.basicAddToCart(cart, item);
+    item.type       = 'bundle';
+    item.weight    += modifiers.weight;
+    const _cart     = await this.basicAddToCart(cart, item);
     return _cart;
+};
+
+ProductBundleSchema.methods.getBundlePrdsModifiers = function (selections) {
+    const modifiers = {price: {ati: 0, et: 0}, weight: 0};
+    if (selections && selections.length) {
+        for (const selection of selections) {
+            for (const product of selection.products) {
+                if (product.modifier_price && product.modifier_price.et && product.modifier_price.ati) {
+                    modifiers.price.et  += product.modifier_price.et;
+                    modifiers.price.ati += product.modifier_price.ati;
+                }
+                if (product.modifier_weight) {
+                    modifiers.weight += product.modifier_weight;
+                }
+            }
+        }
+    }
+    console.log('Total modifiers: ', modifiers);
+    return modifiers;
 };
 
 function validateBySection(bundle_section, item) {
