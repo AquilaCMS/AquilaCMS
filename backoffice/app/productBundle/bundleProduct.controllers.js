@@ -331,6 +331,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             if($scope.product._id) {
                 CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
                     $scope.categoriesLink = categoriesLink.datas;
+                    debugger;
                 });
             }
         };
