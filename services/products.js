@@ -370,55 +370,42 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         prds       = prds.filter((prd) => prdsPrices
             .map((prdPri) => prdPri._id.toString())
             .indexOf(prd._id.toString()) !== -1);
-        if (PostBody.sort && PostBody.sort[`price.priceSort.${getTaxDisplay(user)}`]) {
-            prds = prds.sort((a, b) => {
-                let priceA = a.price.ati.normal;
-                let priceB = a.price.ati.normal;
-                if (a.price.ati.special) priceA = a.price.ati.special;
-                if (b.price.ati.special) priceB = b.price.ati.special;
-                let result;
-                const sort = Number(PostBody.sort[`price.priceSort.${getTaxDisplay(user)}`]);
-                if (sort === 1) result = priceA - priceB;
-                if (sort === -1) result = priceB - priceA;
-                return result;
-            });
-        }
     }
 
     const arrayPrice        = {et: [], ati: []};
     const arraySpecialPrice = {et: [], ati: []};
 
     for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
+        if (prd.price.priceSort[getTaxDisplay(user)]) {
+            arrayPrice.et.push(prd.price.priceSort[getTaxDisplay(user)]);
         } else {
-            arrayPrice.et.push(prd.price.et.normal);
+            arrayPrice.et.push(prd.price.priceSort[getTaxDisplay(user)]);
         }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
+        if (prd.price.priceSort[getTaxDisplay(user)]) {
+            arrayPrice.ati.push(prd.price.priceSort[getTaxDisplay(user)]);
         } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
+            arrayPrice.ati.push(prd.price.priceSort[getTaxDisplay(user)]);
         }
     }
 
     const priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
     const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
-    for (const prd of prdsPrices) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
-        }
-    }
+    // for (const prd of prdsPrices) {
+    //     if (prd.price.et.special) {
+    //         arraySpecialPrice.et.push(prd.price.et.special);
+    //     } else {
+    //         arraySpecialPrice.et.push(prd.price.et.normal);
+    //     }
+    //     if (prd.price.ati.special) {
+    //         arraySpecialPrice.ati.push(prd.price.ati.special);
+    //     } else {
+    //         arraySpecialPrice.ati.push(prd.price.ati.normal);
+    //     }
+    // }
 
-    const specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    const specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+    const specialPriceMin = priceMin || {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
+    const specialPriceMax = priceMax || {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
     // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
     for (let i = 0; i < result.datas.length; i++) {
@@ -490,16 +477,16 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         tProducts                = productsDiscount.datas;
         // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
         // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0]) {
+        if (PostBody.filter.$and && PostBody.filter.$and[0]) {
             tProducts = tProducts.filter((prd) =>  {
-                const pr = prd.price.special || prd.price[getTaxDisplay(user)].normal;
+                const pr = prd.price.priceSort[getTaxDisplay(user)];
                 return pr >= (
-                    PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.special`].$gte
-                    || PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.normal`].$gte
+                    PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$gte
+                    || PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$gte
                 )
                 && pr <= (
-                    PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.special`].$lte
-                    || PostBody.filter.$and[0][`price.${getTaxDisplay(user)}.normal`].$lte
+                    PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$lte
+                    || PostBody.filter.$and[0][`price.priceSort.${getTaxDisplay(user)}`].$lte
                 );
             });
         }
