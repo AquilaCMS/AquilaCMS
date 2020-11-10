@@ -61,6 +61,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                         }
                     });
                 },
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
         ]
         
@@ -114,6 +115,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                         }
                     });
                 },
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
         ]
 

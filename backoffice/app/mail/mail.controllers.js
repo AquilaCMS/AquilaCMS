@@ -33,6 +33,16 @@ MailControllers.controller("MailDetailCtrl", [
             isSelected: false
         };
 
+        $scope.additionnalButtons = [
+            {
+                text: 'mail.detail.test',
+                onClick: function () {
+                    $scope.openItemModal($scope.lang)
+                },
+                icon:'<i class="fa fa-envelope-o" aria-hidden="true"></i>'
+            }
+        ]
+
         if($routeParams.mailId != "new")
         {
             $scope.isEditMode = true;
