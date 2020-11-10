@@ -103,7 +103,6 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             }
             delete $scope.config.$promise;
         });
-
         $scope.local = {
             themeDataOverride : false
         };
@@ -316,9 +315,9 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     $scope.config.ssl.key = $scope.config.ssl.key.name;
                 }
             }
-            debugger;
-            if(!$scope.config.cacheTTL) {
-                $scope.config.cacheTTL = "";
+            $scope.config = {
+                ...$scope.config,
+                cacheTTL: $scope.config.cacheTTL || ""
             }
 
             ConfigV2.environment(function (oldAdmin) {
@@ -348,7 +347,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                             })
                         }, 10000);
                     } else {
-                        window.location.reload(true);
+                        window.location.reload();
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;
