@@ -67,7 +67,7 @@
                     <div class="form-group">
                         <label style="float:left">{{var}} :</label><br/>
                         <input type="text" class="form-control" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'string'">
-                        <input type="number" class="form-control" step="0.1" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'number'">
+                        <input type="number" class="form-control" step="any" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'number'">
                         <ns-switch name='{{var}}' ng-model='themeConfig.variables[lang][var]' ng-if="typeOf(themeConfig.variables[lang][var]) == 'boolean'"></ns-switch>
                         <color-picker ng-model="themeConfig.variables[lang][var]" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var]) == 'color'"></color-picker>
                     </div>
