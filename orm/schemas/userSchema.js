@@ -130,7 +130,7 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ]
-});
+}, {timestamps: true});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});

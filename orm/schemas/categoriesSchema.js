@@ -41,7 +41,8 @@ const CategoriesSchema = new Schema({
     },
     translation      : {},
     canonical_weight : {type: Number, default: 0}
-}, {usePushEach: true});
+}, {usePushEach : true,
+    timestamps  : true});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues

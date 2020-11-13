@@ -8,7 +8,7 @@ const TrademarksSchema = new Schema({
     name         : {type: String, required: true, unique: true},
     active       : {type: Boolean, default: true},
     creationDate : {type: Date, default: Date.now}
-});
+}, {timestamps: true});
 
 TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb ) {
     const res = await this.find({name: trademarkName});
