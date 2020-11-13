@@ -32,6 +32,11 @@
         "qt": "Quantité",
         "attrJeux": "Attributs du jeu d'attributs",
         "idFirst": "Vous devez d'abord renseigner l'id du produit avant de pouvoir configurer les attributs !",
-        "catNom": "Nom de la catégorie"
+        "catNom": "Nom de la catégorie",
+        "modifier_price": {
+            "ati": "Difference prix TTC ",
+            "et": "Difference prix HT"
+        },
+        "modifier_weight": "Difference de poids (g)"
     }
 }

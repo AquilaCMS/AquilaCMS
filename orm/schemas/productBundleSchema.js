@@ -81,15 +81,15 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
             // on check que chaque produit soit commandable
             for (let j = 0; j < selectionProducts.length; j++) {
                 const ServicesProducts = require('../../services/products');
-                const selectionProduct = await this.model('products').findById(selectionProducts[j]);
-                if (selectionProduct.type === 'simple') {
-                    if (!ServicesProducts.checkProductOrderable(selectionProduct.stock, item.quantity).ordering.orderable || !ServicesProducts.checkProductOrderable(item.stock, null)) throw NSErrors.ProductNotOrderable;
-                    await ServicesProducts.updateStock(selectionProduct._id, -item.quantity);
+                // const selectionProduct = await this.model('products').findById(selectionProducts[j]);
+                if (selectionProducts[j].type === 'simple') {
+                    if (!ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity).ordering.orderable || !ServicesProducts.checkProductOrderable(item.stock, null)) throw NSErrors.ProductNotOrderable;
+                    await ServicesProducts.updateStock(selectionProducts[j], -item.quantity);
                 }
             }
         }
     }
-    const modifiers = this.getBundlePrdsModifiers(item.selections);
+    const modifiers = await this.getBundlePrdsModifiers(item.selections);
     item.price      = {
         // TODO P3 : se baser sur le produit normal pour ce schémas - Request somewhere later
         vat  : {rate: this.price.tax},
@@ -101,17 +101,20 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
     return _cart;
 };
 
-ProductBundleSchema.methods.getBundlePrdsModifiers = function (selections) {
-    const modifiers = {price: {ati: 0, et: 0}, weight: 0};
-    if (selections && selections.length) {
+ProductBundleSchema.methods.getBundlePrdsModifiers = async function (selections) {
+    const modifiers     = {price: {ati: 0, et: 0}, weight: 0};
+    const itemPrdBundle = await this.model('products').findOne({_id: this._id});
+    if (itemPrdBundle && selections && selections.length) {
         for (const selection of selections) {
+            const itemPrdBundleSection = itemPrdBundle.bundle_sections.find((bundle_section) => bundle_section.ref);
             for (const product of selection.products) {
-                if (product.modifier_price && product.modifier_price.et && product.modifier_price.ati) {
-                    modifiers.price.et  += product.modifier_price.et;
-                    modifiers.price.ati += product.modifier_price.ati;
+                const itemPrdBundleSectionProduct = itemPrdBundleSection.products.find((itemPrdBundleSectionPrd) => itemPrdBundleSectionPrd.id.toString() === product);
+                if (itemPrdBundleSectionProduct && itemPrdBundleSectionProduct.modifier_price && itemPrdBundleSectionProduct.modifier_price.et && itemPrdBundleSectionProduct.modifier_price.ati) {
+                    modifiers.price.et  += itemPrdBundleSectionProduct.modifier_price.et;
+                    modifiers.price.ati += itemPrdBundleSectionProduct.modifier_price.ati;
                 }
-                if (product.modifier_weight) {
-                    modifiers.weight += product.modifier_weight;
+                if (itemPrdBundleSectionProduct.modifier_weight) {
+                    modifiers.weight += itemPrdBundleSectionProduct.modifier_weight;
                 }
             }
         }

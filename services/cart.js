@@ -220,7 +220,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
@@ -235,7 +235,7 @@ const updateQty = async (req) => {
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd)).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }

@@ -715,7 +715,14 @@ const deleteProduct = async (_id) => {
  * @param   {number?} qtecdé   Quantité a commander
  * @returns {object}  Informations de retour
  */
-const checkProductOrderable = (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0) => {
+    let prdStock = {};
+    // si objstock est un id, on recupere le produit
+    if (typeof objstock === 'string') {
+        prdStock = (await Products.findById(objstock)).stock;
+    } else {
+        prdStock = objstock;
+    }
     const datas = {
         selling : {// Affichage
             sellable : false,   // Produit vendable (affichage du bouton d'achat en gros)
@@ -734,7 +741,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // si qtecdé est null, c'est que l'on teste si un produit bundle est orderable ou non
     if (qtecdé === null) {
-        if (objstock.status === 'epu') {
+        if (prdStock.status === 'epu') {
             datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
             return datas;
         }
@@ -742,13 +749,13 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     const change_lib_stock = 5; // a récup en bdd
 
-    if (typeof objstock.date_selling !== 'undefined'/* && objstock.date_selling > date.now() */) {
-        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
-        datas.delivery.dates[0] = objstock.date_selling;
-    } else if (objstock.qty_real === 0 && objstock.status === 'epu') {
+    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
+        datas.delivery.dates[0] = prdStock.date_selling;
+    } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {
         datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
-    } else if (objstock.qty_real <= change_lib_stock) {
-        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
+    } else if (prdStock.qty_real <= change_lib_stock) {
+        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${prdStock.qty_real} produits disponibles`, en: `Only ${prdStock.qty_real} products available`}};
         datas.delivery.dates[0] = 'today';
         datas.selling.sellable  = true;
     } else {
@@ -759,7 +766,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // Commandable ?
     if (qtecdé > 0 && datas.selling.sellable) {
-        if (qtecdé > objstock.qty_real) {
+        if (qtecdé > prdStock.qty_real) {
             datas.ordering.message = {code: 'NotEnoughPdts', translation: {fr: 'Pas assez de produits disponibles pour votre commande.', en: 'There not enough products in our stock for your order.'}};
         } else {
             datas.ordering.orderable = true;
@@ -1373,7 +1380,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Commandable et on gère la reservation du stock
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (await ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {
