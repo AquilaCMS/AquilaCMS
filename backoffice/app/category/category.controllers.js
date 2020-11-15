@@ -32,7 +32,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             return group;
         }
         // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
-        CategoryGetAttributesUsedInFilters.query({PostBody: {limit: 99}}, function (resp)
+        CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 99, filter: { "usedInFilters":true}}}, function (resp)
         {
             let response = resp.datas;
             for(var i = 0; i < response.length; i++)

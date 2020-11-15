@@ -71,6 +71,7 @@
         "ttlCache": "Cache duration in seconds",
         "database": "Database",
         "connectionString": "Connection chain",
+        "datasAnonyme": "Send anonymes datas :",
         "ssl": {
             "ssl": "SSL",
             "active": "Activate",

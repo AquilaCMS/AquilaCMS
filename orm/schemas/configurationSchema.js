@@ -28,12 +28,13 @@ const ConfigurationSchema = new Schema({
         mailIsSendmail               : {type: Boolean, default: false},
         maintenance                  : {type: Boolean, default: false},
         overrideSendTo               : {type: String},
+        performSortPriceWithDiscount : {type: Boolean, default: true},
         photoPath                    : {type: String},
         port                         : {type: Number, required: true},
+        sendMetrics                  : {type: Boolean, default: true},
         siteName                     : {type: String, required: true},
         websiteCountry               : {type: String, required: true},
-        websiteTimezone              : {type: String},
-        performSortPriceWithDiscount : {type: Boolean, default: true}
+        websiteTimezone              : {type: String}
     },
     taxerate : {
         type : [
