@@ -1,10 +1,7 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
     <ns-box data-title="mail.detail.t1" title-icon="fa fa-envelope fa-lg" close-href="#/mails">
-        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form">
-            <ns-translation ng-model="lang" class="pull-right"></ns-translation> 
-            <button ng-if="isEditMode" type="button" ng-click="openItemModal(lang)" class="btn-default"
-                style="top: 150px;position: absolute;right:600px;color: #fff; padding:0 20px; height: 35px; background-color: grey" translate>mail.detail.test</button>
-                
+        <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form" additionnal-buttons="additionnalButtons">
+            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
                 <div style="width: 50%;float:left;margin-top:10px">
                     <div class="form-group">
                         <div class="col-sm-12">

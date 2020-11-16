@@ -199,7 +199,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         controller: [
             "$scope","$rootScope", "$filter", "$modal","$http",
             function ($scope, $rootScope, $filter, $modal, $http) {
-                    $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    // $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
                         extended_valid_elements: "*[*]",//allow empty <a>-tag
@@ -218,18 +218,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
-                                editor.id = $scope.id;
-                                editor.on('init', () => {
-                                    if (!$scope.text){
-                                        tinyMCE.get($scope.id).selection.setContent("",  { no_events: false } );
-                                    }else{
-                                        tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
-                                    }
-                                    $('html,body').scrollTop(0);
-                                });
-
+                            $scope.tinymceId = editor.id;
                             editor.ui.registry.addButton('customAddImg', {
-                                //text: 'Ajouter une image',
                                 icon: "gallery",
                                 tooltip: 'Gallery',
                                 onAction: function () {
@@ -237,7 +227,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 }
                             });
                             editor.ui.registry.addButton('customLink', {
-                                //text: 'Ajouter un lien de page ou de catégorie',
                                 icon: "unlink",
                                 tooltip: 'Add Page or Category link',
                                 onAction: function () {
@@ -245,10 +234,10 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 }
                             });
                             editor.ui.registry.addButton('customAddShortcode', {
-                                //text: 'Ajouter une image',
                                 icon: "code-sample",
                                 tooltip: 'Add Shortcode',
                                 onAction: function () {
+                                    debugger;
                                     $scope.addShortcode();
                                 }
                             });
@@ -301,7 +290,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $modalInstance.close({ string });
                                 }
 
-
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
                                 }, function errorCallback(response) {
@@ -318,9 +306,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     });
 
                     modalInstance.result.then(function (response) {
-                        if ($scope.id) {
-                            tinyMCE.get($scope.id).selection.setContent(response.string);
-                            $scope.text = tinyMCE.get($scope.id).getContent();
+                        if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent(response.string);
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
                         } else {
                             tinyMCE.activeEditor.selection.setContent(response.string);
                         }
@@ -416,7 +404,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $scope.imageSelected = image.link;
                                 };
 
-                                $scope.ok = function () {
+                                $scope.generate = function () {
                                     let url = $scope.imageSelected.split('medias/')[1];
                                     if($scope.size.max){
                                         url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
@@ -435,9 +423,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             }
                         });
                         modalInstance.result.then(function (url) {
-                        if ($scope.id) {
-                            tinyMCE.get($scope.id).selection.setContent('<img src="' + url + '"/>');
-                            $scope.text = tinyMCE.get($scope.id).getContent();
+                            if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
                         } else {
                             tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
                         }
@@ -520,8 +508,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         });
 
                         modalInstance.result.then(function (response) {
-                                tinyMCE.get($scope.id).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                                $scope.text = tinyMCE.get($scope.id).getContent();
+                            if ($scope.tinymceId) {
+                                tinyMCE.get($scope.tinymceId).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                            } else {
+                                tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                            }
                         });
                     };
             }
@@ -600,7 +592,6 @@ adminCatagenDirectives.directive("nsButtons", function ()
             remove: "&remove",
             saveAndQuit: "&saveAndQuit",
             hideSaveAndQuit: "=",
-            duplicateProduct: "&?",
             disableSave: "=?",
             isEditMode: "=",
             hideRemove: "=", //Si on est en Edit Mode mais qu'on ne veut pas la suppresion pour autant (par exemple sur un ou plusieurs éléments)

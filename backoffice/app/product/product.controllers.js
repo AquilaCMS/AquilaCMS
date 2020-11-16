@@ -308,7 +308,7 @@ ProductControllers.controller("nsProductGeneral", [
                     CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {
                         $scope.cat = categoriesLink.datas.length !== 0;
                     });
-                    
+
                     $scope.cancel = function () {
                         $modalInstance.dismiss('cancel');
                     };
@@ -334,7 +334,7 @@ ProductControllers.controller("nsProductGeneral", [
                     product: function () {
                         return product;
                     },
-                    
+
                 }
             }).result.then(function () {
             });

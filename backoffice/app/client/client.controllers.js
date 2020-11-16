@@ -179,6 +179,8 @@ ClientControllers.controller("ClientDetailCtrl", [
                 $scope.rules = result;
             });
 
+            $scope.client = {};
+
             ClientV2.query({PostBody: {filter: {_id: $routeParams.clientId}, structure: '*', limit: 1}}, function (response) {
                 if (response._id === undefined) {
                     toastService.toast("danger", "Ce client n'existe pas");
@@ -321,14 +323,14 @@ ClientControllers.controller("ClientDetailCtrl", [
             }
         };
 
-        $scope.loginAdminAsClient = function () {
+        const loginAdminAsClient = function () {
             ClientAdmin.logAsClient({_id: $scope.client._id}, function (response) {
                 document.cookie = `jwt=${response.data};path=/`;
                 toastService.toast("success", "Vous êtes maintenant connectés en tant que client sur le site");
             });
         };
 
-        $scope.submitResetRequest = function () {
+        const submitResetRequest = function () {
             if ($scope.client.email !== undefined && $scope.client.email != ""
                 && new RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i).test($scope.client.email)) {
                 const userRes = ClientV2.resetpassword({email: $scope.client.email, lang: $scope.client.preferredLanguage}, function () {
@@ -345,7 +347,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 toastService.toast("danger", "L'adresse e-mail du client n'est valide.");
             }
         };
-        $scope.submitActiveAccountRequest = function () {
+        const submitActiveAccountRequest = function () {
             ActivateAccount.query({userId: $scope.client._id, lang: $scope.adminLang}, function (resp) {
                 if (resp.accepted && resp.accepted.length) {
                     toastService.toast("success", "Mail de confirmation de compte envoyé");
@@ -371,7 +373,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
         $scope.loadNewAttrs = async function () {
             AttributesV2.list({PostBody: {filter: {set_attributes: $scope.client.set_attributes, _type: 'users'}, structure: '*', limit: 99}}, function ({datas}) {
-                console.log(datas)
+                //console.log(datas)
                 $scope.client.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
                     delete attr._id;
@@ -416,5 +418,35 @@ ClientControllers.controller("ClientDetailCtrl", [
                 });
             });
         }
+
+        $scope.additionnalButtons = [
+            {
+                text: 'client.detail.connectAs',
+                onClick: function () {
+                    loginAdminAsClient();
+                },
+                icon: '<i class="fa fa-user-secret" aria-hidden="true"></i>',
+            }
+        ];
+
+        $scope.moreButtons = [
+            {
+                text: 'client.detail.resetMdp',
+                onClick: function () {
+                    submitResetRequest();
+                },
+                icon: '<i class="fa fa-eraser" aria-hidden="true"></i>',
+            },
+            {
+                text: 'client.detail.activeAccount',
+                onClick: function () {
+                    submitActiveAccountRequest();
+                    //pas de controle de succes/erreur ? de toast ?
+                },
+                icon: '<i class="fa fa-envelope-o" aria-hidden="true"></i>',
+                isDisplayed: !$scope.client.isActiveAccount
+            }
+        ];
+
     }
 ]);

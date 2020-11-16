@@ -60,10 +60,7 @@ const setAttribute = async (body) => {
         // Si le usedInFilters est changé et passe de true a false
             if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
             // Alors on supprime les categories.filtres dont l'_id est l'_id de l'attribut modifié
-                await Categories.updateMany(
-                    {'filters._id': attribute._id}, {$pull: {filters: {_id: attribute._id}}},
-                    {new: true, runValidators: true}
-                );
+                await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
             }
             const code = body.code;
             delete body.code;
@@ -187,7 +184,6 @@ async function applyAttribChanges(tab, attribute, model) {
         // on check que les valeurs du produit existe toujours les valeurs
             const valueLength = tab[i].attributes[attrIndex].translation[langs[ii]].value ? tab[i].attributes[attrIndex].translation[langs[ii]].value.length : 0;
             for (let iii = 0; iii < valueLength; iii++) {
-                console.log(!attribute.translation[langs[ii]].values.includes(tab[i].attributes[attrIndex].translation[langs[ii]].value[iii]));
                 if (!attribute.translation[langs[ii]].values.includes(tab[i].attributes[attrIndex].translation[langs[ii]].value[iii])) {
                     tab[i].attributes[attrIndex].translation[langs[ii]].value.splice(iii, 1);
                     isEdit = true;
