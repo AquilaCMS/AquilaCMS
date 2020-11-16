@@ -9,7 +9,8 @@
                     save-and-quit="saveProduct(product, true)"
                     duplicate-product="duplicateProduct()"
                     disable-save="disableSave"
-                    additionnal-buttons="additionnalButtons">
+                    additionnal-buttons="additionnalButtons"
+                    more-buttons="moreButtons">
             <ns-translation ng-model="lang" class="pull-right"></ns-translation>
             <div class="scrollmenu ng-scope">
                 <ul class="nav nav-tabs">
@@ -171,7 +172,7 @@
                                        infinite-scroll-disabled='scroller.busy'>
                                     <tr ng-class-odd="'odd'" ng-class-even="'even'"
                                         ng-repeat="cat in categoriesLink | orderBy:sortType:sortReverse">
-                                        <td class="  sorting_1">{{cat.translation[lang].name}}</td>
+                                        <td class="  sorting_1">{{cat.translation[lang].name}} ({{cat.active ? 'active' : 'inactive'}})</td>
                                     </tr>
                                 </tbody>
                             </table>

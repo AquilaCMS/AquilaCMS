@@ -284,7 +284,7 @@
                                        infinite-scroll-disabled='scroller.busy'>
                                     <tr ng-class-odd="'odd'" ng-class-even="'even'"
                                         ng-repeat="cat in categoriesLink | orderBy:sortType:sortReverse">
-                                        <td class="  sorting_1">{{cat.translation[lang].name}}</td>
+                                        <td class="  sorting_1">{{cat.translation[lang].name}} ({{cat.active ? 'active' : 'inactive'}})</td>
                                     </tr>
                                 </tbody>
                             </table>

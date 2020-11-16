@@ -611,7 +611,20 @@ adminCatagenDirectives.directive("nsButtons", function ()
             {
                 scope.onLoad();
             }
+            scope.checkMoreButtons = function(){
+                if(scope.isEditMode && scope.moreButtons){
+                    for(let a of scope.moreButtons){
+                        if(a.isDisplayed != null){
+                            if(a.isDisplayed == false){
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
         }
+        
     };
 });
 
