@@ -343,7 +343,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         templateUrl: 'app/product/views/modals/coherence.html',
                         controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
                             $scope.product = productSolv;
-                            ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                            ProductCoherence.getCoherence({id : $scope.product._id}, function(response){
                                 $scope.modal.data = response.content;
                             });
                             $scope.modal = {data : ''};
