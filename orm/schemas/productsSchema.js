@@ -24,7 +24,6 @@ const ProductsSchema = new Schema({
     slugMenus          : {type: [String], index: true},
     component_template : String,
     weight             : {type: Number, default: 0}, // Le poids du produit
-    createdAt          : {type: Date, default: Date.now},
     price              : {
         purchase : Number,
         tax      : Number,

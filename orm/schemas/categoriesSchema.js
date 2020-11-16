@@ -15,7 +15,6 @@ const CategoriesSchema = new Schema({
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
     closeDate    : {type: Date},
-    createdAt    : {type: Date, default: Date.now},
     ancestors    : [{type: ObjectId, ref: 'categories'}],
     children     : [{type: ObjectId, ref: 'categories'}],
     productsList : [{

@@ -2,8 +2,7 @@ const mongoose         = require('mongoose');
 const {ContactsSchema} = require('../schemas');
 
 ContactsSchema.pre('save', function (next) {
-    this.createdAt = Date.now();
     next();
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model('contacts', ContactsSchema, 'contacts');

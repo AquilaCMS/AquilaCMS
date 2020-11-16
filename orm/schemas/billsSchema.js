@@ -20,7 +20,6 @@ const BillsSchema = new Schema({
     societe     : {type: String},
     coordonnees : {type: String},
     email       : {type: String, required: true},
-    createdAt   : {type: Date, default: Date.now},
     filename    : {type: String},
     paymentDate : {type: Date},
     checksum    : {type: String},
@@ -57,7 +56,7 @@ const BillsSchema = new Schema({
     avoir           : {type: Boolean, default: false},
     additionnalFees : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}, tax: {type: Number, default: 0}},
     priceSubTotal   : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}}
-});
+}, {timestamps: true});
 
 const docArray = BillsSchema.path('items');
 

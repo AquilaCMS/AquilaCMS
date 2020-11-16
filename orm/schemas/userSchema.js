@@ -92,7 +92,6 @@ const UserSchema = new Schema({
         }
     },
     status           : String,
-    createdAt        : {type: Date, default: Date.now},
     delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
     billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
     addresses        : [AddressSchema],

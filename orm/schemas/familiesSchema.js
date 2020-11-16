@@ -7,7 +7,6 @@ const FamiliesSchema = new Schema({
     code      : {type: String, required: true, unique: true},
     name      : {type: String, required: true},
     type      : {type: String, required: true, enum: ['universe', 'family', 'subfamily']},
-    createdAt : {type: Date, default: Date.now},
     ancestors : [{code: String, slug: String}],
     slug      : {type: String, unique: true},
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
