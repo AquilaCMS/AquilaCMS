@@ -15,7 +15,7 @@ const SuppliersSchema = new Schema({
     phone              : Number,
     purchasing_manager : String,
     active             : {type: Boolean, default: true},
-    creationDate       : {type: Date, default: Date.now}
+    createdAt          : {type: Date, default: Date.now}
 });
 
 SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {

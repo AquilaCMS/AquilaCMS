@@ -177,8 +177,8 @@ ProductControllers.controller("ProductListCtrl", [
                         };
                     } else if (filterKeys[i] === "images") {
                         params.filter["images.url"] = {$regex: $scope.filter[filterKeys[i]], $options: "i"};
-                    } else if (filterKeys[i] === "creationDate") {
-                        params.filter.creationDate = {$gte: moment(new Date($scope.filter[filterKeys[i]])), $lt: moment(new Date($scope.filter[filterKeys[i]])).add(1, 'd')};
+                    } else if (filterKeys[i] === "createdAt") {
+                        params.filter.createdAt = {$gte: moment(new Date($scope.filter[filterKeys[i]])), $lt: moment(new Date($scope.filter[filterKeys[i]])).add(1, 'd')};
                     } else {
                         params.filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]], $options: "i"};
                     }

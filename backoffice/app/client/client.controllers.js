@@ -10,7 +10,7 @@ ClientControllers.controller("ClientCtrl", [
 
         function init() {
             $scope.sort = {
-                type    : "creationDate",
+                type    : "createdAt",
                 reverse : true
             };
         }
@@ -54,7 +54,7 @@ ClientControllers.controller("ClientCtrl", [
                     ],
                     isAdmin : false
                 },
-                structure : {'details': 1, creationDate: 1},
+                structure : {'details': 1, createdAt: 1},
                 page,
                 limit     : $scope.nbItemsPerPage
             }}, function (response) {

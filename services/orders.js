@@ -202,7 +202,7 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: 'PAYMENT_PENDING', creationDate: {$lt: dateAgo}})
+    return Orders.find({status: 'PAYMENT_PENDING', createdAt: {$lt: dateAgo}})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {

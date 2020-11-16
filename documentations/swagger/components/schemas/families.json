@@ -10,7 +10,7 @@
             "code"         : {"type": "String"},
             "name"         : {"type": "String"},
             "type"         : {"type": "String", "enum": ["universe", "family", "subfamily"]},
-            "creationDate" : {"type": "Date", "default": "Date.now"},
+            "createdAt" : {"type": "Date", "default": "Date.now"},
             "ancestors"    : {
                 "type": "array",
                 "items": {

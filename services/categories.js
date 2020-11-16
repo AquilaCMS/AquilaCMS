@@ -204,7 +204,7 @@ const getCategoryChild = async (code, childConds, authorization = null) => {
         projectionOptions = {
             canonical_weight : 0,
             active           : 0,
-            creationDate     : 0,
+            createdAt        : 0,
             openDate         : 0,
             ancestors        : 0
         };

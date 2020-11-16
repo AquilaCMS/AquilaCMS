@@ -5,14 +5,14 @@ const utilsDatabase       = require('../../utils/database');
 const Schema              = mongoose.Schema;
 
 const StaticsSchema = new Schema({
-    code         : {type: String, required: true, unique: true},
-    type         : {type: String, required: true},
-    active       : {type: Boolean, default: false},
-    creationDate : {type: Date, default: Date.now},
-    modifyDate   : {type: Date, default: Date.now},
-    group        : {type: String, default: ''},
+    code        : {type: String, required: true, unique: true},
+    type        : {type: String, required: true},
+    active      : {type: Boolean, default: false},
+    createdAt   : {type: Date, default: Date.now},
+    modifyDate  : {type: Date, default: Date.now},
+    group       : {type: String, default: ''},
     // index        : {type: Boolean, default: true},
-    translation  : {}
+    translation : {}
 });
 
 /* translation:

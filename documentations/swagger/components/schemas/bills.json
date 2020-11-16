@@ -47,7 +47,7 @@
                 "email"        : {
                     "type": "string"
                 },
-                "creationDate" : {
+                "createdAt" : {
                     "type": "string",
                     "format": "date",
                     "default": "Date.now"

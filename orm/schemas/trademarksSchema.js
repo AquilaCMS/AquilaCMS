@@ -4,10 +4,10 @@ const {slugify} = require('../../utils/utils');
 const Schema = mongoose.Schema;
 
 const TrademarksSchema = new Schema({
-    code         : {type: String, unique: true},
-    name         : {type: String, required: true, unique: true},
-    active       : {type: Boolean, default: true},
-    creationDate : {type: Date, default: Date.now}
+    code      : {type: String, unique: true},
+    name      : {type: String, required: true, unique: true},
+    active    : {type: Boolean, default: true},
+    createdAt : {type: Date, default: Date.now}
 }, {timestamps: true});
 
 TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb ) {

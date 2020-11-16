@@ -1534,10 +1534,10 @@ adminCatagenDirectives.directive("nsRule", [
                                 name: 'qty'
                             },
                             {
-                                value: "creationDate",
+                                value: "createdAt",
                                 type: "date",
                                 params: {},
-                                name: 'creationDate'
+                                name: 'createdAt'
                             },
                             {
                                 value: "visible",

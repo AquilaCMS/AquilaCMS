@@ -3,8 +3,8 @@ const aquilaEvents = require('../../utils/aquilaEvents');
 const Schema       = mongoose.Schema;
 
 const ContactsSchema = new Schema({
-    data         : {},
-    creationDate : {type: Date}
+    data      : {},
+    createdAt : {type: Date}
 });
 
 aquilaEvents.emit('contactSchemaInit', ContactsSchema);
