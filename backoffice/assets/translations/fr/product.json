@@ -42,7 +42,7 @@
         "coherenceTitle":"Cohérence du produit"
     },
     "modal":{
-        "activeProduct": "Activer un  produit",
+        "activeProduct": "Activer un produit",
         "close": "Fermer",
         "help": "Ce produit n'est pas activable car il ne possède pas de 'canonical' (URL unique).</br>Pour se faire, vous devez : </br></br><span ng-if='!cat'>- <a target='_blank' href='{{admin}}#/categories'>Ajouter ce produit à une catégorie</a> ou <a target='_blank' href='{{admin}}#/jobs'>générer une catégorisation</a></br></br></span><span>- <a target='_blank' href='{{admin}}#/jobs'>Générer la 'canonicalisation'</a></span>",
         "runCanonicalisation": "- Lancer \"Catégorisation\" puis \"Canonicalisation\"",
