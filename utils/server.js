@@ -2,6 +2,7 @@ const path         = require('path');
 const spdy         = require('spdy');
 const mongoose     = require('mongoose');
 const {v4: uuidv4} = require('uuid');
+const {outside}    = require('semver');
 const NSErrors     = require('./errors/NSErrors');
 const fs           = require('./fsp');
 
@@ -99,14 +100,21 @@ const showAquilaLogo = () => {
     );
 };
 
-const controlNodeVersion = () => {
+const controlNodeVersion = async () => {
     try {
-        const version       = process.version.substring(1).split('.')[0]; // we delete the 'v' and split with the dot
-        const versionMinUse = require('../package.json').engines.node.match(/\d+/)[0];        //
-        let errorVersion    = '';
-        if (version !== versionMinUse) {
-            if (version < versionMinUse) errorVersion = 'low';
-            if (version > versionMinUse) errorVersion = 'high';
+        const packageJSON = JSON.parse(await fs.readFile('../package.json'));
+        const check       = (hilo) => {
+            return outside(process.version, packageJSON.engines.node, hilo);
+        };
+
+        let errorVersion;
+        if (check('>') || check('<')) {
+            errorVersion = 'low';
+            if (!check('<')) {
+                errorVersion = 'high';
+            }
+        }
+        if (errorVersion) {
             console.error(`Error in version of NODE. Your version (${process.version}) is too ${errorVersion}`);
         }
     } catch (error) {
