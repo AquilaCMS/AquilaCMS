@@ -54,7 +54,7 @@ ClientControllers.controller("ClientCtrl", [
                     ],
                     isAdmin : false
                 },
-                structure : {'details': 1, creationDate: 1, company : 1},
+                structure : {'details': 1, creationDate: 1},
                 page,
                 limit     : $scope.nbItemsPerPage
             }}, function (response) {
@@ -308,9 +308,8 @@ ClientControllers.controller("ClientDetailCtrl", [
                 }
             }, function(err) {
                 console.error(err)
-                if(err.data.code === 'UserAlreadyExist') {
-                    //toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
-                    toastService.toast('danger', err.data.message);
+                if(err.data.code === 'login_subscribe_email_existing') {
+                    toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
                 }
             })
         };
