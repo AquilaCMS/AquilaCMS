@@ -2,6 +2,7 @@ const path         = require('path');
 const spdy         = require('spdy');
 const mongoose     = require('mongoose');
 const {v4: uuidv4} = require('uuid');
+const {outside}    = require('semver');
 const NSErrors     = require('./errors/NSErrors');
 const fs           = require('./fsp');
 
@@ -99,6 +100,28 @@ const showAquilaLogo = () => {
     );
 };
 
+const controlNodeVersion = async () => {
+    try {
+        const packageJSON = JSON.parse(await fs.readFile('../package.json'));
+        const check       = (hilo) => {
+            return outside(process.version, packageJSON.engines.node, hilo);
+        };
+
+        let errorVersion;
+        if (check('>') || check('<')) {
+            errorVersion = 'low';
+            if (!check('<')) {
+                errorVersion = 'high';
+            }
+        }
+        if (errorVersion) {
+            console.error(`Error in version of NODE. Your version (${process.version}) is too ${errorVersion}`);
+        }
+    } catch (error) {
+        console.log('Error in Node control version');
+    }
+};
+
 const logVersion = async () => {
     console.log(`%s@@ Mongoose version : ${mongoose.version}%s`, '\x1b[32m', '\x1b[0m');
     console.log(`%s@@ NodeJS version : ${process.version}%s`, '\x1b[32m', '\x1b[0m');
@@ -106,6 +129,7 @@ const logVersion = async () => {
     if (global.envFile.db) {
         console.log(`%s@@ Database : ${global.envFile.db}%s`, '\x1b[32m', '\x1b[0m');
     }
+    controlNodeVersion();
 };
 
 const startListening = async (server) => {
