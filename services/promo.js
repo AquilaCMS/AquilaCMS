@@ -241,24 +241,13 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             // On stoppe s'il y a un soucis avec un produit
             return null;
         }
-    }
-
-    // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
-    let i              = 0;
-    let applyNextRules = true;
-    while (applyNextRules && i < promos.length) {
-        const promo = promos[i];
-        if (!promo.rules_id) {
-            // ---------- //
-            // Si la promo n'a aucune rules_id alors elle s'applique a n'importe quel produit
-            // Nous ajoutons donc la réduction a la liste de réduction de chaque produit (relevantDiscount)
-            products.forEach((product) => {
+        for (let j = 0; j < promos.length; j++) {
+            const promo = promos[j];
+            if (!promo.rules_id) {
                 returnedPromos.push(promo);
-                product.relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
-            });
-        } else {
-            for (let j = 0, lenj = products.length; j < lenj; j++) {
-                const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[j]]});
+                products[i].relevantDiscount.push(promo);
+            } else {
+                const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[i]]});
                 const ifStatement = promoUtils.createIfStatement(tCondition);
                 try {
                     // On test si l'eval peut renvoyer une erreur
@@ -269,13 +258,46 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
                 // Si l'utilisateur ne peut pas utiliser ce code nous renvoyons une erreur
                 if (eval(ifStatement)) {
                     returnedPromos.push(promo);
-                    products[j].relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
+                    products[i].relevantDiscount.push(promo);
+                    if (!promo.applyNextRules) continue;
                 }
             }
         }
-        applyNextRules = promo.applyNextRules;
-        i++;
     }
+
+    // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
+    // for (let i = 0; i < promos.length; i++) {
+    //     const promo = promos[i];
+    //     if (!promo.rules_id) {
+    //         // ---------- //
+    //         // Si la promo n'a aucune rules_id alors elle s'applique a n'importe quel produit
+    //         // Nous ajoutons donc la réduction a la liste de réduction de chaque produit (relevantDiscount)
+    //         products.forEach((product) => {
+    //             returnedPromos.push(promo);
+    //             product.relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
+    //         });
+    //     } else {
+    //         let j              = 0;
+    //         let applyNextRules = true;
+    //         while (applyNextRules && j < products.length) {
+    //             const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[j]]});
+    //             const ifStatement = promoUtils.createIfStatement(tCondition);
+    //             try {
+    //                 // On test si l'eval peut renvoyer une erreur
+    //                 eval(ifStatement);
+    //             } catch (error) {
+    //                 throw NSErrors.PromoCodeIfStatementBadFormat;
+    //             }
+    //             // Si l'utilisateur ne peut pas utiliser ce code nous renvoyons une erreur
+    //             if (eval(ifStatement)) {
+    //                 returnedPromos.push(promo);
+    //                 products[j].relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
+    //             }
+    //             applyNextRules = promo.applyNextRules;
+    //             j++;
+    //         }
+    //     }
+    // }
     // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
     // (normal ou special si existe) et appliquons les reductions les plus fortes
     for (let i = 0; i < products.length; i++) {
@@ -283,15 +305,14 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
 
         // FUTUR: Cumuler les promos ou non
         // on garde uniquement la "meilleure" promo
-        if (product.relevantDiscount.length >= 2) {
-            product.relevantDiscount.sort(function (a, b) {
-                return b.discountValue - a.discountValue;
-            });
-            for (let j = 0; j < (product.relevantDiscount.length - 1); j++) {
-                product.relevantDiscount.pop();
-            }
-        }
-
+        // if (product.relevantDiscount.length >= 2) {
+        //     product.relevantDiscount.sort(function (a, b) {
+        //         return b.discountValue - a.discountValue;
+        //     });
+        //     for (let j = 0; j < (product.relevantDiscount.length - 1); j++) {
+        //         product.relevantDiscount.pop();
+        //     }
+        // }
         for (let j = 0, lenj = product.relevantDiscount.length; j < lenj; j++) {
             if (product.relevantDiscount[j].discountType.startsWith('FV')) {
                 if (product.relevantDiscount[j].discountType === 'FVet') {
