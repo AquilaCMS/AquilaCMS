@@ -99,6 +99,21 @@ const showAquilaLogo = () => {
     );
 };
 
+const controlNodeVersion = () => {
+    try {
+        const version       = process.version.substring(1).split('.')[0]; // we delete the 'v' and split with the dot
+        const versionMinUse = require('../package.json').engines.node.match(/\d+/)[0];        //
+        let errorVersion    = '';
+        if (version !== versionMinUse) {
+            if (version < versionMinUse) errorVersion = 'low';
+            if (version > versionMinUse) errorVersion = 'high';
+            console.error(`Error in version of NODE. Your version (${process.version}) is too ${errorVersion}`);
+        }
+    } catch (error) {
+        console.log('Error in Node control version');
+    }
+};
+
 const logVersion = async () => {
     console.log(`%s@@ Mongoose version : ${mongoose.version}%s`, '\x1b[32m', '\x1b[0m');
     console.log(`%s@@ NodeJS version : ${process.version}%s`, '\x1b[32m', '\x1b[0m');
@@ -106,6 +121,7 @@ const logVersion = async () => {
     if (global.envFile.db) {
         console.log(`%s@@ Database : ${global.envFile.db}%s`, '\x1b[32m', '\x1b[0m');
     }
+    controlNodeVersion();
 };
 
 const startListening = async (server) => {

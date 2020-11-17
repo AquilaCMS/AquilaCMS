@@ -18,7 +18,6 @@ const translation       = require('./utils/translation');
 const serverUtils       = require('./utils/server');
 const utilsModules      = require('./utils/modules');
 const utilsThemes       = require('./utils/themes');
-const versionMaxEngine  = require('./package.json').engines.node;
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -71,26 +70,6 @@ const setEnvConfig = async () => {
     }
     global.envConfig = global.envConfig.toObject();
 };
-
-try {
-    const version       = process.version.substring(1).split('.')[0]; // we delete the 'v' and split with the dot
-    const versionMinUse = versionMaxEngine.match(/\d+/);        //
-    const versionMaxUse = '14';
-    if (version > versionMaxUse) {
-        console.log('----');
-        console.error('Error in version of NODE');
-        console.log(`Your version : ${process.version} is too high`);
-        console.log('----');
-    }
-    if (version < versionMinUse) {
-        console.log('----');
-        console.error('Error in version of NODE');
-        console.log(`Your version : ${process.version} is too low`);
-        console.log('----');
-    }
-} catch (error) {
-    console.log('Error in Node control version');
-}
 
 const initFrontFramework = async (themeFolder) => {
     if (dev) await utilsThemes.themeCompile();
