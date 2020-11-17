@@ -9,10 +9,7 @@ ClientControllers.controller("ClientCtrl", [
         $scope.columns = ClientColumns;
 
         function init() {
-            $scope.sort = {
-                type    : "creationDate",
-                reverse : true
-            };
+            $scope.sort = {};
         }
 
         init();
@@ -56,7 +53,8 @@ ClientControllers.controller("ClientCtrl", [
                 },
                 structure : {'details': 1, creationDate: 1, company : 1},
                 page,
-                limit     : $scope.nbItemsPerPage
+                limit     : $scope.nbItemsPerPage,
+                sort      : {creationDate : -1}
             }}, function (response) {
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
