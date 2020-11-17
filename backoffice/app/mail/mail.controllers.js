@@ -42,6 +42,14 @@ MailControllers.controller("MailDetailCtrl", [
                 icon:'<i class="fa fa-envelope-o" aria-hidden="true"></i>'
             }
         ]
+        $scope.typeName = "";
+        $scope.updateMailType = function () {
+            $scope.mailTypes.filter(obj => {
+                if (obj.code === $scope.mail.type){
+                    $scope.typeName = obj.name;
+                }
+            })
+        }
 
         if($routeParams.mailId != "new")
         {
@@ -65,6 +73,7 @@ MailControllers.controller("MailDetailCtrl", [
         $scope.MailGetById = function () {
             MailGetById.query({_id: $routeParams.mailId}, function (mail) {
                 $scope.mail = mail;
+                $scope.updateMailType();
             });
         };
         //On récupére le document uniquement si nous sommes en mode edit
@@ -72,6 +81,8 @@ MailControllers.controller("MailDetailCtrl", [
         {
             $scope.MailGetById();
         }
+
+        
 
         $scope.after = function(){
             $scope.MailGetById();
@@ -236,8 +247,28 @@ MailControllers.controller("MailDetailTestCtrl", [
                 { name: 'dateReceipt' },
                 { name: 'hourReceipt' },
                 { name: 'address' },
+                { name: 'order.customer.firstname', value: '' },
+                { name: 'order.customer.lastname', value: '' },
+                { name: 'order.customer.company', value: '' },
+                { name: 'order.customer.fullname', value: '' },
+                { name: 'order.number' },
+                { name: 'order.dateReceipt' },
+                { name: 'order.hourReceipt' },
+                { name: 'order.priceTotal' },
+                { name: 'order.delivery' },
+                { name: 'order.paymentMode' },
+                { name: 'order.paymentDescription' },
+                { name: 'order.shipment' },
+                { name: 'address.line1' },
+                { name: 'address.line2' },
+                { name: 'address.companyName' },
+                { name: 'address.complementaryInfo' },
+                { name: 'address.zipcode' },
+                { name: 'address.city' },
+                { name: 'address.country' },
                 { name: 'totalamount' },
                 { name: 'orderdata' },
+                { name: 'taxdisplay' },
                 { name: 'appUrl' },
                 { name: 'payment_type' },
                 { name: 'delivery_type' }
@@ -251,11 +282,32 @@ MailControllers.controller("MailDetailTestCtrl", [
                 { name: 'dateReceipt' },
                 { name: 'hourReceipt' },
                 { name: 'address' },
+                { name: 'order.customer.firstname', value: '' },
+                { name: 'order.customer.lastname', value: '' },
+                { name: 'order.customer.company', value: '' },
+                { name: 'order.customer.fullname', value: '' },
+                { name: 'order.number' },
+                { name: 'order.dateReceipt' },
+                { name: 'order.hourReceipt' },
+                { name: 'order.priceTotal' },
+                { name: 'order.delivery' },
+                { name: 'order.paymentMode' },
+                { name: 'order.paymentDescription' },
+                { name: 'order.shipment' },
+                { name: 'address.line1' },
+                { name: 'address.line2' },
+                { name: 'address.companyName' },
+                { name: 'address.complementaryInfo' },
+                { name: 'address.zipcode' },
+                { name: 'address.city' },
+                { name: 'address.country' },
                 { name: 'totalamount' },
                 { name: 'orderdata' },
+                { name: 'taxdisplay' },
                 { name: 'appUrl' },
                 { name: 'payment_type' },
-                { name: 'delivery_type' }
+                { name: 'delivery_type' },
+                { name: 'payment.instruction' }
             ],
             "orderSuccessCompany":   [
                 { name: 'firstname', value: '' },
@@ -266,13 +318,33 @@ MailControllers.controller("MailDetailTestCtrl", [
                 { name: 'dateReceipt' },
                 { name: 'hourReceipt' },
                 { name: 'address' },
+                { name: 'order.customer.firstname', value: '' },
+                { name: 'order.customer.lastname', value: '' },
+                { name: 'order.customer.company', value: '' },
+                { name: 'order.customer.fullname', value: '' },
+                { name: 'order.number' },
+                { name: 'order.dateReceipt' },
+                { name: 'order.hourReceipt' },
+                { name: 'order.priceTotal' },
+                { name: 'order.delivery' },
+                { name: 'order.paymentMode' },
+                { name: 'order.paymentDescription' },
+                { name: 'order.shipment' },
+                { name: 'address.line1' },
+                { name: 'address.line2' },
+                { name: 'address.companyName' },
+                { name: 'address.complementaryInfo' },
+                { name: 'address.zipcode' },
+                { name: 'address.city' },
+                { name: 'address.country' },
                 { name: 'totalamount' },
+                { name: 'taxdisplay' },
                 { name: 'appUrl' },
                 { name: 'customer_mobile_phone' },
                 { name: 'payment_type' },
                 { name: 'delivery_type' },
                 { name: 'shipment' }
-            ],
+             ],
             "sendRegisterForAdmin": [
                 { name: 'firstname', value: '' },
                 { name: 'lastname', value: '' },
