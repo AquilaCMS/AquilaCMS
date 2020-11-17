@@ -1,5 +1,6 @@
 const moment                                    = require('moment-business-days');
 const {StatsToday, StatsHistory, Configuration} = require('../orm/models');
+const ServiceStatistics                         = require('./statistics');
 
 /**
  * Permet de compter le nombre de panier supprimé
@@ -83,6 +84,7 @@ const getHistory = async (type, periodeStart, periodeEnd, granularityQuery) => {
 const buildStats = async () => {
     // Passer les données du jour (statstoday) vers statshistory
     let dbToday;
+    let result = 'OK';
     try {
         dbToday = await StatsToday.findOne({});
         if (dbToday) {
@@ -92,13 +94,14 @@ const buildStats = async () => {
             await StatsToday.findOneAndUpdate({}, {oldCart: 0, visit: []}, {upsert: true, new: true});
             const _config = await Configuration.findOne({});
             if (_config.environment.sendMetrics && _config.licence.registryKey) {
-                // await ServiceStatistics.sendMetrics(_config.licence.registryKey);
+                await ServiceStatistics.sendMetrics(_config.licence.registryKey);
+                result = 'OK - Metrics sent';
             }
         }
     } catch (err) {
         console.error(err);
     }
-    return 'OK';
+    return result;
 };
 
 /**
