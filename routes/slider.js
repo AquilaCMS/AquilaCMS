@@ -6,6 +6,7 @@ module.exports = function (app) {
     app.post('/v2/slider', getSlider);
     app.post('/v2/slider/:id', getSliderById);
     app.put('/v2/slider', authentication, adminAuth, setSlider);
+    app.put('/v2/slider/:id', authentication, adminAuth, setSlider);
     app.delete('/v2/slider/:id', authentication, adminAuth, deleteSlider);
     app.delete('/v2/slider/:_id/:_id_item', authentication, adminAuth, deleteItemSlider);
 };

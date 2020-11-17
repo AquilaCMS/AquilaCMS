@@ -35,9 +35,13 @@
 
             <div ng-show="isEditMode">
                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="slider" id="slider._id" entity="null" images="slider.items" after-function="close()"></ns-upload-files>
-
-                <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in slider.items | orderBy:'order'" ns-drag="item" ns-drop="item">
-                    <div title="{{item.text}}" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px" ng-click="openItemModal(item)"></div>
+                <div class="upload-area" style="height:300px">
+                    <span class="overlay-inner" style="text-align: center;color: slategray;">
+                        <i class="fa fa-arrows fa-2x" aria-hidden="true"></i>
+                    </span>
+                    <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in slider.items | orderBy:'order'" ns-drag="item" ns-drop="item">
+                        <div title="{{item.text}}" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px" ng-click="openItemModal(item)"></div>
+                    </div>
                 </div>
             </div>
         </ns-buttons>
