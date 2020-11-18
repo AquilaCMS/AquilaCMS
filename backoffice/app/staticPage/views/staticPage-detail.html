@@ -1,7 +1,7 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="saveStatic()" role="form">
     <ns-box data-title="static.detail.t1" title-icon="fa fa-file-text fa-lg" close-href="#/staticPage">
         <ns-buttons form="form" return-path="/staticPage" is-edit-mode="true" remove="removePage(static)" additionnal-buttons="additionnalButtons" save-and-quit="saveStatic(true)" hide-remove="static.code === 'home'">
-            <span class="pull-right" style="position:absolute;right:5%;">
+            <span class="pull-right" style="position:absolute;right:60px;margin-top:30px;">
                 <span bind-html-compile="oneHook.component_template" ng-repeat="oneHook in hookPageInfo" style="display:block;"></span>
             </span>
             <div class="form-group">

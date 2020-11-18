@@ -50,39 +50,11 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         window.dispatchEvent(event);
                     }
                 },
-                moreText: '<i class="fa fa-eye" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>',
             }
         ];
 
-        $scope.moreButtons = [
-            {
-                text: 'product.general.coherenceTitle',
-                onClick: function () {
-                    $modal.open({
-                        templateUrl: 'app/product/views/modals/coherence.html',
-                        controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
-                            $scope.product = productSolv;
-                            ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
-                                $scope.modal.data = response.content;
-                            });
-                            $scope.modal = {data : ''};
-                            $scope.trustHtml = function(){
-                                return $sce.trustAsHtml($scope.modal.data);
-                            }
-                            $scope.cancel = function () {
-                                $modalInstance.close('cancel');
-                            };
-                        },
-                        resolve: {
-                            productSolv: function () {
-                                return $scope.product;
-                            },
-                        }
-                    });
-                },
-                moreText: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
-            }
-        ];
+
 
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
@@ -125,6 +97,56 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         } else {
             $scope.init();
         }
+
+        $scope.moreButtons = [
+            {
+                text: 'product.general.coherenceTitle',
+                onClick: function () {
+                    $modal.open({
+                        templateUrl: 'app/product/views/modals/coherence.html',
+                        controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                            $scope.product = productSolv;
+                            ProductCoherence.getCoherence({id : $scope.product.id}, function(response){
+                                $scope.modal.data = response.content;
+                            });
+                            $scope.modal = {data : ''};
+                            $scope.trustHtml = function(){
+                                return $sce.trustAsHtml($scope.modal.data);
+                            }
+                            $scope.cancel = function () {
+                                $modalInstance.close('cancel');
+                            };
+                        },
+                        resolve: {
+                            productSolv: function () {
+                                return $scope.product;
+                            },
+                        }
+                    });
+                },
+                icon: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
+            },
+            {
+                text: 'product.button.dup',
+                onClick: function () {
+                    const newCode = prompt("Saisir le code du nouveau produit : ");
+                    if (newCode) {
+                        const newPrd = {...$scope.product, code: newCode};
+                        delete newPrd._id;
+                        const query = ProductsV2.duplicate(newPrd);
+                        query.$promise.then(function (savedPrd) {
+                            toastService.toast("success", "Produit dupliqué !");
+                            $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
+                        }).catch(function (e) {
+                            toastService.toast("danger", "Le code existe déjà");
+                        });
+                    }
+                },
+                icon: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
+            }
+        ];
 
         function genAttributes() {
             angular.forEach($scope.product.attributes, function (attributeI) {
@@ -262,28 +284,14 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $location.path("/products");
         };
 
-        $scope.getCategoriesLink = function () {
+        $scope.getCategoriesLink = function (){
             if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink) {
+                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
                     $scope.categoriesLink = categoriesLink.datas;
                 });
             }
         };
 
-        $scope.duplicateProduct = function () {
-            const newCode = prompt("Saisir le code du nouveau produit : ");
-            if (newCode) {
-                const newPrd = {...$scope.product, code: newCode};
-                delete newPrd._id;
-                const query = ProductsV2.duplicate(newPrd);
-                query.$promise.then(function (savedPrd) {
-                    toastService.toast("success", "Produit dupliqué !");
-                    $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
-                }).catch(function (e) {
-                    toastService.toast("danger", "Le code existe déjà");
-                });
-            }
-        };
 
         $scope.momentDate = function (date) {
             if (date === null) {

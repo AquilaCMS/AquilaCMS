@@ -327,47 +327,80 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $location.path("/products");
         };
 
-        $scope.getCategoriesLink = function ()
-        {
+        $scope.getCategoriesLink = function (){
             if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99}}, function (categoriesLink)
-                {
+                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
                     $scope.categoriesLink = categoriesLink.datas;
                 });
             }
         };
-
-        $scope.duplicateProduct = function ()
-        {
-            var clone = angular.copy($scope.product);
-            clone.code = prompt("Saisir le code: ");
-            clone.id = clone._id;
-            delete clone._id;
-            ProductsV2.duplicate(clone, function (savedPrd)
+        
+        $scope.moreButtons = [
             {
-                if(!savedPrd)
-                {
-                    $location.path("/products");
-                }
-                else
-                {
-                    toastService.toast("success", "Produit sauvegardé !");
-                    if($scope.isEditMode)
+                text: 'product.general.coherenceTitle',
+                onClick: function () {
+                    $modal.open({
+                        templateUrl: 'app/product/views/modals/coherence.html',
+                        controller: function ($scope, $modalInstance, $sce, productSolv, ProductCoherence) {
+                            $scope.product = productSolv;
+                            ProductCoherence.getCoherence({id : $scope.product._id}, function(response){
+                                $scope.modal.data = response.content;
+                            });
+                            $scope.modal = {data : ''};
+                            $scope.trustHtml = function(){
+                                return $sce.trustAsHtml($scope.modal.data);
+                            }
+                            $scope.cancel = function () {
+                                $modalInstance.close('cancel');
+                            };
+                        },
+                        resolve: {
+                            productSolv: function () {
+                                return $scope.product;
+                            },
+                        }
+                    });
+                },
+                icon: '<i class="fa fa-puzzle-piece" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
+            },
+            {
+                text: 'product.button.dup',
+                onClick: function (){
+                    var clone = angular.copy($scope.product);
+                    clone.code = prompt("Saisir le code: ");
+                    clone.id = clone._id;
+                    delete clone._id;
+                    ProductsV2.duplicate(clone, function (savedPrd)
                     {
+                        if(!savedPrd)
+                        {
+                            $location.path("/products");
+                        }
+                        else
+                        {
+                            toastService.toast("success", "Produit sauvegardé !");
+                            if($scope.isEditMode)
+                            {
+                                $scope.disableSave = false;
+                                $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
+                            }
+                            else
+                            {
+                                $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
+                            }
+                        }
+                    }, function (err)
+                    {
+                        toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
                         $scope.disableSave = false;
-                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
-                    }
-                    else
-                    {
-                        $location.path("/products/" + savedPrd.type + "/" + savedPrd.code);
-                    }
-                }
-            }, function (err)
-            {
-                toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
-                $scope.disableSave = false;
-            });
-        };
+                    });
+                },
+                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                isDisplayed: $scope.isEditMode
+            }
+        ];
+
 
 
         $scope.momentDate = function (date) {
