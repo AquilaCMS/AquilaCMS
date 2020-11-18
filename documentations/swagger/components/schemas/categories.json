@@ -11,7 +11,7 @@
                 "colorName"    : {"type": "string"},
                 "openDate"     : {"type": "string", "format": "Date", "default": "Date.now"},
                 "closeDate"    : {"type": "string", "format": "Date"},
-                "createdAt" : {"type": "string", "format": "Date", "default": "Date.now"},
+                "createdAt" : {"type": "date"},
                 "ancestors"    : {
                     "type": "array",
                     "items": {

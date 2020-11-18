@@ -15,7 +15,7 @@
             "phone"              : {"type": "number"},
             "purchasing_manager" : {"type": "string"},
             "active"             : {"type": "boolean", "default": true},
-            "createdAt"       : {"type": "string", "format": "date", "default": "Date.now"}
+            "createdAt"          : {"type": "date"}
         }
     }
 }

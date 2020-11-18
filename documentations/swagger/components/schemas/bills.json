@@ -48,9 +48,7 @@
                     "type": "string"
                 },
                 "createdAt" : {
-                    "type": "string",
-                    "format": "date",
-                    "default": "Date.now"
+                    "type": "date"
                 },
                 "filename"     : {
                     "type": "string"

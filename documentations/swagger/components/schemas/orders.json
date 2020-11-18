@@ -269,7 +269,7 @@
                     "required": ["mode"],
                     "properties": {
                         "type"          : {"type": "string", "enum": ["DEBIT", "CREDIT"]},
-                        "createdAt"  : {"type": "string", "format": "date", "default": "Date.now"},
+                        "createdAt"     : {"type": "date"},
                         "operationDate" : {"type": "string", "format": "date"},
                         "status"        : {"type": "string", "enum": ["TODO", "DONE", "CANCELED", "FAILED"]},
                         "mode"          : {"type": "string"},

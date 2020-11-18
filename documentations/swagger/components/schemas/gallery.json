@@ -10,6 +10,7 @@
             "code"            : {"type": "string"},
             "initItemNumber"  : {"type": "number", "default": 6},
             "maxColumnNumber" : {"type": "number", "default": 3},
+            "createdAt" : {"type": "date"},
             "items"           : {
                 "type": "array",
                 "items": {
