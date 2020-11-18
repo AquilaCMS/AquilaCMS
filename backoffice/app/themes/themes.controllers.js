@@ -20,19 +20,48 @@ ThemesController.controller("ThemesCtrl", [
             return lang.defaultLanguage;
         }).code;
 
+        
         ThemeConfig.query({ PostBody: { filter: {}, structure: {}, limit: 99 }}, function (response) {
-            $scope.keys = {};
+            $scope.customiseTheme ={};
+            $scope.customiseTheme.keys = {};
             $scope.themeConfig.variables = {};
-            if(response.config && response.config.translation) {
-                $scope.languages.forEach(element => {
-                    $scope.themeConfig.variables[element.code] = response.config.translation[element.code];
+            $scope.themeFiles = response.filenames;
+            $scope.themeFiles.forEach(element =>{
+                if(element.indexOf("json") === -1){
+                    var index = $scope.themeFiles.indexOf(element);
+                    $scope.themeFiles.splice(index, 1);
+                } else if(element.indexOf("themeConfig.json") !== -1){
+                    var index = $scope.themeFiles.indexOf(element);
+                    $scope.themeFiles.splice(index, 1);
+                }
+            });
+            
+            if(response.config.config && response.config.config.translation) {
+                $scope.languages.forEach(element  => {
+                    $scope.themeConfig.variables[element.code] = response.config.config.translation[element.code];
                     delete $scope.themeConfig.variables[element.code].$promise;
                     delete $scope.themeConfig.variables[element.code].$resolved;
-                    $scope.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
+                    $scope.customiseTheme.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
                     $scope.theme.currentThemeVar = true;
                 });
+                
+
+                // $scope.customiseTheme.arrayGroup = ["GRP1","GRP2","GRP3"];
+                
             }
         });
+
+        $scope.langChange = function (lang)
+        {
+            // selectedLang = lang;
+            $scope.customiseTheme.arrayGroup = [];
+            for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
+                if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
+                    $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
+                   
+                }
+            }
+        };
 
         $scope.typeOf = function(value) {
             try {
@@ -162,7 +191,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 }
-            }
+            } 
         };
 
         $scope.validate = function (tab) {
