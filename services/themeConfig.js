@@ -1,3 +1,5 @@
+const fs                           = require('fs');
+const path                         = require('path');
 const {ThemeConfig, Configuration} = require('../orm/models');
 const QueryBuilder                 = require('../utils/QueryBuilder');
 const NSErrors                     = require('../utils/errors/NSErrors');
@@ -13,9 +15,11 @@ const queryBuilder     = new QueryBuilder(ThemeConfig, restrictedFields, default
 const getThemeConfig = async (PostBody) => {
     if (!PostBody) throw NSErrors.PostBodyUndefined;
 
-    const config    = await Configuration.findOne({});
-    PostBody.filter = {name: config.environment.currentTheme};
-    return queryBuilder.findOne(PostBody);
+    const config        = await Configuration.findOne({});
+    PostBody.filter     = {name: config.environment.currentTheme};
+    const filenames     = fs.readdirSync(path.join(global.appRoot, 'themes/default_theme/demoDatas'));
+    const configuration = await queryBuilder.findOne(PostBody);
+    return {config: configuration, filenames};
 };
 
 /**

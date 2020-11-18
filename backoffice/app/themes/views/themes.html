@@ -8,6 +8,7 @@
         <ul class="nav nav-tabs">
             <li ng-click="onTabSelect('select')" class="active"><a data-toggle="tab" href="#select" target="_self" translate>themes.myTheme</a></li>
             <li ng-click="onTabSelect('config')"><a data-toggle="tab" href="#config" target="_self" translate>themes.customisation</a></li>
+            <li ng-click="onTabSelect('data')"><a data-toggle="tab" href="#data" target="_self" translate>themes.data</a></li>
             <!-- <li><a data-toggle="tab" href="#auth" target="_self" translate>config.environment.menu.third-party-auth</a></li> -->
         </ul>
     </div>
@@ -51,28 +52,46 @@
            </div>
 
            <div id="config" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
-            <div class="form-group">
-                <label translate>themes.themeDatas</label> <br />
-                <a download class="btn btn-success" ng-click="copyThemeDatas()" translate>
-                    themes.themeDatasLead
-                </a>
-                <br />
-                <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
-                <label class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
-            </div>
+
             <br />
                 <label ng-if="theme.currentThemeVar" style="margin:20px 0" translate>themes.currentThemeVar</label>
                 <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
-               <div ng-repeat="var in keys[lang]">
-                    <div class="form-group">
-                        <label style="float:left">{{var}} :</label><br/>
-                        <input type="text" class="form-control" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'string'">
-                        <input type="number" class="form-control" step="any" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'number'">
-                        <ns-switch name='{{var}}' ng-model='themeConfig.variables[lang][var]' ng-if="typeOf(themeConfig.variables[lang][var]) == 'boolean'"></ns-switch>
-                        <color-picker ng-model="themeConfig.variables[lang][var]" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var]) == 'color'"></color-picker>
+                <div>
+                    <div ng-repeat = "group in customiseTheme.arrayGroup">
+                        <label>{{group}} : </label>
+                        <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group"> 
+                            {{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) : {{themeConfig.variables[lang][var].description}}
+                            <br>
+                            <input style = "float : right" type="text" class="form-control" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
+                            <input style = "float : right" type="number" class="form-control" step="0.1" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'number'">
+                            <ns-switch style = "float : right" name='{{var}}' ng-model='themeConfig.variables[lang][var].value' ng-if="typeOf(themeConfig.variables[lang][var].value) == 'boolean'"></ns-switch>
+                            <color-picker style = "float : right" ng-model="themeConfig.variables[lang][var].value" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'color'"></color-picker>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                        <br>
                     </div>
-               </div>
+                </div>
                <!-- <label ng-if="themeConfig.variables.lenght === 0">Pas de variables</label> -->
+            </div>
+            <div id="data" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
+                <label translate>themes.themeDatas</label> <br />
+                <div style="right: 10%;" class="form-group">
+                    <a download class="btn btn-success" ng-click="copyThemeDatas()" translate>
+                        themes.themeDatasLead
+                    </a>
+                    <br />
+                    <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
+                    <label class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
+                </div>
+                <div ng-repeat="file in themeFiles">
+                    <label>{{file}} : </label>
+                    <ns-switch name='{{file}}' ng-model='themeConfig.variables[lang][var].value' ></ns-switch>
+                    <br>
+                    <br>
+                    <br>
+                </div>
             </div>
         </div>
     </div>
