@@ -592,7 +592,6 @@ adminCatagenDirectives.directive("nsButtons", function ()
             remove: "&remove",
             saveAndQuit: "&saveAndQuit",
             hideSaveAndQuit: "=",
-            duplicateProduct: "&?",
             disableSave: "=?",
             isEditMode: "=",
             hideRemove: "=", //Si on est en Edit Mode mais qu'on ne veut pas la suppresion pour autant (par exemple sur un ou plusieurs éléments)
@@ -612,7 +611,20 @@ adminCatagenDirectives.directive("nsButtons", function ()
             {
                 scope.onLoad();
             }
+            scope.checkMoreButtons = function(){
+                if(scope.isEditMode && scope.moreButtons){
+                    for(let a of scope.moreButtons){
+                        if(a.isDisplayed != null){
+                            if(a.isDisplayed == false){
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
         }
+        
     };
 });
 

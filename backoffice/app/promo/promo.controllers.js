@@ -483,11 +483,11 @@ PromoControllers.controller("PromoDetailCtrl", [
 
         $scope.additionnalButtons = [
             {
-                text: 'ns.dup',
+                text: 'product.button.dup',
                 onClick: function () {
                     cloneDiscount();
                 },
-                moreText: '<i class="fa fa-clone" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-clone" aria-hidden="true"></i>',
             }
         ];
     }

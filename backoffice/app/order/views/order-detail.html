@@ -77,7 +77,7 @@
                     <a target="_blank" ng-href="#/clients/{{order.customer.id}}" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-eye"></i></a>
                 </div>
                 <div class="box-content">
-                    <a target="_blank" ng-href="#/clients/{{order.customer.id._id}}">{{order.customer.fullname}}</a><br />
+                    {{order.customer.fullname}}<br />
                     {{order.customer.phone}}<br />
                     {{order.customer.email}}
                     <div ng-if="order.comment">

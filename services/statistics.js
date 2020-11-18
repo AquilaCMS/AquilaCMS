@@ -1,4 +1,5 @@
 const moment                    = require('moment-business-days');
+const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
 const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
@@ -10,6 +11,25 @@ exports.setProductViews = function (product_id) {
     try {
         Products.findOneAndUpdate({_id: product_id}, {$inc: {'stats.views': 1}})
             .exec();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+/**
+ * Construit et envoie les statistiques du jour sur un autre site
+ */
+exports.sendMetrics = async function (licence) {
+    try {
+        // const clients = Users.find({isAdmin: false}).count();
+        const stats = await exports.getGlobaleStats();
+        const date  = new Date();
+        await axios.post('http://localhost:3010/api/v2/metrics', {
+            stats : stats.yesterday,
+            licence,
+            date
+        });
+        return 'Datas sent';
     } catch (error) {
         console.error(error);
     }
@@ -83,9 +103,21 @@ async function getGlobalStat(periode) {
         }
     });
 
-    let orderTotalAmount = 0;
+    let orderTotalAmount        = 0; // prix des toutes les commandes
+    let nbOrderPaid             = 0; // nb de commandes payées
+    let nbOrderNotPaid          = 0; // nb de commandes non payées
+    let orderTotalAmountPaid    = 0; // prix total des commandes payées
+    let orderTotalAmountNotPaid = 0; // prix total des commandes non payées
+
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
+        if (!['PAYMENT_RECEIPT_PENDING', 'PAYMENT_CONFIRMATION_PENDING', 'RETURNED'].includes(allOrders[i].status)) {
+            nbOrderPaid++;
+            orderTotalAmountPaid += allOrders[i].priceTotal.ati;
+        } else {
+            nbOrderNotPaid++;
+            orderTotalAmountNotPaid += allOrders[i].priceTotal.ati;
+        }
     }
 
     // --- Fréquentation ---
@@ -102,12 +134,22 @@ async function getGlobalStat(periode) {
         }
     }
 
+    const newClients     = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
+    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
+
     datas = {
         nbOrder     : allOrders.length,
         averageCart : allOrders.length === 0 ? 0 : orderTotalAmount / allOrders.length,
         ca          : orderTotalAmount,
         transfo     : allOrders.length > 0 && attendance > 0 ? ((allOrders.length / attendance) * 100) : 0,
-        attendance
+        nbArticle   : articlesNumber.datasObject.length,
+        newClient   : newClients.datasObject.length,
+        attendance,
+        nbOrderPaid,
+        nbOrderNotPaid,
+        orderTotalAmountPaid,
+        orderTotalAmountNotPaid
+
     };
 
     return datas;
