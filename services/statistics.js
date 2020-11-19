@@ -1,5 +1,5 @@
 const moment                    = require('moment-business-days');
-const request                   = require('request');
+const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
 const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
@@ -22,26 +22,14 @@ exports.setProductViews = function (product_id) {
 exports.sendMetrics = async function (licence) {
     try {
         // const clients = Users.find({isAdmin: false}).count();
-        const stats   = await exports.getGlobaleStats();
-        stats.date    = new Date();
-        stats.licence = licence;
-        const options = {
-            method  : 'POST',
-            url     : 'http://localhost:3010/api/v2/metrics',
-            headers : {'content-type': 'application/json'},
-            body    : stats,
-            json    : true
-        };
-
-        return new Promise(function (resolve, reject) {
-            request(options, async function (error, res) {
-                if (!error && res.statusCode === 200) {
-                    resolve('Datas sent');
-                } else {
-                    reject(error);
-                }
-            });
+        const stats = await exports.getGlobaleStats();
+        const date  = new Date();
+        await axios.post('http://localhost:3010/api/v2/metrics', {
+            stats : stats.yesterday,
+            licence,
+            date
         });
+        return 'Datas sent';
     } catch (error) {
         console.error(error);
     }
