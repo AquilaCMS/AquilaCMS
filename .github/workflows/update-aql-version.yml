@@ -56,7 +56,7 @@ jobs:
         echo "$newInfoFile" > package.json
         git add --force package.json
 
-        echo "::set-env name=newAquilaVersion::$newAquilaVersion"
+        echo "newAquilaVersion=$newAquilaVersion" >> $GITHUB_ENV
     - name: Commit file
       run: |
         git config --local user.email "action@github.com"
