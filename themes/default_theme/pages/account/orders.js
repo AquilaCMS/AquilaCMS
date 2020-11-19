@@ -51,7 +51,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                             <div key={order._id} className={this.state.isActive[index] ? 'accordion__section order expand' : 'accordion__section order'}>
                                                                                 <div className="accordion__head" onClick={() => this.switchActive(index)}>
                                                                                     <div className="order-head">
-                                                                                        <h6>{t('account:orders.page.label.order_num')} <strong>{order.number}</strong> - {moment(order.creationDate).format('L')}</h6>
+                                                                                        <h6>{t('account:orders.page.label.order_num')} <strong>{order.number}</strong> - {moment(order.createdAt).format('L')}</h6>
                                                                                         <span className="status">{statusColor(order.status, this.props.t)}</span>
                                                                                         <strong className="price">
                                                                                             {

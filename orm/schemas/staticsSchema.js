@@ -90,8 +90,7 @@ StaticsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 StaticsSchema.pre('save', async function (next) {
-    const errors    = await StaticsSchema.statics.translationValidation(undefined, this);
-    this.modifyDate = new Date();
+    const errors = await StaticsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 

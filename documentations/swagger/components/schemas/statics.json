@@ -6,7 +6,7 @@
             "type"         : {"type": "string", "required": true},
             "active"       : {"type": "boolean", "default": false},
             "createdAt" : {"type": "date"},
-            "modifyDate"   : {"type": "date", "default": "Date.now"},
+            "updatedAt"   : {"type": "date", "default": "Date.now"},
             "group"        : {"type": "string", "default": ""},
             "translation"  : {"type": "object"}
         }
