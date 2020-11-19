@@ -169,6 +169,13 @@ const middlewarePromoCatalog = async (req, res) => {
 
 /**
  * Fonction permettant d'appliquer des promotions catalogues
+ * @param {Product} products list of products
+ * @param {User|null} [user=null]
+ * @param {string|null} [lang=null]
+ * @param {boolean} [keepObject=false]
+ * @param {string[]} [populate=[]]
+ * @param {boolean} [associatedProducts=false]
+ * @param {boolean} [keepPromos=false]
  */
 const checkPromoCatalog = async (products, user = null, lang = null, keepObject = false, populate = [], associatedProducts = false, keepPromos = false) => {
     // TODO : improve speed because it's usefull
@@ -241,6 +248,8 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             // On stoppe s'il y a un soucis avec un produit
             return null;
         }
+
+        // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
         for (let j = 0; j < promos.length; j++) {
             const promo = promos[j];
             if (!promo.rules_id) {
@@ -265,73 +274,31 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         }
     }
 
-    // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
-    // for (let i = 0; i < promos.length; i++) {
-    //     const promo = promos[i];
-    //     if (!promo.rules_id) {
-    //         // ---------- //
-    //         // Si la promo n'a aucune rules_id alors elle s'applique a n'importe quel produit
-    //         // Nous ajoutons donc la réduction a la liste de réduction de chaque produit (relevantDiscount)
-    //         products.forEach((product) => {
-    //             returnedPromos.push(promo);
-    //             product.relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
-    //         });
-    //     } else {
-    //         let j              = 0;
-    //         let applyNextRules = true;
-    //         while (applyNextRules && j < products.length) {
-    //             const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[j]]});
-    //             const ifStatement = promoUtils.createIfStatement(tCondition);
-    //             try {
-    //                 // On test si l'eval peut renvoyer une erreur
-    //                 eval(ifStatement);
-    //             } catch (error) {
-    //                 throw NSErrors.PromoCodeIfStatementBadFormat;
-    //             }
-    //             // Si l'utilisateur ne peut pas utiliser ce code nous renvoyons une erreur
-    //             if (eval(ifStatement)) {
-    //                 returnedPromos.push(promo);
-    //                 products[j].relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
-    //             }
-    //             applyNextRules = promo.applyNextRules;
-    //             j++;
-    //         }
-    //     }
-    // }
     // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
     // (normal ou special si existe) et appliquons les reductions les plus fortes
     for (let i = 0; i < products.length; i++) {
-        const product = products[i];
+        let product        = products[i];
+        const savedProduct = {...products[i]};
 
         // FUTUR: Cumuler les promos ou non
         // on garde uniquement la "meilleure" promo
-        // if (product.relevantDiscount.length >= 2) {
-        //     product.relevantDiscount.sort(function (a, b) {
-        //         return b.discountValue - a.discountValue;
-        //     });
-        //     for (let j = 0; j < (product.relevantDiscount.length - 1); j++) {
-        //         product.relevantDiscount.pop();
-        //     }
-        // }
-        for (let j = 0, lenj = product.relevantDiscount.length; j < lenj; j++) {
-            if (product.relevantDiscount[j].discountType.startsWith('FV')) {
-                if (product.relevantDiscount[j].discountType === 'FVet') {
-                    product.price.et.special  = product.relevantDiscount[j].discountValue;
-                    product.price.ati.special = (product.relevantDiscount[j].discountValue * (product.price.tax / 100 + 1));
-                } else {
-                    product.price.et.special  = (product.relevantDiscount[j].discountValue / (product.price.tax / 100 + 1));
-                    product.price.ati.special = product.relevantDiscount[j].discountValue;
-                }
-            } else {
-                const newDiscountPrice    = calculDiscountItem(product.id, product.relevantDiscount[j]);
-                product.price.et.special  = newDiscountPrice.discountET;
-                product.price.ati.special = newDiscountPrice.discountATI;
+        if (product.relevantDiscount.length >= 2) {
+            product.relevantDiscount.sort(function (a, b) {
+                // return b.discountValue - a.discountValue;
+                return a.discountValue - b.discountValue;
+            });
+            for (let j = 0; j < (product.relevantDiscount.length - 1); j++) {
+                product.relevantDiscount.pop();
             }
-            product.price.priceSort = product.price.et.special;
-            product.id.price        = product.price;
+        }
+        for (let j = 0, lenj = product.relevantDiscount.length; j < lenj; j++) {
+            applyRelevantDiscount(savedProduct, product.relevantDiscount[j]);
+            if (savedProduct.price.et.special < product.price.priceSort) {
+                product = savedProduct;
+            }
         }
 
-        if (keepObject === false) {
+        if (!keepObject) {
             // on garde les attributes potentiellement populate
             switch (products[i].type) {
             case 'simple':
@@ -364,6 +331,29 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         return {products, promos: returnedPromos};
     }
     return products;
+};
+
+/**
+ * apply best relevant discount for product
+ * @param {Product} product
+ * @param {Promo} discount
+ */
+const applyRelevantDiscount = (product, discount) => {
+    if (discount.discountType.startsWith('FV')) {
+        if (discount.discountType === 'FVet') {
+            product.price.et.special  = discount.discountValue;
+            product.price.ati.special = (discount.discountValue * (product.price.tax / 100 + 1));
+        } else {
+            product.price.et.special  = (discount.discountValue / (product.price.tax / 100 + 1));
+            product.price.ati.special = discount.discountValue;
+        }
+    } else {
+        const newDiscountPrice    = calculDiscountItem(product.id, discount);
+        product.price.et.special  = newDiscountPrice.discountET;
+        product.price.ati.special = newDiscountPrice.discountATI;
+    }
+    product.price.priceSort = product.price.et.special;
+    product.id.price        = product.price;
 };
 
 const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
