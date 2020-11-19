@@ -8,7 +8,6 @@ const StaticsSchema = new Schema({
     code        : {type: String, required: true, unique: true},
     type        : {type: String, required: true},
     active      : {type: Boolean, default: false},
-    modifyDate  : {type: Date, default: Date.now},
     group       : {type: String, default: ''},
     // index        : {type: Boolean, default: true},
     translation : {}
