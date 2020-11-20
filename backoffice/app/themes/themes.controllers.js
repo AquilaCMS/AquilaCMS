@@ -25,14 +25,18 @@ ThemesController.controller("ThemesCtrl", [
             $scope.customiseTheme ={};
             $scope.customiseTheme.keys = {};
             $scope.themeConfig.variables = {};
-            $scope.themeFiles = response.filenames;
-            $scope.themeFiles.forEach(element =>{
+            $scope.listThemeFiles = [];
+            $scope.listAllThemeFiles = [];
+            $scope.listThemeFiles = response.filenames;
+            $scope.listThemeFiles.forEach(element =>{
                 if(element.indexOf("json") === -1){
-                    var index = $scope.themeFiles.indexOf(element);
-                    $scope.themeFiles.splice(index, 1);
+                    var index = $scope.listThemeFiles.indexOf(element);
+                    $scope.listThemeFiles.splice(index, 1);
                 } else if(element.indexOf("themeConfig.json") !== -1){
-                    var index = $scope.themeFiles.indexOf(element);
-                    $scope.themeFiles.splice(index, 1);
+                    var index = $scope.listThemeFiles.indexOf(element);
+                    $scope.listThemeFiles.splice(index, 1);
+                } else {
+                    $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
                 }
             });
             
@@ -177,11 +181,11 @@ ThemesController.controller("ThemesCtrl", [
             themeDataOverride: false,
             currentThemeVar : false,
         };
-
+       
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, fileNames : $scope.listAllThemeFiles});
                     if (data.data.noDatas) {
                         toastService.toast("success", "Ce thème ne contient pas de données.");
                     } else {
@@ -191,7 +195,12 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 }
-            } 
+            } else {
+                let data = await $http.post("/v2/themes/copyDatas", {  themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, fileNames : $scope.listThemeFiles});
+                console.log(data.data);
+                console.log($scope.config.currentTheme);
+                console.log($scope.theme.themeDataOverride);
+            }
         };
 
         $scope.validate = function (tab) {

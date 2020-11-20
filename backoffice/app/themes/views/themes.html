@@ -85,9 +85,19 @@
                     <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
                     <label class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
                 </div>
-                <div ng-repeat="file in themeFiles">
-                    <label>{{file}} : </label>
-                    <ns-switch name='{{file}}' ng-model='themeConfig.variables[lang][var].value' ></ns-switch>
+                <div>
+                    <table>
+                    <tr ng-repeat="file in listAllThemeFiles">
+                        <td>
+                            <label>{{file.name}} : </label>
+                        </td>
+                        <td>
+                            <ns-switch name='{{file.name}}' ng-model='file.value' ></ns-switch>
+                            <br>
+                        </td>
+                        <br>
+                    </tr>
+                    </table>
                     <br>
                     <br>
                     <br>

@@ -120,7 +120,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override);
+        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.fileNames);
         return res.json(ret);
     } catch (error) {
         return next(error);

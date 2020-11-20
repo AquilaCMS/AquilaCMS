@@ -171,14 +171,36 @@ const deleteTheme = async (themePath) => {
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null) => {
+const copyDatas = async (themePath, override = true, fileNames, configuration = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
+    const listOfFile    = [];
     if (!fs.existsSync(themeDemoData)) {
         return {data, noDatas: true};
     }
     await fs.access(themeDemoData, fs.constants.R_OK);
-    const listOfFile = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    const listOfPath = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    if (fileNames === undefined) {
+        listOfPath.foreach((element) => {
+            listOfFile.push(element);
+        });
+    } else {
+        let themeconf = false;
+        for (let j = 0; j < listOfPath.length; j++) {
+            for (let i = 0; i < fileNames.length; i++) {
+                if (listOfPath[j].indexOf('themeConfig.json') === -1 && themeconf === false) {
+                    if ( listOfPath[j].indexOf(fileNames[i].name) !== -1) {
+                        if (fileNames[i].value === true) {
+                            listOfFile.push(listOfPath[j]);
+                        }
+                    }
+                } else if (listOfPath[j].indexOf('themeConfig.json') !== -1 && themeconf === false) {
+                    listOfFile.push(listOfPath[j]);
+                    themeconf = true;
+                }
+            }
+        }
+    }
     for (const value of listOfFile) {
         if ((await fs.lstat(value)).isDirectory()) {
             continue;
