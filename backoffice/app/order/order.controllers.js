@@ -122,6 +122,35 @@ OrderControllers.controller("OrderDetailCtrl", [
             $scope.changeStatus();// Si changeStatusId
         }
 
+        $scope.displayProducts = function (item) {
+            var displayHtml = '';
+            for (var i = 0; i < item.selections.length; i++) {
+                var section = item.selections[i];
+                for (var j = 0; j < section.products.length; j++) {
+                    var productSection = section.products[j];
+                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
+                        (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'] &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
+                        // HT
+                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ?
+                            '(ET: +' :
+                            '(') +
+                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
+                            // prix TTC
+                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ?
+                            '+' :
+                            '') +
+                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)' : 
+                        ''
+                    }`}</li>`
+                }
+            }
+            return displayHtml;
+        }
+
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {

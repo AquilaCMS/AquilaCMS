@@ -205,6 +205,41 @@ BundleProductControllers.controller("BundleProductCtrl", [
             section.products.splice(section.products.indexOf(product), 1);
         };
 
+        $scope.recalculate = function (target, prd) {
+            const fields = target.split(".");
+            const vat = $scope.product.price.tax / 100 + 1;
+
+            if (fields.length > 1) {
+                let removeFields = false;
+
+                if (fields[1] === "et") {
+                    if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                        prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                    } else {
+                        removeFields = true;
+                    }
+                } else {
+                    if (prd.modifier_price.ati !== undefined && prd.modifier_price.ati != null) {
+                        prd.modifier_price.et = parseFloat((prd.modifier_price.ati / vat).toFixed(2));
+                    } else {
+                        removeFields = true;
+                    }
+                }
+
+                if (removeFields) {
+                    delete prd.modifier_price.et;
+                    delete prd.modifier_price.ati;
+                }
+            } else {
+                if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                }
+                if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                }
+            }
+        };
+
         $scope.saveProduct = function (product, isQuit)
         {
             if ($scope.nsUploadFiles.isSelected) {

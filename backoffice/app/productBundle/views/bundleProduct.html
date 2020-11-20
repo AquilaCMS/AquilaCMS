@@ -137,13 +137,25 @@
                                         {{__product.id.translation[lang].name}}
                                     </td>
                                     <td>
-                                        <input class="form-control" type="number" name="modifier_price_et_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.et">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input class="form-control" type="number" name="modifier_price_et_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.et" step="0.01" ng-change="recalculate('modifier_price.et', __product)">
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <input class="form-control" type="number" name="modifier_price_ati_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.ati">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input class="form-control" type="number" name="modifier_price_ati_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.ati" step="0.01" ng-change="recalculate('modifier_price.ati', __product)">
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <input class="form-control" type="number" name="modifier_weight_{{$index}}_{{__product._id}}" ng-model="__product.modifier_weight">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input class="form-control" type="number" name="modifier_weight_{{$index}}_{{__product._id}}" ng-model="__product.modifier_weight">
+                                            </div>
+                                        </div>
                                     </td>
                                     <!--<td>
                                         <input type="{{section.type === 'SINGLE' ? 'radio' : 'checkbox'}}" name="section_products_{{$parent.$index}}" ng-model="product.isDefault" />

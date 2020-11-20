@@ -97,6 +97,7 @@ class PageCart extends NSPageCart {
                                                                         imgAlt     = item.id.images[0].alt || imgAlt;
                                                                     }
                                                                 }
+                                                                console.log(item.selections)
                                                                 return (
                                                                     <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
                                                                         <div className="product__image">
