@@ -113,7 +113,7 @@ ProductBundleSchema.methods.getBundlePrdsModifiers = async function (selections)
                     modifiers.price.et  += itemPrdBundleSectionProduct.modifier_price.et;
                     modifiers.price.ati += itemPrdBundleSectionProduct.modifier_price.ati;
                 }
-                if (itemPrdBundleSectionProduct.modifier_weight) {
+                if (itemPrdBundleSectionProduct && itemPrdBundleSectionProduct.modifier_weight) {
                     modifiers.weight += itemPrdBundleSectionProduct.modifier_weight;
                 }
             }
