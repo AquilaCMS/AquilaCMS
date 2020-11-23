@@ -14,6 +14,37 @@ ClientControllers.controller("ClientCtrl", [
 
         init();
 
+        $scope.sortSearch = function(valeur){
+            let value;
+            $scope.sort.type = valeur;
+            if($scope.sort.reverse == true){
+                value = -1;
+                $scope.sort.reverse = false;
+            }else{
+                value = 1;
+                $scope.sort.reverse = true;
+            }
+            valeurPage = $scope.page;
+            ClientV2.list({type: "users"}, {PostBody : {
+                filter : {
+                    $or : [
+                        {firstname: {$regex: $scope.query.search, $options: 'i'}},
+                        {lastname: {$regex: $scope.query.search, $options: 'i'}},
+                        {email: {$regex: $scope.query.search, $options: 'i'}},
+                        {'company.name': {$regex: $scope.query.search, $options: 'i'}}
+                    ],
+                    isAdmin : false
+                },
+                structure : {'details': 1, creationDate: 1, company : 1},
+                valeurPage,
+                limit     : $scope.nbItemsPerPage,
+                sort      : {valeur: value}
+            }}, function (response) {
+                $scope.clients = response.datas;
+                $scope.totalClients = response.count;
+            });
+        }
+
         $scope.nbItemsPerPage = 10;
         $scope.maxSize = 5;
 

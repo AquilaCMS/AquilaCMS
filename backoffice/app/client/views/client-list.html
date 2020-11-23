@@ -26,28 +26,28 @@
                             </a>
                         </th>
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Name: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'lastname'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('lastname')" translate>
                                 client.list.nom
                                 <span ng-show="sort.type == 'lastname' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'lastname' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Firstname: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'firstname'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('firstname')" translate>
                                 client.list.prenom
                                 <span ng-show="sort.type == 'firstname' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'firstname' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Société: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'company.name'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('company.name')" translate>
                                 client.list.company
                                 <span ng-show="sort.type == 'company.name' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'company.name' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Creation date: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'creationDate'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('creationDate')" translate>
                                 client.list.creationDate
                                 <span ng-show="sort.type == 'creationDate' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'creationDate' && sort.reverse" class="ico-chevron-up"></span>
