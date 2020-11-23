@@ -9,13 +9,43 @@ ClientControllers.controller("ClientCtrl", [
         $scope.columns = ClientColumns;
 
         function init() {
-            $scope.sort = {
-                type    : "creationDate",
-                reverse : true
-            };
+            $scope.sort = {};
         }
 
         init();
+        $scope.valeurTri = -1;
+        $scope.tri = {creationDate : -1}
+        $scope.sortSearch = function(valeur){
+            $scope.valeurTri;
+            if($scope.valeurTri == 1){
+                $scope.valeurTri = -1;
+                //$scope.sort.reverse = false;
+            }else{
+                $scope.valeurTri = 1;
+                //$scope.sort.reverse = true;
+            }
+            $scope.tri = {}
+            $scope.tri[valeur] = $scope.valeurTri
+            valeurPage = $scope.page;
+            ClientV2.list({type: "users"}, {PostBody : {
+                filter : {
+                    $or : [
+                        {firstname: {$regex: $scope.query.search, $options: 'i'}},
+                        {lastname: {$regex: $scope.query.search, $options: 'i'}},
+                        {email: {$regex: $scope.query.search, $options: 'i'}},
+                        {'company.name': {$regex: $scope.query.search, $options: 'i'}}
+                    ],
+                    isAdmin : false
+                },
+                structure : {'details': 1, creationDate: 1, company : 1},
+                valeurPage,
+                limit     : $scope.nbItemsPerPage,
+                sort      : $scope.tri
+            }}, function (response) {
+                $scope.clients = response.datas;
+                $scope.totalClients = response.count;
+            });
+        }
 
         $scope.nbItemsPerPage = 10;
         $scope.maxSize = 5;
@@ -56,7 +86,8 @@ ClientControllers.controller("ClientCtrl", [
                 },
                 structure : {'details': 1, creationDate: 1},
                 page,
-                limit     : $scope.nbItemsPerPage
+                limit     : $scope.nbItemsPerPage,
+                sort      : $scope.tri
             }}, function (response) {
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
