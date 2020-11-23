@@ -1,4 +1,5 @@
 const moment                    = require('moment-business-days');
+const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
 const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
@@ -10,6 +11,24 @@ exports.setProductViews = function (product_id) {
     try {
         Products.findOneAndUpdate({_id: product_id}, {$inc: {'stats.views': 1}})
             .exec();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+/**
+ * Construit et envoie les statistiques des précédents jour sur un autre site
+ */
+exports.sendMetrics = async function (licence, date) {
+    try {
+        // const clients = Users.find({isAdmin: false}).count();
+        const stats = await exports.getGlobaleStats(date);
+        await axios.post('http://localhost:3010/api/v2/metrics', {
+            stats : stats.yesterday,
+            licence,
+            from  : date.toString()
+        });
+        return 'Datas sent';
     } catch (error) {
         console.error(error);
     }
@@ -31,12 +50,19 @@ exports.generateStatistics = function (data) {
 /**
  * Get Globale Stats (accueil admin)
  */
-exports.getGlobaleStats = async function () {
-    const result = {
-        yesterday : await getGlobalStat('YESTERDAY'),
-        today     : await getGlobalStat('TODAY'),
-        month     : await getGlobalStat('MONTH')
-    };
+exports.getGlobaleStats = async function (date) {
+    let result;
+    if (date) {
+        result = {
+            yesterday : await getGlobalStat('YESTERDAY', date)
+        };
+    } else {
+        result = {
+            yesterday : await getGlobalStat('YESTERDAY'),
+            today     : await getGlobalStat('TODAY'),
+            month     : await getGlobalStat('MONTH')
+        };
+    }
 
     return result;
 };
@@ -44,16 +70,22 @@ exports.getGlobaleStats = async function () {
 /**
  * Get Globale Stat (accueil admin)
  */
-async function getGlobalStat(periode) {
-    let datas        = {};
-    let periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
-    let periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
-
-    if (periode === 'MONTH') {
-        periodeStart = periodeStart.add(-30, 'days');
-    } else if (periode === 'YESTERDAY') {
-        periodeStart = periodeStart.add(-1, 'days');
+async function getGlobalStat(periode, date) {
+    let datas = {};
+    let periodeStart;
+    let periodeEnd;
+    if (date) {
+        periodeStart = moment(date);
         periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+    } else {
+        periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
+        if (periode === 'MONTH') {
+            periodeStart = periodeStart.add(-30, 'days');
+        } else if (periode === 'YESTERDAY') {
+            periodeStart = periodeStart.add(-1, 'days');
+            periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        }
     }
 
     const sPeriodeStart = periodeStart.toISOString();
@@ -83,31 +115,62 @@ async function getGlobalStat(periode) {
         }
     });
 
-    let orderTotalAmount = 0;
+    let orderTotalAmount        = 0; // prix des toutes les commandes
+    let nbOrderPaid             = 0; // nb de commandes payées
+    let nbOrderNotPaid          = 0; // nb de commandes non payées
+    let orderTotalAmountPaid    = 0; // prix total des commandes payées
+    let orderTotalAmountNotPaid = 0; // prix total des commandes non payées
+
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
+        if (!['PAYMENT_RECEIPT_PENDING', 'PAYMENT_CONFIRMATION_PENDING', 'RETURNED'].includes(allOrders[i].status)) {
+            nbOrderPaid++;
+            orderTotalAmountPaid += allOrders[i].priceTotal.ati;
+        } else {
+            nbOrderNotPaid++;
+            orderTotalAmountNotPaid += allOrders[i].priceTotal.ati;
+        }
     }
 
     // --- Fréquentation ---
     let attendance = 0;
-    if (periode === 'MONTH' || periode === 'YESTERDAY') {
+    let newClients;
+    if (date) {
         const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
-        for ( let i = 0, _len = attendanceTab.length; i < _len; i++ ) {
+        for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
             attendance += attendanceTab[i].value;
         }
-    } else { // if (periode === "TODAY") {
-        const statsToday = await serviceStats.getStatstoday();
-        if (statsToday != null && statsToday.visit) {
-            attendance = statsToday.visit.length;
+        newClients = await exports.getNewCustomer('months', periodeStart, periodeEnd);
+    } else {
+        if (periode === 'MONTH' || periode === 'YESTERDAY') {
+            const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
+            for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
+                attendance += attendanceTab[i].value;
+            }
+        } else { // if (periode === "TODAY") {
+            const statsToday = await serviceStats.getStatstoday();
+            if (statsToday != null && statsToday.visit) {
+                attendance = statsToday.visit.length;
+            }
         }
+        newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
+
+    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
 
     datas = {
         nbOrder     : allOrders.length,
         averageCart : allOrders.length === 0 ? 0 : orderTotalAmount / allOrders.length,
         ca          : orderTotalAmount,
         transfo     : allOrders.length > 0 && attendance > 0 ? ((allOrders.length / attendance) * 100) : 0,
-        attendance
+        nbArticle   : articlesNumber.datasObject.length,
+        newClient   : newClients.datasObject.length,
+        attendance,
+        nbOrderPaid,
+        nbOrderNotPaid,
+        orderTotalAmountPaid,
+        orderTotalAmountNotPaid
+
     };
 
     return datas;
@@ -187,10 +250,13 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentId   = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
-            const realProduct = await require('./products').getProductById(currentItem.id._id);
-            let link          = '';
-            if (realProduct) {
-                link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+            let link = '';
+            if (currentItem.id && currentItem.id._id) {
+                const realProduct = await require('./products').getProductById(currentItem.id._id);
+
+                if (realProduct && realProduct.images[0]) {
+                    link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+                }
             }
 
             if (!tabIDProduct.includes(currentId)) {

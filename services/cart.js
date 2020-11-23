@@ -380,11 +380,12 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             addresses      : cartObj.addresses,
             delivery       : cartObj.delivery,
             lang,
-            status         : 'PAYMENT_PENDING',
+            // if priceTotal === 0, then the order is set to status 'PAID'
+            status         : (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'),
             priceTotal,
             priceSubTotal,
             comment        : cartObj.comment,
-            historyStatus  : [{status: 'PAYMENT_PENDING', date: moment(new Date())}],
+            historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
             customer       : {
                 id           : _user._id,
                 email        : _user.email,

@@ -83,28 +83,11 @@ const validateUserIsAllowed = async (token, baseUrl, PostBody, field) => {
 /**
  * Validate user is allowed without PostBody
  */
-const validateUserIsAllowedWithoutPostBody = async (token, baseUrl, query, field) => {
-    try {
-        if (!token) {
-            throw NSErrors.AccessUnauthorized;
-        }
-        const decoded         = getDecodedToken(token);
-        const {Configuration} = require('../orm/models');
-        const _config         = await Configuration.findOne({});
-        if (_config.environment.adminPrefix === undefined) {
-            _config.environment.adminPrefix = 'admin';
-        }
-        if (baseUrl.indexOf(`/${_config.environment.adminPrefix}`) === 0) {
-            return query;
-        }
-        if (!query) {
-            query = {};
-        }
-        query[field] = decoded.userId;
-        return query;
-    } catch (error) {
-        throw NSErrors.AccessUnauthorized;
-    }
+const validateUserIsAllowedWithoutPostBody = async (user, query, field) => {
+    if (user.isAdmin) return query;
+    if (!query) query = {};
+    query[field] = user._id;
+    return query;
 };
 
 /**

@@ -30,9 +30,13 @@ const ConfigurationSchema = new Schema({
         overrideSendTo    : {type: String},
         photoPath         : {type: String},
         port              : {type: Number, required: true},
-        siteName          : {type: String, required: true},
-        websiteCountry    : {type: String, required: true},
-        websiteTimezone   : {type: String}
+        sendMetrics       : {
+            active   : {type: Boolean, default: true},
+            lastSent : {type: Date}
+        },
+        siteName        : {type: String, required: true},
+        websiteCountry  : {type: String, required: true},
+        websiteTimezone : {type: String}
     },
     taxerate : {
         type : [

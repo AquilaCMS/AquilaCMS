@@ -137,6 +137,7 @@ const startServer = async () => {
 (async () => {
     try {
         await init();
+        await serverUtils.updateEnv();
         await initDatabase();
         await initServer();
         await startServer();
