@@ -197,7 +197,6 @@ const OrdersSchema = new Schema({
             type          : {type: String, enum: ['DEBIT', 'CREDIT']},
             creationDate  : {type: Date, default: Date.now},
             operationDate : {type: Date},
-            description   : {type: String},
             status        : {type: String, enum: ['TODO', 'DONE', 'CANCELED', 'FAILED']},
             mode          : {type: String, required: true},
             transactionId : String,

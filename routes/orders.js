@@ -249,7 +249,7 @@ async function payOrder(req, res, next) {
         {
             $set : {
                 status  : 'PAYMENT_RECEIPT_PENDING',
-                payment : [createPayment(order, method, lang)]
+                payment : [createPayment(order, method)]
             }
         });
 
@@ -257,7 +257,7 @@ async function payOrder(req, res, next) {
             await Cart.deleteOne({_id: order.cartId});
         }
 
-        order.payment = [createPayment(order, method, lang)];
+        order.payment = [createPayment(order, method)];
 
         await order.save();
 
@@ -285,11 +285,10 @@ async function payOrder(req, res, next) {
  * @param {*} method
  * @deprecated
  */
-function createPayment(order, method, lang) {
+function createPayment(order, method) {
     return {
         type          : 'CREDIT',
         operationDate : Date.now(),
-        description   : method.translation[lang].description,
         status        : 'TODO',
         mode          : method.code.toUpperCase(),
         amount        : order.priceTotal.ati

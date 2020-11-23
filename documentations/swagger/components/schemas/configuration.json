@@ -42,6 +42,7 @@
                     "overrideSendTo"    : {"type": "string"},
                     "photoPath"         : {"type": "string"},
                     "port"              : {"type": "number"},
+                    "sendMetrics"       : {"type": "boolean", "default": true},
                     "siteName"          : {"type": "string"},
                     "websiteCountry"    : {"type": "string"},
                     "websiteTimezone"   : {"type": "string"}

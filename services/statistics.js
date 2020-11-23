@@ -229,10 +229,13 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentId   = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
-            const realProduct = await require('./products').getProductById(currentItem.id._id);
-            let link          = '';
-            if (realProduct) {
-                link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+            let link = '';
+            if (currentItem.id && currentItem.id._id) {
+                const realProduct = await require('./products').getProductById(currentItem.id._id);
+
+                if (realProduct && realProduct.images[0]) {
+                    link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+                }
             }
 
             if (!tabIDProduct.includes(currentId)) {
