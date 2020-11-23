@@ -31,7 +31,6 @@ module.exports = () => {
         transports,
         exitOnError : false // do not exit on handled exceptions
     });
-
     // // create a stream object with a 'write' function that will be used by `morgan`
     logger.stream = {
         write(message) {
@@ -50,6 +49,9 @@ module.exports = () => {
             return logger.error.apply(logger, arguments);
         };
         console.info  = function () {
+            return logger.info.apply(logger, arguments);
+        };
+        console.warn  = function () {
             return logger.warn.apply(logger, arguments);
         };
     }
