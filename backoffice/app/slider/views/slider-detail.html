@@ -35,28 +35,69 @@
 
             <div ng-show="isEditMode">
                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="slider" id="slider._id" entity="null" images="slider.items" after-function="close()"></ns-upload-files>
-                <div class="upload-area" style="height:300px">
-                    <span class="overlay-inner" style="text-align: center;color: slategray;">
-                        <i class="fa fa-arrows fa-2x" aria-hidden="true"></i>
-                    </span>
-                    <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in slider.items | orderBy:'order'" ondragstart="draggingStart()" draggable="true" ondragend="draggingEnd()" ng-style="dragStyle" ns-drag="item" ns-drop="item">
-                        <div title="{{item.text}}" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px" ng-click="openItemModal(item)"></div>
+                <div>
+                    <div class="col-sm-2" style="margin-bottom: 30px;padding:15px;cursor:move;" ng-repeat="item in slider.items | orderBy:'order'" >
+                        <div class="dropCase" ondragenter="switchElement(this, 'in')" ondragleave="switchElement(this, 'out')" ondragstart="draggingStart(this)" draggable="true" ondragend="draggingEnd(this)" ns-drag="item" ns-drop="item">
+                            <div title="{{item.text}}" class="pointer boxShadow" style="cursor:move;padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px"  ng-click="openItemModal(item)">{{item.text}}</div>
+                        </div>
                     </div>
+                </div>
                     <script>
-                        function draggingStart(){
-                            allSragDiv = document.getElementsByClassName('boxShadow');
-                            for(let element of allSragDiv){
-                                element.style.border = "1px dashed gray"
-                            }
+                        var elementInDrag;
+                        var pointToElement;
+                        var saveURL;
+                        var savePointElement;
+                        var drop;
+                        var inOther;
+                        function draggingStart(element){
+                            drop = false;
+                            elementInDrag = element.childNodes[1].style.backgroundImage;
+                            pointToElement = element.childNodes[1];
+                            element.parentNode.className += ' fakeDrop';
+                            element.childNodes[1].style.opacity = '0.5';
                         }
-                        function draggingEnd(){
-                            allSragDiv = document.getElementsByClassName('boxShadow');
-                            for(let element of allSragDiv){
-                                element.style.border = "0px dashed gray"
+                        function switchElement(element, where){
+                            inOther = false;
+                            if(element.childNodes[1] != pointToElement){
+                                if(where == 'in'){
+                                    inOther = true;
+                                    saveURL = element.childNodes[1].style.backgroundImage;
+                                    savePointElement = element.childNodes[1];
+                                    pointToElement.style.backgroundImage = element.childNodes[1].style.backgroundImage;
+                                    element.childNodes[1].style.backgroundImage = elementInDrag;
+                                }else if(where == 'out'){
+                                    inOther = false;
+                                    element.childNodes[1].style.backgroundImage = saveURL;
+                                    pointToElement.style.backgroundImage = elementInDrag;
+                                }
+                            }
+                            
+                        }
+                        function draggingEnd(element){
+                            drop = true;
+                            element.parentNode.className = element.parentNode.className.replace('fakeDrop', '');
+                            element.childNodes[1].style.opacity = '1';
+                            if(inOther){
+                                //On switch car on est dans une autre
+                                savePointElement.style.backgroundImage = saveURL;
+                                pointToElement.style.backgroundImage = elementInDrag;
+                            }else{
+                                //On remet à zéro
+                                savePointElement.style.backgroundImage = saveURL;
+                                pointToElement.style.backgroundImage = elementInDrag;
                             }
                         }
                     </script>
-                </div>
+                    <style>
+                        .fakeDrop{
+                            border: 1px dashed rgb(200,200,100);
+                            background: rgb(240,240,200);
+                            /*background-image: none !important;*/
+                        }
+                        .opactityBad{
+                            opacity: 0.5;
+                        }
+                    </style>
             </div>
         </ns-buttons>
     </form>
