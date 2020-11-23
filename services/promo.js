@@ -274,6 +274,12 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             }
         }
 
+        // we need to take only the discount who have the highest priority
+        if (products[i].relevantDiscount && products[i].relevantDiscount.length) {
+            const foundPriority          = products[i].relevantDiscount.map((p) => p.priority).sort((a, b) => b - a)[0];
+            products[i].relevantDiscount = products[i].relevantDiscount.filter((d) => d.priority === foundPriority);
+        }
+
         // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
         // (normal ou special si existe) et appliquons les reductions les plus fortes
         const product      = products[i];
