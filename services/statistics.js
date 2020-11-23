@@ -156,7 +156,7 @@ async function getGlobalStat(periode, date) {
         newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
 
-    const articlesNumber = await exports.getCapp(periodeStart, periodeEnd);
+    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
 
     datas = {
         nbOrder     : allOrders.length,
