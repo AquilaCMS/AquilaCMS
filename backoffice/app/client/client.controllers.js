@@ -13,17 +13,19 @@ ClientControllers.controller("ClientCtrl", [
         }
 
         init();
-
+        $scope.valeurTri = -1;
+        $scope.tri = {creationDate : -1}
         $scope.sortSearch = function(valeur){
-            let value;
-            $scope.sort.type = valeur;
-            if($scope.sort.reverse == true){
-                value = -1;
-                $scope.sort.reverse = false;
+            $scope.valeurTri;
+            if($scope.valeurTri == 1){
+                $scope.valeurTri = -1;
+                //$scope.sort.reverse = false;
             }else{
-                value = 1;
-                $scope.sort.reverse = true;
+                $scope.valeurTri = 1;
+                //$scope.sort.reverse = true;
             }
+            $scope.tri = {}
+            $scope.tri[valeur] = $scope.valeurTri
             valeurPage = $scope.page;
             ClientV2.list({type: "users"}, {PostBody : {
                 filter : {
@@ -38,7 +40,7 @@ ClientControllers.controller("ClientCtrl", [
                 structure : {'details': 1, creationDate: 1, company : 1},
                 valeurPage,
                 limit     : $scope.nbItemsPerPage,
-                sort      : {valeur: value}
+                sort      : $scope.tri
             }}, function (response) {
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
@@ -85,7 +87,7 @@ ClientControllers.controller("ClientCtrl", [
                 structure : {'details': 1, creationDate: 1},
                 page,
                 limit     : $scope.nbItemsPerPage,
-                sort      : {creationDate : -1}
+                sort      : $scope.tri
             }}, function (response) {
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
