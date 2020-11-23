@@ -1,6 +1,7 @@
 const nodemailer       = require('nodemailer');
 const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
+const url              = require('url');
 const path             = require('path');
 const ServiceLanguages = require('./languages');
 const encryption       = require('../utils/encryption');
@@ -172,10 +173,7 @@ const sendMailTest = async (mail, values = [], lang = 'fr') => {
         data[`{{${element.name}}}`] = element.value;
     }
 
-    if (['orderSuccessDeferred', 'orderSuccessCompany', 'orderSuccess'].includes(mail.code)) {
-        content.replace('<!--startitems-->', '').replace('<!--enditems-->', '');
-    }
-    const htmlBody = await generateHTML(content, data);
+    const htmlBody = generateHTML(content, data);
     return sendMail({subject, htmlBody, mailTo: mail.to, mailFrom: mail.from, attachments});
 };
 
@@ -337,75 +335,72 @@ const sendPDFAttachmentToClient = async (subject = '', htmlBody = '', mailTo, ma
  * @param {string} lang langue du mail
  */
 const sendMailOrderToCompany = async (order_id, lang = '') => {
-    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
-    if (!order) {
-        throw NSErrors.OrderNotFound;
-    }
-    lang                                            = determineLanguage(lang, order.customer.id.preferredLanguage);
-    const taxDisplay                                = order.priceTotal.paidTax ? 'ati' : 'et';
-    const mailDatas                                 = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
-    const {subject, from, fromName, pathAttachment} = mailDatas;
-    let {content}                                   = mailDatas;
+    const _order     = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    lang             = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    const taxDisplay = _order.priceTotal.paidTax ? 'ati' : 'et';
+    const {
+        content,
+        subject,
+        from,
+        fromName,
+        pathAttachment
+    }                = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
+    const tmpTrad    = require('../utils/translate');
 
     // Les informations de mailling sont enregistrées en BDD
-    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
+    if (!_order) {
+        throw NSErrors.OrderNotFound;
+    }
+    if (_order.payment.length && _order.payment[0].mode === 'CB' && _order.status !== 'PAID' && _order.status !== 'FINISHED') {
         throw NSErrors.OrderNotPaid;
     }
-    const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = order.addresses.delivery;
+    const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = _order.addresses.delivery;
     // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
-    let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
-    if (itemTemplate && itemTemplate[0]) {
-        const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
-        for (const item of order.items) {
-            const {translation} = item.id;
-
-            const prdData = {
-                '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
-                '{{product.specialUnitPrice}}' : '',
-                '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.basePrice}}'        : '',
-                '{{product.descPromo}}'        : '',
-                '{{product.descPromoT}}'       : '',
-                '{{product.sumSpecialPrice}}'  : ''
-            };
-
-            /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
-                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).toFixed(2);
-            } */
-
-            if (item.parent && translation[lang]) {
-                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+    let templateItems = '';
+    _order.items.forEach((item) => {
+        const {translation} = item.id;
+        let basePrice       = null;
+        let descPromo       = '';
+        let descPromoT      = '';
+        if (_order.quantityBreaks && _order.quantityBreaks.productsId.length) {
+            // On check si le produit courant a recu une promo
+            const prdPromoFound = _order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
+            if (prdPromoFound) {
+                basePrice  = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
+                descPromo  = `<del><span>${(basePrice).toFixed(2)} €</span></del><br />`;
+                descPromoT = `<del><span>${(basePrice * item.quantity).toFixed(2)} €</span></del><br />`;
             }
-            let basePrice  = null;
-            let descPromo  = '';
-            let descPromoT = '';
-            if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
-                // On check si le produit courant a recu une promo
-                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
-                if (prdPromoFound) {
-                    basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
-                    prdData['{{product.basePrice}}']  = basePrice;
-                    prdData['{{product.descPromo}}']  = descPromo;
-                    prdData['{{product.descPromoT}}'] = descPromoT;
-                }
-            }
-            templateItems += await generateHTML(htmlItem, prdData);
         }
-        content = content.replace(htmlItem, templateItems);
+        templateItems += `<tr>
+        <td>${item.quantity} x</td>
+        <td>${translation[lang] ? translation[lang].name : translation.en.name} ${item.parent && translation[lang] ? _order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name : ''}</td>
+        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay]).toFixed(2)}€</span></del>` : descPromo} ${getUnitPrice(item, _order).toFixed(2)} €</td>
+        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay] * item.quantity).toFixed(2)}€</span></del>` : descPromoT} ${(getUnitPrice(item, _order) * item.quantity).toFixed(2)} €</td>
+    </tr>`;
+    });
+    templateItems += _order.quantityBreaks && _order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]
+        ? `<tr>
+            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.cart_discount[lang]}</b> - ${_order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]} €</td>
+        </tr>`
+        : '';
+
+    templateItems += _order.promos && _order.promos.length && (_order.promos[0].productsId.length === 0)
+        ? `<tr>
+            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.discount[lang]}</b> - ${_order.promos[0][`discount${taxDisplay.toUpperCase()}`]} € / Code: ${_order.promos[0].code}</td>
+        </tr>`
+        : '';
+
+    if (_order.delivery && _order.delivery.price && _order.delivery.price[taxDisplay]) {
+        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.message[lang]}</b> + ${_order.delivery.price[taxDisplay].toFixed(2)} €</td></tr>`;
     }
+    if (_order.additionnalFees && _order.additionnalFees[taxDisplay] && _order.additionnalFees[taxDisplay] !== 0) {
+        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.additionnalFees[lang]}</b> + ${_order.additionnalFees[taxDisplay].toFixed(2)} €</td></tr>`;
+    }
+    templateItems  += `<tr><td colspan="4" style="text-align:right"><b>TOTAL:</b> ${_order.priceTotal[taxDisplay].toFixed(2)} €</td></tr>`;
     let dateReceipt = '';
     let hourReceipt = '';
-    if (order.orderReceipt && order.orderReceipt.date) {
-        const d       = order.orderReceipt.date;
+    if (_order.orderReceipt && _order.orderReceipt.date) {
+        const d       = _order.orderReceipt.date;
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
@@ -413,42 +408,24 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
-    const datas = {
-        '{{taxdisplay}}'                  : global.translate.common[taxDisplay][lang],
-        '{{order.customer.company.name}}' : order.customer.company.name,
-        '{{order.customer.fullname}}'     : order.customer.id.fullname,
-        '{{order.customer.name}}'         : order.customer.id.fullname,
-        '{{order.customer.firstname}}'    : order.customer.id.firstname,
-        '{{order.customer.lastname}}'     : order.customer.id.lastname,
-        '{{order.customer.mobilePhone}}'  : phone_mobile || order._doc.customer.id.addresses[0].phone_mobile,
-        '{{order.number}}'                : order.number,
-        '{{order.quantityBreaks}}'        : '',
-        '{{order.dateReceipt}}'           : dateReceipt,
-        '{{order.hourReceipt}}'           : hourReceipt,
-        '{{order.priceTotalAti}}'         : order.priceTotal[taxDisplay].toFixed(2),
-        '{{order.priceTotalEt}}'          : order.priceTotal[taxDisplay].toFixed(2),
-        '{{order.delivery}}'              : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
-        '{{order.paymentMode}}'           : order._doc.payment[0].mode,
-        '{{order.paymentDescription}}'    : order._doc.payment[0].description,
-        '{{order.shipment}}'              : order._doc.delivery.name,
-        '{{address.line1}}'               : line1 || '',
-        '{{address.line2}}'               : line2 || '',
-        '{{address.companyName}}'         : companyName || '',
-        '{{address.complementaryInfo}}'   : complementaryInfo || '',
-        '{{address.zipcode}}'             : zipcode || '',
-        '{{address.city}}'                : city || '',
-        '{{address.country}}'             : country || ''
-    };
-
-    if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
-        datas['{{order.quantityBreaks}}'] = order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
-    }
-
-    if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        datas['{{order.promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`];
-        datas['{{order.promo.code}}']     = order.promos[0].code;
-    }
-    const htmlBody = await generateHTML(content, datas);
+    const htmlBody = generateHTML(content, {
+        '{{company}}'               : _order.customer.company.name,
+        '{{taxdisplay}}'            : tmpTrad.common[taxDisplay][lang],
+        '{{fullname}}'              : _order.customer.id.fullname,
+        '{{name}}'                  : _order.customer.id.fullname,
+        '{{firstname}}'             : _order.customer.id.firstname,
+        '{{lastname}}'              : _order.customer.id.lastname,
+        '{{number}}'                : _order.number,
+        '{{dateReceipt}}'           : dateReceipt,
+        '{{hourReceipt}}'           : hourReceipt,
+        '{{orderdata}}'             : templateItems,
+        '{{address}}'               : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
+        '{{totalamount}}'           : `${_order.priceTotal[taxDisplay].toFixed(2)} € ${tmpTrad.common[taxDisplay][lang]}`,
+        '{{customer_mobile_phone}}' : phone_mobile || _order._doc.customer.id.addresses[0].phone_mobile,
+        '{{payment_type}}'          : _order._doc.payment[0].mode,
+        '{{delivery_type}}'         : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang],
+        '{{shipment}}'              : _order._doc.delivery.name
+    });
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 };
 
@@ -458,29 +435,65 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
  * @param {string} lang langue du mail
  */
 const sendMailOrderToClient = async (order_id, lang = '') => {
-    // TODO remove this check
-    // On verifie si le module billetterie-aquila n'existe en base de données ou qu'il n'est actif
-    const moduleTicketing = await Modules.findOne({name: 'billetterie-aquila'});
-    if (moduleTicketing && moduleTicketing.active) {
-        return;
-    }
-    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
-    if (!order) {
+    const tmpTrad = require('../utils/translate');
+    const _order  = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    if (!_order) {
         throw NSErrors.OrderNotFound;
     }
     // Si une commande est payé en CB le status de la commande doit être a paid ou finished pour continuer
-    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
+    if (_order.payment.length && _order.payment[0].mode === 'CB' && _order.status !== 'PAID' && _order.status !== 'FINISHED') {
         throw NSErrors.OrderNotPaid;
     }
 
-    lang                                                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
-    const taxDisplay                                                             = order.priceTotal.paidTax ? 'ati' : 'et';
-    const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = order.addresses.delivery;
+    lang                                                                         = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    const taxDisplay                                                             = _order.priceTotal.paidTax ? 'ati' : 'et';
+    const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = _order.addresses.delivery;
+    // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
+    let templateItems = '';
+    _order.items.forEach((item) => {
+        const {translation} = item.id;
+        let basePrice       = null;
+        let descPromo       = '';
+        let descPromoT      = '';
+        if (_order.quantityBreaks && _order.quantityBreaks.productsId.length) {
+            // On check si le produit courant a recu une promo
+            const prdPromoFound = _order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
+            if (prdPromoFound) {
+                basePrice  = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
+                descPromo  = `<del><span>${(basePrice).toFixed(2)} €</span></del><br />`;
+                descPromoT = `<del><span>${(basePrice * item.quantity).toFixed(2)} €</span></del><br />`;
+            }
+        }
+        templateItems += `<tr>
+        <td>${translation[lang] ? translation[lang].name : translation.en.name} ${item.parent && translation[lang] ? _order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name : ''} ${item.type === 'virtual' ? `<br/><a href="${url.resolve(global.envConfig.environment.appUrl, '/account/orders')}">${tmpTrad.mail.sendMailOrderToClient.download[lang]}</a>` : ''}</td>
+        <td>${item.quantity} x</td>
+        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay]).toFixed(2)}€</span></del>` : descPromo} ${getUnitPrice(item, _order).toFixed(2)} €</td>
+        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay] * item.quantity).toFixed(2)}€</span></del>` : descPromoT} ${(getUnitPrice(item, _order) * item.quantity).toFixed(2)} €</td>
+    </tr>`;
+    });
+    templateItems += _order.quantityBreaks && _order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]
+        ? `<tr>
+            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.cart_discount[lang]}</b> - ${_order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]} €</td>
+        </tr>`
+        : '';
 
+    templateItems += _order.promos && _order.promos.length && (_order.promos[0].productsId.length === 0)
+        ? `<tr>
+            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.discount[lang]}</b> - ${_order.promos[0][`discount${taxDisplay.toUpperCase()}`]} € / Code: ${_order.promos[0].code}</td>
+        </tr>`
+        : '';
+
+    if (_order.delivery && _order.delivery.price && _order.delivery.price[taxDisplay]) {
+        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.message[lang]}</b> + ${_order.delivery.price[taxDisplay].toFixed(2)} €</td></tr>`;
+    }
+    if (_order.additionnalFees && _order.additionnalFees[taxDisplay] && _order.additionnalFees[taxDisplay] !== 0) {
+        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.additionnalFees[lang]}</b> + ${_order.additionnalFees[taxDisplay].toFixed(2)} €</td></tr>`;
+    }
+    templateItems  += `<tr><td colspan="4" style="text-align:right"><b>TOTAL:</b> ${_order.priceTotal[taxDisplay].toFixed(2)} €</td></tr>`;
     let dateReceipt = '';
     let hourReceipt = '';
-    if (order.orderReceipt && order.orderReceipt.date) {
-        const d       = order.orderReceipt.date;
+    if (_order.orderReceipt && _order.orderReceipt.date) {
+        const d       = _order.orderReceipt.date;
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
@@ -488,119 +501,44 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
-    const mailDatas = {
-        '{{taxdisplay}}'                : global.translate.common[taxDisplay][lang],
-        '{{payment.instruction}}'       : '',
-        '{{order.customer.company}}'    : order.customer.company.name,
-        '{{order.customer.firstname}}'  : order.customer.id.firstname,
-        '{{order.customer.lastname}}'   : order.customer.id.lastname,
-        '{{order.customer.fullname}}'   : order.customer.id.fullname,
-        '{{order.customer.name}}'       : order.customer.id.fullname,
-        '{{order.number}}'              : order.number,
-        '{{order.dateReceipt}}'         : dateReceipt,
-        '{{order.hourReceipt}}'         : hourReceipt,
-        '{{address.line1}}'             : line1 || '',
-        '{{address.line2}}'             : line2 || '',
-        '{{address.companyName}}'       : companyName || '',
-        '{{address.complementaryInfo}}' : complementaryInfo || '',
-        '{{address.zipcode}}'           : zipcode || '',
-        '{{address.city}}'              : city || '',
-        '{{address.country}}'           : country || '',
-        '{{order.paymentMode}}'         : order._doc.payment[0].mode,
-        '{{order.paymentDescription}}'  : order._doc.payment[0].description,
-        '{{order.delivery}}'            : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
-        '{{order.priceTotal}}'          : order.priceTotal[taxDisplay].toFixed(2)
+    const oMailData = {
+        '{{taxdisplay}}'    : tmpTrad.common[taxDisplay][lang],
+        '{{company}}'       : _order.customer.company.name,
+        '{{firstname}}'     : _order.customer.id.firstname,
+        '{{lastname}}'      : _order.customer.id.lastname,
+        '{{fullname}}'      : _order.customer.id.fullname,
+        '{{name}}'          : _order.customer.id.fullname,
+        '{{number}}'        : _order.number,
+        '{{dateReceipt}}'   : dateReceipt,
+        '{{hourReceipt}}'   : hourReceipt,
+        '{{address}}'       : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
+        '{{totalamount}}'   : `${_order.priceTotal[taxDisplay].toFixed(2)}`,
+        '{{orderdata}}'     : templateItems,
+        '{{payment_type}}'  : _order._doc.payment[0].mode,
+        '{{delivery_type}}' : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang]
     };
-
-    if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
-        mailDatas['{{order.quantityBreaks}}'] = order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
-    }
-
-    if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        mailDatas['{{order.promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`];
-        mailDatas['{{order.promo.code}}']     = order.promos[0].code;
-    }
-
-    if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{order.delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
-    }
-
-    if (order.additionnalFees && order.additionnalFees[taxDisplay] && order.additionnalFees[taxDisplay] !== 0) {
-        mailDatas['{{order.additionnalFees}}'] = order.additionnalFees[taxDisplay].toFixed(2);
-    }
-
-    let mailByType;
-    // On va chercher la methode de paiement afin de récupérer isDeferred
-    let paymentMethod;
-    if (order.payment && order.payment[0] && order.payment[0].mode) {
-        paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()});
-    }
-    if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === 'PAID' || order.status === 'FINISHED') {
-        // On envoie le mail de succès de commande au client
-        mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
-    } else {
-        // On envoie le mail de succès de commande au client avec les instructions pour payer avec cheque ou virement
-        mailByType = await getMailDataByTypeAndLang('orderSuccessDeferred', lang);
-        if (paymentMethod) {
-            mailDatas['{{payment.instruction}}'] = paymentMethod.translation[lang].instruction;
+    // On verifie si le module billetterie-aquila n'existe en base de données ou qu'il n'est actif
+    const moduleTicketing = await Modules.findOne({name: 'billetterie-aquila'});
+    if (!moduleTicketing || !moduleTicketing.active) {
+        let mailByType;
+        // On va chercher la methode de paiement afin de récupérer isDeferred
+        let paymentMethod;
+        if (_order.payment && _order.payment[0] && _order.payment[0].mode) {
+            paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
         }
-    }
-
-    const {subject, from, fromName, pathAttachment} = mailByType;
-    let {content}                                   = mailByType;
-    // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
-    let templateItems  = '';
-    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
-    if (itemTemplate && itemTemplate[0]) {
-        const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
-        for (const item of order.items) {
-            const {translation} = item.id;
-            const prdData       = {
-                '{{product.quantity}}'         : item.quantity,
-                '{{product.name}}'             : translation[lang].name,
-                '{{product.specialUnitPrice}}' : '',
-                '{{product.bundleName}}'       : translation[lang].name,
-                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.basePrice}}'        : '',
-                '{{product.descPromo}}'        : '',
-                '{{product.descPromoT}}'       : '',
-                '{{product.sumSpecialPrice}}'  : ''
-            };
-
-            /* if (item.price.special && item.price.special[taxDisplay]) {
-                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
-                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
-                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).toFixed(2);
-            } */
-
-            if (item.parent && translation[lang]) {
-                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
-            }
-
-            let basePrice  = null;
-            let descPromo  = '';
-            let descPromoT = '';
-            if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
-                // On check si le produit courant a recu une promo
-                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
-                if (prdPromoFound) {
-                    basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                    descPromo                         = basePrice.toFixed(2);
-                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
-                    prdData['{{product.basePrice}}']  = basePrice;
-                    prdData['{{product.descPromo}}']  = descPromo;
-                    prdData['{{product.descPromoT}}'] = descPromoT;
-                }
-            }
-            templateItems += await generateHTML(htmlItem, prdData);
+        if ((paymentMethod && paymentMethod.isDeferred === false) || _order.status === 'PAID' || _order.status === 'FINISHED') {
+            // On envoie le mail de succès de commande au client
+            mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
+        } else {
+            // On envoie le mail de succès de commande au client avec les instructions pour payer avec cheque ou virement
+            mailByType = await getMailDataByTypeAndLang('orderSuccessDeferred', lang);
+            if (!paymentMethod) oMailData['{{instruction}}'] = '';
+            else oMailData['{{instruction}}'] = paymentMethod.translation[lang].instruction;
         }
-        content = content.replace(htmlItem, templateItems);
+        const {content, subject, from, fromName, pathAttachment} = mailByType;
+        const htmlBody                                           = generateHTML(content, oMailData);
+        return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
     }
-
-    const htmlBody = await generateHTML(content, mailDatas);
-    return sendMail({subject, htmlBody, mailTo: order.customer.email, mailFrom: from, fromName, pathAttachment});
 };
 
 /**
@@ -914,7 +852,6 @@ function determineLanguage(lang, preferredLanguage) {
  * @param {*} item item pour lequel on calcul le prix unitaire
  * @returns {number} prix unitaire
  */
-// eslint-disable-next-line no-unused-vars
 function getUnitPrice(item, order) {
     const taxDisplay = order.priceTotal.paidTax ? 'ati' : 'et';
     let price        = item.price.unit[taxDisplay];

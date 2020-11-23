@@ -714,7 +714,7 @@ async function isUniqueCodePromo(promo) {
  */
 function calculDiscountItem(prd, promo) {
     // On calcule le total avec remise du panier
-    let values                          = [];
+    let values                          = {discountATI: 0, discountET: 0};
     const {discountType, discountValue} = promo;
     let field                           = 'normal';
 
@@ -729,14 +729,14 @@ function calculDiscountItem(prd, promo) {
     if (discountType === 'P') {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
-        values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100, prices.ati - Math.round(prices.ati * discountValue) / 100);
+        values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100);
     } else if (discountType === 'Aet') {
-        values = calculateCartItemDiscount(prices, discountValue, discountValue * (prd.price.tax / 100 + 1), true);
+        values = calculateCartItemDiscount(prices, discountValue, undefined);
     } else if (discountType === 'Aati') {
-        values = calculateCartItemDiscount(prices, discountValue * (prd.price.tax / 100 + 1), discountValue, true);
+        values = calculateCartItemDiscount(prices, undefined, discountValue);
     }
 
-    return {discountET: values[0], discountATI: values[1]};
+    return values;
 }
 
 /**
@@ -746,7 +746,7 @@ function calculDiscountItem(prd, promo) {
  */
 async function calculCartDiscountItem(item, promo) {
     // On calcule le total avec remise du panier
-    let values                          = [];
+    let values                          = {discountATI: 0, discountET: 0};
     const {discountType, discountValue} = promo;
     let field                           = 'normal';
     const baseProduct                   = await ProductSimple.findOne({code: item.code}).lean();
@@ -756,21 +756,20 @@ async function calculCartDiscountItem(item, promo) {
         field = 'special';
     }
 
-    const prices  = {ati: baseProduct.price.ati[field], et: baseProduct.price.et[field]};
-    const taxRate = baseProduct.price.tax !== undefined ? baseProduct.price.tax : baseProduct.price.vat.rate;
+    const prices = {ati: baseProduct.price.ati[field], et: baseProduct.price.et[field]};
 
     // Si le discountType est du pourcentage
     if (discountType === 'P') {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
-        values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100, prices.ati - Math.round(prices.ati * discountValue) / 100);
+        values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100);
     } else if (discountType === 'Aet') {
-        values = calculateCartItemDiscount(prices, discountValue, discountValue / (taxRate / 100 + 1));
+        values = calculateCartItemDiscount(prices, discountValue);
     } else if (discountType === 'Aati') {
-        values = calculateCartItemDiscount(prices, discountValue / (taxRate / 100 + 1), discountValue);
+        values = calculateCartItemDiscount(prices, undefined, discountValue);
     }
 
-    return {discountATI: values[1], discountET: values[0], basePriceATI: prices.ati, basePriceET: prices.et};
+    return {...values, basePriceATI: prices.ati, basePriceET: prices.et};
 }
 
 /**
@@ -782,7 +781,7 @@ async function calculCartDiscountItem(item, promo) {
 async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false */) {
     if (!promo) return null;
     // On calcule le total avec remise du panier
-    let values                          = [];
+    let values                          = {discountATI: 0, discountET: 0};
     const {discountType, discountValue} = promo;
     const priceTotal                    = await calculateCartTotal(cart);
     // if (isQuantityBreak) {
@@ -798,16 +797,17 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
         // afin d'avoir priceTotal - discountATI (ou discountET) = 0
         values = calculateCartItemDiscount(
             priceTotal,
-            Math.round(priceTotal.et * discountValue) / 100,
-            Math.round(priceTotal.ati * discountValue) / 100
+            Math.round(priceTotal.et * discountValue) / 100
         );
-    } else if (discountType === 'Aet' || discountType === 'Aati') {
+    } else if (discountType === 'Aet') {
         // le discountType est un montant
         // Si le prix TTC/HT est inférieur a la remise alors on met une remise correspondant au prix du cart
         // afin d'avoir priceTotal - discountATI (ou discountET) = 0
-        values = calculateCartItemDiscount(priceTotal, discountValue, discountValue);
+        values = calculateCartItemDiscount(priceTotal, discountValue);
+    } else if (discountType === 'Aati') {
+        values = calculateCartItemDiscount(priceTotal, undefined, discountValue);
     }
-    return {discountATI: values[1], discountET: values[0]};
+    return values;
 }
 
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
@@ -845,21 +845,25 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
  * @param {*} discountValueATI
  * @return {Array} array[0] => discountET - array[1] => discountATI
  */
-function calculateCartItemDiscount(prices, discountValueET, discountValueATI, minus = undefined) {
-    let discountET  = discountValueET;
-    let discountATI = discountValueATI;
-    if (prices.et < discountValueET) {
-        discountET = prices.et;
-    } else if (minus) {
-        discountET = prices.et - discountValueET;
+function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
+    let discountET  = 0;
+    let discountATI = 0;
+    const rate      = Number((prices.ati / prices.et).toFixed(2));
+
+    if (discountValueET) {
+        discountET  = prices.et - discountValueET;
+        discountET  = discountET <= 0 ? 0 : discountET;
+        discountATI = discountET * rate;
+    } else if (discountValueATI) {
+        discountATI = prices.ati - discountValueATI;
+        discountATI = discountATI <= 0 ? 0 : discountATI;
+        discountET  = discountATI / rate;
     }
 
-    if (prices.ati < discountValueATI) {
-        discountATI = prices.et;
-    } else if (minus) {
-        discountATI = prices.ati - discountValueATI;
-    }
-    return [discountET, discountATI];
+    return {
+        discountET  : prices.et - discountET,
+        discountATI : prices.ati - discountATI
+    };
 }
 
 async function resetCartProductPrice(cart, j) {

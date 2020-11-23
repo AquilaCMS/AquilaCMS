@@ -2665,7 +2665,7 @@ select::-ms-expand {
 
 figure.product__image {text-align: center;}
 
-.product .product__image img:hover { transform:scale(1.25); }
+.product .product__image .nbb > img:hover { transform:scale(1.25); }
 
 .product--horizontal .product__entry { width: 60% }
 
@@ -3902,9 +3902,9 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle-upper { /*transform: translate
 
 .slider__label { display: block; color: #9B9B9B; font-weight: 600; font-size: 14px; line-height: 1.36; }
 
-.nbb { background: unset; border: 0; overflow: hidden; }
+.nbb { background: unset; border: 0; overflow: hidden; position: relative; }
 
-.nbb img { transition: all 0.8s; }
+.nbb > img { transition: all 0.8s; }
 
 .rgpd.popup__container {padding: 30px 50px 30px 50px;}
 
