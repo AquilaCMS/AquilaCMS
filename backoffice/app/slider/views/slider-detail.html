@@ -38,7 +38,7 @@
                 <div>
                     <div class="col-sm-2" style="margin-bottom: 30px;padding:15px;cursor:move;" ng-repeat="item in slider.items | orderBy:'order'" >
                         <div class="dropCase" ondragenter="switchElement(this, 'in')" ondragleave="switchElement(this, 'out')" ondragstart="draggingStart(this)" draggable="true" ondragend="draggingEnd(this)" ns-drag="item" ns-drop="item">
-                            <div title="{{item.text}}" class="pointer boxShadow" style="cursor:move;padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px"  ng-click="openItemModal(item)">{{item.text}}</div>
+                            <div title="{{item.text}}" class="pointer boxShadow" style="cursor:move;padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px"  ng-click="openItemModal(item)"></div>
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,6 @@
                             drop = false;
                             elementInDrag = element.childNodes[1].style.backgroundImage;
                             pointToElement = element.childNodes[1];
-                            element.parentNode.className += ' fakeDrop';
                             element.childNodes[1].style.opacity = '0.5';
                         }
                         function switchElement(element, where){
@@ -62,29 +61,32 @@
                                 if(where == 'in'){
                                     inOther = true;
                                     saveURL = element.childNodes[1].style.backgroundImage;
-                                    savePointElement = element.childNodes[1];
+                                    savePointElement = element;
                                     pointToElement.style.backgroundImage = element.childNodes[1].style.backgroundImage;
                                     element.childNodes[1].style.backgroundImage = elementInDrag;
+                                    element.parentNode.className += ' fakeDrop';
                                 }else if(where == 'out'){
                                     inOther = false;
                                     element.childNodes[1].style.backgroundImage = saveURL;
                                     pointToElement.style.backgroundImage = elementInDrag;
+                                    element.parentNode.className = element.parentNode.className.replace('fakeDrop', '');
                                 }
                             }
                             
                         }
                         function draggingEnd(element){
                             drop = true;
-                            element.parentNode.className = element.parentNode.className.replace('fakeDrop', '');
                             element.childNodes[1].style.opacity = '1';
                             if(inOther){
                                 //On switch car on est dans une autre
-                                savePointElement.style.backgroundImage = saveURL;
+                                savePointElement.childNodes[1].style.backgroundImage = saveURL;
                                 pointToElement.style.backgroundImage = elementInDrag;
+                                savePointElement.parentNode.className = savePointElement.parentNode.className.replace('fakeDrop', '');
                             }else{
                                 //On remet à zéro
-                                savePointElement.style.backgroundImage = saveURL;
+                                savePointElement.childNodes[1].style.backgroundImage = saveURL;
                                 pointToElement.style.backgroundImage = elementInDrag;
+                                savePointElement.parentNode.className = savePointElement.parentNode.className.replace('fakeDrop', '');
                             }
                         }
                     </script>
