@@ -17,17 +17,16 @@ exports.setProductViews = function (product_id) {
 };
 
 /**
- * Construit et envoie les statistiques du jour sur un autre site
+ * Construit et envoie les statistiques des précédents jour sur un autre site
  */
-exports.sendMetrics = async function (licence) {
+exports.sendMetrics = async function (licence, date) {
     try {
         // const clients = Users.find({isAdmin: false}).count();
-        const stats = await exports.getGlobaleStats();
-        const date  = new Date();
+        const stats = await exports.getGlobaleStats(date);
         await axios.post('http://localhost:3010/api/v2/metrics', {
             stats : stats.yesterday,
             licence,
-            date
+            from  : date.toString()
         });
         return 'Datas sent';
     } catch (error) {
@@ -51,12 +50,19 @@ exports.generateStatistics = function (data) {
 /**
  * Get Globale Stats (accueil admin)
  */
-exports.getGlobaleStats = async function () {
-    const result = {
-        yesterday : await getGlobalStat('YESTERDAY'),
-        today     : await getGlobalStat('TODAY'),
-        month     : await getGlobalStat('MONTH')
-    };
+exports.getGlobaleStats = async function (date) {
+    let result;
+    if (date) {
+        result = {
+            yesterday : await getGlobalStat('YESTERDAY', date)
+        };
+    } else {
+        result = {
+            yesterday : await getGlobalStat('YESTERDAY'),
+            today     : await getGlobalStat('TODAY'),
+            month     : await getGlobalStat('MONTH')
+        };
+    }
 
     return result;
 };
@@ -64,16 +70,22 @@ exports.getGlobaleStats = async function () {
 /**
  * Get Globale Stat (accueil admin)
  */
-async function getGlobalStat(periode) {
-    let datas        = {};
-    let periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
-    let periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
-
-    if (periode === 'MONTH') {
-        periodeStart = periodeStart.add(-30, 'days');
-    } else if (periode === 'YESTERDAY') {
-        periodeStart = periodeStart.add(-1, 'days');
+async function getGlobalStat(periode, date) {
+    let datas = {};
+    let periodeStart;
+    let periodeEnd;
+    if (date) {
+        periodeStart = moment(date);
         periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+    } else {
+        periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
+        if (periode === 'MONTH') {
+            periodeStart = periodeStart.add(-30, 'days');
+        } else if (periode === 'YESTERDAY') {
+            periodeStart = periodeStart.add(-1, 'days');
+            periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        }
     }
 
     const sPeriodeStart = periodeStart.toISOString();
@@ -122,20 +134,29 @@ async function getGlobalStat(periode) {
 
     // --- Fréquentation ---
     let attendance = 0;
-    if (periode === 'MONTH' || periode === 'YESTERDAY') {
+    let newClients;
+    if (date) {
         const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
-        for ( let i = 0, _len = attendanceTab.length; i < _len; i++ ) {
+        for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
             attendance += attendanceTab[i].value;
         }
-    } else { // if (periode === "TODAY") {
-        const statsToday = await serviceStats.getStatstoday();
-        if (statsToday != null && statsToday.visit) {
-            attendance = statsToday.visit.length;
+        newClients = await exports.getNewCustomer('months', periodeStart, periodeEnd);
+    } else {
+        if (periode === 'MONTH' || periode === 'YESTERDAY') {
+            const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
+            for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
+                attendance += attendanceTab[i].value;
+            }
+        } else { // if (periode === "TODAY") {
+            const statsToday = await serviceStats.getStatstoday();
+            if (statsToday != null && statsToday.visit) {
+                attendance = statsToday.visit.length;
+            }
         }
+        newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
 
-    const newClients     = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
-    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
+    const articlesNumber = await exports.getCapp(periodeStart, periodeEnd);
 
     datas = {
         nbOrder     : allOrders.length,
