@@ -1491,7 +1491,7 @@ adminCatagenDirectives.directive("nsRule", [
                             for(var i = 0, leni = langs.length; i < leni; i++){
                                     let values = [];
                                     //we put only value of the correct languages
-                                    const langKey = langs[i].code
+                                    const langKey = langs[i].code;
                                     if(element.translation[langKey]){
                                         values = element.translation[langKey].values;
                                     }
