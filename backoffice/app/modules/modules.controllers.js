@@ -50,6 +50,33 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
         });
     };
 
+    $scope.displayReadMe = function(nameModule){
+        var responseFromAPI;
+        $http.post('/v2/modules/md', {
+            moduleName: nameModule
+        }).then(function (response) {
+            responseFromAPI = response.data.html;
+            if(!responseFromAPI || responseFromAPI == ""){
+                responseFromAPI = 'No ReadMe : (';
+            }
+            $modal.open({
+                templateUrl: 'app/modules/views/modal/popUpReadMe.html',
+                controller: function ($scope, $modalInstance, reponse) {
+                    $scope.modalReadMe = {}
+                    $scope.modalReadMe.dispReadMe = reponse;
+                    $scope.modalReadMe.close = function () {
+                        $modalInstance.close();
+                    };
+                },
+                resolve: {
+                    reponse: function(){
+                        return responseFromAPI;
+                    }
+                }
+            });
+        });
+    }
+
     $scope.toggleActive = function (id, name, state) {
         $scope.showModuleLoading = true;
         $http.get(`/v2/modules/check?idModule=${id}&installation=${state}`).then((response) => {
