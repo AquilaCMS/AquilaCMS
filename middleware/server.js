@@ -41,7 +41,7 @@ const serverUseRequest = (req, res, next) => {
             return res;
         }
         // if an admin request a document, we return it without touching it (them)
-        if ((user && user.isAdmin) || req.baseUrl.indexOf(`/${global.envConfig.environment.adminPrefix}`) === 0 || res.statusCode >= 400) {
+        if (user && user.isAdmin || res.statusCode >= 400) {
             return original.call(res, json);
         }
 

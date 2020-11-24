@@ -128,7 +128,11 @@ async function infoPayment(req, res, next) {
  */
 async function duplicateItemsFromOrderToCart(req, res, next) {
     try {
-        req.body.query = await ServiceAuth.validateUserIsAllowedWithoutPostBody(req.headers.authorization, req.baseUrl, {_id: req.body.idOrder || null}, 'customer.id');
+        req.body.query = await ServiceAuth.validateUserIsAllowedWithoutPostBody(
+            req.info,
+            {_id: req.body.idOrder || null},
+            'customer.id'
+        );
         return res.json(await orderService.duplicateItemsFromOrderToCart(req));
     } catch (err) {
         return next(err);

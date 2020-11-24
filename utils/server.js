@@ -27,6 +27,27 @@ const isProd = () => {
     }
     return false;
 };
+
+const updateEnv = async () => {
+    let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
+    envPath       = path.resolve(global.appRoot, envPath);
+    const envFile = JSON.parse(await fs.readFile(envPath));
+    for (const env of Object.keys(envFile)) {
+        if (envFile[env].jwt && envFile[env].jwt.session !== undefined) {
+            envFile[env].jwt.options = envFile[env].jwt.session;
+            delete envFile[env].jwt.session;
+        }
+        if (envFile[env].useJwt) {
+            delete envFile[env].useJwt;
+        }
+        if (envFile[env].front) {
+            delete envFile[env].front;
+        }
+    }
+    await fs.writeFile(envPath, JSON.stringify(envFile, null, 2));
+    global.envFile = envFile[getEnv('AQUILA_ENV')];
+};
+
 /**
  * Get assign global.envFile if envFile exists else stay null
  */
@@ -209,5 +230,6 @@ module.exports = {
     showAquilaLogo,
     logVersion,
     startListening,
-    getAppUrl
+    getAppUrl,
+    updateEnv
 };
