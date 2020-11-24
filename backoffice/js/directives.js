@@ -1491,9 +1491,10 @@ adminCatagenDirectives.directive("nsRule", [
                             for(var i = 0, leni = langs.length; i < leni; i++)
                                 {
                                     let values = [];
-                                    for(var j = 0; j < Object.keys(element.translation).length; j++) {
-                                        const langKey = Object.keys(element.translation)[j]
-                                        values = values.concat(element.translation[langKey].values)
+                                    //we put only value of the correct languages
+                                    const langKey = Object.keys(element.translation)[i]
+                                    if(langKey){
+                                        values = element.translation[langKey].values;
                                     }
                                     $scope.attributesClassed.push(
                                         {
