@@ -147,7 +147,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
 
         $scope.save = function ()
         {
-            SliderItemService.save({ id: slider._id }, $scope.item, function () {
+            SliderItemService.saveSlider({ id: slider._id}, $scope.slider, function () {
                 $modalInstance.close();
             });
         };
