@@ -38,6 +38,7 @@
         "expediteur": "Expediteur",
         "destinataire": "Destinataire",
         "envoie": "Envoie Test",
+        "back": "Retour",
         "titre" : "Veuillez remplir les informations afin de tester le mail.",
         "null": "Pas de templates existant pour ce type de mail."
     },

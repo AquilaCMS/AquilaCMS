@@ -10,6 +10,17 @@ const getMailTypes = async () => {
 };
 
 /**
+* Permet de récupérer un mailType en fonction de son _id
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+const getMailType = async (code) => {
+    const {MailType} = require('../orm/models');
+    return MailType.findOne({code});
+};
+
+/**
  *
  * @param {*} body les data a enregistrer
  * @param {*} _id si l'_id existe alors on met a jour sinon on update
@@ -45,6 +56,7 @@ const deleteMailType = async (code) => {
 
 module.exports = {
     getMailTypes,
+    getMailType,
     setMailType,
     deleteMailType
 };

@@ -94,19 +94,1400 @@ const initDBValues = async () => {
     }, {new: true, upsert: true});
 
     const mailTypes = [
-        {code: '', name: 'Aucun type', position: 0},
-        {code: 'register', name: 'Inscription d\'un nouveau client', position: 1},
-        {code: 'sendRegisterForAdmin', name: 'Inscription d\'un nouveau client pour l\'admin', position: 2},
-        {code: 'orderSuccess', name: 'Commande validée (envoi du mail au client)', position: 3},
-        {code: 'orderSuccessCompany', name: 'Commande validée (envoi du mail à l\'entreprise)', position: 4},
-        {code: 'passwordRecovery', name: 'Récupération de votre mot de passe', position: 5},
-        {code: 'contactMail', name: 'Mail de contact', position: 6},
-        {code: 'changeOrderStatus', name: 'Changement de statut de la commande', position: 7},
-        {code: 'rmaOrder', name: 'Réception retour produit', position: 8},
-        {code: 'orderSent', name: 'Commande envoyée', position: 9},
-        {code: 'orderSuccessDeferred', name: 'Commande avec paiement différé', position: 10},
-        {code: 'activationAccount', name: 'Activation du compte', position: 11},
-        {code: 'requestCancelOrderNotify', name: 'Demande d\'annulation de commande', position: 12}
+        {
+            code     : '',
+            name     : 'Aucun type',
+            position : 0
+        },
+        {code        : 'register',
+            position    : 1,
+            translation : {
+                fr : {
+                    name      : 'Inscription d\'un nouveau client',
+                    variables : [
+                        {
+                            value       : 'login',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'activate_account_token',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'login',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'activate_account_token',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }
+        },
+        {code        : 'sendRegisterForAdmin',
+            position    : 2,
+            translation : {
+                fr : {
+                    name      : 'Inscription d\'un nouveau client pour l\'admin',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'login',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'login',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'orderSuccess',
+            position    : 3,
+            translation : {
+                fr : {
+                    name      : 'Commande validée (envoi du mail au client)',
+                    variables : [
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line1',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line2',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.companyName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.complementaryInfo',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.zipcode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.city',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.country',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'totalamount',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'orderdata',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'delivery_type',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line1',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line2',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.companyName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.complementaryInfo',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.zipcode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.city',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.country',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'totalamount',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'orderdata',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'delivery_type',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'orderSuccessCompany',
+            position    : 4,
+            translation : {
+                fr : {
+                    name      : 'Commande validée (envoi du mail à l\'entreprise)',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line1',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line2',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.companyName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.complementaryInfo',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.zipcode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.city',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.country',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'totalamount',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'orderdata',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'delivery_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'customer_mobile_phone',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line1',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line2',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.companyName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.complementaryInfo',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.zipcode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.city',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.country',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'totalamount',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'orderdata',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'delivery_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'customer_mobile_phone',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'passwordRecovery',
+            position    : 5,
+            translation : {
+                fr : {
+                    name      : 'Récupération de votre mot de passe',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'tokenlink',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'tokenlink',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'contactMail',
+            position    : 6,
+            translation : {
+                fr : {
+                    name      : 'Mail de contact',
+                    variables : [
+                        {
+                            value       : 'formDatas',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'formDatas',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'changeOrderStatus',
+            position    : 7,
+            translation : {
+                fr : {
+                    name      : 'Changement de statut de la commande',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'status',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'status',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'rmaOrder',
+            position    : 8,
+            translation : {
+                fr : {
+                    name      : 'Réception retour produit',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'refund',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'articles',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'date',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'refund',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'articles',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'date',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'orderSent',
+            position    : 9,
+            translation : {
+                fr : {
+                    name      : 'Commande envoyée',
+                    variables : [
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'transporterName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'date',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'trackingUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'transporterName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'date',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'trackingUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'orderSuccessDeferred',
+            position    : 10,
+            translation : {
+                fr : {
+                    name      : 'Commande avec paiement différé',
+                    variables : [
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line1',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line2',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.companyName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.complementaryInfo',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.zipcode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.city',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.country',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'totalamount',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'orderdata',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'delivery_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.shipment',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line1',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.line2',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.companyName',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.complementaryInfo',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.zipcode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.city',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'address.country',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'totalamount',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'orderdata',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'appUrl',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'delivery_type',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'activationAccount',
+            position    : 11,
+            translation : {
+                fr : {
+                    name      : 'Activation du compte',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'activate_account_token',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'activate_account_token',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }},
+        {code        : 'requestCancelOrderNotify',
+            position    : 12,
+            translation : {
+                fr : {
+                    name      : 'Demande d\'annulation de commande',
+                    variables : [
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'status',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'toDo',
+                    variables : [
+                        {
+                            value       : 'number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'status',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'fullname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'name',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'toDo'
+                        }
+                    ]
+
+                }
+            }}
     ];
     // Populate mailType in BDD
     for (const mailType of mailTypes) {

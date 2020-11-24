@@ -33,11 +33,16 @@ MailControllers.controller("MailDetailCtrl", [
             isSelected: false
         };
 
+        $scope.langChange = function (lang) {
+            $scope.lang = lang;
+        };
+        
         $scope.additionnalButtons = [
             {
                 text: 'mail.detail.test',
                 onClick: function () {
-                    $scope.openItemModal($scope.lang)
+                    debugger;
+                    $scope.openItemModal($scope.lang, $scope.mail.type)
                 },
                 icon:'<i class="fa fa-envelope-o" aria-hidden="true"></i>'
             }
@@ -195,7 +200,7 @@ MailControllers.controller("MailDetailCtrl", [
 
 
         //Ouverture de la modal d'envoie de mails test
-        $scope.openItemModal = function (lang) {
+        $scope.openItemModal = function (lang, mail) {
             $modal.open({
                 templateUrl: 'app/mail/views/mail-detail-test.html',
                 controller: 'MailDetailTestCtrl',
@@ -215,203 +220,214 @@ MailControllers.controller("MailDetailCtrl", [
 ]);
 
 MailControllers.controller("MailDetailTestCtrl", [
-    "$scope", "$q", "$routeParams", "$location", "toastService", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypesGet", "MailVariables", "TestMail", "mail", "$modalInstance","lang",
-    function ($scope, $q, $routeParams, $location, toastService, MailSave, MailUpdate, MailRemove, MailGetById, MailTypesGet, MailVariables, TestMail, mail,$modalInstance, lang) {
-        
+    "$scope", "$rootScope","$q", "$routeParams", "$location", "toastService", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypeGet", "MailVariables", "TestMail", "mail", "$modalInstance","lang",
+    function ($scope,$rootScope,$q, $routeParams, $location, toastService, MailSave, MailUpdate, MailRemove, MailGetById, MailTypeGet, MailVariables, TestMail, mail,$modalInstance, lang) {
         $scope.path = $routeParams.mailId; 
         $scope.mail = mail;
         $scope.lang = lang;
+        $scope.adminLang = $rootScope.adminLang;
         $scope.loading = false;
-        $scope.type = {
-            "register" : [
-                { name: 'firstname', value:'' },
-                { name: 'lastname', value:'' },
-                { name: 'company', value:'' },
-                { name: 'login', value: '' },
-                { name: 'name', value: ''},
-                { name: 'activate_account_token', value: '' }
-            ],
-            "activationAccount": [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'name', value: ''},
-                { name: 'activate_account_token' },
-            ],
-            "orderSuccess":  [
-                { name: 'taxdisplay' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'number' },
-                { name: 'dateReceipt' },
-                { name: 'hourReceipt' },
-                { name: 'address' },
-                { name: 'order.customer.firstname', value: '' },
-                { name: 'order.customer.lastname', value: '' },
-                { name: 'order.customer.company', value: '' },
-                { name: 'order.customer.fullname', value: '' },
-                { name: 'order.number' },
-                { name: 'order.dateReceipt' },
-                { name: 'order.hourReceipt' },
-                { name: 'order.priceTotal' },
-                { name: 'order.delivery' },
-                { name: 'order.paymentMode' },
-                { name: 'order.paymentDescription' },
-                { name: 'order.shipment' },
-                { name: 'address.line1' },
-                { name: 'address.line2' },
-                { name: 'address.companyName' },
-                { name: 'address.complementaryInfo' },
-                { name: 'address.zipcode' },
-                { name: 'address.city' },
-                { name: 'address.country' },
-                { name: 'totalamount' },
-                { name: 'orderdata' },
-                { name: 'taxdisplay' },
-                { name: 'appUrl' },
-                { name: 'payment_type' },
-                { name: 'delivery_type' }
-            ],
-            "orderSuccessDeferred": [
-                { name: 'taxdisplay' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'number' },
-                { name: 'dateReceipt' },
-                { name: 'hourReceipt' },
-                { name: 'address' },
-                { name: 'order.customer.firstname', value: '' },
-                { name: 'order.customer.lastname', value: '' },
-                { name: 'order.customer.company', value: '' },
-                { name: 'order.customer.fullname', value: '' },
-                { name: 'order.number' },
-                { name: 'order.dateReceipt' },
-                { name: 'order.hourReceipt' },
-                { name: 'order.priceTotal' },
-                { name: 'order.delivery' },
-                { name: 'order.paymentMode' },
-                { name: 'order.paymentDescription' },
-                { name: 'order.shipment' },
-                { name: 'address.line1' },
-                { name: 'address.line2' },
-                { name: 'address.companyName' },
-                { name: 'address.complementaryInfo' },
-                { name: 'address.zipcode' },
-                { name: 'address.city' },
-                { name: 'address.country' },
-                { name: 'totalamount' },
-                { name: 'orderdata' },
-                { name: 'taxdisplay' },
-                { name: 'appUrl' },
-                { name: 'payment_type' },
-                { name: 'delivery_type' },
-                { name: 'payment.instruction' }
-            ],
-            "orderSuccessCompany":   [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'taxdisplay' },
-                { name: 'number' },
-                { name: 'dateReceipt' },
-                { name: 'hourReceipt' },
-                { name: 'address' },
-                { name: 'order.customer.firstname', value: '' },
-                { name: 'order.customer.lastname', value: '' },
-                { name: 'order.customer.company', value: '' },
-                { name: 'order.customer.fullname', value: '' },
-                { name: 'order.number' },
-                { name: 'order.dateReceipt' },
-                { name: 'order.hourReceipt' },
-                { name: 'order.priceTotal' },
-                { name: 'order.delivery' },
-                { name: 'order.paymentMode' },
-                { name: 'order.paymentDescription' },
-                { name: 'order.shipment' },
-                { name: 'address.line1' },
-                { name: 'address.line2' },
-                { name: 'address.companyName' },
-                { name: 'address.complementaryInfo' },
-                { name: 'address.zipcode' },
-                { name: 'address.city' },
-                { name: 'address.country' },
-                { name: 'totalamount' },
-                { name: 'taxdisplay' },
-                { name: 'appUrl' },
-                { name: 'customer_mobile_phone' },
-                { name: 'payment_type' },
-                { name: 'delivery_type' },
-                { name: 'shipment' }
-             ],
-            "sendRegisterForAdmin": [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'login', value: '' },
-                { name: 'fullname', value: '' },
-                { name: 'name', value: '' },
-                { name: 'company', value: '' }
-            ],
-            "passwordRecovery":    [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'tokenlink' }
-            ],
-            "changeOrderStatus":  [
-                { name: 'appUrl' },
-                { name: 'number' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'status' }
-            ],
-        
-            "contactMail":   [
-                { name: 'formDatas' },
-            ],
-            "rmaOrder":      [
-                { name: 'number' },
-                { name: 'date' },
-                { name: 'articles' },
-                { name: 'refund' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'fullname', value: '' }
-            ],
-            "orderSent":     [
-                { name: 'number' },
-                { name: 'trackingUrl' },
-                { name: 'date' },
-                { name: 'transporterName' },
-                { name: 'address' },
-                { name: 'fullname', value: '' },
-                { name: 'company', value: '' },
-            ],
-            "requestCancelOrderNotify": [
-                {name: 'number'},
-                {name: 'status'},
-                {name: 'fullname'},
-                {name: 'name'},
-                {name: 'company'},
-                {name: 'firstname'},
-                {name: 'lastname'}
-            ]
+        MailTypeGet.query({code:$scope.mail.type}, function (mailType) {
+            $scope.mailType = mailType;
+        });
 
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
         };
-        $scope.dataMail = $scope.type[$scope.mail.type];
+        
+
+       
+        
+
+        // $scope.type = {
+        //     "register" : [
+        //         { name: 'firstname', value:'' },
+        //         { name: 'lastname', value:'' },
+        //         { name: 'company', value:'' },
+        //         { name: 'login', value: '' },
+        //         { name: 'name', value: ''},
+        //         { name: 'activate_account_token', value: '' }
+        //     ],
+        //     "activationAccount": [
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'company', value: '' },
+        //         { name: 'name', value: ''},
+        //         { name: 'activate_account_token' },
+        //     ],
+        //     "orderSuccess":  [
+        //         { name: 'taxdisplay' },
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'company', value: '' },
+        //         { name: 'number' },
+        //         { name: 'dateReceipt' },
+        //         { name: 'hourReceipt' },
+        //         { name: 'address' },
+        //         { name: 'order.customer.firstname', value: '' },
+        //         { name: 'order.customer.lastname', value: '' },
+        //         { name: 'order.customer.company', value: '' },
+        //         { name: 'order.customer.fullname', value: '' },
+        //         { name: 'order.number' },
+        //         { name: 'order.dateReceipt' },
+        //         { name: 'order.hourReceipt' },
+        //         { name: 'order.priceTotal' },
+        //         { name: 'order.delivery' },
+        //         { name: 'order.paymentMode' },
+        //         { name: 'order.paymentDescription' },
+        //         { name: 'order.shipment' },
+        //         { name: 'address.line1' },
+        //         { name: 'address.line2' },
+        //         { name: 'address.companyName' },
+        //         { name: 'address.complementaryInfo' },
+        //         { name: 'address.zipcode' },
+        //         { name: 'address.city' },
+        //         { name: 'address.country' },
+        //         { name: 'totalamount' },
+        //         { name: 'orderdata' },
+        //         { name: 'taxdisplay' },
+        //         { name: 'appUrl' },
+        //         { name: 'payment_type' },
+        //         { name: 'delivery_type' }
+        //     ],
+        //     "orderSuccessDeferred": [
+        //         { name: 'taxdisplay' },
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'company', value: '' },
+        //         { name: 'number' },
+        //         { name: 'dateReceipt' },
+        //         { name: 'hourReceipt' },
+        //         { name: 'address' },
+        //         { name: 'order.customer.firstname', value: '' },
+        //         { name: 'order.customer.lastname', value: '' },
+        //         { name: 'order.customer.company', value: '' },
+        //         { name: 'order.customer.fullname', value: '' },
+        //         { name: 'order.number' },
+        //         { name: 'order.dateReceipt' },
+        //         { name: 'order.hourReceipt' },
+        //         { name: 'order.priceTotal' },
+        //         { name: 'order.delivery' },
+        //         { name: 'order.paymentMode' },
+        //         { name: 'order.paymentDescription' },
+        //         { name: 'order.shipment' },
+        //         { name: 'address.line1' },
+        //         { name: 'address.line2' },
+        //         { name: 'address.companyName' },
+        //         { name: 'address.complementaryInfo' },
+        //         { name: 'address.zipcode' },
+        //         { name: 'address.city' },
+        //         { name: 'address.country' },
+        //         { name: 'totalamount' },
+        //         { name: 'orderdata' },
+        //         { name: 'taxdisplay' },
+        //         { name: 'appUrl' },
+        //         { name: 'payment_type' },
+        //         { name: 'delivery_type' },
+        //         { name: 'payment.instruction' }
+        //     ],
+        //     "orderSuccessCompany":   [
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'company', value: '' },
+        //         { name: 'taxdisplay' },
+        //         { name: 'number' },
+        //         { name: 'dateReceipt' },
+        //         { name: 'hourReceipt' },
+        //         { name: 'address' },
+        //         { name: 'order.customer.firstname', value: '' },
+        //         { name: 'order.customer.lastname', value: '' },
+        //         { name: 'order.customer.company', value: '' },
+        //         { name: 'order.customer.fullname', value: '' },
+        //         { name: 'order.number' },
+        //         { name: 'order.dateReceipt' },
+        //         { name: 'order.hourReceipt' },
+        //         { name: 'order.priceTotal' },
+        //         { name: 'order.delivery' },
+        //         { name: 'order.paymentMode' },
+        //         { name: 'order.paymentDescription' },
+        //         { name: 'order.shipment' },
+        //         { name: 'address.line1' },
+        //         { name: 'address.line2' },
+        //         { name: 'address.companyName' },
+        //         { name: 'address.complementaryInfo' },
+        //         { name: 'address.zipcode' },
+        //         { name: 'address.city' },
+        //         { name: 'address.country' },
+        //         { name: 'totalamount' },
+        //         { name: 'taxdisplay' },
+        //         { name: 'appUrl' },
+        //         { name: 'customer_mobile_phone' },
+        //         { name: 'payment_type' },
+        //         { name: 'delivery_type' },
+        //         { name: 'shipment' }
+        //      ],
+        //     "sendRegisterForAdmin": [
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'login', value: '' },
+        //         { name: 'fullname', value: '' },
+        //         { name: 'name', value: '' },
+        //         { name: 'company', value: '' }
+        //     ],
+        //     "passwordRecovery":    [
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'company', value: '' },
+        //         { name: 'tokenlink' }
+        //     ],
+        //     "changeOrderStatus":  [
+        //         { name: 'appUrl' },
+        //         { name: 'number' },
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'company', value: '' },
+        //         { name: 'status' }
+        //     ],
+        //     "contactMail":   [
+        //         { name: 'formDatas' },
+        //     ],
+        //     "rmaOrder":      [
+        //         { name: 'number' },
+        //         { name: 'date' },
+        //         { name: 'articles' },
+        //         { name: 'refund' },
+        //         { name: 'firstname', value: '' },
+        //         { name: 'lastname', value: '' },
+        //         { name: 'fullname', value: '' }
+        //     ],
+        //     "orderSent":     [
+        //         { name: 'number' },
+        //         { name: 'trackingUrl' },
+        //         { name: 'date' },
+        //         { name: 'transporterName' },
+        //         { name: 'address' },
+        //         { name: 'fullname', value: '' },
+        //         { name: 'company', value: '' },
+        //     ],
+        //     "requestCancelOrderNotify": [
+        //         {name: 'number'},
+        //         {name: 'status'},
+        //         {name: 'fullname'},
+        //         {name: 'name'},
+        //         {name: 'company'},
+        //         {name: 'firstname'},
+        //         {name: 'lastname'}
+        //     ]
+
+        // };
+        // $scope.dataMail = $scope.type[$scope.mail.type];
 
         //Envoie de mail test
-        $scope.testMail = function(){
+        $scope.testMail = function(variables){
             $scope.loading = true;
             if($scope.mail.to && $scope.mail.to !== "") {
-                for (var data in $scope.dataMail) {
-                    if($scope.dataMail[data] === undefined){
-                        $scope.dataMail[data] = "";
+                for (var data in variables) {
+                    if (variables[data].text === undefined){
+                        variables[data].text = "";
                     };
                 }
-                TestMail.query({ mail: $scope.mail, values: $scope.dataMail, lang: $scope.lang }, function (res) {
+                TestMail.query({ mail: $scope.mail, values: variables, lang: $scope.lang }, function (res) {
                     toastService.toast("success", "Mail Test envoyé.");
                     $scope.loading = false;
                     $modalInstance.close();

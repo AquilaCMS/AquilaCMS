@@ -38,6 +38,7 @@
         "expediteur": "Sender",
         "destinataire": "Receiver",
         "envoie": "Send Test",
+        "back": "Back",
         "titre": "Please fill all the fields to test mail.",
         "null": "No template exisiting for this mail type."
     },

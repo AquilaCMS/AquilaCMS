@@ -193,13 +193,17 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         restrict: "E",
         scope: {
             text: "=",
-            lang: "="
+            lang: "=",
+            mail: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
             "$scope","$rootScope", "$filter", "$modal","$http",
             function ($scope, $rootScope, $filter, $modal, $http) {
-                    // $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    let toolbarOption = "customAddShortcode";
+                    if($scope.mail){
+                        toolbarOption = "customAddMailVar";
+                    }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
                         extended_valid_elements: "*[*]",//allow empty <a>-tag
@@ -213,7 +217,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         plugins: 'code, fullscreen, preview, link',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
-                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | customAddShortcode | customAddImg | fullscreen preview | code',
+                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | code',
                         fontsize_formats: '8px 10px 12px 14px 16px, 20px',
                         menubar: false,
                         statusbar: false,
@@ -240,8 +244,59 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $scope.addShortcode();
                                 }
                             });
+                            editor.ui.registry.addButton('customAddMailVar', {
+                                icon: "template",
+                                tooltip: 'Add mail variables',
+                                onAction: function () {
+                                    $scope.addMailVar($scope.mail);
+                                }
+                            });
                         }
                     };
+
+                $scope.addMailVar = function (code) {
+                    const modalInstance = $modal.open({
+                        backdrop: 'static',
+                        keyboard: false,
+                        templateUrl: 'views/modals/add-mailvar-tinymce.html',
+                        controller: ['$scope', '$modalInstance', '$rootScope','MailTypeGet',
+                            function ($scope, $modalInstance, $rootScope, MailTypeGet) {
+                                $scope.mailType = [];
+                                MailTypeGet.query({code}, function (mailType) {
+                                    $scope.mailType = mailType;
+                                });
+                                $scope.lang = $rootScope.adminLang;
+                                $scope.selected = false;
+                                $scope.mailTypeSelected = {};
+
+                                $scope.selectVariable = function (variable) {
+                                    $scope.selected = true;
+                                    $scope.variableSelected = variable;
+                                }
+
+                                $scope.addMailVariable = function(variable){
+                                    $modalInstance.close(variable);
+                                }
+
+                                $scope.cancel = function () {
+                                    $modalInstance.dismiss('cancel');
+                                };
+
+                            }],
+                        resolve: {
+                        }
+                    });
+
+                    modalInstance.result.then(function (variable) {
+                        variable = '{{' + variable + '}}';
+                        if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent(variable);
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                        } else {
+                            tinyMCE.activeEditor.selection.setContent(variable);
+                        }
+                    });
+                };
 
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({

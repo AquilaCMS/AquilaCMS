@@ -1,14 +1,14 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="save(false)" role="form">
     <ns-box data-title="mail.detail.t1" title-icon="fa fa-envelope fa-lg" close-href="#/mails">
         <ns-buttons is-selected="nsUploadFiles.isSelected" is-edit-mode="isEditMode" remove="remove(mail._id)" save-and-quit="save(true)" disable-save="disableSave" return-path="/mails" form="form" additionnal-buttons="additionnalButtons">
-            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            <ns-translation lang-change="langChange(lang)" ng-model="lang" class="pull-right"></ns-translation>
                 <div style="width: 50%;float:left;margin-top:10px">
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label for="type" class="col-sm-3 control-label" translate>mail.detail.type</label>
                             <div class="col-sm-9">
                                 <select name="type" class="form-control" id="type" ng-model="mail.type" ng-change="updateMailType()">
-                                    <option ng-repeat="option in mailTypes" value="{{option.code}}">{{option.name}}</option>
+                                    <option ng-repeat="option in mailTypes" value="{{option.code}}">{{option.translation[adminLang].name}}</option>
                                 </select>
                             </div>
                     
@@ -89,13 +89,11 @@
                 <div class="col-sm-11">
                     <label class="col-sm-2 control-label" translate>mail.detail.html</label>
                     <div class="col-sm-12 tinyeditor-big">
-                        <ns-tinymce lang="lang" text="mail.translation[lang].content"></ns-tinymce>
+                        <ns-tinymce lang="'lang'" mail="mail.type" text="mail.translation[lang].content"></ns-tinymce>
                         <br />
                     </div>
                 </div>
             </div>
-
-            
 
             <div class="form-group">
                 <div ng-if="!mail.type" style="text-align:center">

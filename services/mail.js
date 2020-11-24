@@ -169,7 +169,7 @@ const sendMailTest = async (mail, values = [], lang = 'fr') => {
 
     const data = {};
     for (const element of values) {
-        data[`{{${element.name}}}`] = element.value;
+        data[`{{${element.value}}}`] = element.text;
     }
 
     if (['orderSuccessDeferred', 'orderSuccessCompany', 'orderSuccess'].includes(mail.code)) {
