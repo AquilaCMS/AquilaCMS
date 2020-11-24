@@ -185,18 +185,12 @@ const copyDatas = async (themePath, override = true, fileNames, configuration = 
             listOfFile.push(element);
         });
     } else {
-        let themeconf = false;
         for (let j = 0; j < listOfPath.length; j++) {
             for (let i = 0; i < fileNames.length; i++) {
-                if (listOfPath[j].indexOf('themeConfig.json') === -1 && themeconf === false) {
-                    if ( listOfPath[j].indexOf(fileNames[i].name) !== -1) {
-                        if (fileNames[i].value === true) {
-                            listOfFile.push(listOfPath[j]);
-                        }
+                if ( listOfPath[j].indexOf(fileNames[i].name) !== -1) {
+                    if (fileNames[i].value === true) {
+                        listOfFile.push(listOfPath[j]);
                     }
-                } else if (listOfPath[j].indexOf('themeConfig.json') !== -1 && themeconf === false) {
-                    listOfFile.push(listOfPath[j]);
-                    themeconf = true;
                 }
             }
         }

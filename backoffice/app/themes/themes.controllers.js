@@ -11,8 +11,10 @@ ThemesController.controller("ThemesCtrl", [
         $scope.onTabSelect = function (tabId) {
           if(tabId == "select"){
               $scope.tab = "select";
-          }else{
+          }else if (tabId == "config"){
               $scope.tab = "config";
+          }else {
+            $scope.tab = "data";
           }
         };
 
@@ -32,10 +34,7 @@ ThemesController.controller("ThemesCtrl", [
                 if(element.indexOf("json") === -1){
                     var index = $scope.listThemeFiles.indexOf(element);
                     $scope.listThemeFiles.splice(index, 1);
-                } else if(element.indexOf("themeConfig.json") !== -1){
-                    var index = $scope.listThemeFiles.indexOf(element);
-                    $scope.listThemeFiles.splice(index, 1);
-                } else {
+                }  else {
                     $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
                 }
             });

@@ -2,7 +2,7 @@
     <form name="form" ng-submit="validate(tab)" ng-show="!showLoading"
         role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
-            <ns-translation ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
+            <ns-translation ng-hide ="tab !== 'config'" ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
     <div class="box-content">
     <div class="scrollmenu">
         <ul class="nav nav-tabs">
@@ -22,7 +22,7 @@
                                                 <input type="text" class="form-control" ng-model="config.currentTheme">
                                             </div> -->
                 <div class="form-group">
-                    <label translate>themes.themeChoice</label> <br />
+                    <h3 style="margin-left:10px;" translate>themes.themeChoice</h3> <br />
                     <select name="themesList" id="themesList" class="form-control" ng-model="config.currentTheme">
                         <!-- <option value="default_theme">Default theme</option> -->
                         <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
@@ -54,11 +54,13 @@
            <div id="config" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
 
             <br />
-                <label ng-if="theme.currentThemeVar" style="margin:20px 0" translate>themes.currentThemeVar</label>
+                <div class="form-group">
+                    <h3 ng-if="theme.currentThemeVar" style="margin-left:10px;margin:20px 0" translate>themes.currentThemeVar</h3>
+                </div>
                 <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
                 <div>
                     <div ng-repeat = "group in customiseTheme.arrayGroup">
-                        <label>{{group}} : </label>
+                        <h4><b>{{group}} : </b></h4>
                         <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group"> 
                             {{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) : {{themeConfig.variables[lang][var].description}}
                             <br>
@@ -75,32 +77,31 @@
                 </div>
                <!-- <label ng-if="themeConfig.variables.lenght === 0">Pas de variables</label> -->
             </div>
-            <div id="data" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
-                <label translate>themes.themeDatas</label> <br />
-                <div style="right: 10%;" class="form-group">
+            <div id="data" class="tab-pane fade in active" ng-if="tab === 'data'" style="width:50%;margin-left:10%;">
+                <h3 style="margin-left:10px;" translate>themes.themeDatas</h3> <br />
+                <div >
+                    <table style="text-align: center;">
+                        <tr style = "height: 50px;" ng-repeat="file in listAllThemeFiles">
+                            <td>
+                                <label>{{file.name.substr(0, file.name.length-5)}} : </label>
+                            </td>
+                            <td>
+                                <ns-switch name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
+                                <label ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <br>
+                </div>
+                
+                <div style="padding-left: 90%; display: inline-block;" class="form-group">
                     <a download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                         themes.themeDatasLead
                     </a>
                     <br />
                     <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
                     <label class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
-                </div>
-                <div>
-                    <table>
-                    <tr ng-repeat="file in listAllThemeFiles">
-                        <td>
-                            <label>{{file.name}} : </label>
-                        </td>
-                        <td>
-                            <ns-switch name='{{file.name}}' ng-model='file.value' ></ns-switch>
-                            <br>
-                        </td>
-                        <br>
-                    </tr>
-                    </table>
-                    <br>
-                    <br>
-                    <br>
                 </div>
             </div>
         </div>

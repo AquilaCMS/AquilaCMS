@@ -15,5 +15,6 @@
     "themeDatas": "Données du thème",
     "themeDatasLead": "Installer les données du thème",
     "themeDatasOverride": "Ecraser les données existantes",
-    "remove":"Supprimer le thème"
+    "remove":"Supprimer le thème",
+    "required": "Requis"
 }
