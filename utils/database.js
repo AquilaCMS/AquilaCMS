@@ -155,8 +155,7 @@ const applyMigrationIfNeeded = async () => {
             let migration = config.environment.migration || 0;
             for (migration; migration < migrationScripts.length; migration++) {
                 await migrationScripts[migration]();
-                config.environment.migration++;
-                await Configuration.updateOne({}, config);
+                await Configuration.updateOne({}, {'environment.migration': migration + 1});
             }
         }
     } catch (e) {

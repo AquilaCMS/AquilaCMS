@@ -1,4 +1,4 @@
-const {Modules} = require('../orm/models');
+const {Modules, Configuration} = require('../orm/models');
 
 /* const migration_N_Sample = async () => {
     console.log('Applying migration script "samigration_N_Samplemple"...');
@@ -36,15 +36,24 @@ const migration_1_ModulesNewPackageDependencies = async () => {
     });
 };
 
-/* const migration_2_CreatedAt = async () => {
+const migration_2_Metrics = async () => {
+    console.log('Applying migration script "migration_2_Metrics"...');
+    const config = await Configuration.findOne({});
+    if (config && config.environment) {
+        await Configuration.updateOne({}, {$unset: {'environment.sendMetrics': {}}});
+    }
+};
+
+/* const migration_3_CreatedAt = async () => {
     console.log('Applying migration script "migration_2_CreatedAt"...');
     // TODO
 }; */
 
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
-    migration_1_ModulesNewPackageDependencies
-    // migration_2_CreatedAt
+    migration_1_ModulesNewPackageDependencies,
+    migration_2_Metrics
+    // migration_3_CreatedAt
     // sample
 ];
 
