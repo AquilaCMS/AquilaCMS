@@ -1,6 +1,6 @@
-// name = nom du produit, prix = prix initial du produit, prixreduit = prix du produit avec les réductions
-// Si il n'y a pas de prix avec réduction, donner le prix normal à la fonction dans la variable prixreduit
-// id = l'id du produit ($prd[index du produit].id), i = index du produit + 1
+// name = name of the product, prix = initial price of the product, prixreduit = price of the product with reductions
+// If there is no reduced price, give as a parameter initial price of the product for the variable prixreduit
+// id = id of the product (default: ($prd[index du produit].id)), i = index of the product + 1
 function check_informations(name, prix, prixreduit, id, i) {
     const link2 = ('.content .products-grid > #' + id + ' > .product__content');
     cy.get(link2 + ' > .product__entry > a > h4').then(($name) => {
@@ -29,35 +29,32 @@ function check_informations(name, prix, prixreduit, id, i) {
 
 describe('Sorting by \'Price +\'', function() {
         it('Check Products after sorting by \'Price +\' ', function() {
-            cy.viewport(1920, 969)
-    
-            cy.visit('http://localhost:3010/')
+            cy.visit('')
             
-            // Aller dans la page 'mes produits'
+            // Go to "my-products" page
             cy.get('[href="/c/mes-produits"]').click({force:true})
             cy.wait(1500)
 
-            // Activer le tri
+            // Activate sorting
             cy.get('#field-sort-by').select('Prix +', {force:true})
             cy.wait(1500)
 
             const link = '.content .products-grid';
 
-            // Récupérer la liste des produits affichés
+            // Get the list of visible products
             cy.get(link + ' .product--horizontal').then(($prd) => {
                 for (var i = 0; i < $prd.length; i++) {
                     console.log($prd[i], $prd[i].id)
                 }
-                check_informations('Tenue complète', 59.99, 30, $prd[0].id, 1);
-                check_informations('Sweat jaune', 29, 29, $prd[1].id, 2);
-                check_informations('Sweat noir', 28, 28, $prd[2].id, 3);
-                check_informations('T-shirt marinière rouge', 25, 25, $prd[3].id, 4);
-                check_informations('T-shirt blanc/vert', 22, 22, $prd[4].id, 5);
-                check_informations('T-shirt basique noir', 17, 17, $prd[5].id, 6);
-                check_informations('T-shirt basique bleu', 17, 17, $prd[6].id, 7);
-                check_informations('T-shirt basique blanc', 17, 13, $prd[7].id, 8);
-                check_informations('Chaussettes noires', 8, 8, $prd[8].id, 9);
-                check_informations('Chaussettes bleues', 8, 8, $prd[9].id, 10);
+                check_informations('Sweat jaune', 29, 5, $prd[0].id, 1);
+                check_informations('Sweat noir', 28, 5, $prd[1].id, 2);
+                check_informations('T-shirt marinière rouge', 25, 5, $prd[2].id, 3);
+                check_informations('T-shirt blanc/vert', 22, 5, $prd[3].id, 4);
+                check_informations('T-shirt basique bleu', 17, 5, $prd[4].id, 5);
+                check_informations('T-shirt basique noir', 17, 5, $prd[5].id, 6);
+                check_informations('T-shirt basique blanc', 17, 5, $prd[6].id, 7);
+                check_informations('Chaussettes bleues', 8, 5, $prd[7].id, 8);
+                check_informations('Chaussettes noires', 8, 5, $prd[8].id, 9);
             })
         })
 })
@@ -65,89 +62,83 @@ describe('Sorting by \'Price +\'', function() {
 
 describe('Sorting by \'Price +\'', function() {
     it('Check Products after sorting by \'Price +\' in T-shirt category', function() {
-        cy.viewport(1920, 969)
-    
-        cy.visit('http://localhost:3010/')
+        cy.visit('')
   
-        // Aller dans la page 'T-shirts'
+        // Go to "T-shirts" page
         cy.get('[href="/c/mes-produits"]').trigger('mouseover', {force:true})
         cy.get('[href="/c/mes-produits/t-shirt"]').click({force:true})
         cy.wait(1500)
 
-        // Activer le tri
+        // Activate sorting
         cy.get('#field-sort-by').select('Prix +', {force:true})
         cy.wait(1500)
 
         const link = '.content .products-grid';
 
-        // Récupérer la liste des produits affichés
+        // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
             for (var i = 0; i < $prd.length; i++) {
                 console.log($prd[i], $prd[i].id)
             }
-            check_informations('T-shirt marinière rouge', 25, 25, $prd[0].id, 1);
-            check_informations('T-shirt blanc/vert', 22, 22, $prd[1].id, 2);
-            check_informations('T-shirt basique noir', 17, 17, $prd[2].id, 3);
-            check_informations('T-shirt basique bleu', 17, 17, $prd[3].id, 4);
-            check_informations('T-shirt basique blanc', 17, 13, $prd[4].id, 5);
+            check_informations('T-shirt marinière rouge', 25, 5, $prd[0].id, 1);
+            check_informations('T-shirt blanc/vert', 22, 5, $prd[1].id, 2);
+            check_informations('T-shirt basique bleu', 17, 5, $prd[2].id, 3);
+            check_informations('T-shirt basique noir', 17, 5, $prd[3].id, 4);
+            check_informations('T-shirt basique blanc', 17, 5, $prd[4].id, 5);
         })
     })
 })
 
 describe('Sorting by \'Price +\'', function() {
     it('Check Products after sorting by \'Price +\' in Sweat category', function() {
-        cy.viewport(1920, 969)
-    
-        cy.visit('http://localhost:3010/')
+        cy.visit('')
   
-        // Aller dans la page 'Sweats'
+        // Go to "Sweats" page
         cy.get('[href="/c/mes-produits"]').trigger('mouseover', {force:true})
         cy.get('[href="/c/mes-produits/sweat"]').click({force:true})
         cy.wait(1500)
 
-        // Activer le tri
+        // Activate sorting
         cy.get('#field-sort-by').select('Prix +', {force:true})
         cy.wait(1500)
 
         const link = '.content .products-grid';
 
-        // Récupérer la liste des produits affichés
+        // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
             for (var i = 0; i < $prd.length; i++) {
                 console.log($prd[i], $prd[i].id)
             }
 
-            check_informations('Sweat jaune', 29, 29, $prd[0].id, 1);
-            check_informations('Sweat noir', 28, 28, $prd[1].id, 2);
+            check_informations('Sweat jaune', 29, 5, $prd[0].id, 1);
+            check_informations('Sweat noir', 28, 5, $prd[1].id, 2);
         })
     })
 })
 
 describe('Sorting by \'Price +\'', function() {
     it('Check Products after sorting by \'Price +\' in Socks category', function() {
-        cy.viewport(1920, 969)
-    
-        cy.visit('http://localhost:3010/')
+        cy.visit('')
   
-        // Aller dans la page 'Chaussettes'
+        // Go to "Socks" page
         cy.get('[href="/c/mes-produits"]').trigger('mouseover', {force:true})
         cy.get('[href="/c/mes-produits/chaussettes"]').click({force:true})
         cy.wait(1500)
 
-        // Activer le tri
+        // Activate sorting 
         cy.get('#field-sort-by').select('Prix +', {force:true})
         cy.wait(1500)
 
         const link = '.content .products-grid';
 
-        // Récupérer la liste des produits affichés
+        // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
             for (var i = 0; i < $prd.length; i++) {
                 console.log($prd[i], $prd[i].id)
             }
 
-            check_informations('Chaussettes noires', 8, 8, $prd[0].id, 1);
-            check_informations('Chaussettes bleues', 8, 8, $prd[1].id, 2);
+            check_informations('Chaussettes bleues', 8, 5, $prd[0].id, 1);
+            check_informations('Chaussettes noires', 8, 5, $prd[1].id, 2);
         })
     })
 })
