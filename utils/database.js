@@ -107,57 +107,49 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'login',
-                            description : 'toDo'
+                            description : 'Login du client'
                         },
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'activate_account_token',
-                            description : 'toDo'
+                            description : 'Lien d\'activation du compte'
                         }
                     ]
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'New customer registration',
                     variables : [
                         {
                             value       : 'login',
-                            description : 'toDo'
+                            description : 'Customer login'
                         },
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firstname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'activate_account_token',
-                            description : 'toDo'
+                            description : 'Account activation link'
                         }
                     ]
 
@@ -172,149 +164,54 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'fullname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'login',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Login du client'
                         }
+
                     ]
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'New customer registration for admin',
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firstname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'fullname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'login',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Customer login'
                         }
-                    ]
 
+                    ]
                 }
             }},
-        {code        : 'orderSuccess',
+        {code        : 'orderSuccess', // TODO !
             position    : 3,
             translation : {
                 fr : {
                     name      : 'Commande validée (envoi du mail au client)',
                     variables : [
                         {
-                            value       : 'taxdisplay',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'address',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.priceTotal',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.delivery',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentMode',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentDescription',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.shipment',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'address.line1',
                             description : 'toDo'
                         },
@@ -343,15 +240,51 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'totalamount',
+                            value       : 'order.customer.firstname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'orderdata',
+                            value       : 'order.customer.lastname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'taxdisplay',
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery.price',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
                             description : 'toDo'
                         },
                         {
@@ -359,100 +292,15 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'payment_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'delivery_type',
+                            value       : 'taxdisplay',
                             description : 'toDo'
                         }
                     ]
-
                 },
                 en : {
                     name      : 'toDo',
                     variables : [
                         {
-                            value       : 'taxdisplay',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'address',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.priceTotal',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.delivery',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentMode',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentDescription',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.shipment',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'address.line1',
                             description : 'toDo'
                         },
@@ -481,11 +329,51 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'totalamount',
+                            value       : 'order.customer.firstname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'orderdata',
+                            value       : 'order.customer.lastname',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery.price',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
                             description : 'toDo'
                         },
                         {
@@ -493,99 +381,19 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'payment_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'delivery_type',
+                            value       : 'taxdisplay',
                             description : 'toDo'
                         }
                     ]
 
                 }
             }},
-        {code        : 'orderSuccessCompany',
+        {code        : 'orderSuccessCompany', // TODO !
             position    : 4,
             translation : {
                 fr : {
                     name      : 'Commande validée (envoi du mail à l\'entreprise)',
                     variables : [
-                        {
-                            value       : 'firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'address',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.priceTotal',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.delivery',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentMode',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentDescription',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.shipment',
-                            description : 'toDo'
-                        },
                         {
                             value       : 'address.line1',
                             description : 'toDo'
@@ -615,15 +423,51 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'totalamount',
+                            value       : 'order.customer.firstname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'orderdata',
+                            value       : 'order.customer.lastname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'taxdisplay',
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery.price',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
                             description : 'toDo'
                         },
                         {
@@ -631,19 +475,7 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'payment_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'delivery_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'shipment',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'customer_mobile_phone',
+                            value       : 'taxdisplay',
                             description : 'toDo'
                         }
                     ]
@@ -653,82 +485,6 @@ const initDBValues = async () => {
                     name      : 'toDo',
                     variables : [
                         {
-                            value       : 'firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'address',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.priceTotal',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.delivery',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentMode',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentDescription',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.shipment',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'address.line1',
                             description : 'toDo'
                         },
@@ -757,15 +513,51 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'totalamount',
+                            value       : 'order.customer.firstname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'orderdata',
+                            value       : 'order.customer.lastname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'taxdisplay',
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery.price',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
                             description : 'toDo'
                         },
                         {
@@ -773,19 +565,7 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'payment_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'delivery_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'shipment',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'customer_mobile_phone',
+                            value       : 'taxdisplay',
                             description : 'toDo'
                         }
                     ]
@@ -800,19 +580,19 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'tokenlink',
-                            description : 'toDo'
+                            description : 'Lien pour remplacer le mot de passe'
                         }
                     ]
 
@@ -822,19 +602,19 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firstname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'tokenlink',
-                            description : 'toDo'
+                            description : 'Recovery password link'
                         }
                     ]
 
@@ -848,7 +628,7 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'formDatas',
-                            description : 'toDo'
+                            description : 'Ensemble des informations du formulaire de contact'
                         }
                     ]
 
@@ -858,7 +638,7 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'formDatas',
-                            description : 'toDo'
+                            description : 'All the information in the contact form'
                         }
                     ]
 
@@ -872,27 +652,27 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'status',
-                            description : 'toDo'
+                            description : 'Status de la commande'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'URL du site'
                         },
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Numéro de commande'
                         }
                     ]
 
@@ -902,27 +682,27 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firstname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
-                            value       : 'status',
-                            description : 'toDo'
+                            value       : 'sstatus',
+                            description : 'Order status'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'Website Url'
                         },
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Order number'
                         }
                     ]
 
@@ -936,31 +716,27 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'fullname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         },
                         {
                             value       : 'refund',
-                            description : 'toDo'
+                            description : 'Type de remboursement'
                         },
                         {
                             value       : 'articles',
-                            description : 'toDo'
+                            description : 'Articles retournés'
                         },
                         {
                             value       : 'date',
-                            description : 'toDo'
+                            description : 'Date de retour'
                         },
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Numéro de la commande'
                         }
                     ]
 
@@ -970,31 +746,27 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firstname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'fullname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         },
                         {
                             value       : 'refund',
-                            description : 'toDo'
+                            description : 'Refund type'
                         },
                         {
                             value       : 'articles',
-                            description : 'toDo'
+                            description : 'Returned articles'
                         },
                         {
                             value       : 'date',
-                            description : 'toDo'
+                            description : 'Return date'
                         },
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Order number'
                         }
                     ]
 
@@ -1007,32 +779,28 @@ const initDBValues = async () => {
                     name      : 'Commande envoyée',
                     variables : [
                         {
-                            value       : 'fullname',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'address',
-                            description : 'toDo'
+                            description : 'Adresse du client'
                         },
                         {
                             value       : 'transporterName',
-                            description : 'toDo'
+                            description : 'Nom du transporteur'
                         },
                         {
                             value       : 'date',
-                            description : 'toDo'
+                            description : 'Date d\'envoie '
                         },
                         {
                             value       : 'trackingUrl',
-                            description : 'toDo'
+                            description : 'Lien de suivis de colis'
                         },
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Numéro de la commande'
                         }
                     ]
 
@@ -1041,124 +809,40 @@ const initDBValues = async () => {
                     name      : 'toDo',
                     variables : [
                         {
-                            value       : 'fullname',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'address',
-                            description : 'toDo'
+                            description : 'Customer address'
                         },
                         {
                             value       : 'transporterName',
-                            description : 'toDo'
+                            description : 'toDTransporteur'
                         },
                         {
                             value       : 'date',
-                            description : 'toDo'
+                            description : 'Send order'
                         },
                         {
                             value       : 'trackingUrl',
-                            description : 'toDo'
+                            description : 'All the information in the contact form'
                         },
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Numéro de la commande'
                         }
                     ]
 
                 }
             }},
-        {code        : 'orderSuccessDeferred',
+        {code        : 'orderSuccessDeferred', // TODO !
             position    : 10,
             translation : {
                 fr : {
                     name      : 'Commande avec paiement différé',
                     variables : [
                         {
-                            value       : 'taxdisplay',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'address',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.priceTotal',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.delivery',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentMode',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentDescription',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.shipment',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'address.line1',
                             description : 'toDo'
                         },
@@ -1187,15 +871,51 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'totalamount',
+                            value       : 'order.customer.firstname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'orderdata',
+                            value       : 'order.customer.lastname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'taxdisplay',
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery.price',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
                             description : 'toDo'
                         },
                         {
@@ -1203,15 +923,7 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'payment_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'delivery_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'payment.instruction',
+                            value       : 'taxdisplay',
                             description : 'toDo'
                         }
                     ]
@@ -1221,86 +933,6 @@ const initDBValues = async () => {
                     name      : 'toDo',
                     variables : [
                         {
-                            value       : 'taxdisplay',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'address',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.firstname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.lastname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.customer.fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.number',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.dateReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.hourReceipt',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.priceTotal',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.delivery',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentMode',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.paymentDescription',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'order.shipment',
-                            description : 'toDo'
-                        },
-                        {
                             value       : 'address.line1',
                             description : 'toDo'
                         },
@@ -1329,15 +961,51 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'totalamount',
+                            value       : 'order.customer.firstname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'orderdata',
+                            value       : 'order.customer.lastname',
                             description : 'toDo'
                         },
                         {
-                            value       : 'taxdisplay',
+                            value       : 'order.customer.company',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.dateReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.delivery.price',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.hourReceipt',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.number',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentDescription',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.paymentMode',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'order.priceTotal',
+                            description : 'toDo'
+                        },
+                        {
+                            value       : 'payment.instruction',
                             description : 'toDo'
                         },
                         {
@@ -1345,15 +1013,7 @@ const initDBValues = async () => {
                             description : 'toDo'
                         },
                         {
-                            value       : 'payment_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'delivery_type',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'payment.instruction',
+                            value       : 'taxdisplay',
                             description : 'toDo'
                         }
                     ]
@@ -1368,23 +1028,19 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'activate_account_token',
-                            description : 'toDo'
+                            description : 'Lien d\'activation du compte'
                         }
                     ]
 
@@ -1394,23 +1050,19 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firsname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'activate_account_token',
-                            description : 'toDo'
+                            description : 'Account activation link'
                         }
                     ]
 
@@ -1424,31 +1076,23 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Numéro de la commande'
                         },
                         {
                             value       : 'status',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Status de la commande'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Nom de la société'
                         },
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Prénom du client'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Nom du client'
                         }
                     ]
 
@@ -1458,31 +1102,23 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'number',
-                            description : 'toDo'
+                            description : 'Order number'
                         },
                         {
                             value       : 'status',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'fullname',
-                            description : 'toDo'
-                        },
-                        {
-                            value       : 'name',
-                            description : 'toDo'
+                            description : 'Order status'
                         },
                         {
                             value       : 'company',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'firstname',
-                            description : 'toDo'
+                            description : 'Customer firstname'
                         },
                         {
                             value       : 'lastname',
-                            description : 'toDo'
+                            description : 'Customer lastname'
                         }
                     ]
 
