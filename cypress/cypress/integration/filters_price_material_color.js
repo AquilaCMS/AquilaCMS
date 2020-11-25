@@ -1,5 +1,5 @@
-describe ('Check des Filtres', function () {
-    it ('Check des filtres prix, couleur et matière', function () {
+describe ('Check filters', function () {
+    it ('Check price, material and color filter', function () {
         cy.visit('');
 
         // There are variables for functions calls in the script
@@ -9,7 +9,7 @@ describe ('Check des Filtres', function () {
         const colorid = '#244161';
 
   
-        // Go to a category page
+        // Go to 'T-shirt' page
         cy.get('.nav [href="/c/mes-produits"]').trigger('mouseover', {force:true});
         cy.get('.nav [href="/c/mes-produits/t-shirt"]').click({force:true});
         cy.wait(1500);
@@ -27,7 +27,7 @@ describe ('Check des Filtres', function () {
             cy.get('.sidebar > .sidebar__actions > button').click({force:true});
         }
 
-        // On donne à cette fonction gd (1 ou 2 si gauche ou droite) et le nouveau prix  => Elle marche à moitié mais selon moi ça vient du drag&drop inexistant
+        // gd = 1 if you want tomove the 1st handle or 2 if you want to move the second
         function move_filter(gd, nvprix) {
             gd = gd.toString();
             cy.get('.sidebar > .form-filters > form > .form__body > .widget > .rc-slider > .rc-slider-handle-' + gd).then(($rc) => {
@@ -35,7 +35,7 @@ describe ('Check des Filtres', function () {
                     var cran;
                     cran = (1 / (parseInt($span[1].textContent) - parseInt($span[0].textContent))) * 100;
                     if (gd == 1) {
-                        // On augmente le prix petit à petit afin de ne pas faire bugger le filtre
+                        // We are increasing price gradually to avoid bugs in filter
                         for (var ii = (parseInt($rc[0].style.left) / cran); ii < (nvprix - parseInt($span[0].textContent)); ii++) {
                             cy.get('.sidebar > .form-filters > form > .form__body > .widget > .rc-slider > .rc-slider-handle-' + gd).then(($btn) => {
                                 $rc[0].style.left = ((parseInt($rc[0].style.left, 10) + cran).toString() + '%');
@@ -44,7 +44,7 @@ describe ('Check des Filtres', function () {
                             cy.wait(500);
                         }
                     } else if (gd == 2) {
-                        // On diminue le prix petit à petit afin de ne pas faire bugger le filtre
+                        // We are decreasing price gradually to avoir bugs in filter
                         console.log('ttt ' + (parseInt($span[0].textContent)), 'uuu ' + (parseInt($rc[0].style.left)) / cran)
                         for (var ii = 25 - (parseInt($span[0].textContent) + (parseInt($rc[0].style.left)) / cran); ii < (parseInt($span[1].textContent) - nvprix); ii++) {
                             console.log(parseInt($span[1].textContent), (parseInt($span[1].textContent) - nvprix), ii)
@@ -62,11 +62,15 @@ describe ('Check des Filtres', function () {
             })
         }
 
-        // Cette fonction va check les materials et ne prend que le nom de celui à vérifier en paramètre
+        // This fonction will check materials and take only the one you want to check
         function check_material_filter(materialName) {
             // Add Material Filter
-            // L'ID dessous est l'ID des pages catégorie, le remplacer s'il est venu à changer
-            cy.get('.sidebar #5d3967aa4aa9c1692db068ce_div').click();
+            // ID behind is category ID, you need to edit it if he changes
+            try {
+                cy.get('.sidebar #5d3967aa4aa9c1692db068ce_div').click();
+            } catch (e) {
+                throw ("Check if category ID is the same in the script and in your page")
+            }
             cy.get('.sidebar input#5d3967aa4aa9c1692db068ce_' + materialName).check({force:true});
             cy.wait(1000);
 
@@ -76,17 +80,17 @@ describe ('Check des Filtres', function () {
                     console.log($prd[i]);
                     cy.get('#' + $prd[i].id + ' > .product__content > .product__entry > a').click({force:true});
                     cy.wait(1000);
-                    // Je veux ici vérifier si dans matières, il y a bien la matière que l'on à filtrée
-                    // On vérifie dans une page produit tous les attributs, puis leur valeur si attribut == 'Matériel'
+                    // I want here to check if, in material attribute of product, there is the material we wanted to check
+                    // We check in a product page all attributes, and values on an attribute if it is "Matières"
                     cy.get('.table-specs > table > tbody').then(($crc) => {
                         for (var ii = 0; $crc[0].children[ii] ; ii++) {
-                            // On récupère le nom de l'attribut
+                            // We get name of the attribute
                             arr[ii] = $crc[0].children[ii].children[0].outerText;
-                            // On vérifie si il est égal ou non à 'Matières'
+                            // We check if it is equal to "Matières"
                             if (arr[ii] == "Matières") {
-                                // On récupère les matières du produit sous forme de tableau contenant toutes les matières du produit
+                                // We get materials of the product in an array containing all products materials
                                 arr[ii] = $crc[0].children[ii].children[1].outerText.split(", ");
-                                // On vérifie si le produit en question possède bien l'attribut recherché
+                                // We check if the product we are in have material we want to check
                                 for (var iii = 0; arr[ii][iii]; iii++) {
                                     if (arr[ii][iii] == materialName) {
                                         arr.material = true;
@@ -99,14 +103,14 @@ describe ('Check des Filtres', function () {
                         }
                     })
 
-                    // Go to a category page
+                    // Go to 'T-shirt page
                     cy.get('.nav [href="/c/mes-produits"]').trigger('mouseover', {force:true});
                     cy.get('.nav [href="/c/mes-produits/t-shirt"]').click({force:true});
                     cy.wait(1500);
                 }
             })
 
-            // Go to a category page
+            // Go to 'T-shirt' page
             cy.get('.nav [href="/c/mes-produits"]').trigger('mouseover', {force:true});
             cy.get('.nav [href="/c/mes-produits/t-shirt"]').click({force:true});
             cy.wait(1500);
@@ -134,18 +138,18 @@ describe ('Check des Filtres', function () {
                         console.log($prd[i]);
                         cy.get('#' + $prd[i].id + ' > .product__content > .product__entry > a').click({force:true});
                         cy.wait(1000);
-                        // Je veux ici vérifier si dans matières, il y a bien la matière que l'on à filtrée
-                        // On vérifie dans une page produit tous les attributs, puis leur valeur si attribut == 'Matériel'
+                        // I want here to check if, in color attribute of product, there is the color we wanted to check
+                        // We check in a product page all attributes, and values on an attribute if it is "Couleurs"
                         cy.get('.table-specs > table > tbody').then(($crc) => {
                             console.log($crc)
                             for (var ii = 0; $crc[0].children[ii] ; ii++) {
                                 arr[ii] = $crc[0].children[ii].children[0].outerText;
                                 if (arr[ii] == "Couleurs") {
-                                    // Je souhaite ici récupérer la couleur en parsant l'html de l'objet
+                                    // I want here to get color of the product by parsing html of the object 'color'
                                     color = $crc[0].children[ii].children[1].children[0].style.backgroundColor;
-                                    // On parse ici la propriété color afin de récupérer un tableau contenant notre couleur en rgb
+                                    // We are parsing color property to get an array containing the color in rgb format
                                     color = color.slice(color.search(/[(]/) + 1, color.search(/[)]/)).split(', ');
-                                    // On transforme color en hexadecimal pour pouvoir le comparer
+                                    // We are changing rg color in hexadecimal color to compre it at colorID we wanted to check
                                     color = rgbToHex(parseInt(color[0], 10), parseInt(color[1], 10), parseInt(color[2], 10));
                                     if (color == colorid) {
                                         arr.color = true;
@@ -157,7 +161,7 @@ describe ('Check des Filtres', function () {
                             }
                         })
     
-                        // Go to a category page
+                        // Go to 'T-shirt' page
                         cy.get('.nav [href="/c/mes-produits"]').trigger('mouseover', {force:true});
                         cy.get('.nav [href="/c/mes-produits/t-shirt"]').click({force:true});
                         cy.wait(1500);
@@ -177,7 +181,7 @@ describe ('Check des Filtres', function () {
 
             for (var i = 0; i < test.length; i++) {
                 nb = parseInt(test[i].textContent);
-                // Si on bouge le filtre de gauche ou de droite, on a pas le même comparateur de prix
+                // If we move left handle or right one, we don't have same price comparator
                 if (gd == 1) {    
                     if (nb < newprice) {
                         throw('Le filtre prix ne fonctionne pas');
@@ -191,13 +195,11 @@ describe ('Check des Filtres', function () {
         })
         reset_filter();
 
-        // Juste donner en paramètre le nom du filtre
+        // Just give as a parameter of this function material of the filter (Go to top of this script to change it)
         check_material_filter(material);
         reset_filter();
 
-        // Check pour un filtre couleur 
+        // Just give as a parameter of this function color id (in hexadecimal, ex: #000000) of the filter (Go to top of this script to change it)
         check_color_filter(colorid);
-
-
     })
 })
