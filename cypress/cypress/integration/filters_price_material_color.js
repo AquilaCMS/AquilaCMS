@@ -39,18 +39,14 @@ describe ('Check filters', function () {
                         for (var ii = (parseInt($rc[0].style.left) / cran); ii < (nvprix - parseInt($span[0].textContent)); ii++) {
                             cy.get('.sidebar > .form-filters > form > .form__body > .widget > .rc-slider > .rc-slider-handle-' + gd).then(($btn) => {
                                 $rc[0].style.left = ((parseInt($rc[0].style.left, 10) + cran).toString() + '%');
-                                console.log(((parseInt($rc[0].style.left, 10) + cran).toString() + '%'))
                             }).click({force:true});
                             cy.wait(500);
                         }
                     } else if (gd == 2) {
                         // We are decreasing price gradually to avoir bugs in filter
-                        console.log('ttt ' + (parseInt($span[0].textContent)), 'uuu ' + (parseInt($rc[0].style.left)) / cran)
                         for (var ii = 25 - (parseInt($span[0].textContent) + (parseInt($rc[0].style.left)) / cran); ii < (parseInt($span[1].textContent) - nvprix); ii++) {
-                            console.log(parseInt($span[1].textContent), (parseInt($span[1].textContent) - nvprix), ii)
                             cy.get('.sidebar > .form-filters > form > .form__body > .widget > .rc-slider > .rc-slider-handle-' + gd).then(($btn) => {
                                 $rc[0].style.left = ((parseInt($rc[0].style.left, 10) - cran).toString() + '%');
-                                console.log(((parseInt($rc[0].style.left, 10) - cran).toString() + '%'))
                             }).click({force:true});
                             cy.wait(500);
                         }
@@ -77,7 +73,6 @@ describe ('Check filters', function () {
             cy.get('.content .products-grid .product--horizontal').then(($prd) => {
                 var arr = [];
                 for (var i = 0; i < $prd.length; i++) {
-                    console.log($prd[i]);
                     cy.get('#' + $prd[i].id + ' > .product__content > .product__entry > a').click({force:true});
                     cy.wait(1000);
                     // I want here to check if, in material attribute of product, there is the material we wanted to check
@@ -121,7 +116,6 @@ describe ('Check filters', function () {
             cy.get('.sidebar #5da5765ede6bed65e1d2a6f8_div').click();
             cy.wait(750)
             cy.get('.sidebar #5da5765ede6bed65e1d2a6f8_div > .list-checkboxes > .checkbox').then(($ttt) => {
-                console.log($ttt);
                 for (var i = 0; $ttt[i]; i++) {
                     if ($ttt[i].id == ('5da5765ede6bed65e1d2a6f8_' + colorid + '_div')) {
                         i++;
@@ -135,13 +129,11 @@ describe ('Check filters', function () {
                     var arr = [];
                     var color;
                     for (var i = 0; i < $prd.length; i++) {
-                        console.log($prd[i]);
                         cy.get('#' + $prd[i].id + ' > .product__content > .product__entry > a').click({force:true});
                         cy.wait(1000);
                         // I want here to check if, in color attribute of product, there is the color we wanted to check
                         // We check in a product page all attributes, and values on an attribute if it is "Couleurs"
                         cy.get('.table-specs > table > tbody').then(($crc) => {
-                            console.log($crc)
                             for (var ii = 0; $crc[0].children[ii] ; ii++) {
                                 arr[ii] = $crc[0].children[ii].children[0].outerText;
                                 if (arr[ii] == "Couleurs") {

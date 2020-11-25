@@ -9,7 +9,6 @@ function check_informations(name, prix, prixreduit, id, i) {
         }
     })
     cy.get(link2 + ' > .product__aside > .product-price').then(($price) => {
-        console.log($price)
         if ($price[0].children.length == 1) {
             if (parseFloat($price[0].children[0].innerText, 10) != prix) {
                 throw('Le Prix du Produit ' + i + ' ne correspond pas à ' + prix + '€ : ' + parseFloat($price[0].children[0].innerText, 10))
@@ -43,9 +42,6 @@ describe('Sorting by \'Price +\'', function() {
 
             // Get the list of visible products
             cy.get(link + ' .product--horizontal').then(($prd) => {
-                for (var i = 0; i < $prd.length; i++) {
-                    console.log($prd[i], $prd[i].id)
-                }
                 check_informations('Sweat jaune', 29, 5, $prd[0].id, 1);
                 check_informations('Sweat noir', 28, 5, $prd[1].id, 2);
                 check_informations('T-shirt marinière rouge', 25, 5, $prd[2].id, 3);
@@ -77,9 +73,6 @@ describe('Sorting by \'Price +\'', function() {
 
         // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
-            for (var i = 0; i < $prd.length; i++) {
-                console.log($prd[i], $prd[i].id)
-            }
             check_informations('T-shirt marinière rouge', 25, 5, $prd[0].id, 1);
             check_informations('T-shirt blanc/vert', 22, 5, $prd[1].id, 2);
             check_informations('T-shirt basique bleu', 17, 5, $prd[2].id, 3);
@@ -106,10 +99,6 @@ describe('Sorting by \'Price +\'', function() {
 
         // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
-            for (var i = 0; i < $prd.length; i++) {
-                console.log($prd[i], $prd[i].id)
-            }
-
             check_informations('Sweat jaune', 29, 5, $prd[0].id, 1);
             check_informations('Sweat noir', 28, 5, $prd[1].id, 2);
         })
@@ -133,10 +122,6 @@ describe('Sorting by \'Price +\'', function() {
 
         // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
-            for (var i = 0; i < $prd.length; i++) {
-                console.log($prd[i], $prd[i].id)
-            }
-
             check_informations('Chaussettes bleues', 8, 5, $prd[0].id, 1);
             check_informations('Chaussettes noires', 8, 5, $prd[1].id, 2);
         })
