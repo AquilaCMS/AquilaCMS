@@ -1,4 +1,4 @@
-const {Modules, Configuration} = require('../orm/models');
+const {Modules, Configuration, MailType} = require('../orm/models');
 
 /* const migration_N_Sample = async () => {
     console.log('Applying migration script "samigration_N_Samplemple"...');
@@ -44,6 +44,11 @@ const migration_2_Metrics = async () => {
     }
 };
 
+const migration_3_MailTypes = async () => {
+    console.log('Applying migration script "migration_3_MailTypes"...');
+    await MailType.remove({});
+};
+
 /* const migration_3_CreatedAt = async () => {
     console.log('Applying migration script "migration_2_CreatedAt"...');
     // TODO
@@ -52,7 +57,8 @@ const migration_2_Metrics = async () => {
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
-    migration_2_Metrics
+    migration_2_Metrics,
+    migration_3_MailTypes
     // migration_3_CreatedAt
     // sample
 ];
