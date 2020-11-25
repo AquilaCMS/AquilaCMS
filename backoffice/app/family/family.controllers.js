@@ -208,20 +208,29 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
             });
         };
         $scope.updateFromUnivers = function (idUniverse) {
-            $scope.selectedFamilies = "";
-            $scope.selectedUniverse = idUniverse;
-            $scope.families = [];
-
-            FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 99, populate:'children'}}, function (result) {
-                $scope.families = result.children;
-            });
+            if($scope.selectedUniverse != idUniverse){
+                $scope.selectedFamilies = "";
+                $scope.selectedUniverse = idUniverse;
+                $scope.families = [];
+    
+                FamilyV2.query({PostBody: {filter: {_id: idUniverse}, limit: 99, populate:'children'}}, function (result) {
+                    $scope.families = result.children;
+                });
+            }else{
+                $scope.selectedUniverse = 0;
+            }
+ 
         };
         $scope.updateFromFamily = function (idCategoryV2) {
-            $scope.selectedFamily = idCategoryV2;
-            $scope.subFamilies = [];
-            FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 99, populate: 'children'}}, function (result) {
-                $scope.subFamilies = result.datas[0].children;
-            });
+            if($scope.selectedFamily != idCategoryV2){
+                $scope.selectedFamily = idCategoryV2;
+                $scope.subFamilies = [];
+                FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 99, populate: 'children'}}, function (result) {
+                    $scope.subFamilies = result.datas[0].children;
+                });
+            }else{
+                $scope.selectedFamily = 0;
+            }
         };
 
         $scope.updateFromSubFamily = function (idCategoryV2) {
