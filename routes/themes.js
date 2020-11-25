@@ -1,9 +1,11 @@
 const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const themesServices              = require('../services/themes');
-const fs                          = require('../utils/fsp');
+const serviceThemeConfig          = require('../services/themeConfig');
+const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const serverUtils                 = require('../utils/server');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.get('/v2/themes', listTheme);
@@ -16,6 +18,7 @@ module.exports = function (app) {
     app.post('/v2/themes/save',            authentication, adminAuth, save);
     app.post('/v2/themes/package/install', authentication, adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   authentication, adminAuth, buildTheme);
+    app.post('/v2/themes/getConfig',   authentication, adminAuth, getConfig);
 };
 
 /**
@@ -36,14 +39,8 @@ async function save(req, res, next) {
  */
 async function listTheme(req, res, next) {
     try {
-        const allTheme = [];
-        for (const element of await fs.readdir('./themes/')) {
-            const fileOrFolder = await fs.stat(`./themes/${element}`);
-            if (fileOrFolder.isDirectory()) {
-                allTheme.push(element);
-            }
-        }
-        return res.send(allTheme);
+        const allTheme = await themesServices.listTheme();
+        res.send({data: allTheme});
     } catch (err) {
         return next(err);
     }
@@ -156,6 +153,26 @@ async function buildTheme(req, res, next) {
         themPath = themPath.replace('./themes/', '');
         await themesServices.buildTheme(themPath);
         res.send(packageManager.restart());
+    } catch (error) {
+        return next(error);
+    }
+}
+async function getConfig(req, res, next) {
+    try {
+        let userInfo;
+        if (req.headers && req.headers.authorization) {
+            try {
+                userInfo = getDecodedToken(req.headers.authorization);
+                if (userInfo) userInfo = userInfo.info;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        const themeConf = await serviceThemeConfig.getThemeConfig(req.body.PostBody);
+        const config    = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: '*'}}, userInfo);
+        const listTheme = await themesServices.listTheme();
+        const listFiles = await themesServices.ListfileNames();
+        res.send({themeConf, config, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }

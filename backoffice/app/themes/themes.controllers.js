@@ -23,47 +23,23 @@ ThemesController.controller("ThemesCtrl", [
         }).code;
 
         
-        ThemeConfig.query({ PostBody: { filter: {}, structure: {}, limit: 99 }}, function (response) {
-            $scope.customiseTheme ={};
-            $scope.customiseTheme.keys = {};
-            $scope.themeConfig.variables = {};
-            $scope.listThemeFiles = [];
-            $scope.listAllThemeFiles = [];
-            $scope.listThemeFiles = response.filenames;
-            $scope.listThemeFiles.forEach(element =>{
-                if(element.indexOf("json") === -1){
-                    var index = $scope.listThemeFiles.indexOf(element);
-                    $scope.listThemeFiles.splice(index, 1);
-                }  else {
-                    $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
-                }
-            });
-            
-            if(response.config.config && response.config.config.translation) {
-                $scope.languages.forEach(element  => {
-                    $scope.themeConfig.variables[element.code] = response.config.config.translation[element.code];
-                    delete $scope.themeConfig.variables[element.code].$promise;
-                    delete $scope.themeConfig.variables[element.code].$resolved;
-                    $scope.customiseTheme.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
-                    $scope.theme.currentThemeVar = true;
-                });
-                
-
-                // $scope.customiseTheme.arrayGroup = ["GRP1","GRP2","GRP3"];
-                
-            }
-        });
+        
 
         $scope.langChange = function (lang)
         {
-            // selectedLang = lang;
-            $scope.customiseTheme.arrayGroup = [];
-            for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
-                if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
-                    $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
-                   
+            if ($scope.customiseTheme === undefined){
+                $scope.LoadThemeCongig();
+            };
+            if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined){
+                $scope.customiseTheme.arrayGroup = [];
+                for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
+                    if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
+                        $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
+                    
+                    }
                 }
             }
+            
         };
 
         $scope.typeOf = function(value) {
@@ -86,19 +62,19 @@ ThemesController.controller("ThemesCtrl", [
             }
         }
 
-        $scope.config = ConfigV2.environment(function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
-            }
-        });
-        $scope.LoadAllThemes = function () {
-            $http.get("/v2/themes").then(function (response) {
-                $scope.themesList = response.data;
-            }, function (err) {
-                $scope.isLoading = false;
-                toastService.toast("danger", err.data);
-            });
-        };
+        // $scope.config = ConfigV2.environment(function () {
+        //     if (!$scope.config.adminPrefix) {
+        //         $scope.config.adminPrefix = "admin";
+        //     }
+        // });
+        // $scope.LoadAllThemes = function () {
+        //     $http.get("/v2/themes").then(function (response) {
+        //         $scope.themesList = response.data;
+        //     }, function (err) {
+        //         $scope.isLoading = false;
+        //         toastService.toast("danger", err.data);
+        //     });
+        // };
 
         $scope.beforeTheme = function () {
             $scope.showThemeLoading = true;
@@ -278,8 +254,52 @@ ThemesController.controller("ThemesCtrl", [
 
 
             }
-            $scope.LoadAllThemes();
+            //$scope.LoadAllThemes();
 
+            $scope.LoadThemeCongig = function () {
+                $http.post("/v2/themes/getConfig", { PostBody: { filter: {}, structure: {}, limit: 99 }}).then(function (response) {
+                    $scope.config = response.data.config.environment;
+                        if (!$scope.config.adminPrefix) {
+                            $scope.config.adminPrefix = "admin";
+                        }
+                    $scope.listThemeFiles = [];
+                    $scope.listAllThemeFiles = [];
+                    $scope.themesList = response.data.listTheme;
+                    $scope.listThemeFiles = response.data.listFiles;
+                    $scope.listThemeFiles.forEach(element =>{
+                        if(element.indexOf("json") === -1){
+                            var index = $scope.listThemeFiles.indexOf(element);
+                            $scope.listThemeFiles.splice(index, 1);
+                        }  else {
+                            $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
+                        }
+                    });
+                    $scope.customiseTheme ={};
+                    $scope.customiseTheme.keys = {};
+                    $scope.themeConfig.variables = {};
+                    
+                    if(response.data.config && response.data.themeConf.config.translation) {
+                        $scope.languages.forEach(element  => {
+                            $scope.themeConfig.variables[element.code] = response.data.themeConf.config.translation[element.code];
+                            delete $scope.themeConfig.variables[element.code].$promise;
+                            delete $scope.themeConfig.variables[element.code].$resolved;
+                            $scope.customiseTheme.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
+                            $scope.langChange($scope.language);
+                            $scope.theme.currentThemeVar = true;
+                        });
+                        
+
+                        // $scope.customiseTheme.arrayGroup = ["GRP1","GRP2","GRP3"];
+                        
+                    }
+                }, function (err) {
+                    $scope.isLoading = false;
+                    toastService.toast("danger", err.data);
+                });
+                
+            
+                
+            };
 
     }
 ]);

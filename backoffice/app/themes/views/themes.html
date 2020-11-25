@@ -13,7 +13,7 @@
         </ul>
     </div>
         <div class="tab-content">
-           <div id="select" class="tab-pane fade in active" ng-if="tab === 'select'">
+           <div id="select" class="col-md-8 tab-pane fade in active" ng-if="tab === 'select'" >
                 <!-- <h3 translate>themes.t1</h3> -->
                 <br/>
 
@@ -51,9 +51,9 @@
                 </div>
            </div>
 
-           <div id="config" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
+           <div id="config" class="col-md-8 tab-pane fade in active" ng-if="tab === 'config'" >
 
-            <br />
+                <br />
                 <div class="form-group">
                     <h3 ng-if="theme.currentThemeVar" style="margin-left:10px;margin:20px 0" translate>themes.currentThemeVar</h3>
                 </div>
@@ -77,17 +77,20 @@
                 </div>
                <!-- <label ng-if="themeConfig.variables.lenght === 0">Pas de variables</label> -->
             </div>
-            <div id="data" class="tab-pane fade in active" ng-if="tab === 'data'" style="width:50%;margin-left:10%;">
-                <h3 style="margin-left:10px;" translate>themes.themeDatas</h3> <br />
+            <div id="data" class="col-md-8 tab-pane fade in active" ng-if="tab === 'data'" >
+                <br />
+                <div class="form-group">
+                    <h3 style="margin-left:10px;" translate>themes.themeDatas</h3> 
+                </div>
                 <div >
-                    <table style="text-align: center;">
+                    <table>
                         <tr style = "height: 50px;" ng-repeat="file in listAllThemeFiles">
-                            <td>
+                            <td style="text-align: right;">
                                 <label>{{file.name.substr(0, file.name.length-5)}} : </label>
                             </td>
-                            <td>
-                                <ns-switch name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
-                                <label ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
+                            <td style = "margin-left: 10px;">
+                                <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
+                                <label style = "margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
                             </td>
                         </tr>
                     </table>
@@ -95,7 +98,7 @@
                     <br>
                 </div>
                 
-                <div style="padding-left: 90%; display: inline-block;" class="form-group">
+                <div style="float : right ;" class="form-group">
                     <a download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                         themes.themeDatasLead
                     </a>

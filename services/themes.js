@@ -166,12 +166,16 @@ const deleteTheme = async (themePath) => {
     console.log('Theme removed !');
 };
 
+const ListfileNames = async () => {
+    const fileNames = fs.readdirSync(path.join(global.appRoot, 'themes/default_theme/demoDatas'));
+    return (fileNames);
+};
 /**
  * @description Copy datas of selected theme models can be a .json or a .js
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, fileNames, configuration = null) => {
+const copyDatas = async (themePath, override = true, fileNames = ListfileNames(), configuration = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
     const listOfFile    = [];
@@ -351,7 +355,16 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
         )));
     }
 };
-
+const listTheme       = async () => {
+    const allTheme = [];
+    for (const element of await fs.readdir('./themes/')) {
+        const fileOrFolder = await fs.stat(`./themes/${element}`);
+        if (fileOrFolder.isDirectory()) {
+            allTheme.push(element);
+        }
+    }
+    return allTheme;
+};
 module.exports = {
     save,
     setConfigTheme,
@@ -364,5 +377,7 @@ module.exports = {
     setCustomCss,
     getAllCssComponentName,
     getThemePath,
-    loadTranslation
+    loadTranslation,
+    listTheme,
+    ListfileNames
 };
