@@ -241,6 +241,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 icon: "code-sample",
                                 tooltip: 'Add Shortcode',
                                 onAction: function () {
+                                    debugger;
                                     $scope.addShortcode();
                                 }
                             });

@@ -47,14 +47,6 @@ MailControllers.controller("MailDetailCtrl", [
                 icon:'<i class="fa fa-envelope-o" aria-hidden="true"></i>'
             }
         ]
-        $scope.typeName = "";
-        $scope.updateMailType = function () {
-            $scope.mailTypes.filter(obj => {
-                if (obj.code === $scope.mail.type){
-                    $scope.typeName = obj.name;
-                }
-            })
-        }
 
         if($routeParams.mailId != "new")
         {
@@ -78,7 +70,6 @@ MailControllers.controller("MailDetailCtrl", [
         $scope.MailGetById = function () {
             MailGetById.query({_id: $routeParams.mailId}, function (mail) {
                 $scope.mail = mail;
-                $scope.updateMailType();
             });
         };
         //On récupére le document uniquement si nous sommes en mode edit
@@ -86,8 +77,6 @@ MailControllers.controller("MailDetailCtrl", [
         {
             $scope.MailGetById();
         }
-
-        
 
         $scope.after = function(){
             $scope.MailGetById();
