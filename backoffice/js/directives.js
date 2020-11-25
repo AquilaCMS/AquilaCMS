@@ -241,7 +241,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 icon: "code-sample",
                                 tooltip: 'Add Shortcode',
                                 onAction: function () {
-                                    debugger;
                                     $scope.addShortcode();
                                 }
                             });
@@ -1543,12 +1542,12 @@ adminCatagenDirectives.directive("nsRule", [
                                         return "text";
                                 }
                             })(element.type);
-                            for(var i = 0, leni = langs.length; i < leni; i++)
-                                {
+                            for(var i = 0, leni = langs.length; i < leni; i++){
                                     let values = [];
-                                    for(var j = 0; j < Object.keys(element.translation).length; j++) {
-                                        const langKey = Object.keys(element.translation)[j]
-                                        values = values.concat(element.translation[langKey].values)
+                                    //we put only value of the correct languages
+                                    const langKey = langs[i].code;
+                                    if(element.translation[langKey]){
+                                        values = element.translation[langKey].values;
                                     }
                                     $scope.attributesClassed.push(
                                         {

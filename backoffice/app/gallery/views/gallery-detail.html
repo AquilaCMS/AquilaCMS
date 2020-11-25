@@ -22,7 +22,7 @@
             </div>
 
             <div ng-show="isEditMode" class="row">
-                <div class="col-sm-2 text-center" style="margin-bottom: 30px">
+                <div class="col-sm-2 text-center" style="margin-bottom: 30px;padding:15px;">
                     <div class="pointer boxShadow" style="padding-top: 100%; background: #ffffff; border-radius: 4px;" ng-click="openItemModal()">
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                             <i class="ico-plus-secondary"></i>
@@ -31,11 +31,26 @@
                     </div>
                 </div>
 
-                <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in gallery.items | orderBy:'order'" ns-drag="item" ns-drop="item">
-                    <div ng-show="item.src" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius: 4px;" ng-click="openItemModal(item)"></div>
-                    <div ng-show="item.content" class="video pointer boxShadow"
-                        style="padding-top: 100%; background: url(https://img.youtube.com/vi/{{item.content}}/0.jpg) no-repeat center; background-size: cover; border-radius: 4px;" ng-click="openItemModal(item)"></div>
+                <div class="col-sm-2" style="margin-bottom:30px;padding:15px;" ng-repeat="item in gallery.items | orderBy:'order'">
+                    <div class="dropCase" ondragenter="angular.element(this).scope().switchElement(this, 'in')" ondragleave="angular.element(this).scope().switchElement(this, 'out')" ondragstart="angular.element(this).scope().draggingStart(this)" draggable="true" ondragend="angular.element(this).scope().draggingEnd(this)" ns-drag="item" ns-drop="item">
+                        <div ng-show="item.src" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius: 4px;" ng-click="openItemModal(item)"></div>
+                        <div ng-show="item.content" class="video pointer boxShadow" style="padding-top: 100%; background: url(https://img.youtube.com/vi/{{item.content}}/0.jpg) no-repeat center; background-size: cover; border-radius: 4px;" ng-click="openItemModal(item)"></div>
+                    </div>
                 </div>
+                <div style="visibility: hidden;display: none;">
+                    <button id="dirty-button" type="button" ng-click="form.inputSlider.$setDirty();" style="visibility: hidden;display: none;">Make Dirty</button>
+                    <input name="inputSlider" type="text" ng-model="slider.inputForSlider" style="visibility: hidden;display: none;">
+                </div>
+                <style>
+                    .fakeDrop{
+                        border: 1px dashed rgb(200,200,100);
+                        background: rgb(240,240,200);
+                        /*background-image: none !important;*/
+                    }
+                    .opactityBad{
+                        opacity: 0.5;
+                    }
+                </style>
             </div>
         </ns-buttons>
     </form>
