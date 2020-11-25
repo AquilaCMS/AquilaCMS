@@ -92,7 +92,7 @@
         "5d24a3e94aa9c1692db04ac7",
         "5d24a43a4aa9c1692db04ad8",
         "5d24a4844aa9c1692db04ae4"
-      ], 
+      ],
       "is_new": false,
       "kind": "SimpleProduct",
       "creationDate": "2020-05-13T09:07:33.753Z",
@@ -180,12 +180,12 @@
       ],
       "pictos": [
         {
-          "_id" : "5f6c6d8a53464f269885a52b", 
-          "code" : "LoveIt", 
-          "image" : "loveit.png", 
-          "pictoId" : "5da09f77db0b3834cf91a506", 
-          "title" : "Love It", 
-          "location" : "TOP_LEFT"
+          "_id": "5f6c6d8a53464f269885a52b",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
         }
       ],
       "_id": "5c667f8a28a49c049c5863c8",
@@ -915,12 +915,12 @@
       ],
       "pictos": [
         {
-          "_id" : "5f6c6d8a53464f269885a52b", 
-          "code" : "LoveIt", 
-          "image" : "loveit.png", 
-          "pictoId" : "5da09f77db0b3834cf91a506", 
-          "title" : "Love It", 
-          "location" : "TOP_LEFT"
+          "_id": "5f6c6d8a53464f269885a52b",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
         }
       ],
       "_id": "5d24a4844aa9c1692db04ae4",
@@ -1279,7 +1279,16 @@
           "url": "photos/product/p/0/chaussette2.JPG"
         }
       ],
-      "pictos": [],
+      "pictos": [
+        {
+          "_id": "5fbe5e8ab739d135f4fce236",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
+        }
+      ],
       "_id": "5d3078aa4aa9c1692db05498",
       "type": "simple",
       "cmsBlocks": [],
@@ -1674,17 +1683,17 @@
     },
     {
       "_id": "5eb2cfdb6cdf0b436c831f23",
-      "price" : {
-        "et" : {
-            "normal" : 49.99
-        }, 
-        "ati" : {
-            "normal" : 59.99
-        }, 
-        "priceSort" : 49.99, 
-        "purchase" : 0, 
-        "tax" : 20
-    }, 
+      "price": {
+        "et": {
+          "normal": 49.99
+        },
+        "ati": {
+          "normal": 59.99
+        },
+        "priceSort": 49.99,
+        "purchase": 0,
+        "tax": 20
+      },
       "reviews": {
         "average": 0,
         "reviews_nb": 0,
