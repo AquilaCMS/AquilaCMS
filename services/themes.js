@@ -167,7 +167,7 @@ const deleteTheme = async (themePath) => {
 };
 
 const ListfileNames = async () => {
-    const fileNames = fs.readdirSync(path.join(global.appRoot, 'themes/default_theme/demoDatas'));
+    const fileNames = await fs.readdir(path.join(global.appRoot, 'themes/default_theme/demoDatas'));
     return (fileNames);
 };
 /**

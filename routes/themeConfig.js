@@ -11,9 +11,9 @@ module.exports = function (app) {
 
 async function getThemeConfig(req, res, next) {
     try {
-        const themeConf = await serviceThemeConfig.getThemeConfig(req.body.PostBody);
-        if (!themeConf.config) {
-            themeConf.config = {config: {}};
+        let themeConf = await serviceThemeConfig.getThemeConfig(req.body.PostBody);
+        if (!themeConf) {
+            themeConf = {config: {}};
         }
         res.json(themeConf);
     } catch (error) {
