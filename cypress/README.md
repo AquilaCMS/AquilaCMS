@@ -5,7 +5,7 @@ Firstly, you will need to execute ths following command:
 
 After that, a node_modules folder will be created.
 To run cypress, you will need to exexute this command:
-'./node_modules/.bin/cypress open'
+'npm run cypress'
 
 Cypress is now open.
 Tu run tests, you can click on files in cypress. It will open them in navigator and run them.
