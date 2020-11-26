@@ -42,15 +42,15 @@ describe('Sorting by \'Price -\'', function() {
 
             // Get the list of visible products
             cy.get(link + ' .product--horizontal').then(($prd) => {
-                check_informations('T-shirt basique blanc', 17, 5, $prd[0].id, 1);
-                check_informations('Chaussettes bleues', 8, 5, $prd[1].id, 2);
-                check_informations('Chaussettes noires', 8, 5, $prd[2].id, 3);
-                check_informations('T-shirt basique bleu', 17, 5, $prd[3].id, 4);
-                check_informations('T-shirt basique noir', 17, 5, $prd[4].id, 5);
-                check_informations('T-shirt blanc/vert', 22, 5, $prd[5].id, 6);
-                check_informations('T-shirt marinière rouge', 25, 5, $prd[6].id, 7);
-                check_informations('Sweat noir', 28, 5, $prd[7].id, 8);
-                check_informations('Sweat jaune', 29, 5, $prd[8].id, 9);
+                check_informations('T-shirt basique blanc', 17, 13, $prd[0].id, 1);
+                check_informations('Chaussettes bleues', 8, 8, $prd[1].id, 2);
+                check_informations('Chaussettes noires', 8, 8, $prd[2].id, 3);
+                check_informations('T-shirt basique bleu', 17, 17, $prd[3].id, 4);
+                check_informations('T-shirt basique noir', 17, 17, $prd[4].id, 5);
+                check_informations('T-shirt blanc/vert', 22, 22, $prd[5].id, 6);
+                check_informations('T-shirt marinière rouge', 25, 25, $prd[6].id, 7);
+                check_informations('Sweat noir', 28, 28, $prd[7].id, 8);
+                check_informations('Sweat jaune', 29, 29, $prd[8].id, 9);
             })
         })
 })
@@ -73,11 +73,11 @@ describe('Sorting by \'Price -\'', function() {
 
         // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
-            check_informations('T-shirt basique blanc', 17, 5, $prd[0].id, 1);
-            check_informations('T-shirt basique bleu', 17, 5, $prd[1].id, 2);
-            check_informations('T-shirt basique noir', 17, 5, $prd[2].id, 3);
-            check_informations('T-shirt blanc/vert', 22, 5, $prd[3].id, 4);
-            check_informations('T-shirt marinière rouge', 25, 5, $prd[4].id, 5);
+            check_informations('T-shirt basique blanc', 17, 13, $prd[0].id, 1);
+            check_informations('T-shirt basique bleu', 17, 17, $prd[1].id, 2);
+            check_informations('T-shirt basique noir', 17, 17, $prd[2].id, 3);
+            check_informations('T-shirt blanc/vert', 22, 22, $prd[3].id, 4);
+            check_informations('T-shirt marinière rouge', 25, 25, $prd[4].id, 5);
         })
     })
 })
@@ -101,8 +101,8 @@ describe('Sorting by \'Price -\'', function() {
 
         // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
-            check_informations('Sweat noir', 28, 5, $prd[0].id, 1);
-            check_informations('Sweat jaune', 29, 5, $prd[1].id, 2);
+            check_informations('Sweat noir', 28, 28, $prd[0].id, 1);
+            check_informations('Sweat jaune', 29, 29, $prd[1].id, 2);
         })
     })
 })
@@ -124,8 +124,8 @@ describe('Sorting by \'Price -\'', function() {
 
         // Get the list of visible products
         cy.get(link + ' .product--horizontal').then(($prd) => {
-            check_informations('Chaussettes bleues', 8, 5, $prd[0].id, 1);
-            check_informations('Chaussettes noires', 8, 5, $prd[1].id, 2);
+            check_informations('Chaussettes bleues', 8, 8, $prd[0].id, 1);
+            check_informations('Chaussettes noires', 8, 8, $prd[1].id, 2);
         })
     })
 })

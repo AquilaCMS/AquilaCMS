@@ -8,7 +8,7 @@ function makeid(length) {
     return result;
  }
 
-const email = makeid(10) + '@test.com';
+const email = makeid(10) + '@yopmail.com';
 
 describe ('Do a command with a new customer', function () {
     it ('Command of a product as a new customer', function () {
@@ -89,7 +89,7 @@ describe ('Do a command with a new customer', function () {
 })
 
 describe ('Command with existing client but not logged in', function () {
-    it ('Do a command of a product as an existing client but don\' logged in and with an edit of the delivery adress', function () {
+    it ('Do a command of a product as an existing client but not logged in and with an edit of the delivery address', function () {
         cy.visit('');
 
         // Do a Command
