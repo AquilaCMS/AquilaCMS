@@ -352,86 +352,39 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
     if (priceFilter) {
         prdsPrices = prdsPrices.filter((prd) => {
-            if (priceFilter.$or[1]['price.ati.special']) {
-                if (prd.price.ati.special) {
-                    if (prd.price.ati.special <= priceFilter.$or[1]['price.ati.special'].$lte
-                        && prd.price.ati.special >= priceFilter.$or[1]['price.ati.special'].$gte) {
-                        return true;
-                    }
-                } else {
-                    if (prd.price.ati.normal <= priceFilter.$or[0]['price.ati.normal'].$lte
-                        && prd.price.ati.normal >= priceFilter.$or[0]['price.ati.normal'].$gte) {
-                        return true;
-                    }
-                }
-            } else if (priceFilter.$or[1]['price.et.special']) {
-                if (prd.price.et.special) {
-                    if (prd.price.et.special <= priceFilter.$or[1]['price.et.special'].$lte
-                        && prd.price.et.special >= priceFilter.$or[1]['price.et.special'].$gte) {
-                        return true;
-                    }
-                } else {
-                    if (prd.price.et.normal <= priceFilter.$or[0]['price.et.normal'].$lte
-                        && prd.price.et.normal >= priceFilter.$or[0]['price.et.normal'].$gte) {
-                        return true;
-                    }
+            if (priceFilter['price.priceSort.ati']) {
+                if (
+                    prd.price.priceSort.ati <= priceFilter['price.priceSort.ati'].$lte
+                    && prd.price.priceSort.ati >= priceFilter['price.priceSort.ati'].$gte
+                ) {
+                    return true;
                 }
             }
-
+            if (priceFilter['price.priceSort.et']) {
+                if (
+                    prd.price.priceSort.et <= priceFilter['price.priceSort.et'].$lte
+                    && prd.price.priceSort.et >= priceFilter['price.priceSort.et'].$gte
+                ) {
+                    return true;
+                }
+            }
             return false;
         });
         prds       = prds.filter((prd) => prdsPrices
             .map((prdPri) => prdPri._id.toString())
             .indexOf(prd._id.toString()) !== -1);
-        if (PostBody.sort && PostBody.sort['price.ati.normal']) {
+        if (PostBody.sort && PostBody.sort['price.priceSort.ati']) {
             prds = prds.sort((a, b) => {
-                let priceA = a.price.ati.normal;
-                let priceB = a.price.ati.normal;
-                if (a.price.ati.special) priceA = a.price.ati.special;
-                if (b.price.ati.special) priceB = b.price.ati.special;
+                const priceA = a.price.priceSort.ati;
+                const priceB = b.price.priceSort.ati;
                 let result;
-                const sort = Number(PostBody.sort['price.ati.normal']);
+                const sort   = Number(PostBody.sort['price.priceSort.ati']);
                 if (sort === 1) result = priceA - priceB;
                 if (sort === -1) result = priceB - priceA;
                 return result;
             });
         }
     }
-
-    const arrayPrice        = {et: [], ati: []};
-    const arraySpecialPrice = {et: [], ati: []};
-
-    for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
-        } else {
-            arrayPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
-        } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
-        }
-    }
-
-    const priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
-    const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
-
-    for (const prd of prdsPrices) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
-        }
-    }
-
-    const specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    const specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
     // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
     for (let i = 0; i < result.datas.length; i++) {
@@ -456,31 +409,46 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
 
-    const products = prds.slice(skip, limit + skip);
+    const arrayPrice = {et: [], ati: []};
+    for (const prd of prds) {
+        arrayPrice.et.push(prd.price.priceSort.et);
+        arrayPrice.ati.push(prd.price.priceSort.ati);
+    }
+    for (const prd of prdsPrices) {
+        arrayPrice.et.push(prd.price.priceSort.et);
+        arrayPrice.ati.push(prd.price.priceSort.ati);
+    }
+
+    const priceMin = {et: Math.min(...arrayPrice.et), ati: Math.min(...arrayPrice.ati)};
+    const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
+
+    let products = prds.slice(skip, limit + skip);
     // On transforme les produits en produit mongoose afin que la translation puisse être effectué après le res.json()
-    let tProducts = [];
     for (let k = 0; k < products.length; k++) {
         switch (products[k].type) {
         case 'simple':
-            tProducts.push(new ProductSimple(products[k]));
-            // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
+            products[k] = new ProductSimple(products[k]);
+            // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans
+            // le PostBody car actuellement ça renvoi tout les champs
             // on utilise la fonction addToStructure pour connaitre les champs a garder (obligatoire + demandés)
             // permettra de récupérer le champ sortWeight également
             // const newPrd = new ProductSimple(products[k]);
             // if (Object.keys(PostBody.structure).length > 0) {
             //     const structure = queryBuilder.addToStructure(PostBody.structure);
-            //     const productWithStructure = Object.keys(structure).map(k => (k in newPrd ? {[k]: newPrd[k]} : {})).reduce((res, o) => Object.assign(res, o), {});
+            //     const productWithStructure = Object.keys(structure)
+            //         .map(k => (k in newPrd ? {[k]: newPrd[k]} : {}))
+            //         .reduce((res, o) => Object.assign(res, o), {});
             //     tProducts.push(productWithStructure);
             // } else {
             //     tProducts.push(newPrd);
             // }
             break;
         case 'virtual':
-            tProducts.push(new ProductVirtual(products[k]));
+            products[k] = new ProductVirtual(products[k]);
             break;
         case 'bundle':
-            const prd = await new ProductBundle(products[k]).populate(PostBody.populate || '').execPopulate();
-            tProducts.push(prd);
+            const prd   = await new ProductBundle(products[k]).populate(PostBody.populate || '').execPopulate();
+            products[k] = prd;
             break;
 
         default:
@@ -488,28 +456,25 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
+    // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le
+    // PostBody car actuellement ça renvoi tout les champs
     // ce code ne marche pas car _doc n'exsite pas dans produits et removeFromStructure en a besoin
     // if (Object.keys(PostBody.structure).length > 0) {
     //     queryBuilder.removeFromStructure(PostBody.structure, tProducts);
     // }
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals.datas  = tProducts;
+        reqRes.res.locals.datas  = products;
         reqRes.req.body.PostBody = PostBody;
         const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-        tProducts                = productsDiscount.datas;
-        // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
-        // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
-            tProducts = tProducts.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte) && pr <= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte);
-            });
-        }
+        products                 = productsDiscount.datas;
+        // Allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
     }
 
-    if (
+    if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
+        // The products are sorted by weight, the sorting by relevance is always from the most relevant to the least relevant.
+        prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
+    } else if (
         PostBody.sort
         && (
             PostBody.sort['price.priceSort.et']
@@ -517,40 +482,46 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         )
     ) {
         if (PostBody.sort['price.priceSort.et']) {
-            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.et');
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.et');
         } else if (PostBody.sort['price.priceSort.ati']) {
-            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.ati');
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
         }
     }
 
     return {
-        ...result, count : prds.length, datas : tProducts, priceMin, priceMax, specialPriceMin, specialPriceMax
+        count : prds.length,
+        datas : products,
+        priceMin,
+        priceMax
     };
 };
 
 const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
-    if (PostBody.sort[param] === '1') {
-        tProducts = tProducts.sort((a, b) => {
-            if (a.price.priceSort > b.price.priceSort) {
-                return 1;
+    const byString = (o, s) => {
+        s       = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+        s       = s.replace(/^\./, '');           // strip a leading dot
+        const a = s.split('.');
+        for (let i = 0, n = a.length; i < n; ++i) {
+            const k = a[i];
+            if (k in o) {
+                o = o[k];
+            } else {
+                return;
             }
-            if (b.price.priceSort > a.price.priceSort) {
-                return -1;
-            }
-            return 0;
-        });
-    } else {
-        tProducts = tProducts.sort((a, b) => {
-            if (a.price.priceSort > b.price.priceSort) {
-                return -1;
-            }
-            if (b.price.priceSort > a.price.priceSort) {
-                return 1;
-            }
-            return 0;
-        });
-    }
-    return tProducts;
+        }
+        return o;
+    };
+    return tProducts.sort((a, b) => {
+        const ea = byString(a, param);
+        const eb = byString(b, param);
+        if (ea > eb) {
+            return PostBody.sort[param] ? 1 : -1;
+        }
+        if (eb > ea) {
+            return PostBody.sort[param] ? -1 : 1;
+        }
+        return 0;
+    });
 };
 
 const getProductById = async (id, PostBody = null) => {
@@ -990,6 +961,7 @@ const applyTranslatedAttribs = async (PostBody) => {
     }
 };
 
+// eslint-disable-next-line no-unused-vars
 function getTaxDisplay(user) {
     if (user && user.taxDisplay !== undefined) {
         if (!user.taxDisplay) {
