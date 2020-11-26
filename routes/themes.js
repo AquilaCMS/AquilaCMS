@@ -8,7 +8,7 @@ const serverUtils                 = require('../utils/server');
 const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
-    app.get('/v2/themes', listTheme);
+    app.get('/v2/themes',                  authentication, adminAuth, listTheme);
     app.post('/v2/themes/upload',          authentication, adminAuth, uploadTheme);
     app.post('/v2/themes/delete',          authentication, adminAuth, deleteTheme);
     app.post('/v2/themes/copyDatas',       authentication, adminAuth, copyDatas);
@@ -18,7 +18,7 @@ module.exports = function (app) {
     app.post('/v2/themes/save',            authentication, adminAuth, save);
     app.post('/v2/themes/package/install', authentication, adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   authentication, adminAuth, buildTheme);
-    app.post('/v2/themes/getConfig',   authentication, adminAuth, getConfig);
+    app.post('/v2/themes/getConfig',       authentication, adminAuth, getConfig);
 };
 
 /**
@@ -157,6 +157,7 @@ async function buildTheme(req, res, next) {
         return next(error);
     }
 }
+
 async function getConfig(req, res, next) {
     try {
         let userInfo;
