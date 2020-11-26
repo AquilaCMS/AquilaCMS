@@ -1,4 +1,4 @@
-const {Modules, Configuration} = require('../orm/models');
+const mongoose = require('mongoose');
 
 /* const migration_N_Sample = async () => {
     console.log('Applying migration script "samigration_N_Samplemple"...');
@@ -6,8 +6,7 @@ const {Modules, Configuration} = require('../orm/models');
 
 const migration_1_ModulesNewPackageDependencies = async () => {
     console.log('Applying migration script "migration_1_ModulesNewPackageDependencies"...');
-
-    (await Modules.find({})).forEach((mod) => {
+    for (const mod of (await mongoose.connection.collection('modules').find({}))) {
         const packageDependencies = {
             api   : {},
             theme : {}
@@ -27,20 +26,20 @@ const migration_1_ModulesNewPackageDependencies = async () => {
                     packageDependencies[apiOrTheme] = mod.packageDependencies[apiOrTheme];
                 }
             }
-            Modules.updateOne({_id: mod._id}, {
+            await mongoose.connection.collection('modules').updateOne({_id: mod._id}, {
                 $set : {
                     packageDependencies
                 }
             });
         }
-    });
+    }
 };
 
 const migration_2_Metrics = async () => {
     console.log('Applying migration script "migration_2_Metrics"...');
-    const config = await Configuration.findOne({});
+    const config = await mongoose.connection.collection('configuration').findOne({});
     if (config && config.environment) {
-        await Configuration.updateOne({}, {$unset: {'environment.sendMetrics': {}}});
+        await mongoose.connection.collection('configuration').updateOne({}, {$unset: {'environment.sendMetrics': {}}});
     }
 };
 
