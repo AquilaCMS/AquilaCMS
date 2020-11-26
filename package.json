@@ -5,7 +5,7 @@
   "main": "server.js",
   "license": "OSL-3.0",
   "engines": {
-    "node": ">=12 <13"
+    "node": "12"
   },
   "repository": {
     "type": "git",
@@ -22,13 +22,19 @@
     "build:linux": "next build ./themes/${npm_config_theme}",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "exit 0"
+    "test": "exit 0",
+    "start:babel": "babel-node server.js"
   },
   "dependencies": {
+    "@babel/core": "^7.12.7",
+    "@babel/node": "^7.12.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
+    "@babel/preset-env": "7.12.1",
     "@haegemonia/express-jsdoc-swagger": "^1.0.2",
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
     "axios": "0.19.2",
+    "babel-plugin-module-resolver": "^4.0.0",
     "bcrypt": "5.0.0",
     "cookie-parser": "1.4.5",
     "cors": "2.8.5",
@@ -89,8 +95,10 @@
     "wkhtmltopdf": "0.3.4"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.12.1",
     "eslint": "^7.10.0",
     "eslint-config-airbnb": "^18.2.0",
+    "eslint-import-resolver-babel-module": "^5.2.0",
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-angular": "^4.0.1",
     "eslint-plugin-import": "^2.22.1",

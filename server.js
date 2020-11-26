@@ -10,14 +10,14 @@ global.appRoot          = path.resolve(__dirname);
 global.port             = process.env.PORT || 3010;
 global.defaultLang      = '';
 global.moduleExtend     = {};
-global.translate        = require('./utils/translate');
-const utils             = require('./utils/utils');
-const npm               = require('./utils/npm');
-const fs                = require('./utils/fsp');
-const translation       = require('./utils/translation');
-const serverUtils       = require('./utils/server');
-const utilsModules      = require('./utils/modules');
-const utilsThemes       = require('./utils/themes');
+global.translate        = require('Utils/translate');
+const utils             = require('Utils/utils');
+const npm               = require('Utils/npm');
+const fs                = require('Utils/fsp');
+const translation       = require('Utils/translation');
+const serverUtils       = require('Utils/server');
+const utilsModules      = require('Utils/modules');
+const utilsThemes       = require('Utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,

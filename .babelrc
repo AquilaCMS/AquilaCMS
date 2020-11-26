@@ -1,0 +1,22 @@
+{
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins" : [
+        "@babel/plugin-proposal-optional-chaining",
+        ["module-resolver", {
+            "root": ["."],
+            "alias": {
+                "Utils": "./utils",
+                "Services": "./services",
+                "Routes": "./routes",
+                "Config": "./config",
+                "Orm": "./orm"
+            }
+        }]
+    ],
+    "ignore": [
+        "node_modules",
+        "themes"
+    ]
+}

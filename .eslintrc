@@ -9,6 +9,12 @@
     "env": {
         "es6": true
     },
+    "settings": {
+        "import/resolver": {
+            "babel-module": {}
+        }
+    },
+    "parser": "@babel/eslint-parser",
     "rules": {
         "align-assignments/align-assignments": ["error"],
         "arrow-body-style": "off",
