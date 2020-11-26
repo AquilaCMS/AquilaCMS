@@ -508,18 +508,19 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
  * @return {any} return the value of the property found
  */
 const objectPropertybyString = (o, s) => {
-    s       = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-    s       = s.replace(/^\./, '');           // strip a leading dot
-    const a = s.split('.');
+    s            = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s            = s.replace(/^\./, ''); // strip a leading dot
+    const a      = s.split('.');
+    let notFound = false;
     for (let i = 0, n = a.length; i < n; ++i) {
         const k = a[i];
         if (k in o) {
             o = o[k];
         } else {
-            return;
+            notFound = true;
         }
     }
-    return o;
+    return notFound ? undefined : o;
 };
 
 const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
