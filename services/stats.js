@@ -1,5 +1,6 @@
 const moment                                    = require('moment-business-days');
 const {StatsToday, StatsHistory, Configuration} = require('../orm/models');
+const ServiceStatistics                         = require('./statistics');
 
 /**
  * Permet de compter le nombre de panier supprimé
@@ -81,8 +82,8 @@ const getHistory = async (type, periodeStart, periodeEnd, granularityQuery) => {
  * Build stats (today to history) (cron)
  */
 const buildStats = async () => {
-    // Passer les données du jour (statstoday) vers statshistory
     let dbToday;
+    let result = 'OK';
     try {
         dbToday = await StatsToday.findOne({});
         if (dbToday) {
@@ -91,14 +92,39 @@ const buildStats = async () => {
             // Reinit les datas du jours
             await StatsToday.findOneAndUpdate({}, {oldCart: 0, visit: []}, {upsert: true, new: true});
             const _config = await Configuration.findOne({});
-            if (_config.environment.sendMetrics && _config.licence.registryKey) {
-                // await ServiceStatistics.sendMetrics(_config.licence.registryKey);
+            if (_config.environment.sendMetrics.active && _config.licence.registryKey) {
+                if (!_config.environment.sendMetrics.lastSent) {
+                    let date                                 = await ServiceStatistics.getFirstDayMetrics();
+                    date                                     = `${(date.getMonth() > 8) ? (date.getMonth() + 1) : (`0${date.getMonth() + 1}`)}/${(date.getDate() > 9) ? date.getDate() : (`0${date.getDate()}`)}/${date.getFullYear()}`;
+                    _config.environment.sendMetrics.lastSent = moment(date, 'MM/DD/YYYY').set({hour: 0, minute: 0, second: 0, millisecond: 0});
+                } else {
+                    if (_config.environment.sendMetrics.lastSent > moment({hour: 0, minute: 0, second: 0, millisecond: 0})) {
+                        result = `OK - Metrics already sent ${_config.environment.sendMetrics.lastSent}`;
+                        return result;
+                    }
+                    _config.environment.sendMetrics.lastSent.setHours(0, 0, 0);
+                    const date                               = `${(_config.environment.sendMetrics.lastSent.getMonth() > 8) ? (_config.environment.sendMetrics.lastSent.getMonth() + 1) : (`0${_config.environment.sendMetrics.lastSent.getMonth() + 1}`)}/${(_config.environment.sendMetrics.lastSent.getDate() > 9) ? _config.environment.sendMetrics.lastSent.getDate() : (`0${_config.environment.sendMetrics.lastSent.getDate()}`)}/${_config.environment.sendMetrics.lastSent.getFullYear()}`;
+                    _config.environment.sendMetrics.lastSent = moment(date, 'DD/MM/YYYY').set({hour: 0, minute: 0, second: 0, millisecond: 0});
+                }
+                try {
+                    const response = await ServiceStatistics.sendMetrics(_config.licence.registryKey, _config.environment.sendMetrics.lastSent);
+                    if (!response) {
+                        result = 'OK - But Metrics not sent';
+                    } else {
+                        _config.environment.sendMetrics.lastSent = new Date();
+                        await _config.save();
+                        result = `OK - Metrics sent ${_config.environment.sendMetrics.lastSent}`;
+                    }
+                } catch (error) {
+                    console.log(error);
+                    return `Ok - But metrics not sent : ${error}`;
+                }
             }
         }
     } catch (err) {
         console.error(err);
     }
-    return 'OK';
+    return result;
 };
 
 /**

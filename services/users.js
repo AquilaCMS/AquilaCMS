@@ -160,7 +160,7 @@ const generateTokenSendMail = async (email, lang) => {
         throw NSErrors.NotFound;
     }
     const {appUrl}  = global.envConfig.environment;
-    const tokenlink = `${appUrl + (global.envFile.front === 'react' ? '' : '#/')}resetpass?token=${resetPassToken}`;
+    const tokenlink = `${appUrl}resetpass?token=${resetPassToken}`;
 
     await servicesMail.sendResetPassword(email, tokenlink, lang);
     return {message: email};

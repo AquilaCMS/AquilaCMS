@@ -54,10 +54,12 @@ const init = async () => {
 
 const initDatabase = async () => {
     if (global.envFile.db) {
-        await require('./utils/database').connect();
+        const utilsDB = require('./utils/database');
+        await utilsDB.connect();
+        await utilsDB.applyMigrationIfNeeded();
         await require('./services/job').initAgendaDB();
         await utilsModules.modulesLoadInit(server);
-        await require('./utils/database').initDBValues();
+        await utilsDB.initDBValues();
         await require('./services/shortcodes').initDBValues();
     }
 };
@@ -137,6 +139,7 @@ const startServer = async () => {
 (async () => {
     try {
         await init();
+        await serverUtils.updateEnv();
         await initDatabase();
         await initServer();
         await startServer();

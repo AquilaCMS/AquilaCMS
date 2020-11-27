@@ -35,10 +35,27 @@
 
             <div ng-show="isEditMode">
                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="slider" id="slider._id" entity="null" images="slider.items" after-function="close()"></ns-upload-files>
-
-                <div class="col-sm-2" style="margin-bottom: 30px" ng-repeat="item in slider.items | orderBy:'order'" ns-drag="item" ns-drop="item">
-                    <div title="{{item.text}}" class="pointer boxShadow" style="padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px" ng-click="openItemModal(item)"></div>
+                <div>
+                    <div class="col-sm-2" style="margin-bottom: 30px;padding:15px;cursor:move;" ng-repeat="item in slider.items | orderBy:'order'" >
+                        <div class="dropCase" ondragenter="angular.element(this).scope().switchElement(this, 'in')" ondragleave="angular.element(this).scope().switchElement(this, 'out')" ondragstart="angular.element(this).scope().draggingStart(this)" draggable="true" ondragend="angular.element(this).scope().draggingEnd(this)" ns-drag="item" ns-drop="item">
+                            <div title="{{item.text}}" class="pointer boxShadow" style="cursor:move;padding-top: 100%; background: url({{getImage(item)}}) center; background-size: cover; border-radius:4px"  ng-click="openItemModal(item)"></div>
+                        </div>
+                    </div>
                 </div>
+                <div style="visibility: hidden;display: none;">
+                    <button id="dirty-button" type="button" ng-click="form.inputSlider.$setDirty();" style="visibility: hidden;display: none;">Make Dirty</button>
+                    <input name="inputSlider" type="text" ng-model="slider.inputForSlider" style="visibility: hidden;display: none;">
+                </div>
+                <style>
+                    .fakeDrop{
+                        border: 1px dashed rgb(200,200,100);
+                        background: rgb(240,240,200);
+                        /*background-image: none !important;*/
+                    }
+                    .opactityBad{
+                        opacity: 0.5;
+                    }
+                </style>
             </div>
         </ns-buttons>
     </form>

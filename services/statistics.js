@@ -1,5 +1,5 @@
 const moment                    = require('moment-business-days');
-const request                   = require('request');
+const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
 const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
@@ -17,31 +17,31 @@ exports.setProductViews = function (product_id) {
 };
 
 /**
- * Construit et envoie les statistiques du jour sur un autre site
+ * Construit et envoie les statistiques des précédents jours
  */
-exports.sendMetrics = async function (licence) {
-    try {
-        // const clients = Users.find({isAdmin: false}).count();
-        const stats   = await exports.getGlobaleStats();
-        stats.date    = new Date();
-        stats.licence = licence;
-        const options = {
-            method  : 'POST',
-            url     : 'http://localhost:3010/api/v2/metrics',
-            headers : {'content-type': 'application/json'},
-            body    : stats,
-            json    : true
-        };
+exports.sendMetrics = async function (licence, date) {
+    const stats = await exports.getGlobaleStats(date);
+    await axios.post('https://stats.aquila-cms.com/api/v2/metrics', {
+        stats,
+        licence
+    });
+    return 'Datas sent';
+};
 
-        return new Promise(function (resolve, reject) {
-            request(options, async function (error, res) {
-                if (!error && res.statusCode === 200) {
-                    resolve('Datas sent');
-                } else {
-                    reject(error);
-                }
-            });
-        });
+/**
+ * Récupère la date du premier client ou de la première commande
+ */
+exports.getFirstDayMetrics = async function () {
+    try {
+        const User  = await Users.find().sort({creationDate: 1}).limit(1);
+        const Order = await Orders.find().sort({creationDate: 1}).limit(1);
+        if (User.length === 1 || Order.length === 1) {
+            if (User[0].creationDate > Order[0].creationDate) {
+                return Order[0].creationDate;
+            }
+            return User[0].creationDate;
+        }
+        return false;
     } catch (error) {
         console.error(error);
     }
@@ -63,12 +63,40 @@ exports.generateStatistics = function (data) {
 /**
  * Get Globale Stats (accueil admin)
  */
-exports.getGlobaleStats = async function () {
-    const result = {
-        yesterday : await getGlobalStat('YESTERDAY'),
-        today     : await getGlobalStat('TODAY'),
-        month     : await getGlobalStat('MONTH')
-    };
+exports.getGlobaleStats = async function (date) {
+    let result;
+    if (date) {
+        result          = [];
+        const dateStart = date;
+        const date2     = new Date();
+        const diffDays  = Math.ceil(Math.abs(date2 - date) / (1000 * 60 * 60 * 24)) - 1;
+        let n           = 0;
+        while (n < diffDays ) {
+            const start = new Date(dateStart);
+            start.setDate(start.getDate() + n);
+            const end = new Date(dateStart);
+            end.setDate(end.getDate() + n + 1);
+            const res = await getGlobalStat('YESTERDAY', start, end);
+            let empty = true;
+            for (const prop in res) {
+                if (res[prop] > 0) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (!empty) {
+                res.date = start.toString();
+                result.push(res);
+            }
+            n++;
+        }
+    } else {
+        result = {
+            yesterday : await getGlobalStat('YESTERDAY'),
+            today     : await getGlobalStat('TODAY'),
+            month     : await getGlobalStat('MONTH')
+        };
+    }
 
     return result;
 };
@@ -76,16 +104,23 @@ exports.getGlobaleStats = async function () {
 /**
  * Get Globale Stat (accueil admin)
  */
-async function getGlobalStat(periode) {
-    let datas        = {};
-    let periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
-    let periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
-
-    if (periode === 'MONTH') {
-        periodeStart = periodeStart.add(-30, 'days');
-    } else if (periode === 'YESTERDAY') {
-        periodeStart = periodeStart.add(-1, 'days');
-        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+async function getGlobalStat(periode, dateStart, dateEnd) {
+    let datas = {};
+    let periodeStart;
+    let periodeEnd;
+    if (dateStart && dateEnd) {
+        periodeStart = moment(dateStart);
+        periodeEnd   = moment(dateEnd);
+        // periodeEnd = moment({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    } else {
+        periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
+        if (periode === 'MONTH') {
+            periodeStart = periodeStart.add(-30, 'days');
+        } else if (periode === 'YESTERDAY') {
+            periodeStart = periodeStart.add(-1, 'days');
+            periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        }
     }
 
     const sPeriodeStart = periodeStart.toISOString();
@@ -134,19 +169,28 @@ async function getGlobalStat(periode) {
 
     // --- Fréquentation ---
     let attendance = 0;
-    if (periode === 'MONTH' || periode === 'YESTERDAY') {
+    let newClients;
+    if (dateStart && dateEnd) {
         const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
-        for ( let i = 0, _len = attendanceTab.length; i < _len; i++ ) {
+        for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
             attendance += attendanceTab[i].value;
         }
-    } else { // if (periode === "TODAY") {
-        const statsToday = await serviceStats.getStatstoday();
-        if (statsToday != null && statsToday.visit) {
-            attendance = statsToday.visit.length;
+        newClients = await exports.getNewCustomer('months', periodeStart, periodeEnd);
+    } else {
+        if (periode === 'MONTH' || periode === 'YESTERDAY') {
+            const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
+            for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
+                attendance += attendanceTab[i].value;
+            }
+        } else { // if (periode === "TODAY") {
+            const statsToday = await serviceStats.getStatstoday();
+            if (statsToday != null && statsToday.visit) {
+                attendance = statsToday.visit.length;
+            }
         }
+        newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
 
-    const newClients     = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
 
     datas = {
@@ -241,10 +285,13 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentId   = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
-            const realProduct = await require('./products').getProductById(currentItem.id._id);
-            let link          = '';
-            if (realProduct) {
-                link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+            let link = '';
+            if (currentItem.id && currentItem.id._id) {
+                const realProduct = await require('./products').getProductById(currentItem.id._id);
+
+                if (realProduct && realProduct.images[0]) {
+                    link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+                }
             }
 
             if (!tabIDProduct.includes(currentId)) {
