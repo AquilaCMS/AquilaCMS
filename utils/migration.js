@@ -45,78 +45,20 @@ const migration_2_Metrics = async () => {
 
 const migration_3_CreatedAt = async () => {
     console.log('Applying migration script "migration_3_CreatedAt"...');
-    const category        = await mongoose.connection.collection('categories').findOne({});
-    const contact         = await mongoose.connection.collection('contacts').findOne({});
-    const familie         = await mongoose.connection.collection('families').findOne({});
-    const gallery         = await mongoose.connection.collection('gallery').findOne({});
-    const mail            = await mongoose.connection.collection('mail').findOne({});
-    const mailType        = await mongoose.connection.collection('mailType').findOne({});
-    const news            = await mongoose.connection.collection('news').findOne({});
-    const orders          = await mongoose.connection.collection('orders').findOne({});
-    const products        = await mongoose.connection.collection('products').findOne({});
-    const productsPreview = await mongoose.connection.collection('productsPreview').findOne({});
-    const shortcodes      = await mongoose.connection.collection('shortcodes').findOne({});
-    const statics         = await mongoose.connection.collection('statics').findOne({});
-    const staticsPreview  = await mongoose.connection.collection('staticsPreview').findOne({});
-    const trademarks      = await mongoose.connection.collection('trademarks').findOne({});
-    const users           = await mongoose.connection.collection('users').findOne({});
-    const bills           = await mongoose.connection.collection('bills').findOne({});
-    const cart            = await mongoose.connection.collection('cart').findOne({});
-    const promo           = await mongoose.connection.collection('promo').findOne({});
 
-    if (category && category.creationDate) {
-        await mongoose.connection.collection('categories').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (contact && contact.creationDate) {
-        await mongoose.connection.collection('contacts').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (familie && familie.creationDate) {
-        await mongoose.connection.collection('families').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (gallery && gallery.creationDate) {
-        await mongoose.connection.collection('gallery').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (mail && mail.creationDate) {
-        await mongoose.connection.collection('mail').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (mailType && mailType.creationDate) {
-        await mongoose.connection.collection('mailType').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (news && news.creationDate) {
-        await mongoose.connection.collection('news').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (orders && orders.creationDate) {
-        await mongoose.connection.collection('orders').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (products && products.creationDate) {
-        await mongoose.connection.collection('products').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (productsPreview && productsPreview.creationDate) {
-        await mongoose.connection.collection('productsPreview').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (shortcodes && shortcodes.creationDate) {
-        await mongoose.connection.collection('shortcodes').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (statics && statics.creationDate) {
-        await mongoose.connection.collection('statics').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (staticsPreview && staticsPreview.creationDate) {
-        await mongoose.connection.collection('staticsPreview').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (trademarks && trademarks.creationDate) {
-        await mongoose.connection.collection('trademarks').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (users && users.creationDate) {
-        await mongoose.connection.collection('users').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (bills && bills.creationDate) {
-        await mongoose.connection.collection('bills').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (cart && cart.creationDate) {
-        await mongoose.connection.collection('cart').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
-    }
-    if (promo && promo.creationDate) {
-        await mongoose.connection.collection('promo').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
+    const collectionsList = ['categories', 'contacts', 'families', 'gallery', 'mail', 'mailType', 'news', 'orders', 'products', 'productsPreview', 'shortcodes', 'statics', 'staticsPreview', 'trademarks', 'users', 'bills', 'cart', 'promo'];
+
+    const changeCreateDateToCreatedAt = async (collection) => {
+        try {
+            const OneCollection = await mongoose.connection.collection(collection).findOne({});
+            if (OneCollection && OneCollection.creationDate) {
+                await mongoose.connection.collection(collection).updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
+            }
+        } catch (e) {console.error(e);}
+    };
+
+    for (let index = 0; index < collectionsList.length; index++) {
+        await changeCreateDateToCreatedAt(collectionsList[index]);
     }
 };
 
