@@ -410,10 +410,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     const arrayPrice = {et: [], ati: []};
-    for (const prd of prds) {
-        arrayPrice.et.push(prd.price.priceSort.et);
-        arrayPrice.ati.push(prd.price.priceSort.ati);
-    }
     for (const prd of prdsPrices) {
         arrayPrice.et.push(prd.price.priceSort.et);
         arrayPrice.ati.push(prd.price.priceSort.ati);
@@ -501,10 +497,10 @@ const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => 
         const ea = utils.objectPropertybyString(a, param);
         const eb = utils.objectPropertybyString(b, param);
         if (ea > eb) {
-            return PostBody.sort[param] ? 1 : -1;
+            return PostBody.sort[param] === '1' ? 1 : -1;
         }
         if (eb > ea) {
-            return PostBody.sort[param] ? -1 : 1;
+            return PostBody.sort[param] === '1' ? -1 : 1;
         }
         return 0;
     });
