@@ -509,33 +509,48 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    if (PostBody.sort && PostBody.sort['price.priceSort']) {
-        if (PostBody.sort['price.priceSort'] === '1') {
-            tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort > b.price.priceSort) {
-                    return 1;
-                }
-                if (b.price.priceSort > a.price.priceSort) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else {
-            tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort > b.price.priceSort) {
-                    return -1;
-                }
-                if (b.price.priceSort > a.price.priceSort) {
-                    return 1;
-                }
-                return 0;
-            });
+    if (
+        PostBody.sort
+        && (
+            PostBody.sort['price.priceSort.et']
+            || PostBody.sort['price.priceSort.ati']
+        )
+    ) {
+        if (PostBody.sort['price.priceSort.et']) {
+            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.et');
+        } else if (PostBody.sort['price.priceSort.ati']) {
+            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.ati');
         }
     }
 
     return {
         ...result, count : prds.length, datas : tProducts, priceMin, priceMax, specialPriceMin, specialPriceMax
     };
+};
+
+const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
+    if (PostBody.sort[param] === '1') {
+        tProducts = tProducts.sort((a, b) => {
+            if (a.price.priceSort > b.price.priceSort) {
+                return 1;
+            }
+            if (b.price.priceSort > a.price.priceSort) {
+                return -1;
+            }
+            return 0;
+        });
+    } else {
+        tProducts = tProducts.sort((a, b) => {
+            if (a.price.priceSort > b.price.priceSort) {
+                return -1;
+            }
+            if (b.price.priceSort > a.price.priceSort) {
+                return 1;
+            }
+            return 0;
+        });
+    }
+    return tProducts;
 };
 
 const getProductById = async (id, PostBody = null) => {

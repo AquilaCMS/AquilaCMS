@@ -146,6 +146,26 @@ const initDBValues = async () => {
     }
 };
 
+const applyMigrationIfNeeded = async () => {
+    try {
+        const {migrationScripts} = require('./migration');
+        const config             =  await mongoose.connection
+            .collection('configurations')
+            .findOne();
+        if (config && config.environment) {
+            let migration = config.environment.migration || 0;
+            for (migration; migration < migrationScripts.length; migration++) {
+                await migrationScripts[migration]();
+                await mongoose.connection
+                    .collection('configurations')
+                    .updateOne({}, {$set: {'environment.migration': migration + 1}});
+            }
+        }
+    } catch (e) {
+        console.error('The migration script failed !', e);
+    }
+};
+
 /**
  * Permet de faire un populate des champs spécifiques de chaque item
  * @param {array} items
@@ -175,6 +195,7 @@ module.exports = {
     connect,
     // checkIfReplicaSet,
     initDBValues,
+    applyMigrationIfNeeded,
     populateItems,
     preUpdates,
     testdb

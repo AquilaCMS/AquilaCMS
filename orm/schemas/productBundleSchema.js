@@ -44,7 +44,10 @@ const ProductBundleSchema = new Schema({
 
 ProductBundleSchema.methods.updateData = async function (data, cb) {
     const updatedData           = data;
-    updatedData.price.priceSort = updatedData.price.et.special === undefined || updatedData.price.et.special === null ? updatedData.price.et.normal : updatedData.price.et.special;
+    updatedData.price.priceSort = {
+        et  : updatedData.price.et.special || updatedData.price.et.normal,
+        ati : updatedData.price.ati.special || updatedData.price.ati.normal
+    };
     if (updatedData.autoSlug) {
         // On met à jour le slug du produit
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;

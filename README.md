@@ -6,7 +6,7 @@
 
 # AquilaCMS
 
-[AquilaCMS](https://www.aquila-cms.com) is an Open-source e-commerce web application, 100% javascript with Node.js and MongoDB. Themes can be used with ReactJS and NextJS (for polymorphism). A complete Back office is available for managing your website. You can download some modules or themes in [Aquila's Shop](https://shop.aquila-cms.com).
+[AquilaCMS](https://www.aquila-cms.com) is an Open-source e-commerce web application, 100% javascript with Node.js and MongoDB. Themes can be used with ReactJS and NextJS (for Server Side Rendering). A complete Back office is available for managing your website. You can download some modules or themes in [Aquila's Shop](https://shop.aquila-cms.com).
 
 ![AquilaCMS](https://www.aquila-cms.com/medias/aquilacms_pres.gif)
 
@@ -54,7 +54,8 @@ Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS web
 - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your mongod.conf and change your bindIp by your network ip instead of 127.0.0.1)
 
 ## Documentations
-Find the swagger documentation on /api-docs or online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs).
+Find some documentation on [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/). For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (/api-docs).
+
 Also check-out some tutorials on [our dedicated page](https://www.aquila-cms.com/ressources-documentation), or on [our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ).
 
 ## License
