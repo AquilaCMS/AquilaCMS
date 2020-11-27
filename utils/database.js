@@ -294,10 +294,10 @@ const initDBValues = async () => {
                             value       : 'order.priceTotal',
                             description : 'Prix total'
                         },
-                        {
+                        /* {
                             value       : 'payment.instruction',
                             description : 'Instruction de paiement (differe)'
-                        },
+                        }, */
                         {
                             value       : 'appUrl',
                             description : 'URL du site'
@@ -309,7 +309,7 @@ const initDBValues = async () => {
                     ]
                 },
                 en : {
-                    name      : 'Commande validée (envoi du mail au client)',
+                    name      : 'Order validated (sending email to customer)',
                     variables : [
                         {
                             value       : 'address.line1',
@@ -317,7 +317,7 @@ const initDBValues = async () => {
                         },
                         {
                             value       : 'address.line2',
-                            description : 'AAddress line 2'
+                            description : 'Address line 2'
                         },
                         {
                             value       : 'address.companyName',
@@ -383,10 +383,10 @@ const initDBValues = async () => {
                             value       : 'order.priceTotal',
                             description : 'Total price'
                         },
-                        {
+                        /*                         {
                             value       : 'payment.instruction',
                             description : 'Payment instruction (deferred)'
-                        },
+                        }, */
                         {
                             value       : 'appUrl',
                             description : 'Website URL'
@@ -478,10 +478,10 @@ const initDBValues = async () => {
                             value       : 'order.priceTotal',
                             description : 'Prix total'
                         },
-                        {
+                        /* {
                             value       : 'payment.instruction',
                             description : 'Instruction de paiement (differe)'
-                        },
+                        }, */
                         {
                             value       : 'appUrl',
                             description : 'URL du site'
@@ -568,10 +568,10 @@ const initDBValues = async () => {
                             value       : 'order.priceTotal',
                             description : 'Total price'
                         },
-                        {
+                        /*                         {
                             value       : 'payment.instruction',
                             description : 'Payment instruction (deferred)'
-                        },
+                        }, */
                         {
                             value       : 'appUrl',
                             description : 'Website URL'
@@ -606,7 +606,7 @@ const initDBValues = async () => {
                         },
                         {
                             value       : 'tokenlink',
-                            description : 'Lien pour remplacer le mot de passe'
+                            description : 'Lien pour changer le mot de passe'
                         }
                     ]
 
@@ -840,19 +840,19 @@ const initDBValues = async () => {
                         },
                         {
                             value       : 'transporterName',
-                            description : 'toDTransporteur'
+                            description : 'Carrier'
                         },
                         {
                             value       : 'date',
-                            description : 'Send order'
+                            description : 'Sending date'
                         },
                         {
                             value       : 'trackingUrl',
-                            description : 'All the information in the contact form'
+                            description : 'Tracking URL'
                         },
                         {
                             value       : 'number',
-                            description : 'Numéro de la commande'
+                            description : 'Order number'
                         }
                     ]
 
@@ -940,7 +940,7 @@ const initDBValues = async () => {
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'Instruction de paiement (differe)'
+                            description : 'Instruction de paiement'
                         },
                         {
                             value       : 'appUrl',
@@ -953,91 +953,91 @@ const initDBValues = async () => {
                     ]
                 },
                 en : {
-                    name      : 'Commande avec paiement différé',
+                    name      : 'Order with deferred payment',
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'Adresse ligne 1'
+                            description : 'Address line 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'Adresse ligne 2'
+                            description : 'Address line 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'Nom de l\'entreprise'
+                            description : 'Company name'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'Informations complementaires'
+                            description : 'Complementary information'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'Code postal'
+                            description : 'Zip code'
                         },
                         {
                             value       : 'address.city',
-                            description : 'Ville'
+                            description : 'City'
                         },
                         {
                             value       : 'address.country',
-                            description : 'Pays'
+                            description : 'Country'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'Prenom'
+                            description : 'Firstname'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'Nom'
+                            description : 'Lastname'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'Nom de l\'entreprise'
+                            description : 'Company'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'Date de reception'
+                            description : 'Date receipt'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'Livraison'
+                            description : 'Delivery'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'Prix de la livraison'
+                            description : 'Delivery price'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'Heure de livraison'
+                            description : 'Delivery time'
                         },
                         {
                             value       : 'order.number',
-                            description : 'Numero de commande'
+                            description : 'Order number'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'Description du paiement'
+                            description : 'Description of payment'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'Mode de paiement'
+                            description : 'Payment method'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'Prix total'
+                            description : 'Total price'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'Instruction de paiement (differe)'
+                            description : 'Payment instruction'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'URL du site'
+                            description : 'Website URL'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'HT ou TTC'
+                            description : 'ATI or ET'
                         }
                     ]
                 }
