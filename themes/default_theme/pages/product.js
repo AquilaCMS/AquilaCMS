@@ -567,7 +567,7 @@ class PageProduct extends NSPageProduct {
                                             <NSBundleProduct product={product} />
 
                                             <div className="product-price">
-                                                <strong>{(product.price.ati.normal || 0).toFixed(2)} €</strong>
+                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} €</strong>
                                             </div>
                                         </div>
                                         <div className="form-footer">
