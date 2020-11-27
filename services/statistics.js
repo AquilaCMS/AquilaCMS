@@ -17,11 +17,11 @@ exports.setProductViews = function (product_id) {
 };
 
 /**
- * Construit et envoie les statistiques des précédents jour sur un autre site
+ * Construit et envoie les statistiques des précédents jours
  */
 exports.sendMetrics = async function (licence, date) {
     const stats = await exports.getGlobaleStats(date);
-    await axios.post('http://localost:3010/api/v2/metrics', {
+    await axios.post('https://stats.aquila-cms.com/api/v2/metrics', {
         stats,
         licence
     });
