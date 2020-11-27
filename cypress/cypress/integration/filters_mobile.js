@@ -1,12 +1,13 @@
-describe ('Check filters', function () {
+describe ('Check filters /!\\ Mobile View', function () {
     it ('Check price, material and color filter', function () {
         cy.visit('');
+        cy.viewport(480, 720);
 
         // There are variables for functions calls in the script
         const gd = 2;
         const newprice = 20;
-        const material = 'Coton';
-        const colorid = '#244161';
+        const material = 'Polyester';
+        const colorid = '#03764E';
 
   
         // Go to 'T-shirt' page
@@ -63,7 +64,7 @@ describe ('Check filters', function () {
             // Add Material Filter
             // ID behind is category ID, you need to edit it if he changes
             try {
-                cy.get('.sidebar #5d3967aa4aa9c1692db068ce_div').click();
+                cy.get('.sidebar #5d3967aa4aa9c1692db068ce_div').click({force:true});
             } catch (e) {
                 throw ("Check if category ID is the same in the script and in your page")
             }
@@ -112,7 +113,7 @@ describe ('Check filters', function () {
         }
 
         function check_color_filter(colorid) {
-            cy.get('.sidebar #5da5765ede6bed65e1d2a6f8_div').click();
+            cy.get('.sidebar #5da5765ede6bed65e1d2a6f8_div').click({force:true});
             cy.wait(750)
             cy.get('.sidebar #5da5765ede6bed65e1d2a6f8_div > .list-checkboxes > .checkbox').then(($ttt) => {
                 for (var i = 0; $ttt[i]; i++) {
