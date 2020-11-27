@@ -44,7 +44,10 @@ const DownloadHistory = new Schema({
                 normal  : Number,
                 special : Number
             },
-            priceSort : {type: Number, default: 0}
+            priceSort : {
+                et  : {type: Number, default: 0},
+                ati : {type: Number, default: 0}
+            }
         },
         code_ean    : String,
         translation : {}

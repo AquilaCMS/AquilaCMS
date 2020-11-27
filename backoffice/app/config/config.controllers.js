@@ -318,6 +318,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             }
 
             ConfigV2.environment(function (oldAdmin) {
+                $scope.config.cacheTTL = $scope.config.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 Upload.upload({
                     url: 'v2/config',
