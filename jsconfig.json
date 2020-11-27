@@ -6,7 +6,7 @@
             "Services/*": ["./services/*"],
             "Routes/*": ["./routes/*"],
             "Config/*": ["./config/*"],
-            "Orm/*": ["./orm/*"],
+            "Orm/*": ["./orm/*"]
         }
     }
 }
