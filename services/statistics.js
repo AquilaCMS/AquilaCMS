@@ -21,14 +21,31 @@ exports.setProductViews = function (product_id) {
  */
 exports.sendMetrics = async function (licence, date) {
     try {
-        // const clients = Users.find({isAdmin: false}).count();
         const stats = await exports.getGlobaleStats(date);
         await axios.post('http://localhost:3010/api/v2/metrics', {
-            stats : stats.yesterday,
-            licence,
-            from  : date.toString()
+            stats,
+            licence
         });
         return 'Datas sent';
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+/**
+ * Récupère la date du premier client ou de la première commande
+ */
+exports.getFirstDayMetrics = async function () {
+    try {
+        const User  = await Users.find().sort({creationDate: 1}).limit(1);
+        const Order = await Orders.find().sort({creationDate: 1}).limit(1);
+        if (User.length === 1 || Order.length === 1) {
+            if (User[0].creationDate > Order[0].creationDate) {
+                return Order[0].creationDate;
+            }
+            return User[0].creationDate;
+        }
+        return false;
     } catch (error) {
         console.error(error);
     }
@@ -53,9 +70,23 @@ exports.generateStatistics = function (data) {
 exports.getGlobaleStats = async function (date) {
     let result;
     if (date) {
-        result = {
-            yesterday : await getGlobalStat('YESTERDAY', date)
-        };
+        result          = [];
+        const dateStart = date;
+        const date2     = new Date();
+        // const diffTime  = Math.abs(date2 - date);
+        const diffDays = Math.ceil(Math.abs(date2 - date) / (1000 * 60 * 60 * 24)) - 1;
+        console.log(`${diffDays} days`);
+        let n = 0;
+        while (n < diffDays ) {
+            const start = new Date(dateStart);
+            start.setDate(start.getDate() + n);
+            const end = new Date(dateStart);
+            end.setDate(end.getDate() + n + 1);
+            const res = await getGlobalStat('YESTERDAY', start, end);
+            res.date  = start.toString();
+            result.push(res);
+            n++;
+        }
     } else {
         result = {
             yesterday : await getGlobalStat('YESTERDAY'),
@@ -70,13 +101,14 @@ exports.getGlobaleStats = async function (date) {
 /**
  * Get Globale Stat (accueil admin)
  */
-async function getGlobalStat(periode, date) {
+async function getGlobalStat(periode, dateStart, dateEnd) {
     let datas = {};
     let periodeStart;
     let periodeEnd;
-    if (date) {
-        periodeStart = moment(date);
-        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+    if (dateStart && dateEnd) {
+        periodeStart = moment(dateStart);
+        periodeEnd   = moment(dateEnd);
+        // periodeEnd = moment({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     } else {
         periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
         periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
@@ -135,7 +167,7 @@ async function getGlobalStat(periode, date) {
     // --- Fréquentation ---
     let attendance = 0;
     let newClients;
-    if (date) {
+    if (dateStart && dateEnd) {
         const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
         for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
             attendance += attendanceTab[i].value;
