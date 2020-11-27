@@ -46,23 +46,23 @@ const migration_2_Metrics = async () => {
 const migration_3_CreatedAt = async () => {
     console.log('Applying migration script "migration_3_CreatedAt"...');
     const category        = await mongoose.connection.collection('categories').findOne({});
-    const contact         = await mongoose.connection.collection('contacts').find({});
-    const familie         = await mongoose.connection.collection('families').find({});
-    const gallery         = await mongoose.connection.collection('gallery').find({});
-    const mail            = await mongoose.connection.collection('mail').find({});
-    const mailType        = await mongoose.connection.collection('mailType').find({});
-    const news            = await mongoose.connection.collection('news').find({});
-    const orders          = await mongoose.connection.collection('orders').find({});
-    const products        = await mongoose.connection.collection('products').find({});
-    const productsPreview = await mongoose.connection.collection('productsPreview').find({});
-    const shortcodes      = await mongoose.connection.collection('shortcodes').find({});
-    const statics         = await mongoose.connection.collection('statics').find({});
-    const staticsPreview  = await mongoose.connection.collection('staticsPreview').find({});
-    const trademarks      = await mongoose.connection.collection('trademarks').find({});
-    const users           = await mongoose.connection.collection('users').find({});
-    const bills           = await mongoose.connection.collection('bills').find({});
-    const cart            = await mongoose.connection.collection('cart').find({});
-    const promo           = await mongoose.connection.collection('promo').find({});
+    const contact         = await mongoose.connection.collection('contacts').findOne({});
+    const familie         = await mongoose.connection.collection('families').findOne({});
+    const gallery         = await mongoose.connection.collection('gallery').findOne({});
+    const mail            = await mongoose.connection.collection('mail').findOne({});
+    const mailType        = await mongoose.connection.collection('mailType').findOne({});
+    const news            = await mongoose.connection.collection('news').findOne({});
+    const orders          = await mongoose.connection.collection('orders').findOne({});
+    const products        = await mongoose.connection.collection('products').findOne({});
+    const productsPreview = await mongoose.connection.collection('productsPreview').findOne({});
+    const shortcodes      = await mongoose.connection.collection('shortcodes').findOne({});
+    const statics         = await mongoose.connection.collection('statics').findOne({});
+    const staticsPreview  = await mongoose.connection.collection('staticsPreview').findOne({});
+    const trademarks      = await mongoose.connection.collection('trademarks').findOne({});
+    const users           = await mongoose.connection.collection('users').findOne({});
+    const bills           = await mongoose.connection.collection('bills').findOne({});
+    const cart            = await mongoose.connection.collection('cart').findOne({});
+    const promo           = await mongoose.connection.collection('promo').findOne({});
 
     if (category && category.creationDate) {
         await mongoose.connection.collection('categories').updateMany({}, {$rename: {creationDate: 'createdAt'}}, false, true);
