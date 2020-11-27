@@ -265,14 +265,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
                                 function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
                                     $scope.mailType = [];
-                                    // if(code !== 'none'){
-                                        MailTypeGet.query({ code }, function (mailType) {
-                                            $scope.mailType = mailType;
-                                            // $scope.noMailType = false;
-                                        });
-                                    // }else{
-                                    //     $scope.noMailType = true;
-                                    // }
+                                    MailTypeGet.query({ code }, function (mailType) {
+                                        $scope.mailType = mailType;
+                                    });
                                     $scope.lang = $rootScope.adminLang;
                                     $scope.selected = false;
                                     $scope.mailTypeSelected = {};
@@ -289,7 +284,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $scope.cancel = function () {
                                         $modalInstance.dismiss('cancel');
                                     };
-    
                                 }],
                             resolve: {
                             }
