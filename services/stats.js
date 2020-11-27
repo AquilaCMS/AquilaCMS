@@ -106,10 +106,19 @@ const buildStats = async () => {
                     const date                               = `${(_config.environment.sendMetrics.lastSent.getMonth() > 8) ? (_config.environment.sendMetrics.lastSent.getMonth() + 1) : (`0${_config.environment.sendMetrics.lastSent.getMonth() + 1}`)}/${(_config.environment.sendMetrics.lastSent.getDate() > 9) ? _config.environment.sendMetrics.lastSent.getDate() : (`0${_config.environment.sendMetrics.lastSent.getDate()}`)}/${_config.environment.sendMetrics.lastSent.getFullYear()}`;
                     _config.environment.sendMetrics.lastSent = moment(date, 'DD/MM/YYYY').set({hour: 0, minute: 0, second: 0, millisecond: 0});
                 }
-                await ServiceStatistics.sendMetrics(_config.licence.registryKey, _config.environment.sendMetrics.lastSent);
-                _config.environment.sendMetrics.lastSent = new Date();
-                await _config.save();
-                result = `OK - Metrics sent ${_config.environment.sendMetrics.lastSent}`;
+                try {
+                    const response = await ServiceStatistics.sendMetrics(_config.licence.registryKey, _config.environment.sendMetrics.lastSent);
+                    if (!response) {
+                        result = 'OK - But Metrics not sent';
+                    } else {
+                        _config.environment.sendMetrics.lastSent = new Date();
+                        await _config.save();
+                        result = `OK - Metrics sent ${_config.environment.sendMetrics.lastSent}`;
+                    }
+                } catch (error) {
+                    console.log(error);
+                    return `Ok - But metrics not sent : ${error}`;
+                }
             }
         }
     } catch (err) {

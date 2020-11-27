@@ -20,16 +20,12 @@ exports.setProductViews = function (product_id) {
  * Construit et envoie les statistiques des précédents jour sur un autre site
  */
 exports.sendMetrics = async function (licence, date) {
-    try {
-        const stats = await exports.getGlobaleStats(date);
-        await axios.post('http://localhost:3010/api/v2/metrics', {
-            stats,
-            licence
-        });
-        return 'Datas sent';
-    } catch (error) {
-        console.error(error);
-    }
+    const stats = await exports.getGlobaleStats(date);
+    await axios.post('http://localost:3010/api/v2/metrics', {
+        stats,
+        licence
+    });
+    return 'Datas sent';
 };
 
 /**
@@ -73,18 +69,25 @@ exports.getGlobaleStats = async function (date) {
         result          = [];
         const dateStart = date;
         const date2     = new Date();
-        // const diffTime  = Math.abs(date2 - date);
-        const diffDays = Math.ceil(Math.abs(date2 - date) / (1000 * 60 * 60 * 24)) - 1;
-        console.log(`${diffDays} days`);
-        let n = 0;
+        const diffDays  = Math.ceil(Math.abs(date2 - date) / (1000 * 60 * 60 * 24)) - 1;
+        let n           = 0;
         while (n < diffDays ) {
             const start = new Date(dateStart);
             start.setDate(start.getDate() + n);
             const end = new Date(dateStart);
             end.setDate(end.getDate() + n + 1);
             const res = await getGlobalStat('YESTERDAY', start, end);
-            res.date  = start.toString();
-            result.push(res);
+            let empty = true;
+            for (const prop in res) {
+                if (res[prop] > 0) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (!empty) {
+                res.date = start.toString();
+                result.push(res);
+            }
             n++;
         }
     } else {
