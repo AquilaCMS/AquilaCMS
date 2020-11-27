@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const migration_1_ModulesNewPackageDependencies = async () => {
     console.log('Applying migration script "migration_1_ModulesNewPackageDependencies"...');
-    for (const mod of (await mongoose.connection.collection('modules').find({}))) {
+    (await mongoose.connection.collection('modules').find({})).forEach(async (mod) => {
         const packageDependencies = {
             api   : {},
             theme : {}
@@ -32,7 +32,7 @@ const migration_1_ModulesNewPackageDependencies = async () => {
                 }
             });
         }
-    }
+    });
 };
 
 const migration_2_Metrics = async () => {
