@@ -95,11 +95,19 @@ const initDBValues = async () => {
 
     const mailTypes = [
         {
-            code     : '',
-            name     : 'Aucun type',
+            code        : '',
+            translation : {
+                fr : {
+                    name : 'Aucun type'
+                },
+                en : {
+                    name : 'Aucun type'
+                }
+            },
             position : 0
         },
-        {code        : 'register',
+        {
+            code        : 'register',
             position    : 1,
             translation : {
                 fr : {
@@ -156,7 +164,8 @@ const initDBValues = async () => {
                 }
             }
         },
-        {code        : 'sendRegisterForAdmin',
+        {
+            code        : 'sendRegisterForAdmin',
             position    : 2,
             translation : {
                 fr : {
@@ -204,8 +213,10 @@ const initDBValues = async () => {
 
                     ]
                 }
-            }},
-        {code        : 'orderSuccess', // TODO !
+            }
+        },
+        {
+            code        : 'orderSuccess',
             position    : 3,
             translation : {
                 fr : {
@@ -213,182 +224,183 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'toDo'
+                            description : 'Adresse ligne 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'toDo'
+                            description : 'Adresse ligne 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'toDo'
+                            description : 'Informations complementaires'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'toDo'
+                            description : 'Code postal'
                         },
                         {
                             value       : 'address.city',
-                            description : 'toDo'
+                            description : 'Ville'
                         },
                         {
                             value       : 'address.country',
-                            description : 'toDo'
+                            description : 'Pays'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'toDo'
+                            description : 'Prénom'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'toDo'
+                            description : 'Nom'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'toDo'
+                            description : 'Date de reception'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'toDo'
+                            description : 'Livraison'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'toDo'
+                            description : 'Prix de la livraison'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'toDo'
+                            description : 'Heure de livraison'
                         },
                         {
                             value       : 'order.number',
-                            description : 'toDo'
+                            description : 'Numero de commande'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'toDo'
+                            description : 'Description du paiement'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'toDo'
+                            description : 'Mode de paiement'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'toDo'
+                            description : 'Prix total'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'toDo'
+                            description : 'Instruction de paiement (differe)'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'URL du site'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'toDo'
+                            description : 'HT ou TTC'
                         }
                     ]
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Commande validée (envoi du mail au client)',
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'toDo'
+                            description : 'Address line 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'toDo'
+                            description : 'AAddress line 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'toDo'
+                            description : 'Complementary information'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'toDo'
+                            description : 'Zip code'
                         },
                         {
                             value       : 'address.city',
-                            description : 'toDo'
+                            description : 'City'
                         },
                         {
                             value       : 'address.country',
-                            description : 'toDo'
+                            description : 'Country'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'toDo'
+                            description : 'Firstname'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'toDo'
+                            description : 'Lastname'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'toDo'
+                            description : 'Company'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'toDo'
+                            description : 'Date receipt'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'toDo'
+                            description : 'Delivery'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'toDo'
+                            description : 'Delivery price'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'toDo'
+                            description : 'Delivery time'
                         },
                         {
                             value       : 'order.number',
-                            description : 'toDo'
+                            description : 'Order number'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'toDo'
+                            description : 'Description of payment'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'toDo'
+                            description : 'Payment method'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'toDo'
+                            description : 'Total price'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'toDo'
+                            description : 'Payment instruction (deferred)'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'Website URL'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'toDo'
+                            description : 'ATI or ET'
                         }
                     ]
-
                 }
-            }},
-        {code        : 'orderSuccessCompany', // TODO !
+            }
+        },
+        {
+            code        : 'orderSuccessCompany',
             position    : 4,
             translation : {
                 fr : {
@@ -396,183 +408,185 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'toDo'
+                            description : 'Adresse ligne 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'toDo'
+                            description : 'Adresse ligne 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'toDo'
+                            description : 'Informations complementaires'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'toDo'
+                            description : 'Code postal'
                         },
                         {
                             value       : 'address.city',
-                            description : 'toDo'
+                            description : 'Ville'
                         },
                         {
                             value       : 'address.country',
-                            description : 'toDo'
+                            description : 'Pays'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'toDo'
+                            description : 'Prenom'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'toDo'
+                            description : 'Nom'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'toDo'
+                            description : 'Date de reception'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'toDo'
+                            description : 'Livraison'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'toDo'
+                            description : 'Prix de la livraison'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'toDo'
+                            description : 'Heure de livraison'
                         },
                         {
                             value       : 'order.number',
-                            description : 'toDo'
+                            description : 'Numero de commande'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'toDo'
+                            description : 'Description du paiement'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'toDo'
+                            description : 'Mode de paiement'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'toDo'
+                            description : 'Prix total'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'toDo'
+                            description : 'Instruction de paiement (differe)'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'URL du site'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'toDo'
+                            description : 'HT ou TTC'
                         }
                     ]
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Order validated (sending the email to the company)',
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'toDo'
+                            description : 'Address line 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'toDo'
+                            description : 'AAddress line 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'toDo'
+                            description : 'Company name'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'toDo'
+                            description : 'Complementary information'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'toDo'
+                            description : 'Zip code'
                         },
                         {
                             value       : 'address.city',
-                            description : 'toDo'
+                            description : 'City'
                         },
                         {
                             value       : 'address.country',
-                            description : 'toDo'
+                            description : 'Country'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'toDo'
+                            description : 'Firstname'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'toDo'
+                            description : 'Lastname'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'toDo'
+                            description : 'Company'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'toDo'
+                            description : 'Date receipt'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'toDo'
+                            description : 'Delivery'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'toDo'
+                            description : 'Delivery price'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'toDo'
+                            description : 'Delivery time'
                         },
                         {
                             value       : 'order.number',
-                            description : 'toDo'
+                            description : 'Order number'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'toDo'
+                            description : 'Description of payment'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'toDo'
+                            description : 'Payment method'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'toDo'
+                            description : 'Total price'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'toDo'
+                            description : 'Payment instruction (deferred)'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'Website URL'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'toDo'
+                            description : 'ATI or ET'
                         }
                     ]
 
                 }
-            }},
-        {code        : 'passwordRecovery',
+            }
+        },
+        {
+            code        : 'passwordRecovery',
             position    : 5,
             translation : {
                 fr : {
@@ -598,7 +612,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Recovering your password',
                     variables : [
                         {
                             value       : 'firstname',
@@ -619,8 +633,10 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }},
-        {code        : 'contactMail',
+            }
+        },
+        {
+            code        : 'contactMail',
             position    : 6,
             translation : {
                 fr : {
@@ -634,7 +650,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Contact email',
                     variables : [
                         {
                             value       : 'formDatas',
@@ -643,8 +659,10 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }},
-        {code        : 'changeOrderStatus',
+            }
+        },
+        {
+            code        : 'changeOrderStatus',
             position    : 7,
             translation : {
                 fr : {
@@ -678,7 +696,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Order status change',
                     variables : [
                         {
                             value       : 'firstname',
@@ -707,8 +725,10 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }},
-        {code        : 'rmaOrder',
+            }
+        },
+        {
+            code        : 'rmaOrder',
             position    : 8,
             translation : {
                 fr : {
@@ -742,7 +762,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Product return receipt',
                     variables : [
                         {
                             value       : 'firstname',
@@ -771,8 +791,10 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }},
-        {code        : 'orderSent',
+            }
+        },
+        {
+            code        : 'orderSent',
             position    : 9,
             translation : {
                 fr : {
@@ -806,7 +828,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Order sent',
                     variables : [
                         {
                             value       : 'company',
@@ -835,8 +857,10 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }},
-        {code        : 'orderSuccessDeferred', // TODO !
+            }
+        },
+        {
+            code        : 'orderSuccessDeferred',
             position    : 10,
             translation : {
                 fr : {
@@ -844,183 +868,183 @@ const initDBValues = async () => {
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'toDo'
+                            description : 'Adresse ligne 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'toDo'
+                            description : 'Adresse ligne 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'toDo'
+                            description : 'Informations complementaires'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'toDo'
+                            description : 'Code postal'
                         },
                         {
                             value       : 'address.city',
-                            description : 'toDo'
+                            description : 'Ville'
                         },
                         {
                             value       : 'address.country',
-                            description : 'toDo'
+                            description : 'Pays'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'toDo'
+                            description : 'Prenom'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'toDo'
+                            description : 'Nom'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'toDo'
+                            description : 'Date de reception'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'toDo'
+                            description : 'Livraison'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'toDo'
+                            description : 'Prix de la livraison'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'toDo'
+                            description : 'Heure de livraison'
                         },
                         {
                             value       : 'order.number',
-                            description : 'toDo'
+                            description : 'Numero de commande'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'toDo'
+                            description : 'Description du paiement'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'toDo'
+                            description : 'Mode de paiement'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'toDo'
+                            description : 'Prix total'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'toDo'
+                            description : 'Instruction de paiement (differe)'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'URL du site'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'toDo'
+                            description : 'HT ou TTC'
                         }
                     ]
-
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Commande avec paiement différé',
                     variables : [
                         {
                             value       : 'address.line1',
-                            description : 'toDo'
+                            description : 'Adresse ligne 1'
                         },
                         {
                             value       : 'address.line2',
-                            description : 'toDo'
+                            description : 'Adresse ligne 2'
                         },
                         {
                             value       : 'address.companyName',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'address.complementaryInfo',
-                            description : 'toDo'
+                            description : 'Informations complementaires'
                         },
                         {
                             value       : 'address.zipcode',
-                            description : 'toDo'
+                            description : 'Code postal'
                         },
                         {
                             value       : 'address.city',
-                            description : 'toDo'
+                            description : 'Ville'
                         },
                         {
                             value       : 'address.country',
-                            description : 'toDo'
+                            description : 'Pays'
                         },
                         {
                             value       : 'order.customer.firstname',
-                            description : 'toDo'
+                            description : 'Prenom'
                         },
                         {
                             value       : 'order.customer.lastname',
-                            description : 'toDo'
+                            description : 'Nom'
                         },
                         {
                             value       : 'order.customer.company',
-                            description : 'toDo'
+                            description : 'Nom de l\'entreprise'
                         },
                         {
                             value       : 'order.dateReceipt',
-                            description : 'toDo'
+                            description : 'Date de reception'
                         },
                         {
                             value       : 'order.delivery',
-                            description : 'toDo'
+                            description : 'Livraison'
                         },
                         {
                             value       : 'order.delivery.price',
-                            description : 'toDo'
+                            description : 'Prix de la livraison'
                         },
                         {
                             value       : 'order.hourReceipt',
-                            description : 'toDo'
+                            description : 'Heure de livraison'
                         },
                         {
                             value       : 'order.number',
-                            description : 'toDo'
+                            description : 'Numero de commande'
                         },
                         {
                             value       : 'order.paymentDescription',
-                            description : 'toDo'
+                            description : 'Description du paiement'
                         },
                         {
                             value       : 'order.paymentMode',
-                            description : 'toDo'
+                            description : 'Mode de paiement'
                         },
                         {
                             value       : 'order.priceTotal',
-                            description : 'toDo'
+                            description : 'Prix total'
                         },
                         {
                             value       : 'payment.instruction',
-                            description : 'toDo'
+                            description : 'Instruction de paiement (differe)'
                         },
                         {
                             value       : 'appUrl',
-                            description : 'toDo'
+                            description : 'URL du site'
                         },
                         {
                             value       : 'taxdisplay',
-                            description : 'toDo'
+                            description : 'HT ou TTC'
                         }
                     ]
-
                 }
-            }},
-        {code        : 'activationAccount',
+            }
+        },
+        {
+            code        : 'activationAccount',
             position    : 11,
             translation : {
                 fr : {
@@ -1046,7 +1070,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Account activation',
                     variables : [
                         {
                             value       : 'firstname',
@@ -1067,8 +1091,10 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }},
-        {code        : 'requestCancelOrderNotify',
+            }
+        },
+        {
+            code        : 'requestCancelOrderNotify',
             position    : 12,
             translation : {
                 fr : {
@@ -1098,7 +1124,7 @@ const initDBValues = async () => {
 
                 },
                 en : {
-                    name      : 'toDo',
+                    name      : 'Order cancellation request',
                     variables : [
                         {
                             value       : 'number',
@@ -1123,7 +1149,8 @@ const initDBValues = async () => {
                     ]
 
                 }
-            }}
+            }
+        }
     ];
     // Populate mailType in BDD
     for (const mailType of mailTypes) {
@@ -1137,7 +1164,8 @@ const initDBValues = async () => {
             code        : 'transfer',
             translation : {
                 fr : {name: 'Virement', urlLogo: imgTrans, description: 'Virement bancaire requis dans un délais de 5 jours'},
-                en : {name: 'Bank transfer', urlLogo: imgTrans, description: 'Bank transfer required within 5 days'}},
+                en : {name: 'Bank transfer', urlLogo: imgTrans, description: 'Bank transfer required within 5 days'}
+            },
             active     : true,
             isDeferred : true
         },
@@ -1145,7 +1173,8 @@ const initDBValues = async () => {
             code        : 'cheque',
             translation : {
                 fr : {name: 'Chèque', urlLogo: imgCheck, description: 'Paiement par chèque à nous envoyer dans les 5 jours'},
-                en : {name: 'Check', urlLogo: imgCheck, description: 'Payment by check to be sent to us within 5 days'}},
+                en : {name: 'Check', urlLogo: imgCheck, description: 'Payment by check to be sent to us within 5 days'}
+            },
             active     : true,
             isDeferred : true
         },
@@ -1153,7 +1182,8 @@ const initDBValues = async () => {
             code        : 'cash',
             translation : {
                 fr : {name: 'Espèces'},
-                en : {name: 'Cash'}},
+                en : {name: 'Cash'}
+            },
             active     : false,
             isDeferred : true
         }
