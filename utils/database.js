@@ -150,14 +150,14 @@ const applyMigrationIfNeeded = async () => {
     try {
         const {migrationScripts} = require('./migration');
         const config             =  await mongoose.connection
-            .collection('configuration')
+            .collection('configurations')
             .findOne();
         if (config && config.environment) {
             let migration = config.environment.migration || 0;
             for (migration; migration < migrationScripts.length; migration++) {
                 await migrationScripts[migration]();
                 await mongoose.connection
-                    .collection('configuration')
+                    .collection('configurations')
                     .updateOne({}, {'environment.migration': migration + 1});
             }
         }

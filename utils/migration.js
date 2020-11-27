@@ -37,9 +37,9 @@ const migration_1_ModulesNewPackageDependencies = async () => {
 
 const migration_2_Metrics = async () => {
     console.log('Applying migration script "migration_2_Metrics"...');
-    const config = await mongoose.connection.collection('configuration').findOne({});
+    const config = await mongoose.connection.collection('configurations').findOne({});
     if (config && config.environment) {
-        await mongoose.connection.collection('configuration').updateOne({}, {$unset: {'environment.sendMetrics': {}}});
+        await mongoose.connection.collection('configurations').updateOne({}, {$unset: {'environment.sendMetrics': {}}});
     }
 };
 
