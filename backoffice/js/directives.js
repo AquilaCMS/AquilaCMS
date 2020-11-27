@@ -198,8 +198,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
-            "$scope","$rootScope", "$filter", "$modal","$http",
-            function ($scope, $rootScope, $filter, $modal, $http) {
+            "$scope","$rootScope", "$filter", "$modal","$http","toastService",
+            function ($scope, $rootScope, $filter, $modal, $http, toastService) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
@@ -255,47 +255,56 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     };
 
                 $scope.addMailVar = function (code) {
-                    const modalInstance = $modal.open({
-                        backdrop: 'static',
-                        keyboard: false,
-                        templateUrl: 'views/modals/add-mailvar-tinymce.html',
-                        controller: ['$scope', '$modalInstance', '$rootScope','MailTypeGet',
-                            function ($scope, $modalInstance, $rootScope, MailTypeGet) {
-                                $scope.mailType = [];
-                                MailTypeGet.query({code}, function (mailType) {
-                                    $scope.mailType = mailType;
-                                });
-                                $scope.lang = $rootScope.adminLang;
-                                $scope.selected = false;
-                                $scope.mailTypeSelected = {};
-
-                                $scope.selectVariable = function (variable) {
-                                    $scope.selected = true;
-                                    $scope.variableSelected = variable;
-                                }
-
-                                $scope.addMailVariable = function(variable){
-                                    $modalInstance.close(variable);
-                                }
-
-                                $scope.cancel = function () {
-                                    $modalInstance.dismiss('cancel');
-                                };
-
-                            }],
-                        resolve: {
-                        }
-                    });
-
-                    modalInstance.result.then(function (variable) {
-                        variable = '{{' + variable + '}}';
-                        if ($scope.tinymceId) {
-                            tinyMCE.get($scope.tinymceId).selection.setContent(variable);
-                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                        } else {
-                            tinyMCE.activeEditor.selection.setContent(variable);
-                        }
-                    });
+                    if (code === 'none') {
+                        toastService.toast('danger', "Veuillez sélectionner un type de mail");
+                    }else{
+                        const modalInstance = $modal.open({
+                            backdrop: 'static',
+                            keyboard: false,
+                            templateUrl: 'views/modals/add-mailvar-tinymce.html',
+                            controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
+                                function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
+                                    $scope.mailType = [];
+                                    // if(code !== 'none'){
+                                        MailTypeGet.query({ code }, function (mailType) {
+                                            $scope.mailType = mailType;
+                                            // $scope.noMailType = false;
+                                        });
+                                    // }else{
+                                    //     $scope.noMailType = true;
+                                    // }
+                                    $scope.lang = $rootScope.adminLang;
+                                    $scope.selected = false;
+                                    $scope.mailTypeSelected = {};
+    
+                                    $scope.selectVariable = function (variable) {
+                                        $scope.selected = true;
+                                        $scope.variableSelected = variable;
+                                    }
+    
+                                    $scope.addMailVariable = function(variable){
+                                        $modalInstance.close(variable);
+                                    }
+    
+                                    $scope.cancel = function () {
+                                        $modalInstance.dismiss('cancel');
+                                    };
+    
+                                }],
+                            resolve: {
+                            }
+                        });
+    
+                        modalInstance.result.then(function (variable) {
+                            variable = '{{' + variable + '}}';
+                            if ($scope.tinymceId) {
+                                tinyMCE.get($scope.tinymceId).selection.setContent(variable);
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                            } else {
+                                tinyMCE.activeEditor.selection.setContent(variable);
+                            }
+                        });
+                    }
                 };
 
                 $scope.addShortcode = function () {

@@ -48,11 +48,13 @@
             </div>
             <div ng-repeat="variable in mailType.translation[lang].variables | orderBy:'-weight'">
                 <div class="col-md-4 shortcode" style="padding:10px;" ng-click="selectVariable(variable.value)">
-                    <div ng-if="variableSelected !== variable.value" style="border:2px solid black;border-radius:8px;padding:10px;height:100px">
+                    <div ng-if="variableSelected !== variable.value"
+                        style="border:2px solid black;border-radius:8px;padding:10px;height:100px">
                         <label>{{variable.description}}</label>
                         <pre>{{'{'+'{'+variable.value+'}'+'}'}}</pre>
                     </div>
-                    <div ng-if="variableSelected === variable.value" style="border:2px solid black;border-radius:8px;padding:10px;height:100px;box-shadow: 0px 0px 20px 5px #576fa1;">
+                    <div ng-if="variableSelected === variable.value"
+                        style="border:2px solid black;border-radius:8px;padding:10px;height:100px;box-shadow: 0px 0px 20px 5px #576fa1;">
                         <label>{{variable.description}}</label>
                         <pre>{{'{'+'{'+variable.value+'}'+'}'}}</pre>
                     </div>

@@ -36,12 +36,11 @@ MailControllers.controller("MailDetailCtrl", [
         $scope.langChange = function (lang) {
             $scope.lang = lang;
         };
-        
+
         $scope.additionnalButtons = [
             {
                 text: 'mail.detail.test',
                 onClick: function () {
-                    debugger;
                     $scope.openItemModal($scope.lang, $scope.mail.type)
                 },
                 icon:'<i class="fa fa-envelope-o" aria-hidden="true"></i>'
@@ -76,6 +75,8 @@ MailControllers.controller("MailDetailCtrl", [
         if($scope.isEditMode)
         {
             $scope.MailGetById();
+        }else{
+            $scope.mail.type = "";
         }
 
         $scope.after = function(){
@@ -223,189 +224,6 @@ MailControllers.controller("MailDetailTestCtrl", [
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
-        
-
-       
-        
-
-        // $scope.type = {
-        //     "register" : [
-        //         { name: 'firstname', value:'' },
-        //         { name: 'lastname', value:'' },
-        //         { name: 'company', value:'' },
-        //         { name: 'login', value: '' },
-        //         { name: 'name', value: ''},
-        //         { name: 'activate_account_token', value: '' }
-        //     ],
-        //     "activationAccount": [
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'company', value: '' },
-        //         { name: 'name', value: ''},
-        //         { name: 'activate_account_token' },
-        //     ],
-        //     "orderSuccess":  [
-        //         { name: 'taxdisplay' },
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'company', value: '' },
-        //         { name: 'number' },
-        //         { name: 'dateReceipt' },
-        //         { name: 'hourReceipt' },
-        //         { name: 'address' },
-        //         { name: 'order.customer.firstname', value: '' },
-        //         { name: 'order.customer.lastname', value: '' },
-        //         { name: 'order.customer.company', value: '' },
-        //         { name: 'order.customer.fullname', value: '' },
-        //         { name: 'order.number' },
-        //         { name: 'order.dateReceipt' },
-        //         { name: 'order.hourReceipt' },
-        //         { name: 'order.priceTotal' },
-        //         { name: 'order.delivery' },
-        //         { name: 'order.paymentMode' },
-        //         { name: 'order.paymentDescription' },
-        //         { name: 'order.shipment' },
-        //         { name: 'address.line1' },
-        //         { name: 'address.line2' },
-        //         { name: 'address.companyName' },
-        //         { name: 'address.complementaryInfo' },
-        //         { name: 'address.zipcode' },
-        //         { name: 'address.city' },
-        //         { name: 'address.country' },
-        //         { name: 'totalamount' },
-        //         { name: 'orderdata' },
-        //         { name: 'taxdisplay' },
-        //         { name: 'appUrl' },
-        //         { name: 'payment_type' },
-        //         { name: 'delivery_type' }
-        //     ],
-        //     "orderSuccessDeferred": [
-        //         { name: 'taxdisplay' },
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'company', value: '' },
-        //         { name: 'number' },
-        //         { name: 'dateReceipt' },
-        //         { name: 'hourReceipt' },
-        //         { name: 'address' },
-        //         { name: 'order.customer.firstname', value: '' },
-        //         { name: 'order.customer.lastname', value: '' },
-        //         { name: 'order.customer.company', value: '' },
-        //         { name: 'order.customer.fullname', value: '' },
-        //         { name: 'order.number' },
-        //         { name: 'order.dateReceipt' },
-        //         { name: 'order.hourReceipt' },
-        //         { name: 'order.priceTotal' },
-        //         { name: 'order.delivery' },
-        //         { name: 'order.paymentMode' },
-        //         { name: 'order.paymentDescription' },
-        //         { name: 'order.shipment' },
-        //         { name: 'address.line1' },
-        //         { name: 'address.line2' },
-        //         { name: 'address.companyName' },
-        //         { name: 'address.complementaryInfo' },
-        //         { name: 'address.zipcode' },
-        //         { name: 'address.city' },
-        //         { name: 'address.country' },
-        //         { name: 'totalamount' },
-        //         { name: 'orderdata' },
-        //         { name: 'taxdisplay' },
-        //         { name: 'appUrl' },
-        //         { name: 'payment_type' },
-        //         { name: 'delivery_type' },
-        //         { name: 'payment.instruction' }
-        //     ],
-        //     "orderSuccessCompany":   [
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'company', value: '' },
-        //         { name: 'taxdisplay' },
-        //         { name: 'number' },
-        //         { name: 'dateReceipt' },
-        //         { name: 'hourReceipt' },
-        //         { name: 'address' },
-        //         { name: 'order.customer.firstname', value: '' },
-        //         { name: 'order.customer.lastname', value: '' },
-        //         { name: 'order.customer.company', value: '' },
-        //         { name: 'order.customer.fullname', value: '' },
-        //         { name: 'order.number' },
-        //         { name: 'order.dateReceipt' },
-        //         { name: 'order.hourReceipt' },
-        //         { name: 'order.priceTotal' },
-        //         { name: 'order.delivery' },
-        //         { name: 'order.paymentMode' },
-        //         { name: 'order.paymentDescription' },
-        //         { name: 'order.shipment' },
-        //         { name: 'address.line1' },
-        //         { name: 'address.line2' },
-        //         { name: 'address.companyName' },
-        //         { name: 'address.complementaryInfo' },
-        //         { name: 'address.zipcode' },
-        //         { name: 'address.city' },
-        //         { name: 'address.country' },
-        //         { name: 'totalamount' },
-        //         { name: 'taxdisplay' },
-        //         { name: 'appUrl' },
-        //         { name: 'customer_mobile_phone' },
-        //         { name: 'payment_type' },
-        //         { name: 'delivery_type' },
-        //         { name: 'shipment' }
-        //      ],
-        //     "sendRegisterForAdmin": [
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'login', value: '' },
-        //         { name: 'fullname', value: '' },
-        //         { name: 'name', value: '' },
-        //         { name: 'company', value: '' }
-        //     ],
-        //     "passwordRecovery":    [
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'company', value: '' },
-        //         { name: 'tokenlink' }
-        //     ],
-        //     "changeOrderStatus":  [
-        //         { name: 'appUrl' },
-        //         { name: 'number' },
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'company', value: '' },
-        //         { name: 'status' }
-        //     ],
-        //     "contactMail":   [
-        //         { name: 'formDatas' },
-        //     ],
-        //     "rmaOrder":      [
-        //         { name: 'number' },
-        //         { name: 'date' },
-        //         { name: 'articles' },
-        //         { name: 'refund' },
-        //         { name: 'firstname', value: '' },
-        //         { name: 'lastname', value: '' },
-        //         { name: 'fullname', value: '' }
-        //     ],
-        //     "orderSent":     [
-        //         { name: 'number' },
-        //         { name: 'trackingUrl' },
-        //         { name: 'date' },
-        //         { name: 'transporterName' },
-        //         { name: 'address' },
-        //         { name: 'fullname', value: '' },
-        //         { name: 'company', value: '' },
-        //     ],
-        //     "requestCancelOrderNotify": [
-        //         {name: 'number'},
-        //         {name: 'status'},
-        //         {name: 'fullname'},
-        //         {name: 'name'},
-        //         {name: 'company'},
-        //         {name: 'firstname'},
-        //         {name: 'lastname'}
-        //     ]
-
-        // };
-        // $scope.dataMail = $scope.type[$scope.mail.type];
 
         //Envoie de mail test
         $scope.testMail = function(variables){
