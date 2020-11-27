@@ -158,7 +158,7 @@ const applyMigrationIfNeeded = async () => {
                 await migrationScripts[migration]();
                 await mongoose.connection
                     .collection('configurations')
-                    .updateOne({}, {'environment.migration': migration + 1});
+                    .updateOne({}, {$set: {'environment.migration': migration + 1}});
             }
         }
     } catch (e) {
