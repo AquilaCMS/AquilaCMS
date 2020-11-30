@@ -5,18 +5,13 @@
     </div>
     <style>
         .carreBleu{
-            color: #fff;
-            background-color: #428bca;
-            border-color: #357ebd;
-            border-radius: 2px;
-            margin:2px;
-            display: inline-block;
-            vertical-align: middle;
-            text-align: center;
-            padding: 1px 5px;
-            font-size: 12px;
-            height: 21px;
-            margin-top: 6px;
+            height: 24px;
+            margin-top: 5px;
+            line-height: initial;
+            padding: 0px 5px;
+            font-size: 16px;
+            min-width: 0;
+            margin-right:1px;
         }
         .carreBleuArrow{
             background: #576fa1;
@@ -74,13 +69,13 @@
                             <span class="titleTree">{{universe.name}}</span>
                             <span class="titleTree">Univers</span>
                         </span>
-                        <span class="carreBleu pull-right">
+                        <span class="btn btn-primary carreBleu pull-right">
                              <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);editFamilies(universe._id);"><span class="glyphicon glyphicon-pencil"></span></a>
                         </span>
-                        <span class="carreBleu pull-right">
+                        <span class="btn btn-primary carreBleu pull-right">
                              <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);removeFamily(universe._id);"><span class="glyphicon glyphicon-trash"></span></a>
                         </span>
-                        <span class="carreBleu pull-right">
+                        <span class="btn btn-primary carreBleu pull-right">
                             <a href="" ng-click="$event.stopPropagation();updateFromUnivers(universe._id);newFamilies('family')"><span class="glyphicon glyphicon-plus"></span></a>
                         </span>
                         
@@ -96,13 +91,13 @@
                                         <span class="label label-info">Famille</span>
                                         <span class="titleTree">{{family.name}}</span>
                                     </span>
-                                    <span class="carreBleu pull-right">
+                                    <span class="btn btn-primary carreBleu pull-right">
                                         <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);editFamilies(family._id); "><span class="glyphicon glyphicon-pencil"></span></a>
                                     </span>
-                                    <span class="carreBleu pull-right">
+                                    <span class="btn btn-primary carreBleu pull-right">
                                         <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);removeFamily(family._id);"><span class="glyphicon glyphicon-trash"></span></a>
                                     </span>
-                                    <span class="carreBleu pull-right" style="margin-top:2px">
+                                    <span class="btn btn-primary carreBleu pull-right">
                                         <a href="" ng-click="$event.stopPropagation();updateFromFamily(family._id);newFamilies('subfamily')"><span class="glyphicon glyphicon-plus"></span></a>
                                     </span>
                                 </div>
@@ -111,10 +106,10 @@
                                         <li class="barre list-group-item" ng-if="selectedFamily == family._id" ng-repeat="subFamily in subFamilies" ng-click="updateFromSubFamily(subFamily._id)" style="cursor:pointer">
                                             <span class="label label-info">Sous famille</span>
                                             <span class="titleTree">{{subFamily.name}}</span>
-                                            <span class="carreBleu pull-right">
+                                            <span class="btn btn-primary carreBleu pull-right">
                                                 <a href="" ng-click="$event.stopPropagation();editFamilies(subFamily._id);"><span class="glyphicon glyphicon-pencil"></span></a>
                                             </span>
-                                            <span class="carreBleu pull-right">
+                                            <span class="btn btn-primary carreBleu pull-right">
                                                 <a href="" ng-click="$event.stopPropagation();removeFamily(subFamily._id);"><span class="glyphicon glyphicon-trash"></span></a>
                                             </span>
                                         </li>
