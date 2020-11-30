@@ -1,5 +1,5 @@
-describe ('Command  /!\\ Mobile View', function () {
-    it ('Command of 3 products and add another one: A promotion should be triggger if we are an existing customer', function () {
+describe ('Customer Promotion  /!\\ Mobile View', function () {
+    it ('Check of a promotion set for a special customer', function () {
         cy.visit('');
         cy.viewport(480, 720);
 
@@ -19,7 +19,6 @@ describe ('Command  /!\\ Mobile View', function () {
         var i = 0;
         // Check if price is reduced or not
         cy.get('.product--horizontal > .product__content > .product__entry > a > h4').then(($prd) => {
-            console.log($prd)
             for (i = 0; i < $prd.length; i++) {
                 if ($prd[i].innerText == "Chaussettes noires") {
                     cy.get('.product--horizontal > .product__content > .product__aside > .product-price').should(($pri) => {
@@ -29,6 +28,19 @@ describe ('Command  /!\\ Mobile View', function () {
                     break;
                 }
             }
+        })
+
+        cy.get('#id5d3074d44aa9c1692db0534d [class="ico-shopping-cart-white"]').click({force:true});
+        cy.get('[href="/cart"]').click({force:true});
+        cy.wait(1500);
+
+        cy.get('.products__body').should(($tb) => {
+            expect($tb).to.have.length(1);
+        })
+
+        cy.get('.products__body .product-price').should(($prd) => {
+            expect($prd[0]).to.contain("8.00€");
+            expect($prd[1]).to.contain("5.00€");
         })
     })
 })
