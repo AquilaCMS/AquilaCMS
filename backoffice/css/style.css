@@ -4151,6 +4151,11 @@ a.ui-button:active,
     position: relative;
 }
 
+.fakeDrop{
+    border: 1px dashed rgb(200,200,100);
+    background: rgb(240,240,200);
+}
+
 @media screen and (max-width: 1360px) {
     .start_stats>div>p>b {
         font-size: 17px !important;
