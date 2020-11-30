@@ -193,13 +193,18 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         restrict: "E",
         scope: {
             text: "=",
-            lang: "="
+            lang: "=",
+            tinyheight: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
             "$scope","$rootScope", "$filter", "$modal","$http",
             function ($scope, $rootScope, $filter, $modal, $http) {
                     // $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    debugger
+                    if(!$scope.tinyheight){
+                        $scope.tinyheight = '500px';
+                    }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
                         extended_valid_elements: "*[*]",//allow empty <a>-tag
