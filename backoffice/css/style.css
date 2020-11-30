@@ -2438,9 +2438,8 @@ input:-webkit-autofill {
 
 .nav-fixed {
     position: fixed;
-    /*height: 100vh;*/
     top: 60px;
-    height: 100vh;
+    min-height: 100vh;
     z-index: 1039;
     left: 0;
     width: 55px;
@@ -2660,7 +2659,7 @@ input:-webkit-autofill {
 }
 
 .nav-fixed-open .dropdown-open .dropdown {
-    max-height: 350px;
+    max-height: 400px;
 }
 
 .nav-fixed-open .dropdown li {
