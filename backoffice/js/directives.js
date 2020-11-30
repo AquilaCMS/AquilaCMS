@@ -201,7 +201,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
             "$scope","$rootScope", "$filter", "$modal","$http",
             function ($scope, $rootScope, $filter, $modal, $http) {
                     // $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    debugger
                     if(!$scope.tinyheight){
                         $scope.tinyheight = '500px';
                     }
