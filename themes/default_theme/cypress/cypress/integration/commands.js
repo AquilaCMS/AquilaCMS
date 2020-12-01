@@ -8,7 +8,7 @@ function makeid(length) {
     return result;
  }
 
-const email = makeid(10) + '@yopmail.com';
+const email = makeid(18) + '@yopmail.com';
 
 describe ('Do a command with a new customer', function () {
     it ('Command of a product as a new customer', function () {
