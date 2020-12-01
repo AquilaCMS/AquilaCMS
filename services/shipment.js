@@ -38,6 +38,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             PostBody.filter = {countries: {$elemMatch: {country: withCountry.toUpperCase()}}};
         }
     }
+    PostBody.filter.active = true;
     if (withCountry) {
         const price = 0;
 
@@ -57,7 +58,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
                     choices.push({shipment, price});
                 } else {
                     const priceR = range.price;
-                    if (!priceR) choices.push({index: i, price: 0});
+                    if (priceR === undefined) choices.push({index: i, price: 0});
                     else choices.push({shipment, price: priceR});
                 }
             }
