@@ -26,7 +26,7 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     // New module architecture
     "aq.home",
     "aq.config",
-    /*"aq.system",  BUG ICI QUAND ON RAJOUTE la ligne*/
+    "aq.system",  //BUG ICI QUAND ON RAJOUTE la ligne
     "aq.product",
     "aq.simpleProduct",
     "aq.bundleProduct",
