@@ -291,7 +291,14 @@
             <div class="box subbox" style="min-height: 185px;">
                 <div class="box-header">
                     <h2 translate>order.detail.colis</h2>
-                    <a ng-click="addPackage()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
+                    <div
+                        ng-show="orderPackagePopup.length > 0"
+                        ng-repeat="orderPP in orderPackagePopup"
+                        bind-html-compile="orderPP.component_template">
+                    </div>
+                    <a ng-show="orderPackagePopup.length === 0" ng-click="addPackage()" style="float:right">
+                        <i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i>
+                    </a>
                 </div>
                 <div class="box-content">
                     <div ng-show="order.delivery.package.length > 0">
@@ -495,7 +502,7 @@
                                 <label translate>{{getTranslation(status.status)}}</label>
                                 <!-- <b translate>{{getStatus(status.status)}} </b> -->
                             </p>
-                           
+
                         </div>
                     </div>
                 </div>
