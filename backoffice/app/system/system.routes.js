@@ -7,11 +7,7 @@ SystemRoutes.config(['$routeProvider', function ($routeProvider) {
         .when('/system', {
             name: 'systemImport',
             controller: 'systemGeneralController',
-            templateUrl: 'app/system/views/system.html',
-            resolve: {
-                        loggedin: checkLoggedin,
-                        checkAccess: checkAccess('system')
-                    }
+            templateUrl: 'app/system/views/system.html'
         });
 
 }]);

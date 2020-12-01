@@ -9,7 +9,3 @@ SystemServices.factory('System', ['$resource', function ($resource) {
     });
 }]);
 
-
-SystemServices.service('EnvBlocks', function () {
-    return [];
-});
