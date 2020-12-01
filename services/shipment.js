@@ -64,7 +64,10 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             i++;
         }
         // on filtre les shipment pour retourner le plus interessant
-        return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
+        if (choices.length) {
+            return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
+        }
+        return [];
     }
     let shipments = [];
     if (cart.addresses && cart.addresses.delivery && cart.addresses.delivery.isoCountryCode) {
