@@ -1,0 +1,33 @@
+{
+    "environment": {
+        "t1": "System",
+        "security":{
+            "title" : "Security",
+            "ssl": {
+                "ssl": "SSL",
+                "active": "Activate",
+                "cert": "certificate",
+                "key": "private key"
+            }
+        },
+        "nextjs":{
+            "title" : "NextJS",
+            "actualVersion": "Actual version",
+            "changeNextVersion": "Validate"
+        },
+        "log":{
+            "title" : "Log"
+        },
+        "other":{
+            "title" : "Others",
+            "connectionString": "Connection chain",
+            "database": "Database",
+            "dlDBAnonymized": "Download an anonymized database",
+            "dlAllDocument": "Download all documents*",
+            "dlAllDocumentTitle": "Documents ",
+            "dlAllDocumentInfo": "* Download only this documents : products, medias/galleries/slider, documents",
+            "uploadAllDocument": "Upload documents *",
+            "uploadAllDocumentInfo": "* Only .zip is accepted, and must contain good folders (available in download). No entry in the database."
+        }
+    }
+}

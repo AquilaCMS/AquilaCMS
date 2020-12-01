@@ -1,0 +1,33 @@
+{
+    "environment": {
+        "t1": "System",
+        "security":{
+            "title" : "Securité",
+            "ssl": {
+                "ssl": "SSL",
+                "active": "Activé",
+                "cert": "certificat",
+                "key": "Clé privée"
+            }
+        },
+        "nextjs":{
+            "title" : "NextJS",
+            "actualVersion": "Version actuelle",
+            "changeNextVersion": "Valider"
+        },
+        "log":{
+            "title" : "Log"
+        },
+        "other":{
+            "title" : "Others",
+            "connectionString": "Chaine de connexion",
+            "database": "Base de données",
+            "dlDBAnonymized": "Télécharger la base de données anonymisée",
+            "dlAllDocument": "Télécharger une sauvegarde des documents *",
+            "dlAllDocumentTitle": "Documents",
+            "dlAllDocumentInfo": "* Télécharge les documents suivants : produits, medias/galleries/carousel, documents",
+            "uploadAllDocument": "Envoyer les documents *",
+            "uploadAllDocumentInfo": "* Seul un .zip est accepté, et doit contenir les dossiers adequat (disponible lors du téléchargement). Aucune entrée dans la base de donnée n'est effectuée"
+        }
+    }
+}
