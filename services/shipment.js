@@ -38,6 +38,9 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             PostBody.filter = {countries: {$elemMatch: {country: withCountry.toUpperCase()}}};
         }
     }
+    if (!PostBody.filter) {
+        PostBody.filter = {};
+    }
     PostBody.filter.active = true;
     if (withCountry) {
         const price = 0;
