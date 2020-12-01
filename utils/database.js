@@ -148,14 +148,17 @@ const initDBValues = async () => {
 
 const applyMigrationIfNeeded = async () => {
     try {
-        const {Configuration}    = require('../orm/models');
         const {migrationScripts} = require('./migration');
-        const config             = await Configuration.findOne();
+        const config             =  await mongoose.connection
+            .collection('configurations')
+            .findOne();
         if (config && config.environment) {
             let migration = config.environment.migration || 0;
             for (migration; migration < migrationScripts.length; migration++) {
                 await migrationScripts[migration]();
-                await Configuration.updateOne({}, {'environment.migration': migration + 1});
+                await mongoose.connection
+                    .collection('configurations')
+                    .updateOne({}, {$set: {'environment.migration': migration + 1}});
             }
         }
     } catch (e) {

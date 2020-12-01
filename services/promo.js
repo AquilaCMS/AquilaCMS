@@ -803,7 +803,10 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
     } else if (discountType === 'Aati') {
         values = calculateCartItemDiscount(priceTotal, undefined, discountValue);
     }
-    return values;
+    return {
+        discountET  : priceTotal.et - values.discountET,
+        discountATI : priceTotal.ati - values.discountATI
+    };
 }
 
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {

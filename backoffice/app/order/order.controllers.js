@@ -40,7 +40,7 @@ OrderControllers.controller("OrderListCtrl", [
                 $scope.currentPage = page;
                 window.scrollTo(0, 0);
             }
-            
+
             sort[$scope.sort.type] = $scope.sort.reverse ? -1 : 1;
             // $scope.currentPage =2;
             // $scope.page =2;
@@ -106,15 +106,15 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup',
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup)
     {
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
+        $scope.orderPackagePopup = OrderPackagePopup;
         $scope.editableMode = false;
         $scope.order = {};
         $scope.status = "";
-
         $scope.scrollTo = function(elemId) {
             $location.hash(elemId);
             $anchorScroll();
@@ -287,7 +287,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 toastService.toast('danger', err.data.message);
             });
         };
-        
+
         $scope.getTranslation = function (status){
             return 'order.status.' + status;
         }
@@ -300,7 +300,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 return NSConstants.orderStatus.translation[$rootScope.adminLang][a].name;
             }
         }
-        
+
         $scope.itemStatus = NSConstants.itemStatus;
 
         $scope.getAddress = function ()
@@ -430,7 +430,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 {
                     for(var k = 0; k < $scope.order.delivery.package[j].products.length; k++)
                     {
-                        if($scope.order.delivery.package[j].products[k].product_id === $scope.order.items[i].id._id)
+                        if($scope.order.delivery.package[j].products[k].product_id === ($scope.order.items[i].id._id || $scope.order.items[i].id))
                         {
                             qty += $scope.order.delivery.package[j].products[k].qty_shipped;
                         }
@@ -458,6 +458,22 @@ OrderControllers.controller("OrderDetailCtrl", [
             }
             return qty;
         }
+        $scope.getQtyShipped = getQtyShipped;
+        $scope.getQtyReturned = getQtyReturned;
+
+        $scope.getOrder = function () {
+            Orders.get({
+                PostBody: {
+                    filter: {_id: $routeParams.orderId}
+                },
+                limit: 1,
+                structure: '*',
+                populate: ['items.id']
+            }, function (response) {
+                $scope.order = response
+                $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+            });
+        }
 
         $scope.addPackage = function (type)
         {
@@ -466,26 +482,21 @@ OrderControllers.controller("OrderDetailCtrl", [
                 controller: "PackagesNewCtrl",
                 windowClass: "modal-large",
                 resolve: {
-                    genericTools: function ()
-                    {
+                    genericTools: function () {
                         return {
                             getQtyShipped: getQtyShipped,
                             getQtyReturned: getQtyReturned,
                         };
                     },
-                    item: function ()
-                    {
+                    item: function () {
                         return $scope.order;
                     },
-                    type : function(){
+                    type : function () {
                         return type;
                     }
                 }
-            }).result.then(function ()
-            {
-                Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response) {
-                    $scope.order = response.datas[0]
-                });
+            }).result.then(function () {
+                $scope.getOrder()
             });
         };
 
@@ -510,9 +521,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 }
             }).result.then(function ()
             {
-                Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response) {
-                    $scope.order = response.datas[0]
-                });
+                $scope.getOrder()
             });
         };
 
@@ -530,12 +539,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 }
             }).result.then(function ()
             {
-                Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response) {
-                    $scope.order = response.datas[0];
-                    $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
-                    // let key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "PAYMENT_RECEIPT_PENDING");
-                    // $scope.orderStatus.splice(key, 1);
-                });
+                $scope.getOrder()
             });
         };
 
@@ -554,9 +558,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 }
             });
             modalInstance.result.then(function () {
-                Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response) {
-                    $scope.order = response.datas[0]
-                });
+                $scope.getOrder()
             });
         }
 
@@ -602,7 +604,7 @@ OrderControllers.controller("InfoAddressCtrl", [
                 if ($scope.order.addresses[$scope.type].isoCountryCode === element.code){
                     return element.translation[$scope.defaultLang].name;
                 }
-            }); 
+            });
             $scope.order.addresses[$scope.type].country = countryName.translation[$scope.defaultLang].name;
             Orders.save({order:$scope.order}, function(response){
                 if(response.nModified === 1){
