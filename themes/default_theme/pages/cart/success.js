@@ -242,7 +242,7 @@ class CartSuccess extends React.Component {
                                                                                     <tr key={item.id._id} className="cart-item cart-item--small">
                                                                                         <td>
                                                                                             <div className="cart__container">
-                                                                                                <figure className="cart__image">
+                                                                                                <figure className="cart__image" style={{ width: '82px' }}>
                                                                                                     <img src={imgDefault} alt={imgAlt} />
                                                                                                 </figure>
 
