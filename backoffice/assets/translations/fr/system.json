@@ -24,7 +24,7 @@
             "errorFileTitle": "Lien du fichier des erreurs :"
         },
         "other":{
-            "title" : "Others",
+            "title" : "Autres",
             "connectionString": "Chaine de connexion",
             "database": "Base de données",
             "dlDBAnonymized": "Télécharger la base de données anonymisée",
