@@ -33,10 +33,10 @@
         "attrJeux": "Attributes set attributes",
         "idFirst": "You must type the product's ID before configuring attributes!",
         "catNom": "Category name",
-        "modifier_price": {
+        "modifierPrice": {
             "ati": "ATI price diff",
             "et": "ET price diff"
         },
-        "modifier_weight": "Weight diff (gram)"
+        "modifierWeight": "Weight diff (gram)"
     }
 }
