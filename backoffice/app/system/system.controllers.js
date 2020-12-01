@@ -4,7 +4,8 @@ SystemControllers.controller("systemGeneralController", [
     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService",
     function ($scope, ConfigV2, NSConstants, System, $http, toastService) {
 
-        $scope.config = ConfigV2.environment(function () {
+        $scope.system = ConfigV2.environment(function () {
+
             $scope.ssl = {
                 cert : $scope.config.ssl.cert || '',
                 key  : $scope.config.ssl.key || ''
