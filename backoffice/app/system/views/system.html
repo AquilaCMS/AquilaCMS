@@ -1,37 +1,38 @@
 <ns-box data-title="system.environment.t1" title-icon="fa fa-cogs fa-lg">
-    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading"
-        role="form">
-        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form"></ns-buttons>
+    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading" role="form">
+        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#security" target="_self" translate>system.environment.menu.security</a></li>
-                    <li><a data-toggle="tab" href="#nextjs" target="_self" translate>system.environment.menu.nextjs</a></li>
-                    <li><a data-toggle="tab" href="#other" target="_self" translate>system.environment.menu.other</a></li>
+                    <li class="active"><a data-toggle="tab" href="#security" target="_self" translate>system.environment.security.title</a></li>
+                    <li><a data-toggle="tab" href="#nextjs" target="_self" translate>system.environment.nextjs.title</a></li>
+                    <li><a data-toggle="tab" href="#other" target="_self" translate>system.environment.other.title</a></li>
+                    <li><a data-toggle="tab" href="#log" target="_self" translate>system.environment.log.title</a></li>
                 </ul>
             </div>
-                <div id="security" class="tab-pane fade ">
-                    <h3 translate>system.environment.ssl.ssl</h3>
+            <div class="tab-content ng-scope" style="width:50%;margin-left:10%">
+                <div id="security" class="tab-pane fade in active">
+                    <h3 translate>system.environment.security.ssl.ssl</h3>
                     <div class="form-group">
-                        <label translate>system.environment.ssl.active</label> <br />
-                        <ns-switch ng-model="system.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
+                        <label translate>system.environment.security.ssl.active</label> <br />
+                        <ns-switch ng-model="system.security.active" yes-value="true" no-value="false" name="active"></ns-switch>
                     </div>
                     <div class="form-group">
                         <label for="cert">
-                            <span class="btn btn-default" translate>system.environment.ssl.cert</span>
-                            <input type="file" name="cert" id="cert" style="display:none" ng-model="system.ssl.cert" input-ng-file>
+                            <span class="btn btn-default" translate>system.environment.security.ssl.cert</span>
+                            <input type="file" name="cert" id="cert" style="display:none" ng-model="system.security.ssl.cert" input-ng-file>
                         </label>
-                        <span>{{ssl.cert}}</span>
+                        <span>{{security.ssl.cert}}</span>
                     </div>
                     <div class="form-group">
                         <label for="key">
-                            <span class="btn btn-default" translate>system.environment.ssl.key</span>
+                            <span class="btn btn-default" translate>system.environment.security.ssl.key</span>
                             <input type="file" name="key" id="key" style="display:none" ng-model="system.ssl.key" input-ng-file>
                         </label>
                         <span>{{ssl.key}}</span>
                     </div>
                 </div>
                 <div id="nextjs" class="tab-pane fade">
-                    <p><span translate>system.environment.actualVersion</span>: {{next.actual}}</p>
+                    <p><span translate>system.environment.nextjs.actualVersion</span>: {{next.actual}}</p>
                     <div class="input-group">
                         <select class="form-control" id="nextVersion" ng-options="version for version in next.versions track by version" ng-model="nextVersion" ng-hide="nextVLoader">
                         </select>
@@ -40,38 +41,39 @@
                         </div>
                     </div>
                     <br>
-                    <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)" ng-hide="nextVLoader" translate>system.environment.changeNextVersion</button>
+                    <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)" ng-hide="nextVLoader" translate>system.environment.nextjs.changeNextVersion</button>
                 </div>
                 <div id="other" class="tab-pane fade">
-                    <h3 translate>system.environment.database</h3>
+                    <h3 translate>system.environment.other.database</h3>
                     <br />
                     <div class="form-group">
-                        <label translate>system.environment.connectionString</label>
+                        <label translate>system.environment.other.connectionString</label>
                         <input type="text" class="form-control" ng-model="system.databaseConnection"
                             class="btn btn-default">
                     </div>
                     <div class="form-group">
                         <a download class="btn btn-success" ng-click="dumpDatabase()" ng-disabled="disabledButton" translate>
-                            system.environment.dlDBAnonymized
+                            system.environment.other.dlDBAnonymized
                         </a>
                     </div>
-                    <h3 translate>system.environment.dlAllDocumentTitle</h3>
+                    <h3 translate>system.environment.other.dlAllDocumentTitle</h3>
                     <br />
                     <div class="form-group">
                         <a download class="btn btn-success" ng-click="downloadDocuments()" ng-disabled="disabledButton"
                             translate>
-                            system.environment.dlAllDocument
+                            system.environment.other.dlAllDocument
                         </a>
-                        <div translate>system.environment.dlAllDocumentInfo</div>
+                        <div translate>system.environment.other.dlAllDocumentInfo</div>
                     </div>
                     <div class="form-group">
-                        <label translate>system.environment.uploadAllDocument</label>
+                        <label translate>system.environment.other.uploadAllDocument</label>
                         <ns-upload-files accepttype=".zip" multiple="false" type="document" before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
-                        <div translate>system.environment.uploadAllDocumentInfo</div>
+                        <div translate>system.environment.other.uploadAllDocumentInfo</div>
                     </div>
                 </div>
-            <!--other div here-->
-        </div>
+                <!--other div here-->
+            </div>
+        </ns-buttons>
     </form>
     <div ng-show="showLoading" style="text-align: center;">
         <h3 translate>system.environment.redemarrage</h3>
@@ -87,147 +89,3 @@
         <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
     </div>
 </ns-box>
-            
-
-                <div id="general" class="tab-pane fade in active">
-                    <h3 translate>system.environment.menu.general</h3>
-                    <br/>
-                    <div class="form-group">
-                        <label translate>system.environment.siteName</label> <br />
-                        <input type="text" class="form-control" ng-model="system.siteName">
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.environment.billsPattern</label> <br />
-                        <input type="text" class="form-control" ng-model="system.billsPattern">
-                        <span translate="">system.environment.billsVariables</span>
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.environment.websiteCountry</label> <br />
-                        <select name="countries" id="countries" class="form-control"
-                            ng-options="country.code as country.translation[adminLang].name for country in countries"
-                            ng-model="system.websiteCountry" >
-                            <option value="" translate>system.environment.selectCountry</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.environment.websiteTimezone</label> <br />
-                        <select name="timezones" id="timezones" class="form-control"
-                                ng-options="tz as tz for tz in timezones"
-                                ng-model="system.websiteTimezone" >
-                            <option value="" translate>system.environment.selectTimezone</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.environment.demoMode</label> <br />
-                        <ns-switch ng-model="system.demoMode" yes-value="true" no-value="false" name="demoMode"></ns-switch>
-                    </div>
-                </div>
-
-                
-
-                
-
-                
-
-
-                <div id="ga" class="tab-pane fade">
-                    <h3 translate>system.environment.menu.ga</h3>
-                    <br/>
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#ganalytics" target="_self" translate>system.environment.ggAnal</a></li>
-                        <li><a data-toggle="tab" href="#gtm" target="_self" translate>system.environment.ggTagMg</a></li>
-                        <li><a data-toggle="tab" href="#chat" target="_self" translate>system.environment.chatScript</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div id="ganalytics" class="tab-pane fade in active">
-                            <p><span translate>system.environment.ccGgCode</span><b style="color: red;" translate>system.environment.ssBal</b>
-                                <span translate>system.environment.siChampVide</span></p>
-                            <div class="form-group">
-                                <label translate>system.environment.scriptGg
-                                    Anal</label>
-                                <textarea rows="10" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="system.analytics.codeAnalytics"></textarea>
-                            </div>
-                        </div>
-                        <div id="gtm" class="tab-pane fade">
-                            <p><span translate>system.environment.ccGgCode</span><b style="color: red;"><span
-                                        translate>system.environment.ssBal</span>
-                                    <span translate>system.environment.or</span> <span translate>system.environment.bal2</span></b>.
-                                <span translate>system.environment.siUnChampVide</span></p>
-                            <div class="form-group">
-                                <label translate>system.environment.scriptGgTagMg</label>
-                                <textarea rows="6" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="system.analytics.codeGTM_1"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label translate>system.environment.scriptGgTagMg2</label>
-                                <textarea rows="3" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="system.analytics.codeGTM_2"></textarea>
-                            </div>
-                        </div>
-                        <div id="chat" class="tab-pane fade">
-                            <p><span translate>system.environment.ccCodeChat</span><b style="color: red;" translate>system.environment.ssBal</b>
-                                <span translate>system.environment.siChampVide</span></p>
-                            <div class="form-group">
-                                <label translate>system.environment.chatScript</label>
-                                <textarea rows="10" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="system.analytics.codeChat"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                
-
-                <div id="auth" class="tab-pane fade">
-                    <h3 translate>system.environment.menu.tird-party-auth</h3>
-                    <br/>
-
-                    <h4>Google</h4>
-                    <div class="form-group">
-                        <label translate>system.auth.clientID</label>
-                        <input type="text" class="form-control" ng-model="systemAuth.googleAuth.clientID">
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.auth.clientSecret</label>
-                        <input type="text" class="form-control" ng-model="systemAuth.googleAuth.clientSecret">
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.auth.callbackURL</label>
-                        <input type="text" class="form-control" ng-model="systemAuth.googleAuth.callbackURL">
-                    </div>
-
-
-                    <h4>Facebook</h4>
-                    <div class="form-group">
-                        <label translate>system.auth.clientID</label>
-                        <input type="text" class="form-control" ng-model="systemAuth.facebookAuth.clientID">
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.auth.clientSecret</label>
-                        <input type="text" class="form-control" ng-model="systemAuth.facebookAuth.clientSecret">
-                    </div>
-                    <div class="form-group">
-                        <label translate>system.auth.callbackURL</label>
-                        <input type="text" class="form-control" ng-model="systemAuth.facebookAuth.callbackURL">
-                    </div>
-                </div>
-            </div>
-        </ns-buttons>
-    </form>
-
-    <div ng-show="showLoading" style="text-align: center;">
-        <h3 translate>system.environment.redemarrage</h3>
-        <h4 translate>system.environment.redirect</h4>
-        <h4>
-            <i>
-                <a href="{{urlRedirect}}">{{urlRedirect}}</a>
-            </i>
-        </h4>
-        <div class="loader"></div>
-    </div>
-
-    <div ng-show="showThemeLoading" id="overlayModule">
-        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
-    </div>
-</ns-box> -->
