@@ -48,8 +48,7 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
         const shipments = (await getShipments(PostBody)).datas;
         if (!shipments.length) return price;
         const choices = [];
-        let i         = 0;
-        for (const shipment of shipments) {
+        for (const [i, shipment] of Object.entries(shipments)) {
             const index = shipment.countries.findIndex((country) => {
                 country = country.toObject();
                 return (country.country).toLowerCase() === (withCountry).toLowerCase();
@@ -65,7 +64,6 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
                     else choices.push({shipment, price: priceR});
                 }
             }
-            i++;
         }
         // on filtre les shipment pour retourner le plus interessant
         return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
