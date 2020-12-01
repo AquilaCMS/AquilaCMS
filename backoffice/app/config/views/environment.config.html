@@ -1,23 +1,5 @@
-<style>
-    .loader {
-        border: 10px solid #f3f3f3; /* Light grey */
-        border-top: 10px solid #576fa1;
-        border-radius: 50%;
-        width: 80px;
-        height: 80px;
-        animation: spin 2s linear infinite;
-        margin: auto;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-</style>
-
 <ns-box data-title="config.environment.t1" title-icon="fa fa-cogs fa-lg">
-    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading"
-        role="form">
+    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading" role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
@@ -167,6 +149,22 @@
                     <div class="input-group">
                         <select class="form-control" id="nextVersion" ng-options="version for version in next.versions track by version" ng-model="nextVersion" ng-hide="nextVLoader">
                         </select>
+                        <style>
+                            .loader {
+                                border: 10px solid #f3f3f3; /* Light grey */
+                                border-top: 10px solid #576fa1;
+                                border-radius: 50%;
+                                width: 80px;
+                                height: 80px;
+                                animation: spin 2s linear infinite;
+                                margin: auto;
+                            }
+                        
+                            @keyframes spin {
+                                0% { transform: rotate(0deg); }
+                                100% { transform: rotate(360deg); }
+                            }
+                        </style>
                         <div ng-show="nextVLoader">
                             <div class="fa fa-spinner fa-spin" style="font-size: 30px;"></div>
                         </div>
@@ -174,55 +172,6 @@
                     <br>
                     <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)" ng-hide="nextVLoader" translate>config.environment.changeNextVersion</button>
                 </div>
-
-
-                <!-- <div id="ga" class="tab-pane fade">
-                    <h3 translate>config.environment.menu.ga</h3>
-                    <br/>
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#ganalytics" target="_self" translate>config.environment.ggAnal</a></li>
-                        <li><a data-toggle="tab" href="#gtm" target="_self" translate>config.environment.ggTagMg</a></li>
-                        <li><a data-toggle="tab" href="#chat" target="_self" translate>config.environment.chatScript</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div id="ganalytics" class="tab-pane fade in active">
-                            <p><span translate>config.environment.ccGgCode</span><b style="color: red;" translate>config.environment.ssBal</b>
-                                <span translate>config.environment.siChampVide</span></p>
-                            <div class="form-group">
-                                <label translate>config.environment.scriptGg
-                                    Anal</label>
-                                <textarea rows="10" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="config.analytics.codeAnalytics"></textarea>
-                            </div>
-                        </div>
-                        <div id="gtm" class="tab-pane fade">
-                            <p><span translate>config.environment.ccGgCode</span><b style="color: red;"><span
-                                        translate>config.environment.ssBal</span>
-                                    <span translate>config.environment.or</span> <span translate>config.environment.bal2</span></b>.
-                                <span translate>config.environment.siUnChampVide</span></p>
-                            <div class="form-group">
-                                <label translate>config.environment.scriptGgTagMg</label>
-                                <textarea rows="6" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="config.analytics.codeGTM_1"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label translate>config.environment.scriptGgTagMg2</label>
-                                <textarea rows="3" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="config.analytics.codeGTM_2"></textarea>
-                            </div>
-                        </div>
-                        <div id="chat" class="tab-pane fade">
-                            <p><span translate>config.environment.ccCodeChat</span><b style="color: red;" translate>config.environment.ssBal</b>
-                                <span translate>config.environment.siChampVide</span></p>
-                            <div class="form-group">
-                                <label translate>config.environment.chatScript</label>
-                                <textarea rows="10" style="font-size: 13px; line-height: 24px; color: #000000; padding-top: 5px;"
-                                    class="form-control" ng-model="config.analytics.codeChat"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            -->
 
                 <div id="other" class="tab-pane fade">
                     <h3>Robot.txt</h3>
@@ -267,40 +216,6 @@
                         <label translate>config.environment.uploadAllDocument</label>
                         <ns-upload-files accepttype=".zip" multiple="false" type="document" before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
                         <div translate>config.environment.uploadAllDocumentInfo</div>
-                    </div>
-                </div>
-
-                <div id="auth" class="tab-pane fade">
-                    <h3 translate>config.environment.menu.tird-party-auth</h3>
-                    <br/>
-
-                    <h4>Google</h4>
-                    <div class="form-group">
-                        <label translate>config.auth.clientID</label>
-                        <input type="text" class="form-control" ng-model="configAuth.googleAuth.clientID">
-                    </div>
-                    <div class="form-group">
-                        <label translate>config.auth.clientSecret</label>
-                        <input type="text" class="form-control" ng-model="configAuth.googleAuth.clientSecret">
-                    </div>
-                    <div class="form-group">
-                        <label translate>config.auth.callbackURL</label>
-                        <input type="text" class="form-control" ng-model="configAuth.googleAuth.callbackURL">
-                    </div>
-
-
-                    <h4>Facebook</h4>
-                    <div class="form-group">
-                        <label translate>config.auth.clientID</label>
-                        <input type="text" class="form-control" ng-model="configAuth.facebookAuth.clientID">
-                    </div>
-                    <div class="form-group">
-                        <label translate>config.auth.clientSecret</label>
-                        <input type="text" class="form-control" ng-model="configAuth.facebookAuth.clientSecret">
-                    </div>
-                    <div class="form-group">
-                        <label translate>config.auth.callbackURL</label>
-                        <input type="text" class="form-control" ng-model="configAuth.facebookAuth.callbackURL">
                     </div>
                 </div>
             </div>

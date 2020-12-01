@@ -113,7 +113,7 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.form.nsSubmitted = true;
             if($scope.form.$invalid)
             {
-                toastService.toast("success", "Mail sauvegardé !");
+                toastService.toast("danger", "Mail non sauvegardé !");
                 return;
             }
             var deferred = $q.defer();

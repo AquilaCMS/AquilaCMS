@@ -50,14 +50,14 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
         });
     };
 
-    $scope.displayReadMe = function(nameModule){
+    $scope.displayReadMe = function(nameModule) {
         var responseFromAPI;
         $http.post('/v2/modules/md', {
             moduleName: nameModule
         }).then(function (response) {
             responseFromAPI = response.data.html;
-            if(!responseFromAPI || responseFromAPI == ""){
-                responseFromAPI = 'No ReadMe : (';
+            if(!responseFromAPI || responseFromAPI == "") {
+                responseFromAPI = 'No ReadMe found';
             }
             $modal.open({
                 templateUrl: 'app/modules/views/modal/popUpReadMe.html',
@@ -69,7 +69,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                     };
                 },
                 resolve: {
-                    reponse: function(){
+                    reponse: function() {
                         return responseFromAPI;
                     }
                 }
