@@ -11,6 +11,41 @@ SystemControllers.controller("systemGeneralController", [
             }
             delete $scope.config.$promise;
         });
+        $scope.getLinks = function (){
+            System.getLinks({}, function(response){
+                if(response.sdf != ''){
+                    $scope.logError = {
+                        logFile : response.linkToLog,
+                        errorFile : response.linkToError
+                    };
+                }else{
+                    $scope.logError = {
+                        logFile : '',
+                        errorFile : ''
+                    };
+                }
+            }, function(){
+                $scope.logError = {
+                    logFile : '',
+                    errorFile : ''
+                };
+            })
+        };
+        $scope.getLinks();
+
+        $scope.getFiles = function(){
+            System.getFiles({name: 'log'}, function (response) {
+                $scope.logError.log = response;
+            }, function(erreur){
+                $scope.logError.log = '';
+            });
+            System.getFiles({name: 'error'}, function (response) {
+                $scope.logError.error = response;
+            }, function(erreur){
+                $scope.logError.error = '';
+            });
+        }
+        $scope.getFiles();
 
         $scope.newNextVersion = (nextVersion) => {
             if (nextVersion !== $scope.next) {

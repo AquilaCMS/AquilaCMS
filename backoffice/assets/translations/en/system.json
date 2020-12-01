@@ -18,8 +18,10 @@
         "log":{
             "title": "Logs",
             "titleMenu": "Logs and Errors",
-            "logTitle": "Logs :",
-            "errorTitle": "Errors :"
+            "logTitle": "Logs overview:",
+            "errorTitle": "Errors overview:",
+            "logFileTitle": "File link to logs :",
+            "errorFileTitle": "File link to Errors :"
         },
         "other":{
             "title" : "Others",

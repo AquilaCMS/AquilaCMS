@@ -1,6 +1,6 @@
 {
     "environment": {
-        "t1": "System",
+        "t1": "Système",
         "security":{
             "title" : "Securité",
             "ssl": {
@@ -18,8 +18,10 @@
         "log":{
             "title": "Logs",
             "titleMenu": "Logs et Erreurs",
-            "logTitle": "Logs :",
-            "errorTitle": "Erreurs :"
+            "logTitle": "Aperçu des logs :",
+            "errorTitle": "Aperçu des Erreurs :",
+            "logFileTitle": "Lien du fichier des  logs :",
+            "errorFileTitle": "Lien du fichier des erreurs :"
         },
         "other":{
             "title" : "Others",
