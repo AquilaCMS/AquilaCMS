@@ -32,6 +32,22 @@
                     </div>
                 </div>
                 <div id="nextjs" class="tab-pane fade">
+                    <style>
+                        .loader {
+                            border: 10px solid #f3f3f3; /* Light grey */
+                            border-top: 10px solid #576fa1;
+                            border-radius: 50%;
+                            width: 80px;
+                            height: 80px;
+                            animation: spin 2s linear infinite;
+                            margin: auto;
+                        }
+                    
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
                     <p><span translate>system.environment.nextjs.actualVersion</span>: {{next.actual}}</p>
                     <div class="input-group">
                         <select class="form-control" id="nextVersion" ng-options="version for version in next.versions track by version" ng-model="nextVersion" ng-hide="nextVLoader">
@@ -48,8 +64,7 @@
                     <br />
                     <div class="form-group">
                         <label translate>system.environment.other.connectionString</label>
-                        <input type="text" class="form-control" ng-model="system.databaseConnection"
-                            class="btn btn-default">
+                        <input type="text" class="form-control" ng-model="system.databaseConnection" class="btn btn-default">
                     </div>
                     <div class="form-group">
                         <a download class="btn btn-success" ng-click="dumpDatabase()" ng-disabled="disabledButton" translate>
@@ -69,6 +84,18 @@
                         <label translate>system.environment.other.uploadAllDocument</label>
                         <ns-upload-files accepttype=".zip" multiple="false" type="document" before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
                         <div translate>system.environment.other.uploadAllDocumentInfo</div>
+                    </div>
+                </div>
+                <div id="log" class="tab-pane fade">
+                    <h3 translate>system.environment.log.titleMenu</h3>
+                    <br />
+                    <div class="form-group">
+                        <label translate>system.environment.log.logTitle</label><br/>
+                        <textarea class="form-control" ng-model="">{{system.log}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label translate>system.environment.log.errorTitle</label><br/>
+                        <textarea class="form-control" ng-model="">{{system.errors}}</textarea>
                     </div>
                 </div>
                 <!--other div here-->

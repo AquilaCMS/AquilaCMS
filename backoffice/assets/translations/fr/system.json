@@ -11,12 +11,15 @@
             }
         },
         "nextjs":{
-            "title" : "NextJS",
+            "title": "NextJS",
             "actualVersion": "Version actuelle",
             "changeNextVersion": "Valider"
         },
         "log":{
-            "title" : "Log"
+            "title": "Logs",
+            "titleMenu": "Logs et Erreurs",
+            "logTitle": "Logs :",
+            "errorTitle": "Erreurs :"
         },
         "other":{
             "title" : "Others",
