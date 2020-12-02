@@ -38,14 +38,17 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             PostBody.filter = {countries: {$elemMatch: {country: withCountry.toUpperCase()}}};
         }
     }
+    if (!PostBody.filter) {
+        PostBody.filter = {};
+    }
+    PostBody.filter.active = true;
     if (withCountry) {
         const price = 0;
 
         const shipments = (await getShipments(PostBody)).datas;
         if (!shipments.length) return price;
         const choices = [];
-        let i         = 0;
-        for (const shipment of shipments) {
+        for (const [i, shipment] of Object.entries(shipments)) {
             const index = shipment.countries.findIndex((country) => {
                 country = country.toObject();
                 return (country.country).toLowerCase() === (withCountry).toLowerCase();
@@ -57,11 +60,10 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
                     choices.push({shipment, price});
                 } else {
                     const priceR = range.price;
-                    if (!priceR) choices.push({index: i, price: 0});
+                    if (priceR === undefined) choices.push({index: i, price: 0});
                     else choices.push({shipment, price: priceR});
                 }
             }
-            i++;
         }
         // on filtre les shipment pour retourner le plus interessant
         if (choices.length) {

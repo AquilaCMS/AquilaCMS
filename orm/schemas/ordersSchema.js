@@ -1,5 +1,3 @@
-const autoIncrement = require('mongoose-plugin-autoinc-fix');
-
 const mongoose      = require('mongoose');
 const aquilaEvents  = require('../../utils/aquilaEvents');
 const utilsDatabase = require('../../utils/database');
@@ -11,6 +9,20 @@ const ItemVirtualSchema = require('./itemVirtualSchema');
 
 const Schema   = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
+
+const DeliveryPackageSchema = new Schema({
+    date     : {type: Date, default: Date.now},
+    tracking : {type: String, required: true},
+    products : [{
+        product_id   : {type: ObjectId, ref: 'products', required: true},
+        product_code : {type: String, required: true},
+        qty_shipped  : {type: Number, required: true},
+        selections   : [{
+            bundle_section_ref : {type: String},
+            products           : [{type: ObjectId, ref: 'products'}]
+        }]
+    }]
+});
 
 const OrdersSchema = new Schema({
     number : {type: String, unique: true}, // pcf : W0000001 ++
@@ -179,19 +191,7 @@ const OrdersSchema = new Schema({
             unitPreparation  : String
         },
         // vatCountry     : {type: Number},
-        package : [{
-            date     : {type: Date, default: Date.now},
-            tracking : {type: String, required: true},
-            products : [{
-                product_id   : {type: ObjectId, ref: 'products', required: true},
-                product_code : {type: String, required: true},
-                qty_shipped  : {type: Number, required: true},
-                selections   : [{
-                    bundle_section_ref : {type: String},
-                    products           : [{type: ObjectId, ref: 'products'}]
-                }]
-            }]
-        }]
+        package : [DeliveryPackageSchema]
     },
     payment : [
         {
@@ -255,8 +255,6 @@ docArray.discriminator('simple', ItemSimpleSchema);
 docArray.discriminator('bundle', ItemBundleSchema);
 docArray.discriminator('virtual', ItemVirtualSchema);
 
-OrdersSchema.plugin(autoIncrement.plugin, {model: 'orders', field: 'id', startAt: 1});
-
 OrdersSchema.pre('save', function (next) {
     const s     = `0000000${this.id}`;
     this.number = `W${s.substr(s.length - 7)}`;
@@ -310,5 +308,6 @@ OrdersSchema.post('find', async function (docs, next) {
 // Permet d'envoyer un evenement avant que le schema order ne soit crée
 // ex: le mondule mondial-relay va écouter cet evenement afin d'ajouter au schema order de nouveaux attributs
 aquilaEvents.emit('orderSchemaInit', OrdersSchema);
+aquilaEvents.emit('deliveryPackageSchemaInit', DeliveryPackageSchema);
 
 module.exports = OrdersSchema;
