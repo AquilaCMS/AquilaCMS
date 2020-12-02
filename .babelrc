@@ -18,5 +18,13 @@
     "ignore": [
         "node_modules",
         "themes"
-    ]
+    ],
+    "env": {
+        "development" : {
+            "compact": false
+        },
+        "production": {
+            "compact": true
+        }
+    }
 }
