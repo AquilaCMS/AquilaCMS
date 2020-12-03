@@ -1,4 +1,4 @@
-const expressJSDocSwagger             = require('@haegemonia/express-jsdoc-swagger');
+const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
 const express                         = require('express');
