@@ -27,7 +27,10 @@
           "normal": 17,
           "special": 13
         },
-        "priceSort": 10.83,
+        "priceSort": {
+            "et": 10.83,
+            "ati": 13
+        },
         "purchase": 10,
         "tax": 20
       },
@@ -92,7 +95,7 @@
         "5d24a3e94aa9c1692db04ac7",
         "5d24a43a4aa9c1692db04ad8",
         "5d24a4844aa9c1692db04ae4"
-      ], 
+      ],
       "is_new": false,
       "kind": "SimpleProduct",
       "creationDate": "2020-05-13T09:07:33.753Z",
@@ -180,12 +183,12 @@
       ],
       "pictos": [
         {
-          "_id" : "5f6c6d8a53464f269885a52b", 
-          "code" : "LoveIt", 
-          "image" : "loveit.png", 
-          "pictoId" : "5da09f77db0b3834cf91a506", 
-          "title" : "Love It", 
-          "location" : "TOP_LEFT"
+          "_id": "5f6c6d8a53464f269885a52b",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
         }
       ],
       "_id": "5c667f8a28a49c049c5863c8",
@@ -249,7 +252,10 @@
         "ati": {
           "normal": 22
         },
-        "priceSort": 18.33,
+        "priceSort": {
+            "et": 18.33,
+            "ati": 22
+        },
         "purchase": 9.8,
         "tax": 20
       },
@@ -450,7 +456,10 @@
         "ati": {
           "normal": 25
         },
-        "priceSort": 20.83,
+        "priceSort": {
+            "et": 20.83,
+            "ati": 25
+        },
         "purchase": 3.75,
         "tax": 20
       },
@@ -632,7 +641,10 @@
         "ati": {
           "normal": 17
         },
-        "priceSort": 14.17,
+        "priceSort": {
+            "et": 14.17,
+            "ati": 17
+        },
         "purchase": 10,
         "tax": 20
       },
@@ -810,7 +822,10 @@
         "ati": {
           "normal": 17
         },
-        "priceSort": 14.17,
+        "priceSort": {
+            "et": 14.17,
+            "ati": 17
+        },
         "purchase": 4.54,
         "tax": 20
       },
@@ -915,12 +930,12 @@
       ],
       "pictos": [
         {
-          "_id" : "5f6c6d8a53464f269885a52b", 
-          "code" : "LoveIt", 
-          "image" : "loveit.png", 
-          "pictoId" : "5da09f77db0b3834cf91a506", 
-          "title" : "Love It", 
-          "location" : "TOP_LEFT"
+          "_id": "5f6c6d8a53464f269885a52b",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
         }
       ],
       "_id": "5d24a4844aa9c1692db04ae4",
@@ -984,7 +999,10 @@
         "ati": {
           "normal": 8
         },
-        "priceSort": 6.67,
+        "priceSort": {
+            "et": 6.67,
+            "ati": 8
+        },
         "purchase": 11,
         "tax": 20
       },
@@ -1176,7 +1194,10 @@
         "ati": {
           "normal": 8
         },
-        "priceSort": 6.67,
+        "priceSort": {
+            "et": 6.67,
+            "ati": 8
+        },
         "purchase": 1.58,
         "tax": 20
       },
@@ -1279,7 +1300,16 @@
           "url": "photos/product/p/0/chaussette2.JPG"
         }
       ],
-      "pictos": [],
+      "pictos": [
+        {
+          "_id": "5fbe5e8ab739d135f4fce236",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
+        }
+      ],
       "_id": "5d3078aa4aa9c1692db05498",
       "type": "simple",
       "cmsBlocks": [],
@@ -1341,7 +1371,10 @@
         "ati": {
           "normal": 28
         },
-        "priceSort": 23.33,
+        "priceSort": {
+            "et": 23.33,
+            "ati": 28
+        },
         "purchase": 4.25,
         "tax": 20
       },
@@ -1504,7 +1537,10 @@
         "ati": {
           "normal": 29
         },
-        "priceSort": 24.17,
+        "priceSort": {
+            "et": 24.17,
+            "ati": 29
+        },
         "purchase": 3,
         "tax": 20
       },
@@ -1674,17 +1710,20 @@
     },
     {
       "_id": "5eb2cfdb6cdf0b436c831f23",
-      "price" : {
-        "et" : {
-            "normal" : 49.99
-        }, 
-        "ati" : {
-            "normal" : 59.99
-        }, 
-        "priceSort" : 49.99, 
-        "purchase" : 0, 
-        "tax" : 20
-    }, 
+      "price": {
+        "et": {
+          "normal": 49.99
+        },
+        "ati": {
+          "normal": 59.99
+        },
+        "priceSort": {
+            "et": 49.99,
+            "ati": 59.99
+        },
+        "purchase": 0,
+        "tax": 20
+      },
       "reviews": {
         "average": 0,
         "reviews_nb": 0,

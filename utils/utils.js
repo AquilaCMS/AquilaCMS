@@ -18,14 +18,14 @@ const checkModuleRegistryKey = async (moduleName) => {
         const aquilaVersion = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
         registryFile        = JSON.parse((await fs.readFile(registryFile)));
         if (fs.existsSync(registryFile)) {
-            const result = await axios.post('https://shop.aquila-cms.com/api/v1/register', {
+            const result = await axios.post('https://stats.aquila-cms.com/api/v1/register', {
                 registryKey : registryFile.code,
                 aquilaVersion
             });
             if (!result.data.data) return true;
             return true;
         }
-        const result = await axios.post('https://shop.aquila-cms.com/api/v1/register/check', {
+        const result = await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
             registryKey : registryFile.code,
             aquilaVersion
         });
@@ -47,7 +47,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
                 lastCheck   : require('moment')().toISOString()
             };
             const firstAdmin      = await Users.findOne({isAdmin: true}, {_id: 1, isAdmin: 1, email: 1, firstname: 1, lastname: 1, fullname: 1});
-            await axios.post('https://shop.aquila-cms.com/api/v1/register', {
+            await axios.post('https://stats.aquila-cms.com/api/v1/register', {
                 registryKey : configuration.licence.registryKey,
                 aquilaVersion,
                 user        : firstAdmin
@@ -55,7 +55,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
         } else {
             if (require('moment')().toISOString() >= require('moment')(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
                 configuration.licence.lastCheck = require('moment')().toISOString();
-                await axios.post('https://shop.aquila-cms.com/api/v1/register/check', {
+                await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
                     registryKey : configuration.licence.registryKey,
                     aquilaVersion,
                     lastCheck   : configuration.licence.lastCheck

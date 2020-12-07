@@ -1,3 +1,4 @@
+const {cloneDeep}          = require('lodash');
 const mongoose             = require('mongoose');
 const {
     Promo,
@@ -169,6 +170,13 @@ const middlewarePromoCatalog = async (req, res) => {
 
 /**
  * Fonction permettant d'appliquer des promotions catalogues
+ * @param {Product} products list of products
+ * @param {User|null} [user=null]
+ * @param {string|null} [lang=null]
+ * @param {boolean} [keepObject=false]
+ * @param {string[]} [populate=[]]
+ * @param {boolean} [associatedProducts=false]
+ * @param {boolean} [keepPromos=false]
  */
 const checkPromoCatalog = async (products, user = null, lang = null, keepObject = false, populate = [], associatedProducts = false, keepPromos = false) => {
     // TODO : improve speed because it's usefull
@@ -211,7 +219,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         if (products[i].id) {
             products[i].relevantDiscount = [];
             if (products[i].price === undefined) {
-                products[i].price = {tax: 0, priceSort: 0, et: {}, ati: {}};
+                products[i].price = {tax: 0, priceSort: {et: 0, ati: 0}, et: {}, ati: {}};
             }
             if (products[i].price.tax === undefined) {
                 products[i].price.tax = products[i].id.price.tax;
@@ -241,24 +249,15 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             // On stoppe s'il y a un soucis avec un produit
             return null;
         }
-    }
 
-    // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
-    let i              = 0;
-    let applyNextRules = true;
-    while (applyNextRules && i < promos.length) {
-        const promo = promos[i];
-        if (!promo.rules_id) {
-            // ---------- //
-            // Si la promo n'a aucune rules_id alors elle s'applique a n'importe quel produit
-            // Nous ajoutons donc la réduction a la liste de réduction de chaque produit (relevantDiscount)
-            products.forEach((product) => {
+        // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
+        for (let j = 0; j < promos.length; j++) {
+            const promo = promos[j];
+            if (!promo.rules_id) {
                 returnedPromos.push(promo);
-                product.relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
-            });
-        } else {
-            for (let j = 0, lenj = products.length; j < lenj; j++) {
-                const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[j]]});
+                products[i].relevantDiscount.push(promo);
+            } else {
+                const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promo.rules_id, user, {items: [products[i]]});
                 const ifStatement = promoUtils.createIfStatement(tCondition);
                 try {
                     // On test si l'eval peut renvoyer une erreur
@@ -269,48 +268,31 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
                 // Si l'utilisateur ne peut pas utiliser ce code nous renvoyons une erreur
                 if (eval(ifStatement)) {
                     returnedPromos.push(promo);
-                    products[j].relevantDiscount.push({discountValue: promo.discountValue, discountType: promo.discountType});
+                    products[i].relevantDiscount.push(promo);
+                    if (!promo.applyNextRules) continue;
                 }
             }
         }
-        applyNextRules = promo.applyNextRules;
-        i++;
-    }
-    // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
-    // (normal ou special si existe) et appliquons les reductions les plus fortes
-    for (let i = 0; i < products.length; i++) {
-        const product = products[i];
 
+        // we need to take only the discount who have the highest priority
+        if (products[i].relevantDiscount && products[i].relevantDiscount.length) {
+            const foundPriority          = products[i].relevantDiscount.map((p) => p.priority).sort((a, b) => b - a)[0];
+            products[i].relevantDiscount = products[i].relevantDiscount.filter((d) => d.priority === foundPriority);
+        }
+
+        // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
+        // (normal ou special si existe) et appliquons les reductions les plus fortes
+        const product      = products[i];
+        const savedProduct = cloneDeep(products[i]);
         // FUTUR: Cumuler les promos ou non
-        // on garde uniquement la "meilleure" promo
-        if (product.relevantDiscount.length >= 2) {
-            product.relevantDiscount.sort(function (a, b) {
-                return b.discountValue - a.discountValue;
-            });
-            for (let j = 0; j < (product.relevantDiscount.length - 1); j++) {
-                product.relevantDiscount.pop();
+        for (let j = 0, lenj = products[i].relevantDiscount.length; j < lenj; j++) {
+            const appliedPromoProduct = cloneDeep(savedProduct);
+            applyRelevantDiscount(appliedPromoProduct, appliedPromoProduct.relevantDiscount[j]);
+            if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et) {
+                products[i] = {...appliedPromoProduct, price: {...appliedPromoProduct.price}};
             }
         }
-
-        for (let j = 0, lenj = product.relevantDiscount.length; j < lenj; j++) {
-            if (product.relevantDiscount[j].discountType.startsWith('FV')) {
-                if (product.relevantDiscount[j].discountType === 'FVet') {
-                    product.price.et.special  = product.relevantDiscount[j].discountValue;
-                    product.price.ati.special = (product.relevantDiscount[j].discountValue * (product.price.tax / 100 + 1));
-                } else {
-                    product.price.et.special  = (product.relevantDiscount[j].discountValue / (product.price.tax / 100 + 1));
-                    product.price.ati.special = product.relevantDiscount[j].discountValue;
-                }
-            } else {
-                const newDiscountPrice    = calculDiscountItem(product.id, product.relevantDiscount[j]);
-                product.price.et.special  = newDiscountPrice.discountET;
-                product.price.ati.special = newDiscountPrice.discountATI;
-            }
-            product.price.priceSort = product.price.et.special;
-            product.id.price        = product.price;
-        }
-
-        if (keepObject === false) {
+        if (!keepObject) {
             // on garde les attributes potentiellement populate
             switch (products[i].type) {
             case 'simple':
@@ -343,6 +325,32 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         return {products, promos: returnedPromos};
     }
     return products;
+};
+
+/**
+ * apply best relevant discount for product
+ * @param {Product} product
+ * @param {Promo} discount
+ */
+const applyRelevantDiscount = (product, discount) => {
+    if (discount.discountType.startsWith('FV')) {
+        if (discount.discountType === 'FVet') {
+            product.price.et.special  = discount.discountValue;
+            product.price.ati.special = (discount.discountValue * (product.price.tax / 100 + 1));
+        } else {
+            product.price.et.special  = (discount.discountValue / (product.price.tax / 100 + 1));
+            product.price.ati.special = discount.discountValue;
+        }
+    } else {
+        const newDiscountPrice    = calculDiscountItem(product, discount);
+        product.price.et.special  = newDiscountPrice.discountET;
+        product.price.ati.special = newDiscountPrice.discountATI;
+    }
+    product.price.priceSort = {
+        et  : product.price.et.special,
+        ati : product.price.ati.special
+    };
+    product.id.price        = product.price;
 };
 
 const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
@@ -716,24 +724,16 @@ function calculDiscountItem(prd, promo) {
     // On calcule le total avec remise du panier
     let values                          = {discountATI: 0, discountET: 0};
     const {discountType, discountValue} = promo;
-    let field                           = 'normal';
-
-    // Si un prix spécial existe alors on calcul la réduction sur la prix spécial
-    if (prd.price.et.special !== undefined || prd.price.et.special != null) {
-        field = 'special';
-    }
-
-    const prices = {et: prd.price.et[field], ati: prd.price.ati[field]};
 
     // Si le discountType est du pourcentage
     if (discountType === 'P') {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
-        values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100);
+        values = calculateCartItemDiscount(prd.price.priceSort, prd.price.priceSort.et * (discountValue / 100));
     } else if (discountType === 'Aet') {
-        values = calculateCartItemDiscount(prices, discountValue, undefined);
+        values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
     } else if (discountType === 'Aati') {
-        values = calculateCartItemDiscount(prices, undefined, discountValue);
+        values = calculateCartItemDiscount(prd.price.priceSort, undefined, discountValue);
     }
 
     return values;
@@ -748,28 +748,24 @@ async function calculCartDiscountItem(item, promo) {
     // On calcule le total avec remise du panier
     let values                          = {discountATI: 0, discountET: 0};
     const {discountType, discountValue} = promo;
-    let field                           = 'normal';
     const baseProduct                   = await ProductSimple.findOne({code: item.code}).lean();
-
-    // Si un prix spécial existe alors on calcul la réduction sur la prix spécial
-    if (baseProduct.price && baseProduct.price.et.special >= 0 && baseProduct.price.ati.special >= 0) {
-        field = 'special';
-    }
-
-    const prices = {ati: baseProduct.price.ati[field], et: baseProduct.price.et[field]};
 
     // Si le discountType est du pourcentage
     if (discountType === 'P') {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
-        values = calculateCartItemDiscount(prices, prices.et - Math.round(prices.et * discountValue) / 100);
+        values = calculateCartItemDiscount(baseProduct.price.priceSort, baseProduct.price.priceSort.et * (discountValue / 100));
     } else if (discountType === 'Aet') {
-        values = calculateCartItemDiscount(prices, discountValue);
+        values = calculateCartItemDiscount(baseProduct.price.priceSort, discountValue);
     } else if (discountType === 'Aati') {
-        values = calculateCartItemDiscount(prices, undefined, discountValue);
+        values = calculateCartItemDiscount(baseProduct.price.priceSort, undefined, discountValue);
     }
 
-    return {...values, basePriceATI: prices.ati, basePriceET: prices.et};
+    return {
+        ...values,
+        basePriceATI : baseProduct.price.priceSort.ati,
+        basePriceET  : baseProduct.price.priceSort.et
+    };
 }
 
 /**
@@ -797,7 +793,7 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
         // afin d'avoir priceTotal - discountATI (ou discountET) = 0
         values = calculateCartItemDiscount(
             priceTotal,
-            Math.round(priceTotal.et * discountValue) / 100
+            priceTotal.et * (discountValue / 100)
         );
     } else if (discountType === 'Aet') {
         // le discountType est un montant
@@ -807,7 +803,10 @@ async function calculCartDiscount(cart, promo = null/* , isQuantityBreak = false
     } else if (discountType === 'Aati') {
         values = calculateCartItemDiscount(priceTotal, undefined, discountValue);
     }
-    return values;
+    return {
+        discountET  : priceTotal.et - values.discountET,
+        discountATI : priceTotal.ati - values.discountATI
+    };
 }
 
 const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => {
@@ -861,8 +860,8 @@ function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
     }
 
     return {
-        discountET  : prices.et - discountET,
-        discountATI : prices.ati - discountATI
+        discountET  : Number(discountET.toFixed(2)),
+        discountATI : Number(discountATI.toFixed(2))
     };
 }
 

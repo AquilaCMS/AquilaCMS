@@ -80,28 +80,34 @@ adminCatagenDirectives.directive("nsDatepicker", function ()
                     scope.myDate = moment(new Date(ngModel.$modelValue)).format("L");
                 }
             };
-            scope.onDateChange = function ()
-            {
-                if(
-                    scope.myDate &&
-                    moment(scope.myDate, "DD/MM/YYYY").isValid()
-                )
-                {
-                    var dateElement = $("#datepicker_" + attrs.name, element);
-                    ngModel.$setViewValue(dateElement.datepicker("getDate"));
-                    dateElement.datepicker("refresh");
-                    $("#datepicker_" + attrs.name, element).removeClass(
-                        "invalid"
-                    );
-                }
-                else
-                {
-                    if(attrs.empty == 'true'){
+            scope.onDateChange = function (){
+                if(scope.myDate && moment(scope.myDate, "DD/MM/YYYY").isValid() ){
+                    if(scope.myDate !== ""){
                         var dateElement = $("#datepicker_" + attrs.name, element);
-                        ngModel.$setViewValue("");
+                        ngModel.$setViewValue(dateElement.datepicker("getDate"));
                         dateElement.datepicker("refresh");
+                        $("#datepicker_" + attrs.name, element).removeClass(
+                            "invalid"
+                        );
                     }else{
-                        $("#datepicker_" + attrs.name, element).addClass("invalid");
+                        dateElement.datepicker("refresh");
+                    }
+                }else{
+                    if(scope.myDate === ""){
+                        var dateElement = $("#datepicker_" + attrs.name, element);
+                        ngModel.$setViewValue(dateElement.datepicker("getDate"));
+                        dateElement.datepicker("refresh");
+                        $("#datepicker_" + attrs.name, element).removeClass(
+                            "invalid"
+                        );
+                    }else{
+                        if(attrs.empty == 'true'){
+                            var dateElement = $("#datepicker_" + attrs.name, element);
+                            ngModel.$setViewValue("");
+                            dateElement.datepicker("refresh");
+                        }else{
+                            $("#datepicker_" + attrs.name, element).addClass("invalid");
+                        }
                     }
                 }
             };
@@ -237,7 +243,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 icon: "code-sample",
                                 tooltip: 'Add Shortcode',
                                 onAction: function () {
-                                    debugger;
                                     $scope.addShortcode();
                                 }
                             });
@@ -1488,12 +1493,12 @@ adminCatagenDirectives.directive("nsRule", [
                                         return "text";
                                 }
                             })(element.type);
-                            for(var i = 0, leni = langs.length; i < leni; i++)
-                                {
+                            for(var i = 0, leni = langs.length; i < leni; i++){
                                     let values = [];
-                                    for(var j = 0; j < Object.keys(element.translation).length; j++) {
-                                        const langKey = Object.keys(element.translation)[j]
-                                        values = values.concat(element.translation[langKey].values)
+                                    //we put only value of the correct languages
+                                    const langKey = langs[i].code;
+                                    if(element.translation[langKey]){
+                                        values = element.translation[langKey].values;
                                     }
                                     $scope.attributesClassed.push(
                                         {

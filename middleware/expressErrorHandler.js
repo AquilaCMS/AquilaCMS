@@ -21,9 +21,12 @@ const log = (err) => {
  */
 const replaceErrors = (value) => {
     if (value instanceof Error || value instanceof NSError) {
-        const error = {};
+        const error   = {};
+        const ignored = ['stack'];
         Object.getOwnPropertyNames(value).forEach(function (key) {
-            error[key] = value[key];
+            if (ignored.indexOf(key) === -1) {
+                error[key] = value[key];
+            }
         });
         return error;
     }
@@ -99,7 +102,6 @@ const expressErrorHandler = (err, req, res, next) => {
             log(err);
         }
 
-        delete err.stack;
         return sendError(res, err);
     }
     return next();

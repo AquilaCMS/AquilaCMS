@@ -102,7 +102,6 @@ function conditionOperator(operator, obj, target, value) {
                 else if (operator === 'lte') isTrue = isTrue || utils.getObjFromDotStr(obj, target) <= value[i];
                 else if (operator === 'lt') isTrue = isTrue || utils.getObjFromDotStr(obj, target) < value[i];
             }
-        // Sinon ...
         } else {
             if (operator === 'contains') isTrue = utils.getObjFromDotStr(obj, target).includes(value);
             else if (operator === 'ncontains') isTrue = !utils.getObjFromDotStr(obj, target).includes(value);

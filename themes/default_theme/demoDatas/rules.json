@@ -26,6 +26,13 @@
           "type": "select",
           "value": "sweats-sweats",
           "operator": "eq"
+        }, 
+        {
+            "_id" : "5fbe5d1cb739d135f4fcdf3a", 
+            "target" : "code", 
+            "type" : "text", 
+            "value" : "allProducts", 
+            "operator" : "neq"
         }
       ],
       "other_rules": [],

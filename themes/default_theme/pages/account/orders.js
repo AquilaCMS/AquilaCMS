@@ -55,7 +55,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                         <span className="status">{statusColor(order.status, this.props.t)}</span>
                                                                                         <strong className="price">
                                                                                             {
-                                                                                                order.priceTotal && order.priceTotal[taxDisplay[index]]
+                                                                                                order.priceTotal && order.priceTotal[taxDisplay[index]] !== undefined
                                                                                                     ? order.priceTotal[taxDisplay[index]].toFixed(2)
                                                                                                     : ''
                                                                                             } €
@@ -77,8 +77,8 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                 <tbody>
                                                                                                     {
                                                                                                         order.items.map((item) => {
-                                                                                                            let basePrice = null;
-                                                                                                            let descPromo = '';
+                                                                                                            let basePrice  = null;
+                                                                                                            let descPromo  = '';
                                                                                                             let descPromoT = '';
                                                                                                             if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
                                                                                                             // On check si le produit courant a recu une promo
@@ -94,15 +94,15 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                 }
                                                                                                             }
                                                                                                             let imgDefault = imgDefaultBase64;
-                                                                                                            let imgAlt = 'illustration produit';
+                                                                                                            let imgAlt     = 'illustration produit';
                                                                                                             if (item.id && item.id.images && item.id.images.length) {
                                                                                                                 const foundImg = item.id.images.find((img) => img.default);
                                                                                                                 if (foundImg) {
                                                                                                                     imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt = foundImg.alt || imgAlt;
+                                                                                                                    imgAlt     = foundImg.alt || imgAlt;
                                                                                                                 } else {
                                                                                                                     imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt = item.id.images[0].alt || imgAlt;
+                                                                                                                    imgAlt     = item.id.images[0].alt || imgAlt;
                                                                                                                 }
                                                                                                             }
                                                                                                             return (
@@ -198,7 +198,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                 <p>
                                                                                                     {t('account:orders.page.label.payment_mode')}<br />
                                                                                                     <em>
-                                                                                                        {order.payment.length && order.payment[0] && order.payment[0].mode}<br />
+                                                                                                        {order.payment.length > 0 && order.payment[0] && order.payment[0].mode}<br />
                                                                                                         {`${t(`account:orders.page.label.paidTax.${taxDisplay[index]}`)}`}
                                                                                                     </em>
                                                                                                 </p>
