@@ -15,6 +15,8 @@ const ConfigurationSchema = new Schema({
         authorizedIPs     : {type: String, default: ''},
         autoMaintenance   : {type: Boolean, default: false},
         billsPattern      : {type: String},
+        linkToLog         : {type: String},
+        linkToError       : {type: String},
         cacheTTL          : {type: Number},
         currentTheme      : {type: String, required: true},
         demoMode          : {type: Boolean, default: true},

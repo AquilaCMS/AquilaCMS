@@ -18,7 +18,9 @@
                     "currentTheme",
                     "port",
                     "siteName",
-                    "websiteCountry"
+                    "websiteCountry",
+                    "linkToLog",
+                    "linkToError"
                 ],
                 "properties": {
                     "adminPrefix"       : {"type": "string", "minlength": 1},
