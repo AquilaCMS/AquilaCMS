@@ -12,7 +12,7 @@ const SuppliersSchema = new Schema({
     cpostal            : String,
     city               : String,
     mail               : String,
-    phone              : Number,
+    phone              : String,
     purchasing_manager : String,
     active             : {type: Boolean, default: true},
     creationDate       : {type: Date, default: Date.now}
