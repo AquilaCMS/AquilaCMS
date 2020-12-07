@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import {
-    NSCartResume, NSContext, NSToast, getCart, getLangPrefix, updateAddressesCart, getShipmentsCart, updateDeliveryCart
+    NSCartResume, NSContext, NSToast, cartToOrder, getCart, getLangPrefix, getShipmentsCart, updateDeliveryCart
 } from 'aqlrc';
 import nsModules from 'modules/list_modules';
 import Head from 'next/head';
