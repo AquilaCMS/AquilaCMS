@@ -91,18 +91,18 @@
                     <br />
                     <div class="form-group">
                         <label translate>system.environment.log.errorFileTitle</label>
-                        <input type="text" class="form-control" ng-model="system.logError.logFile" value="{{system.logError.logTitle}}">
+                        <input type="text" class="form-control" ng-model="system.linkToLog" value="{{system.linkToLog}}">
                         <label translate>system.environment.log.logFileTitle</label><br/>
-                        <input type="text" class="form-control" ng-model="system.logError.errorFile" value="{{system.logError.errorFile}}">
+                        <input type="text" class="form-control" ng-model="system.linkToError" value="{{system.linkToError}}">
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.logTitle</label>
-                        <textarea class="form-control" ng-model="system.logError.log">{{system.logError.log}}</textarea>
+                        <textarea class="form-control" ng-model="log.log"></textarea>
                     </div>
                     <div class="form-group">
                         
                         <label translate>system.environment.log.errorTitle</label><br/>
-                        <textarea class="form-control" ng-change="zaer" ng-model="system.logError.error">{{system.logError.error}}</textarea>
+                        <textarea class="form-control" ng-change="zaer" ng-model="log.error"></textarea>
                     </div>
                 </div>
                 <!--other div here-->
