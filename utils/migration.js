@@ -48,10 +48,43 @@ const migration_2_Metrics = async () => {
     // TODO
 }; */
 
+const migration_4_Themes = async () => {
+    console.log('Applying migration script "migration_4_Themes"...');
+    const theme = await mongoose.connection.collection('themeConfigs').findOne({});
+    console.log(Array.isArray(theme.config.translation.fr));
+    if (theme && Array.isArray(theme.config.translation.fr) === false) {
+        const tabThemeKeyValueFR = [];
+        for (const [key, value] of Object.entries(theme.config.translation.fr)) {
+            tabThemeKeyValueFR.push({
+                key,
+                value,
+                name        : key,
+                description : '',
+                group       : ''
+            });
+        }
+        await mongoose.connection.collection('themeConfigs').updateOne({}, {$set: {'config.translation.fr': tabThemeKeyValueFR}});
+        const tabThemeKeyValueEN = [];
+        for (const [key, value] of Object.entries(theme.config.translation.en)) {
+            tabThemeKeyValueEN.push({
+                key,
+                value,
+                name        : key,
+                description : '',
+                group       : ''
+            });
+        }
+        await mongoose.connection.collection('themeConfigs').updateOne({}, {$set: {'config.translation.en': tabThemeKeyValueEN}});
+    }
+
+    // TODO
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
-    migration_2_Metrics
+    migration_2_Metrics,
+    migration_4_Themes
     // migration_3_CreatedAt
     // sample
 ];
