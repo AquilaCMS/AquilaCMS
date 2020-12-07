@@ -266,14 +266,19 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.listAllThemeFiles = [];
                     $scope.themesList = response.data.listTheme;
                     $scope.listThemeFiles = response.data.listFiles;
-                    $scope.listThemeFiles.forEach(element =>{
-                        if(element.indexOf("json") === -1){
-                            var index = $scope.listThemeFiles.indexOf(element);
-                            $scope.listThemeFiles.splice(index, 1);
-                        }  else {
-                            $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
-                        }
-                    });
+                    if ($scope.listThemeFiles == undefined){
+                        $scope.listAllThemeFiles.push("noDefaultData");
+                    } else {
+                        $scope.listThemeFiles.forEach(element =>{
+                            if(element.indexOf("json") === -1){
+                                var index = $scope.listThemeFiles.indexOf(element);
+                                $scope.listThemeFiles.splice(index, 1);
+                            }  else {
+                                $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
+                            }
+                        });
+                    }
+                    
                     $scope.customiseTheme ={};
                     $scope.customiseTheme.keys = {};
                     $scope.themeConfig.variables = {};

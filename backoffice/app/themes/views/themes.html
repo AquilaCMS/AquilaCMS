@@ -60,7 +60,7 @@
                 <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
                 <div>
                     <div ng-repeat = "group in customiseTheme.arrayGroup">
-                        <h4><b>{{group}} : </b></h4>
+                        <h4><b>{{group}} </b></h4>
                         <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group"> 
                             {{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) : {{themeConfig.variables[lang][var].description}}
                             <br>
@@ -86,9 +86,10 @@
                     <table>
                         <tr style = "height: 50px;" ng-repeat="file in listAllThemeFiles">
                             <td style="text-align: right;">
-                                <label>{{file.name.substr(0, file.name.length-5)}} : </label>
+                                <label ng-if='file != "noDefaultData"'>{{file.name.substr(0, file.name.length-5)}} : </label>
+                                <label ng-if='file == "noDefaultData"' translate>themes.noDefaultData</label>
                             </td>
-                            <td style = "margin-left: 10px;">
+                            <td style = "margin-left: 10px;" ng-if = "file.value != undefined" >
                                 <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
                                 <label style = "margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
                             </td>

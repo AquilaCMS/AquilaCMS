@@ -6,7 +6,7 @@
     "custom": "Custom:",
     "themeChoice": "Choice theme",
     "currentThemeVar":"Modify the variables of the current theme.",
-    "noThemeVar":"No variables of the current theme.",
+    "noThemeVar":"This theme is not customizable.",
     "myTheme":"My Themes",
     "customisation":"Customize",
     "data":"Theme data",
@@ -16,5 +16,6 @@
     "themeDatasLead": "Install theme datas",
     "themeDatasOverride": "Overwrite existing datas",
     "remove": "Remove theme",
-    "required": "Required"
+    "required": "Required",
+    "noDefaultData" : "No default data for this theme"
 }
