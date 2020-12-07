@@ -9,73 +9,74 @@
             {
               "key": "showFooter",
               "value": true,
-              "name": "Footer",
-              "description": "Voici une description un peu longue pour qu'on puisse voir a quoi ressemble la page avec une description un peu longue.",
-              "group": "GRP1"
+              "name": "Afficher le footer",
+              "description": "Affiche ou masque le footer (bas du site)",
+              "group": "Général"
             },
             {
               "key": "filters",
               "value": "left",
-              "name": "Filter",
-              "description": "test2",
-              "group": "GRP2"
+              "name": "Emplacement des filtres",
+              "description": "Permet d'afficher les filtres des catégories, soit à droite (right) soit à gauche (left)",
+              "group": "Général"
             },
             {
               "key": "reviews",
               "value": true,
-              "name": "Review",
-              "description": "test3",
-              "group": "GRP1"
+              "name": "Gestion des avis clients",
+              "description": "Active la gestion des avis clients",
+              "group": "Général"
             },
             {
               "key": "itsnumber",
               "value": "#CCCCCC",
               "name": "Number",
-              "description": "test4",
-              "group": "GRP1"
+              "description": "Ceci est un exemple pour un nombre",
+              "group": "Exemple"
             },
             {
               "key": "itscolor",
               "value": true,
               "name": "Color",
-              "description": "test5",
-              "group": "GRP6"
+              "description": "Ceci est un exemple pour une couleur",
+              "group": "Exemple"
             }
           ],
-          "en": [{
+          "en": [
+            {
               "key": "showFooter",
               "value": true,
-              "name": "Footer",
-              "description": "test1",
-              "group": "ENGRP1"
+              "name": "Show footer",
+              "description": "Show or hide the footer ",
+              "group": "Général"
             },
             {
               "key": "filters",
               "value": "left",
-              "name": "Filter",
-              "description": "test2",
-              "group": "ENGRP2"
+              "name": "Filter location",
+              "description": "Allows you to display category filters, either on the right or on the left",
+              "group": "Général"
             },
             {
               "key": "reviews",
               "value": true,
-              "name": "Review",
-              "description": "test3",
-              "group": "ENGRP1"
+              "name": "Customer reviews management",
+              "description": "Activate the management of customer reviews",
+              "group": "Général"
             },
             {
               "key": "itsnumber",
               "value": "#CCCCCC",
               "name": "Number",
-              "description": "test4",
-              "group": "ENGRP1"
+              "description": "This is an example for numbers",
+              "group": "Exemple"
             },
             {
               "key": "itscolor",
               "value": true,
               "name": "Color",
-              "description": "test5",
-              "group": "ENGRP6"
+              "description": "This is an example for colors",
+              "group": "Exemple"
             }
           ]
         }

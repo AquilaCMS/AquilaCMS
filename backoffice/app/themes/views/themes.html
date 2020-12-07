@@ -62,7 +62,7 @@
                     <div ng-repeat = "group in customiseTheme.arrayGroup">
                         <h4><b>{{group}} </b></h4>
                         <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group"> 
-                            {{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) : {{themeConfig.variables[lang][var].description}}
+                            <b>{{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) :</b> {{themeConfig.variables[lang][var].description}}
                             <br>
                             <input style = "float : right" type="text" class="form-control" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
                             <input style = "float : right" type="number" class="form-control" step="0.1" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'number'">

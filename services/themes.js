@@ -355,7 +355,8 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
         )));
     }
 };
-const listTheme       = async () => {
+
+const listTheme = async () => {
     const allTheme = [];
     for (const element of await fs.readdir('./themes/')) {
         const fileOrFolder = await fs.stat(`./themes/${element}`);
@@ -365,6 +366,7 @@ const listTheme       = async () => {
     }
     return allTheme;
 };
+
 module.exports = {
     save,
     setConfigTheme,
