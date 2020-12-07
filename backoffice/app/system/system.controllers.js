@@ -1,52 +1,50 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService) {
+    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval",
+    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval) {
 
         $scope.system = ConfigV2.environment(function () {
-
-            $scope.ssl = {
-                cert : $scope.config.ssl.cert || '',
-                key  : $scope.config.ssl.key || ''
+            if($scope.system.linkToLog && $scope.system.linkToError){
+                $scope.getFiles();
             }
-            delete $scope.config.$promise;
+            $scope.ssl = {
+                cert : $scope.system.ssl.cert || '',
+                key  : $scope.system.ssl.key || ''
+            }
+            delete $scope.system.$promise;
         });
-        $scope.getLinks = function (){
-            System.getLinks({}, function(response){
-                if(response.sdf != ''){
-                    $scope.logError = {
-                        logFile : response.linkToLog,
-                        errorFile : response.linkToError
-                    };
-                }else{
-                    $scope.logError = {
-                        logFile : '',
-                        errorFile : ''
-                    };
-                }
-            }, function(){
-                $scope.logError = {
-                    logFile : '',
-                    errorFile : ''
-                };
-            })
-        };
-        $scope.getLinks();
 
+        function buildAdminUrl(appUrl, adminPrefix) {
+            let correctAppUrl;
+            if (!appUrl) {
+                correctAppUrl = "/";
+            } else if (!appUrl.endsWith("/")) {
+                correctAppUrl = `${appUrl}/`;
+            } else {
+                correctAppUrl = appUrl;
+            }
+            return correctAppUrl + adminPrefix;
+        }
+        $scope.log = {
+            log: "",
+            error: ""
+        };
         $scope.getFiles = function(){
-            System.getFiles({name: 'log'}, function (response) {
-                $scope.logError.log = response;
+            
+            System.getFiles({name: $scope.system.linkToLog}, function (response) {
+                //here change color
+                $scope.log.log = response.fileData;
             }, function(erreur){
-                $scope.logError.log = '';
+                $scope.log.log = '';
             });
-            System.getFiles({name: 'error'}, function (response) {
-                $scope.logError.error = response;
+            System.getFiles({name: $scope.system.linkToError}, function (response) {
+                //here change color
+                $scope.log.error = response.fileData;
             }, function(erreur){
-                $scope.logError.error = '';
+                $scope.log.error = '';
             });
         }
-        $scope.getFiles();
 
         $scope.newNextVersion = (nextVersion) => {
             if (nextVersion !== $scope.next) {
@@ -61,7 +59,7 @@ SystemControllers.controller("systemGeneralController", [
                     toastService.toast("success", "restart in progress...");
                     $scope.showThemeLoading = false;
                     $scope.showLoading = true;
-                    $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                    $scope.urlRedirect = buildAdminUrl($scope.system.appUrl, $scope.system.adminPrefix);
                     $http.get("/restart");
                     $interval(() => {
                         $http.get("/serverIsUp").then(() => {
@@ -167,45 +165,52 @@ SystemControllers.controller("systemGeneralController", [
 
 
         $scope.validate = function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
+            if($scope.system.linkToLog){
+                System.setFiles({name: $scope.system.linkToLog, error: $scope.system.linkToError}, function (response) {
+                }, function(erreur){/*deal with error here*/});
             }
-            if ($scope.config.appUrl && !$scope.config.appUrl.endsWith('/')) {
-                $scope.config.appUrl += "/";
+            if($scope.system.linkToError){
+                System.setFiles({name: $scope.system.linkToError}, function (response) {
+                }, function(erreur){/*deal with error here*/});
+            }
+            if (!$scope.system.adminPrefix) {
+                $scope.system.adminPrefix = "admin";
+            }
+            if ($scope.system.appUrl && !$scope.system.appUrl.endsWith('/')) {
+                $scope.system.appUrl += "/";
             }
             let file = {};
-            if ($scope.config.ssl.cert instanceof File || $scope.config.ssl.cert instanceof File) {
-                if ($scope.config.ssl.cert instanceof File) {
-                    file.cert = $scope.config.ssl.cert;
-                    $scope.config.ssl.cert = $scope.config.ssl.cert.name;
+            if ($scope.system.ssl.cert instanceof File || $scope.system.ssl.cert instanceof File) {
+                if ($scope.system.ssl.cert instanceof File) {
+                    file.cert = $scope.system.ssl.cert;
+                    $scope.system.ssl.cert = $scope.system.ssl.cert.name;
                 }
-                if ($scope.config.ssl.key instanceof File) {
-                    file.key = $scope.config.ssl.key;
-                    $scope.config.ssl.key = $scope.config.ssl.key.name;
+                if ($scope.system.ssl.key instanceof File) {
+                    file.key = $scope.system.ssl.key;
+                    $scope.system.ssl.key = $scope.system.ssl.key.name;
                 }
             }
-
             ConfigV2.environment(function (oldAdmin) {
-                $scope.config.cacheTTL = $scope.config.cacheTTL || "";
+                $scope.system.cacheTTL = $scope.system.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 Upload.upload({
                     url: 'v2/config',
                     method: 'PUT',
                     data: {
                         ...file,
-                        environment: $scope.config
+                        environment: $scope.system
                     }
                 }).then((response) => {
                     if (
-                        oldAdmin.adminPrefix !== $scope.config.adminPrefix
-                        || oldAdmin.appUrl !== $scope.config.appUrl
-                        || oldAdmin.photoPath !== $scope.config.photoPath
-                        || oldAdmin.cacheTTL !== $scope.config.cacheTTL
-                        || oldAdmin.databaseConnection !== $scope.config.databaseConnection
+                        oldAdmin.adminPrefix !== $scope.system.adminPrefix
+                        || oldAdmin.appUrl !== $scope.system.appUrl
+                        || oldAdmin.photoPath !== $scope.system.photoPath
+                        //|| oldAdmin.cacheTTL !== $scope.system.cacheTTL
+                        || oldAdmin.databaseConnection !== $scope.system.databaseConnection
                     ) {
                         $scope.showThemeLoading = false;
                         $scope.showLoading = true;
-                        $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                        $scope.urlRedirect = buildAdminUrl($scope.system.appUrl, $scope.system.adminPrefix);
                         $http.get("/restart");
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
