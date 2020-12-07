@@ -50,6 +50,7 @@ const territory        = require('./territory.json');
 const themeConfig      = require('./themeConfig.json');
 const trademarks       = require('./trademarks.json');
 const user             = require('./user.json');
+const PostBody         = require('./PostBody.json');
 
 module.exports = {
     ...address,
@@ -103,5 +104,6 @@ module.exports = {
     ...territory,
     ...themeConfig,
     ...trademarks,
-    ...user
+    ...user,
+    ...PostBody
 };
