@@ -136,7 +136,20 @@ class CartDelivery extends React.Component {
 
         // Modification du mode de livraison du panier
         try {
-            await updateDeliveryCart(cartId, shipments[index], cart.addresses.delivery.isoCountryCode, lang);
+            const updatedCart = await updateDeliveryCart(cartId, shipments[index], cart.addresses.delivery.isoCountryCode, lang);
+            if (updatedCart.priceTotal.ati === 0) {
+                // Transformation du panier en commande
+                const order = await cartToOrder(cartId, lang);
+
+                window.localStorage.removeItem('cart_id');
+                window.localStorage.setItem('order', JSON.stringify(order));
+
+                // Event pour Google Analytics
+                const saveTransaction = new CustomEvent('saveTransaction', { detail: order });
+                window.dispatchEvent(saveTransaction);
+
+                return Router.pushRoute('cartSuccess', { lang: routerLang });
+            }
 
             Router.pushRoute('cartPayment', { lang: routerLang });
         } catch (err) {
