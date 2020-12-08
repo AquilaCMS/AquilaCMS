@@ -285,8 +285,8 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         if(!$scope.isEditMode)
                         {
                             window.location.href = "#/products/" + savedPrd.type + "/" + savedPrd.code;
+                            window.location.reload();
                         }
-                        window.location.reload();
                     }
                 }, function (err)
                 {
