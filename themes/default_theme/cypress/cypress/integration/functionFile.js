@@ -3,6 +3,8 @@
 import "./functionFile";
 ```
 in your file
+
+Them to use them, you just need to use the name of the function
 */
 
 Cypress.Commands.add("clickCookieMessage", () => {
