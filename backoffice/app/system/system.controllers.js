@@ -5,9 +5,9 @@ SystemControllers.controller("systemGeneralController", [
     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval) {
 
         $scope.system = ConfigV2.environment(function () {
-            if($scope.system.linkToLog && $scope.system.linkToError){
-                $scope.getFiles();
-            }
+            $scope.system.linkToLog = $scope.system.linkToLog || '';
+            $scope.system.linkToError = $scope.system.linkToError || '';
+            $scope.getFiles();
             $scope.ssl = {
                 cert : $scope.system.ssl.cert || '',
                 key  : $scope.system.ssl.key || ''
@@ -31,19 +31,27 @@ SystemControllers.controller("systemGeneralController", [
             error: ""
         };
         $scope.getFiles = function(){
+            if($scope.system.linkToLog == ''){
+                $scope.log.log = 'Pas de ficher de log';
+            }else{
+                System.getFiles({name: $scope.system.linkToLog}, function (response) {
+                    //here change color
+                    $scope.log.log = response.fileData;
+                }, function(erreur){
+                    $scope.log.log = '';
+                });
+            }
             
-            System.getFiles({name: $scope.system.linkToLog}, function (response) {
-                //here change color
-                $scope.log.log = response.fileData;
-            }, function(erreur){
-                $scope.log.log = '';
-            });
-            System.getFiles({name: $scope.system.linkToError}, function (response) {
-                //here change color
-                $scope.log.error = response.fileData;
-            }, function(erreur){
-                $scope.log.error = '';
-            });
+            if($scope.system.linkToError == ''){
+                $scope.log.error = "Pas de ficher d'Erreur";
+            }else{
+                System.getFiles({name: $scope.system.linkToError}, function (response) {
+                    //here change color
+                    $scope.log.error = response.fileData;
+                }, function(erreur){
+                    $scope.log.error = '';
+                });
+            }
         }
 
         $scope.newNextVersion = (nextVersion) => {
