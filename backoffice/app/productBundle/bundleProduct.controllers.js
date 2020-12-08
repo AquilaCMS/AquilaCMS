@@ -2,13 +2,14 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2)
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.promos = [];
         $scope.displayModes = BundleSectionDisplayModes;
+        $scope.additionnalTabs = ProductsTabs;
         $scope.nsUploadFiles = {
             isSelected: false
         };
