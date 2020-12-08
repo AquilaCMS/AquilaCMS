@@ -11,8 +11,15 @@ const setFilesInAquila = async (body) => {
 const getFile = async (query) => {
     const filePath = path.resolve(global.appRoot, query.name);
     if (await fs.access(filePath)) {
-        const file = await fs.readFile(filePath);
-        return {fileData: file};
+        let fileContent = '';
+        await fs.readFile(filePath, 'utf8', function (error, data) {
+            if (error) {
+                console.log(error);
+                return {fileData: 'None'};
+            }
+            fileContent = data;
+        });
+        return {fileData: fileContent};
     }
     return {fileData: 'None'};
 };
