@@ -1,0 +1,8 @@
+extend type Subscription {
+  tick: Int!
+}
+
+enum Roles {
+    ADMIN
+    USER
+}

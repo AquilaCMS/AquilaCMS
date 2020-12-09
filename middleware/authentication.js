@@ -8,22 +8,30 @@ const {getDecodedToken} = require('../services/auth');
  */
 const authentication = async (req, res, next) => {
     try {
-        if (!req.headers.authorization) return next(NSErrors.MissingHeaderAuthorize);
+        if (!req.headers.authorization) {
+            if (!next) {
+                throw NSErrors.MissingHeaderAuthorize;
+            }
+            return next(NSErrors.MissingHeaderAuthorize);
+        }
         const decoded = getDecodedToken(req.headers.authorization);
         if (!decoded) return next(NSErrors.Unauthorized);
 
         if (decoded.type === 'USER') {
             const user = await authenticate(req, res);
             req.info   = user.info;
+            if (!next) return;
             return next();
         }
         if (decoded.type === 'GUEST') {
             req.info = decoded;
+            if (!next) return;
             return next();
         }
         throw NSErrors.Unauthorized;
     } catch (err) {
         res.clearCookie('jwt');
+        if (!next) throw err;
         return next(err);
     }
 };

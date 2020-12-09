@@ -1,0 +1,2 @@
+directive @auth on FIELD_DEFINITION
+directive @hasRole(roles: [Roles!]) on FIELD_DEFINITION | FIELD
