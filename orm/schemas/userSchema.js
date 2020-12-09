@@ -124,6 +124,7 @@ const UserSchema = new Schema({
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
+            visible     : {type: Boolean, default: true},
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
