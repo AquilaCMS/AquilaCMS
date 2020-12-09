@@ -1,30 +1,28 @@
 const path = require('path');
 const fs   = require('../utils/fsp');
 
-const setFilesInAquila = async (body) => {
-    const filePath = path.resolve(global.appRoot, body.name);
+const setFilesInAquila = async (name) => {
+    const filePath = path.resolve(global.appRoot, name);
     if (!await fs.access(filePath)) {
         await fs.writeFile(filePath, '');
     }
 };
 
-const getFile = async (query) => {
-    const filePath = path.resolve(global.appRoot, query.name);
+const getFileContent = async (name) => {
+    const filePath = path.resolve(global.appRoot, name);
     if (await fs.access(filePath)) {
         let fileContent = '';
-        await fs.readFile(filePath, 'utf8', function (error, data) {
-            if (error) {
-                console.log(error);
-                return {fileData: 'None'};
-            }
-            fileContent = data;
-        });
-        return {fileData: fileContent};
+        try {
+            fileContent = await fs.readFile(filePath, 'utf8');
+            return {fileData: fileContent};
+        } catch (err) {
+            return {fileData: 'None'};
+        }
     }
     return {fileData: 'None'};
 };
 
 module.exports = {
-    getFile,
+    getFileContent,
     setFilesInAquila
 };
