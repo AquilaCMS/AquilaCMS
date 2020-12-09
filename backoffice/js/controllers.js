@@ -6,11 +6,12 @@ var adminCatagenControllers = angular.module("adminCatagenControllers", []);
 
 // wrapper
 adminCatagenControllers.controller("wrapperCtrl", [
-    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "LanguagesApiV2", "$translate",
-    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, LanguagesApiV2, $translate)
+    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate",
+    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate)
     {
 
         $scope.menus = MenusList;
+        $scope.menusCatalog = MenusCatalogList;
 
         function getLanguages() {
             LanguagesApiV2.list({PostBody: {filter: {}, limit: 99}}, function (languages)

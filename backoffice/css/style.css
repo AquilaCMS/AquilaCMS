@@ -1302,6 +1302,7 @@ img.ico{
 
 }
 
+/* /!\ ATTENTION: la regle du dessous retir les icon de tous les boutons, tres chiant */
 @media screen and (min-width: 768px) {
     
     button.btn i {
