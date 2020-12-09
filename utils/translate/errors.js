@@ -7,6 +7,10 @@ module.exports = {
         fr : 'Non autorisé',
         en : 'Unauthorized'
     },
+    DesactivateAccount : {
+        fr : 'Compte désactivé',
+        en : 'Desactivate account'
+    },
     BadLogin : {
         fr : 'Votre identifiant ou mot de passe est incorrect',
         en : 'Your username or password is incorrect'

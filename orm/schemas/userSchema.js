@@ -108,6 +108,7 @@ const UserSchema = new Schema({
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
     payementChoice       : String,
+    isActive             : {type: Boolean, default: true},
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
