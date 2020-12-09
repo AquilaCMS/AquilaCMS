@@ -56,7 +56,7 @@ describe ('Check quantity break system /!\\ Mobile View', function () {
             expect($p).to.contain('FR');
         })
 
-        // Checks if the items are only those ordered
+        // Check if the items are only those ordered
         cy.get('.jsx-3975637264 .table-order > table > tbody').should(($tb) => {
             expect($tb).to.have.length(1);
         })

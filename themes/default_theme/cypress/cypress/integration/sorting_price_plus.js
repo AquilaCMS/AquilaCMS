@@ -1,30 +1,4 @@
-// name = name of the product, prix = initial price of the product, prixreduit = price of the product with reductions
-// If there is no reduced price, give as a parameter initial price of the product for the variable prixreduit
-// id = id of the product (default: ($prd[index du produit].id)), i = index of the product + 1
-function check_informations(name, prix, prixreduit, id, i) {
-    const link2 = ('.content .products-grid > #' + id + ' > .product__content');
-    cy.get(link2 + ' > .product__entry > a > h4').then(($name) => {
-        if ($name[0].textContent != name) {
-            throw ('Le Nom du produit ' + i + ' ne correspond pas à ' + name);
-        }
-    })
-    cy.get(link2 + ' > .product__aside > .product-price').then(($price) => {
-        if ($price[0].children.length == 1) {
-            if (parseFloat($price[0].children[0].innerText, 10) != prix) {
-                throw('Le Prix du Produit ' + i + ' ne correspond pas à ' + prix + '€ : ' + parseFloat($price[0].children[0].innerText, 10))
-            }
-        } else if ($price[0].children.length == 2) {
-            if (parseFloat($price[0].children[0].innerText, 10) != prix) {
-                throw('Le Prix Initial du Produit ' + i + ' ne correspond pas à ' + prix + '€ : ' + parseFloat($price[0].children[0].innerText, 10))
-            }
-            if (parseFloat($price[0].children[1].innerText, 10) != prixreduit) {
-                throw('Le Prix Réduit du Produit ' + i + ' ne correspond pas à ' + prixreduit + '€ : ' + parseFloat($price[0].children[1].innerText, 10))
-            }
-        } else {
-            throw('Le Produit ' + i + ' à plus de deux prix')
-        }
-    })
-}
+import { check_informations } from "./utils.js"
 
 describe('Sorting by \'Price +\'', function() {
         it('Check Products after sorting by \'Price +\' ', function() {

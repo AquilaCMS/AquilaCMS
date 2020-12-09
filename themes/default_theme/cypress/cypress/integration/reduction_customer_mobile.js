@@ -1,5 +1,5 @@
-describe ('Customer Promotion  /!\\ Mobile View', function () {
-    it ('Check of a promotion set for a special customer', function () {
+describe ('Command  /!\\ Mobile View', function () {
+    it ('Command of 3 products and add another one: A promotion should be triggger if we are an existing customer', function () {
         cy.visit('');
         cy.viewport(480, 720);
 
