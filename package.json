@@ -27,6 +27,7 @@
   "dependencies": {
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
+    "apollo-server-express": "^2.19.0",
     "axios": "0.21.1",
     "bcrypt": "5.0.0",
     "cookie-parser": "1.4.5",
@@ -37,6 +38,8 @@
     "express-ejs-extend": "0.0.1",
     "faker": "4.1.0",
     "glob": "7.1.6",
+    "graphql": "^15.4.0",
+    "graphql-tools": "^7.0.2",
     "helmet": "4.4.1",
     "i18next": "11.3.3",
     "i18next-fs-backend": "1.0.6",
@@ -91,6 +94,7 @@
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-angular": "^4.0.1",
     "eslint-plugin-import": "^2.22.1",
+    "graphql-schema-linter": "^1.0.1",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0"
   },

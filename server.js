@@ -120,6 +120,70 @@ const initServer = async () => {
         }
 
         middlewareServer.initExpress(server, passport);
+        const {makeExecutableSchema, loadFiles} = require('graphql-tools');
+        const {ApolloServer}                    = require('apollo-server-express');
+
+        const resolvers          = await loadFiles(path.join(global.appRoot, 'graphql/resolvers'));
+        const typeDefs           = await loadFiles(path.join(global.appRoot, 'graphql/typeDefs'));
+        const directives         = await loadFiles(path.join(global.appRoot, 'graphql/directives'));
+        const directiveResolvers = {};
+        for (const directive of directives) {
+            directiveResolvers[directive.name.replace('Directive', '')] = directive;
+        }
+
+        const query = `
+            type Query {
+                _empty: String
+            }`;
+
+        const mutation = `
+            type Mutation {
+                _empty: String
+            }`;
+
+        const subscription = `
+            type Subscription {
+                _empty: String
+            }`;
+        const schemas      = makeExecutableSchema({
+            typeDefs : [
+                query,
+                mutation,
+                subscription,
+                ...typeDefs
+            ],
+            resolvers,
+            directiveResolvers
+        });
+        const apolloServer = new ApolloServer({
+            schema        : schemas,
+            plugins       : [],
+            introspection : true,
+            tracing       : true,
+            context       : async ({req, res}) => {
+                // const {authentication}  = require('./middleware/authentication');
+                // const user           = await authentication(req, res);
+                if (!req.headers.authorization) return {};
+                const {getDecodedToken} = require('./services/auth');
+                const {authenticate}    = require('./middleware/passport');
+
+                const decoded = getDecodedToken(req.headers.authorization);
+                if (decoded.type === 'USER') {
+                    const user = await authenticate(req, res);
+                    req.info   = user.info;
+                    if (!next) return;
+                    return next();
+                }
+                if (decoded.type === 'GUEST') {
+                    req.info = decoded;
+                    if (!next) return;
+                    return next();
+                }
+                return {user: req.info};
+            }
+        });
+        apolloServer.applyMiddleware({app: server});
+
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
