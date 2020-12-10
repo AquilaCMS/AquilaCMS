@@ -6,7 +6,8 @@ const mongoose = require('mongoose');
 
 const migration_1_ModulesNewPackageDependencies = async () => {
     console.log('Applying migration script "migration_1_ModulesNewPackageDependencies"...');
-    (await mongoose.connection.collection('modules').find({})).forEach(async (mod) => {
+    const modules = (await mongoose.connection.collection('modules').find({})) || [];
+    modules.forEach(async (mod) => {
         const packageDependencies = {
             api   : {},
             theme : {}
