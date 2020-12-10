@@ -346,7 +346,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    let prds       = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
+    let prds       = await Products
+        .find(PostBody.filter, PostBody.structure)
+        .sort(PostBody.sort)
+        .lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
 
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
@@ -479,7 +482,9 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             tProducts.push(new ProductVirtual(products[k]));
             break;
         case 'bundle':
-            const prd = await new ProductBundle(products[k]).populate(PostBody.populate || '').execPopulate();
+            const prd = await new ProductBundle(products[k])
+                .populate(PostBody.populate || '')
+                .execPopulate();
             tProducts.push(prd);
             break;
 
@@ -504,7 +509,14 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
             tProducts = tProducts.filter((prd) =>  {
                 const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte) && pr <= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte);
+                return pr >= (
+                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
+                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
+                )
+                && pr <= (
+                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
+                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
+                );
             });
         }
     }
@@ -524,7 +536,13 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     return {
-        ...result, count : prds.length, datas : tProducts, priceMin, priceMax, specialPriceMin, specialPriceMax
+        ...result,
+        count : prds.length,
+        datas : tProducts,
+        priceMin,
+        priceMax,
+        specialPriceMin,
+        specialPriceMax
     };
 };
 
