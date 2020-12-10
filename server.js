@@ -116,45 +116,55 @@ const initServer = async () => {
         middlewareServer.initExpress(server, passport);
         const {makeExecutableSchema, loadFiles} = require('graphql-tools');
         const {ApolloServer}                    = require('apollo-server-express');
+        const {Modules}                         = require('./orm/models');
+        let directiveResolvers                  = require('./graphql/directives');
 
-        const resolvers          = await loadFiles(path.join(global.appRoot, 'graphql/resolvers'));
-        const typeDefs           = await loadFiles(path.join(global.appRoot, 'graphql/typeDefs'));
-        const directives         = await loadFiles(path.join(global.appRoot, 'graphql/directives'));
-        const directiveResolvers = {};
-        for (const directive of directives) {
-            directiveResolvers[directive.name.replace('Directive', '')] = directive;
+        const modules        = await Modules.find({active: true});
+        const graphqlPath    = path.join(global.appRoot, 'graphql');
+        const resolversPaths = [path.join(graphqlPath, 'resolvers')];
+        const typeDefsPaths  = [path.join(graphqlPath, 'typedefs')];
+
+        for (const gpath of modules.map((m) => `${m.path}graphql`)) {
+            if (fs.existsSync(path.resolve(global.appRoot, gpath, 'resolvers'))) {
+                resolversPaths.push(path.resolve(global.appRoot, gpath, 'resolvers'));
+            }
+            if (fs.existsSync(path.resolve(global.appRoot, gpath, 'typedefs'))) {
+                typeDefsPaths.push(path.resolve(global.appRoot, gpath, 'typedefs'));
+            }
+            if (fs.existsSync(path.resolve(global.appRoot, gpath, 'directives'))) {
+                directiveResolvers = {
+                    ...directiveResolvers,
+                    ...require(path.resolve(global.appRoot, gpath, 'directives'))
+                };
+            }
         }
 
-        const query = `
-            type Query {
-                _empty: String
-            }`;
+        const resolvers = await loadFiles(resolversPaths);
+        const typeDefs  = await loadFiles(typeDefsPaths);
 
-        const mutation = `
-            type Mutation {
-                _empty: String
-            }`;
-
-        const subscription = `
-            type Subscription {
-                _empty: String
-            }`;
         const schemas      = makeExecutableSchema({
             typeDefs : [
-                query,
-                mutation,
-                subscription,
+                `type Query {
+                    _: String
+                }
+                type Mutation {
+                    _: String
+                }
+                type Subscription {
+                    _: String
+                }`,
                 ...typeDefs
             ],
-            resolvers,
-            directiveResolvers
+            resolvers
         });
         const apolloServer = new ApolloServer({
-            schema        : schemas,
-            plugins       : [],
-            introspection : true,
-            tracing       : true,
-            context       : async ({req, res}) => {
+            schema           : schemas,
+            plugins          : [],
+            introspection    : true,
+            playground       : true,
+            tracing          : true,
+            schemaDirectives : directiveResolvers,
+            context          : async ({req, res}) => {
                 // const {authentication}  = require('./middleware/authentication');
                 // const user           = await authentication(req, res);
                 if (!req.headers.authorization) return {};
@@ -164,16 +174,12 @@ const initServer = async () => {
                 const decoded = getDecodedToken(req.headers.authorization);
                 if (decoded.type === 'USER') {
                     const user = await authenticate(req, res);
-                    req.info   = user.info;
-                    if (!next) return;
-                    return next();
+                    return {user: user.info};
                 }
                 if (decoded.type === 'GUEST') {
-                    req.info = decoded;
-                    if (!next) return;
-                    return next();
+                    return {user: decoded};
                 }
-                return {user: req.info};
+                return {};
             }
         });
         apolloServer.applyMiddleware({app: server});
