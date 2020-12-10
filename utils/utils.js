@@ -227,6 +227,33 @@ const IsJsonString = (str) => {
     return true;
 };
 
+/**
+ * find object property by string
+ * @example
+ * const obj = {p1: {p2: "test"}}
+ * const value = objectPropertybyString(obj, "p1.p2")
+ * console.log(value) // "test"
+ *
+ * @param {object} o object to find value from s
+ * @param {string} s property to find value from
+ * @return {any} return the value of the property found
+ */
+const objectPropertybyString = (o, s) => {
+    s            = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s            = s.replace(/^\./, ''); // strip a leading dot
+    const a      = s.split('.');
+    let notFound = false;
+    for (let i = 0, n = a.length; i < n; ++i) {
+        const k = a[i];
+        if (k in o) {
+            o = o[k];
+        } else {
+            notFound = true;
+        }
+    }
+    return notFound ? undefined : o;
+};
+
 module.exports = {
     // utils/datas
     downloadFile,
@@ -244,5 +271,6 @@ module.exports = {
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,
-    IsJsonString
+    IsJsonString,
+    objectPropertybyString
 };
