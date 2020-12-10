@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    updateConfiguration(configuration: ConfigurationInput): Configuration
+    updateConfiguration(configuration: ConfigurationInput): Configuration @auth @hasRole(roles: [ADMIN])
 }
 
 type Configuration {
@@ -25,7 +25,7 @@ type SendMetrics {
 }
 
 type Environment {
-    adminPrefix: String! @auth @hasRole(roles: [ADMIN])
+    adminPrefix: String! @auth
     analytics: String
     appUrl: String!
     authorizedIPs: String
@@ -78,13 +78,6 @@ type AdditionnalFees {
 
 type Labels {
     code: String!
-}
-
-enum BookingStock {
-    COMMANDE
-    PANIER
-    NONE
-    PAYMENT
 }
 
 input ConfigurationInput {

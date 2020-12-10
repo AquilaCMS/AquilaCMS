@@ -1,13 +1,3 @@
-extend type Query {
-    getUser(id: String!): User! @hasRole(roles: [ADMIN])
-    getUsers(offset: Int, limit: Int, conditions: Any): [User]!
-}
-
-extend type Mutation {
-    createUser(user: UserInput!): User!
-    updateUser(id: String!, user: UserInput!): User! @auth @hasRole(roles: [ADMIN])
-}
-
 type User {
     _id: ObjectId!
     email: String!
@@ -45,12 +35,12 @@ type User {
 }
 
 type Campaign {
-    referer : String
-    utm_campaign : String
-    utm_medium : String
-    utm_source : String
-    utm_content : String
-    utm_term : String
+    referer: String
+    utm_campaign: String
+    utm_medium: String
+    utm_source: String
+    utm_content: String
+    utm_term: String
 }
 
 type Company {
@@ -116,12 +106,12 @@ input UserInput {
 }
 
 input CampaignInput {
-    referer : String
-    utm_campaign : String
-    utm_medium : String
-    utm_source : String
-    utm_content : String
-    utm_term : String
+    referer: String
+    utm_campaign: String
+    utm_medium: String
+    utm_source: String
+    utm_content: String
+    utm_term: String
 }
 
 input CompanyInput {
@@ -140,4 +130,14 @@ input ContactInput {
     last_name: String
     email: String
     phone: String
+}
+
+extend type Mutation {
+    createUser(user: UserInput!): User!
+    updateUser(id: String!, user: UserInput!): User! @auth @hasRole(roles: [ADMIN])
+}
+
+extend type Query {
+    getUser(id: String!): User! @hasRole(roles: [ADMIN])
+    getUsers(offset: Int, limit: Int, conditions: Any): [User]!
 }

@@ -94,7 +94,6 @@
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-angular": "^4.0.1",
     "eslint-plugin-import": "^2.22.1",
-    "graphql-schema-linter": "^1.0.1",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0"
   },

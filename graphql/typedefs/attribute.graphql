@@ -12,8 +12,3 @@ type Attribute {
     usedInFilters: Boolean
     translation: Any
 }
-
-enum AttributeType {
-    PRODUCTS,
-    USERS
-}

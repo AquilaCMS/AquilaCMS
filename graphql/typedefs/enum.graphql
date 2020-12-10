@@ -1,0 +1,16 @@
+enum Roles {
+    ADMIN
+    USER
+}
+
+enum AttributeType {
+    PRODUCTS,
+    USERS
+}
+
+enum BookingStock {
+    COMMANDE
+    PANIER
+    NONE
+    PAYMENT
+}
