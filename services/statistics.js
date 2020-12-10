@@ -53,7 +53,7 @@ exports.getFirstDayMetrics = async function () {
 exports.generateStatistics = function (data) {
     try {
         const model     = data.currentRoute;
-        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
+        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['No datas'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
         console.error(error);

@@ -142,7 +142,8 @@ const createConfiguration = async (datas) => {
             port            : global.port,
             siteName        : datas.siteName,
             demoMode        : true,
-            websiteTimezone : 'Europe/Paris'
+            websiteTimezone : 'Europe/Paris',
+            migration       : require('../utils/migration').migrationScripts.length // We don't want to apply migration after the installation, so calculate the current migration step
         },
         stockOrder : {
             cartExpireTimeout         : 1,
