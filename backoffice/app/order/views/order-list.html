@@ -23,10 +23,10 @@
                             </a>
                         </th>
                         <th class="col-sm-2" style="text-align: center">
-                            <a ng-click="sort.type = 'creationDate'; sort.reverse = !sort.reverse; getOrders(1);">
+                            <a ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse; getOrders(1);">
                                 <span translate>order.list.date</span>
-                                <span ng-show="sort.type == 'creationDate' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'creationDate' && sort.reverse" class="ico-chevron-up"></span>
+                                <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th style="width: 180px; text-align: center;">
@@ -65,9 +65,9 @@
                                    class="form-control" />
                         </th>
                         <th style="text-align: center">
-                            <ns-datepicker name="min_creationDate" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.min_creationDate"
+                            <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.min_createdAt"
                                            ng-change="getOrders(1)"></ns-datepicker>
-                            <ns-datepicker name="max_creationDate" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.max_creationDate"
+                            <ns-datepicker name="max_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.max_createdAt"
                                            ng-change="getOrders(1)"></ns-datepicker>
                         </th>
                         <th style="text-align: center">
@@ -99,7 +99,7 @@
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                     <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToOrderDetails(order._id)" ng-repeat="order in orders">
                         <td class="text-right" data-label="Code :">{{order.number}}</td>
-                        <td data-label="Date :">{{order.creationDate | date:'dd/MM/yyyy HH:mm'}}</td>
+                        <td data-label="Date :">{{order.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
                         <td data-label="Prix TTC:" class="text-right">{{order.priceTotal.ati | number:2}} €</td>
                         <td data-label="Nom :">{{order.customer.fullname}}</td>
                         <td data-label="Mail :">{{order.customer.email}}</td>

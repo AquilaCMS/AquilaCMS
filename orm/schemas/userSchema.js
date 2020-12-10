@@ -92,7 +92,6 @@ const UserSchema = new Schema({
         }
     },
     status           : String,
-    creationDate     : {type: Date, default: Date.now},
     delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
     billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
     addresses        : [AddressSchema],
@@ -132,7 +131,7 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ]
-});
+}, {timestamps: true});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});

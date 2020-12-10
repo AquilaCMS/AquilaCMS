@@ -24,7 +24,7 @@
             },
             "component_template" : {"type": "string"},
             "weight"             : {"type": "number", "default": 0, "description": "Le poids du produit"},
-            "creationDate"       : {"type": "string", "format": "date", "default": "Date.now"},
+            "createdAt"          : {"type": "date"},
             "price"              : {
                 "type": "object",
                 "properties": {

@@ -32,7 +32,6 @@ const OrdersSchema = new Schema({
         }
     ],
     invoiceFileName : {type: String},
-    creationDate    : {type: Date, default: Date.now},
     lang            : {type: String}, // Permet de connaitre la langue utilisé lors de la commande
     cartId          : {type: ObjectId, ref: 'cart'},
     promos          : [
@@ -234,7 +233,8 @@ const OrdersSchema = new Schema({
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
     }
-}, {usePushEach: true});
+}, {usePushEach : true,
+    timestamps  : true});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});

@@ -15,7 +15,6 @@ const CategoriesSchema = new Schema({
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
     closeDate    : {type: Date},
-    creationDate : {type: Date, default: Date.now},
     ancestors    : [{type: ObjectId, ref: 'categories'}],
     children     : [{type: ObjectId, ref: 'categories'}],
     productsList : [{
@@ -41,7 +40,8 @@ const CategoriesSchema = new Schema({
     },
     translation      : {},
     canonical_weight : {type: Number, default: 0}
-}, {usePushEach: true});
+}, {usePushEach : true,
+    timestamps  : true});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues
