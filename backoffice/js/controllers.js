@@ -692,12 +692,12 @@ adminCatagenControllers.controller("InvoicesController", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
         $scope.disabledButton = false;
 
         function init()
         {
-            $scope.sortType = "creationDate"; // set the default sort type
+            $scope.sortType = "createdAt"; // set the default sort type
             $scope.sortReverse = true;  // set the default sort order
         }
 

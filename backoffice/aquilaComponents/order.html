@@ -11,9 +11,9 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="order in orders| orderBy:'-creationDate'">
+        <tr ng-repeat="order in orders| orderBy:'-createdAt'">
             <td>
-                {{convertToDate(order.creationDate) | date:'dd/MM/yyyy HH:mm'}}
+                {{convertToDate(order.createdAt) | date:'dd/MM/yyyy HH:mm'}}
             </td>
             <td>
                 <span>Numéro commande : {{order.number}}</span><br>

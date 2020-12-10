@@ -76,7 +76,7 @@ const preview = async (body) => {
 const removePreviews = async () => {
     try {
         const date = new Date();
-        await StaticsPreview.deleteMany({modifyDate: {$lte: date.setDate(date.getDate() - 1)}});
+        await StaticsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
         await ProductsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
     } catch (err) {
         console.error(err);

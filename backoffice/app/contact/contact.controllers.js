@@ -71,7 +71,7 @@ ContactControllers.controller("ContactListCtrl", [
                 window.scrollTo(0, 0);
                 for (let i = 0; i < $scope.contacts.length; i++) {
                     const contact = $scope.contacts[i];
-                    contact.data.date = moment(contact.creationDate).format('L');
+                    contact.data.date = moment(contact.createdAt).format('L');
                     for (let j = 0; j < Object.keys(contact.data).length; j++) {
                         if (!$scope.cols.includes(Object.keys(contact.data)[j])) {
                             $scope.cols.push(Object.keys(contact.data)[j]);
@@ -104,7 +104,7 @@ ContactControllers.controller("ContactDetailsCtrl", [
 
         Contact.list({PostBody: {filter: {_id: $routeParams.id}, limit: 1}, lang: $scope.defaultLang}, function (res) {
             $scope.contact = res.datas[0];
-            $scope.contact.data.date = moment($scope.contact.creationDate).format('L');
+            $scope.contact.data.date = moment($scope.contact.createdAt).format('L');
             $scope.keys = Object.keys($scope.contact.data);
         });
     }

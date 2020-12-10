@@ -128,7 +128,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
 
     // --- Commande ---
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : sPeriodeStart,
             $lte : sPeriodeEnd
         },
@@ -272,7 +272,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
     const datas = [];
 
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
@@ -339,7 +339,7 @@ exports.getTopCustomer = async function (granularity, periodeStart, periodeEnd) 
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }
@@ -373,18 +373,18 @@ async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatc
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             },
@@ -408,18 +408,18 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allUsers = await Users.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }
