@@ -166,8 +166,8 @@ const deleteTheme = async (themePath) => {
     console.log('Theme removed !');
 };
 
-const ListfileNames = async () => {
-    const fileNames = await fs.readdir(path.join(global.appRoot, 'themes/default_theme/demoDatas'));
+const getDemoDatasFilesName = async () => {
+    const fileNames = await fs.readdir(path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`));
     return (fileNames);
 };
 /**
@@ -175,7 +175,8 @@ const ListfileNames = async () => {
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, fileNames = ListfileNames(), configuration = null) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames ) => {
+    fileNames           = getDemoDatasFilesName();
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
     const listOfFile    = [];
@@ -381,5 +382,5 @@ module.exports = {
     getThemePath,
     loadTranslation,
     listTheme,
-    ListfileNames
+    getDemoDatasFilesName
 };

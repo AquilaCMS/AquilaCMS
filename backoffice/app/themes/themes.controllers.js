@@ -170,12 +170,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 }
-            } else {
-                let data = await $http.post("/v2/themes/copyDatas", {  themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, fileNames : $scope.listThemeFiles});
-                console.log(data.data);
-                console.log($scope.config.currentTheme);
-                console.log($scope.theme.themeDataOverride);
-            }
+            } 
         };
 
         $scope.validate = function (tab) {
@@ -257,7 +252,7 @@ ThemesController.controller("ThemesCtrl", [
             //$scope.LoadAllThemes();
 
             $scope.LoadThemeCongig = function () {
-                $http.post("/v2/themes/getConfig", { PostBody: { filter: {}, structure: {}, limit: 99 }}).then(function (response) {
+                $http.get("/v2/themes/getConfig").then(function (response) {
                     $scope.config = response.data.config.environment;
                         if (!$scope.config.adminPrefix) {
                             $scope.config.adminPrefix = "admin";

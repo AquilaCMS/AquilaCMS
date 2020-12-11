@@ -18,7 +18,7 @@ module.exports = function (app) {
     app.post('/v2/themes/save',            authentication, adminAuth, save);
     app.post('/v2/themes/package/install', authentication, adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   authentication, adminAuth, buildTheme);
-    app.post('/v2/themes/getConfig',       authentication, adminAuth, getConfig);
+    app.get('/v2/themes/getConfig',       authentication, adminAuth, getThemeInformations);
 };
 
 /**
@@ -158,7 +158,7 @@ async function buildTheme(req, res, next) {
     }
 }
 
-async function getConfig(req, res, next) {
+async function getThemeInformations(req, res, next) {
     try {
         let userInfo;
         if (req.headers && req.headers.authorization) {
@@ -169,10 +169,10 @@ async function getConfig(req, res, next) {
                 console.error(error);
             }
         }
-        const themeConf = await serviceThemeConfig.getThemeConfig(req.body.PostBody);
+        const themeConf = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
         const config    = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: '*'}}, userInfo);
         const listTheme = await themesServices.listTheme();
-        const listFiles = await themesServices.ListfileNames();
+        const listFiles = await themesServices.getDemoDatasFilesName();
         res.send({themeConf, config, listTheme, listFiles});
     } catch (error) {
         return next(error);
