@@ -62,20 +62,6 @@ ThemesController.controller("ThemesCtrl", [
             }
         }
 
-        // $scope.config = ConfigV2.environment(function () {
-        //     if (!$scope.config.adminPrefix) {
-        //         $scope.config.adminPrefix = "admin";
-        //     }
-        // });
-        // $scope.LoadAllThemes = function () {
-        //     $http.get("/v2/themes").then(function (response) {
-        //         $scope.themesList = response.data;
-        //     }, function (err) {
-        //         $scope.isLoading = false;
-        //         toastService.toast("danger", err.data);
-        //     });
-        // };
-
         $scope.beforeTheme = function () {
             $scope.showThemeLoading = true;
         };
@@ -126,8 +112,6 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.packageRestart = async function () {
-            // $scope.isLoading = true;
-            // $scope.showThemeLoading = true;
             try {
                 await $http.get("/restart");
                 toastService.toast("success", "Succès");
@@ -249,14 +233,13 @@ ThemesController.controller("ThemesCtrl", [
 
 
             }
-            //$scope.LoadAllThemes();
 
             $scope.LoadThemeCongig = function () {
-                $http.get("/v2/themes/getConfig").then(function (response) {
+                $http.get("/v2/themes/informations").then(function (response) {
                     $scope.config = response.data.config.environment;
-                        if (!$scope.config.adminPrefix) {
-                            $scope.config.adminPrefix = "admin";
-                        }
+                    if (!$scope.config.adminPrefix) {
+                        $scope.config.adminPrefix = "admin";
+                    }
                     $scope.listThemeFiles = [];
                     $scope.listAllThemeFiles = [];
                     $scope.themesList = response.data.listTheme;
@@ -287,10 +270,6 @@ ThemesController.controller("ThemesCtrl", [
                             $scope.langChange($scope.language);
                             $scope.theme.currentThemeVar = true;
                         });
-                        
-
-                        // $scope.customiseTheme.arrayGroup = ["GRP1","GRP2","GRP3"];
-                        
                     }
                 }, function (err) {
                     $scope.isLoading = false;

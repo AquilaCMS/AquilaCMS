@@ -18,7 +18,7 @@ module.exports = function (app) {
     app.post('/v2/themes/save',            authentication, adminAuth, save);
     app.post('/v2/themes/package/install', authentication, adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   authentication, adminAuth, buildTheme);
-    app.get('/v2/themes/getConfig',       authentication, adminAuth, getThemeInformations);
+    app.get('/v2/themes/informations',     authentication, adminAuth, getThemeInformations);
 };
 
 /**
