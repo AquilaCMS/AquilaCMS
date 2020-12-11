@@ -160,7 +160,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, fileNames : $scope.listAllThemeFiles});
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listAllThemeFiles});
                     if (data.data.noDatas) {
                         toastService.toast("success", "Ce thème ne contient pas de données.");
                     } else {

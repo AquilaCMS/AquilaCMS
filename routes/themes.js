@@ -117,7 +117,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.fileNames);
+        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
         return res.json(ret);
     } catch (error) {
         return next(error);
@@ -170,7 +170,7 @@ async function getThemeInformations(req, res, next) {
             }
         }
         const themeConf = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
-        const config    = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: '*'}}, userInfo);
+        const config    = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: 'environment.adminPrefix'}}, userInfo);
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
         res.send({themeConf, config, listTheme, listFiles});
