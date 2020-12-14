@@ -18,8 +18,14 @@ const getFileContent = async (name) => {
         try {
             fileContent = await fs.readFile(filePath, 'utf8');
             if (fileContent) {
-                const allLines = fileContent.split('\n');
-                for (let count = 0; count < 500; count++) {
+                const allLines    = fileContent.split('\n');
+                const nbLinesFile = allLines.length;
+                let offset        = 0;
+                if (nbLinesFile > 301) {
+                    offset = 300;
+                }
+                const nbLinesStart = (nbLinesFile - offset);
+                for (let count = nbLinesStart; count < nbLinesFile; count++) {
                     if (allLines[count]) {
                         firstLines = `${firstLines}\n${allLines[count]}`;
                     }
