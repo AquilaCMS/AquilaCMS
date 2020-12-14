@@ -1,9 +1,9 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval) {
-
+    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks",
+    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks) {
+        $scope.blocks = EnvBlocks;
         $scope.system = ConfigV2.environment(function () {
             $scope.system.linkToLog = $scope.system.linkToLog || '';
             $scope.system.linkToError = $scope.system.linkToError || '';

@@ -9,6 +9,6 @@ SystemServices.factory('System', ['$resource', function ($resource) {
     });
 }]);
 
-ConfigsServices.service('EnvBlocks', function () {
+SystemServices.service('EnvBlocks', function () {
     return [];
 });

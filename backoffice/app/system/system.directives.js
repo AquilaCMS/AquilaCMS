@@ -1,6 +1,6 @@
 var SystemDirectives = angular.module('aq.system.directives', []);
 
-SystemDirectives.directive('inputNgFile', function() {
+SystemDirectives.directive('inputFileSsl', function() {
     return {
         require: 'ngModel',
         link: function postLink(scope, elem, attrs, ngModel) {
