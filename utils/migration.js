@@ -62,12 +62,21 @@ const migration_3_CreatedAt = async () => {
         await changeCreateDateToCreatedAt(collectionsList[index]);
     }
 };
+const migration_5_isActive = async () => {
+    console.log('Applying migration script "migration_5_isActive"...');
+    const user = await mongoose.connection.collection('users').findOne({});
+    if (user && !user.isActive) {
+        const test = await mongoose.connection.collection('users').updateMany({}, {$set: {isActive: 'true'}});
+        console.log(test);
+    }
+};
 
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
     migration_2_Metrics,
-    migration_3_CreatedAt
+    migration_3_CreatedAt,
+    migration_5_isActive
     // sample
 ];
 
