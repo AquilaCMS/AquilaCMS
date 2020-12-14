@@ -3,30 +3,28 @@ const fs             = require('../utils/fsp');
 const packageManager = require('../utils/packageManager');
 const NSErrors       = require('../utils/errors/NSErrors');
 
-const setFilesInAquila = async (body) => {
-    const filePath = path.resolve(global.appRoot, body.name);
+const setFilesInAquila = async (name) => {
+    const filePath = path.resolve(global.appRoot, name);
     if (!await fs.access(filePath)) {
         await fs.writeFile(filePath, '');
     }
 };
 
-const getFile = async (query) => {
-    const filePath = path.resolve(global.appRoot, query.name);
+const getFileContent = async (name) => {
+    const filePath = path.resolve(global.appRoot, name);
     if (await fs.access(filePath)) {
         let fileContent = '';
-        await fs.readFile(filePath, 'utf8', function (error, data) {
-            if (error) {
-                console.log(error);
-                return {fileData: 'None'};
-            }
-            const allLines = data.split('\n');
+        try {
+            fileContent    = await fs.readFile(filePath, 'utf8');
+            const allLines = fileContent.split('\n');
             let firstLines;
             for (let count = 0; count < 500; count++) {
                 firstLines += allLines[count];
             }
-            fileContent = firstLines;
-        });
-        return {fileData: fileContent};
+            return {fileData: firstLines};
+        } catch (err) {
+            return {fileData: 'None'};
+        }
     }
     return {fileData: 'None'};
 };
@@ -73,7 +71,7 @@ const changeNextVersionService = async (body) => {
 };
 
 module.exports = {
-    getFile,
+    getFileContent,
     setFilesInAquila,
     getNextVersionService,
     changeNextVersionService
