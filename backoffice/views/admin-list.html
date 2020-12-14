@@ -46,14 +46,10 @@
                    infinite-scroll-immediate-check="true"
                    infinite-scroll-disabled='scroller.busy'>
             <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="client in clients| filter: query.search | orderBy:sortType:sortReverse">
-                <td data-label="Email :" class="  sorting_1">{{client.email}}</td>
-                <td data-label="Nom :" class=" ">{{client.lastname}}</td>
-                <td data-label="Prénom :" class=" ">{{client.firstname}}</td>
+                <td ng-click="goToAdminDetails(client._id)" style="cursor:pointer" data-label="Email :" class="  sorting_1">{{client.email}}</td>
+                <td ng-click="goToAdminDetails(client._id)" style="cursor:pointer" data-label="Nom :" class=" ">{{client.lastname}}</td>
+                <td ng-click="goToAdminDetails(client._id)" style="cursor:pointer" data-label="Prénom :" class=" ">{{client.firstname}}</td>
                 <td data-label="Actions :" style="text-align:center">
-                    <a href="#/list/detail/{{client._id}}" class="btn btn-blue btn-with-icon">
-                        <i class="ico-magnifier-primary"></i>
-                        <span class="text" translate>admin-list.edit</span>
-                    </a>
                     <a href="" ng-click="deleteAdmin(client); $event.stopPropagation();" class="btn btn-red btn-with-icon" ng-disabled="client._id === userInfo._id">
                         <i class="ico-trash"></i>
                         <span class="text" translate>admin-list.delete</span>
