@@ -50,7 +50,8 @@ const setPromo = async (body, _id = null) => {
     } else {
         if (!codePromoUnique) throw NSErrors.PromoCodePromoExists;
         // Create
-        result = await Promo.create(body);
+        body.discountValue = null;
+        result             = await Promo.create(body);
     }
     return result;
 };
