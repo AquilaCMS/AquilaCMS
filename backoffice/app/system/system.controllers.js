@@ -4,10 +4,17 @@ SystemControllers.controller("systemGeneralController", [
     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks",
     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks) {
         $scope.blocks = EnvBlocks;
+
+        $scope.log = {
+            log: "",
+            error: ""
+        };
+
         $scope.system = ConfigV2.environment(function () {
             $scope.system.linkToLog = $scope.system.linkToLog || '';
             $scope.system.linkToError = $scope.system.linkToError || '';
-            $scope.getFilesLogAndError();
+            $scope.getFilesLogAndError('log');
+            $scope.getFilesLogAndError('error');
             $scope.ssl = {
                 cert    : $scope.system.ssl.cert    || '',
                 key     : $scope.system.ssl.key     || '',
@@ -26,34 +33,28 @@ SystemControllers.controller("systemGeneralController", [
                 correctAppUrl = appUrl;
             }
             return correctAppUrl + adminPrefix;
-        }
-        $scope.log = {
-            log: "",
-            error: ""
         };
-        $scope.getFilesLogAndError = function(){
-            if($scope.system.linkToLog == ''){
-                $scope.log.log = 'Pas de ficher de log';
-            }else{
-                System.getFilesLogAndErrorRoute({name: $scope.system.linkToLog}, function (response) {
-                    //here change color
-                    $scope.log.log = response.fileData;
-                }, function(erreur){
-                    $scope.log.log = '';
-                });
+
+        $scope.getFilesLogAndError = function(variable) {
+            let attribut;
+            if(variable === 'log'){
+                attribut = 'linkToLog';
+            }else if(variable === 'error'){
+                attribut = 'linkToError';
             }
-            //les log
-            if($scope.system.linkToError == ''){
-                $scope.log.error = "Pas de ficher d'Erreur";
+            if(!$scope.system[attribut] || $scope.system[attribut] == ''){
+                $scope.system[attribut] == ''; //if it's undefined
+                $scope.log.log = 'Pas de ficher "'+ variable +'"';
             }else{
-                System.getFilesLogAndErrorRoute({name: $scope.system.linkToError}, function (response) {
-                    //here change color
-                    $scope.log.error = response.fileData;
+                System.getFilesLogAndErrorRoute({name: $scope.system[attribut]}, function (response) {
+                    //here change color of text
+                    $scope.log[variable] = response.fileData;
                 }, function(erreur){
-                    $scope.log.error = '';
+                    $scope.log[variable] = '';
                 });
             }
         }
+
 
         $scope.newNextVersion = (nextVersion) => {
             if (nextVersion !== $scope.next) {
