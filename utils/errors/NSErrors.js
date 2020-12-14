@@ -34,6 +34,7 @@ class NSErrors {
     static get OrderNotCancelable() { return this.makeErrorAlias(NSErrors.BadRequest, 'OrderNotCancelable'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
+    static get DesactivateAccount() { return new NSError(401, 'DesactivateAccount', undefined, 'none'); }
     static get UserNotLogin() { return new NSError(401, 'UserNotLogin'); }
     static get BadLogin() { return this.makeErrorAlias(NSErrors.Unauthorized, 'BadLogin', undefined, 'none'); }
     static get MissingHeaderAuthorize() { return this.makeErrorAlias(NSErrors.Unauthorized, 'MissingHeaderAuthorize', undefined, 'none'); }

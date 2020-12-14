@@ -27,7 +27,10 @@
           "normal": 17,
           "special": 13
         },
-        "priceSort": 10.83,
+        "priceSort": {
+            "et": 10.83,
+            "ati": 13
+        },
         "purchase": 10,
         "tax": 20
       },
@@ -95,7 +98,7 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
+      "createdAt": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -249,7 +252,10 @@
         "ati": {
           "normal": 22
         },
-        "priceSort": 18.33,
+        "priceSort": {
+            "et": 18.33,
+            "ati": 22
+        },
         "purchase": 9.8,
         "tax": 20
       },
@@ -303,7 +309,7 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
+      "createdAt": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -450,7 +456,10 @@
         "ati": {
           "normal": 25
         },
-        "priceSort": 20.83,
+        "priceSort": {
+            "et": 20.83,
+            "ati": 25
+        },
         "purchase": 3.75,
         "tax": 20
       },
@@ -485,7 +494,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:25:46.019Z",
+      "createdAt": "2020-05-09T14:25:46.019Z",
       "attributes": [
         {
           "type": "color",
@@ -632,7 +641,10 @@
         "ati": {
           "normal": 17
         },
-        "priceSort": 14.17,
+        "priceSort": {
+            "et": 14.17,
+            "ati": 17
+        },
         "purchase": 10,
         "tax": 20
       },
@@ -667,7 +679,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:27:06.737Z",
+      "createdAt": "2020-05-09T14:27:06.737Z",
       "attributes": [
         {
           "type": "color",
@@ -810,7 +822,10 @@
         "ati": {
           "normal": 17
         },
-        "priceSort": 14.17,
+        "priceSort": {
+            "et": 14.17,
+            "ati": 17
+        },
         "purchase": 4.54,
         "tax": 20
       },
@@ -830,7 +845,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:28:20.190Z",
+      "createdAt": "2020-05-09T14:28:20.190Z",
       "attributes": [
         {
           "type": "color",
@@ -984,7 +999,10 @@
         "ati": {
           "normal": 8
         },
-        "priceSort": 6.67,
+        "priceSort": {
+            "et": 6.67,
+            "ati": 8
+        },
         "purchase": 11,
         "tax": 20
       },
@@ -1033,7 +1051,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:32:04.688Z",
+      "createdAt": "2020-05-18T13:32:04.688Z",
       "attributes": [
         {
           "type": "color",
@@ -1176,7 +1194,10 @@
         "ati": {
           "normal": 8
         },
-        "priceSort": 6.67,
+        "priceSort": {
+            "et": 6.67,
+            "ati": 8
+        },
         "purchase": 1.58,
         "tax": 20
       },
@@ -1196,7 +1217,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:48:26.795Z",
+      "createdAt": "2020-05-18T13:48:26.795Z",
       "attributes": [
         {
           "type": "color",
@@ -1350,7 +1371,10 @@
         "ati": {
           "normal": 28
         },
-        "priceSort": 23.33,
+        "priceSort": {
+            "et": 23.33,
+            "ati": 28
+        },
         "purchase": 4.25,
         "tax": 20
       },
@@ -1370,7 +1394,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:53:34.890Z",
+      "createdAt": "2020-05-18T13:53:34.890Z",
       "attributes": [
         {
           "type": "color",
@@ -1513,7 +1537,10 @@
         "ati": {
           "normal": 29
         },
-        "priceSort": 24.17,
+        "priceSort": {
+            "et": 24.17,
+            "ati": 29
+        },
         "purchase": 3,
         "tax": 20
       },
@@ -1562,7 +1589,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:54:30.441Z",
+      "createdAt": "2020-05-18T13:54:30.441Z",
       "attributes": [
         {
           "type": "color",
@@ -1690,7 +1717,10 @@
         "ati": {
           "normal": 59.99
         },
-        "priceSort": 49.99,
+        "priceSort": {
+            "et": 49.99,
+            "ati": 59.99
+        },
         "purchase": 0,
         "tax": 20
       },
@@ -1875,7 +1905,6 @@
           "canonical": "/en/my-products/full-outfit"
         }
       },
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "pictos": [],
       "createdAt": "2020-05-13T09:07:33.753Z",
       "updatedAt": "2020-05-20T14:02:13.859Z"

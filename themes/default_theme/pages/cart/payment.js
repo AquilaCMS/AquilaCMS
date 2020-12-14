@@ -104,8 +104,6 @@ class CartPayment extends React.Component {
 
         window.localStorage.setItem('order', JSON.stringify(order));
 
-        console.log(this.props)
-
         if (order.priceTotal.ati === 0) {
             if (Router !== undefined) {
                 Router.pushRoute('cartSuccess', { lang: routerLang });

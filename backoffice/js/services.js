@@ -396,6 +396,11 @@ adminCatagenServices.service("MenusList", function ()
     return [];
 });
 
+adminCatagenServices.service("MenusCatalogList", function ()
+{
+    return [];
+});
+
 adminCatagenServices.factory("ConfirmDeleteModal", [
     "$modal", function ($modal)
     {

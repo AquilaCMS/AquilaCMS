@@ -80,28 +80,34 @@ adminCatagenDirectives.directive("nsDatepicker", function ()
                     scope.myDate = moment(new Date(ngModel.$modelValue)).format("L");
                 }
             };
-            scope.onDateChange = function ()
-            {
-                if(
-                    scope.myDate &&
-                    moment(scope.myDate, "DD/MM/YYYY").isValid()
-                )
-                {
-                    var dateElement = $("#datepicker_" + attrs.name, element);
-                    ngModel.$setViewValue(dateElement.datepicker("getDate"));
-                    dateElement.datepicker("refresh");
-                    $("#datepicker_" + attrs.name, element).removeClass(
-                        "invalid"
-                    );
-                }
-                else
-                {
-                    if(attrs.empty == 'true'){
+            scope.onDateChange = function (){
+                if(scope.myDate && moment(scope.myDate, "DD/MM/YYYY").isValid() ){
+                    if(scope.myDate !== ""){
                         var dateElement = $("#datepicker_" + attrs.name, element);
-                        ngModel.$setViewValue("");
+                        ngModel.$setViewValue(dateElement.datepicker("getDate"));
                         dateElement.datepicker("refresh");
+                        $("#datepicker_" + attrs.name, element).removeClass(
+                            "invalid"
+                        );
                     }else{
-                        $("#datepicker_" + attrs.name, element).addClass("invalid");
+                        dateElement.datepicker("refresh");
+                    }
+                }else{
+                    if(scope.myDate === ""){
+                        var dateElement = $("#datepicker_" + attrs.name, element);
+                        ngModel.$setViewValue(dateElement.datepicker("getDate"));
+                        dateElement.datepicker("refresh");
+                        $("#datepicker_" + attrs.name, element).removeClass(
+                            "invalid"
+                        );
+                    }else{
+                        if(attrs.empty == 'true'){
+                            var dateElement = $("#datepicker_" + attrs.name, element);
+                            ngModel.$setViewValue("");
+                            dateElement.datepicker("refresh");
+                        }else{
+                            $("#datepicker_" + attrs.name, element).addClass("invalid");
+                        }
                     }
                 }
             };
@@ -1603,10 +1609,10 @@ adminCatagenDirectives.directive("nsRule", [
                                 name: 'qty'
                             },
                             {
-                                value: "creationDate",
+                                value: "createdAt",
                                 type: "date",
                                 params: {},
-                                name: 'creationDate'
+                                name: 'createdAt'
                             },
                             {
                                 value: "visible",

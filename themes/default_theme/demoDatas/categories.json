@@ -32,7 +32,7 @@
         }
       },
       "productsList": [],
-      "creationDate": "2020-05-13T09:07:33.482Z",
+      "createdAt": "2020-05-13T09:07:33.482Z",
       "openDate": "2020-05-13T09:07:33.482Z"
     },
     {
@@ -111,7 +111,7 @@
         }
       },
       "openDate": "2020-05-13T09:07:33.482Z",
-      "creationDate": "2020-05-13T09:07:33.482Z",
+      "createdAt": "2020-05-13T09:07:33.482Z",
       "productsList": [
         {
           "checked": true,
@@ -207,7 +207,7 @@
         }
       },
       "openDate": "2020-05-13T09:07:33.482Z",
-      "creationDate": "2020-05-13T09:07:33.482Z",
+      "createdAt": "2020-05-13T09:07:33.482Z",
       "productsList": []
     },
     {
@@ -240,7 +240,7 @@
         }
       },
       "openDate": "2020-05-13T09:07:33.482Z",
-      "creationDate": "2020-05-13T09:07:33.482Z",
+      "createdAt": "2020-05-13T09:07:33.482Z",
       "productsList": []
     },
     {
@@ -273,7 +273,7 @@
         }
       },
       "openDate": "2020-05-13T09:07:33.482Z",
-      "creationDate": "2020-05-13T09:07:33.482Z",
+      "createdAt": "2020-05-13T09:07:33.482Z",
       "productsList": []
     },
     {
@@ -347,7 +347,7 @@
         }
       },
       "openDate": "2020-05-10T14:05:10.806Z",
-      "creationDate": "2020-05-10T14:05:10.806Z",
+      "createdAt": "2020-05-10T14:05:10.806Z",
       "productsList": [
         {
           "checked": true,
@@ -453,7 +453,7 @@
         }
       },
       "openDate": "2020-05-10T14:05:21.458Z",
-      "creationDate": "2020-05-10T14:05:21.458Z",
+      "createdAt": "2020-05-10T14:05:21.458Z",
       "productsList": [
         {
           "checked": true,
@@ -540,7 +540,7 @@
         }
       },
       "openDate": "2020-05-10T14:05:37.465Z",
-      "creationDate": "2020-05-10T14:05:37.465Z",
+      "createdAt": "2020-05-10T14:05:37.465Z",
       "productsList": [
         {
           "checked": true,

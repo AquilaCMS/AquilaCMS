@@ -321,16 +321,6 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
 };
 
 /**
- * Utilisé par FKA
- */
-const sendPDFAttachmentToClient = async (subject = '', htmlBody = '', mailTo, mailFrom = null, pathAttachment) => {
-    if (!pathAttachment || !mailTo) {
-        throw NSErrors.MailAttachmentParameterError;
-    }
-    return sendMail({subject, htmlBody, mailTo, mailFrom, pathAttachment});
-};
-
-/**
  * Ce service permet d'envoyer un mail a l'entreprise lorsqu'une commande est passé
  * Ainsi lorsqu'un client de l'entreprise commande, l'entreprise est informée de cette commande
  * @param {ObjectId} order_id l'id d'une commande
@@ -977,7 +967,6 @@ module.exports = {
     sendRegister,
     sendRegisterForAdmin,
     sendResetPassword,
-    sendPDFAttachmentToClient,
     sendMailOrderToCompany,
     sendMailOrderToClient,
     sendMailOrderStatusEdit,

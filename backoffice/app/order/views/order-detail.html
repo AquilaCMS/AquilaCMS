@@ -17,7 +17,7 @@
         <div class="col-md-2" style="background:#e57373;border: 1px solid #ef5350">
             <i class="fa fa-calendar-o" style="color: #ef5350"></i>
             <p>
-                <b style="font-size: 25px;">{{order.creationDate | date:'dd/MM/yyyy'}}</b> <b style="font-size: 15px;">{{order.creationDate | date:'HH:mm'}}</b>
+                <b style="font-size: 25px;">{{order.createdAt | date:'dd/MM/yyyy'}}</b> <b style="font-size: 15px;">{{order.createdAt | date:'HH:mm'}}</b>
                 <br />
                 <br/>
                 <span translate>order.friendlyInfo.date</span>
@@ -58,7 +58,7 @@
 
     <div class="row order-header order-emphase orderInfoOld">
         <div class="col-md-12">
-            <strong>{{order.number}} - {{order.creationDate | date:'dd/MM/yyyy HH:mm'}}
+            <strong>{{order.number}} - {{order.createdAt | date:'dd/MM/yyyy HH:mm'}}
             </strong>
         </div>
     </div>
@@ -291,7 +291,14 @@
             <div class="box subbox" style="min-height: 185px;">
                 <div class="box-header">
                     <h2 translate>order.detail.colis</h2>
-                    <a ng-click="addPackage()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
+                    <div
+                        ng-show="orderPackagePopup.length > 0"
+                        ng-repeat="orderPP in orderPackagePopup"
+                        bind-html-compile="orderPP.component_template">
+                    </div>
+                    <a ng-show="orderPackagePopup.length === 0" ng-click="addPackage()" style="float:right">
+                        <i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i>
+                    </a>
                 </div>
                 <div class="box-content">
                     <div ng-show="order.delivery.package.length > 0">
@@ -495,7 +502,7 @@
                                 <label translate>{{getTranslation(status.status)}}</label>
                                 <!-- <b translate>{{getStatus(status.status)}} </b> -->
                             </p>
-                           
+
                         </div>
                     </div>
                 </div>

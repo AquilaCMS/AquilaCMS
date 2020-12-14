@@ -1,4 +1,4 @@
-const expressJSDocSwagger             = require('@haegemonia/express-jsdoc-swagger');
+const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
 const express                         = require('express');
@@ -167,7 +167,19 @@ const initExpress = async (server, passport) => {
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
     const configFile  = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')));
     const swaggerFile = require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js'));
-    await expressJSDocSwagger(server)({...configFile, baseDir: global.appRoot}, swaggerFile);
+    await expressJSDocSwagger(server)(
+        {...configFile, baseDir: global.appRoot},
+        swaggerFile,
+        {
+            opts : {
+                customCss       : '.curl-command { display: none }',
+                customSiteTitle : 'Aquila : Api\'s documentation',
+                swaggerOptions  : {
+                    docExpansion : 'none'
+                }
+            }
+        }
+    );
 };
 
 const maintenance = async (req, res, next) => {
