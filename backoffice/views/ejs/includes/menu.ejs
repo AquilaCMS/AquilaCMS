@@ -139,6 +139,19 @@
                         <span translate>menu.familles</span>
                     </a>
                 </li>
+                <li ng-repeat="menuCatalog in menusCatalog">
+                    <a href="#{{menuCatalog.route}}" class="menuClick">
+                        <span class="icon">
+                            <i class="{{menuCatalog.icon || 'fa fa-cog i-style'}}"></i>
+                        </span>
+                        <span ng-if="menuCatalog.multilang" translate>
+                            {{menuCatalog.title}}
+                        </span>
+                        <span ng-if="!menuCatalog.multilang">
+                            {{menuCatalog.title}}
+                        </span>
+                    </a>
+                </li>
                 <!-- <li>
                     <a href="#/setOptions" class="menuClick">
                         <span class="icon">

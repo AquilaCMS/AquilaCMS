@@ -12,7 +12,7 @@ OrderControllers.controller("OrderListCtrl", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
         $scope.export = ExportCollectionCSV;
 
         $scope.getOrders = function (page)
@@ -81,7 +81,7 @@ OrderControllers.controller("OrderListCtrl", [
         function init()
         {
             $scope.sort = {
-                type: "creationDate", // set the default sort type
+                type: "createdAt", // set the default sort type
                 reverse: true // set the default sort order
             };
         }
@@ -233,7 +233,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         {
             if($scope.order.delivery && $scope.order.delivery.dateDelivery && $scope.order.delivery.dateDelivery.delayDelivery && $scope.order.delivery.dateDelivery.delayPreparation)
             {
-                return $scope.order.delivery ? moment($scope.order.creationDate)
+                return $scope.order.delivery ? moment($scope.order.createdAt)
                     .add($scope.order.delivery.dateDelivery.delayDelivery, $scope.order.delivery.dateDelivery.unitDelivery)
                     .add($scope.order.delivery.dateDelivery.delayPreparation, $scope.order.delivery.dateDelivery.unitPreparation)
                     .format("L") : moment().format("L");

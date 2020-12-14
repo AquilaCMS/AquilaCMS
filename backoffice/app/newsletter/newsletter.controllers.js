@@ -10,7 +10,7 @@ NewsletterControllers.controller("NewsletterListCtrl", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
 
         $scope.getNewsletters = function (page)
         {
@@ -55,7 +55,7 @@ NewsletterControllers.controller("NewsletterDetailCtrl", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
 
         $scope.getNewsletter = function (page = 1)
         {

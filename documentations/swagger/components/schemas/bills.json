@@ -47,10 +47,8 @@
                 "email"        : {
                     "type": "string"
                 },
-                "creationDate" : {
-                    "type": "string",
-                    "format": "date",
-                    "default": "Date.now"
+                "createdAt" : {
+                    "type": "date"
                 },
                 "filename"     : {
                     "type": "string"

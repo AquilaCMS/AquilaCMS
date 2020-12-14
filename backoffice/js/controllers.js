@@ -6,11 +6,12 @@ var adminCatagenControllers = angular.module("adminCatagenControllers", []);
 
 // wrapper
 adminCatagenControllers.controller("wrapperCtrl", [
-    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "LanguagesApiV2", "$translate",
-    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, LanguagesApiV2, $translate)
+    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate",
+    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate)
     {
 
         $scope.menus = MenusList;
+        $scope.menusCatalog = MenusCatalogList;
 
         function getLanguages() {
             LanguagesApiV2.list({PostBody: {filter: {}, limit: 99}}, function (languages)
@@ -691,12 +692,12 @@ adminCatagenControllers.controller("InvoicesController", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
         $scope.disabledButton = false;
 
         function init()
         {
-            $scope.sortType = "creationDate"; // set the default sort type
+            $scope.sortType = "createdAt"; // set the default sort type
             $scope.sortReverse = true;  // set the default sort order
         }
 

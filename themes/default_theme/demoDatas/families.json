@@ -8,7 +8,7 @@
             "code": "chaussettes",
             "type": "universe",
             "parent": null,
-            "creationDate": "2020-05-10T14:05:37.465Z",
+            "createdAt": "2020-05-10T14:05:37.465Z",
             "ancestors": [],
             "slug": "chaussettes-chaussettes"
         },
@@ -19,7 +19,7 @@
             "code": "tshirt",
             "type": "universe",
             "parent": null,
-            "creationDate": "2020-05-10T14:05:37.465Z",
+            "createdAt": "2020-05-10T14:05:37.465Z",
             "ancestors": [],
             "slug": "tshirts-tshirts"
         },
@@ -30,7 +30,7 @@
             "code": "sweat",
             "type": "universe",
             "parent": null,
-            "creationDate": "2020-05-10T14:05:37.465Z",
+            "createdAt": "2020-05-10T14:05:37.465Z",
             "ancestors": [],
             "slug": "sweats-sweats"
         }
