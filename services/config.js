@@ -67,13 +67,24 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
         if (isAdmin) {
             config.environment = {
                 ...config.environment,
-                ssl : global.envFile.ssl || {
-                    active : false,
-                    cert   : '',
-                    key    : ''
-                },
                 databaseConnection : global.envFile.db
             };
+            if (global.envFile.ssl && global.envFile.ssl.active === true) {
+                config.environment = {
+                    ...config.environment,
+                    ssl : global.envFile.ssl
+                };
+            } else {
+                // on met les links SSL vide si false
+                config.environment = {
+                    ...config.environment,
+                    ssl : {
+                        active : false,
+                        cert   : '',
+                        key    : ''
+                    }
+                };
+            }
         }
         if (config.environment.mailPass) {
             try {

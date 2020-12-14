@@ -9,8 +9,9 @@ SystemControllers.controller("systemGeneralController", [
             $scope.system.linkToError = $scope.system.linkToError || '';
             $scope.getFilesLogAndError();
             $scope.ssl = {
-                cert : $scope.system.ssl.cert || '',
-                key  : $scope.system.ssl.key  || ''
+                cert    : $scope.system.ssl.cert    || '',
+                key     : $scope.system.ssl.key     || '',
+                active  : $scope.system.ssl.active  || false
             }
             delete $scope.system.$promise;
         });
@@ -179,14 +180,16 @@ SystemControllers.controller("systemGeneralController", [
                 $scope.system.appUrl += "/";
             }
             let file = {};
-            if ($scope.system.ssl.cert instanceof File || $scope.system.ssl.cert instanceof File) {
-                if ($scope.system.ssl.cert instanceof File) {
-                    file.cert = $scope.system.ssl.cert;
-                    $scope.system.ssl.cert = $scope.system.ssl.cert.name;
-                }
-                if ($scope.system.ssl.key instanceof File) {
-                    file.key = $scope.system.ssl.key;
-                    $scope.system.ssl.key = $scope.system.ssl.key.name;
+            if($scope.system.ssl.active){
+                if ($scope.system.ssl.cert instanceof File || $scope.system.ssl.cert instanceof File) {
+                    if ($scope.system.ssl.cert instanceof File) {
+                        file.cert = $scope.system.ssl.cert;
+                        $scope.system.ssl.cert = $scope.system.ssl.cert.name;
+                    }
+                    if ($scope.system.ssl.key instanceof File) {
+                        file.key = $scope.system.ssl.key;
+                        $scope.system.ssl.key = $scope.system.ssl.key.name;
+                    }
                 }
             }
             ConfigV2.environment(function (oldAdmin) {
