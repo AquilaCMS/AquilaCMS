@@ -34,7 +34,7 @@ SystemControllers.controller("systemGeneralController", [
             if($scope.system.linkToLog == ''){
                 $scope.log.log = 'Pas de ficher de log';
             }else{
-                System.getFilesRoute({name: $scope.system.linkToLog}, function (response) {
+                System.getFilesLogAndErrorRoute({name: $scope.system.linkToLog}, function (response) {
                     //here change color
                     $scope.log.log = response.fileData;
                 }, function(erreur){
@@ -45,7 +45,7 @@ SystemControllers.controller("systemGeneralController", [
             if($scope.system.linkToError == ''){
                 $scope.log.error = "Pas de ficher d'Erreur";
             }else{
-                System.getFilesRoute({name: $scope.system.linkToError}, function (response) {
+                System.getFilesLogAndErrorRoute({name: $scope.system.linkToError}, function (response) {
                     //here change color
                     $scope.log.error = response.fileData;
                 }, function(erreur){
@@ -165,11 +165,11 @@ SystemControllers.controller("systemGeneralController", [
 
         $scope.validate = function () {
             if($scope.system.linkToLog){
-                System.setFiles({name: $scope.system.linkToLog, error: $scope.system.linkToError}, function (response) {
+                System.setFilesLogAndErrorRoute({name: $scope.system.linkToLog, error: $scope.system.linkToError}, function (response) {
                 }, function(erreur){/*deal with error here*/});
             }
             if($scope.system.linkToError){
-                System.setFiles({name: $scope.system.linkToError}, function (response) {
+                System.setFilesLogAndErrorRoute({name: $scope.system.linkToError}, function (response) {
                 }, function(erreur){/*deal with error here*/});
             }
             if (!$scope.system.adminPrefix) {
