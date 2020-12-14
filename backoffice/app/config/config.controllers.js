@@ -96,11 +96,6 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             if (!$scope.config.adminPrefix) {
                 $scope.config.adminPrefix = "admin";
             }
-
-            $scope.ssl = {
-                cert : $scope.config.ssl.cert || '',
-                key  : $scope.config.ssl.key || ''
-            }
             delete $scope.config.$promise;
         });
 
@@ -186,17 +181,6 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                 $scope.config.appUrl += "/";
             }
             let file = {};
-            if ($scope.config.ssl.cert instanceof File || $scope.config.ssl.cert instanceof File) {
-                if ($scope.config.ssl.cert instanceof File) {
-                    file.cert = $scope.config.ssl.cert;
-                    $scope.config.ssl.cert = $scope.config.ssl.cert.name;
-                }
-                if ($scope.config.ssl.key instanceof File) {
-                    file.key = $scope.config.ssl.key;
-                    $scope.config.ssl.key = $scope.config.ssl.key.name;
-                }
-            }
-
             ConfigV2.environment(function (oldAdmin) {
                 $scope.config.cacheTTL = $scope.config.cacheTTL || "";
                 $scope.showThemeLoading = true;
