@@ -185,9 +185,9 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     await fs.access(themeDemoData, fs.constants.R_OK);
     const listOfPath = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
     if (fileNames === undefined) {
-        listOfPath.foreach((element) => {
-            listOfFile.push(element);
-        });
+        for (let i = 0; i < listOfPath.length; i++) {
+            listOfFile.push(listOfPath[i]);
+        }
     } else {
         for (let j = 0; j < listOfPath.length; j++) {
             for (let i = 0; i < fileNames.length; i++) {
