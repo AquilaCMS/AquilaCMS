@@ -10,7 +10,7 @@ SystemControllers.controller("systemGeneralController", [
             $scope.getFilesLogAndError();
             $scope.ssl = {
                 cert : $scope.system.ssl.cert || '',
-                key  : $scope.system.ssl.key || ''
+                key  : $scope.system.ssl.key  || ''
             }
             delete $scope.system.$promise;
         });
