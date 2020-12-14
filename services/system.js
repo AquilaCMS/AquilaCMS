@@ -14,12 +14,18 @@ const getFileContent = async (name) => {
     const filePath = path.resolve(global.appRoot, name);
     if (await fs.access(filePath)) {
         let fileContent = '';
+        let firstLines;
         try {
-            fileContent    = await fs.readFile(filePath, 'utf8');
-            const allLines = fileContent.split('\n');
-            let firstLines;
-            for (let count = 0; count < 500; count++) {
-                firstLines += allLines[count];
+            fileContent = await fs.readFile(filePath, 'utf8');
+            if (fileContent) {
+                const allLines = fileContent.split('\n');
+                for (let count = 0; count < 500; count++) {
+                    if (allLines[count]) {
+                        firstLines = `${firstLines}\n${allLines[count]}`;
+                    }
+                }
+            } else {
+                firstLines = 'None';
             }
             return {fileData: firstLines};
         } catch (err) {
