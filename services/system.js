@@ -1,5 +1,7 @@
-const path = require('path');
-const fs   = require('../utils/fsp');
+const path           = require('path');
+const fs             = require('../utils/fsp');
+const packageManager = require('../utils/packageManager');
+const NSErrors       = require('../utils/errors/NSErrors');
 
 const setFilesInAquila = async (body) => {
     const filePath = path.resolve(global.appRoot, body.name);
@@ -17,14 +19,62 @@ const getFile = async (query) => {
                 console.log(error);
                 return {fileData: 'None'};
             }
-            fileContent = data;
+            const allLines = data.split('\n');
+            let firstLines;
+            for (let count = 0; count < 500; count++) {
+                firstLines += allLines[count];
+            }
+            fileContent = firstLines;
         });
         return {fileData: fileContent};
     }
     return {fileData: 'None'};
 };
 
+const getNextVersionService = async () => {
+    const datas = {};
+    if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
+        const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json'], global.appRoot);
+        let data     = result.stdout.split('}\n{');
+        data         = data[data.length - 1];
+        if (!data.startsWith('{')) {
+            data = `{${data}`;
+        }
+        let currentVersion = await packageManager.execSh('yarn', ['list', '--pattern', 'next', '--json'], global.appRoot);
+        currentVersion     = JSON.parse(currentVersion.stdout).data.trees;
+        for (const elem of currentVersion) {
+            if (elem.name.startsWith('next@')) {
+                currentVersion = elem.name;
+                break;
+            }
+        }
+
+        datas.actual   = currentVersion.slice(5);
+        datas.versions = JSON.parse(data).data;
+    } else {
+        const nextInstalledVersion = await packageManager.execSh('npm', ['ls', 'next', '--json'], global.appRoot);
+        const listNextVersion      = await packageManager.execSh('npm', ['view', 'next', '--json'], global.appRoot);
+        datas.actual               = JSON.parse(nextInstalledVersion.stdout).dependencies.next.version;
+        datas.versions             = JSON.parse(listNextVersion.stdout).versions;
+    }
+    return datas;
+};
+
+const changeNextVersionService = async (body) => {
+    const {nextVersion} = body;
+    if (!nextVersion) throw NSErrors.UnprocessableEntity;
+    let result;
+    if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
+        result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`], global.appRoot);
+    } else {
+        result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`], global.appRoot);
+    }
+    if (result.code !== 0) throw NSErrors.InvalidRequest;
+};
+
 module.exports = {
     getFile,
-    setFilesInAquila
+    setFilesInAquila,
+    getNextVersionService,
+    changeNextVersionService
 };

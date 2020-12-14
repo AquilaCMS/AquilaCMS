@@ -7,7 +7,7 @@ SystemControllers.controller("systemGeneralController", [
         $scope.system = ConfigV2.environment(function () {
             $scope.system.linkToLog = $scope.system.linkToLog || '';
             $scope.system.linkToError = $scope.system.linkToError || '';
-            $scope.getFiles();
+            $scope.getFilesLogAndError();
             $scope.ssl = {
                 cert : $scope.system.ssl.cert || '',
                 key  : $scope.system.ssl.key || ''
@@ -30,22 +30,22 @@ SystemControllers.controller("systemGeneralController", [
             log: "",
             error: ""
         };
-        $scope.getFiles = function(){
+        $scope.getFilesLogAndError = function(){
             if($scope.system.linkToLog == ''){
                 $scope.log.log = 'Pas de ficher de log';
             }else{
-                System.getFiles({name: $scope.system.linkToLog}, function (response) {
+                System.getFilesRoute({name: $scope.system.linkToLog}, function (response) {
                     //here change color
                     $scope.log.log = response.fileData;
                 }, function(erreur){
                     $scope.log.log = '';
                 });
             }
-            
+            //les log
             if($scope.system.linkToError == ''){
                 $scope.log.error = "Pas de ficher d'Erreur";
             }else{
-                System.getFiles({name: $scope.system.linkToError}, function (response) {
+                System.getFilesRoute({name: $scope.system.linkToError}, function (response) {
                     //here change color
                     $scope.log.error = response.fileData;
                 }, function(erreur){
@@ -57,13 +57,7 @@ SystemControllers.controller("systemGeneralController", [
         $scope.newNextVersion = (nextVersion) => {
             if (nextVersion !== $scope.next) {
                 $scope.showThemeLoading = true;
-                $http({
-                    method : "POST",
-                    url    : "config/next",
-                    data : {
-                        nextVersion
-                    }
-                }).then(function (response) {
+                System.changeNextVersionRoute({nextVersion}, function(response){
                     toastService.toast("success", "restart in progress...");
                     $scope.showThemeLoading = false;
                     $scope.showLoading = true;
@@ -74,7 +68,7 @@ SystemControllers.controller("systemGeneralController", [
                             location.href = window.location = $scope.urlRedirect;
                         })
                     }, 10000);
-                }).catch(function (error) {
+                }, function(error){
                     $scope.showThemeLoading = false;
                     console.error(error);
                     toastService.toast("danger", error.message);
@@ -157,18 +151,15 @@ SystemControllers.controller("systemGeneralController", [
         $scope.nextVLoader = true;
 
         const getNextVersions = () => {
-            $http({
-                method       : "GET",
-                url          : "config/next"
-            }).success(function (data, status, headers) {
-                $scope.next = data.datas;
-                $scope.nextVersion = data.datas.actual;
+            System.getNextVersionRoute({}, function(response){
+                $scope.next = response.datas;
+                $scope.nextVersion = response.datas.actual;
                 $scope.nextVLoader = false;
-            }).error(function (data) {
-                toastService.toast("danger", data.message);
+            }, function(error){
+                toastService.toast("danger", error.message);
                 $scope.nextVLoader = false;
             });
-        }
+        };
         getNextVersions();
 
 

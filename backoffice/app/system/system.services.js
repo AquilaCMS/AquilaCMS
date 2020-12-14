@@ -1,9 +1,11 @@
 const SystemServices = angular.module('aq.system.services', ['ngResource']);
 
 SystemServices.factory('System', ['$resource', function ($resource) {
-    return $resource('/v2/log/:action', {}, {
-        setFiles  : {method: 'POST', params: {action: 'setFiles'}},
-        getFiles  : {method: 'GET', params: {action: 'file'}},
+    return $resource('/v2/system/:tab/:action', {}, {
+        setFiles                : {method: 'POST', params: {tab: 'log',  action: 'setFiles'}},
+        getFilesRoute           : {method: 'GET',  params: {tab: 'log',  action: 'file'}},
+        getNextVersionRoute     : {method: 'GET',  params: {tab: 'next', action: 'get'}},
+        changeNextVersionRoute  : {method: 'POST', params: {tab: 'next', action: 'change'}},
     });
 }]);
 
