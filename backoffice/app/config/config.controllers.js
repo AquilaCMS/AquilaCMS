@@ -85,9 +85,8 @@ ConfigControllers.controller("ImportConfigCtrl", [
 
 
 ConfigControllers.controller("EnvironmentConfigCtrl", [
-    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload",  "EnvBlocks",
-    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload, EnvBlocks) {
-        $scope.blocks = EnvBlocks;
+    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload",
+    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload) {
         $scope.disabledButton = false;
         $scope.countries = [];
         // $scope.themesList = [];
