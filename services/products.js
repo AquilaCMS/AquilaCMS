@@ -405,15 +405,17 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const arraySpecialPrice = {et: [], ati: []};
 
     for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
-        } else {
-            arrayPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
-        } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
+        if (prd.price) {
+            if (prd.price.et.special) {
+                arrayPrice.et.push(prd.price.et.special);
+            } else {
+                arrayPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arrayPrice.ati.push(prd.price.ati.special);
+            } else {
+                arrayPrice.ati.push(prd.price.ati.normal);
+            }
         }
     }
 
@@ -421,15 +423,17 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
     for (const prd of prdsPrices) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
+        if (prd.price) {
+            if (prd.price.et.special) {
+                arraySpecialPrice.et.push(prd.price.et.special);
+            } else {
+                arraySpecialPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arraySpecialPrice.ati.push(prd.price.ati.special);
+            } else {
+                arraySpecialPrice.ati.push(prd.price.ati.normal);
+            }
         }
     }
 
@@ -463,8 +467,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // On transforme les produits en produit mongoose afin que la translation puisse être effectué après le res.json()
     let tProducts = [];
     for (let k = 0; k < products.length; k++) {
-        switch (products[k].type) {
-        case 'simple':
+        switch (products[k].kind) {
+        case 'SimpleProduct':
             tProducts.push(new ProductSimple(products[k]));
             // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
             // on utilise la fonction addToStructure pour connaitre les champs a garder (obligatoire + demandés)
@@ -478,10 +482,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             //     tProducts.push(newPrd);
             // }
             break;
-        case 'virtual':
+        case 'VirtualProduct':
             tProducts.push(new ProductVirtual(products[k]));
             break;
-        case 'bundle':
+        case 'BundleProduct':
             const prd = await new ProductBundle(products[k])
                 .populate(PostBody.populate || '')
                 .execPopulate();
