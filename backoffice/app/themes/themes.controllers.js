@@ -236,8 +236,8 @@ ThemesController.controller("ThemesCtrl", [
 
             $scope.LoadThemeCongig = function () {
                 $http.get("/v2/themes/informations").then(function (response) {
-                    $scope.config = response.data.config.environment;
-                    if (!$scope.config.adminPrefix) {
+                    $scope.config = response.data.configEnvironement;
+                    if (!$scope.adminPrefix) {
                         $scope.config.adminPrefix = "admin";
                     }
                     $scope.listThemeFiles = [];
@@ -261,7 +261,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.customiseTheme.keys = {};
                     $scope.themeConfig.variables = {};
                     
-                    if(response.data.config && response.data.themeConf.config.translation) {
+                    if(response.data.configEnvironement && response.data.themeConf.config.translation) {
                         $scope.languages.forEach(element  => {
                             $scope.themeConfig.variables[element.code] = response.data.themeConf.config.translation[element.code];
                             delete $scope.themeConfig.variables[element.code].$promise;

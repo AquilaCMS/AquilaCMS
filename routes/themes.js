@@ -169,11 +169,17 @@ async function getThemeInformations(req, res, next) {
                 console.error(error);
             }
         }
-        const themeConf = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
-        const config    = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: 'environment.adminPrefix'}}, userInfo);
+        const themeConf          = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
+        const config             = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: 'environment.adminPrefix'}}, userInfo);
+        const configEnvironement = {};
+        if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
+            configEnvironement.adminPrefix  = config.environment.adminPrefix;
+            configEnvironement.appUrl       = config.environment.appUrl;
+            configEnvironement.currentTheme = config.environment.currentTheme;
+        }
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, config, listTheme, listFiles});
+        res.send({themeConf, configEnvironement, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }
