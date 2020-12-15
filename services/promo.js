@@ -342,18 +342,20 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
  * @param {Promo} discount
  */
 const applyRelevantDiscount = (product, discount) => {
-    if (discount.discountType.startsWith('FV')) {
-        if (discount.discountType === 'FVet') {
-            product.price.et.special  = discount.discountValue;
-            product.price.ati.special = (discount.discountValue * (product.price.tax / 100 + 1));
+    if (discount.discountType !== null) {
+        if (discount.discountType.startsWith('FV')) {
+            if (discount.discountType === 'FVet') {
+                product.price.et.special  = discount.discountValue;
+                product.price.ati.special = (discount.discountValue * (product.price.tax / 100 + 1));
+            } else {
+                product.price.et.special  = (discount.discountValue / (product.price.tax / 100 + 1));
+                product.price.ati.special = discount.discountValue;
+            }
         } else {
-            product.price.et.special  = (discount.discountValue / (product.price.tax / 100 + 1));
-            product.price.ati.special = discount.discountValue;
+            const newDiscountPrice    = calculDiscountItem(product, discount);
+            product.price.et.special  = newDiscountPrice.discountET;
+            product.price.ati.special = newDiscountPrice.discountATI;
         }
-    } else {
-        const newDiscountPrice    = calculDiscountItem(product, discount);
-        product.price.et.special  = newDiscountPrice.discountET;
-        product.price.ati.special = newDiscountPrice.discountATI;
     }
     product.price.priceSort = {
         et  : product.price.et.special,
@@ -743,6 +745,8 @@ function calculDiscountItem(prd, promo) {
         values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
     } else if (discountType === 'Aati') {
         values = calculateCartItemDiscount(prd.price.priceSort, undefined, discountValue);
+    } else if (discountType === null) {
+        values = {discountET: 0, discountATI: 0};
     }
 
     return values;
