@@ -6,8 +6,6 @@ const {
     Languages,
     Products,
     ProductSimple,
-    ProductBundle,
-    ProductVirtual,
     Orders,
     Cart
 }                          = require('../orm/models');
@@ -202,13 +200,13 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         // Il n'y a actuellement aucune promo catalogue
         return products;
     }
-    // Nous ajoutons un champ tomporaire a chaque produit, ce tableau contiendra des objets de forme : {discountValue: 10, discountType: "P"}
-    // discount est la valeur de la remise et le discountType
-    // est la facon dont la remise sera appliqué (en pourcentage pour P ou en soustrayant pour M)
+    // Nous ajoutons un champ tomporaire a chaque produit, ce tableau contiendra
+    // des objets de forme : {discountValue: 10, discountType: "P"}
+    // discount est la valeur de la remise et le discountType est la façon
+    // dont la remise sera appliqué (en pourcentage pour P ou en soustrayant pour M)
     for (let i = 0; i < products.length; i++) {
         if (products[i]._doc) {
             products[i] = products[i].toObject();
-            // products[i] = JSON.parse(products[i]);
         }
         // Si products[i].id et products[i]._id existe alors c'est un objet produit sinon c'est un object productList (lors du basicAddToCart)
         if (products[i].id && products[i]._id) {
@@ -293,31 +291,19 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
             }
         }
         if (!keepObject) {
-            // on garde les attributes potentiellement populate
-            switch (products[i].type) {
-            case 'simple':
-                products[i] = await (new ProductSimple(products[i])).populate(populate).execPopulate();
-                break;
-            case 'virtual':
-                products[i] = await (new ProductVirtual(products[i])).populate(populate).execPopulate();
-                break;
-            case 'bundle':
-                products[i] = await (new ProductBundle(products[i])).populate(populate).execPopulate();
-                break;
-            default:
-                break;
-            }
             products[i].isNew = false;
-            for (let k = 0; k < products[i].associated_prds.length; k++) {
-                products[i].associated_prds[k] = product.associated_prds[k];
-            }
-            if (!associatedProducts) {
-                if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
-                    populate.push('associated_prds');
-                    await products[i].populate(populate).execPopulate();
+            if (products[i].associated_prds) {
+                for (let k = 0; k < products[i].associated_prds.length; k++) {
+                    products[i].associated_prds[k] = product.associated_prds[k];
                 }
-                const prds                  = products[i].associated_prds;
-                products[i].associated_prds = await checkPromoCatalog(prds, user, lang, false, populate, true);
+                if (!associatedProducts) {
+                    if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
+                        populate.push('associated_prds');
+                        await products[i].populate(populate).execPopulate();
+                    }
+                    const prds                  = products[i].associated_prds;
+                    products[i].associated_prds = await checkPromoCatalog(prds, user, lang, false, populate, true);
+                }
             }
         }
     }

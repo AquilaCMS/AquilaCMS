@@ -9,7 +9,7 @@ const {v1: uuidv1}                    = require('uuid');
 const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
 
-const getUserFromRequest = (req) => {
+const getUserFromRequest = async (req) => {
     const user = null;
     if (req.info) {
         return req.info;
@@ -26,8 +26,8 @@ const getUserFromRequest = (req) => {
     return user;
 };
 
-const serverUseRequest = (req, res, next) => {
-    const user = getUserFromRequest(req);
+const serverUseRequest = async (req, res, next) => {
+    const user = await getUserFromRequest(req);
     if (user && user.isAdmin) {
         return next();
     }
