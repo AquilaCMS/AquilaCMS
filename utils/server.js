@@ -154,23 +154,40 @@ const logVersion = async () => {
 };
 
 const startListening = async (server) => {
-    if (global.envFile && global.envFile.ssl && global.envFile.ssl.key
-        && global.envFile.ssl.cert && global.envFile.ssl.active
-        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key))
-        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))
-    ) {
-        spdy.createServer({
-            key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
-            cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
-            spdy : {
-                protocols : ['h2', 'http1.1'],
-                plain     : false,
-                ssl       : true
-            }
-        }, server).listen(global.port, (err) => {
-            if (err) throw err;
-            console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
-        });
+    let startWithSSL = false;
+    if (global.envFile && global.envFile.ssl && global.envFile.ssl.key) {
+        if (await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key)) && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))) {
+            startWithSSL = true;
+        } else {
+            console.error('SSL est activé mais invalide');
+            console.error('Access to the key file and certification file is not possible');
+            console.error('Start without SSL');
+        }
+    }
+
+    if (startWithSSL) {
+        try {
+            spdy.createServer({
+                key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
+                cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
+                spdy : {
+                    protocols : ['h2', 'http1.1'],
+                    plain     : false,
+                    ssl       : true
+                }
+            }, server).listen(global.port, (err) => {
+                if (err) throw err;
+                console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+            });
+        } catch (error) {
+            console.log(error);
+            console.error('Invalid SSL');
+            console.error('Start without SSL');
+            server.listen(global.port, (err) => {
+                if (err) throw err;
+                console.log(`%sserver listening on port ${global.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
+            });
+        }
     } else {
         server.listen(global.port, (err) => {
             if (err) throw err;
