@@ -178,7 +178,30 @@ const middlewarePromoCatalog = async (req, res) => {
  */
 const checkPromoCatalog = async (products, user = null, lang = null, keepObject = false, populate = [], associatedProducts = false, keepPromos = false) => {
     // TODO : improve speed because it's usefull
-    if (!products || !products.length) return [];
+    if ((!products || !products.length) && (!products || !products.items || !products.items.length)) return [];
+    // si c'est products.items c'est qu'un panier a été passé, on restucture le tableau
+    if ((!products || !products.length) && (products.items  || products.items.length)) {
+        products =  products.map((product) => {
+            if (product.type === 'bundle') {
+                return {
+                    ...product.id,
+                    price : {
+                        ...product.id.price,
+                        ati : {
+                            normal  : product.price.unit.ati,
+                            special : product.price.special ? product.price.special.ati : undefined
+                        },
+                        et : {
+                            normal  : product.price.unit.et,
+                            special : product.price.special ? product.price.special.et : undefined
+                        }
+
+                    }
+                };
+            }
+            return product.id;
+        });
+    }
     // On récupére les promos catalogue en cours (on est après la date de début et avant la date de fin)
     // Ou dont la date de début et de fin est null
     const returnedPromos = [];
