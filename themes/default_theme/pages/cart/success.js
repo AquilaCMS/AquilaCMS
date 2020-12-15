@@ -248,6 +248,25 @@ class CartSuccess extends React.Component {
 
                                                                                                 <h5 className="cart__title">
                                                                                                     {item.id.name}
+                                                                                                    <ul style={{fontSize: '13px'}}>
+                                                                                                    {
+                                                                                                        item.selections.map((section) => (
+                                                                                                            section.products.map((productSection, indexSel) => (
+                                                                                                            <li style={{listStyle: 'none'}} key={indexSel}>{productSection.name} {`${
+                                                                                                                (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
+                                                                                                                    '+' :
+                                                                                                                    '') +
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' : 
+                                                                                                                ''
+                                                                                                            }`}</li>
+                                                                                                            ))
+                                                                                                        ))
+                                                                                                    }
+                                                                                                    </ul>
                                                                                                     <span
                                                                                                         className="cart__qty visible-sm-inline"
                                                                                                     > x {item.quantity}</span>

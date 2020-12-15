@@ -121,6 +121,25 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                             : ''
                                                                                                                                     }
                                                                                                                                 </p>
+                                                                                                                                {item.type === 'bundle' && <ul style={{listStyle: 'none'}}>
+                                                                                                                                    {
+                                                                                                                                        item.selections.map((section) => (
+                                                                                                                                            section.products.map((productSection, indexSel) => (
+                                                                                                                                            <li key={indexSel}>{productSection.name} {`${
+                                                                                                                                                (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
+                                                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] > 0 ?
+                                                                                                                                                    '+' :
+                                                                                                                                                    '') +
+                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' : 
+                                                                                                                                                ''
+                                                                                                                                            }`}</li>
+                                                                                                                                            ))
+                                                                                                                                        ))
+                                                                                                                                    }
+                                                                                                                                </ul>}
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                     </td>

@@ -1,5 +1,6 @@
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
+const mongoose      = require('mongoose');
+const aquilaEvents  = require('../../utils/aquilaEvents');
+const utilsDatabase = require('../../utils/database');
 
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
@@ -286,6 +287,22 @@ OrdersSchema.post('findOneAndUpdate', function (result) {
         aquilaEvents.emit('aqUpdateOrder', {number: result.number}, this.getUpdate());
         aquilaEvents.emit('aqUpdateStatusOrder', this.getUpdate(), result._id.toString());
     }
+});
+
+OrdersSchema.post('findOne', async function (doc, next) {
+    if (doc && doc.items && doc.items.length) {
+        await utilsDatabase.populateItems(doc.items);
+    }
+    next();
+});
+
+OrdersSchema.post('find', async function (docs, next) {
+    for (let i = 0; i < docs.length; i++) {
+        if (docs[i] && docs[i].items && docs[i].items.length) {
+            await utilsDatabase.populateItems(docs[i].items);
+        }
+    }
+    next();
 });
 
 // Permet d'envoyer un evenement avant que le schema order ne soit crée

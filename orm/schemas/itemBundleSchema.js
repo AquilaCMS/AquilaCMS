@@ -51,7 +51,7 @@ ItemBundle.methods.populateItem = async function () {
     const self       = this;
     for (const selection of self.selections) {
         for (const [index, _product] of Object.entries(selection.products)) {
-            if (selection.products[index]._id === undefined) {
+            if (selection.products[index].type === undefined) {
                 selection.products[index] = await Products.findById(_product);
             }
         }
