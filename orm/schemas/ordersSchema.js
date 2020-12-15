@@ -1,5 +1,3 @@
-const autoIncrement = require('mongoose-plugin-autoinc-fix');
-
 const mongoose     = require('mongoose');
 const aquilaEvents = require('../../utils/aquilaEvents');
 
@@ -11,6 +9,20 @@ const ItemVirtualSchema = require('./itemVirtualSchema');
 const Schema   = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
+const DeliveryPackageSchema = new Schema({
+    date     : {type: Date, default: Date.now},
+    tracking : {type: String, required: true},
+    products : [{
+        product_id   : {type: ObjectId, ref: 'products', required: true},
+        product_code : {type: String, required: true},
+        qty_shipped  : {type: Number, required: true},
+        selections   : [{
+            bundle_section_ref : {type: String},
+            products           : [{type: ObjectId, ref: 'products'}]
+        }]
+    }]
+});
+
 const OrdersSchema = new Schema({
     number : {type: String, unique: true}, // pcf : W0000001 ++
     bills  : [
@@ -20,7 +32,6 @@ const OrdersSchema = new Schema({
         }
     ],
     invoiceFileName : {type: String},
-    creationDate    : {type: Date, default: Date.now},
     lang            : {type: String}, // Permet de connaitre la langue utilisé lors de la commande
     cartId          : {type: ObjectId, ref: 'cart'},
     promos          : [
@@ -178,19 +189,7 @@ const OrdersSchema = new Schema({
             unitPreparation  : String
         },
         // vatCountry     : {type: Number},
-        package : [{
-            date     : {type: Date, default: Date.now},
-            tracking : {type: String, required: true},
-            products : [{
-                product_id   : {type: ObjectId, ref: 'products', required: true},
-                product_code : {type: String, required: true},
-                qty_shipped  : {type: Number, required: true},
-                selections   : [{
-                    bundle_section_ref : {type: String},
-                    products           : [{type: ObjectId, ref: 'products'}]
-                }]
-            }]
-        }]
+        package : [DeliveryPackageSchema]
     },
     payment : [
         {
@@ -234,7 +233,8 @@ const OrdersSchema = new Schema({
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
     }
-}, {usePushEach: true});
+}, {usePushEach : true,
+    timestamps  : true});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});
@@ -253,8 +253,6 @@ const docArray = OrdersSchema.path('items');
 docArray.discriminator('simple', ItemSimpleSchema);
 docArray.discriminator('bundle', ItemBundleSchema);
 docArray.discriminator('virtual', ItemVirtualSchema);
-
-OrdersSchema.plugin(autoIncrement.plugin, {model: 'orders', field: 'id', startAt: 1});
 
 OrdersSchema.pre('save', function (next) {
     const s     = `0000000${this.id}`;
@@ -293,5 +291,6 @@ OrdersSchema.post('findOneAndUpdate', function (result) {
 // Permet d'envoyer un evenement avant que le schema order ne soit crée
 // ex: le mondule mondial-relay va écouter cet evenement afin d'ajouter au schema order de nouveaux attributs
 aquilaEvents.emit('orderSchemaInit', OrdersSchema);
+aquilaEvents.emit('deliveryPackageSchemaInit', DeliveryPackageSchema);
 
 module.exports = OrdersSchema;

@@ -92,7 +92,6 @@ const UserSchema = new Schema({
         }
     },
     status           : String,
-    creationDate     : {type: Date, default: Date.now},
     delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
     billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
     addresses        : [AddressSchema],
@@ -108,6 +107,7 @@ const UserSchema = new Schema({
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
     payementChoice       : String,
+    isActive             : {type: Boolean, default: false},
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
@@ -124,13 +124,14 @@ const UserSchema = new Schema({
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
+            visible     : {type: Boolean, default: true},
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
             position    : {type: Number, default: 1}
         }
     ]
-});
+}, {timestamps: true});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});

@@ -32,7 +32,7 @@ module.exports = function (app) {
  * @param {string} key.path.required - key config ex: environment
  * @param {PostBody} request.body - PostBody
  * @param {string} authorization.headers - authorization
- * @return {Config} 200 - success
+ * @return {configurationSchema} 200 - success
  */
 const getConfigV2 = async (req, res, next) => {
     try {
@@ -65,7 +65,7 @@ async function saveEnvFile(req, res, next) {
  * PUT /api/v2/config
  * @summary Save config
  * @tags Configuration
- * @param {Config} request.body - config
+ * @param {configurationSchema} request.body - config
  * @return {string} 200 - success | success | "success"
  */
 async function saveEnvConfig(req, res, next) {

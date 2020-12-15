@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@haegemonia/express-jsdoc-swagger": "^1.0.2",
+        "@aquilacms/express-jsdoc-swagger": "^1.0.2",
         "adm-zip": "0.4.16",
         "agenda": "3.1.0",
         "axios": "0.19.2",

@@ -185,7 +185,6 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
             && await access(src)
             && fs.statSync(src).isDirectory()
         ) {
-            console.log(src);
             if (!(await access(dest))) {
                 await mkdir(dest, {recursive: true});
             }

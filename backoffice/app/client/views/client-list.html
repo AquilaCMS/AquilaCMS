@@ -47,10 +47,10 @@
                             </a>
                         </th>
                         <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Creation date: activate to sort column ascending">
-                            <a  ng-click="sortSearch('creationDate')" translate>
+                            <a  ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse" translate>
                                 client.list.creationDate
-                                <span ng-show="sort.type == 'creationDate' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'creationDate' && sort.reverse" class="ico-chevron-up"></span>
+                                <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
@@ -68,7 +68,7 @@
                         <td data-label="Nom :" class="tdSize">{{client.lastname || client.company.contact.last_name}}</td>
                         <td data-label="Prénom :" class="tdSize">{{client.firstname || client.company.contact.first_name}}</td>
                         <td data-label="Société :" class="tdSize">{{client.company.name}}</td>
-                        <td data-label="Date de création :" class="tdSize">{{client.creationDate | date:"dd/MM/yyyy"}}</td>
+                        <td data-label="Date de création :" class="tdSize">{{client.createdAt | date:"dd/MM/yyyy"}}</td>
                         <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                         <!--<td style="width: 25%">
                             <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">

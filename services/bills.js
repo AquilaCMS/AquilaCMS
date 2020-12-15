@@ -10,7 +10,7 @@ const queryBuilder               = new QueryBuilder(Bills, [], []);
 
 const getBills = async (body) => {
     if (!body.sort) { // Default sort
-        body.sort = {creationDate: -1};
+        body.sort = {createdAt: -1};
     }
     return queryBuilder.find(body);
 };
@@ -128,8 +128,8 @@ const generatePDF = async (PostBody) => {
         '{{withTaxes}}'              : bill.withTaxes ? withTaxes : withNoTaxes,
         '{{email}}'                  : bill.email,
         '{{paymentDate}}'            : bill.paymentDate ? moment(bill.paymentDate).format('DD/MM/YYYY - HH:mm') : '',
-        '{{creationDate}}'           : moment(bill.creationDate).format('DD/MM/YYYY - HH:mm'),
-        '{{orderDate}}'              : moment(order.creationDate).format('DD/MM/YYYY - HH:mm'),
+        '{{createdAt}}'              : moment(bill.createdAt).format('DD/MM/YYYY - HH:mm'),
+        '{{orderDate}}'              : moment(order.createdAt).format('DD/MM/YYYY - HH:mm'),
         '{{orderComment}}'           : order.comment || '',
         '{{isPaid}}'                 : bill.isPaid ? paid : unpaid,
         '{{firstname}}'              : bill.address.firstname,
