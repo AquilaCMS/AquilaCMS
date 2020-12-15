@@ -91,7 +91,7 @@ const getBreadcrumb = async (url) => {
 
 const exportData = async (model, PostBody) => {
     moment.locale(global.defaultLang);
-    const models = ['users', 'products', 'orders'];
+    const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
         PostBody           = !PostBody || PostBody === {}   ? {} : PostBody;
         PostBody.filter    = !PostBody.filter               ? {} : PostBody.filter;
