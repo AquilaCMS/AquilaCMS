@@ -98,7 +98,7 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
+      "createdAt": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -309,7 +309,7 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
+      "createdAt": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -494,7 +494,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:25:46.019Z",
+      "createdAt": "2020-05-09T14:25:46.019Z",
       "attributes": [
         {
           "type": "color",
@@ -679,7 +679,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:27:06.737Z",
+      "createdAt": "2020-05-09T14:27:06.737Z",
       "attributes": [
         {
           "type": "color",
@@ -845,7 +845,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:28:20.190Z",
+      "createdAt": "2020-05-09T14:28:20.190Z",
       "attributes": [
         {
           "type": "color",
@@ -1051,7 +1051,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:32:04.688Z",
+      "createdAt": "2020-05-18T13:32:04.688Z",
       "attributes": [
         {
           "type": "color",
@@ -1217,7 +1217,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:48:26.795Z",
+      "createdAt": "2020-05-18T13:48:26.795Z",
       "attributes": [
         {
           "type": "color",
@@ -1394,7 +1394,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:53:34.890Z",
+      "createdAt": "2020-05-18T13:53:34.890Z",
       "attributes": [
         {
           "type": "color",
@@ -1589,7 +1589,7 @@
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:54:30.441Z",
+      "createdAt": "2020-05-18T13:54:30.441Z",
       "attributes": [
         {
           "type": "color",
@@ -1905,7 +1905,6 @@
           "canonical": "/en/my-products/full-outfit"
         }
       },
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "pictos": [],
       "createdAt": "2020-05-13T09:07:33.753Z",
       "updatedAt": "2020-05-20T14:02:13.859Z"

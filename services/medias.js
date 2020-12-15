@@ -62,7 +62,7 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB) => {
+const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     console.log('Upload medias start...');
 
     const path_init   = reqFile.path;
@@ -97,7 +97,8 @@ const uploadAllMedias = async (reqFile, insertDB) => {
         if (insertDB) {
             await Medias.create({
                 link : `medias/${filename}`,
-                name : name_file
+                name : name_file,
+                group
             });
         }
     });

@@ -154,3 +154,9 @@ ProductServices.service("ProductColumns", function () {
         }
     ];
 });
+
+
+ProductServices.service('ProductsTabs', function ()
+{
+    return [];
+});

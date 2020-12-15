@@ -148,8 +148,8 @@ const anonymizeUser = async (id) => {
             addresses        : [
                 generateFakeAddresses({firstname: firstName, lastname: lastName, _id: new ObjectID()})
             ],
-            birthDate    : faker.date.past(),
-            creationDate : new Date()
+            birthDate : faker.date.past(),
+            createdAt : new Date()
         }
     });
 };
@@ -260,8 +260,8 @@ const anonymizeDatabase = async (cb) => {
                 addresses        : [
                     generateFakeAddresses({firstname: firstName, lastname: lastName, _id: new ObjectID()})
                 ],
-                birthDate    : faker.date.past(),
-                creationDate : new Date()
+                birthDate : faker.date.past(),
+                createdAt : new Date()
             }
         });
     }

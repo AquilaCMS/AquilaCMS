@@ -257,22 +257,38 @@ adminCatagenApp
 
                 $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 99}}).then(function (response)
                 {
-                    angular.forEach(response.data.datas, function (m) {
-                        $http.get("assets/translations/modules/" + m.name + '/' + options.key + "/" + m.name + ".json").then(function (tr)
-                        {
-                            translation[m.name] = tr.data;
-                        });
-                    });
-                    angular.forEach(namespaces, function (ns)
-                    {
-                        $http.get("assets/translations/" + options.key + "/" + ns + ".json").then(function (nsTranslation)
-                        {
-                            translation[ns] = nsTranslation.data;
+                    const translationArray = []; // {url:"", name:""}
 
-                            if(Object.keys(translation).length === namespaces.length)
+                    // Listing of translation for module
+                    for (let index = 0; index < response.data.datas.length; index++) {
+                        const m = response.data.datas[index];
+                        translationArray.push({
+                            url:"assets/translations/modules/" + m.name + '/' + options.key + "/" + m.name + ".json",
+                            name : m.name
+                        });
+                    }
+
+                    // Listing of translation for Aquila admin
+                    for (let index = 0; index < namespaces.length; index++) {
+                        const ns = namespaces[index];
+                        translationArray.push({
+                            url:"assets/translations/" + options.key + "/" + ns + ".json",
+                            name:ns
+                        });
+                    }
+
+                    let i = 0;
+                    angular.forEach(translationArray, function (element)
+                    {
+                        $http.get(element.url).then(function (nsTranslation)
+                        {
+                            translation[element.name] = nsTranslation.data;
+
+                            if(i === translationArray.length-1)
                             {
                                 deferred.resolve(translation);
                             }
+                            i++;
                         }).catch(function (err)
                         {
                             deferred.reject(err);

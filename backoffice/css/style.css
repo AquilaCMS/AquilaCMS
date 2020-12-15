@@ -1302,6 +1302,7 @@ img.ico{
 
 }
 
+/* /!\ ATTENTION: la regle du dessous retir les icon de tous les boutons, tres chiant */
 @media screen and (min-width: 768px) {
     
     button.btn i {
@@ -4149,6 +4150,11 @@ a.ui-button:active,
     text-align: right;
     float: right;
     position: relative;
+}
+
+.fakeDrop{
+    border: 1px dashed rgb(200,200,100);
+    background: rgb(240,240,200);
 }
 
 @media screen and (max-width: 1360px) {

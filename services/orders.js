@@ -10,12 +10,13 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const aquilaEvents     = require('../utils/aquilaEvents');
+const NSErrors         = require('../utils/errors/NSErrors');
+const utils            = require('../utils');
 const ServiceMail      = require('./mail');
 const ServiceAuth      = require('./auth');
 const ServicePromo     = require('./promo');
 const ServiceCart      = require('./cart');
 const ServicesProducts = require('./products');
-const NSErrors         = require('../utils/errors/NSErrors');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Orders, restrictedFields, defaultFields);
@@ -202,7 +203,7 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: 'PAYMENT_PENDING', creationDate: {$lt: dateAgo}})
+    return Orders.find({status: 'PAYMENT_PENDING', createdAt: {$lt: dateAgo}})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -502,7 +503,11 @@ const addPackage = async (orderId, pkgData) => {
     }
 
     await setStatus(orderId, status, false);
-    let _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {'delivery.package': pkgData}}, {new: true}).populate('delivery.method');
+    let _order = await Orders.findOneAndUpdate(
+        {_id: orderId},
+        {$push: {'delivery.package': pkgData}},
+        {new: true}
+    ).populate('delivery.method');
 
     const packages = {};
     for (let i = 0; i < _order.delivery.package.length; i++) {
@@ -537,7 +542,7 @@ const addPackage = async (orderId, pkgData) => {
     }
 
     _order = setItemStatus(_order, packages, 'DELIVERY_PROGRESS', 'DELIVERY_PARTIAL_PROGRESS');
-
+    await utils.modules.modulesLoadFunctions('addParcel', {order: _order});
     await _order.save();
 
     const _country = Territory.findOne({code: _order.addresses.delivery.isoCountryCode});
@@ -567,6 +572,7 @@ const addPackage = async (orderId, pkgData) => {
 };
 
 const delPackage = async (orderId, pkgId) => {
+    await utils.modules.modulesLoadFunctions('deleteParcel', {orderId, pkgId});
     return Orders.findOneAndUpdate({_id: orderId}, {$pull: {'delivery.package': {_id: pkgId}}}, {new: true}).populate('items.id');
 };
 
