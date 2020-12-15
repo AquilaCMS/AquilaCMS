@@ -436,7 +436,6 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                     });
                 };
                 $scope.removeElementAssociatedPrds = function (index) {
-                    debugger
                     $scope.associatedPrds.splice(index, 1);
                     let index2 = $scope.selectedProducts.indexOf($scope.associatedPrds[index])
                     $scope.selectedProducts.splice(index2, 1);
