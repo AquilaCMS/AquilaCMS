@@ -80,6 +80,7 @@ ProductDirectives.directive("nsProductsList", function () {
                                     prd.images = prd.images.filter(i => i.default)
                                 }
                                 $scope.products = datas;
+                                $scope.addStyle($scope.products)
                                 $scope.totalItems = count;
                             });
                         } else {
@@ -88,6 +89,7 @@ ProductDirectives.directive("nsProductsList", function () {
                                     prd.images = prd.images.filter(i => i.default)
                                 }
                                 $scope.products = datas;
+                                $scope.addStyle($scope.products)
                                 $scope.totalItems = count;
                             });
                         }
@@ -101,20 +103,19 @@ ProductDirectives.directive("nsProductsList", function () {
                             prd.images = prd.images.filter(i => i.default)
                         }
                         $scope.products = productsList;
+                        $scope.addStyle($scope.products)
                     });
                 };
                 // modifie le style css en selectionnee et de cette maniere il permet de garder le champ selectione lors du changement de page
-                $scope.getSelectStyle = function (product) {
-                    for (let i = 0; i < $scope.$parent.selectedProducts.length; i++) {
-                        if ($scope.$parent.selectedProducts[i]._id == product._id) {
-                            if ($scope.$parent.selectedProducts[i]._selected) {
-                                return "background-color: #3f51b5;color: white;";
+                $scope.addStyle = function (allProducts) {
+                    for(product of allProducts){
+                        for (selectProduct of $scope.$parent.$parent.$parent.selectedProducts) {
+                            if (selectProduct._id == product._id) {
+                                product.style = {"background-color": "#3f51b5", "color": "white"};
+                                continue;
                             }
-
-                            return "background-color: #3f51b5;color: white;";
                         }
                     }
-                    return "background-color: '';color: '';";
                 };
 
                 $scope.defaultLang = $rootScope.languages.find(function (lang) {
@@ -435,7 +436,10 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                     });
                 };
                 $scope.removeElementAssociatedPrds = function (index) {
+                    debugger
                     $scope.associatedPrds.splice(index, 1);
+                    let index2 = $scope.selectedProducts.indexOf($scope.associatedPrds[index])
+                    $scope.selectedProducts.splice(index2, 1);
                     $scope.product.associated_prds = $scope.associatedPrds.map(function (item) {
                         return item._id;
                     });

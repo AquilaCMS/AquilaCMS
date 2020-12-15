@@ -21,23 +21,27 @@ ProductControllers.controller("SelectProductsCtrl", [
     "$scope", "$modalInstance", "queryFilter", function ($scope, $modalInstance, queryFilter) {
         ;
         $scope.queryFilter = queryFilter;
-        $scope.selectedProducts = [];
+        if(!$scope.$parent.selectedProducts){
+            $scope.$parent.selectedProducts = [];
+        }
         $scope.selectProduct = function (product, ev) {
             let push = true;
             if (product._selected != true) {
-                for (let i = 0; i < $scope.selectedProducts.length; i++) {
-                    if ($scope.selectedProducts[i]._id == product._id) {
+                for (let i = 0; i < $scope.$parent.selectedProducts.length; i++) {
+                    if ($scope.$parent.selectedProducts[i]._id == product._id) {
                         push = false;
                     }
                 }
                 if (push) {
-                    $scope.selectedProducts.push(product);
+                    $scope.$parent.selectedProducts.push(product);
                     product._selected = true;
+                    product.style = {"background-color": "#3f51b5", "color": "white"};
                 } else {
-                    var index = $scope.selectedProducts.findIndex(function (currProduct) {
+                    var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
                         return currProduct.id == product.id;
                     });
-                    $scope.selectedProducts.splice(index, 1);
+                    $scope.$parent.selectedProducts.splice(index, 1);
+                    product.style = {"background-color": "", "color": ""};
                     // $(ev.target).closest('tr').children('td').css({
                     //     'background-color': '',
                     //     'color': ''
@@ -49,10 +53,11 @@ ProductControllers.controller("SelectProductsCtrl", [
                 //     'color': 'white'
                 // });
             } else {
-                var index = $scope.selectedProducts.findIndex(function (currProduct) {
+                product.style = {"background-color": "", "color": ""};
+                var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
                     return currProduct.code == product.code;
                 });
-                $scope.selectedProducts.splice(index, 1);
+                $scope.$parent.selectedProducts.splice(index, 1);
                 // $(ev.target).closest('tr').children('td').css({
                 //     'background-color': '',
                 //     'color': ''
@@ -62,7 +67,26 @@ ProductControllers.controller("SelectProductsCtrl", [
         };
 
         $scope.validate = function (products) {
-            $modalInstance.close(products);
+            $scope.$parent.selectedProducts;
+            let final = []
+            let long = products.length
+            for(let i = 0; i < long; i++){
+                if(products[i]){
+                    if(products[i].style){
+                        delete products[i].style
+                    }
+                }
+                if($scope.$parent.associatedPrds.length == 0){
+                    final.push(products[i])
+                }else{
+                    for(alreadyAssocied of $scope.$parent.associatedPrds){
+                        if(alreadyAssocied._id != products[i]._id){
+                            final.push(products[i])
+                        }
+                    }
+                }
+            }
+            $modalInstance.close(final);
         };
 
 
