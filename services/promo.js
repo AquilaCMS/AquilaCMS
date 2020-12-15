@@ -740,6 +740,8 @@ function calculDiscountItem(prd, promo) {
         // On calcule la réduction a appliquer sur le produit, si réduction > au prix de l'article alors on
         // applique une réduction égal au prix de l'article afin de ne pas avoir un prix negatif, on aura ainsi un prix = à 0
         values = calculateCartItemDiscount(prd.price.priceSort, prd.price.priceSort.et * (discountValue / 100));
+    } else if (discountType === null) {
+        values = {discountET: 0, discountATI: 0};
     } else if (discountType === 'Aet') {
         values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
     } else if (discountType === 'Aati') {
