@@ -39,6 +39,7 @@ function translateDocument(doc, lang) {
 }
 
 const deepTranslation = (doc, lang) => {
+    if (doc._doc) doc = doc.toObject();
     const docKeys = Object.keys(doc);
     for (let i = 0; i < docKeys.length; i++) {
         if (!(['__v', '_bsontype']).includes(docKeys[i])) {

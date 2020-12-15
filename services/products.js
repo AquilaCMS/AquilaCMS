@@ -18,9 +18,6 @@ const {
     Configuration,
     Products,
     ProductsPreview,
-    ProductSimple,
-    ProductBundle,
-    ProductVirtual,
     Categories,
     SetAttributes,
     Attributes,
@@ -250,7 +247,15 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     if (isAdmin) {
         matchCategory = {};
     }
-    const menu = await Categories.findById(id).populate({
+    if (!PostBody.structure) {
+        PostBody.structure = {};
+    }
+    PostBody.structure = {
+        ...PostBody.structure,
+        price : 1,
+        type  : 1
+    };
+    const menu         = await Categories.findById(id).populate({
         path  : 'productsList.id',
         match : matchCategory
     }).lean();
@@ -442,10 +447,12 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
     for (let i = 0; i < result.datas.length; i++) {
-        if (!result.datas[i].images.length) continue;
-        const image = utilsMedias.getProductImageUrl(result.datas[i]);
-        if (!image) result.datas[i].images = [result.datas[i].images[0]];
-        else result.datas[i].images = [image];
+        if (result.datas[i].images) {
+            if (!result.datas[i].images.length) continue;
+            const image = utilsMedias.getProductImageUrl(result.datas[i]);
+            if (!image) result.datas[i].images = [result.datas[i].images[0]];
+            else result.datas[i].images = [image];
+        }
     }
 
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
@@ -463,39 +470,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
 
-    const products = prds.slice(skip, limit + skip);
-    // On transforme les produits en produit mongoose afin que la translation puisse être effectué après le res.json()
-    let tProducts = [];
-    for (let k = 0; k < products.length; k++) {
-        switch (products[k].kind) {
-        case 'SimpleProduct':
-            tProducts.push(new ProductSimple(products[k]));
-            // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
-            // on utilise la fonction addToStructure pour connaitre les champs a garder (obligatoire + demandés)
-            // permettra de récupérer le champ sortWeight également
-            // const newPrd = new ProductSimple(products[k]);
-            // if (Object.keys(PostBody.structure).length > 0) {
-            //     const structure = queryBuilder.addToStructure(PostBody.structure);
-            //     const productWithStructure = Object.keys(structure).map(k => (k in newPrd ? {[k]: newPrd[k]} : {})).reduce((res, o) => Object.assign(res, o), {});
-            //     tProducts.push(productWithStructure);
-            // } else {
-            //     tProducts.push(newPrd);
-            // }
-            break;
-        case 'VirtualProduct':
-            tProducts.push(new ProductVirtual(products[k]));
-            break;
-        case 'BundleProduct':
-            const prd = await new ProductBundle(products[k])
-                .populate(PostBody.populate || '')
-                .execPopulate();
-            tProducts.push(prd);
-            break;
-
-        default:
-            break;
-        }
-    }
+    let products = prds.slice(skip, limit + skip);
 
     // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
     // ce code ne marche pas car _doc n'exsite pas dans produits et removeFromStructure en a besoin
@@ -504,25 +479,25 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // }
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals.datas  = tProducts;
+        reqRes.res.locals.datas  = products;
         reqRes.req.body.PostBody = PostBody;
         const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-        tProducts                = productsDiscount.datas;
+        products                 = productsDiscount.datas;
         // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
         // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
-            tProducts = tProducts.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (
-                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
-                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
-                )
-                && pr <= (
-                    PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
-                    || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
-                );
-            });
-        }
+    }
+    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
+        products = products.filter((prd) =>  {
+            const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
+            return pr >= (
+                PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
+                || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
+            )
+            && pr <= (
+                PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
+                || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
+            );
+        });
     }
 
     if (
@@ -533,16 +508,15 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         )
     ) {
         if (PostBody.sort['price.priceSort.et']) {
-            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.et');
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.et');
         } else if (PostBody.sort['price.priceSort.ati']) {
-            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.ati');
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
         }
     }
 
     return {
-        ...result,
         count : prds.length,
-        datas : tProducts,
+        datas : products,
         priceMin,
         priceMax,
         specialPriceMin,
@@ -551,27 +525,15 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 };
 
 const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
-    if (PostBody.sort[param] === '1') {
-        tProducts = tProducts.sort((a, b) => {
-            if (a.price.priceSort > b.price.priceSort) {
-                return 1;
-            }
-            if (b.price.priceSort > a.price.priceSort) {
-                return -1;
-            }
-            return 0;
-        });
-    } else {
-        tProducts = tProducts.sort((a, b) => {
-            if (a.price.priceSort > b.price.priceSort) {
-                return -1;
-            }
-            if (b.price.priceSort > a.price.priceSort) {
-                return 1;
-            }
-            return 0;
-        });
-    }
+    tProducts = tProducts.sort((a, b) => {
+        if (a.price.priceSort > b.price.priceSort) {
+            return Number(PostBody.sort[param]) === 1 ? 1 : -1;
+        }
+        if (b.price.priceSort > a.price.priceSort) {
+            return Number(PostBody.sort[param]) === 1 ? -1 : 1;
+        }
+        return 0;
+    });
     return tProducts;
 };
 
