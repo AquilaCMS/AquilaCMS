@@ -66,7 +66,10 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
             }
         }
         // on filtre les shipment pour retourner le plus interessant
-        return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
+        if (choices.length) {
+            return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
+        }
+        return [];
     }
     let shipments = [];
     if (cart.addresses && cart.addresses.delivery && cart.addresses.delivery.isoCountryCode) {
@@ -120,7 +123,7 @@ function getShippingDate(cart, shipment) {
             if (item.type === 'bundle') {
                 // on boucle sur les sections du bundle (j)
                 for (let j = 0; j < item.selections.length; j++) {
-                    const selection = item.selections[i];
+                    const selection = item.selections[j];
                     // on boucle sur la liste de produits selectionnés (k)
                     for (let k = 0; k < selection.products.length; k++) {
                         const product = selection.products[k];
