@@ -415,8 +415,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{quantityBreaks}}'             : '',
         '{{order.dateReceipt}}'          : dateReceipt,
         '{{order.hourReceipt}}'          : hourReceipt,
-        '{{order.priceTotalAti}}'        : order.priceTotal[taxDisplay].toFixed(2),
-        '{{order.priceTotalEt}}'         : order.priceTotal[taxDisplay].toFixed(2),
+        '{{order.priceTotal}}'           : order.priceTotal[taxDisplay].toFixed(2),
         '{{order.delivery}}'             : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
         '{{order.paymentMode}}'          : order._doc.payment[0].mode,
         '{{order.paymentDescription}}'   : order._doc.payment[0].description,
@@ -432,6 +431,10 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
 
     if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
         datas['{{quantityBreaks}}'] = order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
+    }
+
+    if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
+        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {

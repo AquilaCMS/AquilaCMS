@@ -101,7 +101,7 @@ const initDBValues = async () => {
                     name : 'Aucun type'
                 },
                 en : {
-                    name : 'Aucun type'
+                    name : 'No type'
                 }
             },
             position : 0
@@ -271,7 +271,7 @@ const initDBValues = async () => {
                             description : 'Livraison'
                         },
                         {
-                            value       : 'order.delivery.price',
+                            value       : 'delivery.price',
                             description : 'Prix de la livraison'
                         },
                         {
@@ -305,6 +305,18 @@ const initDBValues = async () => {
                         {
                             value       : 'taxdisplay',
                             description : 'HT ou TTC'
+                        },
+                        {
+                            value       : 'promo.discount',
+                            description : 'Valeur de la promotion'
+                        },
+                        {
+                            value       : 'promo.code',
+                            description : 'Code de la promotion'
+                        },
+                        {
+                            value       : 'additionnalFees',
+                            description : 'Frais supplémentaires'
                         }
                     ]
                 },
@@ -360,7 +372,7 @@ const initDBValues = async () => {
                             description : 'Delivery'
                         },
                         {
-                            value       : 'order.delivery.price',
+                            value       : 'delivery.price',
                             description : 'Delivery price'
                         },
                         {
@@ -394,6 +406,18 @@ const initDBValues = async () => {
                         {
                             value       : 'taxdisplay',
                             description : 'ATI or ET'
+                        },
+                        {
+                            value       : 'promo.discount',
+                            description : 'Promotion value'
+                        },
+                        {
+                            value       : 'promo.code',
+                            description : 'Promotion code'
+                        },
+                        {
+                            value       : 'additionnalFees',
+                            description : 'Additionnal fees'
                         }
                     ]
                 }
@@ -455,7 +479,7 @@ const initDBValues = async () => {
                             description : 'Livraison'
                         },
                         {
-                            value       : 'order.delivery.price',
+                            value       : 'delivery.price',
                             description : 'Prix de la livraison'
                         },
                         {
@@ -489,6 +513,14 @@ const initDBValues = async () => {
                         {
                             value       : 'taxdisplay',
                             description : 'HT ou TTC'
+                        },
+                        {
+                            value       : 'promo.discount',
+                            description : 'Valeur de la promotion'
+                        },
+                        {
+                            value       : 'promo.code',
+                            description : 'Code de la promotion'
                         }
                     ]
 
@@ -545,7 +577,7 @@ const initDBValues = async () => {
                             description : 'Delivery'
                         },
                         {
-                            value       : 'order.delivery.price',
+                            value       : 'delivery.price',
                             description : 'Delivery price'
                         },
                         {
@@ -579,6 +611,14 @@ const initDBValues = async () => {
                         {
                             value       : 'taxdisplay',
                             description : 'ATI or ET'
+                        },
+                        {
+                            value       : 'promo.discount',
+                            description : 'Promotion value'
+                        },
+                        {
+                            value       : 'promo.code',
+                            description : 'Promotion code'
                         }
                     ]
 
@@ -915,7 +955,7 @@ const initDBValues = async () => {
                             description : 'Livraison'
                         },
                         {
-                            value       : 'order.delivery.price',
+                            value       : 'delivery.price',
                             description : 'Prix de la livraison'
                         },
                         {
@@ -949,6 +989,14 @@ const initDBValues = async () => {
                         {
                             value       : 'taxdisplay',
                             description : 'HT ou TTC'
+                        },
+                        {
+                            value       : 'promo.discount',
+                            description : 'Valeur de la promotion'
+                        },
+                        {
+                            value       : 'promo.code',
+                            description : 'Promotion code'
                         }
                     ]
                 },
@@ -1004,7 +1052,7 @@ const initDBValues = async () => {
                             description : 'Delivery'
                         },
                         {
-                            value       : 'order.delivery.price',
+                            value       : 'delivery.price',
                             description : 'Delivery price'
                         },
                         {
@@ -1038,6 +1086,14 @@ const initDBValues = async () => {
                         {
                             value       : 'taxdisplay',
                             description : 'ATI or ET'
+                        },
+                        {
+                            value       : 'promo.discount',
+                            description : 'Promotion value'
+                        },
+                        {
+                            value       : 'promo.code',
+                            description : 'Promotion code'
                         }
                     ]
                 }

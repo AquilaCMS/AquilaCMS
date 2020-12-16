@@ -4,7 +4,8 @@ var MailControllers = angular.module("aq.mail.controllers", ['ui.bootstrap']);
  * Controller de la page contenant la liste des Mails
  */
 MailControllers.controller("MailListCtrl", [
-    "$scope", "$location", "MailGetAll", "$rootScope", function ($scope, $location, MailGetAll, $rootScope) {
+    "$scope", "$location", "MailGetAll", "MailTypesGet", "$rootScope", function ($scope, $location, MailGetAll, MailTypesGet, $rootScope) {
+        $scope.adminLang = $rootScope.adminLang;
         $scope.isEditMode = true;
         $scope.detail = function (mail) {
             $location.url("/mails/" + mail._id);
@@ -17,6 +18,17 @@ MailControllers.controller("MailListCtrl", [
         MailGetAll.query(function (mails) {
             $scope.mails = mails;
         });
+
+        MailTypesGet.query({}, function (mailTypes) {
+            $scope.mailTypes = mailTypes;
+        });
+
+        $scope.getMailTypeDesc = function(type){
+            if ($scope.mailTypes && $scope.adminLang){
+                type = $scope.mailTypes.find(x => x.code === type).translation[$scope.adminLang].name;
+            }
+            return type;
+        }
     }
 ]);
 

@@ -13,7 +13,7 @@
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@zeit/next-source-maps": "0.0.3",
-    "aqlrc": "0.4.42",
+    "aqlrc": "^0.4.51",
     "html-react-parser": "0.13.0",
     "lightbox-react": "0.3.7",
     "react-i18next": "7.13.0",
