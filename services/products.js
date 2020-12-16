@@ -353,6 +353,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
     let prds       = await Products
         .find(PostBody.filter, PostBody.structure)
+        .populate(PostBody.populate)
         .sort(PostBody.sort)
         .lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
