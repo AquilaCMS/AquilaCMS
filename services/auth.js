@@ -38,7 +38,7 @@ const login = async (req, res, next) => {
         if (req.params.from === 'admin') {
             if (!user.isAdmin) throw NSErrors.Unauthorized;
         }
-        if (!user.isActiveAccount) {
+        if (!user.isActive) {
             throw NSErrors.DesactivateAccount;
         }
 

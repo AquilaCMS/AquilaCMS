@@ -173,7 +173,7 @@ const getDemoDatasFilesName = async () => {
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null, fileNames ) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames = null ) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
     const listOfFile    = [];
