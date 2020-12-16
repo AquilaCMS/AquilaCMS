@@ -62,6 +62,29 @@ const migration_3_CreatedAt = async () => {
         await changeCreateDateToCreatedAt(collectionsList[index]);
     }
 };
+
+const migration_4_Themes = async () => {
+    console.log('Applying migration script "migration_4_Themes"...');
+    const theme = await mongoose.connection.collection('themeConfigs').findOne({});
+    for (const lang of Object.keys(theme.config.translation)) {
+        console.log(theme.config.translation[lang]);
+        if (theme && Array.isArray(theme.config.translation[lang].values) === false) {
+            const values           = [];
+            const tabThemeKeyValue = {values};
+            for (const [key, value] of Object.entries(theme.config.translation[lang])) {
+                values.push({
+                    key,
+                    value,
+                    name        : key,
+                    description : '',
+                    group       : ''
+                });
+            }
+            await mongoose.connection.collection('themeConfigs').updateOne({}, {$set: {[`config.translation.${lang}`]: tabThemeKeyValue}});
+        }
+    }
+};
+
 const migration_5_isActive = async () => {
     console.log('Applying migration script "migration_5_isActive"...');
     const user = await mongoose.connection.collection('users').findOne({});
@@ -76,6 +99,7 @@ const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
     migration_2_Metrics,
     migration_3_CreatedAt,
+    migration_4_Themes,
     migration_5_isActive
     // sample
 ];

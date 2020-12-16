@@ -1,12 +1,14 @@
 const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const themesServices              = require('../services/themes');
-const fs                          = require('../utils/fsp');
+const serviceThemeConfig          = require('../services/themeConfig');
+const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const serverUtils                 = require('../utils/server');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
-    app.get('/v2/themes', listTheme);
+    app.get('/v2/themes',                  authentication, adminAuth, listTheme);
     app.post('/v2/themes/upload',          authentication, adminAuth, uploadTheme);
     app.post('/v2/themes/delete',          authentication, adminAuth, deleteTheme);
     app.post('/v2/themes/copyDatas',       authentication, adminAuth, copyDatas);
@@ -16,6 +18,7 @@ module.exports = function (app) {
     app.post('/v2/themes/save',            authentication, adminAuth, save);
     app.post('/v2/themes/package/install', authentication, adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   authentication, adminAuth, buildTheme);
+    app.get('/v2/themes/informations',     authentication, adminAuth, getThemeInformations);
 };
 
 /**
@@ -36,14 +39,8 @@ async function save(req, res, next) {
  */
 async function listTheme(req, res, next) {
     try {
-        const allTheme = [];
-        for (const element of await fs.readdir('./themes/')) {
-            const fileOrFolder = await fs.stat(`./themes/${element}`);
-            if (fileOrFolder.isDirectory()) {
-                allTheme.push(element);
-            }
-        }
-        return res.send(allTheme);
+        const allTheme = await themesServices.listTheme();
+        res.send({data: allTheme});
     } catch (err) {
         return next(err);
     }
@@ -120,7 +117,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override);
+        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
         return res.json(ret);
     } catch (error) {
         return next(error);
@@ -156,6 +153,33 @@ async function buildTheme(req, res, next) {
         themPath = themPath.replace('./themes/', '');
         await themesServices.buildTheme(themPath);
         res.send(packageManager.restart());
+    } catch (error) {
+        return next(error);
+    }
+}
+
+async function getThemeInformations(req, res, next) {
+    try {
+        let userInfo;
+        if (req.headers && req.headers.authorization) {
+            try {
+                userInfo = getDecodedToken(req.headers.authorization);
+                if (userInfo) userInfo = userInfo.info;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        const themeConf          = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
+        const config             = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: 'environment.adminPrefix'}}, userInfo);
+        const configEnvironement = {};
+        if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
+            configEnvironement.adminPrefix  = config.environment.adminPrefix;
+            configEnvironement.appUrl       = config.environment.appUrl;
+            configEnvironement.currentTheme = config.environment.currentTheme;
+        }
+        const listTheme = await themesServices.listTheme();
+        const listFiles = await themesServices.getDemoDatasFilesName();
+        res.send({themeConf, configEnvironement, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }

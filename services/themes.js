@@ -164,19 +164,39 @@ const deleteTheme = async (themePath) => {
     console.log('Theme removed !');
 };
 
+const getDemoDatasFilesName = async () => {
+    const fileNames = await fs.readdir(path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`));
+    return (fileNames);
+};
 /**
  * @description Copy datas of selected theme models can be a .json or a .js
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames = null ) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
+    const listOfFile    = [];
     if (!fs.existsSync(themeDemoData)) {
         return {data, noDatas: true};
     }
     await fs.access(themeDemoData, fs.constants.R_OK);
-    const listOfFile = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    const listOfPath = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    if (!fileNames && listOfPath) {
+        for (let i = 0; i < listOfPath.length; i++) {
+            listOfFile.push(listOfPath[i]);
+        }
+    } else {
+        for (let j = 0; j < listOfPath.length; j++) {
+            for (let i = 0; i < fileNames.length; i++) {
+                if ( listOfPath[j].indexOf(fileNames[i].name) !== -1) {
+                    if (fileNames[i].value === true) {
+                        listOfFile.push(listOfPath[j]);
+                    }
+                }
+            }
+        }
+    }
     for (const value of listOfFile) {
         if ((await fs.lstat(value)).isDirectory()) {
             continue;
@@ -334,6 +354,17 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
     }
 };
 
+const listTheme = async () => {
+    const allTheme = [];
+    for (const element of await fs.readdir('./themes/')) {
+        const fileOrFolder = await fs.stat(`./themes/${element}`);
+        if (fileOrFolder.isDirectory()) {
+            allTheme.push(element);
+        }
+    }
+    return allTheme;
+};
+
 module.exports = {
     save,
     setConfigTheme,
@@ -346,5 +377,7 @@ module.exports = {
     setCustomCss,
     getAllCssComponentName,
     getThemePath,
-    loadTranslation
+    loadTranslation,
+    listTheme,
+    getDemoDatasFilesName
 };

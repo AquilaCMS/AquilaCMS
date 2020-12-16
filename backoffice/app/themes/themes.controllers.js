@@ -11,8 +11,10 @@ ThemesController.controller("ThemesCtrl", [
         $scope.onTabSelect = function (tabId) {
           if(tabId == "select"){
               $scope.tab = "select";
-          }else{
+          }else if (tabId == "config"){
               $scope.tab = "config";
+          }else {
+            $scope.tab = "data";
           }
         };
 
@@ -20,19 +22,25 @@ ThemesController.controller("ThemesCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        ThemeConfig.query({ PostBody: { filter: {}, structure: {}, limit: 99 }}, function (response) {
-            $scope.keys = {};
-            $scope.themeConfig.variables = {};
-            if(response.config && response.config.translation) {
-                $scope.languages.forEach(element => {
-                    $scope.themeConfig.variables[element.code] = response.config.translation[element.code];
-                    delete $scope.themeConfig.variables[element.code].$promise;
-                    delete $scope.themeConfig.variables[element.code].$resolved;
-                    $scope.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
-                    $scope.theme.currentThemeVar = true;
-                });
+        
+        
+
+        $scope.langChange = function (lang)
+        {
+            if ($scope.customiseTheme === undefined){
+                $scope.LoadThemeCongig();
+            };
+            if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined){
+                $scope.customiseTheme.arrayGroup = [];
+                for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
+                    if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
+                        $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
+                    
+                    }
+                }
             }
-        });
+            
+        };
 
         $scope.typeOf = function(value) {
             try {
@@ -53,20 +61,6 @@ ThemesController.controller("ThemesCtrl", [
                 return "string";
             }
         }
-
-        $scope.config = ConfigV2.environment(function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
-            }
-        });
-        $scope.LoadAllThemes = function () {
-            $http.get("/v2/themes").then(function (response) {
-                $scope.themesList = response.data;
-            }, function (err) {
-                $scope.isLoading = false;
-                toastService.toast("danger", err.data);
-            });
-        };
 
         $scope.beforeTheme = function () {
             $scope.showThemeLoading = true;
@@ -118,8 +112,6 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.packageRestart = async function () {
-            // $scope.isLoading = true;
-            // $scope.showThemeLoading = true;
             try {
                 await $http.get("/restart");
                 toastService.toast("success", "Succès");
@@ -148,11 +140,11 @@ ThemesController.controller("ThemesCtrl", [
             themeDataOverride: false,
             currentThemeVar : false,
         };
-
+       
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listAllThemeFiles});
                     if (data.data.noDatas) {
                         toastService.toast("success", "Ce thème ne contient pas de données.");
                     } else {
@@ -162,7 +154,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 }
-            }
+            } 
         };
 
         $scope.validate = function (tab) {
@@ -241,8 +233,52 @@ ThemesController.controller("ThemesCtrl", [
 
 
             }
-            $scope.LoadAllThemes();
 
+            $scope.LoadThemeCongig = function () {
+                $http.get("/v2/themes/informations").then(function (response) {
+                    $scope.config = response.data.configEnvironement;
+                    if (!$scope.adminPrefix) {
+                        $scope.config.adminPrefix = "admin";
+                    }
+                    $scope.listThemeFiles = [];
+                    $scope.listAllThemeFiles = [];
+                    $scope.themesList = response.data.listTheme;
+                    $scope.listThemeFiles = response.data.listFiles;
+                    if ($scope.listThemeFiles == undefined){
+                        $scope.listAllThemeFiles.push("noDefaultData");
+                    } else {
+                        $scope.listThemeFiles.forEach(element =>{
+                            if(element.indexOf("json") === -1){
+                                var index = $scope.listThemeFiles.indexOf(element);
+                                $scope.listThemeFiles.splice(index, 1);
+                            }  else {
+                                $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
+                            }
+                        });
+                    }
+                    
+                    $scope.customiseTheme ={};
+                    $scope.customiseTheme.keys = {};
+                    $scope.themeConfig.variables = [];
+                    
+                    if(response.data.configEnvironement && response.data.themeConf.config.translation) {
+                        $scope.languages.forEach(element  => {
+                            $scope.themeConfig.variables[element.code] = response.data.themeConf.config.translation[element.code].values;
+                            delete $scope.themeConfig.variables[element.code].$promise;
+                            delete $scope.themeConfig.variables[element.code].$resolved;
+                            $scope.customiseTheme.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
+                            $scope.langChange($scope.language);
+                            $scope.theme.currentThemeVar = true;
+                        });
+                    }
+                }, function (err) {
+                    $scope.isLoading = false;
+                    toastService.toast("danger", err.data);
+                });
+                
+            
+                
+            };
 
     }
 ]);
