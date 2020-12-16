@@ -634,7 +634,7 @@ const setProduct = async (req) => {
                 reject(NSErrors.ProductUpdateError);
             }
             await ProductsPreview.deleteOne({code: req.body.code});
-            return resolve(result);
+            return resolve((await Products.findOne({code: result.code})).populated(['bundle_sections.products._id']));
         });
     });
 };
