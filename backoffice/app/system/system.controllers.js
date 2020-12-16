@@ -11,8 +11,8 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.system = ConfigV2.environment(function () {
-            $scope.system.linkToLog = $scope.system.linkToLog || '';
-            $scope.system.linkToError = $scope.system.linkToError || '';
+            $scope.system.logPath = $scope.system.logPath || '';
+            $scope.system.errorPath = $scope.system.errorPath || '';
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
             $scope.ssl = {
@@ -38,13 +38,13 @@ SystemControllers.controller("systemGeneralController", [
         $scope.getFilesLogAndError = function(variable) {
             let attribut;
             if(variable === 'log'){
-                attribut = 'linkToLog';
+                attribut = 'logPath';
             }else if(variable === 'error'){
-                attribut = 'linkToError';
+                attribut = 'errorPath';
             }
             if(!$scope.system[attribut] || $scope.system[attribut] == ''){
                 $scope.system[attribut] == ''; //if it's undefined
-                $scope.log.log = 'Pas de ficher "'+ variable +'"';
+                $scope.log.log = 'No file "'+ variable +'"';
             }else{
                 System.getFilesLogAndErrorRoute({name: $scope.system[attribut]}, function (response) {
                     //here change color of text
@@ -166,14 +166,6 @@ SystemControllers.controller("systemGeneralController", [
 
 
         $scope.validate = function () {
-            if($scope.system.linkToLog){
-                System.setFilesLogAndErrorRoute({name: $scope.system.linkToLog, error: $scope.system.linkToError}, function (response) {
-                }, function(erreur){/*deal with error here*/});
-            }
-            if($scope.system.linkToError){
-                System.setFilesLogAndErrorRoute({name: $scope.system.linkToError}, function (response) {
-                }, function(erreur){/*deal with error here*/});
-            }
             if (!$scope.system.adminPrefix) {
                 $scope.system.adminPrefix = "admin";
             }

@@ -3,37 +3,32 @@ const fs             = require('../utils/fsp');
 const packageManager = require('../utils/packageManager');
 const NSErrors       = require('../utils/errors/NSErrors');
 
-const setFilesInAquila = async (name) => {
-    const filePath = path.resolve(global.appRoot, name);
-    if (!await fs.access(filePath)) {
-        await fs.writeFile(filePath, '');
-    }
-};
-
-const getFileContent = async (name) => {
-    const filePath = path.resolve(global.appRoot, name);
+const getLogsContent = async (fileName) => {
+    const filePath = path.resolve(global.appRoot, fileName);
     if (await fs.access(filePath)) {
-        let fileContent = '';
-        let firstLines;
+        let fileContent  = '';
+        let currentLines = '';
         try {
             fileContent = await fs.readFile(filePath, 'utf8');
             if (fileContent) {
                 const allLines    = fileContent.split('\n');
                 const nbLinesFile = allLines.length;
+                let nbLinesStart  = 0;
                 let offset        = 0;
+                // Read only the last logs
                 if (nbLinesFile > 301) {
-                    offset = 300;
+                    offset       = 300;
+                    nbLinesStart = (nbLinesFile - offset);
                 }
-                const nbLinesStart = (nbLinesFile - offset);
                 for (let count = nbLinesStart; count < nbLinesFile; count++) {
                     if (allLines[count]) {
-                        firstLines = `${firstLines}\n${allLines[count]}`;
+                        currentLines = `${currentLines}${allLines[count]}\n`;
                     }
                 }
             } else {
-                firstLines = 'None';
+                currentLines = 'None';
             }
-            return {fileData: firstLines};
+            return {fileData: currentLines};
         } catch (err) {
             return {fileData: 'None'};
         }
@@ -83,8 +78,7 @@ const changeNextVersionService = async (body) => {
 };
 
 module.exports = {
-    getFileContent,
-    setFilesInAquila,
+    getLogsContent,
     getNextVersionService,
     changeNextVersionService
 };
