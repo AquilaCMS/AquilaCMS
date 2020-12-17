@@ -751,7 +751,7 @@ const initDBValues = async () => {
                             description : 'Company name'
                         },
                         {
-                            value       : 'sstatus',
+                            value       : 'status',
                             description : 'Order status'
                         },
                         {
