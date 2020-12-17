@@ -9,11 +9,13 @@ let loadedModules;
 /**
  * Module : Charge les fonctions dans les init.js des modules si besoin
  */
-const modulesLoadFunctions = async (property, params = {}, functionToExecute) => {
+const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
         return global.moduleExtend[property].function(params);
     }
-    return functionToExecute();
+    if (functionToExecute && typeof functionToExecute === 'function') {
+        return functionToExecute();
+    }
 };
 
 /**
