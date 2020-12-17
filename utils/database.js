@@ -1210,7 +1210,8 @@ const initDBValues = async () => {
     ];
     // Populate mailType in BDD
     for (const mailType of mailTypes) {
-        await MailType.findOneAndUpdate({code: mailType.code}, {$setOnInsert: mailType}, {new: true, upsert: true});
+        const a = await MailType.findOneAndUpdate({code: mailType.code}, {$set: mailType}, {new: true, upsert: true});
+        console.log(a);
     }
 
     const imgTrans              = '/medias/paiement-virement-logo.png';
