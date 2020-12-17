@@ -19,7 +19,7 @@ const getStaticById = async (id, PostBody = null) => {
 };
 
 const setStatic = async (req) => {
-    return Statics.updateOne({_id: req.body._id}, req.body);
+    return Statics.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
 const createStatic = async (req) => {
