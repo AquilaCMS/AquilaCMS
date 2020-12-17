@@ -242,11 +242,20 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
-    let matchCategory = {_visible: true, active: true};
+    lang = servicesLanguages.getDefaultLang(lang);
     // Si admin alors on populate tout les documents sans restriction de visibilité ou d'actif
-    if (isAdmin) {
-        matchCategory = {};
+    if (!PostBody.filter) PostBody.filter = {};
+    if (!isAdmin) {
+        PostBody.filter = {
+            ...PostBody.filter,
+            _visible : true,
+            active   : true
+        };
     }
+    PostBody.filter = {
+        ...PostBody.filter,
+        [`translation.${lang}`] : {$exists: true}
+    };
     if (!PostBody.structure) {
         PostBody.structure = {};
     }
@@ -255,10 +264,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         price : 1,
         type  : 1
     };
-    const menu         = await Categories.findById(id).populate({
-        path  : 'productsList.id',
-        match : matchCategory
-    }).lean();
+
+    const menu = await Categories.findById(id).lean();
     if (menu === null) {
         throw NSErrors.CategoryNotFound;
     }
@@ -273,38 +280,22 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
-    lang = servicesLanguages.getDefaultLang(lang);
     // Si un productsList.id ne répond pas au match alors productsList.id === null
-    menu.productsList = menu.productsList.filter((p) => p.id !== null);
-    menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
-    if (PostBody.filter === undefined)  PostBody.filter = {};
-    const _config = await Configuration.findOne({}, {stockOrder: 1});
-    if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
+    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
         PostBody.structure.stock = 1;
     }
 
     // On verifie que les infos de PostBody sont correctes
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
     // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit)
-    // si PostBody.sort n'existe pas ou que sort.sortWeight existe
-    if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-        // on trie les sortWeight du plus petit au plus grand
-        if (PostBody.sort && PostBody.sort.sortWeight && PostBody.sort.sortWeight === 1 ) {
-            menu.productsList.sort((p1, p2) => p1.sortWeight  - p2.sortWeight);
-        } else {
-            menu.productsList.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        }
-    }
-    // Si il y a un tri sur les produits alors on va trier les produits dans le queryBuilder
-    const productListSorted = menu.productsList;
 
-    PostBody.filter._id = {$in: productListSorted.map((item) => item.id._id.toString())};
+    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
     // On récupére les produits de productList
     const result = await queryBuilder.find(PostBody, true);
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         // On ajoute le sortWeight correspondant au produit dans le doc produit
-        productListSorted.forEach((product) => {
-            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id._id.toString());
+        menu.productsList.forEach((product) => {
+            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (ProdFound) {
                 ProdFound.sortWeight = product.sortWeight;
@@ -312,9 +303,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         });
         // On trie les produits par poids
         result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        result.count = menu.productsList.length;
     }
-    if (_config.stockOrder.bookingStock !== 'none') {
+    if (global.envConfig.stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
             const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
@@ -327,14 +317,13 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
                 result.datas[i].stock.qty         = stockData.product.stock.qty;
                 result.datas[i].stock.orderable   = stockData.product.stock.orderable;
                 result.datas[i].stock.qty_real    = stockData.product.stock.qty_real;
-                // result.datas[i] = {...result.datas[i], label, dateShipped, status: product.stock.status, qty: product.stock.qty, orderable: product.stock.orderable, qty_real: product.stock.qty_real};
             }
         }
     }
 
     if (PostBody.structure && PostBody.structure.sortWeight) {
         for (let i = 0; i < result.datas.length; i++) {
-            const sortedPrd = productListSorted.find((sortedPrd) => sortedPrd.id._id.toString() === result.datas[i]._id.toString());
+            const sortedPrd = menu.productsList.find((sortedPrd) => sortedPrd.id.toString() === result.datas[i]._id.toString());
             if (sortedPrd) {
                 result.datas[i].sortWeight = sortedPrd.sortWeight;
             }
@@ -342,7 +331,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     // On récupére tous les produits appartenant a cette categorie afin d'avoir le min et max
-    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id._id.toString())};
     let priceFilter;
     if (PostBody.filter.$and) {
         priceFilter = PostBody.filter.$and[0];
@@ -458,10 +446,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         prds.forEach((product, index) => {
-            const idx = productListSorted.findIndex((resProd) => resProd.id._id.toString() === product._id.toString());
+            const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (idx > -1) {
-                prds[index].sortWeight = productListSorted[idx].sortWeight;
+                prds[index].sortWeight = menu.productsList[idx].sortWeight;
             } else {
                 prds[index].sortWeight = -1;
             }
