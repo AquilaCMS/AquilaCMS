@@ -45,6 +45,14 @@ class CartDelivery extends React.Component {
         window.location.pathname = `${await getLangPrefix(lang)}/cart/delivery`;
     }
 
+    relayPointAddressSavedListener = (e) => {
+        if (!this.state.isRelayPoint) {
+            return;
+        }
+        // true ou false
+        this.setState({ relayPointAddressSaved: e.detail });
+    }
+
     componentDidMount = async () => {
         const { lang, routerLang, user } = this.props;
         const cartId = window.localStorage.getItem('cart_id');
@@ -102,13 +110,7 @@ class CartDelivery extends React.Component {
         });
 
         // Lorsque un point relais est saisi
-        document.addEventListener('relayPointAddressSaved', (e) => {
-            if (!this.state.isRelayPoint) {
-                return;
-            }
-            // true ou false
-            this.setState({ relayPointAddressSaved: e.detail });
-        });
+        document.addEventListener('relayPointAddressSaved', this.relayPointAddressSavedListener);
     }
 
     onChangeSelect = async (e, index) => {
@@ -237,6 +239,10 @@ class CartDelivery extends React.Component {
                 </CartStructure>
             </NSContext.Provider>
         );
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('relayPointAddressSaved', this.relayPointAddressSavedListener);
     }
 }
 
