@@ -194,7 +194,7 @@ const modulesLoadInit = async (server) => {
     if (loadedModules.length > 0) {
         console.log('Finish init loading modules');
     } else {
-        console.log('no modules to load');
+        console.log('No modules to load');
     }
 };
 

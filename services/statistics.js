@@ -276,7 +276,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id']).lean();
+    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/*.lean()*/;
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
