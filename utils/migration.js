@@ -65,22 +65,23 @@ const migration_3_CreatedAt = async () => {
 
 const migration_4_Themes = async () => {
     console.log('Applying migration script "migration_4_Themes"...');
-    const theme = await mongoose.connection.collection('themeConfigs').findOne({});
-    for (const lang of Object.keys(theme.config.translation)) {
-        console.log(theme.config.translation[lang]);
-        if (theme && Array.isArray(theme.config.translation[lang].values) === false) {
-            const values           = [];
-            const tabThemeKeyValue = {values};
-            for (const [key, value] of Object.entries(theme.config.translation[lang])) {
-                values.push({
-                    key,
-                    value,
-                    name        : key,
-                    description : '',
-                    group       : ''
-                });
+    const themes = await mongoose.connection.collection('themeConfigs').find({});
+    for await (const theme of themes) {
+        for (const lang of Object.keys(theme.config.translation)) {
+            if (theme && Array.isArray(theme.config.translation[lang].values) === false) {
+                const values           = [];
+                const tabThemeKeyValue = {values};
+                for (const [key, value] of Object.entries(theme.config.translation[lang])) {
+                    values.push({
+                        key,
+                        value,
+                        name        : key,
+                        description : '',
+                        group       : ''
+                    });
+                }
+                await mongoose.connection.collection('themeConfigs').updateOne({_id: theme._id}, {$set: {[`config.translation.${lang}`]: tabThemeKeyValue}});
             }
-            await mongoose.connection.collection('themeConfigs').updateOne({}, {$set: {[`config.translation.${lang}`]: tabThemeKeyValue}});
         }
     }
 };
