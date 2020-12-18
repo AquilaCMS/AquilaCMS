@@ -27,6 +27,7 @@ const MailTypeSchema              = require('./mailTypeSchema');
 const MediasSchema                = require('./mediasSchema');
 const ModulesSchema               = require('./modulesSchema');
 const NewsSchema                  = require('./newsSchema');
+const NewsPreviewSchema           = require('./newsPreviewSchema');
 const NewslettersSchema           = require('./newslettersSchema');
 const OptsSchema                  = require('./optsSchema');
 const OrdersSchema                = require('./ordersSchema');
@@ -81,6 +82,7 @@ module.exports = {
     MediasSchema,
     ModulesSchema,
     NewsSchema,
+    NewsPreviewSchema,
     NewslettersSchema,
     OptsSchema,
     OrdersSchema,
