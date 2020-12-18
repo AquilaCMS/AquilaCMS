@@ -241,7 +241,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                     }
                 } else {
                     let tItems = [];
-                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product.id, target, value));
+                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product, target, value));
                     if (tItems.length) isTrue = true;
                 }
             }
@@ -302,7 +302,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
                 // ex: on applique une réduction si le panier contient des articles avec le code: 17WONDERSB01 et le slug: jeux-de-societe/abyss
                 // si le produit1 contient le code 17WONDERSB01 et que le produit2 contient le slug jeux-de-societe/abyss
                 // alors la condition sera vrai car c'est sur l'ensemble des produits du panier que ces conditions sont verifiées
-                const tItems = cart.items.filter((product) => conditionOperator(condition.operator, product.id, target, value));
+                const tItems = cart.items.filter((product) => conditionOperator(condition.operator, product, target, value));
                 if (tItems.length) isTrue = true;
             }
             tCondition.push(isTrue);
