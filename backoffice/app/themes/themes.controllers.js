@@ -259,7 +259,7 @@ ThemesController.controller("ThemesCtrl", [
                     
                     $scope.customiseTheme ={};
                     $scope.customiseTheme.keys = {};
-                    $scope.themeConfig.variables = [];
+                    $scope.themeConfig.variables = {};
                     
                     if(response.data.configEnvironement && response.data.themeConf.config.translation) {
                         $scope.languages.forEach(element  => {
