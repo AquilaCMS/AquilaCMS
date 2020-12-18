@@ -6,14 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const URL                         = require('url');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceFilter}       = require('../middleware/security');
 const servicesNews                = require('../services/news');
+const ServicesPreview             = require('../services/preview');
+const {NewsPreview}               = require('../orm/models');
 
 module.exports = function (app) {
     app.post('/v2/site/news', securityForceFilter([{isVisible: true}]), getNews);
     app.post('/v2/site/new', securityForceFilter([{isVisible: true}]), getNew);
     app.put('/v2/site/new', authentication, adminAuth, saveNew);
+    app.post('/v2/site/preview', authentication, adminAuth, previewNew);
     app.delete('/v2/site/new/:_id', authentication, adminAuth, deleteNew);
 };
 
@@ -29,7 +33,12 @@ async function getNews(req, res, next) {
 async function getNew(req, res, next) {
     try {
         const {PostBody} = req.body;
-        res.json(await servicesNews.getNew(PostBody));
+
+        if (req.query.preview) {
+            res.json(await ServicesPreview.getNewPreviewById(req.query.preview));
+        } else {
+            res.json(await servicesNews.getNew(PostBody));
+        }
     } catch (err) {
         return next(err);
     }
@@ -37,6 +46,7 @@ async function getNew(req, res, next) {
 
 async function saveNew(req, res, next) {
     try {
+        await ServicesPreview.deleteNewPreview(req.body.code);
         return res.json(await servicesNews.saveNew(req.body));
     } catch (err) {
         return next(err);
@@ -49,5 +59,33 @@ async function deleteNew(req, res, next) {
         return res.status(200).end();
     } catch (err) {
         return next(err);
+    }
+}
+
+/**
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ */
+async function previewNew(req, res, next) {
+    try {
+        let preview = {};
+        if (await NewsPreview.findOne({code: req.body.code})) {
+            preview = await NewsPreview.findOneAndUpdate({code: req.body.code}, req.body, {new: true});
+        } else {
+            const newPreview = new NewsPreview(req.body);
+            preview          = await newPreview.save();
+        }
+        const _config = (await require('../orm/models/configuration').find({}))[0];
+        if (req.body.lang) {
+            console.log(URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}`));
+            return res.json({url: URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}?preview=${preview._id}`)});
+        }
+        const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
+        console.log(URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}`));
+        return res.json({url: URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}?preview=${preview._id}`)});
+    } catch (err) {
+        next(err);
     }
 }
