@@ -148,7 +148,7 @@ const deletePromoCodeById = async (promoId, codeId) => {
 
 const middlewarePromoCatalog = async (req, res) => {
     try {
-        const user = getUserFromRequest(req);
+        const user = await getUserFromRequest(req);
 
         if (res.locals) {
             const populate = req.body.PostBody && req.body.PostBody.populate ? req.body.PostBody.populate : [];
@@ -268,22 +268,18 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
 
         // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
         // (normal ou special si existe) et appliquons les reductions les plus fortes
-        const product      = products[i];
         const savedProduct = cloneDeep(products[i]);
         // FUTUR: Cumuler les promos ou non
         for (let j = 0, lenj = products[i].relevantDiscount.length; j < lenj; j++) {
             const appliedPromoProduct = cloneDeep(savedProduct);
             applyRelevantDiscount(appliedPromoProduct, appliedPromoProduct.relevantDiscount[j]);
             if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et) {
-                products[i] = {...appliedPromoProduct, price: {...appliedPromoProduct.price}};
+                products[i] = appliedPromoProduct;
             }
         }
         if (!keepObject) {
             products[i].isNew = false;
             if (products[i].associated_prds) {
-                for (let k = 0; k < products[i].associated_prds.length; k++) {
-                    products[i].associated_prds[k] = product.associated_prds[k];
-                }
                 if (!associatedProducts) {
                     if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
                         populate.push('associated_prds');
