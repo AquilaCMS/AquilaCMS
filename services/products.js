@@ -145,9 +145,9 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
-        product         = await queryBuilderPreview.findOne(PostBody);
+        product         = await queryBuilderPreview.findOne(PostBody, true);
     } else {
-        product = await queryBuilder.findOne(PostBody);
+        product = await queryBuilder.findOne(PostBody, true);
     }
     if (!product) {
         return product;
@@ -166,12 +166,12 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
         serviceReviews.keepVisibleAndVerify(product);
     }
 
+    if (product.associated_prds) {
+        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
+    }
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = product;
         product           = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-    }
-    if (product.associated_prds) {
-        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
     }
     return product;
 };

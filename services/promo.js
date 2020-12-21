@@ -268,10 +268,9 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
 
         // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
         // (normal ou special si existe) et appliquons les reductions les plus fortes
-        const savedProduct = cloneDeep(products[i]);
         // FUTUR: Cumuler les promos ou non
         for (let j = 0, lenj = products[i].relevantDiscount.length; j < lenj; j++) {
-            const appliedPromoProduct = cloneDeep(savedProduct);
+            const appliedPromoProduct = cloneDeep(products[i]);
             applyRelevantDiscount(appliedPromoProduct, appliedPromoProduct.relevantDiscount[j]);
             if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et) {
                 products[i] = appliedPromoProduct;
