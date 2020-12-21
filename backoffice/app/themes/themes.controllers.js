@@ -1,8 +1,8 @@
 const ThemesController = angular.module("aq.themes.controllers", []);
 
 ThemesController.controller("ThemesCtrl", [
-    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope",
-    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope) {
+    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal",
+    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal) {
 
         $scope.themeConfig = {};
 
@@ -22,9 +22,21 @@ ThemesController.controller("ThemesCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        
-        
+        $scope.addTheme = function (nodeParent) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/themes/views/modals/themes-new.html",
+                controller: "ThemesNewCtrl"
+            });
 
+            modalInstance.result.then(function () {
+                $scope.LoadAllThemes();
+            });
+        };
+        
+        $scope.LoadAllThemes = function(){
+            $scope.LoadThemeCongig();
+        }
+        
         $scope.langChange = function (lang)
         {
             if ($scope.customiseTheme === undefined){
@@ -62,10 +74,6 @@ ThemesController.controller("ThemesCtrl", [
             }
         }
 
-        $scope.beforeTheme = function () {
-            $scope.showThemeLoading = true;
-        };
-
         $scope.packageInstall = function () {
             if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
                 $scope.isLoading = true;
@@ -83,17 +91,6 @@ ThemesController.controller("ThemesCtrl", [
             
         };
 
-        $scope.onErrorUploadTheme = function () {
-            $scope.isLoading = false;
-            $scope.showThemeLoading = false;
-            toastService.toast("danger", "Error !");
-        };
-
-        $scope.uploadedTheme = function () {
-            $scope.showThemeLoading = false;
-            toastService.toast("success", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
-            $scope.LoadAllThemes();
-        };
 
         $scope.packageBuild = function () {
             if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
@@ -280,5 +277,32 @@ ThemesController.controller("ThemesCtrl", [
                 
             };
 
+    }
+]);
+
+CategoryControllers.controller("ThemesNewCtrl", [
+    "$scope", "$modalInstance", "toastService",
+    function ($scope, $modalInstance, toastService) {
+
+        $scope.onErrorUploadTheme = function () {
+            $scope.$parent.isLoading = false;
+            $scope.showThemeLoading = false;
+            toastService.toast("danger", "Error !");
+        };
+
+        $scope.beforeTheme = function () {
+            $scope.showThemeLoading = true;
+        };
+
+        $scope.uploadedTheme = function () {
+            $scope.showThemeLoading = false;
+            toastService.toast("success", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
+            $modalInstance.close("save");
+        };
+
+
+        $scope.cancel = function (){
+            $modalInstance.dismiss("cancel");
+        };
     }
 ]);
