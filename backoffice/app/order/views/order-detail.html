@@ -205,6 +205,9 @@
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->
                                         <div ng-if="item.opts.length > 0" translate>order.detail.opt <p ng-repeat="opt in item.opts">{{opt[0]}}</p></div>
                                         <div ng-show="item.id.trademark" class="trademark" translate>order.detail.marque</div>
+                                        <ul ng-if="item.type === 'bundle'" style="list-style: none;" bind-html-compile="displayProducts(item)">
+                                            
+                                        </ul>
                                         <!--<a ng-href="#/products/{{(item.item_details.itemType ? item.item_details.itemType : 'simple')}}/{{item.item_details._slug}}" target="_blank" class="btn btn-default">Voir</a>-->
                                     </div>
                                 </td>

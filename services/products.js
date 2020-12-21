@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                  = require('moment-business-days');
 const path                    = require('path');
 const mongoose                = require('mongoose');
@@ -242,11 +250,20 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
-    let matchCategory = {_visible: true, active: true};
+    lang = servicesLanguages.getDefaultLang(lang);
     // Si admin alors on populate tout les documents sans restriction de visibilité ou d'actif
-    if (isAdmin) {
-        matchCategory = {};
+    if (!PostBody.filter) PostBody.filter = {};
+    if (!isAdmin) {
+        PostBody.filter = {
+            ...PostBody.filter,
+            _visible : true,
+            active   : true
+        };
     }
+    PostBody.filter = {
+        ...PostBody.filter,
+        [`translation.${lang}`] : {$exists: true}
+    };
     if (!PostBody.structure) {
         PostBody.structure = {};
     }
@@ -255,10 +272,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         price : 1,
         type  : 1
     };
-    const menu         = await Categories.findById(id).populate({
-        path  : 'productsList.id',
-        match : matchCategory
-    }).lean();
+
+    const menu = await Categories.findById(id).lean();
     if (menu === null) {
         throw NSErrors.CategoryNotFound;
     }
@@ -273,38 +288,22 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
-    lang = servicesLanguages.getDefaultLang(lang);
     // Si un productsList.id ne répond pas au match alors productsList.id === null
-    menu.productsList = menu.productsList.filter((p) => p.id !== null);
-    menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
-    if (PostBody.filter === undefined)  PostBody.filter = {};
-    const _config = await Configuration.findOne({}, {stockOrder: 1});
-    if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
+    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
         PostBody.structure.stock = 1;
     }
 
     // On verifie que les infos de PostBody sont correctes
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
     // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit)
-    // si PostBody.sort n'existe pas ou que sort.sortWeight existe
-    if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-        // on trie les sortWeight du plus petit au plus grand
-        if (PostBody.sort && PostBody.sort.sortWeight && PostBody.sort.sortWeight === 1 ) {
-            menu.productsList.sort((p1, p2) => p1.sortWeight  - p2.sortWeight);
-        } else {
-            menu.productsList.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        }
-    }
-    // Si il y a un tri sur les produits alors on va trier les produits dans le queryBuilder
-    const productListSorted = menu.productsList;
 
-    PostBody.filter._id = {$in: productListSorted.map((item) => item.id._id.toString())};
+    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
     // On récupére les produits de productList
     const result = await queryBuilder.find(PostBody, true);
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         // On ajoute le sortWeight correspondant au produit dans le doc produit
-        productListSorted.forEach((product) => {
-            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id._id.toString());
+        menu.productsList.forEach((product) => {
+            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (ProdFound) {
                 ProdFound.sortWeight = product.sortWeight;
@@ -312,9 +311,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         });
         // On trie les produits par poids
         result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        result.count = menu.productsList.length;
     }
-    if (_config.stockOrder.bookingStock !== 'none') {
+    if (global.envConfig.stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
             const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
@@ -327,14 +325,13 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
                 result.datas[i].stock.qty         = stockData.product.stock.qty;
                 result.datas[i].stock.orderable   = stockData.product.stock.orderable;
                 result.datas[i].stock.qty_real    = stockData.product.stock.qty_real;
-                // result.datas[i] = {...result.datas[i], label, dateShipped, status: product.stock.status, qty: product.stock.qty, orderable: product.stock.orderable, qty_real: product.stock.qty_real};
             }
         }
     }
 
     if (PostBody.structure && PostBody.structure.sortWeight) {
         for (let i = 0; i < result.datas.length; i++) {
-            const sortedPrd = productListSorted.find((sortedPrd) => sortedPrd.id._id.toString() === result.datas[i]._id.toString());
+            const sortedPrd = menu.productsList.find((sortedPrd) => sortedPrd.id.toString() === result.datas[i]._id.toString());
             if (sortedPrd) {
                 result.datas[i].sortWeight = sortedPrd.sortWeight;
             }
@@ -342,7 +339,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     // On récupére tous les produits appartenant a cette categorie afin d'avoir le min et max
-    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id._id.toString())};
     let priceFilter;
     if (PostBody.filter.$and) {
         priceFilter = PostBody.filter.$and[0];
@@ -353,6 +349,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
     let prds       = await Products
         .find(PostBody.filter, PostBody.structure)
+        .populate(PostBody.populate)
         .sort(PostBody.sort)
         .lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
@@ -457,10 +454,10 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         prds.forEach((product, index) => {
-            const idx = productListSorted.findIndex((resProd) => resProd.id._id.toString() === product._id.toString());
+            const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (idx > -1) {
-                prds[index].sortWeight = productListSorted[idx].sortWeight;
+                prds[index].sortWeight = menu.productsList[idx].sortWeight;
             } else {
                 prds[index].sortWeight = -1;
             }
@@ -633,7 +630,7 @@ const setProduct = async (req) => {
                 reject(NSErrors.ProductUpdateError);
             }
             await ProductsPreview.deleteOne({code: req.body.code});
-            return resolve(result);
+            return resolve((await Products.findOne({code: result.code})).populated(['bundle_sections.products._id']));
         });
     });
 };
@@ -714,7 +711,14 @@ const deleteProduct = async (_id) => {
  * @param   {number?} qtecdé   Quantité a commander
  * @returns {object}  Informations de retour
  */
-const checkProductOrderable = (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0) => {
+    let prdStock = {};
+    // si objstock est un id, on recupere le produit
+    if (typeof objstock === 'string') {
+        prdStock = (await Products.findById(objstock)).stock;
+    } else {
+        prdStock = objstock;
+    }
     const datas = {
         selling : {// Affichage
             sellable : false,   // Produit vendable (affichage du bouton d'achat en gros)
@@ -733,7 +737,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // si qtecdé est null, c'est que l'on teste si un produit bundle est orderable ou non
     if (qtecdé === null) {
-        if (objstock.status === 'epu') {
+        if (prdStock.status === 'epu') {
             datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
             return datas;
         }
@@ -741,13 +745,13 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     const change_lib_stock = 5; // a récup en bdd
 
-    if (typeof objstock.date_selling !== 'undefined'/* && objstock.date_selling > date.now() */) {
-        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
-        datas.delivery.dates[0] = objstock.date_selling;
-    } else if (objstock.qty_real === 0 && objstock.status === 'epu') {
+    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
+        datas.delivery.dates[0] = prdStock.date_selling;
+    } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {
         datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
-    } else if (objstock.qty_real <= change_lib_stock) {
-        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
+    } else if (prdStock.qty_real <= change_lib_stock) {
+        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${prdStock.qty_real} produits disponibles`, en: `Only ${prdStock.qty_real} products available`}};
         datas.delivery.dates[0] = 'today';
         datas.selling.sellable  = true;
     } else {
@@ -758,7 +762,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // Commandable ?
     if (qtecdé > 0 && datas.selling.sellable) {
-        if (qtecdé > objstock.qty_real) {
+        if (qtecdé > prdStock.qty_real) {
             datas.ordering.message = {code: 'NotEnoughPdts', translation: {fr: 'Pas assez de produits disponibles pour votre commande.', en: 'There not enough products in our stock for your order.'}};
         } else {
             datas.ordering.orderable = true;
@@ -1372,7 +1376,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Commandable et on gère la reservation du stock
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (await ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {

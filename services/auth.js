@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {promisify} = require('util');
 const jwt         = require('jsonwebtoken');
 const NSErrors    = require('../utils/errors/NSErrors');
@@ -38,12 +46,13 @@ const login = async (req, res, next) => {
         if (req.params.from === 'admin') {
             if (!user.isAdmin) throw NSErrors.Unauthorized;
         }
-        if (!user.isActiveAccount) {
-            throw NSErrors.DesactivateAccount;
-        }
 
         const isMatch = await user.validPassword(password);
         if (!isMatch) throw NSErrors.BadLogin;
+
+        if (!user.isActive) {
+            throw NSErrors.DesactivateAccount;
+        }
 
         const loginPassport = promisify(req.logIn);
         await loginPassport(user, {session: false});

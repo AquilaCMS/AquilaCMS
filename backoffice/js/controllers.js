@@ -687,7 +687,7 @@ adminCatagenControllers.controller("ExportsCtrl", [
 ]);
 
 adminCatagenControllers.controller("InvoicesController", [
-    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location)
+    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', "ExportCollectionCSV", function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location, ExportCollectionCSV)
     {
         $scope.columns = InvoiceColumns;
         $scope.currentPage = 1;
@@ -849,7 +849,7 @@ adminCatagenControllers.controller("InvoicesController", [
             $scope.getInvoices();
         }, 100);
 
-
+        $scope.export = ExportCollectionCSV;
     }
 ]);
 
