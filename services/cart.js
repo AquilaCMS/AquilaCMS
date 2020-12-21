@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment            = require('moment');
 const mongoose          = require('mongoose');
 const {
@@ -45,7 +53,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((item) => item.id), user, lang, false);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
                 cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
@@ -220,7 +228,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
@@ -235,7 +243,7 @@ const updateQty = async (req) => {
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd)).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }

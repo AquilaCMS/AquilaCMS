@@ -1,12 +1,20 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 // staticsPreview
 const URL          = require('url');
 const ModelPreview = require('../orm/models/staticsPreview');
 const QueryBuilder = require('../utils/QueryBuilder');
 
-const restrictedFields = [];
-const defaultFields    = ['_id', 'code', 'translation'];
-const queryBuilder     = new QueryBuilder(ModelPreview, restrictedFields, defaultFields);
-const {StaticsPreview} = require('../orm/models');
+const restrictedFields              = [];
+const defaultFields                 = ['_id', 'code', 'translation'];
+const queryBuilder                  = new QueryBuilder(ModelPreview, restrictedFields, defaultFields);
+const {StaticsPreview, NewsPreview} = require('../orm/models');
 
 const getStaticsPreview = async (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -22,6 +30,24 @@ const getStaticPreviewById = async (_id) => {
 
 const deletePreview = async (code) => {
     return ModelPreview.deleteOne({code});
+};
+
+// Blog preview
+
+const getNewsPreview = async (PostBody) => {
+    return NewsPreview.find(PostBody.filter).populate(PostBody.populate).sort(PostBody.sort).limit(PostBody.limit || 1);
+};
+
+const getNewPreview = async (PostBody) => {
+    return NewsPreview.findOne(PostBody.filter).populate(PostBody.populate);
+};
+
+const getNewPreviewById = async (_id) => {
+    return getNewPreview({filter: {_id}});
+};
+
+const deleteNewPreview = async (code) => {
+    return NewsPreview.deleteOne({code});
 };
 
 // productPreview
@@ -78,6 +104,7 @@ const removePreviews = async () => {
         const date = new Date();
         await StaticsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
         await ProductsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
+        await NewsPreview.deleteMany({updatedAt: {$lte: date.setDate(date.getDate() - 1)}});
     } catch (err) {
         console.error(err);
     }
@@ -89,5 +116,10 @@ module.exports = {
     getStaticPreviewById,
     deletePreview,
     preview,
-    removePreviews
+    removePreviews,
+    getNewsPreview,
+    getNewPreview,
+    getNewPreviewById,
+    deleteNewPreview
+
 };

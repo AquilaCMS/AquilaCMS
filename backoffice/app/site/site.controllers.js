@@ -110,14 +110,29 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
 
 // Edition d'article
 SiteControllers.controller("ArticlesDetailSiteCtrl", [
-    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout",
-    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout)
+    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope",
+    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope)
     {
         var selectedLang = "";
         $scope.isEditMode = false;
         $scope.nsUploadFiles = {
             isSelected: false
         };
+        
+        $scope.additionnalButtons = [
+            {
+                text: 'product.general.preview',
+                onClick: function () {
+                    $scope.articles.lang = $rootScope.adminLang;
+                    ArticlesV2.preview($scope.articles, function (response) {
+                        if (response && response.url) {
+                            window.open(response.url);
+                        }
+                    });
+                },
+                icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
+            }
+        ]
 
         $scope.langChange = function (lang)
         {

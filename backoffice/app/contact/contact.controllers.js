@@ -11,7 +11,7 @@ function getPage() {
 }
 
 ContactControllers.controller("ContactListCtrl", [
-    "$scope", "$location", "$rootScope", "Contact", function ($scope, $location, $rootScope, Contact) {
+    "$scope", "$location", "$rootScope", "Contact", "ExportCollectionCSV", function ($scope, $location, $rootScope, Contact, ExportCollectionCSV) {
         $scope.contacts = [];
         $scope.cols = [];
         $scope.nbItemsPerPage = 15;
@@ -88,6 +88,8 @@ ContactControllers.controller("ContactListCtrl", [
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
             $scope.getContacts();
         }, 100);
+        
+        $scope.export = ExportCollectionCSV;
     }
 ]);
 

@@ -54,7 +54,7 @@ PromoControllers.controller("PromoDetailCtrl", [
     "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2",
     function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2) {
         $scope.promo = {
-            discountType     : "Aet",
+            discountType     : null,
             actif            : false,
             gifts            : [],
             codes            : [],

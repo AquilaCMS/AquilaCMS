@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                    = require('moment-business-days');
 const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
@@ -276,7 +284,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id']).lean();
+    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/* .lean() */;
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {

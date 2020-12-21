@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose = require('mongoose');
 
 /* const migration_N_Sample = async () => {
@@ -63,11 +71,45 @@ const migration_3_CreatedAt = async () => {
     }
 };
 
+const migration_4_Themes = async () => {
+    console.log('Applying migration script "migration_4_Themes"...');
+    const themes = await mongoose.connection.collection('themeConfigs').find({});
+    for await (const theme of themes) {
+        for (const lang of Object.keys(theme.config.translation)) {
+            if (theme && Array.isArray(theme.config.translation[lang].values) === false) {
+                const values           = [];
+                const tabThemeKeyValue = {values};
+                for (const [key, value] of Object.entries(theme.config.translation[lang])) {
+                    values.push({
+                        key,
+                        value,
+                        name        : key,
+                        description : '',
+                        group       : ''
+                    });
+                }
+                await mongoose.connection.collection('themeConfigs').updateOne({_id: theme._id}, {$set: {[`config.translation.${lang}`]: tabThemeKeyValue}});
+            }
+        }
+    }
+};
+
+const migration_5_isActive = async () => {
+    console.log('Applying migration script "migration_5_isActive"...');
+    const user = await mongoose.connection.collection('users').findOne({});
+    if (user && !user.isActive) {
+        const test = await mongoose.connection.collection('users').updateMany({}, {$set: {isActive: 'true'}});
+        console.log(test);
+    }
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
     migration_2_Metrics,
-    migration_3_CreatedAt
+    migration_3_CreatedAt,
+    migration_4_Themes,
+    migration_5_isActive
     // sample
 ];
 

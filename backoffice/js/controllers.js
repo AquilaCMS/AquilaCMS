@@ -103,8 +103,8 @@ adminCatagenControllers.controller("loggedCtrl", [
 ]);
 
 adminCatagenControllers.controller("AdminCtrl", [
-    "$scope", "AdminScroll", "$modal", "ClientV2", function ($scope, AdminScroll, $modal, ClientV2)
-    {
+    "$scope", "AdminScroll", "$modal", "ClientV2", "$location",
+    function ($scope, AdminScroll, $modal, ClientV2, $location) {
         function init()
         {
             $scope.sortType = "lastname"; // set the default sort type
@@ -115,6 +115,10 @@ adminCatagenControllers.controller("AdminCtrl", [
 
         $scope.initValues = {start: 0, limit: 15};
         $scope.page = 1;
+
+        $scope.goToAdminDetails = function(clientId){
+            $location.path(`/list/detail/${clientId}`);
+        };
 
         $scope.getClients = function(page = 1)
         {
@@ -683,7 +687,7 @@ adminCatagenControllers.controller("ExportsCtrl", [
 ]);
 
 adminCatagenControllers.controller("InvoicesController", [
-    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location)
+    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', "ExportCollectionCSV", function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location, ExportCollectionCSV)
     {
         $scope.columns = InvoiceColumns;
         $scope.currentPage = 1;
@@ -845,7 +849,7 @@ adminCatagenControllers.controller("InvoicesController", [
             $scope.getInvoices();
         }, 100);
 
-
+        $scope.export = ExportCollectionCSV;
     }
 ]);
 
