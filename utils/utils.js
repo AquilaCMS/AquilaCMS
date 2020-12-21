@@ -1,13 +1,16 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2020 © Nextsourcia - All rights reserved.
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 const axios          = require('axios');
 const path           = require('path');
 const Json2csvParser = require('json2csv').Parser;
+const {
+    transforms: {unwind, flatten}
+} = require('json2csv');
 const {v4: uuidv4}   = require('uuid');
 const mongoose       = require('mongoose');
 const fs             = require('./fsp');
@@ -69,8 +72,34 @@ const checkOrCreateAquilaRegistryKey = async () => {
 };
 
 const json2csv = async (data, fields, folderPath, filename) => {
+    let decomposedAttribute = [];
+    for (let j = 0; j < data.length; j++) {
+        const line = data[j];
+        for (const [key, value] of Object.entries(line)) {
+            if (Array.isArray(value)) {
+                for (let i = 0; i < value.length; i++) {
+                    if (typeof value[i] === 'object') {
+                        const index = fields.indexOf(key);
+                        if (index !== -1) {
+                            fields.splice(index, 1);
+                            for (let x = 0; x < Object.entries(value[i]).length; x++) {
+                                fields.push(`${key}.${Object.entries(value[i])[x][0]}`);
+                                if (decomposedAttribute.includes(key) === false) {
+                                    decomposedAttribute = key;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
-    const json2csvParser = new Json2csvParser({fields});
+    const transforms     = [
+        unwind({paths: decomposedAttribute}),
+        flatten({objects: true})
+    ];
+    const json2csvParser = new Json2csvParser({fields, transforms});
     return {
         csv        : json2csvParser.parse(data),
         file       : filename,

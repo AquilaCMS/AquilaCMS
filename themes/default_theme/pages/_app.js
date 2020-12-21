@@ -163,7 +163,7 @@ class AquilaApp extends App {
                 appurl,
                 sitename,
                 cmsBlocks,
-                themeConfig   : themeConfig.data.config,
+                themeConfig   : themeConfig.data.config.values,
                 currentUrl    : bundle.ctx.asPath, // => NSMenu
                 user,
                 gNext         : { Router },
