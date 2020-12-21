@@ -163,38 +163,42 @@ const logVersion = async () => {
 
 const startListening = async (server) => {
     let startWithSSL = false;
-    if (global.envFile && global.envFile.ssl && global.envFile.ssl.key) {
+    let errorWIthSSL = false;
+    if (global.envFile && global.envFile.ssl && global.envFile.ssl.active && global.envFile.ssl.key) {
         if (await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key)) && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))) {
             startWithSSL = true;
         } else {
             console.error('SSL est activé mais invalide');
             console.error('Access to the key file and certification file is not possible');
-            console.error('Start without SSL');
+            startWithSSL = true;
+            errorWIthSSL = true;
         }
     }
 
     if (startWithSSL) {
-        try {
-            spdy.createServer({
-                key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
-                cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
-                spdy : {
-                    protocols : ['h2', 'http1.1'],
-                    plain     : false,
-                    ssl       : true
-                }
-            }, server).listen(global.port, (err) => {
-                if (err) throw err;
-                console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
-            });
-        } catch (error) {
-            console.log(error);
-            console.error('Invalid SSL');
-            console.error('Start without SSL');
-            server.listen(global.port, (err) => {
-                if (err) throw err;
-                console.log(`%sserver listening on port ${global.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
-            });
+        if (!errorWIthSSL) {
+            try {
+                spdy.createServer({
+                    key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
+                    cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
+                    spdy : {
+                        protocols : ['h2', 'http1.1'],
+                        plain     : false,
+                        ssl       : true
+                    }
+                }, server).listen(global.port, (err) => {
+                    if (err) throw err;
+                    console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+                });
+            } catch (error) {
+                console.error('Invalid SSL, key and cert files are not found');
+                console.error('You need to add them');
+                throw (error);
+            }
+        } else {
+            console.error('Invalid SSL, key and cert files are not found');
+            console.error('You need to add them');
+            throw ('SSL Error');
         }
     } else {
         server.listen(global.port, (err) => {
