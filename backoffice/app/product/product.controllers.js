@@ -18,11 +18,11 @@ ProductControllers.controller("ProductBeforeCreateCtrl", [
 ]);
 
 ProductControllers.controller("SelectProductsCtrl", [
-    "$scope", "$modalInstance", "queryFilter", function ($scope, $modalInstance, queryFilter) {
+    "$scope", "$modalInstance", "queryFilter", "toastService", function ($scope, $modalInstance, queryFilter, toastService) {
         ;
         $scope.queryFilter = queryFilter;
         if(!$scope.$parent.selectedProducts){
-            $scope.$parent.selectedProducts = [];
+            $scope.$parent.selectedProducts = $scope.$parent.associatedPrds || [];
         }
         $scope.selectProduct = function (product, ev) {
             let push = true;
@@ -70,6 +70,7 @@ ProductControllers.controller("SelectProductsCtrl", [
             $scope.$parent.selectedProducts;
             let final = []
             let long = products.length
+            let change = false;
             for(let i = 0; i < long; i++){
                 if(products[i]){
                     if(products[i].style){
@@ -84,7 +85,13 @@ ProductControllers.controller("SelectProductsCtrl", [
                             final.push(products[i])
                         }
                     }
+                    if(!change){
+                        change = true;
+                    }
                 }
+            }
+            if(change){
+                toastService.toast('success', "Pensez à valider vos modifications");
             }
             $modalInstance.close(final);
         };
