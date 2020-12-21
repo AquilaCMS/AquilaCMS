@@ -6,8 +6,8 @@ var adminCatagenControllers = angular.module("adminCatagenControllers", []);
 
 // wrapper
 adminCatagenControllers.controller("wrapperCtrl", [
-    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate", "$http", "$timeout", 
-    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate, $http, $timeout)
+    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate", "$http",
+    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate, $http)
     {
 
         $scope.menus = MenusList;
