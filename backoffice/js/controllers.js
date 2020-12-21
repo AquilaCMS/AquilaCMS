@@ -288,6 +288,10 @@ adminCatagenControllers.controller("AdminNewCtrl", [
                     {
                         console.error("Error!");
                     }
+                }, function(error){
+                    if(error.data && error.data.message) {
+                        toastService.toast("danger", error.data.message);
+                    }
                 });
             }
         };
