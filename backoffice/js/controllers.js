@@ -247,6 +247,8 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             
             {code:"clients", translate:"admin-list.clients"},
             {code:"reviews", translate:"admin-list.reviews"},
+            {code:"contacts", translate:"admin-list.contact"},
+            {code:"newsletters", translate:"admin-list.newsletters"},
 
             {code:"config", translate:"admin-list.confEnv"},
             {code:"stock", translate:"admin-list.stock"},
@@ -259,6 +261,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"admin", translate:"admin-list.admin"},
             {code:"update", translate:"admin-list.update"},
 
+            {code:"themes", translate:"admin-list.themes"},
             {code:"design", translate:"admin-list.design"},
             {code:"translate", translate:"admin-list.translate"},
 
@@ -383,6 +386,8 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             
             {code:"clients", translate:"admin-list.clients"},
             {code:"reviews", translate:"admin-list.reviews"},
+            {code:"contacts", translate:"admin-list.contact"},
+            {code:"newsletters", translate:"admin-list.newsletters"},
 
             {code:"config", translate:"admin-list.confEnv"},
             {code:"stock", translate:"admin-list.stock"},
@@ -395,6 +400,7 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             {code:"admin", translate:"admin-list.admin"},
             {code:"update", translate:"admin-list.update"},
 
+            {code:"themes", translate:"admin-list.themes"},
             {code:"design", translate:"admin-list.design"},
             {code:"translate", translate:"admin-list.translate"},
 

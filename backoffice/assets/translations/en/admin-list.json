@@ -1,7 +1,6 @@
 {
     "t1": "Edit admin",
     "t2": "Create new admin",
-
     "t3": "Administrators listing",
     "ph1": "Search...",
     
@@ -35,11 +34,11 @@
     
     "clients": " Customers > Customers",
     "reviews": " Customers > reviews",
-
-
+    "contact": " Clients > Contacts",
+    "newsletters": " Clients > Newsletters",
 
     "confEnv": " Configuration > Environment",
-    "stock": " Configuration > stock",
+    "stock": " Configuration > Orders param",
     "mails": " Configuration > emails",
     "shipments": " Configuration > shipments",
     "territories": " Configuration > territories",
@@ -49,6 +48,7 @@
     "admin": " Configuration > Admin",
     "update": " Configuration > update",
 
+    "themes": " Design > Themes",
     "design": " Design > design",
     "translate": " Design > translate",
 

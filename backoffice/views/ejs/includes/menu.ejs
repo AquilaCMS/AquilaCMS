@@ -10,7 +10,7 @@
     </select>
 
     <ul>
-        <li class="parent">
+        <li class="parent" ng-show="!(accessList.includes('orders')) || !(accessList.includes('payments')) || !(accessList.includes('invoices')) || !(accessList.includes('cart'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-handshake-o fa-2x i-style"></i>
@@ -56,7 +56,7 @@
             </ul>
         </li>
 
-        <li class="parent">
+        <li class="parent" ng-show="!(accessList.includes('products')) || !(accessList.includes('categories')) || !(accessList.includes('promos')) || !(accessList.includes('picto')) || !(accessList.includes('attributes')) || !(accessList.includes('trademarks')) || !(accessList.includes('suppliers')) || !(accessList.includes('families'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-database fa-2x i-style"></i>
@@ -172,7 +172,7 @@
         </li>
 
 
-        <li class="parent">
+        <li class="parent" ng-show="!(accessList.includes('staticPage')) || !(accessList.includes('cmsBlocks')) || !(accessList.includes('gallery')) || !(accessList.includes('slider')) || !(accessList.includes('medias')) || !(accessList.includes('articles'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-desktop fa-2x i-style"></i>
@@ -235,7 +235,7 @@
         </li>
 
 
-        <li class="parent">
+        <li class="parent" ng-show="!(accessList.includes('clients')) || !(accessList.includes('attributes')) || !(accessList.includes('reviews')) || !(accessList.includes('contacts')) || !(accessList.includes('newsletters'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-users fa-2x i-style"></i>
@@ -297,7 +297,7 @@
             </ul>
         </li>
 
-        <li class="parent">
+        <li class="parent" ng-show="!(accessList.includes('config')) || !(accessList.includes('stock')) || !(accessList.includes('mails')) || !(accessList.includes('shipments')) || !(accessList.includes('territories')) || !(accessList.includes('languages')) || !(accessList.includes('paymentMethods')) || !(accessList.includes('jobs')) || !(accessList.includes('admin')) || !(accessList.includes('update'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-wrench fa-2x i-style"></i>
@@ -390,7 +390,7 @@
             </ul>
         </li>
 
-        <li class="parent">
+        <li class="parent" ng-show="!(accessList.includes('themes')) || !(accessList.includes('design')) || !(accessList.includes('translate')) || !(accessList.includes('modules'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-desktop fa-2x i-style"></i>
@@ -455,7 +455,7 @@
         </li>
 
 
-       <li class="parent">
+       <li class="parent" ng-show="!(accessList.includes('statistics'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-bar-chart fa-2x i-style"></i>
