@@ -152,7 +152,7 @@ const keepVisibleAndVerifyArray = async (result) => {
  * On supprime les reviews qui ne sont pas visible et verify pour ce produit
  * @param {Products} product Produit
  */
-const keepVisibleAndVerify = async (product) => {
+const keepVisibleAndVerify = (product) => {
     for (let j = product.reviews.datas.length - 1; j >= 0; j--) {
         const {visible, verify} = product.reviews.datas[j];
         if (!visible || !verify) product.reviews.datas.splice(j, 1);

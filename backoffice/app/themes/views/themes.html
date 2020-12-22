@@ -1,6 +1,5 @@
-<ns-box data-title="themes.t1" title-icon="fa fa-desktop">
-    <form name="form" ng-submit="validate(tab)" ng-show="!showLoading"
-        role="form">
+<ns-box data-title="themes.t1" title-icon="fa fa-desktop" new-click="addTheme()">
+    <form name="form" ng-submit="validate(tab)" ng-show="!showLoading" role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <ns-translation ng-hide ="tab !== 'config'" ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
     <div class="box-content">
@@ -41,14 +40,6 @@
                     </a>
                 </div>
                 <br />
-                <div class="col-md-12">
-                    <label translate="">themes.newtheme</label>
-                    <ns-upload-files accepttype=".zip" multiple="false" type="theme" before-function="beforeTheme()"
-                        after-function="uploadedTheme()" on-error="onErrorUploadTheme()"></ns-upload-files>
-                    <div ng-show="showThemeLoading" id="overlayModule">
-                        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
-                    </div>
-                </div>
            </div>
 
            <div id="config" class="col-md-8 tab-pane fade in active" ng-if="tab === 'config'" >
