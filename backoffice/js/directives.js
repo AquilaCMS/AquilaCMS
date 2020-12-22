@@ -2126,8 +2126,8 @@ adminCatagenDirectives.directive("nsUploadFiles", [
             },
             templateUrl: "views/templates/nsUploadFiles.html",
             controller: [
-                "$scope", "Upload",
-                function ($scope, Upload)
+                "$scope", "Upload", "toastService",
+                function ($scope, Upload, toastService)
                 {
                     $scope.disableUpload = false;
                     $scope.idOptional = "";

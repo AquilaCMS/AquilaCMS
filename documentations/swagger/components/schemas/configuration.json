@@ -46,7 +46,9 @@
                     "siteName"          : {"type": "string"},
                     "websiteCountry"    : {"type": "string"},
                     "websiteTimezone"   : {"type": "string"},
-                    "migration"          : {"type": "number"}
+                    "migration"         : {"type": "number"},
+                    "logPath"           : {"type": "string"},
+                    "errorPath"         : {"type": "string"}
                 }
             },
             "taxerate" : {

@@ -6,7 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                        = require('path');
 const {Configuration}             = require('../orm/models');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {extendTimeOut}             = require('../middleware/server');
@@ -28,9 +27,6 @@ module.exports = function (app) {
     app.get('/restart', authentication, adminAuth, restart);
     app.get('/robot', authentication, adminAuth, getRobot);
     app.post('/robot', authentication, adminAuth, setRobot);
-
-    app.get('/config/next', authentication, adminAuth, getNextVersion);
-    app.post('/config/next', authentication, adminAuth, changeNextVersion);
 };
 
 /**
@@ -108,65 +104,6 @@ const getConfig = async (req, res, next) => {
 const getSiteName = async (req, res, next) => {
     try {
         return res.json(await ServiceConfig.getSiteName());
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * GET /api/config/next
- * @tags Configuration
- */
-const getNextVersion = async (req, res, next) => {
-    try {
-        const datas = {};
-        if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
-            const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json'], global.appRoot);
-            let data     = result.stdout.split('}\n{');
-            data         = data[data.length - 1];
-            if (!data.startsWith('{')) {
-                data = `{${data}`;
-            }
-            let currentVersion = await packageManager.execSh('yarn', ['list', '--pattern', 'next', '--json'], global.appRoot);
-            currentVersion     = JSON.parse(currentVersion.stdout).data.trees;
-            for (const elem of currentVersion) {
-                if (elem.name.startsWith('next@')) {
-                    currentVersion = elem.name;
-                    break;
-                }
-            }
-
-            datas.actual   = currentVersion.slice(5);
-            datas.versions = JSON.parse(data).data;
-        } else {
-            const nextInstalledVersion = await packageManager.execSh('npm', ['ls', 'next', '--json'], global.appRoot);
-            const listNextVersion      = await packageManager.execSh('npm', ['view', 'next', '--json'], global.appRoot);
-            datas.actual               = JSON.parse(nextInstalledVersion.stdout).dependencies.next.version;
-            datas.versions             = JSON.parse(listNextVersion.stdout).versions;
-        }
-
-        return res.status(200).json({datas});
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * POST /api/config/next
- * @tags Configuration
- */
-const changeNextVersion = async (req, res, next) => {
-    try {
-        const {nextVersion} = req.body;
-        if (!nextVersion) throw NSErrors.UnprocessableEntity;
-        let result;
-        if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
-            result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`], global.appRoot);
-        } else {
-            result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`], global.appRoot);
-        }
-        if (result.code !== 0) throw NSErrors.InvalidRequest;
-        res.end();
     } catch (err) {
         return next(err);
     }
