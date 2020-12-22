@@ -61,7 +61,6 @@ adminCatagenControllers.controller("wrapperCtrl", [
             // if(["environment", "stock", "mails", "shipments", "territories", "languages", "paymentMethods", "jobs", "list", "update"].every(num => $scope.accessList.includes(num))){
             //     $scope.accessList.push('configuration');
             // }
-            debugger;
         });
 
         window.addEventListener("getLanguages", function(e) { getLanguages() });
