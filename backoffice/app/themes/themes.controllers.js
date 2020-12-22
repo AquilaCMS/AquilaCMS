@@ -280,7 +280,7 @@ ThemesController.controller("ThemesCtrl", [
     }
 ]);
 
-CategoryControllers.controller("ThemesNewCtrl", [
+ThemesController.controller("ThemesNewCtrl", [
     "$scope", "$modalInstance", "toastService",
     function ($scope, $modalInstance, toastService) {
 
