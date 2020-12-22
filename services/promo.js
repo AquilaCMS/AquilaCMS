@@ -1,13 +1,18 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {cloneDeep}          = require('lodash');
 const mongoose             = require('mongoose');
 const {
     Promo,
     Rules,
     Languages,
-    Products,
     ProductSimple,
-    ProductBundle,
-    ProductVirtual,
     Orders,
     Cart
 }                          = require('../orm/models');
@@ -143,7 +148,7 @@ const deletePromoCodeById = async (promoId, codeId) => {
 
 const middlewarePromoCatalog = async (req, res) => {
     try {
-        const user = getUserFromRequest(req);
+        const user = await getUserFromRequest(req);
 
         if (res.locals) {
             const populate = req.body.PostBody && req.body.PostBody.populate ? req.body.PostBody.populate : [];
@@ -180,7 +185,29 @@ const middlewarePromoCatalog = async (req, res) => {
  */
 const checkPromoCatalog = async (products, user = null, lang = null, keepObject = false, populate = [], associatedProducts = false, keepPromos = false) => {
     // TODO : improve speed because it's usefull
-    if (!products || !products.length) return [];
+    if ((!products || !products.length) && (!products || !products.items || !products.items.length)) return [];
+    // si c'est products.items c'est qu'un panier a été passé, on restucture le tableau
+    if ((!products || !products.length) && (products.items  || products.items.length)) {
+        products =  products.map((product) => {
+            if (product.type === 'bundle') {
+                return {
+                    ...product,
+                    price : {
+                        ...product.price,
+                        ati : {
+                            normal  : product.price.unit.ati,
+                            special : product.price.special ? product.price.special.ati : undefined
+                        },
+                        et : {
+                            normal  : product.price.unit.et,
+                            special : product.price.special ? product.price.special.et : undefined
+                        }
+                    }
+                };
+            }
+            return product;
+        });
+    }
     // On récupére les promos catalogue en cours (on est après la date de début et avant la date de fin)
     // Ou dont la date de début et de fin est null
     const returnedPromos = [];
@@ -202,53 +229,12 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         // Il n'y a actuellement aucune promo catalogue
         return products;
     }
-    // Nous ajoutons un champ tomporaire a chaque produit, ce tableau contiendra des objets de forme : {discountValue: 10, discountType: "P"}
-    // discount est la valeur de la remise et le discountType
-    // est la facon dont la remise sera appliqué (en pourcentage pour P ou en soustrayant pour M)
+    // Nous ajoutons un champ tomporaire a chaque produit, ce tableau contiendra
+    // des objets de forme : {discountValue: 10, discountType: "P"}
+    // discount est la valeur de la remise et le discountType est la façon
+    // dont la remise sera appliqué (en pourcentage pour P ou en soustrayant pour M)
     for (let i = 0; i < products.length; i++) {
-        if (products[i]._doc) {
-            products[i] = products[i].toObject();
-            // products[i] = JSON.parse(products[i]);
-        }
-        // Si products[i].id et products[i]._id existe alors c'est un objet produit sinon c'est un object productList (lors du basicAddToCart)
-        if (products[i].id && products[i]._id) {
-            products[i].id = products[i];
-        } else {
-            products[i].id = await Products.findOne({_id: products[i]._id ? products[i]._id : products[i].id}).populate(populate);
-        }
-        if (products[i].id) {
-            products[i].relevantDiscount = [];
-            if (products[i].price === undefined) {
-                products[i].price = {tax: 0, priceSort: {et: 0, ati: 0}, et: {}, ati: {}};
-            }
-            if (products[i].price.tax === undefined) {
-                products[i].price.tax = products[i].id.price.tax;
-            }
-            if (products[i].price.priceSort === undefined) {
-                products[i].price.priceSort = products[i].id.price.priceSort;
-            }
-            if (products[i].price.et === undefined) {
-                products[i].price.et = {};
-            }
-            if (products[i].price.ati === undefined) {
-                products[i].price.ati = {};
-            }
-            if (products[i].price.et.normal === undefined) {
-                products[i].price.et.normal = products[i].id.price.et.normal;
-            }
-            if (products[i].price.et.special === undefined) {
-                products[i].price.et.special = products[i].id.price.et.special;
-            }
-            if (products[i].price.ati.normal === undefined) {
-                products[i].price.ati.normal = products[i].id.price.ati.normal;
-            }
-            if (products[i].price.ati.special === undefined) {
-                products[i].price.ati.special = products[i].id.price.ati.special;
-            }
-        } else {
-            // On stoppe s'il y a un soucis avec un produit
-            return null;
-        }
+        products[i].relevantDiscount = [];
 
         // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
         for (let j = 0; j < promos.length; j++) {
@@ -282,42 +268,25 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
 
         // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
         // (normal ou special si existe) et appliquons les reductions les plus fortes
-        const product      = products[i];
-        const savedProduct = cloneDeep(products[i]);
         // FUTUR: Cumuler les promos ou non
         for (let j = 0, lenj = products[i].relevantDiscount.length; j < lenj; j++) {
-            const appliedPromoProduct = cloneDeep(savedProduct);
+            const appliedPromoProduct = cloneDeep(products[i]);
             applyRelevantDiscount(appliedPromoProduct, appliedPromoProduct.relevantDiscount[j]);
             if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et) {
-                products[i] = {...appliedPromoProduct, price: {...appliedPromoProduct.price}};
+                products[i] = appliedPromoProduct;
             }
         }
         if (!keepObject) {
-            // on garde les attributes potentiellement populate
-            switch (products[i].type) {
-            case 'simple':
-                products[i] = await (new ProductSimple(products[i])).populate(populate).execPopulate();
-                break;
-            case 'virtual':
-                products[i] = await (new ProductVirtual(products[i])).populate(populate).execPopulate();
-                break;
-            case 'bundle':
-                products[i] = await (new ProductBundle(products[i])).populate(populate).execPopulate();
-                break;
-            default:
-                break;
-            }
             products[i].isNew = false;
-            for (let k = 0; k < products[i].associated_prds.length; k++) {
-                products[i].associated_prds[k] = product.associated_prds[k];
-            }
-            if (!associatedProducts) {
-                if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
-                    populate.push('associated_prds');
-                    await products[i].populate(populate).execPopulate();
+            if (products[i].associated_prds) {
+                if (!associatedProducts) {
+                    if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
+                        populate.push('associated_prds');
+                        await products[i].populate(populate).execPopulate();
+                    }
+                    const prds                  = products[i].associated_prds;
+                    products[i].associated_prds = await checkPromoCatalog(prds, user, lang, false, populate, true);
                 }
-                const prds                  = products[i].associated_prds;
-                products[i].associated_prds = await checkPromoCatalog(prds, user, lang, false, populate, true);
             }
         }
     }
@@ -333,24 +302,25 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
  * @param {Promo} discount
  */
 const applyRelevantDiscount = (product, discount) => {
-    if (discount.discountType.startsWith('FV')) {
-        if (discount.discountType === 'FVet') {
-            product.price.et.special  = discount.discountValue;
-            product.price.ati.special = (discount.discountValue * (product.price.tax / 100 + 1));
+    if (discount.discountType !== null) {
+        if (discount.discountType.startsWith('FV')) {
+            if (discount.discountType === 'FVet') {
+                product.price.et.special  = discount.discountValue;
+                product.price.ati.special = (discount.discountValue * (product.price.tax / 100 + 1));
+            } else {
+                product.price.et.special  = (discount.discountValue / (product.price.tax / 100 + 1));
+                product.price.ati.special = discount.discountValue;
+            }
         } else {
-            product.price.et.special  = (discount.discountValue / (product.price.tax / 100 + 1));
-            product.price.ati.special = discount.discountValue;
+            const newDiscountPrice    = calculDiscountItem(product, discount);
+            product.price.et.special  = newDiscountPrice.discountET;
+            product.price.ati.special = newDiscountPrice.discountATI;
         }
-    } else {
-        const newDiscountPrice    = calculDiscountItem(product, discount);
-        product.price.et.special  = newDiscountPrice.discountET;
-        product.price.ati.special = newDiscountPrice.discountATI;
     }
     product.price.priceSort = {
         et  : product.price.et.special,
         ati : product.price.ati.special
     };
-    product.id.price        = product.price;
 };
 
 const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
@@ -586,7 +556,7 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
             // const onlyProductRequest = ServiceRules.onlyProductRequest([promoRules.rules_id]);
             // if (onlyProductRequest) {
             //     const query = await ServiceRules.applyRecursiveRules([promoRules.rules_id], {});
-            //     const productFound = await Productss.findOne(query);
+            //     const productFound = await Products.findOne(query);
             //     if (!productFound) {
             //         await removePromoFromCart(cart);
             //         throw global.errors_list.promo_code_promo_not_authorized;
@@ -734,6 +704,8 @@ function calculDiscountItem(prd, promo) {
         values = calculateCartItemDiscount(prd.price.priceSort, discountValue, undefined);
     } else if (discountType === 'Aati') {
         values = calculateCartItemDiscount(prd.price.priceSort, undefined, discountValue);
+    } else if (discountType === null) {
+        values = {discountET: 0, discountATI: 0};
     }
 
     return values;

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
@@ -9,7 +17,7 @@ const {v1: uuidv1}                    = require('uuid');
 const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
 
-const getUserFromRequest = (req) => {
+const getUserFromRequest = async (req) => {
     const user = null;
     if (req.info) {
         return req.info;
@@ -26,8 +34,8 @@ const getUserFromRequest = (req) => {
     return user;
 };
 
-const serverUseRequest = (req, res, next) => {
-    const user = getUserFromRequest(req);
+const serverUseRequest = async (req, res, next) => {
+    const user = await getUserFromRequest(req);
     if (user && user.isAdmin) {
         return next();
     }
