@@ -256,7 +256,7 @@ table.ns-table-grey td
         margin-top: 60px;
         margin-bottom: 0px !important;
         position: fixed;
-        width: calc(100% - 250px);
+        width: 100%;
     }
 
     .fsboxM
@@ -282,7 +282,7 @@ table.ns-table-grey td
     .boxShrinkM
     {
         padding: 0px !important;
-        width: calc(100% - 42px) !important;
+        width: calc(100% - 55px) !important;
     }
 
     .boxTop > .box-content
