@@ -1,11 +1,10 @@
 {
     "mailTypeSchema": {
         "description": "",
-        "required": ["name"],
         "properties": {
-            "code"     : {"type": "string"},
-            "name"     : {"type": "string"},
-            "position" : {"type": "number", "default": 1}
+            "code"          : {"type": "string"},
+            "position"      : {"type": "number", "default": 1},
+            "translation"   : {}
         }
     }
 }
