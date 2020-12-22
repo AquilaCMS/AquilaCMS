@@ -33,7 +33,7 @@
                     ng-click="detail(mail)" ng-repeat="mail in mails|orderBy:sortPlay.type:sortPlay.reverse">
                     <td data-label="Code :" class=" ">{{mail.code}}</td>
                     <td data-label="Objet :" class=" ">{{mail.translation[defaultLang].subject}}</td>
-                    <td data-label="Action :" class=" ">{{mail.type}}</td>
+                    <td data-label="Action :" class=" ">{{getMailTypeDesc(mail.type)}}</td>
                 </tr>
             </tbody>
         </table>
