@@ -6,8 +6,8 @@ var adminCatagenControllers = angular.module("adminCatagenControllers", []);
 
 // wrapper
 adminCatagenControllers.controller("wrapperCtrl", [
-    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate",
-    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate)
+    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate", "$http",
+    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate, $http)
     {
 
         $scope.menus = MenusList;
@@ -43,6 +43,25 @@ adminCatagenControllers.controller("wrapperCtrl", [
                 console.log(up);
             });
         };
+
+        $http.get("v2/auth/isauthenticated").then(function (resp) {
+            $scope.accessList = resp.data.user.accessList;
+            // if(["orders", "payments", "invoices", "cart"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('transactions');
+            // }
+            // if(["products", "categories", "promos", "picto", "setAttributes", "attributes", "trademarks", "suppliers", "families"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('catalogue');
+            // }
+            // if(["medias", "articles", "cmsBlocks", "staticPage", "categories", "design", "mails", "gallery", "slider"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('site');
+            // }
+            // if(["clients", "setAttributes", "attributes", "reviews", "contacts", "newsletters"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('clientsMenu');
+            // }
+            // if(["environment", "stock", "mails", "shipments", "territories", "languages", "paymentMethods", "jobs", "list", "update"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('configuration');
+            // }
+        });
 
         window.addEventListener("getLanguages", function(e) { getLanguages() });
 
@@ -209,41 +228,47 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"cart", translate:"admin-list.cart"},
 
             {code:"products", translate:"admin-list.catalPdts"},
-            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"categories", translate:"admin-list.siteCat"},
+            {code:"promos", translate:"admin-list.discount"},
+            {code:"picto", translate:"admin-list.picto"},
+            {code:"attributes", translate:"admin-list.catalAttr"},
+
             {code:"trademarks", translate:"admin-list.catalMarques"},
             {code:"suppliers", translate:"admin-list.catalFourn"},
             {code:"families", translate:"admin-list.families"},
-            {code:"attributes", translate:"admin-list.catalAttr"},
-            {code:"options", translate:"admin-list.catalOpt"},
-            {code:"picto", translate:"admin-list.picto"},
-
-            {code:"clients", translate:"admin-list.clients"},
-
+            
             {code:"staticPage", translate:"admin-list.siteStatic"},
             {code:"cmsBlocks", translate:"admin-list.siteCMS"},
-            {code:"categories", translate:"admin-list.siteCat"},
-            {code:"mails", translate:"admin-list.mails"},
-            {code:"medias", translate:"admin-list.siteMedias"},
-            {code:"articles", translate:"admin-list.siteArt"},
-            {code:"design", translate:"admin-list.design"},
-            {code:"translate", translate:"admin-list.translate"},
-
             {code:"gallery", translate:"admin-list.gallery"},
             {code:"slider", translate:"admin-list.slider"},
-            {code:"promos", translate:"admin-list.discount"},
+            {code:"medias", translate:"admin-list.siteMedias"},
+            {code:"articles", translate:"admin-list.siteArt"},
+            
+            {code:"clients", translate:"admin-list.clients"},
+            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"contacts", translate:"admin-list.contact"},
+            {code:"newsletters", translate:"admin-list.newsletters"},
 
             {code:"config", translate:"admin-list.confEnv"},
             {code:"stock", translate:"admin-list.stock"},
+            {code:"mails", translate:"admin-list.mails"},
             {code:"shipments", translate:"admin-list.shipments"},
             {code:"territories", translate:"admin-list.territories"},
             {code:"languages", translate:"admin-list.confLang"},
-            {code:"jobs", translate:"admin-list.confTasks"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
+            {code:"jobs", translate:"admin-list.confTasks"},
+            {code:"admin", translate:"admin-list.admin"},
             {code:"update", translate:"admin-list.update"},
 
+            {code:"themes", translate:"admin-list.themes"},
+            {code:"design", translate:"admin-list.design"},
+            {code:"translate", translate:"admin-list.translate"},
+
             {code:"modules", translate:"admin-list.modules"},
-            {code:"admin", translate:"admin-list.admin"},
-            {code:"statistics", translate:"admin-list.statistics"}
+
+            {code:"statistics", translate:"admin-list.statistics"},
+            
+            {code:"options", translate:"admin-list.catalOpt"}
         ];
 
         $scope.toggleSelection = function toggleSelection(access)
@@ -336,48 +361,53 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
         };
 
         $scope.accessList = [
-
             {code:"orders", translate:"admin-list.transComm"},
             {code:"payments", translate:"admin-list.transPay"},
             {code:"invoices", translate:"admin-list.invoices"},
             {code:"cart", translate:"admin-list.cart"},
 
             {code:"products", translate:"admin-list.catalPdts"},
-            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"categories", translate:"admin-list.siteCat"},
+            {code:"promos", translate:"admin-list.discount"},
+            {code:"picto", translate:"admin-list.picto"},
+            {code:"attributes", translate:"admin-list.catalAttr"},
+
             {code:"trademarks", translate:"admin-list.catalMarques"},
             {code:"suppliers", translate:"admin-list.catalFourn"},
             {code:"families", translate:"admin-list.families"},
-            {code:"attributes", translate:"admin-list.catalAttr"},
-            {code:"options", translate:"admin-list.catalOpt"},
-            {code:"picto", translate:"admin-list.picto"},
-
-            {code:"clients", translate:"admin-list.clients"},
-
+            
             {code:"staticPage", translate:"admin-list.siteStatic"},
             {code:"cmsBlocks", translate:"admin-list.siteCMS"},
-            {code:"categories", translate:"admin-list.siteCat"},
-            {code:"mails", translate:"admin-list.mails"},
-            {code:"medias", translate:"admin-list.siteMedias"},
-            {code:"articles", translate:"admin-list.siteArt"},
-            {code:"design", translate:"admin-list.design"},
-            {code:"translate", translate:"admin-list.translate"},
-
             {code:"gallery", translate:"admin-list.gallery"},
             {code:"slider", translate:"admin-list.slider"},
-            {code:"promos", translate:"admin-list.discount"},
+            {code:"medias", translate:"admin-list.siteMedias"},
+            {code:"articles", translate:"admin-list.siteArt"},
+            
+            {code:"clients", translate:"admin-list.clients"},
+            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"contacts", translate:"admin-list.contact"},
+            {code:"newsletters", translate:"admin-list.newsletters"},
 
             {code:"config", translate:"admin-list.confEnv"},
             {code:"stock", translate:"admin-list.stock"},
+            {code:"mails", translate:"admin-list.mails"},
             {code:"shipments", translate:"admin-list.shipments"},
             {code:"territories", translate:"admin-list.territories"},
             {code:"languages", translate:"admin-list.confLang"},
-            {code:"jobs", translate:"admin-list.confTasks"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
+            {code:"jobs", translate:"admin-list.confTasks"},
+            {code:"admin", translate:"admin-list.admin"},
             {code:"update", translate:"admin-list.update"},
 
+            {code:"themes", translate:"admin-list.themes"},
+            {code:"design", translate:"admin-list.design"},
+            {code:"translate", translate:"admin-list.translate"},
+
             {code:"modules", translate:"admin-list.modules"},
-            {code:"admin", translate:"admin-list.admin"},
-            {code:"statistics", translate:"admin-list.statistics"}
+
+            {code:"statistics", translate:"admin-list.statistics"},
+            
+            {code:"options", translate:"admin-list.catalOpt"}
         ];
 
         $scope.save = function (quit = false)
