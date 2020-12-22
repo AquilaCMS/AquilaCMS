@@ -36,14 +36,14 @@
             ng-repeat="product in products | orderBy:sortType:sortReverse | filter:display"
             ng-click="onSelect(product, $event)"
             style="height: 80px;cursor:pointer;">
-            <td style="{{getSelectStyle(product)}};vertical-align: middle">{{product.code}}</td>
-            <td style="{{getSelectStyle(product)}};vertical-align: middle"><img ng-src="/images/products/300x300-50/{{product.images[0]._id}}/{{product.images[0].title+product.images[0].extension}}" height="80" width="120" class='no-product-image' /></td>
-            <td style="{{getSelectStyle(product)}};vertical-align: middle" class="sorting_1" style="line-height: 24px;">
+            <td style="vertical-align: middle" ng-style="product.style">{{product.code}}</td>
+            <td style="vertical-align: middle" ng-style="product.style"><img ng-src="/images/products/300x300-50/{{product.images[0]._id}}/{{product.images[0].title+product.images[0].extension}}" height="80" width="120" class='no-product-image' /></td>
+            <td style="vertical-align: middle;line-height: 24px;" ng-style="product.style" class="sorting_1">
                 {{product.translation[defaultLang].name}}
                 <!--<br />
                 {{product._trademark}} <span ng-if="product._supplier.length > 0">/ {{product._supplier}}</span>-->
             </td>
-            <td style="{{getSelectStyle(product)}};vertical-align: middle">{{suppliers[product.supplier_ref]}}</td>
+            <td style="vertical-align: middle" ng-style="product.style">{{suppliers[product.supplier_ref]}}</td>
         </tr>
     </tbody>
 </table>
