@@ -65,6 +65,7 @@ log
 !/backoffice/app/cmsBlocks/
 !/backoffice/app/config/
 !/backoffice/app/contact/
+!/backoffice/app/system/
 !/backoffice/app/dependencies/
 !/backoffice/app/design/
 !/backoffice/app/family/

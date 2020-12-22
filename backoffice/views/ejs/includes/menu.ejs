@@ -367,11 +367,19 @@
                 <li ng-if="!(accessList.includes('jobs'))">
                     <a href='#/jobs' , class='menuClick'>
                         <span class="icon"></span>
-                        <i class="fa fa-tasks fa-lg i-style"></i>
+                        <i class="fa fa-calendar fa-lg i-style"></i>
                         <span translate>menu.tachesPlanifiees</span>
                     </a>
                 </li>
-                <li ng-if="!(accessList.includes('admin'))">
+                <li ng-if="!(accessList.includes('system'))">
+                    <a href="#/system" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-server fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.system</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('list'))">
                     <a href="#/list" class="menuClick">
                         <span class="icon">
                             <i class="fa fa-shield fa-lg i-style"></i>

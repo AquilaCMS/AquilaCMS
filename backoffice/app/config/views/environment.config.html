@@ -4,10 +4,8 @@
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#general" target="_self" translate>config.environment.menu.general</a></li>
-                    <li><a data-toggle="tab" href="#security" target="_self" translate>config.environment.menu.security</a></li>
                     <li><a data-toggle="tab" href="#path" target="_self" translate>config.environment.menu.path</a></li>
                     <li><a data-toggle="tab" href="#mail" target="_self" translate>config.environment.menu.mail</a></li>
-                    <li><a data-toggle="tab" href="#nextjs" target="_self" translate>config.environment.menu.nextjs</a></li>
                     <li><a data-toggle="tab" href="#other" target="_self" translate>config.environment.menu.other</a></li>
                 </ul>
             </div>
@@ -45,28 +43,6 @@
                     <div class="form-group">
                         <label translate>config.environment.demoMode</label> <br />
                         <ns-switch ng-model="config.demoMode" yes-value="true" no-value="false" name="demoMode"></ns-switch>
-                    </div>
-                </div>
-
-                <div id="security" class="tab-pane fade">
-                    <h3 translate>config.environment.ssl.ssl</h3>
-                    <div class="form-group">
-                        <label translate>config.environment.ssl.active</label> <br />
-                        <ns-switch ng-model="config.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
-                    </div>
-                    <div class="form-group">
-                        <label for="cert">
-                            <span class="btn btn-default" translate>config.environment.ssl.cert</span>
-                            <input type="file" name="cert" id="cert" style="display:none" ng-model="config.ssl.cert" input-ng-file>
-                        </label>
-                        <span>{{ssl.cert}}</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="key">
-                            <span class="btn btn-default" translate>config.environment.ssl.key</span>
-                            <input type="file" name="key" id="key" style="display:none" ng-model="config.ssl.key" input-ng-file>
-                        </label>
-                        <span>{{ssl.key}}</span>
                     </div>
                 </div>
 
@@ -144,35 +120,6 @@
 
                 </div>
 
-                <div id="nextjs" class="tab-pane fade">
-                    <p><span translate>config.environment.actualVersion</span>: {{next.actual}}</p>
-                    <div class="input-group">
-                        <select class="form-control" id="nextVersion" ng-options="version for version in next.versions track by version" ng-model="nextVersion" ng-hide="nextVLoader">
-                        </select>
-                        <style>
-                            .loader {
-                                border: 10px solid #f3f3f3; /* Light grey */
-                                border-top: 10px solid #576fa1;
-                                border-radius: 50%;
-                                width: 80px;
-                                height: 80px;
-                                animation: spin 2s linear infinite;
-                                margin: auto;
-                            }
-                        
-                            @keyframes spin {
-                                0% { transform: rotate(0deg); }
-                                100% { transform: rotate(360deg); }
-                            }
-                        </style>
-                        <div ng-show="nextVLoader">
-                            <div class="fa fa-spinner fa-spin" style="font-size: 30px;"></div>
-                        </div>
-                    </div>
-                    <br>
-                    <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)" ng-hide="nextVLoader" translate>config.environment.changeNextVersion</button>
-                </div>
-
                 <div id="other" class="tab-pane fade">
                     <h3>Robot.txt</h3>
                     <a download class="btn btn-success"ng-click="editRobot()" translate>
@@ -189,33 +136,6 @@
                     <br />
                     <div class="form-group">
                         <ns-switch ng-model="config.sendMetrics.active" yes-value="Oui" no-value="Non" name="sendMetrics"></ns-switch>
-                    </div>
-                    <h3 translate>config.environment.database</h3>
-                    <br />
-                    <div class="form-group">
-                        <label translate>config.environment.connectionString</label>
-                        <input type="text" class="form-control" ng-model="config.databaseConnection"
-                            class="btn btn-default">
-                    </div>
-                    <div class="form-group">
-                        <a download class="btn btn-success" ng-click="dumpDatabase()" ng-disabled="disabledButton" translate>
-                            config.environment.dlDBAnonymized
-                        </a>
-                    </div>
-
-                    <h3 translate>config.environment.dlAllDocumentTitle</h3>
-                    <br />
-                    <div class="form-group">
-                        <a download class="btn btn-success" ng-click="downloadDocuments()" ng-disabled="disabledButton"
-                            translate>
-                            config.environment.dlAllDocument
-                        </a>
-                        <div translate>config.environment.dlAllDocumentInfo</div>
-                    </div>
-                    <div class="form-group">
-                        <label translate>config.environment.uploadAllDocument</label>
-                        <ns-upload-files accepttype=".zip" multiple="false" type="document" before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
-                        <div translate>config.environment.uploadAllDocumentInfo</div>
                     </div>
                 </div>
             </div>
