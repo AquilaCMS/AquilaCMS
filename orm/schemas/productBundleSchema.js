@@ -130,7 +130,6 @@ ProductBundleSchema.methods.getBundlePrdsModifiers = async function (selections)
             }
         }
     }
-    console.log('Total modifiers: ', modifiers);
     return modifiers;
 };
 
