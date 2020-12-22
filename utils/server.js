@@ -162,21 +162,20 @@ const logVersion = async () => {
 };
 
 const startListening = async (server) => {
-    let startWithSSL = false;
-    let errorWIthSSL = false;
-    if (global.envFile && global.envFile.ssl && global.envFile.ssl.active && global.envFile.ssl.key) {
-        if (await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key)) && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))) {
-            startWithSSL = true;
-        } else {
-            console.error('SSL est activé mais invalide');
-            console.error('Access to the key file and certification file is not possible');
-            startWithSSL = true;
-            errorWIthSSL = true;
+    if (global.envFile && global.envFile.ssl && global.envFile.ssl.active) {
+        const {key, cert} = global.envFile.ssl;
+        if (!key || !cert) {
+            throw new Error('SSL Error - need a cert and a key file');
         }
-    }
-
-    if (startWithSSL) {
-        if (!errorWIthSSL) {
+        const keyPath        = path.resolve(global.appRoot, key);
+        const certPath       = path.resolve(global.appRoot, cert);
+        const keyFileExists  = await fs.access(keyPath);
+        const certFileExists = await fs.access(certPath);
+        if (!keyFileExists || !certFileExists) {
+            console.error('SSL is enabled but invalid');
+            console.error('Access to the key file and certification file is not possible');
+            throw new Error('SSL Error - Path to cert or key file are invalid');
+        } else {
             try {
                 spdy.createServer({
                     key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
@@ -191,14 +190,9 @@ const startListening = async (server) => {
                     console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
                 });
             } catch (error) {
-                console.error('Invalid SSL, key and cert files are not found');
-                console.error('You need to add them');
-                throw (error);
+                console.error(error);
+                throw new Error('SSL Error - Cert or Key file are invalid');
             }
-        } else {
-            console.error('Invalid SSL, key and cert files are not found');
-            console.error('You need to add them');
-            throw ('SSL Error');
         }
     } else {
         server.listen(global.port, (err) => {
