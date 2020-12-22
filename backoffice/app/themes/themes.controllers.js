@@ -168,7 +168,7 @@ ThemesController.controller("ThemesCtrl", [
                         $scope.themeConfig.variables = {};
                         if(response.datas.translation){
                             $scope.languages.forEach(element => {
-                                $scope.themeConfig.variables[element.code] = response.datas.translation[element.code];
+                                $scope.themeConfig.variables[element.code] = response.datas.translation[element.code].values;
                                 delete $scope.themeConfig.variables[element.code].$promise;
                                 delete $scope.themeConfig.variables[element.code].$resolved;
                                 $scope.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
