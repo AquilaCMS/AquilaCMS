@@ -2259,6 +2259,15 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             }
                                         });
                                     }
+                                    else if ($scope.type === "googleFile"){
+                                        $scope.up = Upload.upload({
+                                            url: 'v2/seo/googleFile',
+                                            method: 'POST',
+                                            data: {
+                                                file: file
+                                            }
+                                        });
+                                    }
                                     else {
                                         if ($scope.entity) {
                                             delete $scope.entity.$promise;
@@ -2340,6 +2349,10 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 break;
                                             }
                                             case 'mediaMass': {
+                                                $scope.afterFunction();
+                                                break;
+                                            }
+                                            case 'googleFile': {
                                                 $scope.afterFunction();
                                                 break;
                                             }
