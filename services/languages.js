@@ -28,7 +28,7 @@ const saveLang = async (lang) => {
 
     if (lang.defaultLanguage) { // Remove other default language
         lang.status = 'visible'; // The default language need to be visible
-        await Languages.updateOne({defaultLanguage: true}, {defaultLanguage: false});
+        await Languages.updateOne({defaultLanguage: true}, {defaultLanguage: false}); // TODO $set
     }
 
     if (lang._id) {

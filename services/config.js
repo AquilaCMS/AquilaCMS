@@ -219,7 +219,7 @@ const saveEnvConfig = async (body) => {
             );
         }
     }
-    await Configuration.updateOne({}, body);
+    await Configuration.updateOne({}, body); // TODO $set
 };
 
 module.exports = {

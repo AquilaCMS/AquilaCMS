@@ -390,13 +390,13 @@ const uploadFiles = async (body, files) => {
         }
 
         result.translation[body.lang].attachments.push({path: target_path_full, name: files[0]});
-        await Mail.updateOne({_id: body._id}, {translation: result.translation});
+        await Mail.updateOne({_id: body._id}, {translation: result.translation}); // TODO $set
         return result.translation;
     }
     case 'picto': {
         const result = await Pictos.findOne({_id: body._id});
         await deleteFileAndCacheFile(`medias/picto/${result.filename}`, 'picto');
-        await Pictos.updateOne({_id: body._id}, {filename: name + extension});
+        await Pictos.updateOne({_id: body._id}, {filename: name + extension}); // TODO $set
         return {name: name + extension};
     }
     case 'language': {
@@ -404,20 +404,20 @@ const uploadFiles = async (body, files) => {
         if (result.img) {
             await utilsMedias.deleteFile(result.img);
         }
-        await Languages.updateOne({_id: body._id}, {img: target_path_full});
+        await Languages.updateOne({_id: body._id}, {img: target_path_full}); // TODO $set
         return {name: name + extension, path: target_path_full};
     }
     case 'article': {
         const result = await News.findOne({_id: body._id});
         await deleteFileAndCacheFile(result.img, 'blog');
-        await News.updateOne({_id: body._id}, {img: target_path_full, extension: path.extname(target_path_full)});
+        await News.updateOne({_id: body._id}, {img: target_path_full, extension: path.extname(target_path_full)}); // TODO $set
         return {name: name + extension, path: target_path_full};
     }
     case 'media': {
         if (body._id && body._id !== '') {
             const result = await Medias.findOne({_id: body._id});
             await deleteFileAndCacheFile(result.link, 'medias');
-            await Medias.updateOne({_id: body._id}, {link: target_path_full, extension: path.extname(target_path_full)});
+            await Medias.updateOne({_id: body._id}, {link: target_path_full, extension: path.extname(target_path_full)}); // TODO $set
             return {name: name + extension, path: target_path_full, id: body._id};
         }
         const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full)});
@@ -530,7 +530,7 @@ const uploadFiles = async (body, files) => {
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
         await deleteFileAndCacheFile(result.img, 'category');
-        await Categories.updateOne({_id: body._id}, {img: target_path_full, extension: path.extname(target_path_full), alt: body.alt});
+        await Categories.updateOne({_id: body._id}, {img: target_path_full, extension: path.extname(target_path_full), alt: body.alt}); // TODO $set
         return {name: name + extension, path: target_path_full};
     }
     default:

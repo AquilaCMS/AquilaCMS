@@ -457,7 +457,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
-        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'});
+        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'}); // TODO $set
         throw err;
     }
 };

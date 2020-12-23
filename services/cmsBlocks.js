@@ -26,7 +26,7 @@ const getCMSBlockById = async (id, PostBody = null) => {
 };
 
 const setCMSBlock = async (body) => {
-    if (body._id) return CmsBlocks.updateOne({_id: body._id}, body);
+    if (body._id) return CmsBlocks.updateOne({_id: body._id}, body); // TODO $set
     return CmsBlocks.create(body);
 };
 

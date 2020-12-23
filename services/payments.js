@@ -73,7 +73,7 @@ exports.getPaymentMethod = async function (PostBody) {
 
 exports.savePaymentMethod = async function (pm) {
     if (pm._id) {
-        await PaymentMethods.updateOne({_id: pm._id}, pm);
+        await PaymentMethods.updateOne({_id: pm._id}, pm); // TODO $set
         return pm;
     }
     return PaymentMethods.ceate(pm);
