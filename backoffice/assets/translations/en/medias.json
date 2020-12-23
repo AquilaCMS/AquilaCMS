@@ -7,9 +7,8 @@
         "cpLien": "Copy link",
         "delete": "Delete",
         "uploadInsert" : "Insert in database",
-        "uploadButton" : "Massive adding *",
-        "uploadInfo" : "* Only .zip are accepted. Files must be at the root of .zip."
-    },
+        "uploadButton" : "Massive adding"
+   },
     "new": {
         "t1": "New Media",
         "ph1": "File name",
@@ -54,5 +53,10 @@
         "topRight": "Top right",
         "bottomLeft": "Bottom left",
         "bottomRight": "Bottom right"
+    },
+    "multi":{
+        "title": "Massive adding",
+        "cancel":"Cancel",
+        "uploadInfo" : "Only .zip are accepted. Files must be at the root of .zip."
     }
 }
