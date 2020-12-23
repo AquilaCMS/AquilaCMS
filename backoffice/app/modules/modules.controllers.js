@@ -23,30 +23,19 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
     };
     $scope.getDatas();
 
-    $scope.before = function () {
-        $scope.showModuleLoading = true;
-    };
+    $scope.addPlugin = function (nodeParent) {
+        var modalInstance = $modal.open({
+            templateUrl: "app/modules/views/modal/modules-new.html",
+            controller: "PluginsNewCtrl",
+            resolve: {
+                toggleActive: function() {
+                    return $scope.toggleActive;
+                }
+            }
+        });
 
-    $scope.uploaded = function (module) {
-        $http.post('/v2/modules', {
-            PostBody : {
-                filter    : {},
-                limit     : 100,
-                populate  : [],
-                skip      : 0,
-                sort      : {},
-                structure : {},
-                page      : null
-            }
-        }).then(function (response) {
-            if (module.active) {
-                toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
-                $scope.toggleActive(module._id, module.name, true);
-            } else {
-                $scope.showModuleLoading = false;
-                toastService.toast('success', 'Module ajouté ! Pour l\'utiliser, il suffit de l\'activer');
-            }
-            $scope.modules = response.data.datas;
+        modalInstance.result.then(function () {
+            $scope.getDatas();
         });
     };
 
@@ -227,11 +216,6 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
         });
     };
 
-    $scope.uploadError = function () {
-        $scope.getDatas();
-        $scope.showModuleLoading = false;
-        toastService.toast('danger', 'Problème à l\'ajout du module');
-    };
 }]);
 
 ModulesControllers.controller('ModulesCheckVersionCtrl', [
@@ -270,3 +254,50 @@ ModulesControllers.controller('ModulesCheckVersionCtrl', [
             $modalInstance.dismiss('cancel');
         };
     }]);
+
+
+ModulesControllers.controller("PluginsNewCtrl", [
+    "$scope", "$modalInstance", "toastService", "$http", "toggleActive",
+    function ($scope, $modalInstance, toastService, $http, toggleActive) {
+
+        $scope.before = function () {
+            $scope.showModuleLoading = true;
+        };
+
+        $scope.uploaded = function (module) {
+            $http.post('/v2/modules', {
+                PostBody : {
+                    filter    : {},
+                    limit     : 100,
+                    populate  : [],
+                    skip      : 0,
+                    sort      : {},
+                    structure : {},
+                    page      : null
+                }
+            }).then(function (response) {
+                if (module.active) {
+                    toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
+                    toggleActive(module._id, module.name, true);
+                } else {
+                    $scope.showModuleLoading = false;
+                    toastService.toast('success', 'Module ajouté ! Pour l\'utiliser, il suffit de l\'activer');
+                }
+                $scope.modules = response.data.datas;
+                $modalInstance.close("save");
+            });
+        };
+
+        $scope.uploadError = function () {
+            $scope.getDatas();
+            $scope.showModuleLoading = false;
+            toastService.toast('danger', 'Problème à l\'ajout du module');
+            $modalInstance.close();
+        };
+
+        $scope.cancel = function (){
+            $modalInstance.dismiss("cancel");
+        };
+    }
+]);
+    

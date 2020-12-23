@@ -1,0 +1,20 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(category)" role="form">
+    <div class="modal-header">
+        <h3 translate>modules.new.createNewModule</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="row" style="margin: 0px;">
+                <p translate style="text-align: center;">modules.addMod</p>
+                <div class="col-md-12" style="text-align: center;">
+                    <div class="col-md-6" style="width: 100%;">
+                        <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype=".zip" multiple="false" type="module" before-function="before()" after-function="uploaded(module)" on-error="uploadError()"></ns-upload-files>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()" translate>modules.new.cancel</button>
+    </div>
+</form>
