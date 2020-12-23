@@ -126,6 +126,7 @@
                                     <!--<th style="width: 10px;">
                                         <input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/>
                                     </th>-->
+                                    <th translate>bundle.product.picture</th>
                                     <th translate>bundle.product.pdt</th>
                                     <th translate>bundle.product.modifierPrice.et</th>
                                     <th translate>bundle.product.modifierPrice.ati</th>
@@ -136,6 +137,9 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="__product in section.products">
+                                    <td>
+                                        <img ng-src="{{__product.id.images[0].url}}" class="no-product-image" style="width:120px" ng-style="!(__product.id.images[0].url) ? {'height':'90px'} :{}">
+                                    </td>
                                     <td>
                                         {{__product.id.translation[lang].name}}
                                     </td>

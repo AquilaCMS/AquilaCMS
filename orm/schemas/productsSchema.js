@@ -299,7 +299,10 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
         throw NSErrors.CartQuantityError;
     }
     const ServicePromo = require('../../services/promo');
-    const prd          = await ServicePromo.checkPromoCatalog([item], user, lang);
+    let prd            = [item];
+    if (item.type !== 'bundle') {
+        prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
+    }
     if (prd && prd[0] && prd[0].price) {
         if (prd[0].price.et && prd[0].price.et.special !== undefined) {
             this.price.et.special = prd[0].price.et.special;

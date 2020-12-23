@@ -45,6 +45,9 @@ const getThemeConfigByKey = async (key) => {
 const setThemeConfig = async (body) => {
     const nameTheme = global.envConfig.environment.currentTheme;
     delete body.lang;
+    for (const [key, values] of Object.entries(body.config)) {
+        body.config[key] = {values};
+    }
     const oldConfig = await ThemeConfig.findOne({name: nameTheme});
     if (oldConfig && oldConfig.config) {
         const newConfig = await ThemeConfig.findOneAndUpdate(

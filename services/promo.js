@@ -148,7 +148,7 @@ const deletePromoCodeById = async (promoId, codeId) => {
 
 const middlewarePromoCatalog = async (req, res) => {
     try {
-        const user = getUserFromRequest(req);
+        const user = await getUserFromRequest(req);
 
         if (res.locals) {
             const populate = req.body.PostBody && req.body.PostBody.populate ? req.body.PostBody.populate : [];
@@ -186,28 +186,6 @@ const middlewarePromoCatalog = async (req, res) => {
 const checkPromoCatalog = async (products, user = null, lang = null, keepObject = false, populate = [], associatedProducts = false, keepPromos = false) => {
     // TODO : improve speed because it's usefull
     if ((!products || !products.length) && (!products || !products.items || !products.items.length)) return [];
-    // si c'est products.items c'est qu'un panier a été passé, on restucture le tableau
-    if ((!products || !products.length) && (products.items  || products.items.length)) {
-        products =  products.map((product) => {
-            if (product.type === 'bundle') {
-                return {
-                    ...product,
-                    price : {
-                        ...product.price,
-                        ati : {
-                            normal  : product.price.unit.ati,
-                            special : product.price.special ? product.price.special.ati : undefined
-                        },
-                        et : {
-                            normal  : product.price.unit.et,
-                            special : product.price.special ? product.price.special.et : undefined
-                        }
-                    }
-                };
-            }
-            return product;
-        });
-    }
     // On récupére les promos catalogue en cours (on est après la date de début et avant la date de fin)
     // Ou dont la date de début et de fin est null
     const returnedPromos = [];
@@ -234,6 +212,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
     // discount est la valeur de la remise et le discountType est la façon
     // dont la remise sera appliqué (en pourcentage pour P ou en soustrayant pour M)
     for (let i = 0; i < products.length; i++) {
+        if (products[i].type && products[i].type === 'bundle') continue;
         products[i].relevantDiscount = [];
 
         // Pour chaque promo en cours nous devons verifier que les produits entrées en parametres soient éligibles a la réduction
@@ -268,22 +247,17 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
 
         // Une fois que nous savons quelles produits sont eligibles a la réduction, Nous récupérons le prix de chaque produit
         // (normal ou special si existe) et appliquons les reductions les plus fortes
-        const product      = products[i];
-        const savedProduct = cloneDeep(products[i]);
         // FUTUR: Cumuler les promos ou non
         for (let j = 0, lenj = products[i].relevantDiscount.length; j < lenj; j++) {
-            const appliedPromoProduct = cloneDeep(savedProduct);
+            const appliedPromoProduct = cloneDeep(products[i]);
             applyRelevantDiscount(appliedPromoProduct, appliedPromoProduct.relevantDiscount[j]);
             if (appliedPromoProduct.price.priceSort.et < products[i].price.priceSort.et) {
-                products[i] = {...appliedPromoProduct, price: {...appliedPromoProduct.price}};
+                products[i] = appliedPromoProduct;
             }
         }
         if (!keepObject) {
             products[i].isNew = false;
             if (products[i].associated_prds) {
-                for (let k = 0; k < products[i].associated_prds.length; k++) {
-                    products[i].associated_prds[k] = product.associated_prds[k];
-                }
                 if (!associatedProducts) {
                     if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
                         populate.push('associated_prds');

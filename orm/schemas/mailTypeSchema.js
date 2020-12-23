@@ -10,9 +10,10 @@ const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
 const MailTypeSchema = new Schema({
-    code     : {type: String, unique: true, sparse: true},
-    name     : {type: String, required: true},
-    position : {type: Number, default: 1}
+    code        : {type: String, unique: true, sparse: true},
+    name        : {type: String, required: true},
+    position    : {type: Number, default: 1},
+    translation : {}
 }, {timestamps: true});
 
 MailTypeSchema.pre('validate', function (next) {
