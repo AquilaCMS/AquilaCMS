@@ -2180,7 +2180,8 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 onError: '&',
                 styleProp: '=',
                 lang: '=',
-                isSelected: '='
+                isSelected: '=',
+                uploadUrl: '=',
             },
             templateUrl: "views/templates/nsUploadFiles.html",
             controller: [
@@ -2259,14 +2260,18 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                             }
                                         });
                                     }
-                                    else if ($scope.type === "googleFile"){
-                                        $scope.up = Upload.upload({
-                                            url: 'v2/seo/googleFile',
-                                            method: 'POST',
-                                            data: {
-                                                file: file
-                                            }
-                                        });
+                                    else if ($scope.type === "genericFile"){
+                                        if(!$scope.uploadUrl){
+                                            throw ('Error use the parameter "upload-url" with "genericFile"');
+                                        }else{
+                                            $scope.up = Upload.upload({
+                                                url: $scope.uploadUrl,
+                                                method: 'POST',
+                                                data: {
+                                                    file: file
+                                                }
+                                            });
+                                        }
                                     }
                                     else {
                                         if ($scope.entity) {
@@ -2352,7 +2357,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 $scope.afterFunction();
                                                 break;
                                             }
-                                            case 'googleFile': {
+                                            case 'genericFile': {
                                                 $scope.afterFunction();
                                                 break;
                                             }
