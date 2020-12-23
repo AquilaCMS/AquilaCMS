@@ -8,7 +8,7 @@
         "delete": "Delete",
         "uploadInsert" : "Insert in database",
         "uploadButton" : "Massive adding *",
-        "uploadInfo" : "* Only .zip are accepted. Images must be at the root of .zip."
+        "uploadInfo" : "* Only .zip are accepted. Files must be at the root of .zip."
     },
     "new": {
         "t1": "New Media",

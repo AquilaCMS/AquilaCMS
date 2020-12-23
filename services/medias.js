@@ -348,7 +348,7 @@ const uploadFiles = async (body, files) => {
         extension
     }, async () => {
         // Check if the name is already used
-        if (!(await fsp.existsSync(pathFinal, target_path_full))) {
+        if (!fsp.existsSync(path.resolve(pathFinal, target_path_full))) {
             target_path_full = pathFinal + target_path_full;
         } else {
             name             = `${files[0].originalname}_${Date.now()}`;

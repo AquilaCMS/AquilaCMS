@@ -8,7 +8,7 @@
         "delete": "Supprimer",
         "uploadInsert" : "Inserer en base",
         "uploadButton" : "Ajout en masse *",
-        "uploadInfo" : "* Seul les .zip sont accepté. Les images doivent être à la racine du .zip."
+        "uploadInfo" : "* Seul les .zip sont accepté. Les fichiers doivent être à la racine du .zip."
     },
     "new": {
         "t1": "Nouveau Média",
