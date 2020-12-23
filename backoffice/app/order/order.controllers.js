@@ -717,6 +717,9 @@ OrderControllers.controller("PackagesNewCtrl", [
 
         $scope.sendPackage = function ()
         {
+            var buttonAdd = angular.element(document.getElementById('buttonAdd'));
+            buttonAdd.attr('disabled',"true");
+
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
             $scope.error = "";
@@ -756,6 +759,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             }
             else
             {
+                buttonAdd.removeAttr('disabled');
                 $scope.error = "Colis vide";
                 $scope.partial = true;
             }
