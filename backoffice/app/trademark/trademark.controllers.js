@@ -1,15 +1,28 @@
 var TrademarkControllers = angular.module('aq.trademark.controllers', []);
 
 TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'TrademarksV2', 'TrademarkSearch', 'nsDataTableConfig',
-    function ($scope, $location, TrademarksV2, TrademarkSearch, nsDataTableConfig)
-{
-    $scope.trademarks = [];
-
+    function ($scope, $location, TrademarksV2, TrademarkSearch, nsDataTableConfig){
     
-    TrademarksV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function({datas}) {
-        $scope.trademarks = datas
-    })
-  
+    $scope.trademarks = [];
+    $scope.filter = {};
+    
+    $scope.getTradeMarks = function(){
+        let filter = {};
+        const filterKeys = Object.keys($scope.filter);
+        for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+            if($scope.filter[filterKeys[i]] === null){
+                break;
+            }
+            if($scope.filter[filterKeys[i]].toString() != ""){
+                filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+            }
+        }
+        TrademarksV2.list({PostBody: {filter, structure: '*', limit: 99}}, function({datas}) {
+            $scope.trademarks = datas
+        });
+    }
+    
+    $scope.getTradeMarks();
 
     $scope.editTrademark = function(trademark){
         $location.path('/trademarks/' + trademark._id);
