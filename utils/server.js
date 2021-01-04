@@ -175,24 +175,23 @@ const startListening = async (server) => {
             console.error('SSL is enabled but invalid');
             console.error('Access to the key file and certification file is not possible');
             throw new Error('SSL Error - Path to cert or key file are invalid');
-        } else {
-            try {
-                spdy.createServer({
-                    key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
-                    cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
-                    spdy : {
-                        protocols : ['h2', 'http1.1'],
-                        plain     : false,
-                        ssl       : true
-                    }
-                }, server).listen(global.port, (err) => {
-                    if (err) throw err;
-                    console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
-                });
-            } catch (error) {
-                console.error(error);
-                throw new Error('SSL Error - Cert or Key file are invalid');
-            }
+        }
+        try {
+            spdy.createServer({
+                key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
+                cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
+                spdy : {
+                    protocols : ['h2', 'http1.1'],
+                    plain     : false,
+                    ssl       : true
+                }
+            }, server).listen(global.port, (err) => {
+                if (err) throw err;
+                console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+            });
+        } catch (error) {
+            console.error(error);
+            throw new Error('SSL Error - Cert or Key file are invalid');
         }
     } else {
         server.listen(global.port, (err) => {
