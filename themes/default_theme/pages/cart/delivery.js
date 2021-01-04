@@ -222,7 +222,7 @@ class CartDelivery extends React.Component {
                                                     }
                                                 </div>{ /* <!-- /.form__body --> */ }
                                                 <div className="form__actions  text-right" style={{ marginTop: '40px' }}>
-                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => {Router.pushRoute('cartAddress', { lang: this.state.routerLang });}} type="button">
+                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => {Router.back();}} type="button">
                                                         {t('common:retour')}
                                                     </button>
                                                     {shipments.length ? <button disabled={isRelayPoint && !relayPointAddressSaved} type="submit" className="form__btn btn btn--red">{t('common:valider')}</button> : ''}
