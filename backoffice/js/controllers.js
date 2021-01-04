@@ -858,6 +858,12 @@ adminCatagenControllers.controller("InvoicesController", [
                         filter[key[1]] = {};
                     }
                     filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
+                } else if(filterKeys[i].includes("avoir")) {
+                    if($scope.filter.avoir == "true"){
+                        filter["avoir"] = true;
+                    }else if($scope.filter.avoir == "false"){
+                        filter["avoir"] = false;
+                    }
                 } else {
                     if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
                         filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };

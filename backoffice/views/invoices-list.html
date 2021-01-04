@@ -69,9 +69,12 @@
                                 translate translate-attr-placeholder='invoices-list.prixTTC' />
                         </div>
                     </th>
-                   
-                    
-                    <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.inter.component_template">
+                    <th style="text-align: center" colspan="2">
+                        <select ng-model="filter.avoir" ng-change="getInvoices(1)" class="form-control">
+                            <option value="" selected></option>
+                            <option value="false" translate>invoices-list.facture</option>
+                            <option value="true" translate>invoices-list.avoir</option>
+                        </select>
                     </th>
                 </tr>
             </thead>
@@ -82,8 +85,8 @@
                     <td data-label="N° de commande :" style="cursor: pointer;" ng-click="goToOrder(invoice)">{{invoice.order_id ? invoice.order_id.number : 'N/A'}}</td>
                     <td data-label="Client :">{{invoice.nom}} {{invoice.prenom}}</td>
                     <td data-label="Date :">{{invoice.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
-                    <td data-label="Prix TTC :" align="right">{{invoice.montant | number:2}} € {{invoice.withTaxes ? "TTC" : "HT"}}</td>
-                    <td data-label="Type :" align="center" translate>{{invoice.type}}</td>
+                    <td data-label="Prix TTC :" style="text-align:center">{{invoice.montant | number:2}} € {{invoice.withTaxes ? "TTC" : "HT"}}</td>
+                    <td data-label="Type :" style="text-align:center" translate>{{invoice.type}}</td>
                     <td><button class="btn btn-blue" ng-click="generatePDF(invoice)" ng-disabled="disabledButton">PDF</button></td>
                     <td style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                 </tr>
