@@ -4,8 +4,8 @@ AttributeControllers.controller("AttributeListCtrl", [
     "$scope", "$rootScope", "$location", "LanguagesApi", 'AttributesV2',
     function ($scope, $rootScope,  $location, LanguagesApi, AttributesV2) {
         $scope._type = window.location.hash.indexOf('users') > -1 ? 'users' : 'products';
-        $scope.local= {search: ""};
-
+        $scope.local = {search: ""};
+        $scope.filter = {};
         function init() {
             $scope.sortType = "name"; // set the default sort type
             $scope.sortReverse = false;  // set the default sort order
@@ -14,11 +14,34 @@ AttributeControllers.controller("AttributeListCtrl", [
         init();
 
         $scope.getAttributesClassed = function() {
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("type")) {
+                    if($scope.filter.type != ""){
+                        filter["type"] = $scope.filter.type;
+                    }
+                } else if(filterKeys[i].includes("name")) {
+                    if($scope.filter.name != ""){
+                        filter["translation.fr.name"] = { $regex: $scope.filter.name, $options: "i" };;
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            filter["_type"] = $scope._type;
+            filter["set_attributes"] = {$gt: []};
             let PostBody = {
-                filter : {
-                    _type          : $scope._type,
-                    set_attributes : {$gt: []},
-                },
+                filter,
                 structure: '*',
                 populate : 'set_attributes',
                 limit    : 99
@@ -30,6 +53,8 @@ AttributeControllers.controller("AttributeListCtrl", [
                 PostBody
             }, function (attributesList) {
                 $scope.attributesClassed = attributesList.datas;
+            }, function(error){
+                //deal with error here
             });
         }
 
