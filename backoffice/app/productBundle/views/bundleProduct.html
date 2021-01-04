@@ -22,6 +22,9 @@
                     <li><a data-toggle="tab" href="#promos" target="_self" translate>bundle.product.promos</a></li>
                     <li><a data-toggle="tab" href="#attributes" target="_self" translate>bundle.product.specAttr</a></li>
                     <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>bundle.product.linkedCat</a></li>
+                    <li ng-repeat="tab in additionnalTabs">
+                        <a data-toggle="tab" href="{{tab.href}}" target="_self" translate="{{tab.title}}"></a>
+                    </li>
                 </ul>
             </div>
             <div class="tab-content">
@@ -41,7 +44,7 @@
                         </button>
                     </div>
 
-                    <div ng-repeat="section in product.bundle_sections">
+                    <div ng-repeat="section in product.bundle_sections track by $index">
                         <hr style="border-top: 2px solid #000000" />
                         <div class="form-group">
                             <button type="button" class="btn btn-danger" ng-click="removeBundleSection(section)" translate>bundle.product.delSec</button>
@@ -123,21 +126,49 @@
                                     <!--<th style="width: 10px;">
                                         <input type="checkbox" ng-model="selectedAll" ng-click="checkAll()"/>
                                     </th>-->
+                                    <th translate>bundle.product.picture</th>
                                     <th translate>bundle.product.pdt</th>
+                                    <th translate>bundle.product.modifierPrice.et</th>
+                                    <th translate>bundle.product.modifierPrice.ati</th>
+                                    <th translate>bundle.product.modifierWeight</th>
                                     <!--<th>Valeur par défaut</th>-->
                                     <th translate>bundle.product.act</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="product in section.products">
+                                <tr ng-repeat="__product in section.products">
                                     <td>
-                                        {{product.id.translation[lang].name}}
+                                        <img ng-src="{{__product.id.images[0].url}}" class="no-product-image" style="width:120px" ng-style="!(__product.id.images[0].url) ? {'height':'90px'} :{}">
+                                    </td>
+                                    <td>
+                                        {{__product.id.translation[lang].name}}
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input class="form-control" type="number" name="modifier_price_et_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.et" step="0.01" ng-change="recalculate('modifier_price.et', __product)">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input class="form-control" type="number" name="modifier_price_ati_{{$index}}_{{__product._id}}" ng-model="__product.modifier_price.ati" step="0.01" ng-change="recalculate('modifier_price.ati', __product)">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <input class="form-control" type="number" name="modifier_weight_{{$index}}_{{__product._id}}" ng-model="__product.modifier_weight">
+                                            </div>
+                                        </div>
                                     </td>
                                     <!--<td>
                                         <input type="{{section.type === 'SINGLE' ? 'radio' : 'checkbox'}}" name="section_products_{{$parent.$index}}" ng-model="product.isDefault" />
                                     </td>-->
                                     <td>
-                                        <a ng-click="removeBundleProduct(section, product)" class="btn btn-red">
+                                        <a ng-click="removeBundleProduct(section, __product)" class="btn btn-red">
                                             <i class="ico-trash"></i>
                                         </a>
                                     </td>
@@ -289,6 +320,12 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+                <div ng-repeat="tab in additionnalTabs" id="{{tab.id}}" class="tab-pane fade">
+                    <h3 style="display: inline" translate="tab.title"></h3>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div bind-html-compile="tab.content"></div>
                     </div>
                 </div>
             </div>

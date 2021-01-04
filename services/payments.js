@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {Orders, PaymentMethods} = require('../orm/models');
 const QueryBuilder             = require('../utils/QueryBuilder');
 
@@ -65,7 +73,7 @@ exports.getPaymentMethod = async function (PostBody) {
 
 exports.savePaymentMethod = async function (pm) {
     if (pm._id) {
-        await PaymentMethods.updateOne({_id: pm._id}, pm);
+        await PaymentMethods.updateOne({_id: pm._id}, pm); // TODO $set
         return pm;
     }
     return PaymentMethods.ceate(pm);

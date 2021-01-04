@@ -43,6 +43,12 @@ MailServices.factory('MailTypesGet', ['$resource', function ($resource) {
     });
 }]);
 
+MailServices.factory('MailTypeGet', ['$resource', function ($resource) {
+    return $resource('/v2/mail_type/:code', {}, {
+        query: { method: 'GET', params: {}}
+    });
+}]);
+
 MailServices.service("MailVariables", function ()
 {
     return {component_template: ""};

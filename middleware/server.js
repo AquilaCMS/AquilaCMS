@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
@@ -9,7 +17,7 @@ const {v1: uuidv1}                    = require('uuid');
 const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
 
-const getUserFromRequest = (req) => {
+const getUserFromRequest = async (req) => {
     const user = null;
     if (req.info) {
         return req.info;
@@ -26,8 +34,8 @@ const getUserFromRequest = (req) => {
     return user;
 };
 
-const serverUseRequest = (req, res, next) => {
-    const user = getUserFromRequest(req);
+const serverUseRequest = async (req, res, next) => {
+    const user = await getUserFromRequest(req);
     if (user && user.isAdmin) {
         return next();
     }
@@ -51,40 +59,14 @@ const serverUseRequest = (req, res, next) => {
             if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
-            if (json.collection && json.collection.collectionName) {
-                json = translation.translateDocument(json, lang, keepOriginalAttribs);
-                json = restrictProductFields(json, req.originalUrl);
-                // remove hidden attributes from document
-                if (json.attributes) {
-                    for (let i = 0; i < json.attributes.length; i++) {
-                        if (!json.attributes[i].visible) {
-                            json.attributes.splice(i, 1);
-                            i--;
-                        }
-                    }
-                }
-            } else if (json.datas !== undefined) {
-                for (let i = 0; i < json.datas.length; i++) {
-                    json.datas[i] = translation.translateDocument(json.datas[i], lang, keepOriginalAttribs);
-                    json.datas[i] = restrictProductFields(json.datas[i], req.originalUrl);
-                    // remove hidden attributes from document
-                    if (json.datas[i].attributes) {
-                        for (let j = 0; j < json.datas[i].attributes.length; j++) {
-                            if (!json.datas[i].attributes[j].visible) {
-                                json.datas[i].attributes.splice(j, 1);
-                                j--;
-                            }
-                        }
-                    }
-                }
-                if (json.filters !== undefined) {
-                    for (let i = 0; i < Object.keys(json.filters).length; i++) {
-                        const filterKey = Object.keys(json.filters)[i];
-                        if (json.filters[filterKey].length) {
-                            for (let j = 0; j < json.filters[filterKey].length; j++) {
-                                json.filters[filterKey][j] = translation.translateDocument(json.filters[filterKey][j], lang);
-                            }
-                        }
+            json = translation.translateDocument(json, lang, keepOriginalAttribs);
+            json = restrictProductFields(json, req.originalUrl);
+            // remove hidden attributes from document
+            if (json.attributes) {
+                for (let i = 0; i < json.attributes.length; i++) {
+                    if (!json.attributes[i].visible) {
+                        json.attributes.splice(i, 1);
+                        i--;
                     }
                 }
             }

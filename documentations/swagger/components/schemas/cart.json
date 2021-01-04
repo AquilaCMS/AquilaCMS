@@ -5,6 +5,7 @@
             "updated" : {"type": "string", "format": "date", "default": "Date.now"},
             "paidTax" : {"type": "boolean", "default": true},
             "status"  : {"type": "String", "enum": ["IN_PROGRESS", "EXPIRING", "EXPIRED"], "default": "IN_PROGRESS", "index": true},
+            "createdAt" : {"type": "date"},
             "promos"  : {
                 "type": "array",
                 "items": {

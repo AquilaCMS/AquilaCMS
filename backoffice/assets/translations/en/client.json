@@ -20,6 +20,7 @@
         "mdp": "Password",
         "connectAs": "Log as this customer",
         "resetMdp": "Reset password",
+        "active": "Active",
         "activeAccount": "Resend account confirm",
         "company": "Company",
         "newsletter": "Newsletter",

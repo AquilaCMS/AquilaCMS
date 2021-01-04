@@ -1,0 +1,23 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(category)" role="form">
+    <div class="modal-header">
+        <h3 translate>medias.multi.title</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+                <div style="text-align: center;">
+                    <p translate>medias.multi.uploadInfo</p>
+                </div>
+                <div style="margin-top: 20px;text-align: center;">
+                    <ns-upload-files accepttype=".zip" multiple="false" type="mediaMass" before-function="beforeMediaMass()" after-function="uploadedMediaMass()" entity="local.insertDBMediaUpload"></ns-upload-files>
+                    <div style="text-align: center;">
+                        <input type="checkbox" ng-model="local.insertDBMediaUpload" ng-true-value="true" id="inDBMedia" ng-false-value="false">
+                        <label for="inDBMedia" translate>medias.medias.uploadInsert</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()" translate>medias.multi.cancel</button>
+    </div>
+</form>

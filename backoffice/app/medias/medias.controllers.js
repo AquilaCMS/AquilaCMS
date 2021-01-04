@@ -8,7 +8,6 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         $scope.totalMedias = 0;
         $scope.groups = [];
         $scope.local = {
-            insertDBMediaUpload : true,
             search: ""
         };
 
@@ -62,13 +61,6 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
             }
         };
 
-        $scope.beforeMediaMass = function () {
-            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
-        };
-
-        $scope.uploadedMediaMass = function () {
-            toastService.toast("success", "Ajout en masse effectué. Rafraichir la page SVP.");
-        };
         $scope.copyLink = function (index, event) {
             event.stopPropagation();
             $modal.open({
@@ -188,9 +180,33 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
         if($routeParams.id !== 'new') {
             $scope.init();
         } else {
-            $scope.getGroups()
+            $scope.getGroups();
+            $scope.additionnalButtons = [
+                {
+                    text: 'medias.medias.uploadButton',
+                    onClick: function(){
+                        $scope.addMulti();
+                    }
+                }
+            ];
         }
-    }]);
+
+        $scope.addMulti = function (nodeParent) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/medias/views/modals/medias-mass-new.html",
+                controller: "MediasModalMassNewCtrl"
+            });
+    
+            modalInstance.result.then(function (resultOfTheModal) {
+                if(resultOfTheModal == 'cancel'){
+                    $location.path("/medias/new");
+                }else{
+                    $location.path("/medias");
+                }
+            });
+        };
+    }
+]);
 
 MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media",
     function ($scope, toastService, $modalInstance, media) {
@@ -300,4 +316,26 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
         $scope.cancel = function () {
             $modalInstance.close()
         };
-    }]);
+    }
+]);
+
+
+MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance",
+    function ($scope, toastService, $modalInstance) {
+        $scope.local = {
+            insertDBMediaUpload: true
+        };
+        $scope.beforeMediaMass = function () {
+            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
+        };
+
+        $scope.uploadedMediaMass = function () {
+            toastService.toast("success", "Ajout en masse effectué.");
+            $modalInstance.close('ok')
+        };
+    
+        $scope.cancel = function () {
+            $modalInstance.close('cancel')
+        };
+    }
+]);

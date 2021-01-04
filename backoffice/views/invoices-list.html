@@ -1,7 +1,12 @@
 <ns-box data-title="invoices-list.t1" title-icon="fa fa-usd fa-lg">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
+        <div class="row">
+            <div class="col-lg-12">
+                <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('bills')" style="cursor: pointer" ></i>
+            </div>
+        </div>
         <table class=" mediumTable table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-            <thead>
+            <thead> 
             <tr role="row">
                 <th class="" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
                     <span translate>
@@ -51,11 +56,11 @@
                             ng-change="getInvoices(1)" translate translate-attr-placeholder='invoices-list.client' />
                     </th>
                     <th style="text-align: center">
-                        <ns-datepicker name="min_creationDate" class="fullDatepicker form-datepicker"
-                            style="display: inline-block; width: 45%;" ng-model="filter.min_creationDate" ng-change="getInvoices(1)">
+                        <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker"
+                            style="display: inline-block; width: 45%;" ng-model="filter.min_createdAt" ng-change="getInvoices(1)">
                         </ns-datepicker>
-                        <ns-datepicker name="max_creationDate" class="fullDatepicker form-datepicker"
-                            style="display: inline-block; width: 45%" ng-model="filter.max_creationDate" ng-change="getInvoices(1)">
+                        <ns-datepicker name="max_createdAt" class="fullDatepicker form-datepicker"
+                            style="display: inline-block; width: 45%" ng-model="filter.max_createdAt" ng-change="getInvoices(1)">
                         </ns-datepicker>
                     </th>
                     <th style="text-align: center">
@@ -76,7 +81,7 @@
                     <td data-label="Facture :">{{invoice.facture}}</td>
                     <td data-label="N° de commande :" style="cursor: pointer;" ng-click="goToOrder(invoice)">{{invoice.order_id ? invoice.order_id.number : 'N/A'}}</td>
                     <td data-label="Client :">{{invoice.nom}} {{invoice.prenom}}</td>
-                    <td data-label="Date :">{{invoice.creationDate | date:'dd/MM/yyyy HH:mm'}}</td>
+                    <td data-label="Date :">{{invoice.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
                     <td data-label="Prix TTC :" align="right">{{invoice.montant | number:2}} € {{invoice.withTaxes ? "TTC" : "HT"}}</td>
                     <td data-label="Type :" align="center" translate>{{invoice.type}}</td>
                     <td><button class="btn btn-blue" ng-click="generatePDF(invoice)" ng-disabled="disabledButton">PDF</button></td>

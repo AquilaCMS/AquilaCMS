@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                    = require('moment-business-days');
 const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
@@ -53,7 +61,7 @@ exports.getFirstDayMetrics = async function () {
 exports.generateStatistics = function (data) {
     try {
         const model     = data.currentRoute;
-        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
+        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['No datas'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
         console.error(error);
@@ -128,7 +136,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
 
     // --- Commande ---
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : sPeriodeStart,
             $lte : sPeriodeEnd
         },
@@ -272,11 +280,11 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
     const datas = [];
 
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id']).lean();
+    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/* .lean() */;
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
@@ -339,7 +347,7 @@ exports.getTopCustomer = async function (granularity, periodeStart, periodeEnd) 
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }
@@ -373,18 +381,18 @@ async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatc
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             },
@@ -408,18 +416,18 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allUsers = await Users.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }

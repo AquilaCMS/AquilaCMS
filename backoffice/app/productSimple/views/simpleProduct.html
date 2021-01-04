@@ -22,6 +22,9 @@
                     <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
                     <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
                     <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
+                    <li ng-repeat="tab in additionnalTabs">
+                        <a data-toggle="tab" href="{{tab.href}}" target="_self" translate="{{tab.title}}"></a>
+                    </li>
                 </ul>
             </div>
             <div class="tab-content">
@@ -176,6 +179,12 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+                <div ng-repeat="tab in additionnalTabs" id="{{tab.id}}" class="tab-pane fade">
+                    <h3 style="display: inline" translate="tab.title"></h3>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div bind-html-compile="tab.content"></div>
                     </div>
                 </div>
             </div>

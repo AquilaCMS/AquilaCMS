@@ -1,8 +1,8 @@
 const ThemesController = angular.module("aq.themes.controllers", []);
 
 ThemesController.controller("ThemesCtrl", [
-    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope",
-    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope) {
+    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal",
+    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal) {
 
         $scope.themeConfig = {};
 
@@ -11,8 +11,10 @@ ThemesController.controller("ThemesCtrl", [
         $scope.onTabSelect = function (tabId) {
           if(tabId == "select"){
               $scope.tab = "select";
-          }else{
+          }else if (tabId == "config"){
               $scope.tab = "config";
+          }else {
+            $scope.tab = "data";
           }
         };
 
@@ -20,19 +22,37 @@ ThemesController.controller("ThemesCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        ThemeConfig.query({ PostBody: { filter: {}, structure: {}, limit: 99 }}, function (response) {
-            $scope.keys = {};
-            $scope.themeConfig.variables = {};
-            if(response.config && response.config.translation) {
-                $scope.languages.forEach(element => {
-                    $scope.themeConfig.variables[element.code] = response.config.translation[element.code];
-                    delete $scope.themeConfig.variables[element.code].$promise;
-                    delete $scope.themeConfig.variables[element.code].$resolved;
-                    $scope.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
-                    $scope.theme.currentThemeVar = true;
-                });
+        $scope.addTheme = function (nodeParent) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/themes/views/modals/themes-new.html",
+                controller: "ThemesNewCtrl"
+            });
+
+            modalInstance.result.then(function () {
+                $scope.LoadAllThemes();
+            });
+        };
+        
+        $scope.LoadAllThemes = function(){
+            $scope.LoadThemeCongig();
+        }
+        
+        $scope.langChange = function (lang)
+        {
+            if ($scope.customiseTheme === undefined){
+                $scope.LoadThemeCongig();
+            };
+            if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined){
+                $scope.customiseTheme.arrayGroup = [];
+                for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
+                    if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
+                        $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
+                    
+                    }
+                }
             }
-        });
+            
+        };
 
         $scope.typeOf = function(value) {
             try {
@@ -54,24 +74,6 @@ ThemesController.controller("ThemesCtrl", [
             }
         }
 
-        $scope.config = ConfigV2.environment(function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
-            }
-        });
-        $scope.LoadAllThemes = function () {
-            $http.get("/v2/themes").then(function (response) {
-                $scope.themesList = response.data;
-            }, function (err) {
-                $scope.isLoading = false;
-                toastService.toast("danger", err.data);
-            });
-        };
-
-        $scope.beforeTheme = function () {
-            $scope.showThemeLoading = true;
-        };
-
         $scope.packageInstall = function () {
             if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
                 $scope.isLoading = true;
@@ -89,17 +91,6 @@ ThemesController.controller("ThemesCtrl", [
             
         };
 
-        $scope.onErrorUploadTheme = function () {
-            $scope.isLoading = false;
-            $scope.showThemeLoading = false;
-            toastService.toast("danger", "Error !");
-        };
-
-        $scope.uploadedTheme = function () {
-            $scope.showThemeLoading = false;
-            toastService.toast("success", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
-            $scope.LoadAllThemes();
-        };
 
         $scope.packageBuild = function () {
             if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
@@ -118,8 +109,6 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.packageRestart = async function () {
-            // $scope.isLoading = true;
-            // $scope.showThemeLoading = true;
             try {
                 await $http.get("/restart");
                 toastService.toast("success", "Succès");
@@ -148,11 +137,11 @@ ThemesController.controller("ThemesCtrl", [
             themeDataOverride: false,
             currentThemeVar : false,
         };
-
+       
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride });
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listAllThemeFiles});
                     if (data.data.noDatas) {
                         toastService.toast("success", "Ce thème ne contient pas de données.");
                     } else {
@@ -162,7 +151,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 }
-            }
+            } 
         };
 
         $scope.validate = function (tab) {
@@ -176,7 +165,7 @@ ThemesController.controller("ThemesCtrl", [
                         $scope.themeConfig.variables = {};
                         if(response.datas.translation){
                             $scope.languages.forEach(element => {
-                                $scope.themeConfig.variables[element.code] = response.datas.translation[element.code];
+                                $scope.themeConfig.variables[element.code] = response.datas.translation[element.code].values;
                                 delete $scope.themeConfig.variables[element.code].$promise;
                                 delete $scope.themeConfig.variables[element.code].$resolved;
                                 $scope.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
@@ -241,8 +230,79 @@ ThemesController.controller("ThemesCtrl", [
 
 
             }
-            $scope.LoadAllThemes();
+
+            $scope.LoadThemeCongig = function () {
+                $http.get("/v2/themes/informations").then(function (response) {
+                    $scope.config = response.data.configEnvironement;
+                    if (!$scope.adminPrefix) {
+                        $scope.config.adminPrefix = "admin";
+                    }
+                    $scope.listThemeFiles = [];
+                    $scope.listAllThemeFiles = [];
+                    $scope.themesList = response.data.listTheme;
+                    $scope.listThemeFiles = response.data.listFiles;
+                    if ($scope.listThemeFiles == undefined){
+                        $scope.listAllThemeFiles.push("noDefaultData");
+                    } else {
+                        $scope.listThemeFiles.forEach(element =>{
+                            if(element.indexOf("json") === -1){
+                                var index = $scope.listThemeFiles.indexOf(element);
+                                $scope.listThemeFiles.splice(index, 1);
+                            }  else {
+                                $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
+                            }
+                        });
+                    }
+                    
+                    $scope.customiseTheme ={};
+                    $scope.customiseTheme.keys = {};
+                    $scope.themeConfig.variables = {};
+                    
+                    if(response.data.configEnvironement && response.data.themeConf.config.translation) {
+                        $scope.languages.forEach(element  => {
+                            $scope.themeConfig.variables[element.code] = response.data.themeConf.config.translation[element.code].values;
+                            delete $scope.themeConfig.variables[element.code].$promise;
+                            delete $scope.themeConfig.variables[element.code].$resolved;
+                            $scope.customiseTheme.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
+                            $scope.langChange($scope.language);
+                            $scope.theme.currentThemeVar = true;
+                        });
+                    }
+                }, function (err) {
+                    $scope.isLoading = false;
+                    toastService.toast("danger", err.data);
+                });
+                
+            
+                
+            };
+
+    }
+]);
+
+ThemesController.controller("ThemesNewCtrl", [
+    "$scope", "$modalInstance", "toastService",
+    function ($scope, $modalInstance, toastService) {
+
+        $scope.onErrorUploadTheme = function () {
+            $scope.$parent.isLoading = false;
+            $scope.showThemeLoading = false;
+            toastService.toast("danger", "Error !");
+        };
+
+        $scope.beforeTheme = function () {
+            $scope.showThemeLoading = true;
+        };
+
+        $scope.uploadedTheme = function () {
+            $scope.showThemeLoading = false;
+            toastService.toast("success", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
+            $modalInstance.close("save");
+        };
 
 
+        $scope.cancel = function (){
+            $modalInstance.dismiss("cancel");
+        };
     }
 ]);

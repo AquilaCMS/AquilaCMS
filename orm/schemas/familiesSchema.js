@@ -1,19 +1,26 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose = require('mongoose');
 const helper   = require('../../utils/utils');
 const Schema   = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const FamiliesSchema = new Schema({
-    code         : {type: String, required: true, unique: true},
-    name         : {type: String, required: true},
-    type         : {type: String, required: true, enum: ['universe', 'family', 'subfamily']},
-    creationDate : {type: Date, default: Date.now},
-    ancestors    : [{code: String, slug: String}],
-    slug         : {type: String, unique: true},
-    parent       : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
-    children     : [{type: ObjectId, ref: 'families'}],
-    details      : {}
-});
+    code      : {type: String, required: true, unique: true},
+    name      : {type: String, required: true},
+    type      : {type: String, required: true, enum: ['universe', 'family', 'subfamily']},
+    ancestors : [{code: String, slug: String}],
+    slug      : {type: String, unique: true},
+    parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
+    children  : [{type: ObjectId, ref: 'families'}],
+    details   : {}
+}, {timestamps: true});
 
 // FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 

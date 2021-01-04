@@ -1,5 +1,14 @@
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const mongoose      = require('mongoose');
+const aquilaEvents  = require('../../utils/aquilaEvents');
+const utilsDatabase = require('../../utils/database');
 
 const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
@@ -32,7 +41,6 @@ const OrdersSchema = new Schema({
         }
     ],
     invoiceFileName : {type: String},
-    creationDate    : {type: Date, default: Date.now},
     lang            : {type: String}, // Permet de connaitre la langue utilisé lors de la commande
     cartId          : {type: ObjectId, ref: 'cart'},
     promos          : [
@@ -234,7 +242,8 @@ const OrdersSchema = new Schema({
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
     }
-}, {usePushEach: true});
+}, {usePushEach : true,
+    timestamps  : true});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});
@@ -286,6 +295,22 @@ OrdersSchema.post('findOneAndUpdate', function (result) {
         aquilaEvents.emit('aqUpdateOrder', {number: result.number}, this.getUpdate());
         aquilaEvents.emit('aqUpdateStatusOrder', this.getUpdate(), result._id.toString());
     }
+});
+
+OrdersSchema.post('findOne', async function (doc, next) {
+    if (doc && doc.items && doc.items.length) {
+        await utilsDatabase.populateItems(doc.items);
+    }
+    next();
+});
+
+OrdersSchema.post('find', async function (docs, next) {
+    for (let i = 0; i < docs.length; i++) {
+        if (docs[i] && docs[i].items && docs[i].items.length) {
+            await utilsDatabase.populateItems(docs[i].items);
+        }
+    }
+    next();
 });
 
 // Permet d'envoyer un evenement avant que le schema order ne soit crée

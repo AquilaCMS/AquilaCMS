@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path     = require('path');
 const fs       = require('./fsp');
 const utils    = require('./utils');
@@ -9,11 +17,13 @@ let loadedModules;
 /**
  * Module : Charge les fonctions dans les init.js des modules si besoin
  */
-const modulesLoadFunctions = async (property, params = {}, functionToExecute) => {
+const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
         return global.moduleExtend[property].function(params);
     }
-    return functionToExecute();
+    if (functionToExecute && typeof functionToExecute === 'function') {
+        return functionToExecute();
+    }
 };
 
 /**
@@ -192,7 +202,7 @@ const modulesLoadInit = async (server) => {
     if (loadedModules.length > 0) {
         console.log('Finish init loading modules');
     } else {
-        console.log('no modules to load');
+        console.log('No modules to load');
     }
 };
 

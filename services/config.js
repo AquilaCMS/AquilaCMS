@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const diff                      = require('diff-arrays-of-objects');
 const path                      = require('path');
 const fs                        = require('../utils/fsp');
@@ -67,13 +75,24 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
         if (isAdmin) {
             config.environment = {
                 ...config.environment,
-                ssl : global.envFile.ssl || {
-                    active : false,
-                    cert   : '',
-                    key    : ''
-                },
                 databaseConnection : global.envFile.db
             };
+            if (global.envFile.ssl && global.envFile.ssl.active === true) {
+                config.environment = {
+                    ...config.environment,
+                    ssl : global.envFile.ssl
+                };
+            } else {
+                // on met les links SSL vide si false
+                config.environment = {
+                    ...config.environment,
+                    ssl : {
+                        active : false,
+                        cert   : '',
+                        key    : ''
+                    }
+                };
+            }
         }
         if (config.environment.mailPass) {
             try {
@@ -200,7 +219,7 @@ const saveEnvConfig = async (body) => {
             );
         }
     }
-    await Configuration.updateOne({}, body);
+    await Configuration.updateOne({}, body); // TODO $set
 };
 
 module.exports = {

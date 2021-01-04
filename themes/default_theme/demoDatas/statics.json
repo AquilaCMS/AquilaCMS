@@ -21,8 +21,8 @@
           "slug": "home"
         }
       },
-      "modifyDate": "2020-05-13T09:07:33.926Z",
-      "creationDate": "2020-05-13T09:07:33.926Z"
+      "updatedAt": "2020-05-13T09:07:33.926Z",
+      "createdAt": "2020-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -44,8 +44,8 @@
           "name": "Contact"
         }
       },
-      "modifyDate": "2020-05-13T09:07:33.926Z",
-      "creationDate": "2020-05-13T09:07:33.926Z"
+      "updatedAt": "2020-05-13T09:07:33.926Z",
+      "createdAt": "2020-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -68,8 +68,8 @@
           "content": "<div class=\"shell\">\n<h1>Blog</h1>\n        <ns-blog-articles limit=\"4\"></ns-blog-article>\n</div>"
         }
       },
-      "creationDate": "2020-05-13T09:07:33.926Z",
-      "modifyDate": "2020-05-13T09:07:33.926Z"
+      "createdAt": "2020-05-13T09:07:33.926Z",
+      "updatedAt": "2020-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -92,8 +92,8 @@
           "content": "<div class=\"shell\">\n<h1>Gallerie</h1>\n        <ns-gallery ns-code=\"gallery1\"></ns-gallery>\n</div>"
         }
       },
-      "creationDate": "2020-05-13T09:07:33.926Z",
-      "modifyDate": "2020-05-13T09:07:33.926Z"
+      "createdAt": "2020-05-13T09:07:33.926Z",
+      "updatedAt": "2020-05-13T09:07:33.926Z"
     },
     {
       "active": true,
@@ -114,8 +114,8 @@
           "slug": "legal-notice"
         }
       },
-      "creationDate": "2020-05-20T09:34:42.608Z",
-      "modifyDate": "2020-05-20T09:34:42.638Z"
+      "createdAt": "2020-05-20T09:34:42.608Z",
+      "updatedAt": "2020-05-20T09:34:42.638Z"
     },
     {
       "active": true,
@@ -137,8 +137,8 @@
         }
         
       },
-      "creationDate": "2020-05-20T09:41:02.575Z",
-      "modifyDate": "2020-05-20T09:41:02.599Z"
+      "createdAt": "2020-05-20T09:41:02.575Z",
+      "updatedAt": "2020-05-20T09:41:02.599Z"
     }
   ]
 }
