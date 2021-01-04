@@ -9,7 +9,7 @@
     "status": "Statut",
     "prixTTC": "Montant TTC",
     "type": "Type",
-
+    "indiff": "Indifferent",
     "start": "Début",
     "end": "Fin",
     "export": "Exporter",
