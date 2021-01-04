@@ -51,21 +51,21 @@
                 "value": true,
                 "name": "Show footer",
                 "description": "Show or hide the footer ",
-                "group": "Général"
+                "group": "General"
               },
               {
                 "key": "filters",
                 "value": "left",
                 "name": "Filter location",
                 "description": "Allows you to display category filters, either on the right or on the left",
-                "group": "Général"
+                "group": "General"
               },
               {
                 "key": "reviews",
                 "value": true,
                 "name": "Customer reviews management",
                 "description": "Activate the management of customer reviews",
-                "group": "Général"
+                "group": "General"
               },
               {
                 "key": "itsnumber",

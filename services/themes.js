@@ -37,7 +37,7 @@ const save = async (environment) => {
     if (environment && environment.mailPass !== undefined && environment.mailPass !== '') {
         environment.mailPass = encryption.cipher(environment.mailPass);
     }
-    await Configuration.updateOne({}, {environment});
+    await Configuration.updateOne({}, {environment}); // TODO $set
     // Si le theme a changé
     if (oldConfig.environment.currentTheme !== environment.currentTheme) {
         console.log('Setup selected theme...');

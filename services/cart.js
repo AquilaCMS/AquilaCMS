@@ -53,7 +53,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items, user, lang, false);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((i) => i.id), user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
                 cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
@@ -193,7 +193,7 @@ const addItem = async (req) => {
     if (req.headers && req.headers.authorization) {
         user = ServiceAuth.getDecodedToken(req.headers.authorization);
     }
-    const item = {...req.body.item, weight: _product.weight};
+    const item = {...req.body.item, weight: _product.weight, price: _product.price};
     if (_product.type !== 'virtual') item.stock = _product.stock;
     const data = await _product.addToCart(cart, item, user ? user.info : {}, _lang.code);
     if (data && data.code) {
@@ -457,7 +457,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
-        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'});
+        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'}); // TODO $set
         throw err;
     }
 };

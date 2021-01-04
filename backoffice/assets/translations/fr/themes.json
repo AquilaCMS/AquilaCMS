@@ -11,11 +11,15 @@
     "myTheme": "Mes thèmes",
     "customisation": "Personnalisation",
     "data":"Données du theme",
-    "newtheme": "Ajout d'un theme",
+    "newtheme": "Ajout d'un thème",
     "themeDatas": "Données du thème",
     "themeDatasLead": "Installer les données du thème",
     "themeDatasOverride": "Ecraser les données existantes",
     "remove":"Supprimer le thème",
     "required": "Requis",
-    "noDefaultData" : "Pas de donnée par default pour ce thème"
+    "noDefaultData" : "Pas de donnée par default pour ce thème",
+    "new": {
+        "createNewTheme": "Ajouter un nouveau thème",
+        "cancel": "Annuler"
+    }
 }

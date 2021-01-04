@@ -18,5 +18,9 @@
     "modalReadMe" : {
         "title":"README.md du module",
         "close":"Fermer"
+    },
+    "new": {
+        "createNewModule": "Ajouter un nouveau module",
+        "cancel": "Annuler"
     }
 }

@@ -48,7 +48,6 @@ const SetAttributesSchema         = require('./setAttributesSchema');
 const SetOptionsSchema            = require('./setOptionsSchema');
 const ShipmentSchema              = require('./shipmentSchema');
 const SliderSchema                = require('./sliderSchema');
-const SpecialCondSchema           = require('./specialCondSchema');
 const StaticsPreviewSchema        = require('./staticsPreviewSchema');
 const StaticsSchema               = require('./staticsSchema');
 const StatsTodaySchema            = require('./statsTodaySchema');
@@ -103,7 +102,6 @@ module.exports = {
     SetOptionsSchema,
     ShipmentSchema,
     SliderSchema,
-    SpecialCondSchema,
     StaticsPreviewSchema,
     StaticsSchema,
     StatsTodaySchema,

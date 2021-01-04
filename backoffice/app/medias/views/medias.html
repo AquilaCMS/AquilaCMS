@@ -101,22 +101,5 @@
         </div>
     </div>
 
-    <hr />
-
-    <div style="width:300px">
-        <label translate>medias.medias.uploadButton</label>
-        <div style="font-size: 10px" translate>
-            medias.medias.uploadInfo
-        </div>
-        <div style="margin-top: 20px;text-align: right">
-            <ns-upload-files accepttype=".zip" multiple="false" type="mediaMass" before-function="beforeMediaMass()" after-function="uploadedMediaMass()" entity="local.insertDBMediaUpload"></ns-upload-files>
-            <input type="checkbox" ng-model="local.insertDBMediaUpload" ng-true-value="true" ng-false-value="false">
-                <span translate>
-                    medias.medias.uploadInsert
-                </span>
-            </input>
-        </div>
-    </div>
-
 </ns-box>
 

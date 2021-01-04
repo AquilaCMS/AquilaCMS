@@ -178,7 +178,7 @@ async function getThemeInformations(req, res, next) {
             }
         }
         const themeConf          = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
-        const config             = await ServiceConfig.getConfigV2(req.params.key, {PostBody: {filter: {_id: {$exists: true}}, structure: 'environment.adminPrefix'}}, userInfo);
+        const config             = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix':1}}, userInfo);
         const configEnvironement = {};
         if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
             configEnvironement.adminPrefix  = config.environment.adminPrefix;

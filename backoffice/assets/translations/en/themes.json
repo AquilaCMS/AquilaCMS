@@ -17,5 +17,9 @@
     "themeDatasOverride": "Overwrite existing datas",
     "remove": "Remove theme",
     "required": "Required",
-    "noDefaultData" : "No default data for this theme"
+    "noDefaultData" : "No default data for this theme",
+    "new": {
+        "createNewTheme": "Add a new theme",
+        "cancel": "Cancel"
+    }
 }

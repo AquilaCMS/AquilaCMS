@@ -44,7 +44,9 @@
         "order": "Order",
         "customer": "Customer",
         "date": "Date",
-        "prixTTC": "ATI Price"
+        "prixTTC": "ATI Price",
+        "nb": "Order number",
+        "mail": "Customer email"
     },
     "list2": {
         "priceTotal": {
