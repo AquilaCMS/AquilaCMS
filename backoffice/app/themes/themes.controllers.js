@@ -32,11 +32,11 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.LoadAllThemes();
             });
         };
-        
+
         $scope.LoadAllThemes = function(){
             $scope.LoadThemeCongig();
         }
-        
+
         $scope.langChange = function (lang)
         {
             if ($scope.customiseTheme === undefined){
@@ -47,11 +47,11 @@ ThemesController.controller("ThemesCtrl", [
                 for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
                     if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
                         $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
-                    
+
                     }
                 }
             }
-            
+
         };
 
         $scope.typeOf = function(value) {
@@ -86,9 +86,9 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     $scope.showThemeLoading = false;
                     toastService.toast("danger", "Error !");
-                }); 
+                });
             }
-            
+
         };
 
 
@@ -137,7 +137,7 @@ ThemesController.controller("ThemesCtrl", [
             themeDataOverride: false,
             currentThemeVar : false,
         };
-       
+
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
@@ -151,7 +151,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 }
-            } 
+            }
         };
 
         $scope.validate = function (tab) {
@@ -233,7 +233,7 @@ ThemesController.controller("ThemesCtrl", [
 
             $scope.LoadThemeCongig = function () {
                 $http.get("/v2/themes/informations").then(function (response) {
-                    $scope.config = response.data.configEnvironement;
+                    $scope.config = response.data.configEnvironment;
                     if (!$scope.adminPrefix) {
                         $scope.config.adminPrefix = "admin";
                     }
@@ -253,12 +253,12 @@ ThemesController.controller("ThemesCtrl", [
                             }
                         });
                     }
-                    
+
                     $scope.customiseTheme ={};
                     $scope.customiseTheme.keys = {};
                     $scope.themeConfig.variables = {};
-                    
-                    if(response.data.configEnvironement && response.data.themeConf.config.translation) {
+
+                    if(response.data.configEnvironment && response.data.themeConf.config.translation) {
                         $scope.languages.forEach(element  => {
                             $scope.themeConfig.variables[element.code] = response.data.themeConf.config.translation[element.code].values;
                             delete $scope.themeConfig.variables[element.code].$promise;
@@ -272,9 +272,9 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data);
                 });
-                
-            
-                
+
+
+
             };
 
     }
