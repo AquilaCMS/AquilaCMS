@@ -19,6 +19,20 @@
                     picto.list.actif
                 </th>
             </tr>
+            <tr>
+                <th>
+                </th>
+                <th>
+                    <input type="text" ng-change="getPicto()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='picto.list.code' class="form-control">
+                </th>
+                <th>
+                    <input type="text" ng-change="getPicto()" ng-model="filter.title" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='picto.list.title' class="form-control">
+                </th>
+                <th>
+                </th>
+                <th>
+                </th>
+            </tr>
         </thead>
         <tbody>
             <tr ng-repeat="picto in pictos" style="cursor: pointer;" ng-click="detailsPicto(picto._id)" ng-show="pictos.length > 0">
