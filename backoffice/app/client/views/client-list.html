@@ -3,15 +3,7 @@
         <div id="clientsList" class="tab-pane fade in active">
             <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
                 <div class="row">
-                    <div class="col-lg-11">
-                        <div class="dataTables_filter">
-                            <label>
-                                <input type="search" ng-change="search()"
-                                    ng-model="query.search" ng-model-options="{ debounce: 500 }" name="q" id="q" value=""  translate translate-attr-placeholder='client.list.ph1' class="search-field">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="col-lg-1" style="float:right">
                             <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('users')" style="cursor: pointer" ></i>
                     </div>
                 </div>
@@ -58,6 +50,25 @@
                             Actions
                         </th>-->
                     </tr>
+                    <tr role="row">
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.email" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.email' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.lastname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.nom' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.firstname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.prenom2' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.company" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.companyName' class="form-control">
+                        </th>
+                        <th>
+                            <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="sortSearch()">
+                            </ns-datepicker>
+                        </th>
+                    </tr>
+
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                     <tr class="pointer"
@@ -83,7 +94,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <pagination total-items="totalClients" page="currentClientsPage" on-select-page="onClientsPageChange(page)" items-per-page="nbItemsPerPage"
+                <pagination total-items="totalClients" page="currentClientsPage" on-select-page="onClientsPageChange(page+1)" items-per-page="nbItemsPerPage"
                 max-size="maxSize" boundary-links="true" rotate="false"></pagination>
             </div>
         </div>

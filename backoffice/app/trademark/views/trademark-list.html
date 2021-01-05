@@ -16,19 +16,26 @@
                 <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
                     style="width: 200px;" aria-sort="ascending"
                     aria-label="Username: activate to sort column descending">
-                    <a ng-click="sortType = 'name'; sortReverse = !sortReverse">
-                        Nom
+                    <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
+                        trademark.detail.nom
                         <span ng-show="sortType == 'name' && !sortReverse" class="ico-chevron-down"></span>
                         <span ng-show="sortType == 'name' && sortReverse" class="ico-chevron-up"></span>
                     </a>
                 </th>
                 <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
                     style="width: 200px;" aria-label="Date registered: activate to sort column ascending">
-                    <a ng-click="sortType = 'active'; sortReverse = !sortReverse">
-                        Etats
+                    <a ng-click="sortType = 'active'; sortReverse = !sortReverse" translate>
+                        trademark.detail.state
                         <span ng-show="sortType == 'active' && !sortReverse" class="ico-chevron-down"></span>
                         <span ng-show="sortType == 'active' && sortReverse" class="ico-chevron-up"></span>
                     </a>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <input type="text" ng-change="getTradeMarks()" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='trademark.detail.nom' class="form-control">
+                </th>
+                <th>
                 </th>
             </tr>
             </thead>

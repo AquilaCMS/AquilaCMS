@@ -124,6 +124,7 @@ adminCatagenControllers.controller("loggedCtrl", [
 adminCatagenControllers.controller("AdminCtrl", [
     "$scope", "AdminScroll", "$modal", "ClientV2", "$location",
     function ($scope, AdminScroll, $modal, ClientV2, $location) {
+        $scope.filter = {};
         function init()
         {
             $scope.sortType = "lastname"; // set the default sort type
@@ -139,10 +140,20 @@ adminCatagenControllers.controller("AdminCtrl", [
             $location.path(`/list/detail/${clientId}`);
         };
 
-        $scope.getClients = function(page = 1)
+        $scope.getClients = function(page)
         {
-            $scope.page = page;
-            ClientV2.list({PostBody: {filter: {isAdmin: true}, page: $scope.page, limit: $scope.initValues.limit}}, function (clientsList)
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if($scope.filter[filterKeys[i]].toString() != ""){
+                    filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                }
+            }
+            filter["isAdmin"] = true;
+            ClientV2.list({PostBody: {filter, page: $scope.page, limit: $scope.initValues.limit}}, function (clientsList)
             {
                 $scope.clients = clientsList.datas;
                 $scope.totalAdmin = clientsList.count;
@@ -858,6 +869,12 @@ adminCatagenControllers.controller("InvoicesController", [
                         filter[key[1]] = {};
                     }
                     filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
+                } else if(filterKeys[i].includes("avoir")) {
+                    if($scope.filter.avoir == "true"){
+                        filter["avoir"] = true;
+                    }else if($scope.filter.avoir == "false"){
+                        filter["avoir"] = false;
+                    }
                 } else {
                     if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
                         filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };

@@ -218,7 +218,7 @@ class CartPayment extends React.Component {
                                                         <button
                                                             className="btn btn--grey"
                                                             style={{ float: 'left' }}
-                                                            onClick={() => Router.pushRoute('cartDelivery', { lang: routerLang })}
+                                                            onClick={() => Router.back()}
                                                             type="button"
                                                         >
                                                             {t('common:retour')}

@@ -8,10 +8,6 @@
     <div class="tab-content">
         <div id="classes" class="tab-pane fade in active">
             <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-                <div class="form-group">
-                    <input style="margin: 20px 0;" class="form-control" placeholder="Nom/Name" type="text" ng-model="local.search" ng-change="getAttributesClassed()" ng-model-options="{debounce: 1000}">
-                </div>
-
                 <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
                        id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
                     <thead>
@@ -40,6 +36,30 @@
                             style="width: 200px;">
                             Actions
                         </th>-->
+                    </tr>
+                    <tr role="row">
+                        <th>
+                            <input type="text" ng-change="getAttributesClassed()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='attribute.list.code' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="getAttributesClassed()" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='attribute.list.nom' class="form-control">
+                        </th>
+                        <th>
+                            <select ng-model="filter.type" ng-change="getAttributesClassed()" class="form-control" type="boolean">
+                                <option value="" selected>Indifferent</option>
+                                <option value="textfield" translate>attribute.detail.champTexte</option>
+                                <option value="textarea" translate>attribute.detail.zoneTexte</option>
+                                <option value="date" translate>attribute.detail.date</option>
+                                <option value="bool" translate>attribute.detail.booleen</option>
+                                <option value="list" translate>attribute.detail.listeDeroulante</option>
+                                <option value="multiselect" translate>attribute.detail.selectionMultiple</option>
+                                <option value="interval" translate>attribute.detail.intervalle</option>
+                                <option value="image" translate>attribute.detail.image</option>
+                                <option value="video" translate>attribute.detail.video</option>
+                                <option value="doc/pdf" translate>attribute.detail.fichierPDF</option>
+                                <option value="number" translate>attribute.detail.nombre</option>
+                            </select>
+                        </th>
                     </tr>
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()" infinite-scroll-distance="1" infinite-scroll-immediate-check="true"

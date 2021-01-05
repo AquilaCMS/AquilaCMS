@@ -74,12 +74,6 @@ class Login extends NSLogin {
                                                         </div>{/* <!-- /.form__controls-link --> */ }
                                                     </div>{/* <!-- /.form__controls --> */ }
                                                 </div>{/* <!-- /.form__row --> */ }
-
-                                                <div className="checkbox visible-xs-block">
-                                                    <input type="checkbox" name="field-terms1" id="field-terms1" />
-
-                                                    <label htmlFor="field-terms1">{t('login:page.client_sign_in.remember_me')}</label>
-                                                </div>{/* <!-- /.checkbox --> */ }
                                             </div>{/* <!-- /.form__body --> */ }
 
                                             <div className="form__actions text-center">
