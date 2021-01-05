@@ -34,7 +34,7 @@ aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = unde
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
             const _order = await Orders.findOne({_id: orderId, historyStatus: {$exists: true}});
             if (!_order) {
-                await Orders.updateOne({_id: orderId}, {historyStatus: []}); // TODO $set
+                await Orders.updateOne({_id: orderId}, {$set: {historyStatus: []}});
             }
             const historyStatus = {status: fields.status || fields.$set.status};
             if (stringDate && typeof stringDate === 'string') {
