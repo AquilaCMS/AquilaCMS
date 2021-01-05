@@ -62,7 +62,7 @@ const genSitemap = async () => {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
                     const _static = statics[i].translation[languages[j].code];
                     const lang    = _languages[languages[j].code];
-                    if (_static.slug) {
+                    if (_static && _static.slug) {
                         const xhtml = [];
                         const url   = {
                             loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '') + (page === 'home' ? '' : _static.slug),
@@ -72,7 +72,9 @@ const genSitemap = async () => {
                         };
                         if (languages.length > 1) {
                             for (let k = 0, lenk = languages.length; k < lenk; k++) {
-                                xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}${page === 'home' ? '' : statics[i].translation[languages[k].code].slug}"`);
+                                if (languages[k] && statics[i] && statics[i].translation[languages[k].code] && statics[i].translation[languages[k].code].slug) {
+                                    xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}${page === 'home' ? '' : statics[i].translation[languages[k].code].slug}"`);
+                                }
                             }
                             url.xhtml = xhtml;
                         }
