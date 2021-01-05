@@ -4,9 +4,11 @@ var MailControllers = angular.module("aq.mail.controllers", ['ui.bootstrap']);
  * Controller de la page contenant la liste des Mails
  */
 MailControllers.controller("MailListCtrl", [
-    "$scope", "$location", "MailGetAll", "MailTypesGet", "$rootScope", function ($scope, $location, MailGetAll, MailTypesGet, $rootScope) {
+    "$scope", "$location", "Mail", "MailTypesGet", "$rootScope", function ($scope, $location, Mail, MailTypesGet, $rootScope) {
         $scope.adminLang = $rootScope.adminLang;
         $scope.isEditMode = true;
+        $scope.filter = {};
+
         $scope.detail = function (mail) {
             $location.url("/mails/" + mail._id);
         };
@@ -15,13 +17,45 @@ MailControllers.controller("MailListCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        MailGetAll.query(function (mails) {
-            $scope.mails = mails;
-        });
+        $scope.getAllMails = function(){
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("isVisible")) {
+                    if($scope.filter.isVisible == "true"){
+                        filter["isVisible"] = true;
+                    }else if($scope.filter.isVisible == "false"){
+                        filter["isVisible"] = false;
+                    }
+                } else if(filterKeys[i].includes("subject")) {
+                    if($scope.filter.subject != ""){
+                        filter["translation."+$scope.defaultLang+".subject"] = { $regex: $scope.filter.subject, $options: "i" };
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            Mail.list({PostBody: {filter, structure: '*', limit: 100, page: 1}}, function ({datas, count}) {
+                $scope.mails = datas;
+            });
+        };
 
         MailTypesGet.query({}, function (mailTypes) {
             $scope.mailTypes = mailTypes;
         });
+        
+        $scope.getAllMails();
+
+        
 
         $scope.getMailTypeDesc = function(type){
             if ($scope.mailTypes && $scope.adminLang){

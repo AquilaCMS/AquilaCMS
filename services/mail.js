@@ -25,11 +25,16 @@ const {
     PaymentMethods
 }                      = require('../orm/models');
 
+const QueryBuilder     = require('../utils/QueryBuilder');
+const restrictedFields = [];
+const defaultFields    = ['*'];
+const queryBuilder     = new QueryBuilder(Mail, restrictedFields, defaultFields);
+
 /**
  * @description On récupére les mails
  */
-const getMails = async () => {
-    return Mail.find({}).sort({createdAt: -1});
+const getMails = async (PostBody) => {
+    return queryBuilder.find(PostBody);
 };
 /**
  * @description on récupére le mail en fonction de son _id
