@@ -10,7 +10,7 @@
                             <span ng-show="sort.type == 'title' && sort.reverse" class="ico-chevron-up"></span>
                         </a>
                     </th>
-                    <th role="columnheader" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 45%">
+                    <th role="columnheader" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 40%">
                         <a ng-click="sort.type = 'slug'; sort.reverse = !sort.reverse" translate>
                             site.articles.urlKey
                             <span ng-show="sort.type == 'slug' && !sort.reverse" class="ico-chevron-down"></span>
@@ -24,13 +24,33 @@
                             <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
                         </a>
                     </th>
-                    <th role="columnheader" aria-controls="DataTables_Table_0" rowspan="1" colspan="2" style="width: 5%">
+                    <th role="columnheader" aria-controls="DataTables_Table_0" rowspan="1" colspan="2" style="width: 10%">
                         <a ng-click="sort.type = 'isVisible'; sort.reverse = !sort.reverse" translate>
                             site.articles.visible
                             <span ng-show="sort.type == 'isVisible' && !sort.reverse" class="ico-chevron-down"></span>
                             <span ng-show="sort.type == 'isVisible' && sort.reverse" class="ico-chevron-up"></span>
                         </a>
                     </th>
+                </tr>
+                <tr>
+                    <th>
+                        <input type="text" ng-change="getArticles(page)" ng-model="filter.title" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='site.articles.title' class="form-control">
+                    </th>
+                    <th>
+                        <input type="text" ng-change="getArticles(page)" ng-model="filter.slug" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='site.articles.urlKey' class="form-control">
+                    </th>
+                    <th>
+                        <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="getArticles(page)">
+                        </ns-datepicker>
+                    </th>
+                    <th>
+                        <select ng-model="filter.isVisible" ng-change="getArticles(page)" class="form-control" type="boolean">
+                            <option value="" translate>site.articles.indiff</option>
+                            <option value="true" translate>site.articles.yes</option>
+                            <option value="false" translate>site.articles.no</option>
+                        </select>
+                    </th>
+
                 </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all">
@@ -63,7 +83,7 @@
                 </tr>
             </tbody>
         </table>
-        <pagination total-items="totalArticles" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
+        <pagination total-items="totalArticles" page="page" on-select-page="getArticles(page)" items-per-page="nbItemsPerPage"
             max-size="maxSize" boundary-links="true" rotate="false"></pagination>
     </div>
 </ns-box>

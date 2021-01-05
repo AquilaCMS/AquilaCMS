@@ -8,13 +8,13 @@
         <thead>
             <tr>
                 <th translate>
+                    translation.img
+                </th>
+                <th translate>
                     translation.code
                 </th>
                 <th translate>
                     translation.des
-                </th>
-                <th translate>
-                    translation.img
                 </th>
                 <th translate>
                     translation.status
@@ -23,12 +23,34 @@
                     translation.act
                 </th>
             </tr>
+            <tr>
+                <th>
+
+                </th>
+                <th>
+                    <input type="text" ng-change="getLanguages()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='translation.code' class="form-control">
+                </th>
+                <th>
+                    <input type="text" ng-change="getLanguages()" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='translation.des2' class="form-control">
+                
+                </th>
+                <th>
+                    <select ng-model="filter.status" ng-change="getLanguages(page)" class="form-control" type="boolean">
+                        <option value="" translate>translation.indiff</option>
+                        <option value="visible" translate>translation.visible2</option>
+                        <option value="invisible" translate>translation.invisible</option>
+                    </select>    
+                </th>
+                <th>
+                    
+                </th>
+            </tr>
         </thead>
         <tbody>
             <tr ng-repeat="lang in languages">
+                <td data-label="IMG :" class="pointer" ng-click="editLang(lang)"><img style="width: 18px;height: 12px;" ng-src="{{lang.img}}"></td>
                 <td data-label="Code :" class="pointer" ng-click="editLang(lang)">{{lang.code}}</td>
                 <td data-label="Désignation :" class="pointer" ng-click="editLang(lang)">{{lang.name}}</td>
-                <td data-label="IMG :" class="pointer" ng-click="editLang(lang)"><img style="width: 18px;height: 12px;" ng-src="{{lang.img}}"></td>
                 <td data-label="Statut :" class="pointer" ng-click="editLang(lang)">
                     <span class="label" ng-class="{'label-success': lang.status == 'visible',
                                         'label-warning': lang.status == 'invisible',

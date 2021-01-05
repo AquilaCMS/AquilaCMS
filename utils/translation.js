@@ -47,6 +47,7 @@ function translateDocument(doc, lang) {
 }
 
 const deepTranslation = (doc, lang) => {
+    if (!doc) return doc;
     if (doc._doc) doc = doc.toObject();
     const docKeys = Object.keys(doc);
     for (let i = 0; i < docKeys.length; i++) {

@@ -14,17 +14,16 @@ const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
 const cacheService = require('./cache');
 
+const QueryBuilder     = require('../utils/QueryBuilder');
+const restrictedFields = [];
+const defaultFields    = ['*'];
+const queryBuilder     = new QueryBuilder(Gallery, restrictedFields, defaultFields);
+
 /**
  * @description Retourne toutes les galleries
  */
-const getGalleries = async () => {
-    const resultTmp = await Gallery.find({});
-    const result    = resultTmp.map((gallery) => {
-        gallery.itemCount = gallery.items.length;
-        delete gallery.items;
-        return gallery;
-    });
-    return {datas: result, count: result.length};
+const getGalleries = async (PostBody) => {
+    return queryBuilder.find(PostBody);
 };
 
 /**
