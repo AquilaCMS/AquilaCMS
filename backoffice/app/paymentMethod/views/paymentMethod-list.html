@@ -38,6 +38,28 @@
                         </a>
                     </th>
                 </tr>
+                <tr>
+                    <th>
+                        
+                    </th>
+                    <th>
+                        <input type="text" ng-change="getPaymentMethod()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='paymentMethod.list.des2' class="form-control">
+                    </th>
+                    <th>
+                        <select ng-model="filter.isDeferred" ng-change="getPaymentMethod()" class="form-control" type="boolean">
+                            <option value="" translate>paymentMethod.list.indiff</option>
+                            <option value="true" translate>paymentMethod.list.yes</option>
+                            <option value="false" translate>paymentMethod.list.no</option>
+                        </select>
+                    </th>
+                    <th>
+                        <select ng-model="filter.active" ng-change="getPaymentMethod()" class="form-control" type="boolean">
+                            <option value="" translate>paymentMethod.list.indiff</option>
+                            <option value="true" translate>paymentMethod.list.actif</option>
+                            <option value="false" translate>paymentMethod.list.noActif</option>
+                        </select>
+                    </th>
+                </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr class="pointer"
