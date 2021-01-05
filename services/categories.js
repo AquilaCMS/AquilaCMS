@@ -153,7 +153,7 @@ const getCategoryById = async (id, PostBody = null) => {
     return queryBuilder.findById(id, PostBody);
 };
 const setCategory     = async (req) => {
-    return Categories.updateOne({_id: req.body._id}, req.body); // TODO $set
+    return Categories.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
 const createCategory = async (req) => {
