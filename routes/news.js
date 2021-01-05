@@ -70,20 +70,20 @@ async function deleteNew(req, res, next) {
  */
 async function previewNew(req, res, next) {
     try {
-        let preview = {};
-        if (await NewsPreview.findOne({code: req.body.code})) {
-            preview = await NewsPreview.findOneAndUpdate({code: req.body.code}, req.body, {new: true});
+        let preview  = {};
+        const exists = await NewsPreview.findOne({_id: req.body._id});
+        if (exists) {
+            preview = await NewsPreview.findOneAndUpdate({_id: req.body._id}, req.body, {new: true});
         } else {
-            const newPreview = new NewsPreview(req.body);
-            preview          = await newPreview.save();
+            preview = await NewsPreview.create(req.body);
         }
         const _config = (await require('../orm/models/configuration').find({}))[0];
         if (req.body.lang) {
-            console.log(URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}`));
+            // console.log(URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}`));
             return res.json({url: URL.resolve(_config.environment.appUrl, `/${req.body.lang}/blog/${preview.translation[req.body.lang].slug}?preview=${preview._id}`)});
         }
         const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-        console.log(URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}`));
+        // console.log(URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}`));
         return res.json({url: URL.resolve(_config.environment.appUrl, `/blog/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}?preview=${preview._id}`)});
     } catch (err) {
         next(err);
