@@ -22,7 +22,26 @@
                 <th role="columnheader" style="width: 10%" translate>
                     territories.listing.children
                 </th>
-                <th></th>
+                <th role="columnheader" translate>
+                    territories.listing.delete
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <input type="text" ng-change="getTerritories()" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder=' territories.listing.name' class="form-control">
+                </th>
+                <th>
+                    <input type="text" ng-change="getTerritories()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='territories.listing.code' class="form-control">
+                </th>
+                <th>
+                    
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
             </tr>
             </thead>
             <tbody>

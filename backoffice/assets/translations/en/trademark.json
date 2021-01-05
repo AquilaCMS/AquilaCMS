@@ -5,6 +5,7 @@
         "click": "Click to edit",
         "id": "ID",
         "nom": "Name",
+        "state": "State",
         "code": "Code",
         "active": "Active",
         "creaDate": "Creation date"

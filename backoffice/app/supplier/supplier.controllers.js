@@ -5,12 +5,13 @@ SupplierControllers.controller("SupplierListCtrl", [
         $scope.totalItems = 0;
         $scope.nbItemsPerPage = 15;
         $scope.maxSize = 10;
-
+        $scope.page = 1;
+        $scope.filter = {query: ""};
         //Pagination
-        $scope.onPageChange = function (page, query) {
-            let filter = {}
-            if(query) {
-                filter.name = {$regex: query, $options: 'i'}
+        $scope.onPageChange = function (page) {
+            let filter = {};
+            if($scope.filter.query != "") {
+                filter["name"] = {$regex: $scope.filter.query, $options: 'i'};
             }
             SuppliersV2.list({PostBody: {filter, page, limit: $scope.nbItemsPerPage, structure: '*', limit: 99}}, function (res) {
                 $scope.suppliers = res.datas;

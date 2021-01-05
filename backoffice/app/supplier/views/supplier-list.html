@@ -1,14 +1,5 @@
 <ns-box data-title="supplier.list.t1" title-icon="fa fa-industry fa-lg" new-href="#/suppliers/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="dataTables_filter">
-                    <label>
-                        <input type="search" ng-model="query" ng-change="onPageChange(1, query)" name="query" id="query" value="" translate translate-attr-placeholder='supplier.list.ph1' class="search-field">
-                    </label>
-                </div>
-            </div>
-        </div>
         <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
                id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
@@ -35,6 +26,13 @@
                     Actions
                 </th>-->
             </tr>
+            <tr role="row" style="cursor: pointer">
+                <th>
+                    <input type="text" ng-change="onPageChange(page)" ng-model="filter.query" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='supplier.list.nom' class="form-control">
+                </th>
+                <th>
+                </th>
+            </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all">
             <tr class="pointer"
@@ -54,7 +52,7 @@
             </tr>
             </tbody>
         </table>
-        <pagination total-items="totalItems" page="page" on-select-page="onPageChange(page, query)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
+        <pagination total-items="totalItems" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                     rotate="false"></pagination>
     </div>
 </ns-box>

@@ -65,7 +65,7 @@ ClientControllers.controller("ClientCtrl", [
             let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {'details': 1, createdAt: 1, company : 1},
+                structure : {createdAt: 1, company : 1},
                 valeurPage,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -105,7 +105,7 @@ ClientControllers.controller("ClientCtrl", [
             let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
-                structure : {'details': 1, createdAt: 1},
+                structure : {createdAt: 1, company : 1},
                 page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri

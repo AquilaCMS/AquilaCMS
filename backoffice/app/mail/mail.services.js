@@ -1,9 +1,9 @@
 var MailServices = angular.module('aq.mail.services', ['ngResource']);
 
 
-MailServices.factory('MailGetAll', ['$resource', function ($resource) {
+MailServices.factory('Mail', ['$resource', function ($resource) {
     return $resource('/v2/mails', {}, {
-        query: { method: 'GET', isArray: true }
+        list: { method: 'POST'}
     });
 }]);
 

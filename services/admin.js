@@ -34,7 +34,7 @@ const getAdminInformation = async () => {
  * @description Delete adminInformation
  */
 const deleteAdminInformation = async (code) => {
-    await AdminInformation.updateOne({code}, {deleted: true}); // TODO $set
+    await AdminInformation.updateOne({code}, {$set: {deleted: true}});
 };
 
 /**

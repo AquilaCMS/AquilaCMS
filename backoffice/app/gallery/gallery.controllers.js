@@ -1,14 +1,22 @@
 angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
     "$scope", "$location", "GalleryService", function ($scope, $location, GalleryService) {
         $scope.galleries = [];
+        $scope.filter = {code:""};
 
         $scope.goToGalleryDetails = function (galleryId) {
             $location.path("/component/gallery/" + galleryId);
         };
 
-        GalleryService.list({ skip: 0, limit: 100 }, function (res) {
-            $scope.galleries = res.datas;
-        });
+        $scope.getGallery = function(){
+            let filter = {};
+            if($scope.filter.code != ""){
+                filter["code"] = { $regex: $scope.filter.code, $options: "i" };
+            }
+            GalleryService.list({PostBody: { filter, skip: 0, limit: 100 }}, function (res) {
+                $scope.galleries = res.datas;
+            });
+        };
+        $scope.getGallery(); //get gallery list for the first time
     }
 ]).controller("GalleryDetailCtrl", [
     "$rootScope", "$scope", "$routeParams", "$location", "GalleryService", "GalleryItemService", "toastService", "$modal",
