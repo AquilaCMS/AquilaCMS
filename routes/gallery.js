@@ -9,7 +9,7 @@
 const ServiceGallery = require('../services/gallery');
 
 module.exports = function (app) {
-    app.get('/v2/galleries', getGalleries);
+    app.post('/v2/galleries', getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
     app.get('/v2/gallery/:code/items', getItemsGallery);
     app.put('/v2/gallery', setGallery);
@@ -24,7 +24,7 @@ module.exports = function (app) {
  */
 async function getGalleries(req, res, next) {
     try {
-        const result = await ServiceGallery.getGalleries();
+        const result = await ServiceGallery.getGalleries(req.body.PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
