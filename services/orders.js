@@ -84,7 +84,7 @@ const setStatus = async (_id, status, sendMail = true) => {
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
     if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
         // On supprime le panier sauf si la commande est en attente de paiement ou annulée
-        await Orders.updateOne({_id}, {cartId: null}); // TODO $set
+        await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
     if (status === 'PAID' && global.envConfig.stockOrder.automaticBilling) {
