@@ -13,6 +13,11 @@
         "t1": "Payment modes",
         "ph1": "Search...",
         "des": "Designation",
-        "actif": "Active"
+        "des2": "Designation",
+        "indiff": "Indifferent",
+        "actif": "Active",
+        "noActif": "Not active",
+        "yes": "Yes",
+        "no": "No"
     }
 }

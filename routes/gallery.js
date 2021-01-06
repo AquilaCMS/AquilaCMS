@@ -1,7 +1,15 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const ServiceGallery = require('../services/gallery');
 
 module.exports = function (app) {
-    app.get('/v2/galleries', getGalleries);
+    app.post('/v2/galleries', getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
     app.get('/v2/gallery/:code/items', getItemsGallery);
     app.put('/v2/gallery', setGallery);
@@ -16,7 +24,7 @@ module.exports = function (app) {
  */
 async function getGalleries(req, res, next) {
     try {
-        const result = await ServiceGallery.getGalleries();
+        const result = await ServiceGallery.getGalleries(req.body.PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);

@@ -96,7 +96,8 @@ class Layout extends React.Component {
                 {children}
                 {
                     themeConfig
-                    && themeConfig.showFooter
+                    && themeConfig.find(t => t.key === 'showFooter')
+                    && themeConfig.find(t => t.key === 'showFooter').value
                         ? <CMS ns-code="footer" content={footer} />
                         : ''
                 }

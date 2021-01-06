@@ -69,7 +69,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productReviews",
     "aq.themes",
     "aq.productVirtual",
-    "aq.newsletter"
+    "aq.newsletter",
+    "aq.system", 
 
 ]);
 
@@ -244,7 +245,7 @@ adminCatagenApp.config([
 var namespaces = [
     "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules", "option",
     "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setOption", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
-    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual"
+    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system"
 ];
 adminCatagenApp
     .factory("customLoader", [

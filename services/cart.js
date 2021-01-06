@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment            = require('moment');
 const mongoose          = require('mongoose');
 const {
@@ -45,7 +53,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((item) => item.id), user, lang, false);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((i) => i.id), user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
                 cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
@@ -185,7 +193,7 @@ const addItem = async (req) => {
     if (req.headers && req.headers.authorization) {
         user = ServiceAuth.getDecodedToken(req.headers.authorization);
     }
-    const item = {...req.body.item, weight: _product.weight};
+    const item = {...req.body.item, weight: _product.weight, price: _product.price};
     if (_product.type !== 'virtual') item.stock = _product.stock;
     const data = await _product.addToCart(cart, item, user ? user.info : {}, _lang.code);
     if (data && data.code) {
@@ -220,7 +228,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
@@ -235,7 +243,7 @@ const updateQty = async (req) => {
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
+                            && !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd)).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
@@ -449,7 +457,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
-        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'});
+        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'}); // TODO $set
         throw err;
     }
 };

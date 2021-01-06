@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const AdmZip         = require('adm-zip');
 const path           = require('path');
 const mongoose       = require('mongoose');
@@ -451,7 +459,7 @@ const activateModule = async (idModule, toBeChanged) => {
             false,
             myModule.type ? `type: '${myModule.type}'` : ''
         );
-        await myModule.updateOne({$push: {files: copyTab}, active: true});
+        await myModule.updateOne({$push: {files: copyTab}, active: true}); // TODO $set
         console.log('Module activated');
         return Modules.find({});
     } catch (err) {
@@ -550,7 +558,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
-        await Modules.updateOne({_id: idModule}, {files: [], active: false});
+        await Modules.updateOne({_id: idModule}, {files: [], active: false}); // TODO $set
         console.log('Module desactivated');
         return Modules.find({});
     } catch (err) {

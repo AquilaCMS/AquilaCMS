@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose         = require('mongoose');
 const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
@@ -15,7 +23,6 @@ const CategoriesSchema = new Schema({
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
     closeDate    : {type: Date},
-    creationDate : {type: Date, default: Date.now},
     ancestors    : [{type: ObjectId, ref: 'categories'}],
     children     : [{type: ObjectId, ref: 'categories'}],
     productsList : [{
@@ -41,7 +48,8 @@ const CategoriesSchema = new Schema({
     },
     translation      : {},
     canonical_weight : {type: Number, default: 0}
-}, {usePushEach: true});
+}, {usePushEach : true,
+    timestamps  : true});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues

@@ -20,6 +20,7 @@
         "mdp": "Password",
         "connectAs": "Log as this customer",
         "resetMdp": "Reset password",
+        "active": "Active",
         "activeAccount": "Resend account confirm",
         "company": "Company",
         "newsletter": "Newsletter",
@@ -70,7 +71,9 @@
         "email": "Email",
         "nom": "Last name",
         "prenom": "First name",
+        "prenom2": "First name",
         "company": "Company",
+        "companyName": "Company name",
         "creationDate": "Creation date"
     }
 }

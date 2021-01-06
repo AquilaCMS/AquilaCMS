@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose         = require('mongoose');
 const {
     Categories,
@@ -37,18 +45,18 @@ const generateFilters = async (res, lang = '') => {
             }).lean();
             productsList   = category.productsList;
         }
-        for (const products of productsList) {
-            let prd = null;
+        for (let i = 0; i < productsList.length; ++i) {
+            let prd;
             // products peut être soit un objet de type Product soit
             // un objet de type category.productList contenant l'id du produit populate par le produit
-            if (products.attributes !== undefined || (products.id != null && products.id.attributes !== undefined)) {
-                if (products.id != null && products.id.attributes !== undefined) {
-                    prd = products.id;
+            if (productsList[i].attributes !== undefined || (productsList[i].id != null && productsList[i].id.attributes !== undefined)) {
+                if (productsList[i].id != null && productsList[i].id.attributes !== undefined) {
+                    prd = productsList[i].id;
                 } else {
-                    prd = products;
+                    prd = productsList[i];
                 }
             } else {
-                prd = await Products.findOne({_id: products.id, active: true, _visible: true}).lean();
+                prd = await Products.findOne({_id: productsList[i].id, active: true, _visible: true}).lean();
             }
 
             if (prd && prd.attributes) {
@@ -145,7 +153,7 @@ const getCategoryById = async (id, PostBody = null) => {
     return queryBuilder.findById(id, PostBody);
 };
 const setCategory     = async (req) => {
-    return Categories.updateOne({_id: req.body._id}, req.body);
+    return Categories.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
 const createCategory = async (req) => {
@@ -204,7 +212,7 @@ const getCategoryChild = async (code, childConds, authorization = null) => {
         projectionOptions = {
             canonical_weight : 0,
             active           : 0,
-            creationDate     : 0,
+            createdAt        : 0,
             openDate         : 0,
             ancestors        : 0
         };

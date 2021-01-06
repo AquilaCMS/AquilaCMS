@@ -20,6 +20,7 @@
         "mdp": "Mot de passe",
         "connectAs": "Se connecter en tant que ce client",
         "resetMdp": "Réinitialiser mot de passe",
+        "active": "Actif",
         "activeAccount": "Réenvoyer la confirmation de compte",
         "company": "Société",
         "newsletter": "Newsletter",
@@ -70,7 +71,9 @@
         "email": "Email",
         "nom": "Nom",
         "prenom": "Prénom",
+        "prenom2": "Prenom",
         "company": "Société",
+        "companyName": "Nom de la societe",
         "creationDate": "Date de création"
     }
 }

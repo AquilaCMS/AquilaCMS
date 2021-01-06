@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment           = require('moment');
 const {
     Orders,
@@ -26,7 +34,7 @@ aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = unde
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
             const _order = await Orders.findOne({_id: orderId, historyStatus: {$exists: true}});
             if (!_order) {
-                await Orders.updateOne({_id: orderId}, {historyStatus: []});
+                await Orders.updateOne({_id: orderId}, {$set: {historyStatus: []}});
             }
             const historyStatus = {status: fields.status || fields.$set.status};
             if (stringDate && typeof stringDate === 'string') {
@@ -76,7 +84,7 @@ const setStatus = async (_id, status, sendMail = true) => {
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
     if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
         // On supprime le panier sauf si la commande est en attente de paiement ou annulée
-        await Orders.updateOne({_id}, {cartId: null});
+        await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
     if (status === 'PAID' && global.envConfig.stockOrder.automaticBilling) {
@@ -203,7 +211,7 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: 'PAYMENT_PENDING', creationDate: {$lt: dateAgo}})
+    return Orders.find({status: 'PAYMENT_PENDING', createdAt: {$lt: dateAgo}})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {

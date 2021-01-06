@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const AdminInformationSchema      = require('./adminInformationSchema');
 const AttributesSchema            = require('./attributesSchema');
 const BillsSchema                 = require('./billsSchema');
@@ -19,6 +27,7 @@ const MailTypeSchema              = require('./mailTypeSchema');
 const MediasSchema                = require('./mediasSchema');
 const ModulesSchema               = require('./modulesSchema');
 const NewsSchema                  = require('./newsSchema');
+const NewsPreviewSchema           = require('./newsPreviewSchema');
 const NewslettersSchema           = require('./newslettersSchema');
 const OptsSchema                  = require('./optsSchema');
 const OrdersSchema                = require('./ordersSchema');
@@ -39,7 +48,6 @@ const SetAttributesSchema         = require('./setAttributesSchema');
 const SetOptionsSchema            = require('./setOptionsSchema');
 const ShipmentSchema              = require('./shipmentSchema');
 const SliderSchema                = require('./sliderSchema');
-const SpecialCondSchema           = require('./specialCondSchema');
 const StaticsPreviewSchema        = require('./staticsPreviewSchema');
 const StaticsSchema               = require('./staticsSchema');
 const StatsTodaySchema            = require('./statsTodaySchema');
@@ -73,6 +81,7 @@ module.exports = {
     MediasSchema,
     ModulesSchema,
     NewsSchema,
+    NewsPreviewSchema,
     NewslettersSchema,
     OptsSchema,
     OrdersSchema,
@@ -93,7 +102,6 @@ module.exports = {
     SetOptionsSchema,
     ShipmentSchema,
     SliderSchema,
-    SpecialCondSchema,
     StaticsPreviewSchema,
     StaticsSchema,
     StatsTodaySchema,

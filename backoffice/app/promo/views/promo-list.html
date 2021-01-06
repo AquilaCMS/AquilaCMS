@@ -1,22 +1,12 @@
 <ns-box data-title="promo.list.t1" title-icon="fa fa-percent fa-lg" new-href="#/promos/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="dataTables_filter">
-                    <label>
-                        <input  type="search" ng-change="search(searchPromoByName)" ng-model="searchPromoByName" ng-model-options="{ debounce: 500 }"
-                                name="q" id="q" translate translate-attr-placeholder='promo.list.ph1' class="search-field">
-                    </label>
-                </div>
-            </div>
-        </div>
 
         <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
                 <tr role="row">
                     <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
                         <a ng-click="sort.type = 'name'; sort.reverse = !sort.reverse; PromoGetById(1);" translate>
-                            promo.list.nom
+                            promo.list.name
                             <span ng-show="sort.type == 'name' && !sort.reverse" class="ico-chevron-down"></span>
                             <span ng-show="sort.type == 'name' && sort.reverse" class="ico-chevron-up"></span>
                         </a>
@@ -71,17 +61,58 @@
                         </a>
                     </th>
                 </tr>
+                <tr role="row">
+                    <th>
+                        <input type="text" ng-change="getPromo(page)" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='promo.list.name' class="form-control">
+                    </th>
+                    <th>
+                        <select ng-model="filter.type" ng-change="getPromo(page)" class="form-control" type="boolean">
+                            <option value="" translate>promo.list.indiff</option>
+                            <option value="1" translate>promo.type.cart</option>
+                            <option value="2" translate>promo.type.catalog</option>
+                        </select>
+                    </th>
+                    <th>
+                        <ns-datepicker name="min_dateStart" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%;" ng-model="filter.min_dateStart" ng-change="getPromo(page)">
+                        </ns-datepicker>
+                    </th>
+                    <th>
+                        <ns-datepicker name="max_dateEnd" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.max_dateEnd" ng-change="getPromo(page)">
+                        </ns-datepicker>
+                    </th>
+                    <th>
+                        <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="getPromo(page)">
+                        </ns-datepicker>
+                    </th>
+                    <th>
+                        <input type="text" ng-change="getPromo(page)" ng-model="filter.priority" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='promo.list.priority' class="form-control">
+                    </th>
+                    <th>
+                        <select ng-model="filter.nextRules" ng-change="getPromo(page)" class="form-control" type="boolean">
+                            <option value="" translate>promo.list.indiff</option>
+                            <option value="true" translate>promo.list.yes</option>
+                            <option value="false" translate>promo.list.no</option>
+                        </select>
+                    </th>
+                    <th>
+                        <select ng-model="filter.active" ng-change="getPromo(page)" class="form-control" type="boolean">
+                            <option value="" translate>promo.list.indiff</option>
+                            <option value="true" translate>promo.list.actif</option>
+                            <option value="false" translate>promo.list.noActif</option>
+                        </select>
+                    </th>
+                </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all">
                 <tr class="pointer" ng-click="detail(promo)" ng-repeat="promo in promos" ng-class-odd="'odd'" ng-class-even="'even'">
                     <td data-label="Nom :">{{promo.name}}</td>
-                    <td data-label="Type :">{{promo.type === "1" ? "Panier" : "Catalogue"}}</td>
+                    <td data-label="Type :" translate>{{promo.type === "1" ? "promo.type.cart" : "promo.type.catalog"}}</td>
                     <td data-label="Date début :">{{ momentDate(promo.dateStart) }}</td>
                     <td data-label="Date fin :">{{ momentDate(promo.dateEnd) }}</td>
                     <td data-label="Date Création :">{{ momentDate(promo.createdAt) }}</td>
                     <td data-label="Priorité :">{{promo.priority}}</td>
-                    <td data-label="Appliquer promo de priorité inférieur :">{{promo.applyNextRules ? "Oui" : "Non"}}</td>
-                    <td data-label="Actif :">{{promo.actif ? "Actif" : "Non actif"}}</td>
+                    <td data-label="Appliquer promo de priorité inférieur :" translate>{{promo.applyNextRules ? 'promo.list.yes' : 'promo.list.no'}}</td>
+                    <td data-label="Actif :" translate>{{promo.actif ? 'promo.list.actif' : 'promo.list.noActif'}}</td>
                 </tr>
             </tbody>
         </table>

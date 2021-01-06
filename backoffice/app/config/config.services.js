@@ -17,7 +17,3 @@ ConfigsServices.factory('ConfigV2', ['$resource', function ($resource) {
         save       : {method: 'PUT', params: {key: ""}},
     });
 }]);
-
-ConfigsServices.service('EnvBlocks', function () {
-    return [];
-});

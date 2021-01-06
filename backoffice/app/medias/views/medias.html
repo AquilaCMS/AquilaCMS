@@ -1,10 +1,13 @@
 <ns-box data-title="medias.medias.t1" title-icon="fa fa-file-image-o fa-lg" new-href="#/medias/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
         <div class="row">
-            <div class="col-lg-12">
-                <div class="dataTables_filter">
-                    <input group="search" ng-model="local.search" ng-change="onPageChange(1)" class="search-field" name="q" id="q" value="" placeholder="{{'static.list.search' | translate}}">                    
-                </div>
+            <div class="pull-right" style="width:45%">
+                <div class="searchBar dataTables_filter">
+                    <input type="text" class="searchBarTerm" placeholder="Search..." ng-change="onPageChange(1)" ng-model="local.search" group="search" name="q" id="q" value="" placeholder="{{'static.list.search' | translate}}">
+                    <button type="submit" class="searchBarButton">
+                      <i class="fa fa-search"></i>
+                   </button>
+                 </div>
             </div>
         </div>
         <div class= "scrollmenu">
@@ -98,23 +101,6 @@
             </table>
             <pagination total-items="totalMedias" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
                 max-size="maxSize" boundary-links="true" rotate="false"></pagination>
-        </div>
-    </div>
-
-    <hr />
-
-    <div style="width:300px">
-        <label translate>medias.medias.uploadButton</label>
-        <div style="font-size: 10px" translate>
-            medias.medias.uploadInfo
-        </div>
-        <div style="margin-top: 20px;text-align: right">
-            <ns-upload-files accepttype=".zip" multiple="false" type="mediaMass" before-function="beforeMediaMass()" after-function="uploadedMediaMass()" entity="local.insertDBMediaUpload"></ns-upload-files>
-            <input type="checkbox" ng-model="local.insertDBMediaUpload" ng-true-value="true" ng-false-value="false">
-                <span translate>
-                    medias.medias.uploadInsert
-                </span>
-            </input>
         </div>
     </div>
 

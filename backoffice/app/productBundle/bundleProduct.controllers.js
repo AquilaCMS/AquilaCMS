@@ -2,13 +2,14 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2)
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.promos = [];
         $scope.displayModes = BundleSectionDisplayModes;
+        $scope.additionnalTabs = ProductsTabs;
         $scope.nsUploadFiles = {
             isSelected: false
         };
@@ -205,6 +206,41 @@ BundleProductControllers.controller("BundleProductCtrl", [
             section.products.splice(section.products.indexOf(product), 1);
         };
 
+        $scope.recalculate = function (target, prd) {
+            const fields = target.split(".");
+            const vat = $scope.product.price.tax / 100 + 1;
+
+            if (fields.length > 1) {
+                let removeFields = false;
+
+                if (fields[1] === "et") {
+                    if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                        prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                    } else {
+                        removeFields = true;
+                    }
+                } else {
+                    if (prd.modifier_price.ati !== undefined && prd.modifier_price.ati != null) {
+                        prd.modifier_price.et = parseFloat((prd.modifier_price.ati / vat).toFixed(2));
+                    } else {
+                        removeFields = true;
+                    }
+                }
+
+                if (removeFields) {
+                    delete prd.modifier_price.et;
+                    delete prd.modifier_price.ati;
+                }
+            } else {
+                if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                }
+                if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                }
+            }
+        };
+
         $scope.saveProduct = function (product, isQuit)
         {
             if ($scope.nsUploadFiles.isSelected) {
@@ -219,7 +255,18 @@ BundleProductControllers.controller("BundleProductCtrl", [
             {
                 section.products = section.products.map(function (item)
                 {
-                    return {id: item.id, isDefault: item.isDefault};
+                    const prd = {id: item.id, isDefault: item.isDefault};
+                    if (item.modifier_price && item.modifier_price.ati) {
+                        prd.modifier_price = item.modifier_price;
+                    } else {
+                        prd.$unset = {modifier_price: ""}
+                    }
+                    if (item.modifier_weight) {
+                        prd.modifier_weight = item.modifier_weight;
+                    } else {
+                        prd.$unset = {modifiers_weight: ""}
+                    }
+                    return prd;
                 });
             });
 
@@ -285,8 +332,8 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         if(!$scope.isEditMode)
                         {
                             window.location.href = "#/products/" + savedPrd.type + "/" + savedPrd.code;
+                            window.location.reload();
                         }
-                        window.location.reload();
                     }
                 }, function (err)
                 {

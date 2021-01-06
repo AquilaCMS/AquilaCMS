@@ -12,7 +12,7 @@ OrderControllers.controller("OrderListCtrl", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
         $scope.export = ExportCollectionCSV;
 
         $scope.getOrders = function (page)
@@ -81,7 +81,7 @@ OrderControllers.controller("OrderListCtrl", [
         function init()
         {
             $scope.sort = {
-                type: "creationDate", // set the default sort type
+                type: "createdAt", // set the default sort type
                 reverse: true // set the default sort order
             };
         }
@@ -120,6 +120,35 @@ OrderControllers.controller("OrderDetailCtrl", [
             $anchorScroll();
 
             $scope.changeStatus();// Si changeStatusId
+        }
+
+        $scope.displayProducts = function (item) {
+            var displayHtml = '';
+            for (var i = 0; i < item.selections.length; i++) {
+                var section = item.selections[i];
+                for (var j = 0; j < section.products.length; j++) {
+                    var productSection = section.products[j];
+                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
+                        (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'] &&
+                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
+                        // HT
+                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ?
+                            '(ET: +' :
+                            '(') +
+                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
+                            // prix TTC
+                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ?
+                            '+' :
+                            '') +
+                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)' : 
+                        ''
+                    }`}</li>`
+                }
+            }
+            return displayHtml;
         }
 
         $scope.init = function () {
@@ -233,7 +262,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         {
             if($scope.order.delivery && $scope.order.delivery.dateDelivery && $scope.order.delivery.dateDelivery.delayDelivery && $scope.order.delivery.dateDelivery.delayPreparation)
             {
-                return $scope.order.delivery ? moment($scope.order.creationDate)
+                return $scope.order.delivery ? moment($scope.order.createdAt)
                     .add($scope.order.delivery.dateDelivery.delayDelivery, $scope.order.delivery.dateDelivery.unitDelivery)
                     .add($scope.order.delivery.dateDelivery.delayPreparation, $scope.order.delivery.dateDelivery.unitPreparation)
                     .format("L") : moment().format("L");
@@ -688,6 +717,9 @@ OrderControllers.controller("PackagesNewCtrl", [
 
         $scope.sendPackage = function ()
         {
+            var buttonAdd = angular.element(document.getElementById('buttonAdd'));
+            buttonAdd.attr('disabled',"true");
+
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
             $scope.error = "";
@@ -727,6 +759,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             }
             else
             {
+                buttonAdd.removeAttr('disabled');
                 $scope.error = "Colis vide";
                 $scope.partial = true;
             }

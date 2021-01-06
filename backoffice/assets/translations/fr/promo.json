@@ -75,11 +75,16 @@
     "list": {
         "t1": "Promotions",
         "ph1": "Rechercher...",
-        "nom": "Nom",
         "type": "Type",
         "dateDeb": "Date début",
         "dateFin": "Date fin",
         "dateCre": "Date de création",
-        "actif": "Actif"
+        "actif": "Actif",
+        "noActif": "Non actif",
+        "no": "Non",
+        "yes": "Oui",
+        "indiff": "Indifferent",
+        "priority": "Priorite",
+        "name": "Nom"
     }
 }

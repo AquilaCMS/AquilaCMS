@@ -1,14 +1,5 @@
 <ns-box data-title="admin-list.t3" title-icon="fa fa-shield fa-lg" new-href="#/list/new">
     <div id="DataTables_Table_0_wrapper" class="shortTable dataTables_wrapper form-inline" role="grid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="dataTables_filter">
-                    <label>
-                        <input type="search" ng-model="query.search" name="q" id="q" value="" translate translate-attr-placeholder="admin-list.ph1" class="search-field">
-                    </label>
-                </div>
-            </div>
-        </div>
         <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
             <thead>
             <tr role="row" class="pointer">
@@ -40,20 +31,30 @@
                     admin-list.actions
                 </th>
             </tr>
+            <tr role="row">
+                <th>
+                    <input type="text" ng-change="getClients(page)" value="" ng-model="filter.email" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='admin-list.mail' class="form-control">
+                </th>
+                <th>
+                    <input type="text" ng-change="getClients(page)" value="" ng-model="filter.lastname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='admin-list.nom' class="form-control">
+                </th>
+                <th>
+                    <input type="text" ng-change="getClients(page)" value="" ng-model="filter.firstname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='admin-list.prenom2' class="form-control">
+                </th>
+                <th>
+                    
+                </th>
+            </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all"
                    infinite-scroll="scroller.next()" infinite-scroll-distance="1"
                    infinite-scroll-immediate-check="true"
                    infinite-scroll-disabled='scroller.busy'>
             <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="client in clients| filter: query.search | orderBy:sortType:sortReverse">
-                <td data-label="Email :" class="  sorting_1">{{client.email}}</td>
-                <td data-label="Nom :" class=" ">{{client.lastname}}</td>
-                <td data-label="Prénom :" class=" ">{{client.firstname}}</td>
+                <td ng-click="goToAdminDetails(client._id)" style="cursor:pointer" data-label="Email :" class="  sorting_1">{{client.email}}</td>
+                <td ng-click="goToAdminDetails(client._id)" style="cursor:pointer" data-label="Nom :" class=" ">{{client.lastname}}</td>
+                <td ng-click="goToAdminDetails(client._id)" style="cursor:pointer" data-label="Prénom :" class=" ">{{client.firstname}}</td>
                 <td data-label="Actions :" style="text-align:center">
-                    <a href="#/list/detail/{{client._id}}" class="btn btn-blue btn-with-icon">
-                        <i class="ico-magnifier-primary"></i>
-                        <span class="text" translate>admin-list.edit</span>
-                    </a>
                     <a href="" ng-click="deleteAdmin(client); $event.stopPropagation();" class="btn btn-red btn-with-icon" ng-disabled="client._id === userInfo._id">
                         <i class="ico-trash"></i>
                         <span class="text" translate>admin-list.delete</span>
@@ -63,7 +64,6 @@
             </tbody>
         </table>
 
-        <pagination total-items="totalAdmin" page="page" on-select-page="getClients(page)" items-per-page="initValues.limit"
-        max-size="10" boundary-links="true" rotate="false"></pagination>
+        <pagination total-items="totalAdmin" page="page" on-select-page="getClients(page+1)" items-per-page="initValues.limit" max-size="10" boundary-links="true" rotate="false"></pagination>
     </div>
 </ns-box>

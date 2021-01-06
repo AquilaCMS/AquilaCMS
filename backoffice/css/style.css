@@ -1302,6 +1302,7 @@ img.ico{
 
 }
 
+/* /!\ ATTENTION: la regle du dessous retir les icon de tous les boutons, tres chiant */
 @media screen and (min-width: 768px) {
     
     button.btn i {
@@ -1454,7 +1455,7 @@ img.ico{
 }
 
 .main .content.shrink {
-    width: calc(100% - 237px);
+    width: calc(100% - 250px);
     padding-left: 0px;
     padding-right: 19px;
 }
@@ -2438,9 +2439,8 @@ input:-webkit-autofill {
 
 .nav-fixed {
     position: fixed;
-    /*height: 100vh;*/
     top: 60px;
-    height: 100vh;
+    min-height: 100vh;
     z-index: 1039;
     left: 0;
     width: 55px;
@@ -2660,7 +2660,7 @@ input:-webkit-autofill {
 }
 
 .nav-fixed-open .dropdown-open .dropdown {
-    max-height: 350px;
+    max-height: 400px;
 }
 
 .nav-fixed-open .dropdown li {
@@ -2952,7 +2952,7 @@ input:-webkit-autofill {
     background: #dfe6ee;
     border: 1px solid #bec4ca;
     border-radius: 3px;
-    padding: 11px 13px 25px;
+    padding: 11px 0px 25px;
 }
 
 .box+.box {
