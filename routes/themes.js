@@ -125,8 +125,8 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
-        return res.json(ret);
+        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
+        return res.end();
     } catch (error) {
         return next(error);
     }
