@@ -10,7 +10,7 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceMail                 = require('../services/mail');
 
 module.exports = function (app) {
-    app.get('/v2/mails', authentication, adminAuth, getMails);
+    app.post('/v2/mails', authentication, adminAuth, getMails);
     app.get('/v2/mail/:_id', authentication, adminAuth, getMail);
     app.get('/v2/mail/activation/account/sent/:user_id/:lang?', sendMailActivationAccount);
     app.put('/v2/mail', authentication, adminAuth, setMail);
@@ -52,7 +52,7 @@ async function removePdf(req, res, next) {
  */
 async function getMails(req, res, next) {
     try {
-        const result = await ServiceMail.getMails();
+        const result = await ServiceMail.getMails(req.body.PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);

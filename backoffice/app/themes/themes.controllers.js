@@ -141,7 +141,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listAllThemeFiles});
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listThemeFiles});
                     if (data.data.noDatas) {
                         toastService.toast("success", "Ce thème ne contient pas de données.");
                     } else {
@@ -238,21 +238,11 @@ ThemesController.controller("ThemesCtrl", [
                         $scope.config.adminPrefix = "admin";
                     }
                     $scope.listThemeFiles = [];
-                    $scope.listAllThemeFiles = [];
                     $scope.themesList = response.data.listTheme;
                     $scope.listThemeFiles = response.data.listFiles;
                     if ($scope.listThemeFiles == undefined){
-                        $scope.listAllThemeFiles.push("noDefaultData");
-                    } else {
-                        $scope.listThemeFiles.forEach(element =>{
-                            if(element.indexOf("json") === -1){
-                                var index = $scope.listThemeFiles.indexOf(element);
-                                $scope.listThemeFiles.splice(index, 1);
-                            }  else {
-                                $scope.listAllThemeFiles.push({'name' : element, 'value' : true});
-                            }
-                        });
-                    }
+                        $scope.listThemeFiles.push("noDefaultData");
+                    } 
                     
                     $scope.customiseTheme ={};
                     $scope.customiseTheme.keys = {};

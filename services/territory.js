@@ -45,6 +45,6 @@ exports.setTerritory = async function (territory) {
     if (typeof _id === 'undefined') {
         await Territory.create(territory);
     } else {
-        await Territory.updateOne({_id}, territory); // TODO $set
+        await Territory.updateOne({_id}, {$set: territory});
     }
 };

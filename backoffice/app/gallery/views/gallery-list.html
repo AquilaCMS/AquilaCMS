@@ -5,6 +5,14 @@
                 <th translate>gallery.list.code</th>
                 <th translate>gallery.list.img</th>
             </tr>
+            <tr>
+                <th>
+                    <input type="text" ng-change="getGallery()" ng-model="filter.code" value="" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='gallery.list.code' class="form-control">
+                </th>
+                <th>
+
+                </th>
+            </tr>
         </thead>
         <tbody>
             <tr class="pointer"

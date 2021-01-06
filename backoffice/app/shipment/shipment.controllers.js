@@ -3,18 +3,49 @@ var ShipmentControllers = angular.module('aq.shipment.controllers', []);
 ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Shipment', '$http', '$rootScope',
     function ($scope, $location, Shipment, $http, $rootScope) {
         $scope.lang = $rootScope.adminLang;
-
+        $scope.filter = {};
         function init() {
             $scope.sort = {
                 type: 'type',
                 reverse: true
             };
         }
+        
+        $scope.defaultLang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+        }).code;
 
         init();
 
-        function getShipments() {
+        $scope.getShipments = function() {
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("active")) {
+                    if($scope.filter.active == "true"){
+                        filter["active"] = true;
+                    }else if($scope.filter.active == "false"){
+                        filter["active"] = false;
+                    }
+                } else if(filterKeys[i].includes("name")) {
+                    if($scope.filter.name != ""){
+                        filter["translation."+$scope.defaultLang+".name"] = { $regex: $scope.filter.name, $options: "i" };
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
             Shipment.list({PostBody: {
+                filter,
                 structure: {
                     active: 1,
                     vat_rate: 1,
@@ -29,7 +60,7 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
             });
         }
 
-        getShipments();
+        $scope.getShipments();
 
         $scope.goToShipmentDetails = function (shipmentId) {
             $location.path("shipments/delivery/" + shipmentId);

@@ -82,6 +82,9 @@
         "code": "Code",
         "nom": "Nom",
         "url": "Logo",
-        "minAchat": "Minimum d'achat"
+        "minAchat": "Minimum d'achat",
+        "indiff" :"Indifferent",
+        "actif":"Actif",
+        "noActif": "Non actif"
     }
 }
