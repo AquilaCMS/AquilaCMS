@@ -34,7 +34,7 @@ aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = unde
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
             const _order = await Orders.findOne({_id: orderId, historyStatus: {$exists: true}});
             if (!_order) {
-                await Orders.updateOne({_id: orderId}, {historyStatus: []}); // TODO $set
+                await Orders.updateOne({_id: orderId}, {$set: {historyStatus: []}});
             }
             const historyStatus = {status: fields.status || fields.$set.status};
             if (stringDate && typeof stringDate === 'string') {
@@ -84,7 +84,7 @@ const setStatus = async (_id, status, sendMail = true) => {
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
     if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
         // On supprime le panier sauf si la commande est en attente de paiement ou annulée
-        await Orders.updateOne({_id}, {cartId: null}); // TODO $set
+        await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
     if (status === 'PAID' && global.envConfig.stockOrder.automaticBilling) {

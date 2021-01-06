@@ -174,6 +174,13 @@ const deleteTheme = async (themePath) => {
 
 const getDemoDatasFilesName = async () => {
     const fileNames = await fs.readdir(path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`));
+    for ( let i = (fileNames.length - 1); i >= 0; i--) {
+        if (fileNames[i].indexOf('json') === -1) {
+            fileNames.splice(i, 1);
+        } else {
+            fileNames.splice(i, 1, {name: fileNames[i], value: true});
+        }
+    }
     return (fileNames);
 };
 /**
