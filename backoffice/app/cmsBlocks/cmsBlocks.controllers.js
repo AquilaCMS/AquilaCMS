@@ -44,8 +44,8 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope) {
         $scope.isEditMode = false;
         $scope.modules = [];
         $scope.groups = [];
@@ -72,6 +72,9 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 $scope.cmsBlock = block;
                 $scope.isEditMode = true;
                 $scope.selectedDropdownItem = block.group ? block.group : "";
+                if(!$scope.cmsBlock.translation[$rootScope.adminLang].html) {
+                    $scope.cmsBlock.translation[$rootScope.adminLang].html = $scope.cmsBlock.translation[$rootScope.adminLang].content
+                }
 
                 $scope.getGroups()
             });
@@ -81,6 +84,44 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
 
             $scope.getGroups()
         }
+
+        $scope.generateVariables = function () {
+            if($scope.cmsBlock.translation[$rootScope.adminLang] && $scope.cmsBlock.translation[$rootScope.adminLang].html) {
+                var originalArray = $scope.cmsBlock.translation[$rootScope.adminLang].variables || [],
+                    founds        = [...$scope.cmsBlock.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)]
+                $scope.cmsBlock.translation[$rootScope.adminLang].variables = [];
+                for (var i = 0; i < founds.length; i++) {
+                    if(originalArray.find(_var => _var.label === founds[i][1])) {
+                        $scope.cmsBlock.translation[$rootScope.adminLang].variables.push(originalArray.find(_var => _var.label === founds[i][1]))
+                    } else {
+                        $scope.cmsBlock.translation[$rootScope.adminLang].variables.push({label: founds[i][1], value: ''})
+                    }
+                }
+            }
+        }
+
+        $scope.generateContent = function () {
+            if ($scope.cmsBlock.translation[$rootScope.adminLang] && $scope.cmsBlock.translation[$rootScope.adminLang].html) {
+
+                var founds = [...$scope.cmsBlock.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)];
+                
+                $scope.cmsBlock.translation[$rootScope.adminLang].content = $scope.cmsBlock.translation[$rootScope.adminLang].html;
+                var missingVariables = [];
+            
+                for (var i = 0; i < founds.length; i++) {
+                    var variable = $scope.cmsBlock.translation[$rootScope.adminLang].variables.find(_var => _var.label === founds[i][1])
+                    if(variable) {
+                        $scope.cmsBlock.translation[$rootScope.adminLang].content = $scope.cmsBlock.translation[$rootScope.adminLang].content.replace(founds[i][0], variable ? variable.value : '')
+                    } else {
+                        missingVariables.push(founds[i][1])
+                    }
+                }
+                
+                if (missingVariables.length) {
+                    toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                }
+            }
+        } 
 
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
