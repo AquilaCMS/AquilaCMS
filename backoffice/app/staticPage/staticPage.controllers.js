@@ -168,7 +168,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
 
         $scope.generateVariables = function () {
             if($scope.static.translation[$rootScope.adminLang] && $scope.static.translation[$rootScope.adminLang].html) {
-                var originalArray = $scope.static.translation[$rootScope.adminLang].variables,
+                var originalArray = $scope.static.translation[$rootScope.adminLang].variables || [],
                     founds        = [...$scope.static.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)]
                 $scope.static.translation[$rootScope.adminLang].variables = [];
                 for (var i = 0; i < founds.length; i++) {
