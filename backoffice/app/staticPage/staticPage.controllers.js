@@ -45,8 +45,8 @@ StaticPageControllers.controller("StaticPageListCtrl", [
 ]);
 
 StaticPageControllers.controller("StaticPageNewCtrl", [
-    "$scope", "$location", 'StaticV2', "toastService", function ($scope, $location, StaticV2, toastService) {
-        $scope.static = {type: "page", group: ""};
+    "$scope", "$location", 'StaticV2', "toastService", "$rootScope", function ($scope, $location, StaticV2, toastService, $rootScope) {
+        $scope.static = {type: "page", group: "", translation: {[$rootScope.adminLang]: {variables: [], html: '', content: ''}}};
         $scope.groups = [];
         $scope.selectedDropdownItem = "";
 
@@ -63,7 +63,45 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                 },
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
-        ]
+        ];
+
+        $scope.generateVariables = function () {
+            if($scope.static.translation[$rootScope.adminLang] && $scope.static.translation[$rootScope.adminLang].html) {
+                var originalArray = $scope.static.translation[$rootScope.adminLang].variables,
+                    founds        = [...$scope.static.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)]
+                $scope.static.translation[$rootScope.adminLang].variables = [];
+                for (var i = 0; i < founds.length; i++) {
+                    if(originalArray.find(_var => _var.label === founds[i][1])) {
+                        $scope.static.translation[$rootScope.adminLang].variables.push(originalArray.find(_var => _var.label === founds[i][1]))
+                    } else {
+                        $scope.static.translation[$rootScope.adminLang].variables.push({label: founds[i][1], value: ''})
+                    }
+                }
+            }
+        }
+
+        $scope.generateContent = function () {
+            if ($scope.static.translation[$rootScope.adminLang] && $scope.static.translation[$rootScope.adminLang].html) {
+
+                var founds = [...$scope.static.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)];
+                
+                $scope.static.translation[$rootScope.adminLang].content = $scope.static.translation[$rootScope.adminLang].html;
+                var missingVariables = [];
+            
+                for (var i = 0; i < founds.length; i++) {
+                    var variable = $scope.static.translation[$rootScope.adminLang].variables.find(_var => _var.label === founds[i][1])
+                    if(variable) {
+                        $scope.static.translation[$rootScope.adminLang].content = $scope.static.translation[$rootScope.adminLang].content.replace(founds[i][0], variable ? variable.value : '')
+                    } else {
+                        missingVariables.push(founds[i][1])
+                    }
+                }
+                
+                if (missingVariables.length) {
+                    toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                }
+            }
+        } 
         
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
@@ -123,8 +161,49 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             $scope.static = staticPage;
             $scope.local.url = staticPage.code;
             $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
+            if(!$scope.static.translation[$rootScope.adminLang].html) {
+                $scope.static.translation[$rootScope.adminLang].html = $scope.static.translation[$rootScope.adminLang].content
+            }
         });
-        
+
+        $scope.generateVariables = function () {
+            if($scope.static.translation[$rootScope.adminLang] && $scope.static.translation[$rootScope.adminLang].html) {
+                var originalArray = $scope.static.translation[$rootScope.adminLang].variables,
+                    founds        = [...$scope.static.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)]
+                $scope.static.translation[$rootScope.adminLang].variables = [];
+                for (var i = 0; i < founds.length; i++) {
+                    if(originalArray.find(_var => _var.label === founds[i][1])) {
+                        $scope.static.translation[$rootScope.adminLang].variables.push(originalArray.find(_var => _var.label === founds[i][1]))
+                    } else {
+                        $scope.static.translation[$rootScope.adminLang].variables.push({label: founds[i][1], value: ''})
+                    }
+                }
+            }
+        }
+
+        $scope.generateContent = function () {
+            if ($scope.static.translation[$rootScope.adminLang] && $scope.static.translation[$rootScope.adminLang].html) {
+
+                var founds = [...$scope.static.translation[$rootScope.adminLang].html.matchAll(/{{([^}]*)}}/gm)];
+                
+                $scope.static.translation[$rootScope.adminLang].content = $scope.static.translation[$rootScope.adminLang].html;
+                var missingVariables = [];
+            
+                for (var i = 0; i < founds.length; i++) {
+                    var variable = $scope.static.translation[$rootScope.adminLang].variables.find(_var => _var.label === founds[i][1])
+                    if(variable) {
+                        $scope.static.translation[$rootScope.adminLang].content = $scope.static.translation[$rootScope.adminLang].content.replace(founds[i][0], variable ? variable.value : '')
+                    } else {
+                        missingVariables.push(founds[i][1])
+                    }
+                }
+                
+                if (missingVariables.length) {
+                    toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                }
+            }
+        }       
+
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
         };
