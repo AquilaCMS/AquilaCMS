@@ -64,6 +64,14 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
         ];
+        
+        $scope.langChange = function (lang) {
+            if(!$scope.static.translation[lang].html) {
+                $scope.static.translation[lang].html = $scope.static.translation[lang].content
+            }
+            $scope.lang = lang
+            $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
+        };
 
         $scope.generateVariables = function () {
             if($scope.static.translation[$scope.lang] && $scope.static.translation[$scope.lang].html) {
@@ -223,10 +231,11 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         $scope.filterDropdown();
 
         $scope.langChange = function (lang) {
-            $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
             if(!$scope.static.translation[lang].html) {
                 $scope.static.translation[lang].html = $scope.static.translation[lang].content
             }
+            $scope.lang = lang
+            $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
         };
 
         $scope.preview = function (lang) {
