@@ -46,21 +46,7 @@ const verifyingUpdate = async () => {
 const update = async () => {
     console.log('Update Aquila...');
 
-    const _config   = await Configuration.findOne({});
-    let maintenance = false;
-    if (
-        _config
-        && _config.environment
-        && _config.environment.autoMaintenance === true
-        && _config.environment.maintenance === false
-    ) {
-        _config.environment.maintenance = true;
-        maintenance                     = true;
-        await Configuration.updateOne(
-            {_id: _config._id},
-            {$set: {environment: _config.environment}}
-        );
-    }
+    await setMaintenance(true);
 
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
     const version   = fsp.readFileSync(filePathV).toString().replace('\n', '').trim();
@@ -101,22 +87,10 @@ const update = async () => {
         }
     }
 
-    if (
-        _config
-        && _config.environment
-        && _config.environment.autoMaintenance === true
-        && _config.environment.maintenance === true
-        && maintenance === true
-    ) {
-        _config.environment.maintenance = false;
-        await Configuration.updateOne(
-            {_id: _config._id},
-            {$set: {environment: _config.environment}}
-        );
-    }
+    await fsp.unlink(filePath);
+    await setMaintenance(false);
 
     console.log('Aquila is updated !');
-    await fsp.unlink(filePath);
     // Reboot
     return packageManager.restart();
 };
@@ -146,7 +120,21 @@ async function downloadURL(url, dest) {
     });
 }
 
+/**
+ * Set in maintenance mode (no front is delivered)
+ * @param {boolean} isInMaintenance Maintenance status to set
+ */
+const setMaintenance = async (isInMaintenance) =>  {
+    const configuration = await Configuration.findOne({});
+
+    if (configuration && configuration.environment && configuration.environment.autoMaintenance) {
+        configuration.environment.maintenance = isInMaintenance;
+        await configuration.save();
+    }
+};
+
 module.exports = {
     verifyingUpdate,
-    update
+    update,
+    setMaintenance
 };

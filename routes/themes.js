@@ -34,7 +34,7 @@ module.exports = function (app) {
 async function save(req, res, next) {
     req.setTimeout(300000);
     try {
-        const sauvegarde = await themesServices.save(req.body.environment);
+        const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme);
         res.send({data: sauvegarde});
     } catch (err) {
         next(err);
@@ -167,7 +167,7 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        const themeConf         = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
+        const themeConf         = await serviceThemeConfig.getThemeConfig({filter: {}, structure: {}, limit: 99});
         const config            = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix': 1}}, req.info);
         const configEnvironment = {};
         if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
