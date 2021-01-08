@@ -242,6 +242,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
 
         $scope.preview = function (lang) {
             $scope.static.lang = lang;
+            $scope.generateContent()
             StaticV2.preview($scope.static, function (response) {
                 if (response && response.url) {
                     window.open(response.url);
