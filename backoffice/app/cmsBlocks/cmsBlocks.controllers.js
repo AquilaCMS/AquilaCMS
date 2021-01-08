@@ -160,8 +160,10 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
 
         $scope.langChange = function (lang) {
             $scope.lang = lang;
-            if(!$scope.cmsBlock.translation[lang].html) {
-                $scope.cmsBlock.translation[lang].html = $scope.cmsBlock.translation[lang].content
+            if ($scope.cmsBlock) {
+                if(!$scope.cmsBlock.translation[lang].html) {
+                    $scope.cmsBlock.translation[lang].html = $scope.cmsBlock.translation[lang].content
+                }
             }
         }
 

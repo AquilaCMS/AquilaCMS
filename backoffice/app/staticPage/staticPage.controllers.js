@@ -66,8 +66,10 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
         ];
         
         $scope.langChange = function (lang) {
-            if(!$scope.static.translation[lang].html) {
-                $scope.static.translation[lang].html = $scope.static.translation[lang].content
+            if($scope.static) {
+                if(!$scope.static.translation[lang].html) {
+                    $scope.static.translation[lang].html = $scope.static.translation[lang].content
+                }
             }
             $scope.lang = lang
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
