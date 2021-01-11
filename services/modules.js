@@ -459,7 +459,7 @@ const activateModule = async (idModule, toBeChanged) => {
             false,
             myModule.type ? `type: '${myModule.type}'` : ''
         );
-        await myModule.updateOne({$push: {files: copyTab}, active: true}); // TODO $set
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
         return Modules.find({});
     } catch (err) {
