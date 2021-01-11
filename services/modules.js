@@ -558,7 +558,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
-        await Modules.updateOne({_id: idModule}, {files: [], active: false}); // TODO $set
+        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module desactivated');
         return Modules.find({});
     } catch (err) {
