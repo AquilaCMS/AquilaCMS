@@ -6,6 +6,7 @@ import Head from 'next/head';
 import CartStructure from 'components/CartStructure';
 import { withI18next } from 'lib/withI18n';
 import { Link, Router } from 'routes';
+import { listModulePage } from 'lib/utils';
 
 /**
  * CartAddress - Page des adresses client dans le panier
@@ -76,6 +77,7 @@ class CartAddress extends React.Component {
             oCmsHeader, oCmsFooter, sitename, t
         } = this.props;
         const { cart } = this.state;
+        const hookSelectDate = listModulePage('select-date');
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <CartStructure oCmsFooter={oCmsFooter} oCmsHeader={oCmsHeader} step={2}>
@@ -87,7 +89,12 @@ class CartAddress extends React.Component {
                         <div className="container--flex align-top">
                             { cart.items.length > 0 && (
                                 <>
-                                    <NSAddressMultiple t={t} gNext={{ Router }} />
+                                    {
+                                        hookSelectDate && <div className="content content--left">{hookSelectDate}</div>
+                                    }
+                                    {
+                                        !hookSelectDate && <NSAddressMultiple t={t} gNext={{ Router }} />
+                                    }
                                     <NSCartResume t={t} gNext={{ Link }} />
                                 </>
                             )}
