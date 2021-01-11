@@ -199,7 +199,7 @@ async function applyAttribChanges(tab, attribute, model) {
             }
         }
         if (isEdit) {
-            await mongoose.model(model).updateOne({_id: tab[i]._id}, tab[i]); // TODO $set
+            await mongoose.model(model).updateOne({_id: tab[i]._id}, {$set: tab[i]});
         }
     }
 }
