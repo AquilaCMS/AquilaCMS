@@ -115,7 +115,7 @@ async function save(req, res, next) {
 
         const setOption = await SetOptions.findOne({code});
         if (setOption && updateF) {
-            SetOptions.updateOne({code}, {name}); // TODO $set
+            SetOptions.updateOne({code}, {$set: {name}});
             return res.send({status: true});
         }
         if (setOption && !updateF) {
