@@ -18,7 +18,7 @@
                 "key": "filters",
                 "value": "left",
                 "name": "Emplacement des filtres",
-                "description": "Permet d'afficher les filtres des catégories, soit à droite (right) soit à gauche (left)",
+                "description": "Permet d'afficher les filtres des catégories, soit à droite (right) soit à gauche (left) ou caché (none)",
                 "group": "Général"
               },
               {
@@ -57,7 +57,7 @@
                 "key": "filters",
                 "value": "left",
                 "name": "Filter location",
-                "description": "Allows you to display category filters, either on the right or on the left",
+                "description": "Allows you to display category filters, either on the right or on the left or hidden",
                 "group": "General"
               },
               {
