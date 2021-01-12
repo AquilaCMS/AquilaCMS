@@ -105,6 +105,9 @@ class PageProduct extends NSPageProduct {
                     </Head>
                     <div className="main">
                         <div className="shell">
+                            {
+                                listModulePage('select-date')
+                            }
                             <NSBreadcrumb gNext={{ routes, Link }} />
 
                             <section className="section-product-main">

@@ -75,7 +75,7 @@
                 </div>
                 <div >
                     <table>
-                        <tr style = "height: 50px;" ng-repeat="file in listAllThemeFiles">
+                        <tr style = "height: 50px;" ng-repeat="file in listThemeFiles">
                             <td style="text-align: right;">
                                 <label ng-if='file != "noDefaultData"'>{{file.name.substr(0, file.name.length-5)}} : </label>
                                 <label ng-if='file == "noDefaultData"' translate>themes.noDefaultData</label>

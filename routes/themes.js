@@ -35,7 +35,7 @@ module.exports = function (app) {
 async function save(req, res, next) {
     req.setTimeout(300000);
     try {
-        const sauvegarde = await themesServices.save(req.body.environment);
+        const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme);
         res.send({data: sauvegarde});
     } catch (err) {
         next(err);
@@ -125,8 +125,8 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        const ret = await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
-        return res.json(ret);
+        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
+        return res.end();
     } catch (error) {
         return next(error);
     }
@@ -177,8 +177,8 @@ async function getThemeInformations(req, res, next) {
                 console.error(error);
             }
         }
-        const themeConf          = await serviceThemeConfig.getThemeConfig({PostBody: {filter: {}, structure: {}, limit: 99}});
-        const config             = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix':1}}, userInfo);
+        const themeConf          = await serviceThemeConfig.getThemeConfig({filter: {}, structure: {}, limit: 99});
+        const config             = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix': 1}}, userInfo);
         const configEnvironement = {};
         if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
             configEnvironement.adminPrefix  = config.environment.adminPrefix;

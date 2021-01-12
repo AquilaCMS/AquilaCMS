@@ -159,7 +159,7 @@ class CartSuccess extends React.Component {
                                             <div className="section__container">
                                                 <div style={{ textAlign: 'center' }}>
                                                     <h5>
-                                                        {t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
+                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawal') : t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
                                                     </h5>
                                                     {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
                                                     <br />
@@ -178,9 +178,10 @@ class CartSuccess extends React.Component {
                                                     }
                                                     <br />
                                                     <h5>
-                                                        {t('success:page.deliveryDate')} :
+                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawalDate') : t('success:page.deliveryDate')} :
                                                     </h5>
                                                     <h6>
+                                                        {order.orderReceipt && order.orderReceipt.date && <strong>{moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>} {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
                                                         {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
                                                     </h6>
                                                 </div>

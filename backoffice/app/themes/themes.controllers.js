@@ -141,7 +141,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
                 try {
-                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listAllThemeFiles});
+                    let data = await $http.post("/v2/themes/copyDatas", { themeName: $scope.config.currentTheme, override: $scope.theme.themeDataOverride, configuration : null, fileNames : $scope.listThemeFiles});
                     if (data.data.noDatas) {
                         toastService.toast("success", "Ce thème ne contient pas de données.");
                     } else {
@@ -238,9 +238,9 @@ ThemesController.controller("ThemesCtrl", [
                         $scope.config.adminPrefix = "admin";
                     }
                     $scope.listThemeFiles = [];
-                    $scope.listAllThemeFiles = [];
                     $scope.themesList = response.data.listTheme;
                     $scope.listThemeFiles = response.data.listFiles;
+<<<<<<< HEAD
                     if ($scope.listThemeFiles[0] == null){
                         $scope.listAllThemeFiles.push("noDefaultData");
                     } else {
@@ -253,6 +253,11 @@ ThemesController.controller("ThemesCtrl", [
                             }
                         });
                     }
+=======
+                    if ($scope.listThemeFiles == undefined){
+                        $scope.listThemeFiles.push("noDefaultData");
+                    } 
+>>>>>>> 05b63717fb776c7a8334590f5d12ca42d962c1cb
                     
                     $scope.customiseTheme ={};
                     $scope.customiseTheme.keys = {};

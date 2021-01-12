@@ -405,10 +405,10 @@
                                     {{payment.comment}}
                                 </td>
                                 <td data-label="Crée le :">
-                                    {{payment.creationDate | date:'dd/MM/yyyy'}}
+                                    {{payment.creationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
                                 <td data-label="Date :">
-                                    {{payment.operationDate | date:'dd/MM/yyyy'}}
+                                    {{payment.operationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
                                 <td data-label="Mode :">
                                     {{payment.mode | paymentMode}}
