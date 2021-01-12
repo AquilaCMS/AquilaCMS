@@ -11,11 +11,11 @@ const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
 const packageManager               = require('../utils/packageManager');
-const encryption                   = require('../utils/encryption');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const modulesUtils                 = require('../utils/modules');
 const {isProd}                     = require('../utils/server');
 const {Configuration, ThemeConfig} = require('../orm/models');
+const updateService                = require('./update');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -25,31 +25,26 @@ const CSS_FOLDERS = [
     'styles'
 ];
 
-const save = async (environment) => {
+/**
+ * Set theme
+ * @param {string} selectedTheme Name of the selected theme
+ */
+const changeTheme = async (selectedTheme) => {
     const oldConfig = await Configuration.findOne({});
-    let maintenance = false;
-    if (oldConfig && oldConfig.environment && oldConfig.environment.autoMaintenance === true && oldConfig.environment.maintenance === false) {
-        oldConfig.environment.maintenance = true;
-        await Configuration.updateOne({_id: oldConfig._id}, {$set: {environment: oldConfig.environment}});
-        maintenance = true;
-    }
 
-    if (environment && environment.mailPass !== undefined && environment.mailPass !== '') {
-        environment.mailPass = encryption.cipher(environment.mailPass);
-    }
-    await Configuration.updateOne({}, {environment}); // TODO $set
     // Si le theme a changé
-    if (oldConfig.environment.currentTheme !== environment.currentTheme) {
+    if (oldConfig.environment.currentTheme !== selectedTheme) {
         console.log('Setup selected theme...');
         try {
-            await require('./modules').setFrontModules(environment.currentTheme);
-            await setConfigTheme(environment.currentTheme);
-            await installDependencies(environment.currentTheme);
-            if (oldConfig && oldConfig.environment && oldConfig.environment.autoMaintenance === true && oldConfig.environment.maintenance === true && maintenance === true) {
-                environment.maintenance = false;
-                await Configuration.updateOne({_id: oldConfig._id}, {$set: {environment}});
-            }
-            await buildTheme(environment.currentTheme);
+            await updateService.setMaintenance(true);
+            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
+
+            await require('./modules').setFrontModules(selectedTheme);
+            await setConfigTheme(selectedTheme);
+            await installDependencies(selectedTheme);
+            await buildTheme(selectedTheme);
+
+            await updateService.setMaintenance(false);
         } catch (err) {
             console.error(err);
         }
@@ -173,7 +168,9 @@ const deleteTheme = async (themePath) => {
 };
 
 const getDemoDatasFilesName = async () => {
-    const fileNames = await fs.readdir(path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`));
+    const folder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`);
+    if (!fs.existsSync(folder)) return [];
+    const fileNames = await fs.readdir(folder);
     for ( let i = (fileNames.length - 1); i >= 0; i--) {
         if (fileNames[i].indexOf('json') === -1) {
             fileNames.splice(i, 1);
@@ -181,7 +178,7 @@ const getDemoDatasFilesName = async () => {
             fileNames.splice(i, 1, {name: fileNames[i], value: true});
         }
     }
-    return (fileNames);
+    return fileNames;
 };
 /**
  * @description Copy datas of selected theme models can be a .json or a .js
@@ -381,7 +378,7 @@ const listTheme = async () => {
 };
 
 module.exports = {
-    save,
+    changeTheme,
     setConfigTheme,
     installDependencies,
     buildTheme,

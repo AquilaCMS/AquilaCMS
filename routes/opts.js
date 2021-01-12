@@ -84,7 +84,7 @@ const save = async (req, res, next) => {
                 }
             }
 
-            await Opts.updateOne({code}, {name, set_options, columns, values}); // TODO $set
+            await Opts.updateOne({code}, {$set: {name, set_options, columns, values}});
             for (const set of setToRemove) {
                 await SetOptions.updateMany({_id: set}, {$pull: {opts: option._id}});
             }

@@ -459,7 +459,7 @@ const activateModule = async (idModule, toBeChanged) => {
             false,
             myModule.type ? `type: '${myModule.type}'` : ''
         );
-        await myModule.updateOne({$push: {files: copyTab}, active: true}); // TODO $set
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
         return Modules.find({});
     } catch (err) {
@@ -558,7 +558,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             }
         }
 
-        await Modules.updateOne({_id: idModule}, {files: [], active: false}); // TODO $set
+        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module desactivated');
         return Modules.find({});
     } catch (err) {

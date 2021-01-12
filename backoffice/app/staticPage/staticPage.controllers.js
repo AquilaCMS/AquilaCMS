@@ -157,7 +157,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             {
                 text: 'product.general.preview',
                 onClick: function () {
-                    $scope.static.lang = $rootScope.adminLang;
+                    $scope.static.lang = $scope.lang;
                     $scope.generateContent()
                     StaticV2.preview($scope.static, function (response) {
                         if (response && response.url) {
@@ -239,6 +239,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
             $scope.lang = lang
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
+            $scope.lang = lang
         };
 
         $scope.saveStatic = function (isQuit) {
