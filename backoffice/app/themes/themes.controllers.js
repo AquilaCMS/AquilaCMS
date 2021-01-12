@@ -241,7 +241,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.listAllThemeFiles = [];
                     $scope.themesList = response.data.listTheme;
                     $scope.listThemeFiles = response.data.listFiles;
-                    if ($scope.listThemeFiles == undefined){
+                    if ($scope.listThemeFiles[0] == null){
                         $scope.listAllThemeFiles.push("noDefaultData");
                     } else {
                         $scope.listThemeFiles.forEach(element =>{
