@@ -91,12 +91,12 @@
                 </div>
                 
                 <div style="float : right ;" class="form-group">
-                    <a ng-if='listAllThemeFiles[0] != "noDefaultData"' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
+                    <a ng-if='listThemeFiles[0] != "noDefaultData"' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                         themes.themeDatasLead
                     </a>
                     <br />
-                    <input ng-if='listAllThemeFiles[0] != "noDefaultData"' type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
-                    <label ng-if='listAllThemeFiles[0] != "noDefaultData"' class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
+                    <input ng-if='listThemeFiles[0] != "noDefaultData"' type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
+                    <label ng-if='listThemeFiles[0] != "noDefaultData"' class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
                 </div>
             </div>
         </div>
