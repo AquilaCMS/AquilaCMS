@@ -158,6 +158,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                 text: 'product.general.preview',
                 onClick: function () {
                     $scope.static.lang = $rootScope.adminLang;
+                    $scope.generateContent()
                     StaticV2.preview($scope.static, function (response) {
                         if (response && response.url) {
                             window.open(response.url);
@@ -238,16 +239,6 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
             $scope.lang = lang
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
-        };
-
-        $scope.preview = function (lang) {
-            $scope.static.lang = lang;
-            $scope.generateContent()
-            StaticV2.preview($scope.static, function (response) {
-                if (response && response.url) {
-                    window.open(response.url);
-                }
-            });
         };
 
         $scope.saveStatic = function (isQuit) {
