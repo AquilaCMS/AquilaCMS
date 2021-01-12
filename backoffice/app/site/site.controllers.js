@@ -159,7 +159,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             {
                 text: 'product.general.preview',
                 onClick: function () {
-                    $scope.articles.lang = $rootScope.adminLang;
+                    $scope.articles.lang = selectedLang;
                     ArticlesV2.preview($scope.articles, function (response) {
                         if (response && response.url) {
                             window.open(response.url);
