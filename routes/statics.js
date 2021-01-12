@@ -11,6 +11,7 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const {StaticsPreview}            = require('../orm/models');
 const ServiceStatic               = require('../services/statics');
+const {getDecodedToken}           = require('../services/auth');
 const ServiceStaticPreview        = require('../services/preview');
 
 module.exports = function (app) {
@@ -47,6 +48,20 @@ async function getStatics(req, res, next) {
     try {
         const {PostBody} = req.body;
         const result     = await ServiceStatic.getStatics(PostBody);
+        if (!req.headers.authorization || !getDecodedToken(req.headers.authorization).info.isAdmin) {
+            // on boucle sur les resultats
+            for (let i = 0; i < result.datas.length; i++) {
+                const page = result.datas[i];
+                if (page.translation) {
+                    // on boucle sur les langues contenue
+                    for (let k = 0; k < Object.keys(page.translation).length; k++) {
+                        const langKey = Object.keys(page.translation)[k];
+                        delete page.translation[langKey].variables;
+                        delete page.translation[langKey].html;
+                    }
+                }
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -83,6 +98,14 @@ async function getStatic(req, res, next) {
         } else {
             result = await ServiceStatic.getStatic(postBody);
         }
+        if ((!req.headers.authorization || !getDecodedToken(req.headers.authorization).info.isAdmin) && result.translation) {
+            // on boucle sur les langues contenue
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -97,6 +120,14 @@ async function getStaticById(req, res, next) {
 
     try {
         const result = await ServiceStatic.getStaticById(req.params.id, req.body.PostBody);
+        if ((!req.headers.authorization || !getDecodedToken(req.headers.authorization).info.isAdmin) && result.translation) {
+            // on boucle sur les langues contenue
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -169,11 +200,9 @@ async function previewStatic(req, res, next) {
         }
         const _config = (await require('../orm/models/configuration').find({}))[0];
         if (req.body.lang) {
-            console.log(URL.resolve(_config.environment.appUrl, `/${req.body.lang}/${preview.translation[req.body.lang].slug}`));
             return res.json({url: URL.resolve(_config.environment.appUrl, `/${req.body.lang}/${preview.translation[req.body.lang].slug}?preview=${preview._id}`)});
         }
         const lang = await require('../orm/models/languages').findOne({defaultLanguage: true});
-        console.log(URL.resolve(_config.environment.appUrl, `/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}`));
         return res.json({url: URL.resolve(_config.environment.appUrl, `/${preview.translation[lang ? lang.code : Object.keys(preview.translation)[0]].slug}?preview=${preview._id}`)});
     } catch (err) {
         next(err);
