@@ -240,8 +240,23 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.listThemeFiles = [];
                     $scope.themesList = response.data.listTheme;
                     $scope.listThemeFiles = response.data.listFiles;
-                    if ($scope.listThemeFiles == undefined){
+                    console.log($scope.listThemeFiles);
+                    if ($scope.listThemeFiles[0] == null){
                         $scope.listThemeFiles.push("noDefaultData");
+                    } else{
+                        $scope.listThemeFiles.forEach(element => {
+                            if(element.substr(element.length-5, 5) !== '.json'){
+                                $scope.listThemeFiles.splice($scope.listThemeFiles.indexOf(element),1)
+                            }
+                        });
+                        for (let i = 0; i<$scope.listThemeFiles.length; i++){
+                            const tmp = {};
+                            tmp.name = $scope.listThemeFiles[i];
+                            tmp.value = true;
+                            console.log(tmp);
+                            $scope.listThemeFiles[i] = tmp;
+                        }
+                        console.log($scope.listThemeFiles);
                     }
 
                     $scope.customiseTheme ={};

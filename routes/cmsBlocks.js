@@ -8,6 +8,7 @@
 
 const ServiceCmsBlock             = require('../services/cmsBlocks');
 const {authentication, adminAuth} = require('../middleware/authentication');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/cmsBlocks', getCMSBlocks);
@@ -36,6 +37,20 @@ Get all CMSBlocks with the default fields for default language :
 async function getCMSBlocks(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlocks(req.body.PostBody);
+        if (!req.headers.authorization || !getDecodedToken(req.headers.authorization).info.isAdmin) {
+            // on boucle sur les resultats
+            for (let i = 0; i < result.datas.length; i++) {
+                const block = result.datas[i];
+                if (block.translation) {
+                    // on boucle sur les langues contenue
+                    for (let k = 0; k < Object.keys(block.translation).length; k++) {
+                        const langKey = Object.keys(block.translation)[k];
+                        delete block.translation[langKey].variables;
+                        delete block.translation[langKey].html;
+                    }
+                }
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -60,6 +75,14 @@ async function getCMSBlocks(req, res, next) {
 async function getCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlock(req.body.PostBody);
+        if ((!req.headers.autorization || !getDecodedToken(req.headers.authorization).info.isAdmin) && result.translation) {
+            // on boucle sur les langues contenue
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -69,6 +92,14 @@ async function getCMSBlock(req, res, next) {
 async function getCMSBlockById(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlockById(req.params.code, req.body.PostBody);
+        if ((!req.headers.autorization || !getDecodedToken(req.headers.authorization).info.isAdmin) && result.translation) {
+            // on boucle sur les langues contenue
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);

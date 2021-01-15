@@ -36,7 +36,7 @@ exports.createOrUpdateSetAttribute = async function (req) {
 
     const setOption = await SetOptions.findOne({code});
     if (setOption && updateF) {
-        const resSetOption = await SetOptions.updateOne({code}, {name}); // TODO $set
+        const resSetOption = await SetOptions.updateOne({code}, {$set: {name}});
         if (!resSetOption) throw NSErrors.SetOptionNotFound;
         return {status: true};
     }

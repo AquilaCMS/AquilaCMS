@@ -235,13 +235,13 @@ const checkDependenciesAtInstallation = async (idModule) => {
             if (myModule.packageDependencies[apiOrTheme]) {
                 let savePackagedependenciesPath;
                 if (apiOrTheme === 'api') {
-                    savePackagedependenciesPath = path.join(global.appRoot, 'package-aquila.json');
+                    savePackagedependenciesPath = path.join(global.appRoot, 'package.json');
                 } else if (apiOrTheme === 'theme') {
                     savePackagedependenciesPath = path.join(
                         global.appRoot,
                         'themes',
                         global.envConfig.environment.currentTheme,
-                        'package-theme.json'
+                        'package.json'
                     );
                 }
                 const savePackagedependencies = JSON.parse(await fs.readFile(savePackagedependenciesPath));
@@ -410,7 +410,7 @@ const activateModule = async (idModule, toBeChanged) => {
         if (myModule.loadTranslationFront) {
             console.log('Loading front translation for module...');
             const {currentTheme} = global.envConfig.environment;
-            const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`);
+            const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`, 'utf-8');
             for (let i = 0; i < files.length; i++) {
                 const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
                 const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
@@ -448,7 +448,8 @@ const activateModule = async (idModule, toBeChanged) => {
                     packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                     await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
                     console.log(`Installing dependencies of the module in ${position}...`);
-                    await packageManager.execCmd('yarn install --force', installPath);
+                    await packageManager.execCmd('yarn install', installPath);
+                    await packageManager.execCmd('yarn upgrade', installPath);
                 }
             }
         }
@@ -459,7 +460,7 @@ const activateModule = async (idModule, toBeChanged) => {
             false,
             myModule.type ? `type: '${myModule.type}'` : ''
         );
-        await myModule.updateOne({$push: {files: copyTab}, active: true}); // TODO $set
+        await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
         return Modules.find({});
     } catch (err) {
@@ -554,7 +555,8 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
 
                 packageJSON.dependencies = orderPackages(packageJSON.dependencies);
                 await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                await packageManager.execCmd('yarn install --force', installPath);
+                await packageManager.execCmd('yarn install', installPath);
+                await packageManager.execCmd('yarn upgrade', installPath);
             }
         }
 
