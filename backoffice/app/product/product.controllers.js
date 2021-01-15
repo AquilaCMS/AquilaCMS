@@ -151,6 +151,11 @@ ProductControllers.controller("ProductListCtrl", [
                 return '';
             }
         };
+        $scope.collapse = function () {
+          if(document.getElementById('collapseIcon').className === "fa fa-chevron-down fa-3x"){
+            document.getElementById('collapseIcon').className =  "fa fa-chevron-up fa-3x"
+          }else {document.getElementById('collapseIcon').className = "fa fa-chevron-down fa-3x"}
+        };
 
         $scope.getAttributesClassed = function () {
             AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 99}}, function ({datas}) {

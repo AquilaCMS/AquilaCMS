@@ -1,14 +1,15 @@
 <ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/new/settings">
 
-    <div class="box subbox" ng-show="attribs.length > 0">
-        <div class="box-header" data-toggle="collapse" data-target="#filter" style="cursor:pointer;">
+    <div class="box subbox" ng-show="attribs.length > 0" style="padding: 0 0 0;">
+        <div class="box-header" data-toggle="collapse" ng-click="collapse()" data-target="#filter" style="cursor:pointer;">
             <h2>Recherche avancée</h2>
+            <i style="float : right" id=collapseIcon class="fa fa-chevron-down fa-3x" ></i>
         </div>
         <div class="box-content">
             <form name="form" class="form-horizontal collapse" id="filter">
                 <div class="row settings">
-                    <div class="col-sm-6">
-                        <select name="filterLang" class="form-control" id="filterLang" ng-model="filterLang" style="max-width: 200px; margin-bottom: 30px;">
+                    <div style="width: 100%;" class="col-sm-6">
+                        <select ng-if="langs[1] !== undefined" name="filterLang" class="form-control" id="filterLang" ng-model="filterLang" style="max-width: 200px; margin-left:5%; margin-bottom: 30px;">
                             <option value="{{lang.code}}" ng-repeat="lang in langs track by $index">{{lang.name}}</option>
                         </select>
                     </div>
@@ -21,24 +22,23 @@
                         </div>
                     </div>
                </div>
-    
                 <br>
-                <button type="button" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
-                <button class="btn btn-default" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button>
-                <br>
-                <br>
-                
+                <button type="button" style="margin-right: 5%;" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
+                <button class="btn btn-default" style="margin-left: 5%;" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button> 
             </form>
         </div>
     </div>
 
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
         <div class="row">
-                <div class="col-lg-12" style="height: 45px;">
-                        <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('products')" style="cursor: pointer" ></i>
-                        <p>Nombre de produits : <span>{{totalItems}}</span></p>
-                </div>
+            <div class="col-lg-12" style="height: 45px;">
+                <br>
+                <br>
+                <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('products')" style="cursor: pointer" ></i>
+                <p>Nombre de produits : <span>{{totalItems}}</span></p>
             </div>
+            <br>
+        </div>
         <table id="DataTables_Table_0" class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
                aria-describedby="DataTables_Table_0_info">
             <thead>
