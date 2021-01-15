@@ -6,7 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const NSErrors = require('../utils/errors/NSErrors');
+const NSErrors          = require('../utils/errors/NSErrors');
+const {getDecodedToken} = require('./auth');
 
 /**
  * get component
@@ -34,7 +35,16 @@ const getComponent = async (componentName, code, authorization = null) => {
         models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
         PostBody               = {filter: {code}, structure: {content: 1, translation: 1}};
-        return cmsBlockServices.getCMSBlock(PostBody);
+        const result           = await cmsBlockServices.getCMSBlock(PostBody);
+        if ((!authorization || !getDecodedToken(authorization).info.isAdmin) && result.translation) {
+            // on boucle sur les langues contenue
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
+        return result;
     case 'gallery':
         models               = require(`../orm/models/${componentName}`);
         const ServiceGallery = require(`./${componentName}`);

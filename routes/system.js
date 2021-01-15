@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
- const {authentication, adminAuth} = require('../middleware/authentication');
+const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceSystem               = require('../services/system');
 
 module.exports = function (app) {
