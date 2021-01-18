@@ -50,7 +50,7 @@ ClientControllers.controller("ClientCtrl", [
         $scope.filter = {};
         init();
         $scope.valeurTri = -1;
-        $scope.tri = {creationDate : -1}
+        $scope.tri = {createdAt : -1}
         $scope.sortSearch = function(){
             $scope.valeurTri;
             if($scope.valeurTri == 1){
