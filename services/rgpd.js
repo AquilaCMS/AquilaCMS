@@ -188,9 +188,9 @@ const copyDatabase = async (cb) => {
     }
 };
 
-function mongodump(uri) {
+async function mongodump(uri) {
     const data = MongoURI.parse(uri);
-    let cmd    = createConnectionStringMongoose(data);
+    let cmd    = await createConnectionStringMongoose(data);
     if (data.database) {
         cmd += ` --db ${data.database}`;
     }
@@ -205,9 +205,9 @@ function mongodump(uri) {
     });
 }
 
-function mongorestore(uri) {
+async function mongorestore(uri) {
     const data = MongoURI.parse(uri);
-    const cmd  = createConnectionStringMongoose(data);
+    const cmd  = await createConnectionStringMongoose(data);
     return new Promise((resolve, reject) => {
         exec(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`, (error, stdout) => {
             if (error) {
