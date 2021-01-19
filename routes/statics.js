@@ -52,7 +52,7 @@ async function getStatics(req, res, next) {
             // on boucle sur les resultats
             for (let i = 0; i < result.datas.length; i++) {
                 const page = result.datas[i];
-                if (page.translation) {
+                if (page && page.translation) {
                     // on boucle sur les langues contenue
                     for (let k = 0; k < Object.keys(page.translation).length; k++) {
                         const langKey = Object.keys(page.translation)[k];
@@ -98,7 +98,7 @@ async function getStatic(req, res, next) {
         } else {
             result = await ServiceStatic.getStatic(postBody);
         }
-        if ((!req.headers.authorization || !getDecodedToken(req.headers.authorization).info.isAdmin) && result.translation) {
+        if ((!req.headers.authorization || !getDecodedToken(req.headers.authorization).info.isAdmin) && result && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];

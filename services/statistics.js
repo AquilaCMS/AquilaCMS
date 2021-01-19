@@ -41,13 +41,13 @@ exports.sendMetrics = async function (licence, date) {
  */
 exports.getFirstDayMetrics = async function () {
     try {
-        const User  = await Users.find().sort({creationDate: 1}).limit(1);
-        const Order = await Orders.find().sort({creationDate: 1}).limit(1);
+        const User  = await Users.find().sort({createdAt: 1}).limit(1);
+        const Order = await Orders.find().sort({createdAt: 1}).limit(1);
         if (User.length === 1 || Order.length === 1) {
-            if (User[0].creationDate > Order[0].creationDate) {
-                return Order[0].creationDate;
+            if (User[0].createdAt > Order[0].createdAt) {
+                return Order[0].createdAt;
             }
-            return User[0].creationDate;
+            return User[0].createdAt;
         }
         return false;
     } catch (error) {

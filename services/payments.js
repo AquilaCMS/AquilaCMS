@@ -18,6 +18,20 @@ exports.getOrdersPayments = async function (postBody) {
     if (!postBody.page) {
         postBody.page = 1;
     }
+    console.log(postBody.filter['payment.operationDate']);
+    if (postBody.filter['payment.operationDate'] !== undefined) {
+        if (postBody.filter['payment.operationDate'].$lte !== undefined && postBody.filter['payment.operationDate'].$gte !== undefined) {
+            postBody.filter['payment.operationDate'].$lte = new Date(postBody.filter['payment.operationDate'].$lte);
+            postBody.filter['payment.operationDate'].$gte = new Date(postBody.filter['payment.operationDate'].$gte);
+            console.log('1', postBody.filter['payment.operationDate']);
+        } else if (postBody.filter['payment.operationDate'].$lte === undefined) {
+            postBody.filter['payment.operationDate'].$gte = new Date(postBody.filter['payment.operationDate'].$gte);
+            console.log('2');
+        } else if (postBody.filter['payment.operationDate'].$gte === undefined) {
+            postBody.filter['payment.operationDate'].$lte = new Date(postBody.filter['payment.operationDate'].$lte);
+            console.log('3');
+        }
+    }
 
     const allPayments = await Orders.aggregate([{
         $match : postBody.filter

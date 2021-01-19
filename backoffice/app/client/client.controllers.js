@@ -50,7 +50,7 @@ ClientControllers.controller("ClientCtrl", [
         $scope.filter = {};
         init();
         $scope.valeurTri = -1;
-        $scope.tri = {creationDate : -1}
+        $scope.tri = {createdAt : -1}
         $scope.sortSearch = function(){
             $scope.valeurTri;
             if($scope.valeurTri == 1){
@@ -361,7 +361,13 @@ ClientControllers.controller("ClientDetailCtrl", [
             }, function(err) {
                 console.error(err)
                 if(err.data.code === 'login_subscribe_email_existing') {
+                    if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
                     toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
+                    }else{
+                        toastService.toast('danger', 'Email already exists');
+                    }
+                }else{
+                    toastService.toast('danger', 'Error during creation');
                 }
             })
         };

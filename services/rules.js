@@ -558,7 +558,8 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                         }
                     } else if (splittedRulesKeys[i] === 'picto') {
                         let picto;
-                        if (!optionPictoId) {
+                        // fix 'feature-pictorisation' (https://trello.com/c/1ys0BQt3/1721-feature-pictorisation-dans-picto)
+                        if (!optionPictoId || optionPictoId === splittedRules[splittedRulesKeys[i]][j].owner_id) {
                             picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
                         } else {
                             picto = await Pictos.findOne({_id: optionPictoId, enabled: true});
