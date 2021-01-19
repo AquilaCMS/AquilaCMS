@@ -86,7 +86,7 @@ log
 !/backoffice/app/productBundle/
 !/backoffice/app/productReviews/
 !/backoffice/app/productSimple/
-!/backoffice/app/produtVirtual/
+!/backoffice/app/productVirtual/
 !/backoffice/app/promo/
 !/backoffice/app/shipment/
 !/backoffice/app/site/
