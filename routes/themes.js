@@ -140,7 +140,10 @@ async function packageInstall(req, res, next) {
         if (!themPath || themPath === '' || themPath === './themes/') {
             themPath = `./themes/${themesServices.getThemePath()}`;
         }
-        await packageManager.execCmd(`yarn install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve(`./themes/${themPath}`));
+        await packageManager.execCmd(
+            `yarn install${serverUtils.isProd() ? ' --prod' : ''}`,
+            path.resolve(`./themes/${themPath}`)
+        );
         return res.json();
     } catch (error) {
         return next(error);

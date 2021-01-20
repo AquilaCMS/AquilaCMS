@@ -300,4 +300,3 @@ ModulesControllers.controller("PluginsNewCtrl", [
         };
     }
 ]);
-    

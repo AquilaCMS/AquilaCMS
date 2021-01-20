@@ -64,7 +64,6 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    let result = await queryBuilder.find(PostBody);
     if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -77,9 +76,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         delete PostBody.filter.$text;
-
-        result = await queryBuilder.find(PostBody);
     }
+    let result                 = await queryBuilder.find(PostBody);
     queryBuilder.defaultFields = defaultFields;
 
     // On supprime les reviews qui ne sont pas visible et verify

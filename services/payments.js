@@ -13,23 +13,17 @@ const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
 const queryBuilder     = new QueryBuilder(PaymentMethods, restrictedFields, defaultFields);
 
-exports.getOrdersPayments = async function (postBody) {
+const getOrdersPayments = async (postBody) => {
     postBody.limit = postBody.limit || 12;
     if (!postBody.page) {
         postBody.page = 1;
     }
-    console.log(postBody.filter['payment.operationDate']);
-    if (postBody.filter['payment.operationDate'] !== undefined) {
-        if (postBody.filter['payment.operationDate'].$lte !== undefined && postBody.filter['payment.operationDate'].$gte !== undefined) {
-            postBody.filter['payment.operationDate'].$lte = new Date(postBody.filter['payment.operationDate'].$lte);
-            postBody.filter['payment.operationDate'].$gte = new Date(postBody.filter['payment.operationDate'].$gte);
-            console.log('1', postBody.filter['payment.operationDate']);
-        } else if (postBody.filter['payment.operationDate'].$lte === undefined) {
-            postBody.filter['payment.operationDate'].$gte = new Date(postBody.filter['payment.operationDate'].$gte);
-            console.log('2');
-        } else if (postBody.filter['payment.operationDate'].$gte === undefined) {
-            postBody.filter['payment.operationDate'].$lte = new Date(postBody.filter['payment.operationDate'].$lte);
-            console.log('3');
+
+    if (postBody.filter && postBody.filter['payment.operationDate']) {
+        for (const operator of Object.keys(postBody.filter['payment.operationDate'])) {
+            if (['$gte', '$lte', '$lt', '$gt'].indexOf(operator) !== -1) {
+                postBody.filter['payment.operationDate'][operator] = new Date(postBody.filter['payment.operationDate'][operator]);
+            }
         }
     }
 
@@ -70,14 +64,14 @@ exports.getOrdersPayments = async function (postBody) {
 /**
  * @description retourne les methodes de payment
  */
-exports.getPaymentMethods = async function (PostBody) {
+const getPaymentMethods = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
 /**
  * @description retourne les methodes de payment
  */
-exports.getPaymentMethod = async function (PostBody) {
+const getPaymentMethod = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
@@ -85,7 +79,7 @@ exports.getPaymentMethod = async function (PostBody) {
  * @description sauvegarde la methode de payment
  */
 
-exports.savePaymentMethod = async function (pm) {
+const savePaymentMethod = async (pm) => {
     if (pm._id) {
         await PaymentMethods.updateOne({_id: pm._id}, {$set: pm});
         return pm;
@@ -93,6 +87,14 @@ exports.savePaymentMethod = async function (pm) {
     return PaymentMethods.ceate(pm);
 };
 
-exports.deletePaymentMethod = async function (_id) {
+const deletePaymentMethod = async (_id) => {
     return PaymentMethods.findOneAndDelete({_id});
+};
+
+module.exports = {
+    getOrdersPayments,
+    getPaymentMethods,
+    getPaymentMethod,
+    savePaymentMethod,
+    deletePaymentMethod
 };
