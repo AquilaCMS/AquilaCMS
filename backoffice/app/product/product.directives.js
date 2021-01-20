@@ -268,7 +268,7 @@ ProductDirectives.directive("nsProductPrice", function () {
             "$scope", "ConfigV2", "$rootScope", function ($scope, ConfigV2, $rootScope) {
                 $scope.langs = [];
                 $scope.stockLabels = [];
-                $scope.taxerate = [];
+                $scope.config = [];
                 $scope.lang = "";
 
                 $scope.lang = $rootScope.languages.find(function (lang) {
@@ -276,18 +276,14 @@ ProductDirectives.directive("nsProductPrice", function () {
                 }).code;
                 $scope.langs = $rootScope.languages;
 
-                ConfigV2.taxerate(function (taxerate) {
-                    $scope.taxerate = taxerate.map(t => t.rate);
-                    if ($scope.taxerate.length > 0 && $scope.product && $scope.product.price && !$scope.product.price.tax) {
-                        // $scope.product.price.tax = $scope.taxerate[$scope.taxerate.length - 1].rate;
+                ConfigV2.get({PostBody: {structure: {taxerate: 1, stockOrder: 1}}}, function (config) {
+                    $scope.config = config.taxerate.map(t => t.rate);
+                    if ($scope.config.taxerate.length > 0 && $scope.product && $scope.product.price && !$scope.product.price.tax) {
+                        // $scope.product.price.tax = $scope.config.taxerate[$scope.config.taxerate.length - 1].rate;
                         $scope.product.price.tax = 0;
                     }
-                });
-
-
-                ConfigV2.stockOrder(function (cfg) {
-                    if (Object.keys(cfg).length > 2) {
-                        $scope.stockLabels = cfg.labels;
+                    if (Object.keys(config.stockOrder).length > 2) {
+                        $scope.stockLabels = config.stockOrder.labels;
                     }
                 });
 

@@ -17,17 +17,11 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             }
             $scope.stock.additionnalFees.et = Number($scope.stock.additionnalFees.et.toFixed(2))
         }
-
-        ConfigV2.stockOrder( function (cfg)
-        {
-            if(Object.keys(cfg).length > 2)
-            {
+        ConfigV2.get({PostBody: {structure: {stockOrder: 1, taxerate: 1}}}, function (config) {
+            if(Object.keys(config.stockOrder).length > 2) {
                 $scope.stock = cfg;
             }
-        });
-        ConfigV2.taxerate( function (cfg)
-        {
-                $scope.taxerate = cfg;
+            $scope.taxerate = config.taxerate;
         });
 
         $scope.manageLabel = function (label)
@@ -101,7 +95,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         {
             var stock = $scope.stock;
 
-            ConfigV2.save({stockOrder: stock, taxerate:$scope.taxerate}, function ()
+            ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function ()
             {
                 toastService.toast("success", "Stock & commandes sauvegardée !");
                 if(quit)

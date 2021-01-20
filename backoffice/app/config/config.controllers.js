@@ -87,11 +87,13 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
     function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload) {
         $scope.disabledButton = false;
         $scope.countries = [];
+        $scope.config = {};
         // $scope.themesList = [];
         $scope.timezones = moment.tz.names().filter(n => n.includes("Europe"));
-        $scope.config = ConfigV2.environment(function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.config = config;
+            if (!$scope.config.environment.adminPrefix) {
+                $scope.config.environment.adminPrefix = "admin";
             }
             delete $scope.config.$promise;
         });
@@ -103,7 +105,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             $scope.countries = datas;
         });
 
-        $scope.$watch("config.mailUser", function (newValue, oldValue) {
+        $scope.$watch("config.environment.mailUser", function (newValue, oldValue) {
             if (newValue !== undefined && newValue.indexOf("gmail") > -1) {
                 $scope.messageMail = " ! Vous devez autoriser le paramètre \"Autoriser les applications moins sécurisées\" <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>ici</a> pour utiliser Gmail !";
                 $scope.messageMail = $sce.trustAsHtml($scope.messageMail);
@@ -171,34 +173,31 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
         };
 
         $scope.validate = function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
-            }
-            if ($scope.config.appUrl && !$scope.config.appUrl.endsWith('/')) {
-                $scope.config.appUrl += "/";
+            if ($scope.config.environment.appUrl && !$scope.config.environment.appUrl.endsWith('/')) {
+                $scope.config.environment.appUrl += "/";
             }
             let file = {};
-            ConfigV2.environment(function (oldAdmin) {
-                $scope.config.cacheTTL = $scope.config.cacheTTL || "";
+            ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldConfig) {
+                $scope.config.environment.cacheTTL = $scope.config.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 Upload.upload({
                     url: 'v2/config',
                     method: 'PUT',
                     data: {
                         ...file,
-                        environment: $scope.config
+                        ...$scope.config
                     }
                 }).then((response) => {
                     if (
-                        oldAdmin.adminPrefix !== $scope.config.adminPrefix
-                        || oldAdmin.appUrl !== $scope.config.appUrl
-                        || oldAdmin.photoPath !== $scope.config.photoPath
-                        || oldAdmin.cacheTTL !== $scope.config.cacheTTL
-                        || oldAdmin.databaseConnection !== $scope.config.databaseConnection
+                        oldConfig.environment.adminPrefix !== $scope.config.environment.adminPrefix
+                        || oldConfig.environment.appUrl !== $scope.config.environment.appUrl
+                        || oldConfig.environment.photoPath !== $scope.config.environment.photoPath
+                        || oldConfig.environment.cacheTTL !== $scope.config.environment.cacheTTL
+                        || oldConfig.environment.databaseConnection !== $scope.config.environment.databaseConnection
                     ) {
                         $scope.showThemeLoading = false;
                         $scope.showLoading = true;
-                        $scope.urlRedirect = buildAdminUrl($scope.config.appUrl, $scope.config.adminPrefix);
+                        $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
                         $http.get("/restart");
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {

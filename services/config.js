@@ -8,6 +8,7 @@
 
 const diff                      = require('diff-arrays-of-objects');
 const path                      = require('path');
+const {merge}                   = require('lodash');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
@@ -16,61 +17,28 @@ const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
 
 const restrictedFields = [];
-const defaultFields    = ['*'];
+const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Configuration, restrictedFields, defaultFields);
 
-const getConfig = async (action, propertie) => {
-    if (!propertie) {
-        propertie = 'environment';
+const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
+    PostBody    = merge({filter: {_id: {$exists: true}}, structure: '*'}, PostBody);
+    let isAdmin = false;
+    if (!user || !user.isAdmin) {
+        isAdmin                       = true;
+        queryBuilder.defaultFields    = [];
+        queryBuilder.restrictedFields = [
+            'environment.adminPrefix',
+            'environment.authorizedIPs',
+            'environment.mailHost',
+            'environment.mailPass',
+            'environment.mailPort',
+            'environment.mailUser',
+            'environment.overrideSendTo',
+            'environment.port',
+            'licence'
+        ];
     }
-    if (action === propertie) {
-        const _config = await Configuration.findOne({});
-        try {
-            if (
-                propertie === 'environment'
-                    && _config[propertie]
-                    && _config[propertie].mailPass !== undefined
-                    && _config[propertie].mailPass !== ''
-            ) {
-                _config[propertie].mailPass = encryption.decipher(_config[propertie].mailPass);
-            }
-        } catch (err) {
-            console.error(err);
-        }
-        if (propertie === 'environment') {
-            const cfg = {
-                ..._config[propertie],
-                nodeEnv            : serverUtils.getEnv('NODE_ENV'),
-                databaseConnection : global.envFile.db
-            };
-            return cfg;
-        }
-        return _config[propertie];
-    }
-};
-
-const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
-    PostBody    = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
-    let isAdmin = true;
-    if (!user) {
-        if (!user || !user.isAdmin) {
-            isAdmin                       = false;
-            PostBody.structure            = undefined;
-            queryBuilder.defaultFields    = [];
-            queryBuilder.restrictedFields = [
-                'environment.adminPrefix',
-                'environment.authorizedIPs',
-                'environment.mailHost',
-                'environment.mailPass',
-                'environment.mailPort',
-                'environment.mailUser',
-                'environment.overrideSendTo',
-                'environment.port',
-                'licence'
-            ];
-        }
-    }
-    const config = (await queryBuilder.findOne(PostBody)).toObject();
+    const config = await queryBuilder.findOne(PostBody);
     if (config.environment) {
         if (isAdmin) {
             config.environment = {
@@ -101,20 +69,7 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
             } catch (err) {}
         }
     }
-    let data = config;
-    if (key) {
-        data = {...config[key]};
-        if (Array.isArray(config[key])) {
-            data = config[key];
-        }
-    }
-    return data;
-};
-
-const getSiteName = async () => {
-    require('../utils/utils').tmp_use_route('ConfigServices', 'getSiteName');
-    const _config = await Configuration.findOne({}, {'environment.siteName': 1});
-    return _config.environment.siteName;
+    return config;
 };
 
 const updateEnvFile = async () => {
@@ -224,8 +179,6 @@ const saveEnvConfig = async (body) => {
 
 module.exports = {
     getConfig,
-    getConfigV2,
-    getSiteName,
     saveEnvConfig,
     saveEnvFile
 };

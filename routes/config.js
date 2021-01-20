@@ -6,24 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {Configuration}             = require('../orm/models');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {extendTimeOut}             = require('../middleware/server');
 const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
-const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.put('/v2/config', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
-    app.post('/v2/config/sitename', getSiteName);
-    app.post('/v2/config/:key?', getConfigV2);
-
-    app.get('/config/sitename', getSiteName);
-    app.post('/config/save', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
-    app.get('/config/:action/:propertie', authentication, adminAuth, getConfig);
-    app.get('/config/data', getConfigTheme);
+    app.post('/v2/config', getConfig);
     app.get('/restart', authentication, adminAuth, restart);
     app.get('/robot', authentication, adminAuth, getRobot);
     app.post('/robot', authentication, adminAuth, setRobot);
@@ -38,18 +30,10 @@ module.exports = function (app) {
  * @param {string} authorization.headers - authorization
  * @return {configurationSchema} 200 - success
  */
-const getConfigV2 = async (req, res, next) => {
+const getConfig = async (req, res, next) => {
     try {
-        let userInfo;
-        if (req.headers && req.headers.authorization) {
-            try {
-                userInfo = getDecodedToken(req.headers.authorization);
-                if (userInfo) userInfo = userInfo.info;
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        const config = await ServiceConfig.getConfigV2(req.params.key, req.body.PostBody, userInfo);
+        const {PostBody} = req.body;
+        const config     = await ServiceConfig.getConfig(PostBody, req.info);
         return res.json(config);
     } catch (e) {
         return next(e);
@@ -82,58 +66,12 @@ async function saveEnvConfig(req, res, next) {
 }
 
 /**
- * GET /api/config/{action}/{propertie}
- * @tags Configuration
- * @param {string} action.path.required - action
- * @param {string} propertie.path.required - propertie
- */
-const getConfig = async (req, res, next) => {
-    try {
-        const {action, propertie} = req.params;
-        return res.json(await ServiceConfig.getConfig(action, propertie));
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * POST /api/v2/config/sitename
- * @summary Get sitename from config
- * @tags Configuration
- */
-const getSiteName = async (req, res, next) => {
-    try {
-        return res.json(await ServiceConfig.getSiteName());
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
  * GET /api/restart
  * @tags Configuration
  */
 const restart = async (req, res, next) => {
     try {
         await packageManager.restart();
-    } catch (err) {
-        return next(err);
-    }
-};
-
-/**
- * GET /api/config/data
- * @tags Configuration
- */
-const getConfigTheme = async (req, res, next) => {
-    try {
-        const _config = await Configuration.findOne({});
-        return res.json({
-            appUrl     : _config.environment.appUrl,
-            siteName   : _config.environment.siteName,
-            demoMode   : _config.environment.demoMode,
-            stockOrder : _config.stockOrder
-        });
     } catch (err) {
         return next(err);
     }

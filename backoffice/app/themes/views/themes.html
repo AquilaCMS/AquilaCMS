@@ -22,7 +22,7 @@
                                             </div> -->
                 <div class="form-group">
                     <h3 style="margin-left:10px;" translate>themes.themeChoice</h3> <br />
-                    <select name="themesList" id="themesList" class="form-control" ng-model="config.currentTheme">
+                    <select name="themesList" id="themesList" class="form-control" ng-model="config.environment.currentTheme">
                         <!-- <option value="default_theme">Default theme</option> -->
                         <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
                     </select>
@@ -52,7 +52,7 @@
                 <div>
                     <div ng-repeat = "group in customiseTheme.arrayGroup">
                         <h4><b>{{group}} </b></h4>
-                        <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group"> 
+                        <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group">
                             <b>{{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) :</b> {{themeConfig.variables[lang][var].description}}
                             <br>
                             <input style = "float : right" type="text" class="form-control" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
@@ -71,7 +71,7 @@
             <div id="data" class="col-md-8 tab-pane fade in active" ng-if="tab === 'data'" >
                 <br />
                 <div class="form-group">
-                    <h3 style="margin-left:10px;" translate>themes.themeDatas</h3> 
+                    <h3 style="margin-left:10px;" translate>themes.themeDatas</h3>
                 </div>
                 <div >
                     <table>
@@ -89,7 +89,7 @@
                     <br>
                     <br>
                 </div>
-                
+
                 <div style="float : right ;" class="form-group">
                     <a ng-if='listThemeFiles[0] != "noDefaultData"' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                         themes.themeDatasLead

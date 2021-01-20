@@ -782,9 +782,9 @@ OrderControllers.controller("RMANewCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        ConfigV2.taxerate(function (data) {
-            $scope.taxerate = data;
-            $scope.return.tax = data[0].rate;
+        ConfigV2.get({PostBody: {structure: {taxerate: 1}}}, function (config) {
+            $scope.taxerate = config.taxerate;
+            $scope.return.tax = config.taxerate[0].rate;
         });
 
         for(var i = $scope.order.items.length - 1; i >= 0; i--)
