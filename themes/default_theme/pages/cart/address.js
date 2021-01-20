@@ -90,10 +90,10 @@ class CartAddress extends React.Component {
                             { cart.items.length > 0 && (
                                 <>
                                     {
-                                        hookSelectDate && <div className="content content--left">{hookSelectDate}</div>
+                                        hookSelectDate ? hookSelectDate : null
                                     }
                                     {
-                                        !hookSelectDate && <NSAddressMultiple t={t} gNext={{ Router }} />
+                                        (!hookSelectDate || !hookSelectDate.length) && <NSAddressMultiple t={t} gNext={{ Router }} />
                                     }
                                     <NSCartResume t={t} gNext={{ Link }} />
                                 </>

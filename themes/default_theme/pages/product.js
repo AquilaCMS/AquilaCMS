@@ -254,7 +254,9 @@ class PageProduct extends NSPageProduct {
                                                 </div>{/* <!-- /.rating --> */}
                                             </div>{/* <!-- /.product-reviews --> */}
                                             <div className="product-price hidden-xs">
-                                                <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                {
+                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                }
 
                                                 <strong>
                                                     <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
