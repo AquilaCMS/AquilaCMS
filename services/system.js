@@ -5,7 +5,7 @@ const NSErrors       = require('../utils/errors/NSErrors');
 
 const getLogsContent = async (fileName) => {
     const filePath = path.resolve(global.appRoot, fileName);
-    if (await fs.access(filePath)) {
+    if (!(await fs.access(filePath, fs.constants.R_OK))) {
         let fileContent  = '';
         let currentLines = '';
         try {
@@ -36,9 +36,9 @@ const getLogsContent = async (fileName) => {
     return {fileData: 'None'};
 };
 
-const getNextVersionService = async () => {
+const getNextVersion = async () => {
     const datas = {};
-    if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
+    if (fs.existsSync(path.join(global.appRoot, 'yarn.lock'))) {
         const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json'], global.appRoot);
         let data     = result.stdout.split('}\n{');
         data         = data[data.length - 1];
@@ -65,11 +65,11 @@ const getNextVersionService = async () => {
     return datas;
 };
 
-const changeNextVersionService = async (body) => {
+const changeNextVersion = async (body) => {
     const {nextVersion} = body;
     if (!nextVersion) throw NSErrors.UnprocessableEntity;
     let result;
-    if (await fs.access(path.join(global.appRoot, 'yarn.lock'))) {
+    if (fs.existsSync(path.join(global.appRoot, 'yarn.lock'))) {
         result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`], global.appRoot);
     } else {
         result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`], global.appRoot);
@@ -79,6 +79,6 @@ const changeNextVersionService = async (body) => {
 
 module.exports = {
     getLogsContent,
-    getNextVersionService,
-    changeNextVersionService
+    getNextVersion,
+    changeNextVersion
 };
