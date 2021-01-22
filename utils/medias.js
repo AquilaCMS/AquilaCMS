@@ -116,7 +116,7 @@ const existsFile = async (key) => {
         return utilsModules.modulesLoadFunctions('existsFile', {key}, async () => {
             const pathUpload  = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.access(pathToCheck)) {
+            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
                 return true;
             }
             return false;
