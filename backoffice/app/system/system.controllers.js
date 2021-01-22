@@ -71,7 +71,7 @@ SystemControllers.controller("systemGeneralController", [
                             location.href = window.location = $scope.urlRedirect;
                         })
                     }, 10000);
-                }, function(error){
+                }, function(error) {
                     $scope.showThemeLoading = false;
                     console.error(error);
                     toastService.toast("danger", error.message);
@@ -197,24 +197,20 @@ SystemControllers.controller("systemGeneralController", [
                         ...$scope.system
                     }
                 }).then((response) => {
-                    if (
-                        oldAdmin.adminPrefix !== $scope.system.environment.adminPrefix
-                        || oldAdmin.appUrl !== $scope.system.environment.appUrl
-                        || oldAdmin.photoPath !== $scope.system.environment.photoPath
-                        //|| oldAdmin.cacheTTL !== $scope.system.environment.cacheTTL
-                        || oldAdmin.databaseConnection !== $scope.system.environment.databaseConnection
-                    ) {
-                        $scope.showThemeLoading = false;
+                    if (response.data.data.needRestart) {
                         $scope.showLoading = true;
-                        $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
-                        $http.get("/restart");
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
-                                location.href = window.location = $scope.urlRedirect;
+                                location.href = $scope.urlRedirect;
+                                window.location = $scope.urlRedirect;
                             })
                         }, 10000);
+                    }
+                    if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
+                        $scope.showThemeLoading = false;
+                        $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                     } else {
-                        window.location.reload(true);
+                        window.location.reload();
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;

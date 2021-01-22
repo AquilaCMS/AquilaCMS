@@ -37,7 +37,7 @@ const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: 
             'licence'
         ];
     }
-    const config = await queryBuilder.findOne(PostBody);
+    const config = await queryBuilder.findOne(PostBody, true);
     if (config.environment) {
         if (isAdmin) {
             config.environment = {
@@ -102,7 +102,7 @@ const saveEnvFile = async (body, files) => {
                 }
             }
         }
-        if (environment.ssl && environment.ssl.active) {
+        if (environment.ssl && environment.ssl.active === 'true') {
             if (environment.ssl.active === 'false') {
                 global.envFile.ssl.active = false;
             } else {
