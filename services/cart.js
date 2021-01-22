@@ -22,7 +22,6 @@ const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
 const ServiceShipment   = require('./shipment');
 const ServicesProducts  = require('./products');
-const ServiceAuth       = require('./auth');
 const servicesTerritory = require('./territory');
 
 const restrictedFields = [];
@@ -189,18 +188,15 @@ const addItem = async (req) => {
     if (req.body.item.parent) {
         req.body.item._id = idGift;
     }
-    let user = null;
-    if (req.headers && req.headers.authorization) {
-        user = ServiceAuth.getDecodedToken(req.headers.authorization);
-    }
+
     const item = {...req.body.item, weight: _product.weight, price: _product.price};
     if (_product.type !== 'virtual') item.stock = _product.stock;
-    const data = await _product.addToCart(cart, item, user ? user.info : {}, _lang.code);
+    const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
     cart           = data;
-    cart           = await ServicePromo.checkForApplyPromo(user, cart, _lang.code);
+    cart           = await ServicePromo.checkForApplyPromo(req.info, cart, _lang.code);
     const _newCart = await cart.save();
     if (req.body.item.parent) {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
@@ -265,11 +261,7 @@ const updateQty = async (req) => {
         throw NSErrors.InactiveCart;
     }
     await linkCustomerToCart(cart, req);
-    let user = null;
-    if (req.headers && req.headers.authorization) {
-        user = ServiceAuth.getDecodedToken(req.headers.authorization);
-    }
-    cart = await ServicePromo.checkForApplyPromo(user, cart);
+    cart = await ServicePromo.checkForApplyPromo(req.info, cart);
     await cart.save();
     // Event appelé par les modules pour récupérer les modifications dans le panier
     const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
@@ -509,15 +501,15 @@ const checkProductOrderable = async (stock, qty) => {
  * Fonction pour associer un utilisateur à un panier
  */
 const linkCustomerToCart = async (cart, req) => {
-    if (cart && (!cart.customer || !cart.customer.id) && req.headers && req.headers.authorization) {
-        const user = ServiceAuth.getDecodedToken(req.headers.authorization);
+    if (cart && (!cart.customer || !cart.customer.id)) {
+        const user = req.info;
         if (user) {
             const customer = {
-                id    : user.userId,
-                email : user.info.email,
-                phone : user.info.phone
+                id    : user._id,
+                email : user.email,
+                phone : user.phone
             };
-            const paidTax  = await checkCountryTax(cart, user.info);
+            const paidTax  = await checkCountryTax(cart, user);
             await Cart.findOneAndUpdate({_id: cart._id}, {customer, paidTax}, {new: true});
             cart.paidTax  = paidTax;
             cart.customer = customer;
