@@ -12,6 +12,7 @@ const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
+const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.put('/v2/config', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
@@ -33,7 +34,16 @@ module.exports = function (app) {
 const getConfig = async (req, res, next) => {
     try {
         const {PostBody} = req.body;
-        const config     = await ServiceConfig.getConfig(PostBody, req.info);
+        let userInfo;
+        if (req.headers && req.headers.authorization) {
+            try {
+                userInfo = getDecodedToken(req.headers.authorization);
+                if (userInfo) userInfo = userInfo.info;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        const config = await ServiceConfig.getConfig(PostBody, userInfo);
         return res.json(config);
     } catch (e) {
         return next(e);
