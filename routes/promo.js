@@ -7,7 +7,6 @@
  */
 
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {getUserFromRequest}        = require('../middleware/server');
 const ServicePromo                = require('../services/promo');
 
 module.exports = function (app) {
@@ -23,8 +22,7 @@ module.exports = function (app) {
 
 async function checkCodePromoByCode(req, res, next) {
     try {
-        const user   = await getUserFromRequest(req);
-        const result = await ServicePromo.checkForApplyPromo(user, req.params.cartId, req.params.lang, req.params.code);
+        const result = await ServicePromo.checkForApplyPromo(req.info, req.params.cartId, req.params.lang, req.params.code);
         return res.json(result);
     } catch (error) {
         return next(error);
