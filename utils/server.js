@@ -70,7 +70,7 @@ const getOrCreateEnvFile = async () => {
     try {
         let envFile;
         const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
-        if (await fs.access(path.resolve(global.envPath))) {
+        if (!(await fs.access(path.resolve(global.envPath), fs.constants.R_OK))) {
             envFile = await fs.readFile(global.envPath);
             envFile = JSON.parse(envFile);
             if (!envFile[getEnv('AQUILA_ENV')]) {
