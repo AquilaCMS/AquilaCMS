@@ -30,7 +30,7 @@ const getLogsContent = async (req, res, next) => {
  */
 const getNextVersion = async (req, res, next) => {
     try {
-        const datas = await ServiceSystem.getNextVersionService();
+        const datas = await ServiceSystem.getNextVersion();
         return res.json({datas});
     } catch (err) {
         return next(err);
@@ -43,7 +43,7 @@ const getNextVersion = async (req, res, next) => {
  */
 const changeNextVersion = async (req, res, next) => {
     try {
-        await ServiceSystem.changeNextVersionService(req.body);
+        await ServiceSystem.changeNextVersion(req.body);
         res.end();
     } catch (err) {
         return next(err);
