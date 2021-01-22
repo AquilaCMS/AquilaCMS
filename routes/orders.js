@@ -214,7 +214,7 @@ async function cancelOrder(req, res, next) {
 
 async function cancelOrderRequest(req, res, next) {
     try {
-        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.headers.authorization);
+        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.info);
         if (result) {
             return res.json({code: 'ORDER_ASK_CANCEL_SUCCESS'});
         }
