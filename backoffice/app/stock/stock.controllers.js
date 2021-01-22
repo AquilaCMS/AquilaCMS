@@ -1,8 +1,10 @@
 angular.module("aq.stock.controllers", []).controller("StockCtrl", [
-    "$scope", "$location", "toastService", "ConfigV2", "$modal", function ($scope, $location, toastService, ConfigV2, $modal)
-    {
+    "$scope", "$location", "toastService", "ConfigV2", "$modal",
+    function ($scope, $location, toastService, ConfigV2, $modal) {
         $scope.stock = {
-            cartExpireTimeout: 48, pendingOrderCancelTimeout: 48, bookingStock: "panier",
+            cartExpireTimeout: 48,
+            pendingOrderCancelTimeout: 48,
+            bookingStock: "panier",
             labels: {}
         };
         $scope.disableEdit = false;
@@ -18,14 +20,14 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             $scope.stock.additionnalFees.et = Number($scope.stock.additionnalFees.et.toFixed(2))
         }
         ConfigV2.get({PostBody: {structure: {stockOrder: 1, taxerate: 1}}}, function (config) {
+            debugger
             if(Object.keys(config.stockOrder).length > 2) {
-                $scope.stock = cfg;
+                $scope.stock = config.stockOrder;
             }
             $scope.taxerate = config.taxerate;
         });
 
-        $scope.manageLabel = function (label)
-        {
+        $scope.manageLabel = function (label) {
             $modal.open({
                 templateUrl: "app/stock/stock-labels.html",
                 controller: "StockLabelCtrl",
@@ -35,27 +37,18 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
                         return label;
                     }
                 }
-            }).result.then(function (result)
-            {
-                if(result)
-                {
-                    if(result.isNew)
-                    {
+            }).result.then(function (result) {
+                if(result) {
+                    if(result.isNew) {
                         $scope.stock.labels.push(result.label);
                         console.log($scope.stock.labels);
-                    }
-                    else
-                    {
-                        $scope.stock.labels[$scope.stock.labels.findIndex(function (_label)
-                        {
+                    } else {
+                        $scope.stock.labels[$scope.stock.labels.findIndex(function (_label) {
                             return _label.code === result.label.code;
                         })] = result.label;
                     }
-                }
-                else
-                {
-                    $scope.stock.labels.splice($scope.stock.labels.findIndex(function (_label)
-                    {
+                } else {
+                    $scope.stock.labels.splice($scope.stock.labels.findIndex(function (_label) {
                         return _label.code === label.code;
                     }), 1);
                 }
@@ -91,19 +84,13 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             });
         };
 
-        $scope.save = function (quit)
-        {
+        $scope.save = function (quit) {
             var stock = $scope.stock;
 
-            ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function ()
-            {
+            ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function () {
                 toastService.toast("success", "Stock & commandes sauvegardée !");
-                if(quit)
-                {
-                    $location.path("/");
-                }
-            }, function (err)
-            {
+                if (quit) $location.path("/");
+            }, function (err) {
                 toastService.toast("danger", err.data);
             });
         };
@@ -114,11 +101,11 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         $scope.isEditMode = false;
         $scope.label = {code: "", translation: {}};
 
-        for(var i = 0; i < $scope.languages.length; i++) {
+        for (var i = 0; i < $scope.languages.length; i++) {
             $scope.label.translation[$scope.languages[i].code] = {value: ''}
         }
 
-        if(label)
+        if (label)
         {
             $scope.isEditMode = true;
             $scope.label = angular.copy(label);

@@ -12,7 +12,6 @@ const {merge}                   = require('lodash');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
-const encryption                = require('../utils/encryption');
 const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
 
@@ -22,9 +21,9 @@ const queryBuilder     = new QueryBuilder(Configuration, restrictedFields, defau
 
 const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
     PostBody    = merge({filter: {_id: {$exists: true}}, structure: '*'}, PostBody);
-    let isAdmin = false;
+    let isAdmin = true;
     if (!user || !user.isAdmin) {
-        isAdmin                       = true;
+        isAdmin                       = false;
         queryBuilder.defaultFields    = [];
         queryBuilder.restrictedFields = [
             'environment.adminPrefix',
@@ -62,12 +61,6 @@ const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: 
                 };
             }
         }
-        if (config.environment.mailPass) {
-            try {
-                config.environment.mailPass = encryption.decipher(config.environment.mailPass);
-            // eslint-disable-next-line no-empty
-            } catch (err) {}
-        }
     }
     return config;
 };
@@ -96,23 +89,18 @@ const saveEnvFile = async (body, files) => {
             for (const file of files) {
                 if (['cert', 'key'].indexOf(file.fieldname) !== -1) {
                     try {
-                        await fs.copyRecursiveSync(
+                        await fs.moveFile(
                             path.resolve(file.destination, file.filename),
                             path.resolve(global.appRoot, 'config/ssl', file.originalname),
-                            true
+                            {mkdirp: true}
                         );
                         global.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
+                        body.needRestart                   = true;
                     } catch (err) {
                         console.error(err);
                     }
                 }
             }
-        }
-        if (
-            environment.databaseConnection
-            && environment.databaseConnection !== global.envFile.db
-        ) {
-            global.envFile.db = environment.databaseConnection;
         }
         if (environment.ssl && environment.ssl.active) {
             if (environment.ssl.active === 'false') {
@@ -120,6 +108,14 @@ const saveEnvFile = async (body, files) => {
             } else {
                 global.envFile.ssl.active = true;
             }
+            body.needRestart = true;
+        }
+        if (
+            environment.databaseConnection
+            && environment.databaseConnection !== global.envFile.db
+        ) {
+            global.envFile.db = environment.databaseConnection;
+            body.needRestart  = true;
         }
         await updateEnvFile();
         delete environment.databaseConnection;
@@ -131,17 +127,15 @@ const saveEnvConfig = async (body) => {
     const oldConfig                 = await Configuration.findOne({});
     const {environment, stockOrder} = body;
     if (environment) {
-        if (environment.mailPass !== undefined && environment.mailPass !== '') {
-            try {
-                environment.mailPass = encryption.cipher(environment.mailPass);
-            } catch (err) {
-                console.error(err);
-            }
+        if (
+            oldConfig.environment.appUrl !== environment.appUrl
+            || oldConfig.environment.adminPrefix !== environment.adminPrefix
+        ) {
+            body.needRestart = true;
         }
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
-        delete environment.databaseConnection;
         // traitement spécifique
         if (environment.demoMode) {
             const seoService = require('./seo');
@@ -157,9 +151,7 @@ const saveEnvConfig = async (body) => {
             JSON.parse(JSON.stringify(oldConfig.stockOrder.labels)),
             stockOrder.labels,
             '_id',
-            {
-                updatedValues : diff.updatedValues.second
-            }
+            {updatedValues: diff.updatedValues.second}
         );
         for (let i = 0; i < result.removed.length; i++) {
             await Products.updateMany(

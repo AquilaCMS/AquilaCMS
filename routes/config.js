@@ -59,7 +59,12 @@ async function saveEnvFile(req, res, next) {
 async function saveEnvConfig(req, res, next) {
     try {
         await ServiceConfig.saveEnvConfig(req.body);
-        return res.send('success');
+        if (req.body.needRestart) {
+            setTimeout(() => {
+                packageManager.restart();
+            }, 5000);
+        }
+        res.send('success');
     } catch (err) {
         return next(err);
     }
