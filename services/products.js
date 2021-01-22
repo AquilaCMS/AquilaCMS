@@ -1063,13 +1063,10 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
-    let result = {};
+    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters || req.body.withFilters) {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
-
-        // result.productsList = await Products.find(req.body.PostBody.filter);
 
         const attrs = await Attributes.find({usedInFilters: true});
         if (!result.filters) {
@@ -1084,8 +1081,6 @@ const getProductsListing = async (req, res) => {
         }));
 
         await servicesCategory.generateFilters(result, req.body.lang);
-    } else {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang);
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
