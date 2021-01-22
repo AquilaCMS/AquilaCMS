@@ -76,20 +76,20 @@
 
                     <div class="form-group">
                         <label translate>config.environment.host</label>
-                        <input type="text" class="form-control" ng-model="config.environment.mailHost" ng-disabled="config.mailIsSendmail" />
+                        <input type="text" class="form-control" ng-model="config.environment.mailHost" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.port</label>
-                        <input type="number" class="form-control" ng-model="config.environment.mailPort" ng-disabled="config.mailIsSendmail" />
+                        <input type="number" class="form-control" ng-model="config.environment.mailPort" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.user <span ng-show="messageMail" style="color: #d2322d;"
                                 ng-bind-html="messageMail"></span></label>
-                        <input type="text" class="form-control" ng-model="config.environment.mailUser" ng-disabled="config.mailIsSendmail" />
+                        <input type="text" class="form-control" ng-model="config.environment.mailUser" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.mdp</label>
-                        <input type="password" class="form-control" ng-model="config.environment.mailPass" ng-disabled="config.mailIsSendmail" />
+                        <input type="password" class="form-control" ng-model="config.environment.mailPass" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label>Secure (old: {secure: Number(mailPort) !== 587})</label>
