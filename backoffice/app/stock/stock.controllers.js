@@ -20,7 +20,6 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             $scope.stock.additionnalFees.et = Number($scope.stock.additionnalFees.et.toFixed(2))
         }
         ConfigV2.get({PostBody: {structure: {stockOrder: 1, taxerate: 1}}}, function (config) {
-            debugger
             if(Object.keys(config.stockOrder).length > 2) {
                 $scope.stock = config.stockOrder;
             }

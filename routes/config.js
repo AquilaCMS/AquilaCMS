@@ -64,7 +64,12 @@ async function saveEnvConfig(req, res, next) {
                 packageManager.restart();
             }, 5000);
         }
-        res.send('success');
+        res.send({
+            status : 'success',
+            data   : {
+                needRestart : req.body.needRestart
+            }
+        });
     } catch (err) {
         return next(err);
     }

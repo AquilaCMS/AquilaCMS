@@ -188,26 +188,22 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                         ...$scope.config
                     }
                 }).then((response) => {
-                    if (
-                        oldConfig.environment.adminPrefix !== $scope.config.environment.adminPrefix
-                        || oldConfig.environment.appUrl !== $scope.config.environment.appUrl
-                        || oldConfig.environment.photoPath !== $scope.config.environment.photoPath
-                        || oldConfig.environment.cacheTTL !== $scope.config.environment.cacheTTL
-                        || oldConfig.environment.databaseConnection !== $scope.config.environment.databaseConnection
-                    ) {
-                        $scope.showThemeLoading = false;
+                    $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+                    if (response.data.data.needRestart) {
                         $scope.showLoading = true;
-                        $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
-                        $http.get("/restart");
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
-                                location.href = window.location = $scope.urlRedirect;
+                                location.href = $scope.urlRedirect;
+                                window.location = $scope.urlRedirect;
                             })
                         }, 10000);
-                    } else {
-                        window.location.reload(true);
                     }
-                }, function (err) {
+                    if (oldConfig.environment.adminPrefix !== $scope.config.environment.adminPrefix) {
+                        $scope.showThemeLoading = false;
+                    } else {
+                        window.location.reload();
+                    }
+                }, (err) => {
                     $scope.showThemeLoading = false;
                     toastService.toast("danger", "Une erreur est survenue !");
                     console.error(err);
