@@ -38,19 +38,19 @@ SystemControllers.controller("systemGeneralController", [
 
         $scope.getFilesLogAndError = function(variable) {
             let attribut;
-            if(variable === 'log'){
+            if (variable === 'log') {
                 attribut = 'logPath';
-            }else if(variable === 'error'){
+            } else if(variable === 'error') {
                 attribut = 'errorPath';
             }
-            if(!$scope.system.environment[attribut] || $scope.system.environment[attribut] == ''){
+            if (!$scope.system.environment[attribut] || $scope.system.environment[attribut] == '') {
                 $scope.system.environment[attribut] == ''; //if it's undefined
                 $scope.log.log = 'No file "'+ variable +'"';
-            }else{
+            } else {
                 System.getFilesLogAndErrorRoute({name: $scope.system.environment[attribut]}, function (response) {
                     //here change color of text
                     $scope.log[variable] = response.fileData;
-                }, function(erreur){
+                }, function(err) {
                     $scope.log[variable] = '';
                 });
             }
