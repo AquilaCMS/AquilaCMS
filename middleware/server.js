@@ -14,21 +14,13 @@ const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
 const {v1: uuidv1}                    = require('uuid');
-const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
+const {retrieveUser}                  = require('./authentication');
 
 const getUserFromRequest = async (req) => {
     const user = null;
-    if (req.info) {
-        return req.info;
-    } if (req.headers && req.headers.authorization) {
-        try {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo) return userInfo.info;
-        } catch (error) {
-            console.error(error);
-        }
-    } else if (req.query.u_id) {
+    if (req.info) return req.info;
+    if (req.query.u_id) {
         return require('../services/users').getUser({filter: {_id: req.query.u_id}});
     }
     return user;
@@ -124,7 +116,7 @@ const initExpress = async (server, passport) => {
         methods        : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
     }));
-    server.use('/api', serverUseRequest);
+    server.use('/api', retrieveUser, serverUseRequest);
     server.get('*', require('../routes/index').manageExceptionsRoutes);
 
     // set a cookie

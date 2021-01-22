@@ -11,25 +11,33 @@ const NSErrors          = require('../utils/errors/NSErrors');
 const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
 
+const retrieveUser = async (req, res, next) => {
+    if (req.headers.authorization) {
+        const decoded = getDecodedToken(req.headers.authorization);
+        if (decoded) {
+            if (decoded.type === 'USER') {
+                try {
+                    const user = await authenticate(req, res);
+                    req.info   = user.info;
+                } catch (err) {
+                    return next(err);
+                }
+            }
+            if (decoded.type === 'GUEST') {
+                req.info = decoded;
+            }
+        }
+    }
+    return next();
+};
+
 /**
  * Authentication
  */
 const authentication = async (req, res, next) => {
     try {
-        if (!req.headers.authorization) return next(NSErrors.MissingHeaderAuthorize);
-        const decoded = getDecodedToken(req.headers.authorization);
-        if (!decoded) return next(NSErrors.Unauthorized);
-
-        if (decoded.type === 'USER') {
-            const user = await authenticate(req, res);
-            req.info   = user.info;
-            return next();
-        }
-        if (decoded.type === 'GUEST') {
-            req.info = decoded;
-            return next();
-        }
-        throw NSErrors.Unauthorized;
+        if (!req.info) throw NSErrors.Unauthorized;
+        next();
     } catch (err) {
         res.clearCookie('jwt');
         return next(err);
@@ -51,7 +59,8 @@ const adminAuth = async (req, res, next) => {
 
 const generateJWTToken = (res, user, isAdmin) => {
     // Ne pas mettre trop de propriétés dans le token pour ne pas dépasser les limites du header
-    let token = jwt.sign({type   : 'USER',
+    let token = jwt.sign({
+        type   : 'USER',
         userId : user._id,
         info   : {
             _id             : user._id,
@@ -61,9 +70,10 @@ const generateJWTToken = (res, user, isAdmin) => {
             type            : user.type,
             taxDisplay      : user.taxDisplay,
             isActiveAccount : user.isActiveAccount
-        }}, global.envFile.jwt.secret, {
-        expiresIn : 172800 // 48 hours in second
-    });
+        }
+    },
+    global.envFile.jwt.secret,
+    {expiresIn: 172800 /* 48 hours in second */});
     token     = `JWT ${token}`;
 
     if (!isAdmin) {
@@ -76,6 +86,7 @@ const generateJWTToken = (res, user, isAdmin) => {
 };
 
 module.exports = {
+    retrieveUser,
     authentication,
     adminAuth,
     generateJWTToken

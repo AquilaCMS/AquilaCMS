@@ -9,7 +9,6 @@
 const utilsDatabase               = require('../utils/database');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const ServiceCart                 = require('../services/cart');
-const {getDecodedToken}           = require('../services/auth');
 const {authentication, adminAuth} = require('../middleware/authentication');
 
 module.exports = function (app) {
@@ -61,14 +60,7 @@ const getCartforClient = async (req, res, next) => {
  */
 const getCartById = async (req, res, next) => {
     try {
-        let user;
-        if (req.headers.authorization) {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo) {
-                user = userInfo.info;
-            }
-        }
-        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, user, req.body.lang, req);
+        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req);
         if (result) {
             await utilsDatabase.populateItems(result.items);
             return res.json(result);
