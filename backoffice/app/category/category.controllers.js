@@ -533,7 +533,8 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             //     }
             // }
             if(typeof isQuit !== "undefined" && isQuit){
-                $scope.editCat = true;
+                $scope.editCat = false;
+                $scope.$apply();
                 //don't work
             }
         };
