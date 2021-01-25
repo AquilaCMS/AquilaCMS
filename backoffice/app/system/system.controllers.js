@@ -45,7 +45,7 @@ SystemControllers.controller("systemGeneralController", [
             }
             if (!$scope.system.environment[attribut] || $scope.system.environment[attribut] == '') {
                 $scope.system.environment[attribut] == ''; //if it's undefined
-                $scope.log.log = 'No file "'+ variable +'"';
+                $scope.log[variable] = 'No file "'+ variable +'"';
             } else {
                 System.getFilesLogAndErrorRoute({name: $scope.system.environment[attribut]}, function (response) {
                     //here change color of text
