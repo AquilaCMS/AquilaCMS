@@ -178,7 +178,8 @@ const createUserAdmin = async (userDatas) => {
             firstname : userDatas.firstname,
             lastname  : userDatas.lastname,
             email     : userDatas.email,
-            isAdmin   : true
+            isAdmin   : true,
+            isActive  : true
         });
     } catch (err) {
         if (err._errors && err._errors.message === 'FORMAT_PASSWORD') {
