@@ -33,7 +33,6 @@ const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: 
             'environment.mailPort',
             'environment.mailUser',
             'environment.overrideSendTo',
-            'environment.port',
             'licence'
         ];
     }

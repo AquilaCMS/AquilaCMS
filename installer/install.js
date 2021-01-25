@@ -147,7 +147,6 @@ const createConfiguration = async (datas) => {
             currentTheme    : 'default_theme',
             adminPrefix     : datas.adminPrefix,
             websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
-            port            : global.port,
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',

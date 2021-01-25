@@ -40,7 +40,6 @@ const ConfigurationSchema = new Schema({
         maintenance       : {type: Boolean, default: false},
         overrideSendTo    : {type: String},
         photoPath         : {type: String},
-        port              : {type: Number, required: true},
         sendMetrics       : {
             active   : {type: Boolean, default: true},
             lastSent : {type: Date}

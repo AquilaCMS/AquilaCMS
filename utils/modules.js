@@ -34,8 +34,8 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
     try {
         modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
         await fs.ensureDir(modules_folder);
-        const isFileExists = await fs.access(`${modules_folder}/list_modules.js`);
-        if (!isFileExists) {
+        const isFileExists = !(await fs.access(`${modules_folder}/list_modules.js`));
+        if (isFileExists) {
             await fs.writeFile(`${modules_folder}/list_modules.js`, 'export default [];');
         }
     } catch (err) {
@@ -182,7 +182,7 @@ const modulesLoadInit = async (server) => {
     }
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
-        if (await fs.access(initModuleFile)) {
+        if (fs.existsSync(initModuleFile)) {
             process.stdout.write(`- ${loadedModules[i].name}`);
             try {
                 const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
@@ -218,7 +218,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                 // Récupère les fichiers initAfter.js des modules
                 await new Promise(async (resolve, reject) => {
                     try {
-                        if (await fs.access(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
+                        if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
                             process.stdout.write(`- ${mod.name}`);
                             if (!mod.valid) {
                                 const isValid = await utils.checkModuleRegistryKey(mod.name);
