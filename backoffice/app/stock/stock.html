@@ -30,7 +30,7 @@
                 <div class="col-sm-11">
                     <label class="col-sm-5 control-label" translate>stock.additionnalFeesTax</label>
                     <div class="col-sm-6">
-                        <select class="form-control" ng-options="tax.rate as tax.rate for tax in config.taxerate" ng-model="stock.additionnalFees.tax"></select>
+                        <select class="form-control" ng-options="oneTaxRate.rate as oneTaxRate.rate for oneTaxRate in taxerate" ng-model="stock.additionnalFees.tax"></select>
                     </div>
                 </div>
             </div>
