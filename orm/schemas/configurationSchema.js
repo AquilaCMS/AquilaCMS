@@ -7,8 +7,7 @@
  */
 
 const mongoose = require('mongoose');
-
-const Schema = mongoose.Schema;
+const Schema   = mongoose.Schema;
 
 const ConfigurationSchema = new Schema({
     name    : String,
@@ -39,7 +38,6 @@ const ConfigurationSchema = new Schema({
         maintenance       : {type: Boolean, default: false},
         overrideSendTo    : {type: String},
         photoPath         : {type: String},
-        port              : {type: Number, required: true},
         sendMetrics       : {
             active   : {type: Boolean, default: true},
             lastSent : {type: Date}

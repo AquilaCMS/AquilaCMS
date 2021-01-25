@@ -145,8 +145,8 @@ const getConfigTheme = async (req, res, next) => {
  */
 async function getRobot(req, res) {
     try {
-        if (await fs.access('robots.txt')) {
-            const file = await fs.readFileSync('robots.txt');
+        if (!(await fs.access('robots.txt'))) {
+            const file = await fs.readFile('robots.txt', {encoding: 'utf-8'});
             return res.json({robot: file.toString()});
         }
     } catch (error) {

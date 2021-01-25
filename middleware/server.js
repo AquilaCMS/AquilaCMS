@@ -94,13 +94,7 @@ const serverUseRequest = async (req, res, next) => {
  * @param {passport.PassportStatic} passport passport
  */
 const initExpress = async (server, passport) => {
-    let port = 3010;
-    if (global.envConfig) {
-        port = global.envConfig.environment.port;
-    } else if (process.env.PORT) {
-        port = process.env.PORT;
-    }
-    server.set('port', port);
+    server.set('port', global.port);
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
