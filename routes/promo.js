@@ -23,7 +23,7 @@ module.exports = function (app) {
 
 async function checkCodePromoByCode(req, res, next) {
     try {
-        const user   = getUserFromRequest(req);
+        const user   = await getUserFromRequest(req);
         const result = await ServicePromo.checkForApplyPromo(user, req.params.cartId, req.params.lang, req.params.code);
         return res.json(result);
     } catch (error) {

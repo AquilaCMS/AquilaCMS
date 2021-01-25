@@ -261,7 +261,7 @@ async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await fs.access(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+        if (!(await fs.access(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`))) {
             const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }

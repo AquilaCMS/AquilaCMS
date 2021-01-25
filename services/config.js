@@ -65,7 +65,6 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
                 'environment.mailPort',
                 'environment.mailUser',
                 'environment.overrideSendTo',
-                'environment.port',
                 'licence'
             ];
         }

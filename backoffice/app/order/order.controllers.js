@@ -128,23 +128,20 @@ OrderControllers.controller("OrderDetailCtrl", [
                 var section = item.selections[i];
                 for (var j = 0; j < section.products.length; j++) {
                     var productSection = section.products[j];
+                    const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
                     displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
-                        (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'] &&
-                        item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
+                        (bundleSection &&
+                        bundleSection.products.find((product) => product.id === productSection.id) &&
+                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price &&
+                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] &&
+                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
                         // HT
-                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ?
-                            '(ET: +' :
-                            '(') +
-                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
+                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ? '(ET: +' : '(') +
+                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
                             // prix TTC
-                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ?
-                            '+' :
-                            '') +
-                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)' : 
-                        ''
+                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ? '+' : '') +
+                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)'
+                        : ''
                     }`}</li>`
                 }
             }

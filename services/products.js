@@ -64,7 +64,6 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    let result = await queryBuilder.find(PostBody);
     if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -77,9 +76,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         delete PostBody.filter.$text;
-
-        result = await queryBuilder.find(PostBody);
     }
+    let result                 = await queryBuilder.find(PostBody);
     queryBuilder.defaultFields = defaultFields;
 
     // On supprime les reviews qui ne sont pas visible et verify
@@ -1065,13 +1063,10 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
-    let result = {};
+    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters || req.body.withFilters) {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
-
-        // result.productsList = await Products.find(req.body.PostBody.filter);
 
         const attrs = await Attributes.find({usedInFilters: true});
         if (!result.filters) {
@@ -1086,8 +1081,6 @@ const getProductsListing = async (req, res) => {
         }));
 
         await servicesCategory.generateFilters(result, req.body.lang);
-    } else {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang);
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;

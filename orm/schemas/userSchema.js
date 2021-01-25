@@ -141,6 +141,8 @@ const UserSchema = new Schema({
     ]
 }, {timestamps: true});
 
+UserSchema.index({email: 1});
+
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});
 UserSchema.virtual('fullname').get(function () {

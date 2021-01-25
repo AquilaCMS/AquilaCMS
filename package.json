@@ -20,8 +20,8 @@
     "reload": "pm2 reload ecosystem.config.js --update-env && pm2 restart server && pm2 log server",
     "build:win": "next build .\\themes\\%npm_config_theme%",
     "build:linux": "next build ./themes/${npm_config_theme}",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "eslint --ext *.js,*.json,*.jsx .",
+    "lint:fix": "eslint --fix --ext *.js,*.json,*.jsx .",
     "test": "exit 0"
   },
   "dependencies": {
@@ -38,6 +38,7 @@
     "express-ejs-extend": "0.0.1",
     "faker": "4.1.0",
     "glob": "7.1.6",
+    "helmet": "4.4.1",
     "html-pdf": "2.2.0",
     "i18next": "11.3.3",
     "i18next-fs-backend": "1.0.6",

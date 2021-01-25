@@ -67,7 +67,7 @@ const genSitemap = async () => {
                         const url   = {
                             loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '') + (page === 'home' ? '' : _static.slug),
                             lastmod    : moment().format('YYYY-MM-DD'),
-                            changeFreq : sitemapConf[page].frequency,
+                            changefreq : sitemapConf[page].frequency,
                             priority   : sitemapConf[page].priority
                         };
                         if (languages.length > 1) {
@@ -95,7 +95,7 @@ const genSitemap = async () => {
                         const url   = {
                             loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : 'c/') + _category.slug,
                             lastmod    : moment().format('YYYY-MM-DD'),
-                            changeFreq : sitemapConf.category.frequency,
+                            changefreq : sitemapConf.category.frequency,
                             priority   : sitemapConf.category.priority
                         };
                         if (languages.length > 1) {
@@ -124,7 +124,7 @@ const genSitemap = async () => {
                         const url          = {
                             loc        : appUrl + (lang && lang.defaultLanguage === false ? '' : '') + _product.canonical,
                             lastmod    : moment().format('YYYY-MM-DD'),
-                            changeFreq : sitemapConf.product.frequency,
+                            changefreq : sitemapConf.product.frequency,
                             priority   : sitemapConf.product.priority
                         };
                         if (languages.length > 1) {
@@ -153,7 +153,7 @@ const genSitemap = async () => {
                         const url   = {
                             loc        : `${appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '')}blog/${_article.slug}`,
                             lastmod    : moment().format('YYYY-MM-DD'),
-                            changeFreq : sitemapConf.blog.frequency,
+                            changefreq : sitemapConf.blog.frequency,
                             priority   : sitemapConf.blog.priority
                         };
                         if (languages.length > 1) {

@@ -82,8 +82,6 @@ ConfigControllers.controller("ImportConfigCtrl", [
     }
 ]);
 
-
-
 ConfigControllers.controller("EnvironmentConfigCtrl", [
     "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload",
     function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload) {

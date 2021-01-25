@@ -13,7 +13,6 @@ const serviceThemeConfig          = require('../services/themeConfig');
 const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const serverUtils                 = require('../utils/server');
-const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  authentication, adminAuth, listTheme);
@@ -141,7 +140,10 @@ async function packageInstall(req, res, next) {
         if (!themPath || themPath === '' || themPath === './themes/') {
             themPath = `./themes/${themesServices.getThemePath()}`;
         }
-        await packageManager.execCmd(`yarn install${serverUtils.isProd() ? ' --prod' : ''}`, path.resolve(`./themes/${themPath}`));
+        await packageManager.execCmd(
+            `yarn install${serverUtils.isProd() ? ' --prod' : ''}`,
+            path.resolve(`./themes/${themPath}`)
+        );
         return res.json();
     } catch (error) {
         return next(error);
@@ -168,26 +170,17 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        let userInfo;
-        if (req.headers && req.headers.authorization) {
-            try {
-                userInfo = getDecodedToken(req.headers.authorization);
-                if (userInfo) userInfo = userInfo.info;
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        const themeConf          = await serviceThemeConfig.getThemeConfig({filter: {}, structure: {}, limit: 99});
-        const config             = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix': 1}}, userInfo);
-        const configEnvironement = {};
+        const themeConf         = await serviceThemeConfig.getThemeConfig({filter: {}, structure: {}, limit: 99});
+        const config            = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix': 1}}, req.info);
+        const configEnvironment = {};
         if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
-            configEnvironement.adminPrefix  = config.environment.adminPrefix;
-            configEnvironement.appUrl       = config.environment.appUrl;
-            configEnvironement.currentTheme = config.environment.currentTheme;
+            configEnvironment.adminPrefix  = config.environment.adminPrefix;
+            configEnvironment.appUrl       = config.environment.appUrl;
+            configEnvironment.currentTheme = config.environment.currentTheme;
         }
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, configEnvironement, listTheme, listFiles});
+        res.send({themeConf, configEnvironment, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }

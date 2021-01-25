@@ -87,8 +87,8 @@ const uploadTheme = async (originalname, filepath) => {
         const themeName = originalname.split('.')
             .slice(0, -1)
             .join('.');
-        if (await fs.access(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
-            if (await fs.access(target_path_full)) {
+        if (!(await fs.access(`${target_path_full.replace('.zip', '/')}next.config.js`))) {
+            if (!(await fs.access(target_path_full))) {
                 await fs.unlink(target_path_full);
             }
             console.log('New theme is ready to be selected (need to build)');
@@ -161,7 +161,7 @@ const deleteTheme = async (themePath) => {
     await removeConfigTheme(themePath);
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
-    if (await fs.access(path.join(global.appRoot, complete_Path))) {
+    if (!(await fs.access(path.join(global.appRoot, complete_Path)))) {
         await fs.deleteRecursiveSync(path.join(global.appRoot, complete_Path));
     }
     console.log('Theme removed !');
