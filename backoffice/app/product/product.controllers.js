@@ -337,8 +337,9 @@ ProductControllers.controller("nsProductGeneral", [
                 controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
                     $scope.product = product;
                     $scope.adminUrl = "";
-                    $scope.config = ConfigV2.environment(function () {
-                            $scope.adminUrl = $scope.config.adminPrefix;
+                    ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+                        $scope.config = config
+                        $scope.adminUrl = $scope.config.environment.adminPrefix;
                     });
 
                     CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {

@@ -170,17 +170,22 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        const themeConf         = await serviceThemeConfig.getThemeConfig({filter: {}, structure: {}, limit: 99});
-        const config            = await ServiceConfig.getConfigV2(req.params.key, {structure: {'environment.adminPrefix': 1}}, req.info);
-        const configEnvironment = {};
-        if (config.environment.adminPrefix && config.environment.appUrl && config.environment.currentTheme) {
-            configEnvironment.adminPrefix  = config.environment.adminPrefix;
-            configEnvironment.appUrl       = config.environment.appUrl;
-            configEnvironment.currentTheme = config.environment.currentTheme;
-        }
+        const themeConf = await serviceThemeConfig.getThemeConfig({
+            filter    : {},
+            structure : {},
+            limit     : 99
+        });
+        const config    = (await ServiceConfig.getConfig({
+            structure : {
+                _id                        : 0,
+                'environment.adminPrefix'  : 1,
+                'environment.appUrl'       : 1,
+                'environment.currentTheme' : 1
+            }
+        }, req.info)).toObject();
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, configEnvironment, listTheme, listFiles});
+        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }

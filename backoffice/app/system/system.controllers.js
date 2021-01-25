@@ -10,15 +10,16 @@ SystemControllers.controller("systemGeneralController", [
             error: ""
         };
 
-        $scope.system = ConfigV2.environment(function () {
-            $scope.system.logPath = $scope.system.logPath || '';
-            $scope.system.errorPath = $scope.system.errorPath || '';
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.system = config;
+            $scope.system.environment.logPath = $scope.system.environment.logPath || '';
+            $scope.system.environment.errorPath = $scope.system.environment.errorPath || '';
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
             $scope.ssl = {
-                cert    : $scope.system.ssl.cert    || '',
-                key     : $scope.system.ssl.key     || '',
-                active  : $scope.system.ssl.active  || false
+                cert    : $scope.system.environment.ssl.cert    || '',
+                key     : $scope.system.environment.ssl.key     || '',
+                active  : $scope.system.environment.ssl.active  || false
             }
             delete $scope.system.$promise;
         });
@@ -37,19 +38,19 @@ SystemControllers.controller("systemGeneralController", [
 
         $scope.getFilesLogAndError = function(variable) {
             let attribut;
-            if(variable === 'log'){
+            if (variable === 'log') {
                 attribut = 'logPath';
-            }else if(variable === 'error'){
+            } else if(variable === 'error') {
                 attribut = 'errorPath';
             }
-            if(!$scope.system[attribut] || $scope.system[attribut] == ''){
-                $scope.system[attribut] == ''; //if it's undefined
-                $scope.log.log = 'No file "'+ variable +'"';
-            }else{
-                System.getFilesLogAndErrorRoute({name: $scope.system[attribut]}, function (response) {
+            if (!$scope.system.environment[attribut] || $scope.system.environment[attribut] == '') {
+                $scope.system.environment[attribut] == ''; //if it's undefined
+                $scope.log[variable] = 'No file "'+ variable +'"';
+            } else {
+                System.getFilesLogAndErrorRoute({name: $scope.system.environment[attribut]}, function (response) {
                     //here change color of text
                     $scope.log[variable] = response.fileData;
-                }, function(erreur){
+                }, function(err) {
                     $scope.log[variable] = '';
                 });
             }
@@ -63,14 +64,14 @@ SystemControllers.controller("systemGeneralController", [
                     toastService.toast("success", "restart in progress...");
                     $scope.showThemeLoading = false;
                     $scope.showLoading = true;
-                    $scope.urlRedirect = buildAdminUrl($scope.system.appUrl, $scope.system.adminPrefix);
+                    $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                     $http.get("/restart");
                     $interval(() => {
                         $http.get("/serverIsUp").then(() => {
                             location.href = window.location = $scope.urlRedirect;
                         })
                     }, 10000);
-                }, function(error){
+                }, function(error) {
                     $scope.showThemeLoading = false;
                     console.error(error);
                     toastService.toast("danger", error.message);
@@ -81,7 +82,7 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         // Permet de télécharger l'ensemble des documents du serveur au format zip
-        
+
         $scope.downloadDocuments = function () {
             toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
             $scope.disabledButton = true;
@@ -119,7 +120,7 @@ SystemControllers.controller("systemGeneralController", [
                 console.error(data);
             });
         };
-        
+
         const downloadBlob = function (data, status, headers, type, nFile) {
             headers = headers();
 
@@ -166,54 +167,50 @@ SystemControllers.controller("systemGeneralController", [
 
 
         $scope.validate = function () {
-            if (!$scope.system.adminPrefix) {
-                $scope.system.adminPrefix = "admin";
+            if (!$scope.system.environment.adminPrefix) {
+                $scope.system.environment.adminPrefix = "admin";
             }
-            if ($scope.system.appUrl && !$scope.system.appUrl.endsWith('/')) {
-                $scope.system.appUrl += "/";
+            if ($scope.system.environment.appUrl && !$scope.system.environment.appUrl.endsWith('/')) {
+                $scope.system.environment.appUrl += "/";
             }
             let file = {};
-            if($scope.system.ssl.active){
-                if ($scope.system.ssl.cert instanceof File || $scope.system.ssl.cert instanceof File) {
-                    if ($scope.system.ssl.cert instanceof File) {
-                        file.cert = $scope.system.ssl.cert;
-                        $scope.system.ssl.cert = $scope.system.ssl.cert.name;
+            if ($scope.system.environment.ssl.active) {
+                if ($scope.system.environment.ssl.cert instanceof File || $scope.system.environment.ssl.cert instanceof File) {
+                    if ($scope.system.environment.ssl.cert instanceof File) {
+                        file.cert = $scope.system.environment.ssl.cert;
+                        $scope.system.environment.ssl.cert = $scope.system.environment.ssl.cert.name;
                     }
-                    if ($scope.system.ssl.key instanceof File) {
-                        file.key = $scope.system.ssl.key;
-                        $scope.system.ssl.key = $scope.system.ssl.key.name;
+                    if ($scope.system.environment.ssl.key instanceof File) {
+                        file.key = $scope.system.environment.ssl.key;
+                        $scope.system.environment.ssl.key = $scope.system.environment.ssl.key.name;
                     }
                 }
             }
-            ConfigV2.environment(function (oldAdmin) {
-                $scope.system.cacheTTL = $scope.system.cacheTTL || "";
+            ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
+                $scope.system.environment.cacheTTL = $scope.system.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 Upload.upload({
                     url: 'v2/config',
                     method: 'PUT',
                     data: {
                         ...file,
-                        environment: $scope.system
+                        ...$scope.system
                     }
                 }).then((response) => {
-                    if (
-                        oldAdmin.adminPrefix !== $scope.system.adminPrefix
-                        || oldAdmin.appUrl !== $scope.system.appUrl
-                        || oldAdmin.photoPath !== $scope.system.photoPath
-                        //|| oldAdmin.cacheTTL !== $scope.system.cacheTTL
-                        || oldAdmin.databaseConnection !== $scope.system.databaseConnection
-                    ) {
-                        $scope.showThemeLoading = false;
+                    if (response.data.data.needRestart) {
                         $scope.showLoading = true;
-                        $scope.urlRedirect = buildAdminUrl($scope.system.appUrl, $scope.system.adminPrefix);
-                        $http.get("/restart");
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
-                                location.href = window.location = $scope.urlRedirect;
+                                location.href = $scope.urlRedirect;
+                                window.location = $scope.urlRedirect;
                             })
                         }, 10000);
+                    }
+                    if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
+                        $scope.showThemeLoading = false;
+                        $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                     } else {
-                        window.location.reload(true);
+                        window.location.reload();
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;
@@ -224,6 +221,3 @@ SystemControllers.controller("systemGeneralController", [
         };
     }
 ]);
-
-
-

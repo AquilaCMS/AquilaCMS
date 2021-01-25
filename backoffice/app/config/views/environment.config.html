@@ -17,18 +17,18 @@
                     <br/>
                     <div class="form-group">
                         <label translate>config.environment.siteName</label> <br />
-                        <input type="text" class="form-control" ng-model="config.siteName">
+                        <input type="text" class="form-control" ng-model="config.environment.siteName">
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.billsPattern</label> <br />
-                        <input type="text" class="form-control" ng-model="config.billsPattern">
+                        <input type="text" class="form-control" ng-model="config.environment.billsPattern">
                         <span translate="">config.environment.billsVariables</span>
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.websiteCountry</label> <br />
                         <select name="countries" id="countries" class="form-control"
                             ng-options="country.code as country.translation[adminLang].name for country in countries"
-                            ng-model="config.websiteCountry" >
+                            ng-model="config.environment.websiteCountry" >
                             <option value="" translate>config.environment.selectCountry</option>
                         </select>
                     </div>
@@ -36,13 +36,13 @@
                         <label translate>config.environment.websiteTimezone</label> <br />
                         <select name="timezones" id="timezones" class="form-control"
                                 ng-options="tz as tz for tz in timezones"
-                                ng-model="config.websiteTimezone" >
+                                ng-model="config.environment.websiteTimezone" >
                             <option value="" translate>config.environment.selectTimezone</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.demoMode</label> <br />
-                        <ns-switch ng-model="config.demoMode" yes-value="true" no-value="false" name="demoMode"></ns-switch>
+                        <ns-switch ng-model="config.environment.demoMode" yes-value="true" no-value="false" name="demoMode"></ns-switch>
                     </div>
                 </div>
 
@@ -51,22 +51,22 @@
                     <br/>
                     <div class="form-group">
                         <label translate>config.environment.baseURL</label>
-                        <input type="url" class="form-control" ng-model="config.appUrl">
+                        <input type="url" class="form-control" ng-model="config.environment.appUrl">
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.prefixeURL</label>
-                        <input type="text" class="form-control" ng-model="config.adminPrefix" popover-ns type="button"
+                        <input type="text" class="form-control" ng-model="config.environment.adminPrefix" popover-ns type="button"
                             class="btn btn-default" data-toggle="popover" data-placement="top" data-html="true"
                             title="config.environment.t2" data-content="Modifier ce champ redémarrera l'application, l'ancienne URL ne sera plus accessible !">
                     </div>
                     <hr/>
                     <div class="form-group">
                         <label translate>config.environment.picsPath</label>
-                        <input type="text" class="form-control" ng-model="config.photoPath">
+                        <input type="text" class="form-control" ng-model="config.environment.photoPath">
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.billsPath</label>
-                        <input type="text" class="form-control" ng-model="config.invoicePath">
+                        <input type="text" class="form-control" ng-model="config.environment.invoicePath">
                     </div>
                 </div>
 
@@ -76,37 +76,37 @@
 
                     <div class="form-group">
                         <label translate>config.environment.host</label>
-                        <input type="text" class="form-control" ng-model="config.mailHost" ng-disabled="config.mailIsSendmail" />
+                        <input type="text" class="form-control" ng-model="config.environment.mailHost" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.port</label>
-                        <input type="number" class="form-control" ng-model="config.mailPort" ng-disabled="config.mailIsSendmail" />
+                        <input type="number" class="form-control" ng-model="config.environment.mailPort" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.user <span ng-show="messageMail" style="color: #d2322d;"
                                 ng-bind-html="messageMail"></span></label>
-                        <input type="text" class="form-control" ng-model="config.mailUser" ng-disabled="config.mailIsSendmail" />
+                        <input type="text" class="form-control" ng-model="config.environment.mailUser" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.mdp</label>
-                        <input type="password" class="form-control" ng-model="config.mailPass" ng-disabled="config.mailIsSendmail" />
+                        <input type="password" class="form-control" ng-model="config.environment.mailPass" ng-disabled="config.environment.mailIsSendmail" />
                     </div>
                     <div class="form-group">
                         <label>Secure (old: {secure: Number(mailPort) !== 587})</label>
                         <div>
-                            <ns-switch ng-model="config.mailSecure" yes-value="Oui" no-value="Non" name="mailSecure"></ns-switch>
+                            <ns-switch ng-model="config.environment.mailSecure" yes-value="Oui" no-value="Non" name="mailSecure"></ns-switch>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Type</label>
                         <div>
-                            <ns-switch ng-model="config.mailIsSendmail" yes-value="Sendmail" no-value="SMTP" name="mailIsSendmail"></ns-switch>
+                            <ns-switch ng-model="config.environment.mailIsSendmail" yes-value="Sendmail" no-value="SMTP" name="mailIsSendmail"></ns-switch>
                         </div>
                     </div>
                     <hr />
                     <div class="form-group">
                         <label translate>config.environment.overrideSendTo</label>
-                        <input type="text" class="form-control" ng-model="config.overrideSendTo" />
+                        <input type="text" class="form-control" ng-model="config.environment.overrideSendTo" />
                     </div>
                     <hr />
                     <label translate>config.environment.sendMailTest</label>
@@ -129,13 +129,13 @@
                     <br />
                     <div class="form-group">
                         <label translate>config.environment.ttlCache</label>
-                        <input type="text" class="form-control" ng-model="config.cacheTTL" class="btn btn-default">
+                        <input type="text" class="form-control" ng-model="config.environment.cacheTTL" class="btn btn-default">
                     </div>
 
-                    <h3 translate>config.environment.datasAnonyme</h3> 
+                    <h3 translate>config.environment.datasAnonyme</h3>
                     <br />
                     <div class="form-group">
-                        <ns-switch ng-model="config.sendMetrics.active" yes-value="Oui" no-value="Non" name="sendMetrics"></ns-switch>
+                        <ns-switch ng-model="config.environment.sendMetrics.active" yes-value="Oui" no-value="Non" name="sendMetrics"></ns-switch>
                     </div>
                 </div>
             </div>

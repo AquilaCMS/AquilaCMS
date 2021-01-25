@@ -10,14 +10,15 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceSystem               = require('../services/system');
 
 module.exports = function (app) {
-    app.get('/v2/system/log/file', authentication, adminAuth, getLogsContent);
-    app.get('/v2/system/next/get', authentication, adminAuth, getNextVersion);
-    app.post('/v2/system/next/change', authentication, adminAuth, changeNextVersion);
+    app
+        .post('/v2/system/log/file', authentication, adminAuth, getLogsContent)
+        .get('/v2/system/next/get', authentication, adminAuth, getNextVersion)
+        .post('/v2/system/next/change', authentication, adminAuth, changeNextVersion);
 };
 
 const getLogsContent = async (req, res, next) => {
     try {
-        const {name:fileName} = req.query;
+        const fileName = req.body.name;
         return res.json(await ServiceSystem.getLogsContent(fileName));
     } catch (err) {
         return next(err);
@@ -30,7 +31,7 @@ const getLogsContent = async (req, res, next) => {
  */
 const getNextVersion = async (req, res, next) => {
     try {
-        const datas = await ServiceSystem.getNextVersionService();
+        const datas = await ServiceSystem.getNextVersion();
         return res.json({datas});
     } catch (err) {
         return next(err);
@@ -43,7 +44,7 @@ const getNextVersion = async (req, res, next) => {
  */
 const changeNextVersion = async (req, res, next) => {
     try {
-        await ServiceSystem.changeNextVersionService(req.body);
+        await ServiceSystem.changeNextVersion(req.body);
         res.end();
     } catch (err) {
         return next(err);

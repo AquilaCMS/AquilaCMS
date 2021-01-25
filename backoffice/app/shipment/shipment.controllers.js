@@ -10,7 +10,7 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
                 reverse: true
             };
         }
-        
+
         $scope.defaultLang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
@@ -87,9 +87,9 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
             $scope.tabActive = tabActive
         };
 
-        $scope.taxerate = [];
-        ConfigV2.taxerate( function (cfg) {
-            $scope.taxerate = cfg;
+        $scope.config = [];
+        ConfigV2.get({PostBody: {structure: {taxerate: 1}}}, function (cfg) {
+            $scope.config = cfg;
         });
 
         $scope.isEditMode      = false;
@@ -98,7 +98,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         $scope.countries = [];
         TerritoryCountries.query({PostBody: { filter: { type: 'country'}, limit: 999}}, function (countries) {
             $scope.countries = countries;
-            $scope.countries.datas.forEach(function (country, i){
+            $scope.countries.datas.forEach(function (country, i) {
                 $scope.languages.forEach(lang => {
                     if(country.translation[lang.code] === undefined){
                         $scope.countries.datas[i].translation[lang.code] = {};

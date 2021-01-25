@@ -1,5 +1,5 @@
 <ns-box data-title="system.environment.t1" title-icon="fa fa-cogs fa-lg">
-    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" ng-show="!showLoading" role="form">
+    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
@@ -14,19 +14,19 @@
                     <h3 translate>system.environment.security.ssl.ssl</h3>
                     <div class="form-group">
                         <label translate>system.environment.security.ssl.active</label> <br />
-                        <ns-switch ng-model="system.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
+                        <ns-switch ng-model="system.environment.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
                     </div>
                     <div class="form-group">
                         <label for="cert">
                             <span class="btn btn-default" translate>system.environment.security.ssl.cert</span>
-                            <input type="file" name="cert" id="cert" style="display:none" ng-model="system.security.ssl.cert" input-file-ssl>
+                            <input type="file" name="cert" id="cert" style="display:none" ng-model="system.environment.security.ssl.cert" input-file-ssl>
                         </label>
                         <span>{{ssl.cert}}</span>
                     </div>
                     <div class="form-group">
                         <label for="key">
                             <span class="btn btn-default" translate>system.environment.security.ssl.key</span>
-                            <input type="file" name="key" id="key" style="display:none" ng-model="system.ssl.key" input-file-ssl>
+                            <input type="file" name="key" id="key" style="display:none" ng-model="system.environment.ssl.key" input-file-ssl>
                         </label>
                         <span>{{ssl.key}}</span>
                     </div>
@@ -42,7 +42,7 @@
                             animation: spin 2s linear infinite;
                             margin: auto;
                         }
-                    
+
                         @keyframes spin {
                             0% { transform: rotate(0deg); }
                             100% { transform: rotate(360deg); }
@@ -64,7 +64,7 @@
                     <br />
                     <div class="form-group">
                         <label translate>system.environment.other.connectionString</label>
-                        <input type="text" class="form-control" ng-model="system.databaseConnection" class="btn btn-default">
+                        <input type="text" class="form-control" ng-model="system.environment.databaseConnection" class="btn btn-default">
                     </div>
                     <div class="form-group">
                         <a download class="btn btn-success" ng-click="dumpDatabase()" ng-disabled="disabledButton" translate>
@@ -91,7 +91,7 @@
                     <br />
                     <div class="form-group">
                         <label translate>system.environment.log.logFileTitle</label><br/>
-                        <input type="text" class="form-control" ng-model="system.logPath" value="{{system.logPath}}">
+                        <input type="text" class="form-control" ng-model="system.environment.logPath" value="{{system.environment.logPath}}">
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.logTitle</label>
@@ -99,7 +99,7 @@
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.errorFileTitle</label>
-                        <input type="text" class="form-control" ng-model="system.errorPath" value="{{system.errorPath}}">
+                        <input type="text" class="form-control" ng-model="system.environment.errorPath" value="{{system.environment.errorPath}}">
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.errorTitle</label><br/>
