@@ -458,7 +458,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             });
         }
 
-        $scope.save = function ()
+        $scope.save = function (isQuit)
         {
             var deferred = $q.defer();
             var promises = [];
@@ -532,6 +532,11 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             //         });
             //     }
             // }
+            if(typeof isQuit !== "undefined" && isQuit){
+                $scope.editCat = false;
+                $scope.$apply();
+                //don't work
+            }
         };
 
         $scope.removeMenu = function ()
@@ -782,9 +787,21 @@ CategoryControllers.controller("CategoryListCtrl", [
                 }
             });
 
-            modalInstance.result.then(function ()
-            {
-                getMenus();
+            modalInstance.result.then(function (returnedValue) {
+                let longeur1 = $scope.categories.length;
+                for(let count1 = 0; count1 < longeur1; count1++){
+                    if($scope.categories[count1].children){
+                        let longeur2 = $scope.categories[count1].children.length;
+                        for(let count2 = 0; count2 < longeur2; count2++){
+                            if($scope.categories[count1].children[count2]["_id"] == nodeParent._id){
+                                $scope.categories[count1].children[count2].children.push(returnedValue);
+                            }
+                        }
+                    }
+                    if($scope.categories[count1]["_id"] == nodeParent._id){
+                        $scope.categories[count1].children.push(returnedValue);
+                    }
+                }
             });
         };
 
@@ -873,9 +890,9 @@ CategoryControllers.controller("CategoryNewCtrl", [
 
         $scope.save = function (category)
         {
-            CategoryV2.save(category, function ()
+            CategoryV2.save(category, function (rep)
             {
-                $modalInstance.close();
+                $modalInstance.close(rep);
             }, function(err) {
                 toastService.toast("danger", err.data.message);
             });
