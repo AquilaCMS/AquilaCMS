@@ -49,6 +49,12 @@ const adminAuth = async (req, res, next) => {
     next();
 };
 
+/**
+ *
+ * @param {Express.Response} res
+ * @param {any} user
+ * @param {boolean} isAdmin
+ */
 const generateJWTToken = (res, user, isAdmin) => {
     // Ne pas mettre trop de propriétés dans le token pour ne pas dépasser les limites du header
     let token = jwt.sign({type   : 'USER',
@@ -69,7 +75,12 @@ const generateJWTToken = (res, user, isAdmin) => {
     if (!isAdmin) {
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate() + 2);
-        res.cookie('jwt', token, {expires: currentDate, httpOnly: false, encode: String});
+        res.cookie('jwt', token, {
+            expires  : currentDate,
+            httpOnly : false,
+            encode   : String,
+            secure   : !!global.isServerSecure
+        });
     }
 
     return token;

@@ -38,6 +38,7 @@
     "express-ejs-extend": "0.0.1",
     "faker": "4.1.0",
     "glob": "7.1.6",
+    "helmet": "4.4.1",
     "html-pdf": "2.2.0",
     "i18next": "11.3.3",
     "i18next-fs-backend": "1.0.6",

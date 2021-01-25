@@ -187,6 +187,7 @@ const startListening = async (server) => {
                 }
             }, server).listen(global.port, (err) => {
                 if (err) throw err;
+                global.isServerSecure = true;
                 console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
             });
         } catch (error) {

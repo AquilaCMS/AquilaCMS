@@ -70,12 +70,12 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
  */
 const deleteRecursiveSync = async (filePath) => {
-    if (!(await fsp.access(filePath, fs.constants.R_OK | fs.constants.W_OK))) {
+    if (fs.existsSync(filePath)) {
         const statFile = await fsp.lstat(filePath);
         if (statFile.isFile()) {
             await fsp.unlink(filePath);
         } else if (statFile.isDirectory()) {
-            if (await fsp.access(filePath, fs.constants.R_OK)) {
+            if (fs.existsSync(filePath)) {
                 for (const file of await fsp.readdir(filePath, 'utf-8')) {
                     await deleteRecursiveSync(path.resolve(filePath, file));
                 }
