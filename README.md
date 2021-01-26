@@ -56,7 +56,7 @@ Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS web
 ## Documentations
 Find some documentation on [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/). For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (/api-docs).
 
-Also check-out some tutorials on [our dedicated page](https://www.aquila-cms.com/ressources-documentation), or on [our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ).
+Also check-out some tutorials on [our dedicated page](https://www.aquila-cms.com/resources-documentation), or on [our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ).
 
 ## License
 AquilaCMS is licensed under OSL3.

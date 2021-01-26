@@ -6,7 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
+const mongoose     = require('mongoose');
+const {encryption} = require('../../utils');
 
 const Schema = mongoose.Schema;
 
@@ -39,7 +40,6 @@ const ConfigurationSchema = new Schema({
         maintenance       : {type: Boolean, default: false},
         overrideSendTo    : {type: String},
         photoPath         : {type: String},
-        port              : {type: Number, required: true},
         sendMetrics       : {
             active   : {type: Boolean, default: true},
             lastSent : {type: Date}
@@ -101,7 +101,24 @@ const ConfigurationSchema = new Schema({
 });
 
 ConfigurationSchema.post('updateOne', async function () {
+    const update = this.getUpdate().$set;
+    if (update.environment && update.environment.mailPass) {
+        try {
+            update.environment.mailPass = encryption.cipher(update.environment.mailPass);
+        } catch (err) {
+            console.error(err);
+        }
+    }
     global.envConfig = (await this.findOne({})).toObject();
+});
+
+ConfigurationSchema.post('findOne', async function (doc) {
+    if (doc.environment && doc.environment.mailPass) {
+        try {
+            doc.environment.mailPass = encryption.decipher(doc.environment.mailPass);
+        // eslint-disable-next-line no-empty
+        } catch (err) {}
+    }
 });
 
 module.exports = ConfigurationSchema;

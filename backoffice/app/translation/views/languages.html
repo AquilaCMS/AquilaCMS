@@ -1,9 +1,4 @@
 <ns-box data-title="translation.t1" title-icon="fa fa-flag fa-lg" new-click="editLang()">
-    <div class="row">
-        <div class="col-sm-12">
-            <label translate>translation.defLang</label> {{defaultLanguage.name}}  
-        </div>      
-    </div>
     <table class="shortTable table table-bordered">
         <thead>
             <tr>
@@ -57,6 +52,7 @@
                                         'label-danger': lang.status == 'removing'}">{{lang.status | langStatus}}</span>
                 </td>
                 <td data-label="Action :" >
+                    <label ng-if="lang.defaultLanguage"translate>translation.defLang</label>
                     <a ng-click="removeLang(lang)" ng-if="!lang.defaultLanguage" class="btn btn-red btn-with-icon">
                         <i class="ico-trash"></i>
                         <span class="text" translate>translation.delete</span>

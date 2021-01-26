@@ -376,7 +376,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const copy    = path.resolve(`backoffice/app/${myModule.name}`);
         const copyF   = path.resolve(`modules/${myModule.name}/app/`);
         const copyTab = [];
-        if (await fs.access(copyF, fs.constants.W_OK)) {
+        if (!(await fs.access(copyF, fs.constants.W_OK))) {
             try {
                 await fs.copyRecursiveSync(
                     path.resolve(global.appRoot, copyF),
@@ -497,7 +497,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
 
         // Suppression des fichiers copiés
         for (let i = 0; i < _module.files.length; i++) {
-            if (await fs.access(_module.files[i])) {
+            if (!(await fs.access(_module.files[i]))) {
                 if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
                     await new Promise((resolve) => rimraf(_module.files[i], (err) => {
                         if (err) console.error(err);
@@ -616,7 +616,7 @@ const setFrontModules = async (theme) => {
         const oneModule = listModules[index];
 
         // Est ce que ce module comprend du front ?
-        if (await fs.access(`./${oneModule.path}`)) {
+        if (!(await fs.access(`./${oneModule.path}`))) {
             // Ecrire dans le fichier s'il n'est pas déjà dedans
             await setFrontModuleInTheme(oneModule.path, theme || global.envConfig.environment.currentTheme);
         }

@@ -151,11 +151,11 @@ ProductControllers.controller("ProductListCtrl", [
                 return '';
             }
         };
-        $scope.collapse = function () {
-          if(document.getElementById('collapseIcon').className === "fa fa-chevron-down fa-3x"){
-            document.getElementById('collapseIcon').className =  "fa fa-chevron-up fa-3x"
-          }else {document.getElementById('collapseIcon').className = "fa fa-chevron-down fa-3x"}
-        };
+        // $scope.collapse = function () {
+        //   if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+        //     document.getElementById('collapseIcon').className =  "ico-arrow-up"
+        //   }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
+        // };
 
         $scope.getAttributesClassed = function () {
             AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 99}}, function ({datas}) {
@@ -337,8 +337,9 @@ ProductControllers.controller("nsProductGeneral", [
                 controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
                     $scope.product = product;
                     $scope.adminUrl = "";
-                    $scope.config = ConfigV2.environment(function () {
-                            $scope.adminUrl = $scope.config.adminPrefix;
+                    ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+                        $scope.config = config
+                        $scope.adminUrl = $scope.config.environment.adminPrefix;
                     });
 
                     CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {

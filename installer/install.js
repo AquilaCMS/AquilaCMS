@@ -63,7 +63,7 @@ const postConfiguratorDatas = async (req) => {
     try {
         console.log('Installer : Record datas value');
         const datas = req.body;
-        if (!await fs.access(datas.envPath) || path.extname(datas.envPath) !== '.json') {
+        if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
             throw new Error('envPath is not correct');
         }
 
@@ -116,7 +116,7 @@ const recoverConfiguration = async (req) => {
     console.log('Installer : fetching new env path');
     let {envPath} = req.body;
 
-    if (!await fs.access(envPath)) {
+    if (fs.existsSync(envPath)) {
         throw new Error('env file doesn\'t exist or is not located in this folder');
     }
 
@@ -147,7 +147,6 @@ const createConfiguration = async (datas) => {
             currentTheme    : 'default_theme',
             adminPrefix     : datas.adminPrefix,
             websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
-            port            : global.port,
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',
@@ -179,7 +178,8 @@ const createUserAdmin = async (userDatas) => {
             firstname : userDatas.firstname,
             lastname  : userDatas.lastname,
             email     : userDatas.email,
-            isAdmin   : true
+            isAdmin   : true,
+            isActive  : true
         });
     } catch (err) {
         if (err._errors && err._errors.message === 'FORMAT_PASSWORD') {

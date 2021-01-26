@@ -70,7 +70,7 @@ const getOrCreateEnvFile = async () => {
     try {
         let envFile;
         const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
-        if (await fs.access(path.resolve(global.envPath))) {
+        if (fs.existsSync(path.resolve(global.envPath))) {
             envFile = await fs.readFile(global.envPath);
             envFile = JSON.parse(envFile);
             if (!envFile[getEnv('AQUILA_ENV')]) {
@@ -167,11 +167,12 @@ const startListening = async (server) => {
         if (!key || !cert) {
             throw new Error('SSL Error - need a cert and a key file');
         }
-        const keyPath        = path.resolve(global.appRoot, key);
-        const certPath       = path.resolve(global.appRoot, cert);
-        const keyFileExists  = await fs.access(keyPath);
-        const certFileExists = await fs.access(certPath);
-        if (!keyFileExists || !certFileExists) {
+        const keyPath  = path.resolve(global.appRoot, key);
+        const certPath = path.resolve(global.appRoot, cert);
+        try {
+            await fs.access(keyPath);
+            await fs.access(certPath);
+        } catch (err) {
             console.error('SSL is enabled but invalid');
             console.error('Access to the key file and certification file is not possible');
             throw new Error('SSL Error - Path to cert or key file are invalid');
@@ -187,6 +188,7 @@ const startListening = async (server) => {
                 }
             }, server).listen(global.port, (err) => {
                 if (err) throw err;
+                global.isServerSecure = true;
                 console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
             });
         } catch (error) {

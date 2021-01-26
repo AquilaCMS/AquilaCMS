@@ -63,7 +63,7 @@ const deleteFile = async (filePath) => {
         await utilsModules.modulesLoadFunctions('removeFile', {key: filePath}, async () => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = path.resolve(pathUpload, filePath);
-            if (pathToRemove && await fsp.access(pathToRemove)) {
+            if (pathToRemove && fsp.existsSync(pathToRemove)) {
                 try {
                     await fsp.unlink(pathToRemove);
                 } catch (err) {
@@ -81,7 +81,7 @@ const deleteFolder = async (folderPath) => {
         await utilsModules.modulesLoadFunctions('removeFolder', {folder: folderPath}, async () => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = path.resolve(pathUpload, folderPath);
-            if (await fsp.access(pathToRemove)) {
+            if (fsp.existsSync(pathToRemove)) {
                 await fsp.deleteRecursiveSync(pathToRemove);
             }
         });
@@ -116,7 +116,7 @@ const existsFile = async (key) => {
         return utilsModules.modulesLoadFunctions('existsFile', {key}, async () => {
             const pathUpload  = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.access(pathToCheck)) {
+            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
                 return true;
             }
             return false;

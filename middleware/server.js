@@ -10,6 +10,7 @@ const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagge
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
 const express                         = require('express');
+const helmet                          = require('helmet');
 const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
@@ -86,13 +87,19 @@ const serverUseRequest = async (req, res, next) => {
  * @param {passport.PassportStatic} passport passport
  */
 const initExpress = async (server, passport) => {
-    let port = 3010;
-    if (global.envConfig) {
-        port = global.envConfig.environment.port;
-    } else if (process.env.PORT) {
-        port = process.env.PORT;
-    }
-    server.set('port', port);
+    server.set('port', global.port);
+
+    server.use(helmet.contentSecurityPolicy());
+    server.use(helmet.dnsPrefetchControl({allow: true}));
+    server.use(helmet.expectCt());
+    server.use(helmet.frameguard({action: 'deny'}));
+    server.use(helmet.hidePoweredBy());
+    server.use(helmet.hsts());
+    server.use(helmet.ieNoOpen());
+    server.use(helmet.noSniff());
+    server.use(helmet.permittedCrossDomainPolicies());
+    server.use(helmet.referrerPolicy());
+    server.use(helmet.xssFilter());
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
@@ -163,7 +170,7 @@ const maintenance = async (req, res, next) => {
             && global.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
         const maintenanceFile = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'maintenance.html');
-        if (fsp.existsSync(maintenanceFile) && await fsp.access(maintenanceFile)) {
+        if (fsp.existsSync(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }
         return res.status(301).send('<h1>Maintenance</h1>');

@@ -193,7 +193,8 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
     };
 
     $scope.restart = function (nomModule, active, deleteBool) {
-        $scope.config = ConfigV2.environment(function () {
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.config = config;
             $scope.showLoading = true;
             $http.get('/restart').catch((err) => {});
             if (active && !deleteBool) {
@@ -206,11 +207,12 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
 
             $interval(() => {
                 $http.get('/serverIsUp').then(() => {
-                    if ($scope.config.appUrl.slice(-1) !== '/') {
-                        $scope.config.appUrl += '/';
+                    if ($scope.config.environment.appUrl.slice(-1) !== '/') {
+                        $scope.config.environment.appUrl += '/';
                     }
-                    window.location = $scope.config.appUrl + $scope.config.adminPrefix;
-                    location.href   = $scope.config.appUrl + $scope.config.adminPrefix;
+                    const url = $scope.config.environment.appUrl + $scope.config.environment.adminPrefix;
+                    window.location = url;
+                    location.href   = url;
                 });
             }, 10000);
         });
