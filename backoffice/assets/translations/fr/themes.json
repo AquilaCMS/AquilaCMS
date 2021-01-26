@@ -21,5 +21,9 @@
     "new": {
         "createNewTheme": "Ajouter un nouveau thème",
         "cancel": "Annuler"
-    }
+    },
+    "themeSelect":"Sélectionner ce thème",
+    "themeInstallDependencies":"Installer les dépendances de ce thème",
+    "themeCompile":"Compiler le thème",
+    "themeDelete":"Supprimer le thème"
 }
