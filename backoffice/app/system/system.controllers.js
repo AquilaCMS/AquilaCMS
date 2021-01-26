@@ -24,6 +24,11 @@ SystemControllers.controller("systemGeneralController", [
             delete $scope.system.$promise;
         });
 
+        $scope.refreshLog = function(){
+            $scope.getFilesLogAndError('log');
+            $scope.getFilesLogAndError('error');
+        };
+
         function buildAdminUrl(appUrl, adminPrefix) {
             let correctAppUrl;
             if (!appUrl) {

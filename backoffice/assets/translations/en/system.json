@@ -21,7 +21,8 @@
             "logTitle": "Logs overview:",
             "errorTitle": "Errors overview:",
             "logFileTitle": "File link to logs :",
-            "errorFileTitle": "File link to Errors :"
+            "errorFileTitle": "File link to Errors :",
+            "refreshLog" : "Refresh logs"
         },
         "other":{
             "title" : "Others",
