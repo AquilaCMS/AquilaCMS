@@ -80,7 +80,7 @@
         "eol-last": "off",
         "consistent-return": "off",
         "object-curly-newline": "off",
-        "quotes": [2, "single"],
+        "quotes": [2, "single", { "avoidEscape": true }],
         "prefer-promise-reject-errors": "off",
         "prefer-arrow-callback": "off",
         "newline-per-chained-call": "off",
