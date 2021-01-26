@@ -173,13 +173,13 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             $scope.static = staticPage;
             $scope.local.url = staticPage.code;
             $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
-            if(!$scope.static.translation[$scope.lang].html) {
+            if($scope.static && !$scope.static.translation[$scope.lang].html) {
                 $scope.static.translation[$scope.lang].html = $scope.static.translation[$scope.lang].content
             }
         });
 
         $scope.generateVariables = function () {
-            if($scope.static.translation[$scope.lang] && $scope.static.translation[$scope.lang].html) {
+            if($scope.static && $scope.static.translation[$scope.lang] && $scope.static.translation[$scope.lang].html) {
                 var originalArray = $scope.static.translation[$scope.lang].variables || [],
                     founds        = [...$scope.static.translation[$scope.lang].html.matchAll(/{{([^}]*)}}/gm)]
                 $scope.static.translation[$scope.lang].variables = [];
@@ -194,7 +194,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         }
 
         $scope.generateContent = function () {
-            if ($scope.static.translation[$scope.lang] && $scope.static.translation[$scope.lang].html) {
+            if ($scope.static && $scope.static.translation[$scope.lang] && $scope.static.translation[$scope.lang].html) {
 
                 var founds = [...$scope.static.translation[$scope.lang].html.matchAll(/{{([^}]*)}}/gm)];
                 
@@ -234,10 +234,9 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         $scope.filterDropdown();
 
         $scope.langChange = function (lang) {
-            if(!$scope.static.translation[lang].html) {
+            if($scope.static && !$scope.static.translation[lang].html) {
                 $scope.static.translation[lang].html = $scope.static.translation[lang].content
             }
-            $scope.lang = lang
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
             $scope.lang = lang
         };
