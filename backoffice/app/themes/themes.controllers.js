@@ -244,14 +244,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.listThemeFiles = response.data.listFiles;
                 if (!$scope.listThemeFiles.length) {
                     $scope.listThemeFiles.push("noDefaultData");
-                } else {
-                    $scope.listThemeFiles.forEach(element => {
-                        if (element.name.substr(element.name.length - 5, 5) !== '.json') {
-                            $scope.listThemeFiles.splice($scope.listThemeFiles.indexOf(element), 1)
-                        }
-                    });
-                }
-
+                } 
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};

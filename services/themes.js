@@ -255,10 +255,10 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     }
     const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
-    if (!await fs.access(path.join(themeDemoData, 'files'), fs.constants.R_OK)) {
+    if (await fs.access(path.join(themeDemoData, 'files'), fs.constants.R_OK)) {
         throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
     }
-    if (!await fs.access(photoPath, fs.constants.OK)) {
+    if (await fs.access(photoPath, fs.constants.W_OK)) {
         throw new Error(`"${photoPath}" is not writable`);
     }
     await fs.copyRecursiveSync(path.join(themeDemoData, 'files'), photoPath, override);

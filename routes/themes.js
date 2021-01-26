@@ -182,7 +182,7 @@ async function getThemeInformations(req, res, next) {
                 'environment.appUrl'       : 1,
                 'environment.currentTheme' : 1
             }
-        }, req.info)).toObject();
+        }, req.info));
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
         res.send({themeConf, configEnvironment: config, listTheme, listFiles});
