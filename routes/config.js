@@ -8,7 +8,7 @@
 
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {extendTimeOut}             = require('../middleware/server');
-const ServiceConfig               = require('../services/config');
+const serviceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
@@ -20,6 +20,21 @@ module.exports = function (app) {
     app.get('/restart', authentication, adminAuth, restart);
     app.get('/robot', authentication, adminAuth, getRobot);
     app.post('/robot', authentication, adminAuth, setRobot);
+    app.get('/config/data', getConfigTheme);
+};
+
+/**
+ * GET /api/config/data
+ * @tags Configuration
+ * @deprecated
+ */
+const getConfigTheme = async (req, res, next) => {
+    try {
+        const data = serviceConfig.getConfigTheme();
+        return res.json(data);
+    } catch (err) {
+        return next(err);
+    }
 };
 
 /**
@@ -43,7 +58,7 @@ const getConfig = async (req, res, next) => {
                 console.error(error);
             }
         }
-        const config = await ServiceConfig.getConfig(PostBody, userInfo);
+        const config = await serviceConfig.getConfig(PostBody, userInfo);
         return res.json(config);
     } catch (e) {
         return next(e);
@@ -52,7 +67,7 @@ const getConfig = async (req, res, next) => {
 
 async function saveEnvFile(req, res, next) {
     try {
-        await ServiceConfig.saveEnvFile(req.body, req.files);
+        await serviceConfig.saveEnvFile(req.body, req.files);
         next();
     } catch (err) {
         return next(err);
@@ -68,7 +83,7 @@ async function saveEnvFile(req, res, next) {
  */
 async function saveEnvConfig(req, res, next) {
     try {
-        await ServiceConfig.saveEnvConfig(req.body);
+        await serviceConfig.saveEnvConfig(req.body);
         if (req.body.needRestart) {
             setTimeout(() => {
                 packageManager.restart();

@@ -167,11 +167,12 @@ const startListening = async (server) => {
         if (!key || !cert) {
             throw new Error('SSL Error - need a cert and a key file');
         }
-        const keyPath        = path.resolve(global.appRoot, key);
-        const certPath       = path.resolve(global.appRoot, cert);
-        const keyFileExists  = await fs.access(keyPath);
-        const certFileExists = await fs.access(certPath);
-        if (!keyFileExists || !certFileExists) {
+        const keyPath  = path.resolve(global.appRoot, key);
+        const certPath = path.resolve(global.appRoot, cert);
+        try {
+            await fs.access(keyPath);
+            await fs.access(certPath);
+        } catch (err) {
             console.error('SSL is enabled but invalid');
             console.error('Access to the key file and certification file is not possible');
             throw new Error('SSL Error - Path to cert or key file are invalid');

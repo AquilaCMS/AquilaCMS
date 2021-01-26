@@ -41,10 +41,12 @@ class AquilaApp extends App {
                 }
             }
             if (!cache || (cache && Date.now() >= cache.date)) {
-                const resConf = await axios.get(`${getAPIUrl(bundle.ctx)}config/data`);
-                appurl = resConf.data.appUrl;
-                sitename = resConf.data.siteName;
-                demo = resConf.data.demoMode;
+                const resConf = await axios.post(`${getAPIUrl(bundle.ctx)}v2/config`, {
+                    PostBody: {structure: {environment: 1}}
+                });
+                appurl = resConf.data.environment.appUrl;
+                sitename = resConf.data.environment.siteName;
+                demo = resConf.data.environment.demoMode;
                 const resLangs = await axios.post(`${getAPIUrl(bundle.ctx)}v2/languages`, { PostBody: { limit: 99 } }); // Récupération des langues
                 langs = resLangs.data.datas;
                 if (typeof window !== 'undefined') {
@@ -74,7 +76,7 @@ class AquilaApp extends App {
             if (typeof window !== 'undefined' && (!window.localStorage.getItem('lang') || window.localStorage.getItem('lang') !== lang)) {
                 window.localStorage.setItem('lang', lang);
             }
-            
+
             // Affection de la langue dans les headers
             axios.defaults.headers.common.lang = lang;
             initLangAqlrc(lang);

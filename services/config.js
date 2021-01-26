@@ -168,8 +168,23 @@ const saveEnvConfig = async (body) => {
     await Configuration.updateOne({}, {$set: body});
 };
 
+/**
+ * use `getConfig(PostBody?, user?)` instead
+ * @deprecated
+ */
+const getConfigTheme = async () => {
+    const _config = await Configuration.findOne({});
+    return {
+        appUrl     : _config.environment.appUrl,
+        siteName   : _config.environment.siteName,
+        demoMode   : _config.environment.demoMode,
+        stockOrder : _config.stockOrder
+    };
+};
+
 module.exports = {
     getConfig,
     saveEnvConfig,
-    saveEnvFile
+    saveEnvFile,
+    getConfigTheme
 };
