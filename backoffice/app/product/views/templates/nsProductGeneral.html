@@ -9,6 +9,13 @@
     .col-sm-11{
         width:70%;
     }
+    @media (max-width: 768px) {
+        .col-sm-11{
+            width:100%;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    }
     .form-goup{
         display: inline;
     }
@@ -17,7 +24,7 @@
 <div class="form-group">
     <div class="col-sm-11">
         <label for="code" class="col-sm-2 control-label" translate>product.general.code</label>
-        <div class="col-sm-6">
+        <div class="col-sm-10">
             <input type="text" class="form-control" id="code" name="code" ng-model="product.code" ng-disabled="isEditMode" required>
             <div class="ns-error-message">
                 <div ng-show="(form.code.$dirty || form.nsSubmitted) && form.code.$error.required" translate>product.general.fieldReq</div>
@@ -29,7 +36,7 @@
 <div class="form-group">
     <div class="col-sm-11">
         <label for="name" class="col-sm-2 control-label" translate>product.general.nom</label>
-        <div class="col-sm-6">
+        <div class="col-sm-10">
             <input type="text" class="form-control" id="name" name="name" ng-model="product.translation[lang].name" required>
             <div class="ns-error-message">
                 <div ng-show="(form.name.$dirty || form.nsSubmitted) && form.name.$error.required" translate>product.general.fieldReq</div>
@@ -41,7 +48,7 @@
 <div class="form-group">
     <div class="col-sm-11">
         <label for="slug" class="col-sm-2 control-label" translate>product.general.slug</label>
-        <div class="col-sm-6">
+        <div class="col-sm-10">
             <input type="text" class="form-control" id="slug" name="slug" ng-model="product.translation[lang].slug">
             <div>
                 <small><i translate>product.general.autoGen</i></small>
@@ -53,7 +60,7 @@
 <div class="form-group">
     <div class="col-sm-11">
         <label for="canonical" class="col-sm-2 control-label" translate>product.general.canon</label>
-        <div class="col-sm-6">
+        <div class="col-sm-10">
             <input style="float:left" type="text" class="form-control" id="canonical" name="canonical" ng-model="product.translation[lang].canonical" disabled="disabled">
             <a ng-if="product.translation[lang].canonical" style="float:left;margin-left:-30px;padding-top:5px" target="_blank" href="{{product.translation[lang].canonical}}"><i class="fa fa-eye"></i></a>
         </div>
@@ -138,7 +145,7 @@
 <div class="form-group">
     <div class="col-sm-11">
         <label for="slug" class="col-sm-2 control-label" translate>product.general.metaDesc</label>
-        <div class="col-sm-6">
+        <div class="col-sm-10">
             <input type="text" class="form-control" id="metadesc" name="metadesc"
                 ng-model="product.translation[lang].metaDesc">
         </div>
