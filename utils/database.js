@@ -1283,7 +1283,7 @@ const applyMigrationIfNeeded = async () => {
  */
 const populateItems = async (items) => {
     for (const item of items) {
-        await item.populateItem();
+        if (item.populateItem) await item.populateItem();
     }
 };
 
