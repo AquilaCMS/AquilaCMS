@@ -7,8 +7,28 @@
                     save-and-quit="save(true)"
                     disable-save="disableSave"
                     form="form">
-
+            <style>
+                .col-sm-4{
+                    width:70%; 
+                }
+                @media (max-width: 768px) {
+                    .col-sm-4{
+                        width:100%;
+                        padding-left: 0px;
+                        padding-right: 0px;
+                    }
+                }
+                .form-goup{
+                    display: inline;
+                }
+            </style>
             <div class="form-group">
+                
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+                </div>
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.code</label>
                     <div class="col-sm-4">
@@ -18,7 +38,6 @@
                         </div>
                         <div class="label label-info">&lt;ns-cms ns-code="{{cmsBlock.code}}"&gt;&lt;/ns-cms&gt;</ns-cms></div>
                     </div>
-                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
                 </div>
             </div>
             <div class="form-group">
