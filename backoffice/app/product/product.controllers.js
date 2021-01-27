@@ -151,11 +151,11 @@ ProductControllers.controller("ProductListCtrl", [
                 return '';
             }
         };
-        // $scope.collapse = function () {
-        //   if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
-        //     document.getElementById('collapseIcon').className =  "ico-arrow-up"
-        //   }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
-        // };
+        $scope.collapse = function () {
+          if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+            document.getElementById('collapseIcon').className =  "ico-arrow-up"
+          }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
+        };
 
         $scope.getAttributesClassed = function () {
             AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 99}}, function ({datas}) {

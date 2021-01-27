@@ -116,6 +116,17 @@
     vertical-align: middle;
     font-size: 0;
 }
+.ico-arrow-up {
+    background-image: url(images/sprite.png);
+    background-position: 50% 25.8%;
+    background-size: 604% 1488.888888888889%;
+    width: 25px;
+    height: 9px;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 0;
+    transform: scaleY(-1);
+}
 
 .ico-arrow-left,
 .fc-button-prev>.fc-text-arrow {
