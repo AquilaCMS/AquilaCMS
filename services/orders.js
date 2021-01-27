@@ -21,7 +21,6 @@ const aquilaEvents     = require('../utils/aquilaEvents');
 const NSErrors         = require('../utils/errors/NSErrors');
 const utils            = require('../utils');
 const ServiceMail      = require('./mail');
-const ServiceAuth      = require('./auth');
 const ServicePromo     = require('./promo');
 const ServiceCart      = require('./cart');
 const ServicesProducts = require('./products');
@@ -449,13 +448,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
                 item.code  = productThatExists.code;
                 item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-                let user   = null;
-                if (req.headers && req.headers.authorization) {
-                    user = await ServiceAuth.getDecodedToken(req.headers.authorization);
-                }
-                _cart = await productThatExists.addToCart(_cart, item, user ? user.info : {}, _lang.code);
+                _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
                 itemsPushed++;
-                _cart = await ServicePromo.checkForApplyPromo(user, _cart, _lang.code);
+                _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
                 await _cart.save();
             }
         } else if (productThatExists && productThatExists.stock && productThatExists.stock.orderable) {
@@ -476,13 +471,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
             }
             item.code  = productThatExists.code;
             item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-            let user   = null;
-            if (req.headers && req.headers.authorization) {
-                user = await ServiceAuth.getDecodedToken(req.headers.authorization);
-            }
-            _cart = await productThatExists.addToCart(_cart, item, user ? user.info : {}, _lang.code);
+            _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
             itemsPushed++;
-            _cart = await ServicePromo.checkForApplyPromo(user, _cart, _lang.code);
+            _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
             await _cart.save();
         } else {
             isErrorOccured = true;
@@ -618,9 +609,8 @@ const updateStatus = async (body, params) => {
     throw NSErrors.StatusUpdateError;
 };
 
-const cancelOrderRequest = async (_id, authorizationToken) => {
-    const user  = await ServiceAuth.getDecodedToken(authorizationToken);
-    const order = await Orders.findOne({_id, 'customer.email': user.info.email});
+const cancelOrderRequest = async (_id, user) => {
+    const order = await Orders.findOne({_id, 'customer.email': user.email});
     if (order) {
         await setStatus(_id, 'ASK_CANCEL');
         return order.status = 'ASK_CANCEL';

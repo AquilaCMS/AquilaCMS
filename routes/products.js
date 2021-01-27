@@ -11,7 +11,6 @@ const ServiceProduct              = require('../services/products');
 const ProductPreview              = require('../services/preview');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
-const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/products/adminList', authentication, adminAuth, getProductsAdminList);
@@ -128,16 +127,9 @@ async function getProductById(req, res, next) {
 async function getProductsByCategoryId(req, res, next) {
     try {
         let isAdmin = false;
-        let user;
-        if (req.headers.authorization) {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo && userInfo.info && userInfo.info.isAdmin === true) {
-                isAdmin = true;
-            }
-            if (userInfo) user = userInfo.info;
-        }
+        if (req.info) isAdmin = req.info.isAdmin;
 
-        const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.body.PostBody, req.body.lang, isAdmin, user, {req, res});
+        const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.body.PostBody, req.body.lang, isAdmin, req.info, {req, res});
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
             return res.json(resultat);

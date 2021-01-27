@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {cloneDeep}          = require('lodash');
-const mongoose             = require('mongoose');
+const {cloneDeep}  = require('lodash');
+const mongoose     = require('mongoose');
 const {
     Promo,
     Rules,
@@ -16,11 +16,10 @@ const {
     Orders,
     Cart
 }                          = require('../orm/models');
-const ServiceRules         = require('./rules');
-const {getUserFromRequest} = require('../middleware/server');
-const QueryBuilder         = require('../utils/QueryBuilder');
-const promoUtils           = require('../utils/promo.js');
-const NSErrors             = require('../utils/errors/NSErrors');
+const ServiceRules = require('./rules');
+const QueryBuilder = require('../utils/QueryBuilder');
+const promoUtils   = require('../utils/promo.js');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -148,19 +147,17 @@ const deletePromoCodeById = async (promoId, codeId) => {
 
 const middlewarePromoCatalog = async (req, res) => {
     try {
-        const user = await getUserFromRequest(req);
-
         if (res.locals) {
             const populate = req.body.PostBody && req.body.PostBody.populate ? req.body.PostBody.populate : [];
             if (res.locals.datas) {
-                const datas = await checkPromoCatalog(res.locals.datas, user, req.body.lang, false, populate, res.keepPromos);
+                const datas = await checkPromoCatalog(res.locals.datas, req.info, req.body.lang, false, populate, res.keepPromos);
                 if (res.keepPromos) {
                     return {...res.locals, datas: datas.products, promos: datas.promos};
                 }
                 return {...res.locals, datas};
             }
 
-            const datas = await checkPromoCatalog([res.locals], user, req.body.lang, false, populate, false, res.keepPromos);
+            const datas = await checkPromoCatalog([res.locals], req.info, req.body.lang, false, populate, false, res.keepPromos);
             if (res.keepPromos) {
                 return {datas};
             }

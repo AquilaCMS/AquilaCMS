@@ -149,7 +149,7 @@ adminCatagenApp.config([
                 request: function (config)
                 {
                     if (window.localStorage.getItem("jwtAdmin")) {
-                        config.headers["Authorization"] = window.localStorage.getItem("jwtAdmin");
+                        config.headers.Authorization = window.localStorage.getItem("jwtAdmin");
                     }
                     if(config.url.indexOf("/") === 0)
                     {
