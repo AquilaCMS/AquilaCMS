@@ -32,7 +32,7 @@
     <div class="col-sm-3">
         <label class="col-sm-5 control-label" translate>product.price.tax</label>
         <div class="col-sm-6">
-            <select class="form-control" ng-options="tax as tax for tax in taxerate" ng-model="product.price.tax" min="0" step="any" ng-change="recalculate('tax')"></select>
+            <select class="form-control" ng-options="tax as tax for tax in config.taxerate" ng-model="product.price.tax" min="0" step="any" ng-change="recalculate('tax')"></select>
         </div>
     </div>
     <div class="col-sm-3">

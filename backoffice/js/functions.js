@@ -42,6 +42,7 @@
 
         $('.nav-fixed a[href="#"]').on('click', function (event)
         {
+            $('.nav-fixed').toggleClass('nav-fixed-open');
             event.preventDefault();
         });
 
@@ -52,6 +53,7 @@
 
         $('.nav-content').on('click', function ()
         {
+            $('.nav-fixed').toggleClass('nav-fixed-open');
             $(this).closest('li').toggleClass('dropdown-open').siblings().removeClass('dropdown-open');
         });
 

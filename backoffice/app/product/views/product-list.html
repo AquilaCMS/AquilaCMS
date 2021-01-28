@@ -3,7 +3,7 @@
     <div class="box subbox" ng-show="attribs.length > 0" style="padding: 0 0 0;">
         <div class="box-header" data-toggle="collapse" ng-click="collapse()" data-target="#filter" style="cursor:pointer;">
             <h2>Recherche avancée</h2>
-            <i style="float : right" id=collapseIcon class="fa fa-chevron-down fa-3x" ></i>
+            <i style="float : right;width: 30px; height: 15px; margin: 12px;" id=collapseIcon class="ico-arrow-down" ></i>
         </div>
         <div class="box-content">
             <form name="form" class="form-horizontal collapse" id="filter">
@@ -26,6 +26,7 @@
                 <button type="button" style="margin-right: 5%;" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
                 <button class="btn btn-default" style="margin-left: 5%;" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button> 
             </form>
+            <br>
         </div>
     </div>
 

@@ -6,30 +6,22 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
-const cookieParser                    = require('cookie-parser');
-const cors                            = require('cors');
-const express                         = require('express');
-const helmet                          = require('helmet');
+const expressJSDocSwagger = require('@aquilacms/express-jsdoc-swagger');
+const cookieParser        = require('cookie-parser');
+const cors                = require('cors');
+const express             = require('express');
+// const helmet                          = require('helmet');
 const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
 const {v1: uuidv1}                    = require('uuid');
-const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
+const {retrieveUser}                  = require('./authentication');
 
 const getUserFromRequest = async (req) => {
     const user = null;
-    if (req.info) {
-        return req.info;
-    } if (req.headers && req.headers.authorization) {
-        try {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo) return userInfo.info;
-        } catch (error) {
-            console.error(error);
-        }
-    } else if (req.query.u_id) {
+    if (req.info) return req.info;
+    if (req.query.u_id) {
         return require('../services/users').getUser({filter: {_id: req.query.u_id}});
     }
     return user;
@@ -97,17 +89,17 @@ const serverUseRequest = async (req, res, next) => {
 const initExpress = async (server, passport) => {
     server.set('port', global.port);
 
-    server.use(helmet.contentSecurityPolicy());
-    server.use(helmet.dnsPrefetchControl({allow: true}));
-    server.use(helmet.expectCt());
-    server.use(helmet.frameguard({action: 'deny'}));
-    server.use(helmet.hidePoweredBy());
-    server.use(helmet.hsts());
-    server.use(helmet.ieNoOpen());
-    server.use(helmet.noSniff());
-    server.use(helmet.permittedCrossDomainPolicies());
-    server.use(helmet.referrerPolicy());
-    server.use(helmet.xssFilter());
+    // server.use(helmet.contentSecurityPolicy());
+    // server.use(helmet.dnsPrefetchControl({allow: true}));
+    // server.use(helmet.expectCt());
+    // server.use(helmet.frameguard({action: 'deny'}));
+    // server.use(helmet.hidePoweredBy());
+    // server.use(helmet.hsts());
+    // server.use(helmet.ieNoOpen());
+    // server.use(helmet.noSniff());
+    // server.use(helmet.permittedCrossDomainPolicies());
+    // server.use(helmet.referrerPolicy());
+    // server.use(helmet.xssFilter());
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
@@ -131,7 +123,7 @@ const initExpress = async (server, passport) => {
         methods        : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
     }));
-    server.use('/api', serverUseRequest);
+    server.use('/api', retrieveUser, serverUseRequest);
     server.get('*', require('../routes/index').manageExceptionsRoutes);
 
     // set a cookie

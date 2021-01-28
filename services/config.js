@@ -8,68 +8,35 @@
 
 const diff                      = require('diff-arrays-of-objects');
 const path                      = require('path');
+const {merge}                   = require('lodash');
 const fs                        = require('../utils/fsp');
 const serverUtils               = require('../utils/server');
 const QueryBuilder              = require('../utils/QueryBuilder');
-const encryption                = require('../utils/encryption');
 const utils                     = require('../utils/utils');
 const {Configuration, Products} = require('../orm/models');
 
 const restrictedFields = [];
-const defaultFields    = ['*'];
+const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Configuration, restrictedFields, defaultFields);
 
-const getConfig = async (action, propertie) => {
-    if (!propertie) {
-        propertie = 'environment';
-    }
-    if (action === propertie) {
-        const _config = await Configuration.findOne({});
-        try {
-            if (
-                propertie === 'environment'
-                    && _config[propertie]
-                    && _config[propertie].mailPass !== undefined
-                    && _config[propertie].mailPass !== ''
-            ) {
-                _config[propertie].mailPass = encryption.decipher(_config[propertie].mailPass);
-            }
-        } catch (err) {
-            console.error(err);
-        }
-        if (propertie === 'environment') {
-            const cfg = {
-                ..._config[propertie],
-                nodeEnv            : serverUtils.getEnv('NODE_ENV'),
-                databaseConnection : global.envFile.db
-            };
-            return cfg;
-        }
-        return _config[propertie];
-    }
-};
-
-const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
-    PostBody    = {filter: {_id: {$exists: true}}, structure: '*', ...PostBody};
+const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
+    PostBody    = merge({filter: {_id: {$exists: true}}, structure: '*'}, PostBody);
     let isAdmin = true;
-    if (!user) {
-        if (!user || !user.isAdmin) {
-            isAdmin                       = false;
-            PostBody.structure            = undefined;
-            queryBuilder.defaultFields    = [];
-            queryBuilder.restrictedFields = [
-                'environment.adminPrefix',
-                'environment.authorizedIPs',
-                'environment.mailHost',
-                'environment.mailPass',
-                'environment.mailPort',
-                'environment.mailUser',
-                'environment.overrideSendTo',
-                'licence'
-            ];
-        }
+    if (!user || !user.isAdmin) {
+        isAdmin                       = false;
+        queryBuilder.defaultFields    = [];
+        queryBuilder.restrictedFields = [
+            'environment.adminPrefix',
+            'environment.authorizedIPs',
+            'environment.mailHost',
+            'environment.mailPass',
+            'environment.mailPort',
+            'environment.mailUser',
+            'environment.overrideSendTo',
+            'licence'
+        ];
     }
-    const config = (await queryBuilder.findOne(PostBody)).toObject();
+    const config = await queryBuilder.findOne(PostBody, true);
     if (config.environment) {
         if (isAdmin) {
             config.environment = {
@@ -93,27 +60,8 @@ const getConfigV2 = async (key = null, PostBody = {filter: {_id: {$exists: true}
                 };
             }
         }
-        if (config.environment.mailPass) {
-            try {
-                config.environment.mailPass = encryption.decipher(config.environment.mailPass);
-            // eslint-disable-next-line no-empty
-            } catch (err) {}
-        }
     }
-    let data = config;
-    if (key) {
-        data = {...config[key]};
-        if (Array.isArray(config[key])) {
-            data = config[key];
-        }
-    }
-    return data;
-};
-
-const getSiteName = async () => {
-    require('../utils/utils').tmp_use_route('ConfigServices', 'getSiteName');
-    const _config = await Configuration.findOne({}, {'environment.siteName': 1});
-    return _config.environment.siteName;
+    return config;
 };
 
 const updateEnvFile = async () => {
@@ -140,30 +88,33 @@ const saveEnvFile = async (body, files) => {
             for (const file of files) {
                 if (['cert', 'key'].indexOf(file.fieldname) !== -1) {
                     try {
-                        await fs.copyRecursiveSync(
+                        await fs.moveFile(
                             path.resolve(file.destination, file.filename),
                             path.resolve(global.appRoot, 'config/ssl', file.originalname),
-                            true
+                            {mkdirp: true}
                         );
                         global.envFile.ssl[file.fieldname] = `config/ssl/${file.originalname}`;
+                        body.needRestart                   = true;
                     } catch (err) {
                         console.error(err);
                     }
                 }
             }
         }
-        if (
-            environment.databaseConnection
-            && environment.databaseConnection !== global.envFile.db
-        ) {
-            global.envFile.db = environment.databaseConnection;
-        }
-        if (environment.ssl && environment.ssl.active) {
+        if (environment.ssl && environment.ssl.active === 'true') {
             if (environment.ssl.active === 'false') {
                 global.envFile.ssl.active = false;
             } else {
                 global.envFile.ssl.active = true;
             }
+            body.needRestart = true;
+        }
+        if (
+            environment.databaseConnection
+            && environment.databaseConnection !== global.envFile.db
+        ) {
+            global.envFile.db = environment.databaseConnection;
+            body.needRestart  = true;
         }
         await updateEnvFile();
         delete environment.databaseConnection;
@@ -175,17 +126,15 @@ const saveEnvConfig = async (body) => {
     const oldConfig                 = await Configuration.findOne({});
     const {environment, stockOrder} = body;
     if (environment) {
-        if (environment.mailPass !== undefined && environment.mailPass !== '') {
-            try {
-                environment.mailPass = encryption.cipher(environment.mailPass);
-            } catch (err) {
-                console.error(err);
-            }
+        if (
+            oldConfig.environment.appUrl !== environment.appUrl
+            || oldConfig.environment.adminPrefix !== environment.adminPrefix
+        ) {
+            body.needRestart = true;
         }
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
-        delete environment.databaseConnection;
         // traitement spécifique
         if (environment.demoMode) {
             const seoService = require('./seo');
@@ -201,9 +150,7 @@ const saveEnvConfig = async (body) => {
             JSON.parse(JSON.stringify(oldConfig.stockOrder.labels)),
             stockOrder.labels,
             '_id',
-            {
-                updatedValues : diff.updatedValues.second
-            }
+            {updatedValues: diff.updatedValues.second}
         );
         for (let i = 0; i < result.removed.length; i++) {
             await Products.updateMany(
@@ -221,10 +168,23 @@ const saveEnvConfig = async (body) => {
     await Configuration.updateOne({}, {$set: body});
 };
 
+/**
+ * use `getConfig(PostBody?, user?)` instead
+ * @deprecated
+ */
+const getConfigTheme = async () => {
+    const _config = await Configuration.findOne({});
+    return {
+        appUrl     : _config.environment.appUrl,
+        siteName   : _config.environment.siteName,
+        demoMode   : _config.environment.demoMode,
+        stockOrder : _config.stockOrder
+    };
+};
+
 module.exports = {
     getConfig,
-    getConfigV2,
-    getSiteName,
     saveEnvConfig,
-    saveEnvFile
+    saveEnvFile,
+    getConfigTheme
 };

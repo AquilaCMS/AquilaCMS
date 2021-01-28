@@ -16,7 +16,6 @@ const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
 const ServiceRules     = require('./rules');
 const ServiceLanguages = require('./languages');
-const {isAdmin}        = require('./auth');
 
 const restrictedFields = ['clickable'];
 const defaultFields    = ['_id', 'code', 'action', 'translation'];
@@ -191,14 +190,14 @@ const deleteCategory = async (id) => {
     return result.ok === 1;
 };
 
-const getCategoryChild = async (code, childConds, authorization = null) => {
+const getCategoryChild = async (code, childConds, user = null) => {
     const queryCondition = {
         ancestors : {$size: 0},
         code
     };
 
     let projectionOptions = {};
-    if (!isAdmin(authorization)) {
+    if (user && !user.isAdmin) {
         const date          = new Date();
         queryCondition.$and = [
             {openDate: {$lte: date}},

@@ -1,6 +1,6 @@
-<ns-box data-title="themes.t1" title-icon="fa fa-desktop" new-click="addTheme()">
+<ns-box data-title="themes.t1" title-icon="fa fa-desktop">
     <form name="form" ng-submit="validate(tab)" ng-show="!showLoading" role="form">
-        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
+        <ns-buttons hide-save-and-quit="true" hide-save="true" return-path="/" form="form">
             <ns-translation ng-hide ="tab !== 'config'" ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
     <div class="box-content">
     <div class="scrollmenu">
@@ -17,27 +17,47 @@
                 <br/>
 
                 <!-- <div class="form-group">
-                                                <label translate>config.environment.theme</label>
-                                                <input type="text" class="form-control" ng-model="config.currentTheme">
-                                            </div> -->
+                    <label translate>config.environment.theme</label>
+                    <input type="text" class="form-control" ng-model="config.currentTheme">
+                </div> -->
                 <div class="form-group">
-                    <h3 style="margin-left:10px;" translate>themes.themeChoice</h3> <br />
-                    <select name="themesList" id="themesList" class="form-control" ng-model="config.currentTheme">
+                    <h3 style="margin-left:10px;" translate>themes.themeChoice</h3>
+                    <br>
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="addTheme()" ng-disabled="disabledButton" translate>
+                        themes.newtheme
+                    </a>
+                    <br>
+                    <br>
+                    <br>
+                    <select name="themesList" id="themesList" class="form-control" ng-model="config.environment.currentTheme">
                         <!-- <option value="default_theme">Default theme</option> -->
                         <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <a download class="btn btn-success" ng-click="packageInstall()" ng-disabled="disabledButton">
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="save()" ng-disabled="disabledButton" translate>
+                        ns.save
+                    </a>
+                    <p style="display:inline;margin-left:20px;" translate>themes.themeSelect</p>
+                    <br>
+                    <br>
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageInstall()" ng-disabled="disabledButton">
                         yarn install
                     </a>
-                    <a download class="btn btn-success" ng-click="packageBuild()" ng-disabled="disabledButton">
+                    <p style="display:inline;margin-left:20px;" translate>themes.themeInstallDependencies</p>
+                    <br>
+                    <br>
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageBuild()" ng-disabled="disabledButton">
                         build theme
                     </a>
-                    <a download class="btn btn-danger" ng-click="removeTheme()" ng-disabled="disabledButton" style="float:right" translate>
+                    <p style="display:inline;margin-left:20px;"translate>themes.themeCompile</p>
+                    <br>
+                    <br>
+                    <a download class="btn btn-danger" style="min-width: 184px;" ng-click="removeTheme()" ng-disabled="disabledButton" translate>
                         themes.remove
                     </a>
+                    <p style="display:inline;margin-left:20px;" translate>themes.themeDelete</p>
                 </div>
                 <br />
            </div>
@@ -52,7 +72,7 @@
                 <div>
                     <div ng-repeat = "group in customiseTheme.arrayGroup">
                         <h4><b>{{group}} </b></h4>
-                        <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group"> 
+                        <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group">
                             <b>{{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) :</b> {{themeConfig.variables[lang][var].description}}
                             <br>
                             <input style = "float : right" type="text" class="form-control" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
@@ -71,7 +91,7 @@
             <div id="data" class="col-md-8 tab-pane fade in active" ng-if="tab === 'data'" >
                 <br />
                 <div class="form-group">
-                    <h3 style="margin-left:10px;" translate>themes.themeDatas</h3> 
+                    <h3 style="margin-left:10px;" translate>themes.themeDatas</h3>
                 </div>
                 <div >
                     <table>
@@ -89,7 +109,7 @@
                     <br>
                     <br>
                 </div>
-                
+
                 <div style="float : right ;" class="form-group">
                     <a ng-if='listThemeFiles[0] != "noDefaultData"' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                         themes.themeDatasLead

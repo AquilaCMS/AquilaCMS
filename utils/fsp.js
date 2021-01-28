@@ -13,6 +13,27 @@ const fsp  = require('fs').promises;
 const path = require('path');
 
 /**
+ * Asynchronously tests a user's permissions for the file specified by path.
+ * @param path A path to a file or directory. If a URL is provided, it must use the `file:` protocol.
+ * URL support is _experimental_.
+ */
+const access = async (path, mode = fs.constants.R_OK) => {
+    return fsp.access(path, mode);
+};
+
+const hasAccess = async (path, mode) => {
+    try {
+        await access(path, mode);
+        return true;
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return false;
+        }
+        throw err;
+    }
+};
+
+/**
  * ensure a directory exists and create the arborescence if not
  * @param {string | Buffer | URL} path A path to a file or directory.
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
@@ -118,6 +139,8 @@ const moveFile = async (oldPath, newPath, options = {}) => {
 module.exports = {
     ...fs,
     ...fsp,
+    access,
+    hasAccess,
     ensureDir,
     moveFile,
     copyRecursiveSync,

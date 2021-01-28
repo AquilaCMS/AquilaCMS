@@ -7,7 +7,6 @@
  */
 
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {getDecodedToken}           = require('../services/auth');
 const ServiceReviews              = require('../services/reviews');
 
 module.exports = function (app) {
@@ -35,12 +34,9 @@ const setProductReview = async (req, res, next) => {
     // On ajoute le produit
     try {
         const {review, title, rate, lang, questions} = req.body;
-        let user                                     = null;
-        if (req.headers && req.headers.authorization) {
-            user = getDecodedToken(req.headers.authorization);
-        }
+
         const ipClient = req.header('x-forwarded-for') || req.connection.remoteAddress;
-        const result   = await ServiceReviews.setProductReview(req.params.id, user, review, title, rate, lang, questions, ipClient);
+        const result   = await ServiceReviews.setProductReview(req.params.id, req.info, review, title, rate, lang, questions, ipClient);
         return res.status(200).json(result);
     } catch (error) {
         return next(error);
