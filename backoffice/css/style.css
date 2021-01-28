@@ -2458,6 +2458,7 @@ input:-webkit-autofill {
     background: #576fa1;
     transition: width .3s;
     overflow-y: auto;
+    max-height: 1vh;
 }
 
 
