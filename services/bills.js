@@ -102,7 +102,11 @@ const orderToBill = async (idOrder, isAvoir = false) => {
         const bill = await Bills.create(data);
         // set order status to BILLED
         await Orders.updateOne({_id: idOrder}, {$push: {bills: {billId: bill._id.toString()}}});
-        await ServiceOrder.setStatus(order._id, 'BILLED');
+        if (!isAvoir) {
+            await ServiceOrder.setStatus(order._id, 'BILLED');
+        } else {
+            await ServiceOrder.setStatus(order._id, 'CANCELED');
+        }
         return bill;
     }
     return null;

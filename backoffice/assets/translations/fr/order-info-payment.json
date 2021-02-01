@@ -7,5 +7,7 @@
     "det": "Détails",
     "mailCli": "Mail client",
     "cancel": "Annuler",
-    "valider": "Valider"
+    "valider": "Valider",
+    "refoundOrder": "Selectionnez une methode de remboursement",
+    "refound" : "Remboursement"
 }

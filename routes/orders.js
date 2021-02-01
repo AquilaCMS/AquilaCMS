@@ -121,7 +121,7 @@ async function rma(req, res, next) {
  */
 async function infoPayment(req, res, next) {
     try {
-        await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
+        await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.isAvoir);
         res.end();
     } catch (err) {
         return next(err);

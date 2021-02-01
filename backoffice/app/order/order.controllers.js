@@ -303,9 +303,9 @@ OrderControllers.controller("OrderDetailCtrl", [
             $scope.editableMode = !$scope.editableMode;
         };
 
-        $scope.orderToBill = function ()
+        $scope.orderToBill = function (isAvoir = false)
         {
-            let query = Invoice.orderToBill({idOrder: $scope.order._id});
+            let query = Invoice.orderToBill({idOrder: $scope.order._id, isAvoir});
             query.$promise.then(function (response) {
                 toastService.toast('success', 'Facture créée')
                 $scope.init()
@@ -349,9 +349,12 @@ OrderControllers.controller("OrderDetailCtrl", [
             var d = $q.defer();
             if(field === "status")
             {
-                if(data === $scope.order.status){
+                if(data === $scope.order.status) {
                     toastService.toast("danger", "La commande est déjà dans cet état !");
-                }else if(data == "PAID"){
+                } else if ($scope.order.status === "BILLED" && data === 'CANCELED') {
+                    $scope.editStatus = false;
+                    $scope.addInfoPayment();
+                } else if(data == "PAID"){
                     $scope.editStatus = false;
                     $scope.addInfoPayment();
                 } else if (data == "DELIVERY_PARTIAL_PROGRESS" || data == "DELIVERY_PROGRESS") {
@@ -889,11 +892,27 @@ OrderControllers.controller("RMANewCtrl", [
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService)
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "PaymentMethodV2", "Invoice",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, PaymentMethodV2, Invoice)
     {
         $scope.order = angular.copy(item);
-        $scope.return = {comment: "", mode: "", sendMail: true, amount: $scope.order.priceTotal.ati, type: "CREDIT", status: "DONE", products: []};
+
+        $scope.modalTitle = $scope.order.status === 'BILLED' ? "order-info-payment.refoundOrder" : "order-info-payment.payedOrder";
+        $scope.isAvoir = $scope.order.status === 'BILLED';
+
+        $scope.return = {
+            comment: $scope.isAvoir ? "REFOUND" : "", 
+            mode: "", 
+            sendMail: true, 
+            amount: $scope.isAvoir ? $scope.order.priceTotal.ati : $scope.order.priceTotal.ati, 
+            type: $scope.isAvoir ? "DEBIT" : "CREDIT", 
+            status: "DONE", 
+            products: []
+        };
+
+        PaymentMethodV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function ({datas}) {
+            $scope.paymentMethods = datas;
+        });
 
         $scope.defaultLang = $rootScope.languages.find(function (lang)
         {
@@ -941,15 +960,40 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             }
         };
 
+        $scope.orderToBill = function (isAvoir = false)
+        {
+            let query = Invoice.orderToBill({idOrder: $scope.order._id, isAvoir});
+            query.$promise.then(function (response) {
+                toastService.toast('success', 'Facture créée')
+                $scope.init()
+            }).catch(function (err) {
+                toastService.toast('danger', err.data.message);
+            });
+        };
+        $scope.init = function () {
+
+            Orders.list({PostBody: {filter: {_id: $scope.order._id}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
+            {
+                $scope.order = response.datas[0];
+                $scope.status = $scope.order.status;
+            }, function (error)
+            {
+                console.error(error);
+            });
+        };
+
         $scope.validateInfoPayment = function ()
         {
             var returnData = angular.copy($scope.return);
             $scope.error = "";
 
             delete returnData.sendMail;
-            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
+            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail, isAvoir: $scope.isAvoir}, function ()
             {
                 toastService.toast("success", "Information de paiement correctement ajoutée");
+                if($scope.order.status === 'BILLED') {
+                    $scope.orderToBill(true);
+                }
                 $modalInstance.close();
             }, function (err)
             {

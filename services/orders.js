@@ -352,9 +352,9 @@ const rma = async (orderId, returnData) => {
     }
 };
 
-const infoPayment = async (orderId, returnData, sendMail) => {
+const infoPayment = async (orderId, returnData, sendMail, isAvoir = false) => {
     returnData.operationDate = Date.now();
-    await setStatus(orderId, 'PAID');
+    if (!isAvoir) await setStatus(orderId, 'PAID');
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {

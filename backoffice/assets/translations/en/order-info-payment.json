@@ -7,5 +7,7 @@
     "det": "Details",
     "mailCli": "Customer e-mail",
     "cancel": "Cancel",
-    "valider": "Submit"
+    "valider": "Submit",
+    "refoundOrder": "Choose a method to refound the order",
+    "refound" : "Refound"
 }
