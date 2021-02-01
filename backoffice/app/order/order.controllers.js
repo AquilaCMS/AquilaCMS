@@ -158,10 +158,10 @@ OrderControllers.controller("OrderDetailCtrl", [
             {
                 $scope.order = response.datas[0];
                 $scope.status = $scope.order.status;
-                if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
+                /*if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
                     key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                     $scope.orderStatus.splice(key, 1);
-                }
+                }*/
                 Object.keys($scope.order.addresses).forEach(function (key)
                 {
                     ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[key].isoCountryCode}}}, function (response)
