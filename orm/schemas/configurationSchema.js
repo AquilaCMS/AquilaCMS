@@ -26,6 +26,7 @@ const ConfigurationSchema = new Schema({
         billsPattern      : {type: String},
         logPath           : {type: String},
         errorPath         : {type: String},
+        favicon           : {type: String},
         cacheTTL          : {type: Number},
         currentTheme      : {type: String, required: true},
         demoMode          : {type: Boolean, default: true},

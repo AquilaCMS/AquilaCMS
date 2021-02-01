@@ -53,6 +53,7 @@
         "selectCountry" : "Select country",
         "demoMode" : "Demo mode",
         "siteName" : "Website name",
+        "favicon" : "Favicon link",
         "billsPattern" : "Billing pattern code",
         "billsVariables" : "Available variables : {year} for the current year and {numAuto} for an autoincremented number. Example : MYSITE_{year}_{numAuto}",
         "menu": {
