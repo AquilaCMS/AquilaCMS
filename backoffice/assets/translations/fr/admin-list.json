@@ -38,23 +38,25 @@
     "contact": " Clients > Contacts",
     "newsletters": " Clients > Newsletters",
 
-    "confEnv": " Configuration > Environnement",
-    "stock": " Configuration > Param Commande",
     "mails": " Configuration > Mails",
     "shipments": " Configuration > shipments",
-    "territories": " Configuration > territories",
+    "territories": " Configuration > territoires",
     "confLang": " Configuration > Langues",
     "paymentModes": " Configuration > Modes de paiement",
-    "confTasks": " Configuration > Tâches planifiées",
     "admin": " Configuration > Admin",
-    "update": " Configuration > Mise à jour",
 
     "themes": " Apparence > Thèmes",
     "design": " Apparence > Design",
     "translate": " Apparence > translation",
 
+    "confEnv": " Paramètres > Paramètre serveur",
+    "stock": " Paramètres > Param Commande",
+    "confTasks": " Paramètres > Tâches planifiées",
+    "system": " Paramètres > Système",
+    "update": " Paramètres > Mise à jour",
+
     "modules": " Modules",
-    
+
     "statistics": " Statistiques",
     
     "confLiv": " Pays de livraison",

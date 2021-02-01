@@ -10,12 +10,12 @@
     "username": "Username",
     "mail": "E-mail",
     "cocher": "Aquila features access:",
-    
+
     "transComm": " Transactions > Orders",
     "transPay": " Transactions > Payments",
     "invoices": " Transactions > invoices",
     "cart": " Transactions > cart",
-    
+
     "catalPdts": " Catalog > Products",
     "siteCat": " Catalog > Categories",
     "discount": "Catalog > Discount",
@@ -38,20 +38,22 @@
     "contact": " Clients > Contacts",
     "newsletters": " Clients > Newsletters",
 
-    "confEnv": " Configuration > Environment",
-    "stock": " Configuration > Orders param",
     "mails": " Configuration > emails",
     "shipments": " Configuration > shipments",
     "territories": " Configuration > territories",
     "confLang": " Configuration > Languages",
     "paymentModes": " Configuration > Payment modes",
-    "confTasks": " Configuration > Planned Tasks",
     "admin": " Configuration > Admin",
-    "update": " Configuration > update",
 
     "themes": " Design > Themes",
     "design": " Design > design",
     "translate": " Design > translate",
+
+    "confEnv": " Configuration > Server setting",
+    "stock": " Configuration > Orders param",
+    "confTasks": " Configuration > Planned Tasks",
+    "system": " Configuration > System",
+    "update": " Configuration > update",
 
     "modules": " Plugins",
     
