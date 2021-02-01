@@ -670,6 +670,21 @@ CategoryControllers.controller("CategoryListCtrl", [
             isSelected: false
         };
         
+        $scope.expandAll = function(){
+            for(let oneCat of $scope.categories){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                    oneCat.nodes = response.datas;
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                    for(let oneNode of oneCat.nodes){
+                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                            oneNode.nodes = response.datas;
+                            $scope.$broadcast('angular-ui-tree:expand-all');
+                        });
+                    }
+                });
+            }
+            //or use the $scope.listChildren()
+        }
         getMenus();
 
         $scope.getImage = function (category) {
@@ -685,6 +700,8 @@ CategoryControllers.controller("CategoryListCtrl", [
             CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
             {
                 $scope.categories = response.datas;
+                //we expand all the categories
+                $scope.expandAll();
             });
         }
 
