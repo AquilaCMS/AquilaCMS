@@ -912,7 +912,11 @@ CategoryControllers.controller("CategoryNewCtrl", [
             {
                 $modalInstance.close(rep);
             }, function(err) {
-                toastService.toast("danger", err.data.message);
+                if(err.data.code === "Conflict"){
+                    toastService.toast("danger", err.data.message + " : code already exists");
+                }else{
+                    toastService.toast("danger", err.data.message);
+                }
             });
         };
 
