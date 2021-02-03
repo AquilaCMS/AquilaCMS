@@ -169,7 +169,15 @@ const createCategory = async (req) => {
         }
         _menu.save();
     }
-    return newMenu.save();
+    let saved;
+    try {
+        saved = await newMenu.save();
+        return saved;
+    } catch (error) {
+        if (error && error.code === 11000) {
+            throw NSErrors.Conflict;
+        }
+    }
 };
 
 const deleteCategory = async (id) => {

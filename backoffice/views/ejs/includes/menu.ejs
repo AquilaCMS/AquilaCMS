@@ -308,22 +308,6 @@
                 </span>
             </a>
             <ul class="dropdown">
-                <li ng-if="!(accessList.includes('config'))">
-                    <a href="#/config/environment" class="menuClick">
-                        <span class="icon">
-                            <i class="fa fa-cogs fa-lg i-style"></i>
-                        </span>
-                        <span translate>menu.environnement</span>
-                    </a>
-                </li>
-                <li ng-if="!(accessList.includes('stock'))">
-                    <a href="#/stock" class="menuClick">
-                        <span class="icon">
-                            <i class="fa fa-cog fa-lg i-style"></i>
-                        </span>
-                        <span translate>menu.stock&commandes</span>
-                    </a>
-                </li>
                 <li ng-if="!(accessList.includes('mails'))">
                     <a href="#/mails" class="menuClick">
                         <span class="icon">
@@ -364,35 +348,12 @@
                         <span translate>menu.modesPaiement</span>
                     </a>
                 </li>
-                <li ng-if="!(accessList.includes('jobs'))">
-                    <a href='#/jobs' , class='menuClick'>
-                        <span class="icon"></span>
-                        <i class="fa fa-calendar fa-lg i-style"></i>
-                        <span translate>menu.tachesPlanifiees</span>
-                    </a>
-                </li>
-                <li ng-if="!(accessList.includes('system'))">
-                    <a href="#/system" class="menuClick">
-                        <span class="icon">
-                            <i class="fa fa-server fa-lg i-style"></i>
-                        </span>
-                        <span translate>menu.system</span>
-                    </a>
-                </li>
                 <li ng-if="!(accessList.includes('list'))">
                     <a href="#/list" class="menuClick">
                         <span class="icon">
                             <i class="fa fa-shield fa-lg i-style"></i>
                         </span>
                         <span translate>menu.admin</span>
-                    </a>
-                </li>
-                <li ng-if="!(accessList.includes('update'))">
-                    <a href="#/update" class="menuClick">
-                        <span class="icon">
-                            <i class="fa fa-medkit  fa-lg i-style"></i>
-                        </span>
-                        <span translate>menu.update</span>
                     </a>
                 </li>
             </ul>
@@ -431,6 +392,59 @@
                             <i class="fa fa-language fa-lg i-style"></i>
                         </span>
                         <span translate>menu.translate</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="parent" ng-show="!(accessList.includes('environnement')) || !(accessList.includes('stock'))  || !(accessList.includes('jobs'))  || !(accessList.includes('system'))  || !(accessList.includes('update'))">
+            <a href="#">
+                <span class="main-icon">
+                    <i class="fa fa-cog fa-2x i-style"></i>
+                </span>
+                <span class="nav-content">
+                    <span translate>menu.settings</span>
+                    <i class="ico-arrow-down"></i>
+                </span>
+            </a>
+            <ul class="dropdown">
+                <li ng-if="!(accessList.includes('config'))">
+                    <a href="#/config/environment" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-cogs fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.environnement</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('stock'))">
+                    <a href="#/stock" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-cart-plus fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.stock&commandes</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('jobs'))">
+                    <a href='#/jobs' , class='menuClick'>
+                        <span class="icon"></span>
+                        <i class="fa fa-calendar fa-lg i-style"></i>
+                        <span translate>menu.tachesPlanifiees</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('system'))">
+                    <a href="#/system" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-server fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.system</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('update'))">
+                    <a href="#/update" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-medkit  fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.update</span>
                     </a>
                 </li>
             </ul>

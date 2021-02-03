@@ -176,6 +176,9 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             if ($scope.config.environment.appUrl && !$scope.config.environment.appUrl.endsWith('/')) {
                 $scope.config.environment.appUrl += "/";
             }
+            if(!$scope.config.environment.favicon){
+                $scope.config.environment.favicon = '';
+            }
             let file = {};
             ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldConfig) {
                 $scope.config.environment.cacheTTL = $scope.config.environment.cacheTTL || "";

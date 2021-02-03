@@ -670,6 +670,21 @@ CategoryControllers.controller("CategoryListCtrl", [
             isSelected: false
         };
         
+        $scope.expandAll = function(){
+            for(let oneCat of $scope.categories){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                    oneCat.nodes = response.datas;
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                    for(let oneNode of oneCat.nodes){
+                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                            oneNode.nodes = response.datas;
+                            $scope.$broadcast('angular-ui-tree:expand-all');
+                        });
+                    }
+                });
+            }
+            //or use the $scope.listChildren()
+        }
         getMenus();
 
         $scope.getImage = function (category) {
@@ -685,6 +700,8 @@ CategoryControllers.controller("CategoryListCtrl", [
             CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
             {
                 $scope.categories = response.datas;
+                //we expand all the categories
+                $scope.expandAll();
             });
         }
 
@@ -790,36 +807,37 @@ CategoryControllers.controller("CategoryListCtrl", [
             });
 
             modalInstance.result.then(function (returnedValue) {
-                delete returnedValue.$resolved;
-                delete returnedValue.$promise;
-                let longeur1 = $scope.categories.length;
-                for(let count1 = 0; count1 < longeur1; count1++){
-                    if($scope.categories[count1].children){
-                        let longeur2 = $scope.categories[count1].children.length;
-                        for(let count2 = 0; count2 < longeur2; count2++){
-                            if($scope.categories[count1].children[count2]["_id"] == nodeParent._id){
-                                $scope.categories[count1].children[count2].children.push(returnedValue._id);
-                                if (!$scope.$$phase) {
-                                    $scope.$apply();
-                                }
-                                break;
-                            }
-                            //don't work
-                            getMenus();
-                        }
-                    }
-                    if($scope.categories[count1]["_id"] == nodeParent._id){
-                        let newArray = angular.copy($scope.categories[count1].children);
-                        newArray.push(returnedValue);
-                        delete $scope.categories[count1].children;
-                        $scope.categories[count1].children = newArray;
-                        $scope.categories[count1].nodes = newArray;
-                        if (!$scope.$$phase) {
-                            $scope.$apply();
-                        }
-                        break;
-                    }
-                }
+                // delete returnedValue.$resolved;
+                // delete returnedValue.$promise;
+                // let longeur1 = $scope.categories.length;
+                // for(let count1 = 0; count1 < longeur1; count1++){
+                //     if($scope.categories[count1].children){
+                //         let longeur2 = $scope.categories[count1].children.length;
+                //         for(let count2 = 0; count2 < longeur2; count2++){
+                //             if($scope.categories[count1].children[count2]["_id"] == nodeParent._id){
+                //                 $scope.categories[count1].children[count2].children.push(returnedValue._id);
+                //                 if (!$scope.$$phase) {
+                //                     $scope.$apply();
+                //                 }
+                //                 break;
+                //             }
+                //             //don't work
+                //             getMenus();
+                //         }
+                //     }
+                //     if($scope.categories[count1]["_id"] == nodeParent._id){
+                //         let newArray = angular.copy($scope.categories[count1].children);
+                //         newArray.push(returnedValue);
+                //         delete $scope.categories[count1].children;
+                //         $scope.categories[count1].children = newArray;
+                //         $scope.categories[count1].nodes = newArray;
+                //         if (!$scope.$$phase) {
+                //             $scope.$apply();
+                //         }
+                //         break;
+                //     }
+                // }
+                getMenus();
             });
         };
 
@@ -912,7 +930,11 @@ CategoryControllers.controller("CategoryNewCtrl", [
             {
                 $modalInstance.close(rep);
             }, function(err) {
-                toastService.toast("danger", err.data.message);
+                if(err.data.code === "Conflict"){
+                    toastService.toast("danger", err.data.message + " : code already exists");
+                }else{
+                    toastService.toast("danger", err.data.message);
+                }
             });
         };
 

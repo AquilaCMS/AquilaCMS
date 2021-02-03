@@ -261,14 +261,16 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"newsletters", translate:"admin-list.newsletters"},
 
             {code:"config", translate:"admin-list.confEnv"},
-            {code:"stock", translate:"admin-list.stock"},
             {code:"mails", translate:"admin-list.mails"},
             {code:"shipments", translate:"admin-list.shipments"},
             {code:"territories", translate:"admin-list.territories"},
             {code:"languages", translate:"admin-list.confLang"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
-            {code:"jobs", translate:"admin-list.confTasks"},
             {code:"admin", translate:"admin-list.admin"},
+            
+            {code:"stock", translate:"admin-list.stock"},
+            {code:"jobs", translate:"admin-list.confTasks"},
+            {code:"system", translate:"admin-list.system"},
             {code:"update", translate:"admin-list.update"},
 
             {code:"themes", translate:"admin-list.themes"},
@@ -399,21 +401,23 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             {code:"contacts", translate:"admin-list.contact"},
             {code:"newsletters", translate:"admin-list.newsletters"},
 
-            {code:"config", translate:"admin-list.confEnv"},
             {code:"stock", translate:"admin-list.stock"},
             {code:"mails", translate:"admin-list.mails"},
             {code:"shipments", translate:"admin-list.shipments"},
             {code:"territories", translate:"admin-list.territories"},
             {code:"languages", translate:"admin-list.confLang"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
-            {code:"jobs", translate:"admin-list.confTasks"},
             {code:"admin", translate:"admin-list.admin"},
-            {code:"update", translate:"admin-list.update"},
-
+            
             {code:"themes", translate:"admin-list.themes"},
             {code:"design", translate:"admin-list.design"},
             {code:"translate", translate:"admin-list.translate"},
-
+            
+            {code:"config", translate:"admin-list.confEnv"},
+            {code:"jobs", translate:"admin-list.confTasks"},
+            {code:"update", translate:"admin-list.update"},
+            {code:"system", translate:"admin-list.system"},
+            
             {code:"modules", translate:"admin-list.modules"},
 
             {code:"statistics", translate:"admin-list.statistics"},

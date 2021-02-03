@@ -286,7 +286,11 @@ const rma = async (orderId, returnData) => {
         nom         : _order.addresses.billing.lastname,
         prenom      : _order.addresses.billing.firstname,
         societe     : _order.addresses.billing.companyName,
-        coordonnees : `${_order.addresses.billing.line1 + (_order.addresses.billing.line2 ? ` ${_order.addresses.billing.line2}` : '')}, ${_order.addresses.billing.zipcode} ${_order.addresses.billing.city + (_order.addresses.billing.country ? `, ${_order.addresses.billing.country}` : '')}`,
+        coordonnees : `${_order.addresses.billing.line1 + (_order.addresses.billing.line2
+            ? ` ${_order.addresses.billing.line2}`
+            : '')}, ${_order.addresses.billing.zipcode} ${_order.addresses.billing.city + (_order.addresses.billing.country
+            ? `, ${_order.addresses.billing.country}`
+            : '')}`,
         email       : _order.customer.email,
         paymentDate : new Date(),
         isPaid      : true,
@@ -320,7 +324,10 @@ const rma = async (orderId, returnData) => {
     data.items = _order.items.filter((item) => returnData.products.find((prd) => prd.product_id === item.id.toString()));
 
     for (let i = 0; i < data.items.length; i++) {
-        data.items[i] = {...(data.items[i].toObject()), quantity: returnData.products.find((prd) => prd.product_id === data.items[i].id.toString()).qty_returned};
+        data.items[i] = {
+            ...(data.items[i].toObject()),
+            quantity : returnData.products.find((prd) => prd.product_id === data.items[i].id.toString()).qty_returned
+        };
     }
 
     await Bills.create(data);
@@ -417,7 +424,12 @@ const duplicateItemsFromOrderToCart = async (req) => {
         // On teste que le produit existe, est visible et est actif
         if (productThatExists && productThatExists.bundle_sections && productThatExists.bundle_sections.length > 0) {
             // Code pour les menus
-            const item = {id: productThatExists._id, quantity: products[i].quantity, weight: productThatExists.weight, selections: []};
+            const item = {
+                id         : productThatExists._id,
+                quantity   : products[i].quantity,
+                weight     : productThatExists.weight,
+                selections : []
+            };
             // On parcours les sections
             for (let j = 0; j < products[i].selections.length; j++) {
                 item.selections.push({
@@ -427,7 +439,12 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 // Puis les produits des sections
                 for (let k = 0; k < products[i].selections[j].products.length; k++) {
                     // On vérifie que le produit existe, est visible et est actif
-                    const prd = await Products.findOne({_id: products[i].selections[j].products[k], active: true, _visible: true, 'stock.orderable': true});
+                    const prd = await Products.findOne({
+                        _id               : products[i].selections[j].products[k],
+                        active            : true,
+                        _visible          : true,
+                        'stock.orderable' : true
+                    });
                     if (prd) {
                         item.selections[j].products.push(products[i].selections[j].products[k]);
                     } else {
@@ -552,18 +569,31 @@ const addPackage = async (orderId, pkgData) => {
         country = _order.addresses.delivery.country;
     }
 
-    const dateDelivery = moment().add(_order.delivery.dateDelivery.delayDelivery, _order.delivery.dateDelivery.unitDelivery).add(_order.delivery.dateDelivery.delayPreparation, _order.delivery.dateDelivery.unitPreparation).format('DD/MM/YYYY');
+    const dateDelivery = moment()
+        .add(_order.delivery.dateDelivery.delayDelivery, _order.delivery.dateDelivery.unitDelivery)
+        .add(_order.delivery.dateDelivery.delayPreparation, _order.delivery.dateDelivery.unitPreparation)
+        .format('DD/MM/YYYY');
     try {
         await ServiceMail.sendGeneric('orderSent', _order.customer.email, {
-            number          : _order.number,
-            name            : _order.delivery.name,
-            fullname        : _order.customer.fullname,
-            company         : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : '',
+            number   : _order.number,
+            name     : _order.delivery.name,
+            fullname : _order.customer.fullname,
+            company  : _order.addresses.delivery.companyName
+                && _order.addresses.delivery.idMondialRelay
+                ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}`
+                : '',
             trackingUrl     : pkgData.tracking,
             date            : dateDelivery,
             transporterName : _order.delivery.name,
-            companyName     : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : '', // Legacy
-            address         : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2 ? ` ${_order.addresses.delivery.line2}` : '')}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country ? `, ${country}` : '')}`
+            companyName     : _order.addresses.delivery.companyName
+                && _order.addresses.delivery.idMondialRelay
+                ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}`
+                : '', // Legacy
+            address : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2
+                ? ` ${_order.addresses.delivery.line2}`
+                : '')}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country
+                ? `, ${country}`
+                : '')}`
         });
     } catch (error) {
         console.error(error);

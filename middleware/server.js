@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const expressJSDocSwagger = require('@aquilacms/express-jsdoc-swagger');
-const cookieParser        = require('cookie-parser');
-const cors                = require('cors');
-const express             = require('express');
-// const helmet                          = require('helmet');
+const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
+const cookieParser                    = require('cookie-parser');
+const cors                            = require('cors');
+const express                         = require('express');
+const helmet                          = require('helmet');
 const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
@@ -89,17 +89,26 @@ const serverUseRequest = async (req, res, next) => {
 const initExpress = async (server, passport) => {
     server.set('port', global.port);
 
-    // server.use(helmet.contentSecurityPolicy());
-    // server.use(helmet.dnsPrefetchControl({allow: true}));
-    // server.use(helmet.expectCt());
-    // server.use(helmet.frameguard({action: 'deny'}));
-    // server.use(helmet.hidePoweredBy());
-    // server.use(helmet.hsts());
-    // server.use(helmet.ieNoOpen());
-    // server.use(helmet.noSniff());
-    // server.use(helmet.permittedCrossDomainPolicies());
-    // server.use(helmet.referrerPolicy());
-    // server.use(helmet.xssFilter());
+    // TODO add possibility to add own policy
+    server.use(helmet.contentSecurityPolicy({
+        directives : {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            'script-src' : [
+                "'self'",
+                'https://cdnjs.cloudflare.com',
+                'https://code.getmdl.io',
+                "'unsafe-inline'"
+            ]
+        },
+        // reportOnly ignore the CSP error, but report it
+        reportOnly : false
+    }));
+    server.use(helmet.dnsPrefetchControl({allow: true}));
+    server.use(helmet.originAgentCluster());
+    server.use(helmet.frameguard({action: 'sameorigin'}));
+    server.use(helmet.hsts());
+    server.use(helmet.ieNoOpen());
+    server.use(helmet.noSniff());
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
