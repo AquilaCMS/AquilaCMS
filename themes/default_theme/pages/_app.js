@@ -25,12 +25,14 @@ class AquilaApp extends App {
         let appurl = null;
         let sitename = null;
         let demo = null;
+        let favicon = null;
         let langs = null;
         try {
             // Récupération de variables globales dont nous aurons besoin basées sur la configuration du back-office
             // "appurl" : l'URL de base du site
             // "sitename" : le nom du site
             // "demo" : le booléen d'activation du site en mode démo
+            // "favicon" : le chemin du favicon
             // "langs" : tableau des langues
             // Ces données sont cachées (limite de 2 jours) dans le local storage
             // Le cache ne fonctionne donc que côté client !
@@ -47,17 +49,19 @@ class AquilaApp extends App {
                 appurl = resConf.data.environment.appUrl;
                 sitename = resConf.data.environment.siteName;
                 demo = resConf.data.environment.demoMode;
+                favicon = resConf.data.environment.favicon;
                 const resLangs = await axios.post(`${getAPIUrl(bundle.ctx)}v2/languages`, { PostBody: { limit: 99 } }); // Récupération des langues
                 langs = resLangs.data.datas;
                 if (typeof window !== 'undefined') {
                     window.localStorage.setItem('cache', JSON.stringify({
-                        appurl, sitename, demo, langs, date : Date.now() + 172800000
+                        appurl, sitename, demo, favicon, langs, date : Date.now() + 172800000
                     }));
                 }
             } else {
                 appurl = cache.appurl;
                 sitename = cache.sitename;
                 demo = cache.demo;
+                favicon = cache.favicon;
                 langs = cache.langs;
             }
 
@@ -160,6 +164,7 @@ class AquilaApp extends App {
                 ...pageProps,
                 ...initData,
                 demo,
+                favicon,
                 cmsHead       : cmsHead.content,
                 messageCookie : cmsCookieBanner.content,
                 appurl,
@@ -229,6 +234,7 @@ class AquilaApp extends App {
                 <Head>
                     <meta property="og:site_name" content={pageProps.sitename} />
                     <meta itemProp="name" content={pageProps.sitename} />
+                    { pageProps.favicon && <link rel="shortcut icon" href={pageProps.favicon} /> }
                     {
                         !pageProps.demo ? <meta name="robots" content="index,follow" />
                             : (
