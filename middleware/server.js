@@ -93,12 +93,7 @@ const initExpress = async (server, passport) => {
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'script-src' : [
-                "'self'",
-                'https://cdnjs.cloudflare.com',
-                'https://code.getmdl.io',
-                "'unsafe-inline'"
-            ]
+            'script-src' : global.envConfig.environment.contentSecurityPolicyValues
         },
         // reportOnly ignore the CSP error, but report it
         reportOnly : false
