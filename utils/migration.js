@@ -7,7 +7,6 @@
  */
 
 const mongoose = require('mongoose');
-const url      = require('url');
 
 /* const migration_N_Sample = async () => {
     console.log('Applying migration script "samigration_N_Samplemple"...');
@@ -105,18 +104,7 @@ const migration_5_isActive = async () => {
 };
 
 const migration_6_contentSecurityPolicy = async () => {
-    const configuration        = await mongoose.connection.collection('configurations').findOne({});
-    const {protocol, hostname} = url.parse(configuration.environment.appUrl);
-    await mongoose.connection.collection('configurations').updateOne(
-        {
-            _id : mongoose.Types.ObjectId(configuration._id)
-        },
-        {
-            $push : {
-                'environment.contentSecurityPolicyValues' : `${protocol}//${hostname}`
-            }
-        }
-    );
+    // Not use anymore
 };
 
 // Scripts must be in order: put the new scripts at the bottom

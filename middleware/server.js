@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const expressJSDocSwagger = require('@aquilacms/express-jsdoc-swagger');
-const cookieParser        = require('cookie-parser');
-const cors                = require('cors');
-const express             = require('express');
-// const helmet                          = require('helmet');
+const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
+const cookieParser                    = require('cookie-parser');
+const cors                            = require('cors');
+const express                         = require('express');
+const helmet                          = require('helmet');
 const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
@@ -89,11 +89,18 @@ const serverUseRequest = async (req, res, next) => {
 const initExpress = async (server, passport) => {
     server.set('port', global.port);
 
-    // TODO add possibility to add own policy
+    // Use own policy
+    const contentSecurityPolicyValues = [...
+        ["'self'",
+        'https://cdnjs.cloudflare.com',
+        'https://code.getmdl.io',
+        "'unsafe-inline'",
+        global.envConfig.environment.appUrl],
+        ...global.envConfig.environment.contentSecurityPolicyValues];
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'script-src' : global.envConfig.environment.contentSecurityPolicyValues
+            'script-src' : contentSecurityPolicyValues
         },
         // reportOnly ignore the CSP error, but report it
         reportOnly : false

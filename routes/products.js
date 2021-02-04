@@ -207,7 +207,7 @@ async function calculStock(req, res, next) {
 }
 
 /**
- * @api {post} /v2/products/searchObj Get products
+ * @api {post} /v2/products/adminList Get products
  * @apiGroup Products
  * @apiVersion 2.0.0
  * @apiDescription Get all products

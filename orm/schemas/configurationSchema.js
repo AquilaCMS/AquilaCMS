@@ -49,15 +49,7 @@ const ConfigurationSchema = new Schema({
         websiteCountry              : {type: String, required: true},
         websiteTimezone             : {type: String},
         migration                   : {type: Number},
-        contentSecurityPolicyValues : {
-            type    : [String],
-            default : [
-                "'self'",
-                'https://cdnjs.cloudflare.com',
-                'https://code.getmdl.io',
-                "'unsafe-inline'"
-            ]
-        }
+        contentSecurityPolicyValues : {type: [String]}
     },
     taxerate : {
         type : [

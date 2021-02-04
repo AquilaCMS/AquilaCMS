@@ -7,7 +7,6 @@
  */
 
 const path                   = require('path');
-const url                    = require('url');
 const themeServices          = require('../services/themes');
 const fs                     = require('../utils/fsp');
 const serverUtils            = require('../utils/server');
@@ -139,9 +138,8 @@ const recoverConfiguration = async (req) => {
  * @param {Object} datas Datas to insert
  */
 const createConfiguration = async (datas) => {
-    datas.appUrl               = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
-    const {Configuration}      = require('../orm/models');
-    const {protocol, hostname} = url.parse('http://dev.nicog:3010');
+    datas.appUrl          = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
+    const {Configuration} = require('../orm/models');
     return Configuration.create({
         environment : {
             appUrl                      : datas.appUrl,
@@ -151,14 +149,7 @@ const createConfiguration = async (datas) => {
             siteName                    : datas.siteName,
             demoMode                    : true,
             websiteTimezone             : 'Europe/Paris',
-            migration                   : require('../utils/migration').migrationScripts.length, // We don't want to apply migration after the installation, so calculate the current migration step
-            contentSecurityPolicyValues : [...(new Set([
-                "'self'",
-                'https://cdnjs.cloudflare.com',
-                'https://code.getmdl.io',
-                "'unsafe-inline'",
-                `${protocol}//${hostname}`
-            ]))]
+            migration                   : require('../utils/migration').migrationScripts.length // We don't want to apply migration after the installation, so calculate the current migration step
         },
         stockOrder : {
             cartExpireTimeout         : 1,
