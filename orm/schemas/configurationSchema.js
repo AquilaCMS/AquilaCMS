@@ -45,10 +45,19 @@ const ConfigurationSchema = new Schema({
             active   : {type: Boolean, default: true},
             lastSent : {type: Date}
         },
-        siteName        : {type: String, required: true},
-        websiteCountry  : {type: String, required: true},
-        websiteTimezone : {type: String},
-        migration       : {type: Number}
+        siteName                    : {type: String, required: true},
+        websiteCountry              : {type: String, required: true},
+        websiteTimezone             : {type: String},
+        migration                   : {type: Number},
+        contentSecurityPolicyValues : {
+            type    : [String],
+            default : [
+                "'self'",
+                'https://cdnjs.cloudflare.com',
+                'https://code.getmdl.io',
+                "'unsafe-inline'"
+            ]
+        }
     },
     taxerate : {
         type : [
