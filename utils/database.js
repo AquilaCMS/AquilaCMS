@@ -1214,6 +1214,64 @@ const initDBValues = async () => {
 
                 }
             }
+        },
+        {
+            code        : 'requestCancelOrder',
+            position    : 12,
+            translation : {
+                fr : {
+                    name      : 'Annulation de commande',
+                    variables : [
+                        {
+                            value       : 'number',
+                            description : 'Numéro de la commande'
+                        },
+                        {
+                            value       : 'status',
+                            description : 'Status de la commande'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'Nom de la société'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'Prénom du client'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'Nom du client'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'Order cancellation',
+                    variables : [
+                        {
+                            value       : 'number',
+                            description : 'Order number'
+                        },
+                        {
+                            value       : 'status',
+                            description : 'Order status'
+                        },
+                        {
+                            value       : 'company',
+                            description : 'Company name'
+                        },
+                        {
+                            value       : 'firstname',
+                            description : 'Customer firstname'
+                        },
+                        {
+                            value       : 'lastname',
+                            description : 'Customer lastname'
+                        }
+                    ]
+
+                }
+            }
         }
     ];
     // Populate mailType in BDD

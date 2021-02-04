@@ -96,7 +96,13 @@ const setStatus = async (_id, status, sendMail = true) => {
             console.error(error);
         }
     }
-    if (!['PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAID'].includes(order.status) && sendMail) {
+    if ((['CANCELED']).includes(order.status) && sendMail) {
+        try {
+            await ServiceMail.sendMailOrderCancel(_id);
+        } catch (error) {
+            console.error(error);
+        }
+    } else if (!['PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAID'].includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderStatusEdit(_id);
         } catch (error) {

@@ -683,6 +683,36 @@ const sendMailOrderSent = async (order_id, lang = '') => {
 };
 
 /**
+ * @description Permet d'envoyer un mail contenant les informations d'annulation d'une commande
+ * @param {guid} order_id - _id de l'utilisateur destinataire
+ * @param {string} [lang] - langue du mail (Optionnel)
+ */
+async function sendMailOrderCancel(_id, lang = '') {
+    const _order = await Orders.findOne({_id}).populate('customer.id');
+    if (!_order) {
+        throw NSErrors.OrderNotFound;
+    }
+    lang           = determineLanguage(lang, _order.customer.id.preferredLanguage);
+    const {
+        content,
+        subject,
+        from,
+        fromName,
+        pathAttachment
+    }              = await getMailDataByTypeAndLang('requestCancelOrder', lang);
+    const status   = require('../utils/translate/orderStatus')[_order.status].translation[lang].name;
+    const htmlBody = generateHTML(content, {
+        '{{number}}'    : _order.number,
+        '{{status}}'    : status,
+        '{{name}}'      : _order.customer.id.fullname,
+        '{{fullname}}'  : _order.customer.id.fullname,
+        '{{company}}'   : _order.customer.company.name,
+        '{{firstname}}' : _order.customer.id.firstname,
+        '{{lastname}}'  : _order.customer.id.lastname});
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
+}
+
+/**
  * @description Envoi d'un email
  * @param {Object} mailinformation - information about the mail
  * @param {string} mailinformation.subject - Sujet du mail
@@ -987,6 +1017,7 @@ module.exports = {
     sendMailOrderToClient,
     sendMailOrderStatusEdit,
     sendMailOrderSent,
+    sendMailOrderCancel,
     sendMail,
     sendGeneric,
     sendContact,

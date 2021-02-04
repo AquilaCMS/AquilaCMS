@@ -1,6 +1,6 @@
 <div class="modal-header">
     <ol class="breadcrumb">
-        <li style="font-weight: bold;" translate="modalTitle"></li>
+        <li style="font-weight: bold;" translate="{{modalTitle}}"></li>
     </ol>
 </div>
 <div class="modal-body">
@@ -13,8 +13,6 @@
                                 <label class="col-sm-2 control-label" translate>order-info-payment.payMode</label>
                                 <div class="col-sm-10">
                                     <select name="mode" class="form-control" ng-model="return.mode" required>
-                                        <option value="CHEQUE" translate>order-info-payment.cheque</option>
-                                        <option value="TRANSFER" translate>order-info-payment.vir</option>
                                         <option ng-repeat="payment in paymentMethods" value="{{payment.code}}">{{payment.translation[adminLang].name}}</option>
                                     </select>
                                     <div ng-show="form.mode.$invalid" class="ns-error-message">
