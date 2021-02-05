@@ -17,11 +17,10 @@ ProductServices.factory("Product", [
 ProductServices.factory("ProductsV2", [
     "$resource", function ($resource) {
         return $resource("v2/:type/:id", {}, {
-            list         : {method: "POST", params: {type: "products"}},
-            query        : {method: "POST", params: {type: "product"}},
-            save       : {method: "PUT", params: {type: "product"}},
-            delete  : {method: "DELETE", params: {type: "product"}},
-            adminList: { method: "POST", params: { type: "products", id: 'adminList'}},
+            list: {method: "POST", params: {type: "products"}},
+            query: {method: "POST", params: {type: "product"}},
+            save: {method: "PUT", params: {type: "product"}},
+            delete: {method: "DELETE", params: {type: "product"}},
             getPromos: {method: "POST", params: {type: 'product', id: 'promos'}, isArray: false},
             getDownloadHistory: {method: "POST", params: {type: 'downloadHistory'}, isArray: false},
             preview: {method: "POST", params: {type: 'product', id: 'preview'}, isArray: false},

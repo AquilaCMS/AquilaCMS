@@ -240,12 +240,27 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                 }
             }
 
-            ProductsV2.adminList(params, function (response)
+            const paramsV2 = {
+                lang: "fr",
+                PostBody: {
+                    filter: params.filter, // // TODO adminList - Category edit > Products list
+                    structure: {
+                        code: 1,
+                        active: 1,
+                        _visible: 1,
+                        stock: 1
+                    },
+                    limit: $scope.itemPerPage,
+                    page: $scope.currentPage,
+                    sort: params.sortObj
+                }
+            };
+            ProductsV2.list(paramsV2, function (res)
             {
-                if(angular.isArray(response.products))
+                if(angular.isArray(res.datas))
                 {
-                    $scope.totalItems = response.count;
-                    $scope.products = response.products;
+                    $scope.totalItems = res.count;
+                    $scope.products = res.datas;
 
                     if($scope.category.productsList && $scope.category.productsList.length > 0)
                     {
@@ -274,11 +289,11 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
 
                     if($scope.category._id !== undefined)
                     {
-                        for(var i = 0; i < response.products.length; i++)
+                        for(var i = 0; i < res.datas.length; i++)
                         {
-                            response.products[i].check = $scope.category.productsList.findIndex(function (item)
+                            res.datas[i].check = $scope.category.productsList.findIndex(function (item)
                             {
-                                return item.id == response.products[i]._id;
+                                return item.id == res.datas[i]._id;
                             }) != -1;
                         }
 

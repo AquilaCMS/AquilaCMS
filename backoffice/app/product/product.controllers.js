@@ -249,10 +249,24 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            ProductsV2.adminList(params, function (res) {
-                getProductImg(0, res.products);
-
-                $scope.products = res.products;
+            const paramsV2 = {
+                lang: "fr",
+                PostBody: {
+                    filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
+                    structure: {
+                        code: 1,
+                        active: 1,
+                        _visible: 1,
+                        stock: 1
+                    },
+                    limit: 12,
+                    page: $scope.currentPage,
+                    sort: params.sortObj
+                }
+            };
+            ProductsV2.list(paramsV2, function (res) {
+                getProductImg(0, res.datas); // what the hell is that ?!
+                $scope.products = res.datas;
                 $scope.totalItems = res.count;
             });
         };
