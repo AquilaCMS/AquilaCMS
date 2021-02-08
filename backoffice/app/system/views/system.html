@@ -11,24 +11,56 @@
             </div>
             <div class="tab-content ng-scope" style="width:50%;margin-left:10%">
                 <div id="security" class="tab-pane fade in active">
-                    <h3 translate>system.environment.security.ssl.ssl</h3>
-                    <div class="form-group">
-                        <label translate>system.environment.security.ssl.active</label> <br />
-                        <ns-switch ng-model="system.environment.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
+                    <div>
+                        <h3 translate>system.environment.security.contentPolicy.title</h3>
+                        <div class="form-group">
+                            <label translate></label> <br />
+                            <ns-switch ng-model="contentPolicy.active" yes-value="true" no-value="false" name="contentPolicy" ng-click="getContentPolicy(contentPolicy.active)"></ns-switch>
+                        </div>
+                        <div class="form-group" ng-show="contentPolicy.active">
+                            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+                                <thead>
+                                    <tr>
+                                        <th translate>system.environment.security.contentPolicy.value</th>
+                                        <th translate>system.environment.security.contentPolicy.delAndAdd</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="value in contentPolicy.content">
+                                        <td>{{value}}</td>
+                                        <td><span ng-click="removePolicy(value)"><i class="fa fa-minus-circle fa-2x" aria-hidden="true"></i></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="newPolicy">
+                                        </td>
+                                        <td><span ng-click="addPolicy(newPolicy)"><i class="fa fa-plus-circle fa-2x" aria-hidden="true"></i></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="cert">
-                            <span class="btn btn-default" translate>system.environment.security.ssl.cert</span>
-                            <input type="file" name="cert" id="cert" style="display:none" ng-model="system.environment.security.ssl.cert" input-file-ssl>
-                        </label>
-                        <span>{{ssl.cert}}</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="key">
-                            <span class="btn btn-default" translate>system.environment.security.ssl.key</span>
-                            <input type="file" name="key" id="key" style="display:none" ng-model="system.environment.ssl.key" input-file-ssl>
-                        </label>
-                        <span>{{ssl.key}}</span>
+                    <div>
+                        <h3 translate>system.environment.security.ssl.ssl</h3>
+                        <div class="form-group">
+                            <ns-switch ng-model="system.environment.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
+                        </div>
+                        <div ng-show="system.environment.ssl.active">
+                            <div class="form-group">
+                                <label for="cert">
+                                    <span class="btn btn-default" translate>system.environment.security.ssl.cert</span>
+                                    <input type="file" name="cert" id="cert" style="display:none" ng-model="system.environment.security.ssl.cert" input-file-ssl>
+                                </label>
+                                <span>{{ssl.cert}}</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="key">
+                                    <span class="btn btn-default" translate>system.environment.security.ssl.key</span>
+                                    <input type="file" name="key" id="key" style="display:none" ng-model="system.environment.ssl.key" input-file-ssl>
+                                </label>
+                                <span>{{ssl.key}}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="nextjs" class="tab-pane fade">

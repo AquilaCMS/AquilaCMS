@@ -10,12 +10,46 @@ SystemControllers.controller("systemGeneralController", [
             error: ""
         };
 
+        $scope.contentPolicy = {
+            active: false,
+            content: []
+        };
+
+        $scope.getContentPolicy = function(){
+            System.getContentPolicy({}, function(response){
+                if($scope.contentPolicy.active){
+                    $scope.contentPolicy.content = response.values;
+                }
+            }, function (error){
+                toastService.toast("danger", "API error");
+            });
+        };
+
+        $scope.removePolicy = function(value){
+            const index = $scope.contentPolicy.content.indexOf(value);
+            if (index > -1) {
+                $scope.contentPolicy.content.splice(index, 1);
+            }
+        };
+
+        $scope.addPolicy = function(value){
+            if(!$scope.contentPolicy.content.includes(value) && value != ""){
+                $scope.contentPolicy.content.push(value);
+                $scope.newPolicy = "";
+            }
+        };
+
+
         ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
             $scope.system = config;
             $scope.system.environment.logPath = $scope.system.environment.logPath || '';
             $scope.system.environment.errorPath = $scope.system.environment.errorPath || '';
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
+            if($scope.system.environment.contentSecurityPolicyValues){
+                $scope.contentPolicy.active = true;
+                $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicyValues;
+            }
             $scope.ssl = {
                 cert    : $scope.system.environment.ssl.cert    || '',
                 key     : $scope.system.environment.ssl.key     || '',
@@ -202,6 +236,14 @@ SystemControllers.controller("systemGeneralController", [
                         ...$scope.system
                     }
                 }).then((response) => {
+                    if(!$scope.contentPolicy.active){
+                        $scope.contentPolicy.content = [];
+                    }
+                    System.setContentPolicy({value: $scope.contentPolicy.content}, function(response){
+                        toastService.toast("success", "Saved");
+                    }, function (error){
+                        toastService.toast("danger", "API error");
+                    });
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
                         $interval(() => {
