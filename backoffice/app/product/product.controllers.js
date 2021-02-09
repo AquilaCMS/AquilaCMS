@@ -114,8 +114,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.maxSize = 10;
         $scope.searchObj = {};
         $scope.filter = {};
-        $scope.currProductId = "";
-        $scope.currProductSlugs = [];
         $scope.local = {sortType: "code", sortReverse: false};
         $scope.productTypes = NSConstants.productTypes;
         $scope.export = ExportCollectionCSV;
@@ -293,29 +291,6 @@ ProductControllers.controller("ProductListCtrl", [
                 $scope.products = res.datas;
                 $scope.totalItems = res.count;
             });
-        };
-
-        $scope.updateProduct = function (field, data) {
-            console.log(`${field} : ${data}`);
-            const d = $q.defer();
-            $http.post("/product/update", {
-                _id   : $scope.currProductId, value : data, field
-            }).success(function (res) {
-                res = res || {};
-                if (res.status === true) { // {status: "ok"}
-                    d.resolve();
-                } else { // {status: "error", msg: "..."}
-                    d.resolve(res.msg);
-                }
-            }).error(function (e) {
-                d.reject("Server error!");
-            });
-            return d.promise;
-        };
-
-        $scope.setCurrProduct = function (pId, pSmenus) {
-            $scope.currProductId = pId;
-            $scope.currProductSlugs = pSmenus;
         };
 
         $scope.goToProductDetails = function (productType, productSlug) {

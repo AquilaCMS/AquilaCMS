@@ -111,7 +111,7 @@
             <div bind-html-compile="product.component_template"></div>
     </div>
 
-    <div ng-if="!product.translation[lang].canonical && !product.active" class="col-sm-11">
+    <div ng-if="!product.translation[lang].canonical && !product.active && isEditMode" class="col-sm-11">
         <label for="active" class="col-sm-2 control-label" translate>product.general.actifVisible</label>
         <div class="col-sm-2">
             <div ng-click="changeActiveVisible(product)">

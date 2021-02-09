@@ -112,7 +112,7 @@
                 </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all">
-                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" ng-mouseover="setCurrProduct(product._id, product.slugMenus)"
+                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products"
                 ng-click="goToProductDetails(product.type, product.code)" style="height: 80px; cursor: pointer">
                     <td data-label="Code :" class="text-center" style="vertical-align: middle">{{product.code}}</td>
                     <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template" ng-class="column.cell.class" class="text-center" style="vertical-align: middle" data-label={{column.cell.label}}></td>

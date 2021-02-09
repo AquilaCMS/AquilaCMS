@@ -8,6 +8,11 @@
                 "active": "Activé",
                 "cert": "certificat",
                 "key": "Clé privée"
+            },
+            "contentPolicy": {
+                "title": "Politique de contenu",
+                "delAndAdd": "Supprimer/ajouter",
+                "value": "Valeur"
             }
         },
         "nextjs":{

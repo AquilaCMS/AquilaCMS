@@ -5,6 +5,8 @@ SystemServices.factory('System', ['$resource', function ($resource) {
         getFilesLogAndErrorRoute : {method: 'POST',  params: {tab: 'log',  action: 'file'}},
         getNextVersionRoute      : {method: 'GET',  params: {tab: 'next', action: 'get'}},
         changeNextVersionRoute   : {method: 'POST', params: {tab: 'next', action: 'change'}},
+        getContentPolicy         : {method: 'GET', params: {tab: 'contentPolicy', action: 'get'}},
+        setContentPolicy         : {method: 'POST', params: {tab: 'contentPolicy', action: 'set'}},
     });
 }]);
 

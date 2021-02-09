@@ -29,7 +29,6 @@ const ProductsSchema = new Schema({
     universe           : String,
     family             : String,
     subfamily          : String,
-    slugMenus          : {type: [String], index: true},
     component_template : String,
     weight             : {type: Number, default: 0}, // Le poids du produit
     price              : {
@@ -139,7 +138,6 @@ ProductsSchema.index({
     universe                           : 'text',
     family                             : 'text',
     subfamily                          : 'text',
-    slugMenus                          : 'text',
     code_ean                           : 'text',
     'specific.custom_text1'            : 'text',
     'specific.custom_text2'            : 'text',

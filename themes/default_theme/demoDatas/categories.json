@@ -114,61 +114,61 @@
       "createdAt": "2020-05-13T09:07:33.482Z",
       "productsList": [
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8ad",
           "id": "5c667f8a28a49c049c5863c8"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8ac",
           "id": "5c667ff128a49c049c5863c9"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8ab",
           "id": "5d24a3e94aa9c1692db04ac7"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8aa",
           "id": "5d24a43a4aa9c1692db04ad8"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a9",
           "id": "5d24a4844aa9c1692db04ae4"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a8",
           "id": "5d3074d44aa9c1692db0534d"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a7",
           "id": "5d3078aa4aa9c1692db05498"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a6",
           "id": "5d3079de4aa9c1692db0549d"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a5",
           "id": "5d307a164aa9c1692db054a4"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8a6",
           "id": "5eb2cfdb6cdf0b436c831f23"
@@ -350,31 +350,31 @@
       "createdAt": "2020-05-10T14:05:10.806Z",
       "productsList": [
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b2",
           "id": "5c667f8a28a49c049c5863c8"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b1",
           "id": "5c667ff128a49c049c5863c9"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b0",
           "id": "5d24a3e94aa9c1692db04ac7"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8af",
           "id": "5d24a43a4aa9c1692db04ad8"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8ae",
           "id": "5d24a4844aa9c1692db04ae4"
@@ -456,13 +456,13 @@
       "createdAt": "2020-05-10T14:05:21.458Z",
       "productsList": [
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b4",
           "id": "5d3079de4aa9c1692db0549d"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b3",
           "id": "5d307a164aa9c1692db054a4"
@@ -543,13 +543,13 @@
       "createdAt": "2020-05-10T14:05:37.465Z",
       "productsList": [
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b6",
           "id": "5d3074d44aa9c1692db0534d"
         },
         {
-          "checked": true,
+          "checked": false,
           "sortWeight": 0,
           "_id": "5da57915de6bed65e1d2a8b5",
           "id": "5d3078aa4aa9c1692db05498"
