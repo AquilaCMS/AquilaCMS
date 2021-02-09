@@ -10,7 +10,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         $scope.selectedAttributes;
         $scope.selectedFilters;
         $scope.searchObj = {
-            slugMenus: ""
+            productInCategory: ""
         };
         
         StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
@@ -128,23 +128,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         };
         /***** Fin multi-langues ********/
 
-        var init = function ()
-        {
-            /*$scope.category.defaultLanguage = true;
-             $scope.changeLanguage($scope.category)*/
-
-            // $scope.infoImage.header.originalImage = angular.copy(
-            //     $scope.category.headerUrl
-            // );
-            // $scope.infoImage.header.ImageUrl = $scope.category.headerUrl;
-            // $scope.infoImage.thumbnail.originalImage = angular.copy(
-            //     $scope.category.thumbnailUrl
-            // );
-            // $scope.infoImage.thumbnail.ImageUrl = $scope.category.thumbnailUrl;
-            $scope.pagination = {slugMenus: "true"};
-        };
-        init();
-
+        $scope.pagination = {productInCategory: "true"};
         $scope.dateOptions = {
             "starting-day": 1
         };
@@ -166,7 +150,6 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                     let newFilter = {};
                     for (var i = 0; i < filterLength; i++) {
                         if(filterKeys[i] == "translation"){
-                            debugger
                             newFilter[`translation.${$scope.lang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };                          
                         } else if (filterKeys[i] == "active" || filterKeys[i] == "_visible"){
                             if($scope.searchObj[filterKeys[i]]){
@@ -181,7 +164,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                             if($scope.searchObj[index].$lt != null){
                                 newFilter[index].$lt = $scope.searchObj[index].$lt;
                             }
-                        } else if(filterKeys[i] == "slugMenus"){
+                        } else if(filterKeys[i] == "productInCategory"){
                             // do nothing because it is notwith the API
                         }else {
                             if($scope.searchObj[filterKeys[i]] != ""){

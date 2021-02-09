@@ -166,7 +166,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.getProducts = function (page) {
             const search = $scope.searchObj;
             const filter = $scope.filter;
-            debugger
             let pageAdmin = {location: "products", page: 1};
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
                 pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
