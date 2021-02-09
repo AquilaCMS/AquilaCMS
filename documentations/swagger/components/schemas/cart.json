@@ -80,12 +80,6 @@
                         "onAllSite"   : {"type": "Boolean"},
                         "openDate"    : {"type": "Date"},
                         "closeDate"   : {"type": "Date"},
-                        "slugMenus"   : {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
                         "priceATI"    : {"type": "number", "required": true}
                     }
                 }

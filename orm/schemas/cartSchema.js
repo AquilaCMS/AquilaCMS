@@ -65,7 +65,6 @@ const CartSchema = new Schema({
             onAllSite   : Boolean,
             openDate    : Date,
             closeDate   : Date,
-            slugMenus   : [String],
             priceATI    : {type: Number, required: true} // TODO P3 : renommer en amountATI - 2X - (y a til une raison de renommer ?)
         }
     ],

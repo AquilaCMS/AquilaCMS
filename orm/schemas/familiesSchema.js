@@ -48,16 +48,6 @@ FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu
         f.menus.push(slugMenu);
         await f.save();
     }
-
-    // Add menu in products assigned to this universe
-    const productList = await Products.find({'whatami._universe_code': familyCode});
-    productList.forEach(async (product) => {
-        if ( product.slugMenus === undefined) product.slugMenus = [];
-        if ( product.slugMenus.indexOf(slugMenu) === -1) {
-            product.slugMenus.push(slugMenu);
-            await product.save();
-        }
-    });
 };
 
 // Remove menu from a family, and remove this menu from all products assigned to this universe
@@ -74,16 +64,6 @@ FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slug
         f.menus.splice(indexOfSlug, 1);
         await f.save();
     }
-
-    // Remove menu from products assigned to this universe
-    const productList = await Products.find({'whatami._universe_code': familyCode});
-    productList.forEach(async (p) => {
-        const prodIndexSlug = p.slugMenus.indexOf(slugMenu);
-        if ( prodIndexSlug > -1) {
-            p.slugMenus.splice(prodIndexSlug, 1);
-            await p.save();
-        }
-    });
 };
 
 module.exports = FamiliesSchema;

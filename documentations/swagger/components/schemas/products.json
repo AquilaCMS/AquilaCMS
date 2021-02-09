@@ -18,10 +18,6 @@
             "universe"           : {"type": "string"},
             "family"             : {"type": "string"},
             "subfamily"          : {"type": "string"},
-            "slugMenus"          : {
-                "type": "array",
-                "items": {"type": "string"}
-            },
             "component_template" : {"type": "string"},
             "weight"             : {"type": "number", "default": 0, "description": "Le poids du produit"},
             "createdAt"          : {"type": "date"},
