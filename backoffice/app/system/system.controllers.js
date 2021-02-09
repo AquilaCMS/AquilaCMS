@@ -11,15 +11,14 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.contentPolicy = {
-            active: false,
-            content: []
+            active: true,
+            content: [],
+            newPolicy: ""
         };
 
         $scope.getContentPolicy = function(){
             System.getContentPolicy({}, function(response){
-                if($scope.contentPolicy.active){
-                    $scope.contentPolicy.content = response.values;
-                }
+                $scope.contentPolicy.content = response.values;
             }, function (error){
                 toastService.toast("danger", "API error");
             });
@@ -33,9 +32,9 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.addPolicy = function(value){
-            if(!$scope.contentPolicy.content.includes(value) && value != ""){
+            if(!$scope.contentPolicy.content.includes(value) && value != "" && typeof value !== "undefined"){
                 $scope.contentPolicy.content.push(value);
-                $scope.newPolicy = "";
+                $scope.contentPolicy.newPolicy = "";
             }
         };
 
@@ -47,7 +46,6 @@ SystemControllers.controller("systemGeneralController", [
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
             if($scope.system.environment.contentSecurityPolicyValues){
-                $scope.contentPolicy.active = true;
                 $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicyValues;
             }
             $scope.ssl = {
@@ -236,8 +234,9 @@ SystemControllers.controller("systemGeneralController", [
                         ...$scope.system
                     }
                 }).then((response) => {
-                    if(!$scope.contentPolicy.active){
-                        $scope.contentPolicy.content = [];
+                    if($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)){
+                        $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
+                        $scope.contentPolicy.newPolicy = "";
                     }
                     System.setContentPolicy({value: $scope.contentPolicy.content}, function(response){
                         toastService.toast("success", "Saved");

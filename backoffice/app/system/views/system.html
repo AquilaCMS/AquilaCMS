@@ -1,4 +1,4 @@
-<ns-box data-title="system.environment.t1" title-icon="fa fa-cogs fa-lg">
+<ns-box data-title="system.environment.t1" title-icon="fa fa-server fa-lg">
     <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <div class="scrollmenu">
@@ -14,10 +14,6 @@
                     <div>
                         <h3 translate>system.environment.security.contentPolicy.title</h3>
                         <div class="form-group">
-                            <label translate></label> <br />
-                            <ns-switch ng-model="contentPolicy.active" yes-value="true" no-value="false" name="contentPolicy" ng-click="getContentPolicy(contentPolicy.active)"></ns-switch>
-                        </div>
-                        <div class="form-group" ng-show="contentPolicy.active">
                             <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
                                 <thead>
                                     <tr>
@@ -32,12 +28,12 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control" ng-model="newPolicy">
+                                            <input type="text" class="form-control" ng-model="contentPolicy.newPolicy">
                                         </td>
-                                        <td><span ng-click="addPolicy(newPolicy)"><i class="fa fa-plus-circle fa-2x" aria-hidden="true"></i></span></td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <span ng-click="addPolicy(contentPolicy.newPolicy)"><i class="fa fa-plus-circle fa-2x" aria-hidden="true"></i></span>
                         </div>
                     </div>
                     <div>
