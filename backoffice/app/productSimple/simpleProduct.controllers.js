@@ -344,13 +344,18 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         }
         
         $scope.catDisabled = function (node){
-            for(let oneChild of node.productsList){
-                if(oneChild.id == $scope.product._id){
-                    return !oneChild.checked;
-                }else{
-                    return !oneChild.checked;
+            let final = false;
+            if(node.action == "page"){
+                final = true;
+            }else{
+                for(let oneChild of node.productsList){
+                    if(oneChild.id == $scope.product._id){
+                        final = !oneChild.checked;
+                        break;
+                    }
                 }
             }
+            return final;
         };
 
         $scope.catCheck = function (node){
