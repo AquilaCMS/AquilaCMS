@@ -504,10 +504,10 @@ module.exports = {
     },
     ModuleNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du module ne corespondent pas',
-        en : 'EN-Le nom du theme, nom du dossier ou du zip du module ne corespondent pas'
+        en : 'The name of the theme, name of the module\'s folder or zip do not match'
     },
     ThemeNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du theme ne corespondent pas',
-        en : 'EN-Le nom du theme, nom du dossier ou du zip du theme ne corespondent pas'
+        en : 'The name of the theme, name of the module\'s folder or zip do not match'
     }
 };
