@@ -166,6 +166,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.getProducts = function (page) {
             const search = $scope.searchObj;
             const filter = $scope.filter;
+            debugger
             let pageAdmin = {location: "products", page: 1};
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
                 pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
@@ -239,7 +240,31 @@ ProductControllers.controller("ProductListCtrl", [
             }
 
             if (Object.keys($scope.searchObj).length > 0) {
-                params.searchObj = $scope.searchObj;
+                const filterKeys = Object.keys($scope.searchObj);
+                const filterLength = filterKeys.length;
+                let newFilter = {};
+                for (var i = 0; i < filterLength; i++) {
+                    if(filterKeys[i] == "translation"){
+                        newFilter[`translation.${$scope.filterLang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
+                    }else if(filterKeys[i] == "active" || filterKeys[i] == "_visible"){
+                        newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
+                    }else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                        const key = filterKeys[i].split("_");
+                        const value = $scope.searchObj[filterKeys[i]];
+                        if (key[1] == "priceSale") {
+                            if(typeof newFilter['price.ati.normal'] === "undefined"){
+                                newFilter['price.ati.normal'] = {}
+                            }
+                            newFilter['price.ati.normal'][key[0] === "min" ? "$gte" : "$lte"] = value;
+                        }else if(key[1] == "qty"){
+                            if(typeof newFilter["stock.qty"] === "undefined"){
+                                newFilter["stock.qty"] = {}
+                            }
+                            newFilter['stock.qty'][key[0] === "min" ? "$gte" : "$lte"] = value;
+                        }
+                    }
+                }
+                params.filter = {...params.filter, ...newFilter};
             }
 
             params.sortObj = {};

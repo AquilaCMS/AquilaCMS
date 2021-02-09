@@ -9,7 +9,9 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         $scope.usedInFilters = [];
         $scope.selectedAttributes;
         $scope.selectedFilters;
-        $scope.searchObj = {};
+        $scope.searchObj = {
+            slugMenus: ""
+        };
         
         StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
             $scope.pages = staticsList.datas;
@@ -153,89 +155,49 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             var params = {
                 page: $scope.currentPage,
                 limit: $scope.itemPerPage,
-                searchObj: angular.copy($scope.searchObj),
-                categoryId: $scope.category._id
+                categoryId: $scope.category._id,
+                filter: {}
             };
-            if($scope.pagination)
-            {
-                // params.filter = angular.copy($scope.pagination);
-                // if(params.filter.name)
-                // {
-                //     if(params.filter.name.$regex == "")
-                //     {
-                //         delete params.filter.name;
-                //     }
-                //     else
-                //     {
-                //         params.filter.name.$regex =
-                //             "^(?=.*" +
-                //             params.filter.name.$regex.replace(/ /g, ")(?=.*") +
-                //             ").*$";
-                //
-                //         params.filter.name.$options = "i";
-                //     }
-                // }
 
-                if(params.searchObj && params.searchObj["price.ati.normal"]){
-                    if(params.searchObj["price.ati.normal"].$gte === null){
-                        delete params.searchObj["price.ati.normal"].$gte;
+            if($scope.pagination) {
+                if(Object.keys($scope.searchObj).length > 0) {
+                    const filterKeys = Object.keys($scope.searchObj);
+                    const filterLength = filterKeys.length;
+                    let newFilter = {};
+                    for (var i = 0; i < filterLength; i++) {
+                        if(filterKeys[i] == "translation"){
+                            debugger
+                            newFilter[`translation.${$scope.lang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };                          
+                        } else if (filterKeys[i] == "active" || filterKeys[i] == "_visible"){
+                            if($scope.searchObj[filterKeys[i]]){
+                                newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
+                            }
+                        } else if (filterKeys[i] == "price.ati.normal" || filterKeys[i] == "stock.qty"){
+                            const index = filterKeys[i];
+                            newFilter[index] = {};
+                            if($scope.searchObj[index].$gte != null){
+                                newFilter[index].$gte = $scope.searchObj[index].$gte;
+                            }
+                            if($scope.searchObj[index].$lt != null){
+                                newFilter[index].$lt = $scope.searchObj[index].$lt;
+                            }
+                        } else if(filterKeys[i] == "slugMenus"){
+                            // do nothing because it is notwith the API
+                        }else {
+                            if($scope.searchObj[filterKeys[i]] != ""){
+                                newFilter[filterKeys[i]] = { $regex: $scope.searchObj[filterKeys[i]], $options: "i" };
+                            }
+                        }
                     }
-                    if(params.searchObj["price.ati.normal"].$lt === null){
-                        delete params.searchObj["price.ati.normal"].$lt;
-                    }
-                    if(!params.searchObj["price.ati.normal"].$gte && !params.searchObj["price.ati.normal"].$lt){
-                        delete params.searchObj["price.ati.normal"];
-                    }
+                    params.filter = {...params.filter, ...newFilter};
                 }
-                // Idem que ci-dessus
-                if(params.searchObj && params.searchObj.qty){
-                    if(params.searchObj.qty.$gte === null){
-                        delete params.searchObj.qty.$gte;
-                    }
-                    if(params.searchObj.qty.$lt === null){
-                        delete params.searchObj.qty.$lt;
-                    }
-                    if(!params.searchObj.qty.$gte && !params.searchObj.qty.$lt){
-                        delete params.searchObj.qty;
-                    }
-                }
-                if(params.searchObj.type == "")
-                {
-                    delete params.searchObj.type;
-                }
-
-                if(params.searchObj.active == "")
-                {
-                    delete params.searchObj.active;
-                }
-
-                if(params.searchObj._visible == "")
-                {
-                    delete params.searchObj._visible;
-                }
-
-                if(params.searchObj.slugMenus !== undefined && params.searchObj.slugMenus !== "")
-                {
-                    params.searchObj.inProducts = (params.searchObj.slugMenus === "true");
-                    params.searchObj.productsIds = [];
-                    for(var i = 0; i < $scope.category.productsList.length; i++)
-                    {
-                        params.searchObj.productsIds.push($scope.category.productsList[i].id);
-                    }
-                }
-                delete params.searchObj.slugMenus;
             }
 
-            if($scope.local && $scope.local.sortType)
-            {
+            if($scope.local && $scope.local.sortType) {
                 params.sortObj = {};
-
-                if($scope.local.sortReverse === false)
-                {
+                if($scope.local.sortReverse === false) {
                     params.sortObj[$scope.local.sortType] = -1;
-                }
-                else
-                {
+                } else {
                     params.sortObj[$scope.local.sortType] = 1;
                 }
             }
