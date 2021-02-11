@@ -40,7 +40,7 @@ const login = async (req, res, next) => {
     const {username, password} = req.body;
     try {
         const {Users} = require('../orm/models');
-        let user      = await Users.findOne({email: {$regex: username, $options: 'i'}});
+        let user      = await Users.findOne({email: new RegExp(`^${username}$`, 'i')}); // Exact match with case insensitive
 
         if (!user) throw NSErrors.BadLogin;
         if (req.params.from === 'admin') {
