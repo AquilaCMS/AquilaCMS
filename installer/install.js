@@ -142,14 +142,15 @@ const createConfiguration = async (datas) => {
     const {Configuration} = require('../orm/models');
     return Configuration.create({
         environment : {
-            appUrl                      : datas.appUrl,
-            currentTheme                : 'default_theme',
-            adminPrefix                 : datas.adminPrefix,
-            websiteCountry              : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
-            siteName                    : datas.siteName,
-            demoMode                    : true,
-            websiteTimezone             : 'Europe/Paris',
-            migration                   : require('../utils/migration').migrationScripts.length // We don't want to apply migration after the installation, so calculate the current migration step
+            appUrl          : datas.appUrl,
+            currentTheme    : 'default_theme',
+            adminPrefix     : datas.adminPrefix,
+            websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
+            siteName        : datas.siteName,
+            demoMode        : true,
+            websiteTimezone : 'Europe/Paris',
+            // We don't want to apply migration after the installation, so we calculate the current migration step
+            migration       : require('../utils/migration').migrationScripts.length
         },
         stockOrder : {
             cartExpireTimeout         : 1,

@@ -90,13 +90,14 @@ const initExpress = async (server, passport) => {
     server.set('port', global.port);
 
     // Use own policy
-    const contentSecurityPolicyValues = [...
-        ["'self'",
+    const contentSecurityPolicyValues = [
+        "'self'",
         'https://cdnjs.cloudflare.com',
         'https://code.getmdl.io',
         "'unsafe-inline'",
-        global.envConfig.environment.appUrl],
-        ...global.envConfig.environment.contentSecurityPolicyValues];
+        global.envConfig.environment.appUrl,
+        ...global.envConfig.environment.contentSecurityPolicyValues
+    ];
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
