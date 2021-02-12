@@ -53,11 +53,6 @@ const getCartforClient = async (req, res, next) => {
     }
 };
 
-/**
- * Post /api/v2/cart/:id
- * @tags Cart
- * @summary Get cart by id
- */
 const getCartById = async (req, res, next) => {
     try {
         const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req);
