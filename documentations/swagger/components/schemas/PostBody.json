@@ -4,7 +4,12 @@
         "properties": {
             "filter"    : {"type": "object"},
             "limit"     : {"type": "number", "default": 1},
-            "populate"  : {"type": "array"},
+            "populate"  : {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
             "skip"      : {"type": "number", "default": 0},
             "sort"      : {"type": "object"},
             "structure" : {"type": "object"},

@@ -1,0 +1,48 @@
+{
+    "/api/v2/cart/{id}": {
+        "post": {
+            "deprecated": false,
+            "summary": "Get cart by id",
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {}
+                },
+                "404": {
+                    "description": "",
+                    "content": {}
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of cart to return",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "test description",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "",
+                                "description": "",
+                                "value": {"PostBody": {"structure": {"_id": 1}}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

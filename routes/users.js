@@ -77,7 +77,7 @@ async function getUser(req, res, next) {
  * @tags User
  * @summary Get user by id
  * @param {string} authorization.headers - authorization
- * @param {PostBody} request.bod.required - PostBody
+ * @param {PostBody} request.body - PostBody
  * @param {string} id.path.required - user id
  * @return {UserSchema} 200 - success
  */
