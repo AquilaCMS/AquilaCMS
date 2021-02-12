@@ -74,25 +74,39 @@ ProductDirectives.directive("nsProductsList", function () {
 
                         const filter = angular.copy($scope.queryFilter);
                         // Si pagination avec recherche
-                        if ($scope.f.nameFilter.length > 0) {
-                            ProductsV2.adminList({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
-                                for (let prd of datas) {
-                                    prd.images = prd.images.filter(i => i.default)
-                                }
-                                $scope.products = datas;
-                                $scope.addStyle($scope.products)
-                                $scope.totalItems = count;
-                            });
-                        } else {
-                            ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
-                                for (let prd of datas) {
-                                    prd.images = prd.images.filter(i => i.default)
-                                }
-                                $scope.products = datas;
-                                $scope.addStyle($scope.products)
-                                $scope.totalItems = count;
-                            });
-                        }
+                        console.log("open popup");
+                        // if ($scope.f.nameFilter.length > 0) {
+                        const paramsV2 = {
+                            lang: "fr",
+                            PostBody: {
+                                filter:{}, // q: $scope.f.nameFilter
+                                structure: {
+                                    code: 1,
+                                    supplier_ref:1 // TODO : faire le populate !
+                                },
+                                limit: $scope.nbItemsPerPage,
+                                page
+                            }
+                        };
+                        // TODO adminList : Edit prd, popup crossselling call this. Pb with filter, etc
+                        ProductsV2.list(paramsV2, function (res) {
+                            // for (let prd of res.datas) {
+                            //     prd.images = prd.images.filter(i => i.default)
+                            // }
+                            $scope.products = res.datas;
+                            $scope.addStyle($scope.products)
+                            $scope.totalItems = res.count;
+                        });
+                        // } else {
+                        //     ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
+                        //         for (let prd of datas) {
+                        //             prd.images = prd.images.filter(i => i.default)
+                        //         }
+                        //         $scope.products = datas;
+                        //         $scope.addStyle($scope.products)
+                        //         $scope.totalItems = count;
+                        //     });
+                        // }
 
                         // $scope.queryFilter.supplier_ref = "";
                     });
@@ -129,40 +143,45 @@ ProductDirectives.directive("nsProductsList", function () {
                     return $scope.$parent.product._id != product._id;
                 };
                 $scope.search = function () {
-                    const filter = angular.copy($scope.queryFilter);
-                    const searchObj = {
-                        code : '',
-                        translation : {
-                            name : ''
+                    let filterObj = {};
+                    if($scope.queryFilter.type){
+                        filterObj["type"] = $scope.queryFilter.type;
+                    }
+                    if($scope.f.codeFilter && $scope.f.codeFilter != ""){
+                        filterObj["code"] = { $regex: $scope.f.codeFilter, $options: "i" };
+                    }
+                    if($scope.f.nameFilter && $scope.f.nameFilter != ""){
+                        filterObj[`translation.${$scope.defaultLang}.name`] = { $regex: $scope.f.nameFilter, $options: "i" };
+                    }
+                    if($scope.queryFilter.supplier_ref && $scope.queryFilter.supplier_ref != "") {
+                        filterObj["supplier_ref"] = $scope.queryFilter.supplier_ref;
+                    }
+                    // lang : "fr" ???
+                    const paramsV2 = {
+                        lang: "fr",
+                        PostBody: {
+                            filter: filterObj,
+                            structure: {
+                                code: 1,
+                                active: 1,
+                                _visible: 1,
+                                stock: 1
+                            },
+                            limit: $scope.nbItemsPerPage,
+                            page: 1
                         }
                     };
-                    searchObj.translation.name = $scope.f.nameFilter;
-                    searchObj.code = $scope.f.codeFilter;
-
-                    if (filter.supplier_ref == "") {
-                        delete filter.supplier_ref;
-                    }
-                    if ($scope.f.nameFilter.length > 0 || $scope.f.codeFilter.length > 0) {
-                        ProductsV2.adminList({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
-                            for (let prd of res.products) {
-                                prd.images = prd.images.filter(i => i.default)
-                            }
-                            $scope.products = res.products;
-                            $scope.totalItems = res.count;
-                            $scope.currentPage = 1;
-                        });
-                    } else {
-                        filter.page = 1;
-                        filter.limit = $scope.nbItemsPerPage;
-                        ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page: 1}}, function (res) {
-                            for (let prd of res.datas) {
-                                prd.images = prd.images.filter(i => i.default)
-                            }
-                            $scope.products = res.datas;
-                            $scope.totalItems = res.count;
-                            $scope.currentPage = 1;
-                        });
-                    }
+                    //console.log("filter popup");
+                    // TODO adminList : Edit prd, popup crossselling search call this. Pb with filter, etc
+                    ProductsV2.list(paramsV2, function (res) {
+                        for (let prd of res.datas) {
+                            prd.images = prd.images.filter(i => i.default)
+                        }
+                        $scope.products = res.datas;
+                        $scope.totalItems = res.count;
+                        $scope.currentPage = 1;
+                        $scope.addStyle($scope.products); //we colorize product alerady added
+                    });
                 };
             }
         ]

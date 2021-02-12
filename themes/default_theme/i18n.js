@@ -1,6 +1,6 @@
 const i18next = require('i18next');
 const moment = require('moment');
-const XHR = require('i18next-http-backend');
+const XHR = require('i18next-xhr-backend');
 const langs = require('../../config/dynamic_langs');
 const loadAssets = require('./lib/loadAssets');
 

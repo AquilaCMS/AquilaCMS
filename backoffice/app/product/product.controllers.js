@@ -114,8 +114,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.maxSize = 10;
         $scope.searchObj = {};
         $scope.filter = {};
-        $scope.currProductId = "";
-        $scope.currProductSlugs = [];
         $scope.local = {sortType: "code", sortReverse: false};
         $scope.productTypes = NSConstants.productTypes;
         $scope.export = ExportCollectionCSV;
@@ -239,7 +237,31 @@ ProductControllers.controller("ProductListCtrl", [
             }
 
             if (Object.keys($scope.searchObj).length > 0) {
-                params.searchObj = $scope.searchObj;
+                const filterKeys = Object.keys($scope.searchObj);
+                const filterLength = filterKeys.length;
+                let newFilter = {};
+                for (var i = 0; i < filterLength; i++) {
+                    if(filterKeys[i] == "translation"){
+                        newFilter[`translation.${$scope.filterLang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
+                    }else if(filterKeys[i] == "active" || filterKeys[i] == "_visible"){
+                        newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
+                    }else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                        const key = filterKeys[i].split("_");
+                        const value = $scope.searchObj[filterKeys[i]];
+                        if (key[1] == "priceSale") {
+                            if(typeof newFilter['price.ati.normal'] === "undefined"){
+                                newFilter['price.ati.normal'] = {}
+                            }
+                            newFilter['price.ati.normal'][key[0] === "min" ? "$gte" : "$lte"] = value;
+                        }else if(key[1] == "qty"){
+                            if(typeof newFilter["stock.qty"] === "undefined"){
+                                newFilter["stock.qty"] = {}
+                            }
+                            newFilter['stock.qty'][key[0] === "min" ? "$gte" : "$lte"] = value;
+                        }
+                    }
+                }
+                params.filter = {...params.filter, ...newFilter};
             }
 
             params.sortObj = {};
@@ -249,35 +271,26 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            ProductsV2.adminList(params, function (res) {
-                getProductImg(0, res.products);
-
-                $scope.products = res.products;
+            const paramsV2 = {
+                lang: "fr",
+                PostBody: {
+                    filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
+                    structure: {
+                        code: 1,
+                        active: 1,
+                        _visible: 1,
+                        stock: 1
+                    },
+                    limit: 12,
+                    page: $scope.currentPage,
+                    sort: params.sortObj
+                }
+            };
+            ProductsV2.list(paramsV2, function (res) {
+                getProductImg(0, res.datas); // what the hell is that ?!
+                $scope.products = res.datas;
                 $scope.totalItems = res.count;
             });
-        };
-
-        $scope.updateProduct = function (field, data) {
-            console.log(`${field} : ${data}`);
-            const d = $q.defer();
-            $http.post("/product/update", {
-                _id   : $scope.currProductId, value : data, field
-            }).success(function (res) {
-                res = res || {};
-                if (res.status === true) { // {status: "ok"}
-                    d.resolve();
-                } else { // {status: "error", msg: "..."}
-                    d.resolve(res.msg);
-                }
-            }).error(function (e) {
-                d.reject("Server error!");
-            });
-            return d.promise;
-        };
-
-        $scope.setCurrProduct = function (pId, pSmenus) {
-            $scope.currProductId = pId;
-            $scope.currProductSlugs = pSmenus;
         };
 
         $scope.goToProductDetails = function (productType, productSlug) {

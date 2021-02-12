@@ -88,7 +88,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 404,
       "associated_prds": [
         "5c667ff128a49c049c5863c9",
@@ -96,9 +95,8 @@
         "5d24a43a4aa9c1692db04ad8",
         "5d24a4844aa9c1692db04ae4"
       ],
-      "is_new": false,
+      "is_new": true,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -299,7 +297,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 982,
       "associated_prds": [
         "5d24a43a4aa9c1692db04ad8",
@@ -309,7 +306,6 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -489,12 +485,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 178,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-09T14:25:46.019Z",
       "attributes": [
         {
           "type": "color",
@@ -674,12 +668,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 189,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-09T14:27:06.737Z",
       "attributes": [
         {
           "type": "color",
@@ -840,12 +832,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 243,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-09T14:28:20.190Z",
       "attributes": [
         {
           "type": "color",
@@ -1046,12 +1036,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 28,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-18T13:32:04.688Z",
       "attributes": [
         {
           "type": "color",
@@ -1212,12 +1200,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 38,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-18T13:48:26.795Z",
       "attributes": [
         {
           "type": "color",
@@ -1389,12 +1375,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 425,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-18T13:53:34.890Z",
       "attributes": [
         {
           "type": "color",
@@ -1584,12 +1568,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 385,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "createdAt": "2020-05-18T13:54:30.441Z",
       "attributes": [
         {
           "type": "color",
@@ -1735,7 +1717,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 0,
       "associated_prds": [],
       "is_new": false,

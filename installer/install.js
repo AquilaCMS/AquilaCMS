@@ -140,7 +140,6 @@ const recoverConfiguration = async (req) => {
 const createConfiguration = async (datas) => {
     datas.appUrl          = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
     const {Configuration} = require('../orm/models');
-
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
@@ -150,7 +149,8 @@ const createConfiguration = async (datas) => {
             siteName        : datas.siteName,
             demoMode        : true,
             websiteTimezone : 'Europe/Paris',
-            migration       : require('../utils/migration').migrationScripts.length // We don't want to apply migration after the installation, so calculate the current migration step
+            // We don't want to apply migration after the installation, so we calculate the current migration step
+            migration       : require('../utils/migration').migrationScripts.length
         },
         stockOrder : {
             cartExpireTimeout         : 1,

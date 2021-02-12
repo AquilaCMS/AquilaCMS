@@ -332,7 +332,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         if(!$scope.isEditMode)
                         {
                             window.location.href = "#/products/" + savedPrd.type + "/" + savedPrd.code;
-                            window.location.reload();
+                            $location.path(window.location.href);
                         }
                     }
                 }, function (err)

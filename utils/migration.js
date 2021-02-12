@@ -103,13 +103,18 @@ const migration_5_isActive = async () => {
     }
 };
 
+const migration_6_contentSecurityPolicy = async () => {
+    // Not use anymore
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
     migration_2_Metrics,
     migration_3_CreatedAt,
     migration_4_Themes,
-    migration_5_isActive
+    migration_5_isActive,
+    migration_6_contentSecurityPolicy
     // sample
 ];
 

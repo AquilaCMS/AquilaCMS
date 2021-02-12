@@ -13,7 +13,6 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 
 module.exports = function (app) {
-    app.post('/v2/products/adminList', authentication, adminAuth, getProductsAdminList);
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
@@ -203,31 +202,6 @@ async function calculStock(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
-    }
-}
-
-/**
- * @api {post} /v2/products/searchObj Get products
- * @apiGroup Products
- * @apiVersion 2.0.0
- * @apiDescription Get all products
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-TODO
-{"page":1,"limit":12,"filter":{},"sortObj":{"code":1}}
- * @apiUse ProductSchemaDefault
- * @apiUse ProductPrice
- * @apiUse ProductTranslation
- * @apiUse ProductReviews
- * @apiUse ProductStats
- * @apiUse ErrorPostBody
- */
-async function getProductsAdminList(req, res, next) {
-    try {
-        const result = await ServiceProduct.getProductsAdminList(req.body, req.params);
-        return res.json(result);
-    } catch (error) {
-        next(error);
     }
 }
 
