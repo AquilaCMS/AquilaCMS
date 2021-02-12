@@ -18,7 +18,18 @@ const {middlewareServer} = require('../middleware');
 const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
+    /**
+     * POST /api/v2/auth/login/{from}
+     * @tags Auth
+     * @summary Authentification
+     * @param {string} from.path.required - TODO
+     */
     app.post('/v2/auth/login/:from?', login);
+    /**
+     * GET /api/v2/auth/isauthenticated
+     * @tags Auth
+     * @summary Is authentificated
+     */
     app.get('/v2/auth/isauthenticated', authentication, IsAuthenticate);
     app.get('/v2/auth/logout', logout);
     app.post('/v2/auth/logout/admin', logoutAdmin);
@@ -28,6 +39,11 @@ module.exports = function (app) {
     app.get('/auth/logout', middlewareServer.deprecatedRoute, logout);
 };
 
+/**
+ * GET /api/v2/auth/logout
+ * @tags Auth
+ * @summary Delete the cookie for authentification
+ */
 const logout = (req, res) => {
     res.clearCookie('jwt');
     res.removeHeader('x-auth-token');

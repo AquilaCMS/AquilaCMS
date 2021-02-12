@@ -1,0 +1,77 @@
+{
+    "/api/v2/categories": {
+        "POST": {
+            "responses": {},
+            "tags": ["Category"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/category": {
+        "POST": {
+            "responses": {},
+            "tags": ["Category"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/category/{id}": {
+        "POST": {
+            "responses": {},
+            "tags": ["Category"],
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Category id",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                }
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/category": {
+        "PUT": {
+            "responses": {},
+            "tags": ["Category"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

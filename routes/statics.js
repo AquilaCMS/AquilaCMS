@@ -22,17 +22,17 @@ module.exports = function (app) {
     app.delete('/v2/static/:id', authentication, adminAuth, deleteStatic);
 };
 
-/**
- * @api {post} /v2/statics Get pages
- * @apiName getStatics
- * @apiGroup Static
- * @apiVersion 2.0.0
- * @apiDescription Get static pages
- * @apiParam {String} lang Get the translation in the right language
- * @apiUse param_PostBody
+ /**
+ * POST /api/v2/statics
+ * @tags Static
+ * @summary Static (pages) listing
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @return {staticsSchema} 200 - success
+ * 
  * @apiParamExample {js} Example usage:
-Get the french pages for slug "mon_slug" with the default fields except one field "metadesc" :
-{"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
+      Get the french pages for slug "mon_slug" with the default fields except one field "metadesc" :
+      {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
  * @apiSuccess {Array}  datas           Array of static pages
  * @apiSuccess {String} datas.code      Code of the page
  * @apiSuccess {Object} datas.slug      Slug information
@@ -41,7 +41,6 @@ Get the french pages for slug "mon_slug" with the default fields except one fiel
  * @apiSuccess {Number} datas.content   Content of the page (from translation[lang] fields)
  * @apiSuccess {String} datas.metaDesc  MetaDesc of the page (from translation[lang] fields)
  * @apiSuccess {String} datas.title     Title of the page (from translation[lang] fields)
- * @apiUse ErrorPostBody
  */
 async function getStatics(req, res, next) {
     try {
@@ -68,13 +67,12 @@ async function getStatics(req, res, next) {
 }
 
 /**
- * @api {post} /v2/static Get page
- * @apiName getStatic
- * @apiGroup Static
- * @apiVersion 2.0.0
- * @apiDescription Get one static page
- * @apiParam {String} lang Get the translation in the right language
- * @apiUse param_PostBody
+ * POST /api/v2/static
+ * @tags Static
+ * @summary Static (page) details
+ * @param {PostBody} request.body - PostBody
+ * @return {staticsSchema} 200 - success
+ * 
  * @apiParamExample {js} Example usage:
 Get the page for code "mycode" with the default fields for default language :
 {"PostBody":{"filter":{"code":"mycode"}}}
@@ -85,7 +83,6 @@ Get the page for code "mycode" with the default fields for default language :
  * @apiSuccess {Number}   content     Content of the page (from translation[lang] fields)
  * @apiSuccess {String}   metaDesc    MetaDesc of the page (from translation[lang] fields)
  * @apiSuccess {String}   title       Title of the page (from translation[lang] fields)
- * @apiUse ErrorPostBody
  */
 async function getStatic(req, res, next) {
     try {
@@ -134,11 +131,13 @@ async function getStaticById(req, res, next) {
 }
 
 /**
- * @api {put} /v2/static Set page
- * @apiName setStatic
- * @apiGroup Static
- * @apiVersion 2.0.0
- * @apiDescription Create/update static page
+ * PUT /api/v2/static
+ * @tags Static
+ * @summary Create/update static (page)
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @return {staticsSchema} 200 - success
+ * 
  * @apiParam {String} code Internal code for this page
  * @apiParam {String} type "Page" TODO
  * @apiParam {Object} [translation] Translation informations
@@ -164,14 +163,11 @@ async function setStatic(req, res, next) {
     }
 }
 
-/**
- * @api {delete} /v2/static/:_id Delete page
- * @apiName deleteStatic
- * @apiGroup Static
- * @apiVersion 2.0.0
- * @apiDescription Delete static page
- * @apiParam {String} _id Internal _id for this page
- * @apiUse static_not_found
+ /**
+ * DELETE /api/v2/static/{id}
+ * @tags Static
+ * @summary Delete static (page)
+ * @param {string} authorization.headers - authorization
  */
 async function deleteStatic(req, res, next) {
     try {

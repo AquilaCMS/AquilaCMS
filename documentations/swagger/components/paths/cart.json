@@ -2,14 +2,9 @@
     "/api/v2/cart/{id}": {
         "post": {
             "deprecated": false,
-            "summary": "Get cart by id",
             "security": [],
             "responses": {
                 "200": {
-                    "description": "",
-                    "content": {}
-                },
-                "404": {
                     "description": "",
                     "content": {}
                 }
@@ -39,6 +34,190 @@
                                 "description": "",
                                 "value": {"PostBody": {"structure": {"_id": 1}}}
                             }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/user/{idclient}": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {}
+                },
+                "404": {
+                    "description": "",
+                    "content": {}
+                }
+            },
+            "parameters": [
+                {
+                    "name": "idclient",
+                    "in": "path",
+                    "description": "Client id",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "test description",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "",
+                                "description": "",
+                                "value": {"PostBody": {"structure": {"_id": 0}}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/carts": {
+        "post": {
+            "responses": {
+            },
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "___REQUEST_DESCRIPTION__",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/to/order": {
+        "post": {
+            "responses": {},
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/:cartId/item/:itemId": {
+        "delete": {
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "cartId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "itemId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": ["Cart"]
+        }
+    },
+    "/api/v2/cart/item": {
+        "put": {
+            "responses": {},
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/updateQty": {
+        "put": {
+            "responses": {},
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/comment": {
+        "put": {
+            "responses": {},
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/addresses": {
+        "put": {
+            "responses": {},
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/delivery": {
+        "PUT": {
+            "responses": {},
+            "tags": ["Cart"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
                         }
                     }
                 }

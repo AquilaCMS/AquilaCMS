@@ -28,8 +28,6 @@ module.exports = function (app) {
 /**
  * POST /api/v2/categories
  * @summary Listing of categories
- * @tags Category
- * @param {PostBody} request.body.required - PostBody
  */
 async function getCategories(req, res, next) {
     try {
@@ -42,7 +40,8 @@ async function getCategories(req, res, next) {
 }
 
 /**
- * Fonction retournant une catégorie
+ * POST /api/v2/category
+ * @summary Category details
  */
 async function getCategory(req, res, next) {
     try {
@@ -55,7 +54,8 @@ async function getCategory(req, res, next) {
 }
 
 /**
- * Fonction retournant une categorie
+ * POST /api/v2/category/{id}
+ * @summary Category details by id
  */
 async function getCategoryById(req, res, next) {
     try {
@@ -66,8 +66,10 @@ async function getCategoryById(req, res, next) {
         return next(error);
     }
 }
-/**
- * Fonction pour ajouter ou mettre à jour une categorie
+
+ /**
+ * PUT /api/v2/category
+ * @summary Add or update category
  */
 async function setCategory(req, res, next) {
     try {

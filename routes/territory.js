@@ -23,7 +23,7 @@ module.exports = function (app) {
  * POST /api/v2/territories
  * @tags Territory
  * @summary Get a list of territory
- * @param {PostBody} request.body.required - PostBody
+ * @param {PostBody} request.body - PostBody
  * @return {ResponseTerritories} 200 - list of territories | territories
  */
 async function getTerritories(req, res, next) {
@@ -38,7 +38,7 @@ async function getTerritories(req, res, next) {
 /**
  * POST /api/v2/territory
  * @tags Territory
- * @param {PostBody} request.body.required - PostBody
+ * @param {PostBody} request.body - PostBody
  * @returns {TerritorySchema} territory
  */
 async function getTerritory(req, res, next) {
@@ -54,7 +54,7 @@ async function getTerritory(req, res, next) {
  * PUT /api/v2/territory
  * @summary Used for creating and updating territories
  * @tags Territory
- * @param {TerritorySchema} request.body.required - territory
+ * @param {TerritorySchema} request.body - territory
  */
 async function setTerritory(req, res, next) {
     try {
@@ -68,7 +68,7 @@ async function setTerritory(req, res, next) {
 /**
  * POST /api/v2/territory/{id}
  * @tags Territory
- * @param {string} id.path.required - territory id
+ * @param {string} id.path.required - Territory id
  * @param {PostBody} request.body - PostBody
  * @returns {TerritorySchema} territory
  */

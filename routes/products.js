@@ -36,7 +36,12 @@ async function getCoherence(req, res, next) {
 }
 
 /**
- * Fonction retournant un listing de produits
+ * POST /api/v2/products
+ * @tags Product
+ * @summary Listing of products
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @return {productsSchema} 200 - success
  */
 async function getProductsListing(req, res, next) {
     try {
@@ -68,7 +73,12 @@ async function getProductsListing(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /api/v2/product
+ * @tags Product
+ * @summary Get product
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @return {productsSchema} 200 - success
  */
 async function getProduct(req, res, next) {
     try {
@@ -109,7 +119,13 @@ async function duplicateProduct(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /api/v2/product/{id}
+ * @tags Product
+ * @summary Get one product by id
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @param {string} id.path.required - product id
+ * @return {productsSchema} 200 - success
  */
 async function getProductById(req, res, next) {
     try {
@@ -121,7 +137,13 @@ async function getProductById(req, res, next) {
 }
 
 /**
- * Fonction retournant une liste de produit appartenant a la categorie dont l'id est passé en parametre
+ * POST /api/v2/products/category/{id}
+ * @tags Product
+ * @summary Listing of product by category
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @param {string} id.path.required - category id
+ * @return {productsSchema} 200 - success
  */
 async function getProductsByCategoryId(req, res, next) {
     try {
@@ -171,7 +193,7 @@ async function deleteProduct(req, res, next) {
 }
 
 /**
- * @api {get} /v2/product/download Download virtual product
+ * @api {get} /api/v2/product/download Download virtual product
  * @apiGroup Products
  * @apiVersion 2.0.0
  * @apiDescription Download a virtual-product

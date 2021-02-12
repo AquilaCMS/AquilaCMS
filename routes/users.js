@@ -23,19 +23,16 @@ module.exports = function (app) {
     app.post('/v2/getUserTypes', authentication, getUserTypes);
 };
 
-/**
- * @api {post} /v2/users Users listing
- * @apiName getUsers
- * @apiGroup Users
- * @apiVersion 2.0.0
- * @apiDescription Get listing of users
- * @apiUse headerAuth
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-Get all 10 first users matching "lookingforname" with default structure
-{"PostBody": {"filter": {"$or": [{"firstname": {"$regex": "lookingforname","$options": "i"}},{"lastname": {"$regex": "lookingforname","$options": "i"}}]},"limit": 10}}
- * @apiUse UserSchemaDefault
- * @apiUse ErrorPostBody
+
+// Get all 10 first users matching "lookingforname" with default structure
+// {"PostBody": {"filter": {"$or": [{"firstname": {"$regex": "lookingforname","$options": "i"}},{"lastname": {"$regex": "lookingforname","$options": "i"}}]},"limit": 10}}
+ /**
+ * POST /api/v2/users
+ * @tags User
+ * @summary Users list
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @return {userSchema} 200 - success
  */
 async function getUsers(req, res, next) {
     try {
@@ -47,20 +44,14 @@ async function getUsers(req, res, next) {
     }
 }
 
+// {"PostBody":{"filter":{"email": "lookingfor@themail.com"},"structure":"*","limit":1}}
 /**
- * @api {post} /v2/user User details
- * @apiName getUser
- * @apiGroup Users
- * @apiVersion 2.0.0
- * @apiDescription Get one user
- * @apiUse headerAuth
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-Get the user matching "lookingfor@themail.com" with full structure
-{"PostBody":{"filter":{"email": "lookingfor@themail.com"},"structure":"*","limit":1}}
- * @apiUse UserSchema
- * @apiUse UserAddressSchema
- * @apiUse ErrorPostBody
+ * POST /api/v2/user
+ * @tags User
+ * @summary User details
+ * @param {string} authorization.headers - authorization
+ * @param {PostBody} request.body - PostBody
+ * @return {userSchema} 200 - success
  */
 async function getUser(req, res, next) {
     try {
@@ -79,7 +70,7 @@ async function getUser(req, res, next) {
  * @param {string} authorization.headers - authorization
  * @param {PostBody} request.body - PostBody
  * @param {string} id.path.required - user id
- * @return {UserSchema} 200 - success
+ * @return {userSchema} 200 - success
  */
 async function getUserById(req, res, next) {
     try {
@@ -101,7 +92,7 @@ async function getUserById(req, res, next) {
  * @tags User
  * @summary Get user by 'Activate Account Token'
  * @param {RequestAccountToken} request.body - activateAccountToken
- * @return {UserSchema} 200 - response success
+ * @return {userSchema} 200 - response success
  */
 async function getUserByAccountToken(req, res, next) {
     try {
@@ -116,6 +107,7 @@ async function getUserByAccountToken(req, res, next) {
  * PUT /api/v2/user
  * @tags User
  * @summary Add or update a user
+ * @param {string} authorization.headers - authorization
  */
 async function setUser(req, res, next) {
     let isAdmin = false;
@@ -160,6 +152,8 @@ async function setUserAddresses(req, res, next) {
  * DELETE /api/v2/user/{id}
  * @tags User
  * @summary Delete a user
+ * @param {string} id.path.required - User id
+ * @param {string} authorization.headers - authorization
  */
 async function deleteUser(req, res, next) {
     try {
@@ -211,3 +205,6 @@ async function resetpassword(req, res, next) {
         return next(error);
     }
 }
+
+
+

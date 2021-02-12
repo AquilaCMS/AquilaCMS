@@ -48,8 +48,12 @@ async function getShipment(req, res, next) {
     }
 }
 
-/**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ /**
+ * POST /api/v2/shipments/filter
+ * @tags Shipment
+ * @summary Get shipments for country and an order
+ * @param {PostBody} request.body - PostBody
+ * @return {shipmentSchema} 200 - success
  */
 async function getShipmentsFilter(req, res, next) {
     try {
