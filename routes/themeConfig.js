@@ -17,12 +17,9 @@ module.exports = function (app) {
     app.put('/v2/themeConfig', authentication, adminAuth, setThemeConfig);
 };
 
- /**
+/**
  * POST /api/v2/themeConfig
- * @tags ThemeConfig
  * @summary Get the configutation of the current theme
- * @param {PostBody} request.body - PostBody
- * @return {themeConfigSchema} 200 - success
  */
 async function getThemeConfig(req, res, next) {
     try {

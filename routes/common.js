@@ -39,9 +39,8 @@ const serverIsUp = (req, res) => {
     return res.status(200).end();
 };
 
- /**
+/**
  * POST /api/v2/getBreadcrumb
- * @tags Common
  * @summary Get current breadcrumb
  */
 async function getBreadcrumb(req, res, next) {

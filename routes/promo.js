@@ -20,14 +20,9 @@ module.exports = function (app) {
     app.delete('/v2/promo/:promoId/code/:codeId',    authentication, adminAuth, deletePromoCode);
 };
 
- /**
+/**
  * GET /api/v2/promo/check/code/{code}/{cartId}/{lang}
- * @tags Discount
  * @summary Validate discount code and return the new cart
- * @param {string} code.path.required - Discount code
- * @param {string} cartId.path.required - Cart id
- * @param {string} lang.path - lang
- * @return {cartSchema} 200 - success
  */
 async function checkCodePromoByCode(req, res, next) {
     try {

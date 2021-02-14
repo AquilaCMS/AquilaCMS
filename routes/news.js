@@ -21,12 +21,9 @@ module.exports = function (app) {
     app.delete('/v2/site/new/:_id', authentication, adminAuth, deleteNew);
 };
 
- /**
+/**
  * POST /api/v2/site/news
- * @tags News
  * @summary News list
- * @param {PostBody} request.body - PostBody
- * @return {newsSchema} 200 - success
  */
 async function getNews(req, res, next) {
     try {
@@ -37,12 +34,9 @@ async function getNews(req, res, next) {
     }
 }
 
- /**
+/**
  * POST /api/v2/site/new
- * @tags News
  * @summary News details
- * @param {PostBody} request.body - PostBody
- * @return {newsSchema} 200 - success
  */
 async function getNew(req, res, next) {
     try {

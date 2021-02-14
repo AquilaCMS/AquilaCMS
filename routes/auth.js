@@ -20,14 +20,11 @@ const NSErrors           = require('../utils/errors/NSErrors');
 module.exports = function (app) {
     /**
      * POST /api/v2/auth/login/{from}
-     * @tags Auth
      * @summary Authentification
-     * @param {string} from.path.required - TODO
      */
     app.post('/v2/auth/login/:from?', login);
     /**
      * GET /api/v2/auth/isauthenticated
-     * @tags Auth
      * @summary Is authentificated
      */
     app.get('/v2/auth/isauthenticated', authentication, IsAuthenticate);
@@ -41,7 +38,6 @@ module.exports = function (app) {
 
 /**
  * GET /api/v2/auth/logout
- * @tags Auth
  * @summary Delete the cookie for authentification
  */
 const logout = (req, res) => {

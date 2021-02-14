@@ -48,12 +48,9 @@ async function getShipment(req, res, next) {
     }
 }
 
- /**
+/**
  * POST /api/v2/shipments/filter
- * @tags Shipment
  * @summary Get shipments for country and an order
- * @param {PostBody} request.body - PostBody
- * @return {shipmentSchema} 200 - success
  */
 async function getShipmentsFilter(req, res, next) {
     try {

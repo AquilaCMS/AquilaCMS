@@ -1,39 +1,19 @@
 {
-    "/api/v2/cart/{id}": {
+    "/api/v2/carts": {
         "post": {
             "deprecated": false,
             "security": [],
-            "responses": {
-                "200": {
-                    "description": "",
-                    "content": {}
-                }
-            },
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "ID of cart to return",
-                    "required": true,
-                    "schema":{
-                        "type": "string"
-                    }
-                }
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
             ],
-            "tags": ["Cart"],
             "requestBody": {
-                "description": "test description",
+                "description": "___REQUEST_DESCRIPTION__",
                 "content": {
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
-                        },
-                        "examples": {
-                            "example1": {
-                                "summary": "",
-                                "description": "",
-                                "value": {"PostBody": {"structure": {"_id": 1}}}
-                            }
                         }
                     }
                 }
@@ -60,12 +40,14 @@
                     "in": "path",
                     "description": "Client id",
                     "required": true,
-                    "schema":{
+                    "schema": {
                         "type": "string"
                     }
                 }
             ],
-            "tags": ["Cart"],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "test description",
                 "content": {
@@ -77,7 +59,13 @@
                             "example1": {
                                 "summary": "",
                                 "description": "",
-                                "value": {"PostBody": {"structure": {"_id": 0}}}
+                                "value": {
+                                    "PostBody": {
+                                        "structure": {
+                                            "_id": 0
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -85,17 +73,49 @@
             }
         }
     },
-    "/api/v2/carts": {
+    "/api/v2/cart/{id}": {
         "post": {
+            "deprecated": false,
+            "security": [],
             "responses": {
+                "200": {
+                    "description": "",
+                    "content": {}
+                }
             },
-            "tags": ["Cart"],
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of cart to return",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
-                "description": "___REQUEST_DESCRIPTION__",
+                "description": "test description",
                 "content": {
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "",
+                                "description": "",
+                                "value": {
+                                    "PostBody": {
+                                        "structure": {
+                                            "_id": 1
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -104,8 +124,13 @@
     },
     "/api/v2/cart/to/order": {
         "post": {
+            "deprecated": false,
+            "security": [],
             "responses": {},
-            "tags": ["Cart"],
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "",
                 "content": {
@@ -120,6 +145,8 @@
     },
     "/api/v2/cart/:cartId/item/:itemId": {
         "delete": {
+            "deprecated": false,
+            "security": [],
             "responses": {},
             "parameters": [
                 {
@@ -127,7 +154,7 @@
                     "in": "path",
                     "description": "",
                     "required": true,
-                    "schema":{
+                    "schema": {
                         "type": "string"
                     }
                 },
@@ -136,18 +163,25 @@
                     "in": "path",
                     "description": "",
                     "required": true,
-                    "schema":{
+                    "schema": {
                         "type": "string"
                     }
                 }
             ],
-            "tags": ["Cart"]
+            "tags": [
+                "Cart"
+            ]
         }
     },
     "/api/v2/cart/item": {
         "put": {
+            "deprecated": false,
+            "security": [],
             "responses": {},
-            "tags": ["Cart"],
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "",
                 "content": {
@@ -162,8 +196,13 @@
     },
     "/api/v2/cart/updateQty": {
         "put": {
+            "deprecated": false,
+            "security": [],
             "responses": {},
-            "tags": ["Cart"],
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "",
                 "content": {
@@ -178,8 +217,13 @@
     },
     "/api/v2/cart/comment": {
         "put": {
+            "deprecated": false,
+            "security": [],
             "responses": {},
-            "tags": ["Cart"],
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "",
                 "content": {
@@ -194,8 +238,13 @@
     },
     "/api/v2/cart/addresses": {
         "put": {
+            "deprecated": false,
+            "security": [],
             "responses": {},
-            "tags": ["Cart"],
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "",
                 "content": {
@@ -209,9 +258,18 @@
         }
     },
     "/api/v2/cart/delivery": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": []
+        },
         "PUT": {
             "responses": {},
-            "tags": ["Cart"],
+            "tags": [
+                "Cart"
+            ],
             "requestBody": {
                 "description": "",
                 "content": {

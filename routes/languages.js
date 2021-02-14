@@ -19,12 +19,9 @@ module.exports = function (app) {
     app.post('/V2/translate/:lang/:currentTranslate', translateSet);
 };
 
- /**
+/**
  * POST /api/v2/languages
- * @tags Language
  * @summary Language list
- * @param {PostBody} request.body - PostBody
- * @return {languagesSchema} 200 - success
  */
 async function listLangs(req, res, next) {
     try {

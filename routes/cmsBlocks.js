@@ -17,16 +17,9 @@ module.exports = function (app) {
     app.delete('/v2/cmsBlock/:code', authentication, adminAuth, deleteCMSBlock);
 };
 
- /**
+/**
  * PUT /api/v2/cmsBlocks
- * @tags CMSBlock
  * @summary List of CMSBlocks
- * @param {PostBody} request.body - PostBody
- * @return {categoriesSchema} 200 - success
- *
- * @apiParamExample {js} Example usage:
-Get all CMSBlocks with the default fields for default language :
-{"PostBody":{"filter":{}}}
  * @apiSuccess {Array}  datas           Array of CMSBlocks
  * @apiSuccess {String} datas.code      Code of the CMSBlock
  * @apiSuccess {Number} datas.content   HTML content of the CMSBlock (from translation[lang] fields)

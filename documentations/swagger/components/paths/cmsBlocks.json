@@ -1,0 +1,42 @@
+{
+    "/api/v2/cmsBlocks": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/categoriesSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "CMSBlock"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all CMSBlocks",
+                                "description": "Get all CMSBlocks with the default fields for default language",
+                                "value": {"PostBody":{"filter":{}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    }
+}

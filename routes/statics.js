@@ -22,14 +22,14 @@ module.exports = function (app) {
     app.delete('/v2/static/:id', authentication, adminAuth, deleteStatic);
 };
 
- /**
+/**
  * POST /api/v2/statics
  * @tags Static
  * @summary Static (pages) listing
  * @param {string} authorization.headers - authorization
  * @param {PostBody} request.body - PostBody
  * @return {staticsSchema} 200 - success
- * 
+ *
  * @apiParamExample {js} Example usage:
       Get the french pages for slug "mon_slug" with the default fields except one field "metadesc" :
       {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
@@ -72,7 +72,7 @@ async function getStatics(req, res, next) {
  * @summary Static (page) details
  * @param {PostBody} request.body - PostBody
  * @return {staticsSchema} 200 - success
- * 
+ *
  * @apiParamExample {js} Example usage:
 Get the page for code "mycode" with the default fields for default language :
 {"PostBody":{"filter":{"code":"mycode"}}}
@@ -137,7 +137,7 @@ async function getStaticById(req, res, next) {
  * @param {string} authorization.headers - authorization
  * @param {PostBody} request.body - PostBody
  * @return {staticsSchema} 200 - success
- * 
+ *
  * @apiParam {String} code Internal code for this page
  * @apiParam {String} type "Page" TODO
  * @apiParam {Object} [translation] Translation informations
@@ -163,11 +163,9 @@ async function setStatic(req, res, next) {
     }
 }
 
- /**
+/**
  * DELETE /api/v2/static/{id}
- * @tags Static
  * @summary Delete static (page)
- * @param {string} authorization.headers - authorization
  */
 async function deleteStatic(req, res, next) {
     try {

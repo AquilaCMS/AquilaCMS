@@ -66,7 +66,7 @@ const getCartById = async (req, res, next) => {
     }
 };
 
- /**
+/**
  * POST /api/v2/cart/to/order
  * @summary Transform cart to order
  */
@@ -92,7 +92,7 @@ async function deleteCartItem(req, res, next) {
     }
 }
 
- /**
+/**
  * PUT /api/v2/cart/item
  * @summary Add an item in cart
  */
@@ -111,9 +111,8 @@ const addItem = async (req, res, next) => {
     }
 };
 
- /**
+/**
  * PUT /api/v2/cart/updateQty
- * @tags Cart
  * @summary Update an item quantity in cart
  */
 async function updateQty(req, res, next) {
@@ -128,7 +127,7 @@ async function updateQty(req, res, next) {
     }
 }
 
- /**
+/**
  * PUT /api/v2/cart/comment
  * @summary Update comment in cart
  */
@@ -142,7 +141,7 @@ async function updateComment(req, res, next) {
     }
 }
 
- /**
+/**
  * PUT /api/v2/cart/addresses
  * @summary Update address in cart
  */
@@ -156,7 +155,7 @@ async function updateAddresses(req, res, next) {
     }
 }
 
- /**
+/**
  * PUT /api/v2/cart/delivery
  * @summary Update delivery address in cart
  */
