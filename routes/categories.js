@@ -67,7 +67,7 @@ async function getCategoryById(req, res, next) {
     }
 }
 
- /**
+/**
  * PUT /api/v2/category
  * @summary Add or update category
  */
@@ -99,9 +99,6 @@ async function deleteCategory(req, res, next) {
 
 /**
  * Met a jour le filtre passer dans le body si il contient un id_attribut sinon, le filtre sera testé
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
  */
 async function setFilter(req, res, next) {
     try {
@@ -114,9 +111,6 @@ async function setFilter(req, res, next) {
 }
 /**
  * Met a jour les filtres passer dans le body
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
  */
 async function setFilters(req, res, next) {
     try {
@@ -152,8 +146,6 @@ async function applyTranslatedAttribs(req, res, next) {
 }
 
 /**
- * @param {{}} postBody PostBody
- * @param {string} req_headers_authorization header Authorization
  * @deprecated
  */
 // eslint-disable-next-line no-unused-vars

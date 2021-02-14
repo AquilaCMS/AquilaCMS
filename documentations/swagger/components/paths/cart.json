@@ -259,13 +259,6 @@
     },
     "/api/v2/cart/delivery": {
         "put": {
-            "deprecated": false,
-            "security": [],
-            "responses": {},
-            "parameters": [],
-            "tags": []
-        },
-        "PUT": {
             "responses": {},
             "tags": [
                 "Cart"

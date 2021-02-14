@@ -1,6 +1,6 @@
 {
     "/api/v2/categories": {
-        "POST": {
+        "post": {
             "responses": {},
             "tags": ["Category"],
             "requestBody": {
@@ -16,7 +16,7 @@
         }
     },
     "/api/v2/category": {
-        "POST": {
+        "post": {
             "responses": {},
             "tags": ["Category"],
             "requestBody": {
@@ -32,7 +32,7 @@
         }
     },
     "/api/v2/category/{id}": {
-        "POST": {
+        "post": {
             "responses": {},
             "tags": ["Category"],
             "parameters": [
@@ -59,7 +59,7 @@
         }
     },
     "/api/v2/category": {
-        "PUT": {
+        "put": {
             "responses": {},
             "tags": ["Category"],
             "requestBody": {
