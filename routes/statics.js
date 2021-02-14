@@ -24,15 +24,8 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/statics
- * @tags Static
  * @summary Static (pages) listing
- * @param {string} authorization.headers - authorization
- * @param {PostBody} request.body - PostBody
- * @return {staticsSchema} 200 - success
  *
- * @apiParamExample {js} Example usage:
-      Get the french pages for slug "mon_slug" with the default fields except one field "metadesc" :
-      {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
  * @apiSuccess {Array}  datas           Array of static pages
  * @apiSuccess {String} datas.code      Code of the page
  * @apiSuccess {Object} datas.slug      Slug information
@@ -70,12 +63,7 @@ async function getStatics(req, res, next) {
  * POST /api/v2/static
  * @tags Static
  * @summary Static (page) details
- * @param {PostBody} request.body - PostBody
- * @return {staticsSchema} 200 - success
  *
- * @apiParamExample {js} Example usage:
-Get the page for code "mycode" with the default fields for default language :
-{"PostBody":{"filter":{"code":"mycode"}}}
  * @apiSuccess {String}   code        Code of the page
  * @apiSuccess {Object}   slug        Slug information
  * @apiSuccess {String}   slug.fr     Slug fr
@@ -178,9 +166,6 @@ async function deleteStatic(req, res, next) {
 
 /**
  *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
  */
 async function previewStatic(req, res, next) {
     try {
