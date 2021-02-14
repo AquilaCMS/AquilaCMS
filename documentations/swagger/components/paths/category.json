@@ -1,8 +1,28 @@
 {
     "/api/v2/categories": {
         "post": {
-            "responses": {},
             "tags": ["Category"],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/categoriesSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "requestBody": {
                 "description": "",
                 "content": {
@@ -17,7 +37,18 @@
     },
     "/api/v2/category/{id}": {
         "post": {
-            "responses": {},
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/categoriesSchema"
+                            }
+                        }
+                    }
+                }
+            },
             "tags": ["Category"],
             "parameters": [
                 {
@@ -44,7 +75,18 @@
     },
     "/api/v2/category": {
         "post": {
-            "responses": {},
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/categoriesSchema"
+                            }
+                        }
+                    }
+                }
+            },
             "tags": ["Category"],
             "requestBody": {
                 "description": "",

@@ -9,7 +9,7 @@
                 "Cart"
             ],
             "requestBody": {
-                "description": "___REQUEST_DESCRIPTION__",
+                "description": "",
                 "content": {
                     "application/json": {
                         "schema": {

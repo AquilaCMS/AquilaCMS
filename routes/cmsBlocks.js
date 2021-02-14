@@ -50,17 +50,6 @@ async function getCMSBlocks(req, res, next) {
 /**
  * @api {post} /v2/cmsBlock Get CMSBlock
  * @apiName getCMSBlock
- * @apiGroup CMSBlock
- * @apiVersion 2.0.0
- * @apiDescription Get one CMSBlock
- * @apiParam {String} lang Get the translation in the right language
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-// Get the CMSBlock for code "mycode" with the default fields for default language :
-{PostBody:{filter:{code: "mycode"}}}
- * @apiSuccess {String}   code          Code of the CMSBlock
- * @apiSuccess {Number}   content       HTML content of the CMSBlock (from translation[lang] fields)
- * @apiUse ErrorPostBody
  */
 async function getCMSBlock(req, res, next) {
     try {

@@ -9,7 +9,18 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/productsSchema"
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/productsSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
                             }
                         }
                     }
@@ -151,7 +162,18 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/productsSchema"
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/productsSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
                             }
                         }
                     }

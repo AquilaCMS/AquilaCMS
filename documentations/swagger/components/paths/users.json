@@ -9,7 +9,16 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/userSchema"
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/userSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
                             }
                         }
                     }

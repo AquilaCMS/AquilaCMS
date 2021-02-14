@@ -1,6 +1,6 @@
 {
     "/api/v2/cmsBlocks": {
-        "put": {
+        "post": {
             "deprecated": false,
             "security": [],
             "responses": {
@@ -9,7 +9,16 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/categoriesSchema"
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/cmsBlocksSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
                             }
                         }
                     }
@@ -30,6 +39,86 @@
                                 "summary": "Get all CMSBlocks",
                                 "description": "Get all CMSBlocks with the default fields for default language",
                                 "value": {"PostBody":{"filter":{}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/cmsBlock": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/cmsBlocksSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "CMSBlock"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get CMSBlock",
+                                "description": "Get the CMSBlock for code 'mycode' with the default fields for default language",
+                                "value": {"PostBody":{"filter":{"code": "mycode"}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/cmsBlock/{code}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/cmsBlocksSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "CMSBlock"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get CMSBlock",
+                                "description": "Get the CMSBlock for code 'mycode' with the default fields for default language",
+                                "value": {"PostBody":{"filter":{"code": "mycode"}}}
                             }
                         }
                     }

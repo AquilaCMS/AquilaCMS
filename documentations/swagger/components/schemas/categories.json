@@ -64,7 +64,7 @@
                             }
                         },
                         "attributesValues" : {"type": "object"},
-                        "pictos"           : {"type": "array"}
+                        "pictos"           : {"type": "object"}
                     }
                 },
                 "translation"      : {"type": "object"},
