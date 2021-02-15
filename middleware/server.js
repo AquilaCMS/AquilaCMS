@@ -94,18 +94,28 @@ const initExpress = async (server, passport) => {
         "'self'",
         'https://cdnjs.cloudflare.com',
         'https://code.getmdl.io',
-        "'unsafe-inline'",
-        global.envConfig.environment.appUrl,
-        ...global.envConfig.environment.contentSecurityPolicyValues
+        "'unsafe-inline'"
     ];
-    server.use(helmet.contentSecurityPolicy({
-        directives : {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'script-src' : contentSecurityPolicyValues
-        },
-        // reportOnly ignore the CSP error, but report it
-        reportOnly : false
-    }));
+    if(global.envConfig && global.envConfig.environment) {
+        if(global.envConfig.environment.appUrl) {
+            contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
+        }
+        if(global.envConfig.environment.contentSecurityPolicyValues) {
+            contentSecurityPolicyValues = [
+                ...contentSecurityPolicyValues,
+                ...global.envConfig.environment.contentSecurityPolicyValues
+            ];
+        }
+    }
+
+    // server.use(helmet.contentSecurityPolicy({
+    //     directives : {
+    //         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+    //         'script-src' : contentSecurityPolicyValues
+    //     },
+    //     // reportOnly ignore the CSP error, but report it
+    //     reportOnly : false
+    // }));
     server.use(helmet.dnsPrefetchControl({allow: true}));
     server.use(helmet.originAgentCluster());
     server.use(helmet.frameguard({action: 'sameorigin'}));

@@ -34,8 +34,8 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
     try {
         modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
         await fs.ensureDir(modules_folder);
-        const isFileExists = !(await fs.access(`${modules_folder}/list_modules.js`));
-        if (isFileExists) {
+        const isFileExists = await fs.hasAccess(`${modules_folder}/list_modules.js`);
+        if (!isFileExists) {
             await fs.writeFile(`${modules_folder}/list_modules.js`, 'export default [];');
         }
     } catch (err) {
