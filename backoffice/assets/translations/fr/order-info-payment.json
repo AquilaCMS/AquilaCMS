@@ -10,5 +10,6 @@
     "valider": "Valider",
     "DEBIT": "Remboursement",
     "CREDIT": "Paiement",
-    "payType" : "Type de réglement"
+    "payType" : "Type de réglement",
+    "amount": "Montant"
 }

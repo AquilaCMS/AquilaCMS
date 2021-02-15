@@ -10,5 +10,6 @@
     "valider": "Submit",
     "DEBIT": "Refund",
     "CREDIT": "Payment",
-    "payType" : "Type of payment"
+    "payType": "Type of payment",
+    "amount": "Amount"
 }
