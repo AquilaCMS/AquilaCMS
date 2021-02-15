@@ -29,6 +29,29 @@ FamiliesSchema.pre('save', function (next) {
     return next();
 });
 
+FamiliesSchema.pre('findOneAndDelete', async function (next) {
+    const {Families, Products} = require('../models');
+    await Families.updateOne({children: this._conditions._id}, {$pull: {children: this._conditions._id}});
+    const family = await Families.findOne({_id: this._conditions._id});
+    for (const child of family.children) {
+        await Families.findOneAndDelete({_id: child.toString()});
+    }
+    const where  = {};
+    const action = {};
+    if (family.type === 'universe') {
+        where.universe = family.slug;
+        action.$unset  = {universe: '', family: '', subfamily: ''};
+    } else if (family.type === 'family') {
+        where.family  = family.slug;
+        action.$unset = {family: '', subfamily: ''};
+    } else {
+        where.subfamily = family.slug;
+        action.$unset   = {subfamily: ''};
+    }
+    await Products.updateMany(where, action);
+    return next();
+});
+
 /*
 FamiliesSchema.post('save', function () {
   helper.create_ancestors(this._id, this.parent);
@@ -39,8 +62,6 @@ FamiliesSchema.post('save', function () {
 // familyCode : families.code
 // slugMenu : menus.slug
 FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu ) {
-    const {Products} = require('../models');
-
     // Add menu in family
     const f = await this.findOne({code: familyCode});
     if ( f.menus === undefined) f.menus = [];
@@ -54,8 +75,6 @@ FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu
 // familyCode : families.code
 // slugMenu : menus.slug
 FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slugMenu) {
-    const {Products} = require('../models');
-
     // Remove menu from family
     const f           = await this.findOne({code: familyCode});
     const indexOfSlug = f.menus.indexOf(slugMenu);

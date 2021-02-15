@@ -142,32 +142,32 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
             category : "", menu     : "", submenu  : ""
         };
 
-        $scope.updateFromUniverse = function (idUniverse) {
-            $scope.selectedUniverse = idUniverse;
-            $scope.selectedFamily = "";
-        };
-
-        $scope.updateFromFamily = function (idFamily) {
-            $scope.selectedFamily = idFamily;
-        };
-
         function updateMenu() {
             FamilyV2.list({PostBody: {filter: {}, limit: 99, structure: '*'}}, function({datas}) {
                 $scope.universes = datas
                 if ($scope.selectedUniverse) {
-                    childrenfamily.get({id: $scope.selectedUniverse}, function (result) {
-                        $scope.families = result.children;
+                    FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedUniverse}, limit: 99, structure: '*' }}, function (result) {
+                        $scope.families = result.datas;
+                        if ($scope.selectedFamily) {
+                            FamilyV2.list({ PostBody: { filter: { parent: $scope.selectedFamily }, limit: 99, structure: '*' } }, function (result) {
+                                $scope.subFamilies = result.datas;
+                            });
+                        }
                     });
-                    if ($scope.selectedFamily) {
-                        childrenfamily.get({id: $scope.selectedFamily}, function (result) {
-                            $scope.subFamilies = result.children;
-                        });
-                    }
                 }
             });
         }
 
-        $scope.newFamilies = function (type) {
+        $scope.newFamilies = function (type, id) {
+            if(type === 'family'){
+                if ($scope.selectedUniverse != id) {
+                    $scope.updateFromUnivers(id)
+                }
+            }else if(type === 'subfamily'){
+                if ($scope.selectedFamily != id) {
+                    $scope.updateFromFamily(id)
+                }
+            }
             const modalInstance = $modal.open({
                 templateUrl : 'app/family/views/family-new.html',
                 controller  : 'FamilyNewCtrl',
@@ -202,7 +202,6 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
 
             modalInstance.result.then(function () {
                 updateMenu();
-            // $scope.selected = selectedItem;
             }, function () {
                 console.log(`Modal dismissed at: ${new Date()}`);
             });
@@ -226,7 +225,9 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
                 $scope.selectedFamily = idCategoryV2;
                 $scope.subFamilies = [];
                 FamilyV2.list({ PostBody: { filter: { _id: idCategoryV2 }, limit: 99, populate: 'children'}}, function (result) {
-                    $scope.subFamilies = result.datas[0].children;
+                    if(result.datas[0] != undefined){
+                        $scope.subFamilies = result.datas[0].children;
+                    }
                 });
             }else{
                 $scope.selectedFamily = 0;
@@ -240,7 +241,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
         $scope.removeFamily = function (familyId) {
             if (confirm("Etes-vous sûr de vouloir supprimer cette famille et tous ses enfants ?")) {
                 FamilyV2.delete({id: familyId, type: 'family'}, function () {
-                    location.reload();
+                    updateMenu();
                 });
             }
         };
