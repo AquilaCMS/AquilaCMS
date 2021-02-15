@@ -2,18 +2,24 @@
     "PostBody": {
         "description": "",
         "properties": {
-            "filter"    : {"type": "object"},
-            "limit"     : {"type": "number", "default": 1},
-            "populate"  : {
-                "type": "array",
-                "items": {
-                    "type": "string"
+            "lang":{"type": "string"},
+            "PostBody" : {
+                "type": "object",
+                "properties": {
+                    "filter" : {"type": "object"},
+                        "limit" : {"type": "number", "default": 1},
+                        "populate" : {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "skip"      : {"type": "number", "default": 0},
+                        "sort"      : {"type": "object"},
+                        "structure" : {"type": "object"},
+                        "page"      : {"type": "page", "default": null}
                 }
-            },
-            "skip"      : {"type": "number", "default": 0},
-            "sort"      : {"type": "object"},
-            "structure" : {"type": "object"},
-            "page"      : {"type": "page", "default": null}
+            }
         }
     }
 }
