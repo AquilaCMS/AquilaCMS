@@ -21,6 +21,10 @@ module.exports = function (app) {
     app.delete('/v2/site/new/:_id', authentication, adminAuth, deleteNew);
 };
 
+/**
+ * POST /api/v2/site/news
+ * @summary News list
+ */
 async function getNews(req, res, next) {
     try {
         const {PostBody} = req.body;
@@ -30,6 +34,10 @@ async function getNews(req, res, next) {
     }
 }
 
+/**
+ * POST /api/v2/site/new
+ * @summary News details
+ */
 async function getNew(req, res, next) {
     try {
         const {PostBody} = req.body;

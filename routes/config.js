@@ -25,8 +25,6 @@ module.exports = function (app) {
 
 /**
  * GET /api/config/data
- * @tags Configuration
- * @deprecated
  */
 const getConfigTheme = async (req, res, next) => {
     try {
@@ -39,12 +37,7 @@ const getConfigTheme = async (req, res, next) => {
 
 /**
  * POST /api/v2/config/{key}
- * @tags Configuration
  * @summary Get config of the website
- * @param {string} key.path.required - key config ex: environment
- * @param {PostBody} request.body - PostBody
- * @param {string} authorization.headers - authorization
- * @return {configurationSchema} 200 - success
  */
 const getConfig = async (req, res, next) => {
     try {
@@ -77,9 +70,6 @@ async function saveEnvFile(req, res, next) {
 /**
  * PUT /api/v2/config
  * @summary Save config
- * @tags Configuration
- * @param {configurationSchema} request.body - config
- * @return {string} 200 - success | success | "success"
  */
 async function saveEnvConfig(req, res, next) {
     try {
@@ -102,7 +92,6 @@ async function saveEnvConfig(req, res, next) {
 
 /**
  * GET /api/restart
- * @tags Configuration
  */
 const restart = async (req, res, next) => {
     try {
@@ -114,7 +103,6 @@ const restart = async (req, res, next) => {
 
 /**
  * GET /api/robot
- * @tags Configuration
  */
 async function getRobot(req, res, next) {
     try {
@@ -130,11 +118,6 @@ async function getRobot(req, res, next) {
 
 /**
  * POST /api/robot
- * @tags Configuration
- * @param {PostBody} request.body
- * @return {object} 200 - success | success | {
- * "message": "success"
- * }
  */
 async function setRobot(req, res, next) {
     try {

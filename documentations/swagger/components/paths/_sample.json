@@ -1,0 +1,61 @@
+{
+    "/api/v2/__ROUTE__/{__PARAM1__}": {
+        "post": {
+            "deprecated": false,
+            "summary": "__NOT_USED_BECAUSE_ITS_IN_THE_ROUTE_SO_REMOVE_IT__",
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#components/schemas/_____SCHEMA____"
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "__responses_200_SAMPLE_SUMMARY__",
+                                    "description": "__responses_200_SAMPLE_DESCRIPTION__",
+                                    "value": {"__FIELD__": "__VALUE__"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "",
+                    "content": {}
+                }
+            },
+            "parameters": [
+                {
+                    "name": "__PARAM1__",
+                    "in": "path",
+                    "description": "___DESCRIPTION__",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": ["___TAG___"],
+            "requestBody": {
+                "description": "___REQUEST_DESCRIPTION__",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "___SAMPLE_SUMMARY__",
+                                "description": "___SAMPLE_DESCRIPTION__",
+                                "value": {"PostBody": {"__FIELD__": "__VALUE__"}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

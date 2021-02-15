@@ -45,7 +45,6 @@ const getLogsContent = async (req, res, next) => {
 
 /**
  * GET /api/config/next
- * @tags Configuration
  */
 const getNextVersion = async (req, res, next) => {
     try {
@@ -58,7 +57,6 @@ const getNextVersion = async (req, res, next) => {
 
 /**
  * POST /api/config/next
- * @tags Configuration
  */
 const changeNextVersion = async (req, res, next) => {
     try {

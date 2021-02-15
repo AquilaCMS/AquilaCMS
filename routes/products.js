@@ -36,7 +36,8 @@ async function getCoherence(req, res, next) {
 }
 
 /**
- * Fonction retournant un listing de produits
+ * POST /api/v2/products
+ * @summary Listing of products
  */
 async function getProductsListing(req, res, next) {
     try {
@@ -68,7 +69,8 @@ async function getProductsListing(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /api/v2/product
+ * @summary Get product
  */
 async function getProduct(req, res, next) {
     try {
@@ -109,7 +111,8 @@ async function duplicateProduct(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /api/v2/product/{id}
+ * @summary Get one product by id
  */
 async function getProductById(req, res, next) {
     try {
@@ -121,7 +124,8 @@ async function getProductById(req, res, next) {
 }
 
 /**
- * Fonction retournant une liste de produit appartenant a la categorie dont l'id est passé en parametre
+ * POST /api/v2/products/category/{id}
+ * @summary Listing of product by category
  */
 async function getProductsByCategoryId(req, res, next) {
     try {
@@ -171,7 +175,7 @@ async function deleteProduct(req, res, next) {
 }
 
 /**
- * @api {get} /v2/product/download Download virtual product
+ * @api {get} /api/v2/product/download Download virtual product
  * @apiGroup Products
  * @apiVersion 2.0.0
  * @apiDescription Download a virtual-product

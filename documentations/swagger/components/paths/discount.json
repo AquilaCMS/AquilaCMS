@@ -1,0 +1,55 @@
+{
+    "/api/v2/promo/check/code/{code}/{cartId}/{lang}": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/cartSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "code",
+                    "in": "path",
+                    "description": "Discount code",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "cartId",
+                    "in": "path",
+                    "description": "Cart id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "lang",
+                    "in": "path",
+                    "description": "lang",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Discount"
+            ]
+        }
+    }
+}

@@ -43,6 +43,10 @@ async function getDistinctNewsletters(req, res, next) {
     }
 }
 
+/**
+ * GET /api/v2/newsletter/{email}
+ * @summary Get subscribing for this email
+ */
 async function getNewsletterByEmail(req, res, next) {
     try {
         const result = await ServiceNewsletter.getNewsletterByEmail(req.params.email);
@@ -52,6 +56,10 @@ async function getNewsletterByEmail(req, res, next) {
     }
 }
 
+/**
+ * POST /api/v2/newsletter/{email}
+ * @summary Subscribe to a newsletter
+ */
 async function setStatusNewsletterByEmail(req, res, next) {
     try {
         const result = await ServiceNewsletter.setStatusNewsletterByEmail(req.params.email, req.body);

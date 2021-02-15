@@ -21,10 +21,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/territories
- * @tags Territory
  * @summary Get a list of territory
- * @param {PostBody} request.body.required - PostBody
- * @return {ResponseTerritories} 200 - list of territories | territories
  */
 async function getTerritories(req, res, next) {
     try {
@@ -37,9 +34,7 @@ async function getTerritories(req, res, next) {
 
 /**
  * POST /api/v2/territory
- * @tags Territory
- * @param {PostBody} request.body.required - PostBody
- * @returns {TerritorySchema} territory
+ * @param {PostBody} request.body - PostBody
  */
 async function getTerritory(req, res, next) {
     try {
@@ -53,8 +48,6 @@ async function getTerritory(req, res, next) {
 /**
  * PUT /api/v2/territory
  * @summary Used for creating and updating territories
- * @tags Territory
- * @param {TerritorySchema} request.body.required - territory
  */
 async function setTerritory(req, res, next) {
     try {
@@ -67,10 +60,6 @@ async function setTerritory(req, res, next) {
 
 /**
  * POST /api/v2/territory/{id}
- * @tags Territory
- * @param {string} id.path.required - territory id
- * @param {PostBody} request.body - PostBody
- * @returns {TerritorySchema} territory
  */
 async function getTerritoryById(req, res, next) {
     try {
@@ -83,8 +72,6 @@ async function getTerritoryById(req, res, next) {
 
 /**
  * DELETE /api/v2/territory/{id}
- * @tags Territory
- * @param {string} id.path.required - territory id
  */
 async function deleteTerritory(req, res, next) {
     try {
@@ -97,7 +84,6 @@ async function deleteTerritory(req, res, next) {
 
 /**
  * GET /api/territory/countries
- * @tags Territory
  */
 async function listCountries(req, res, next) {
     try {

@@ -28,8 +28,6 @@ module.exports = function (app) {
 /**
  * POST /api/v2/categories
  * @summary Listing of categories
- * @tags Category
- * @param {PostBody} request.body.required - PostBody
  */
 async function getCategories(req, res, next) {
     try {
@@ -42,7 +40,8 @@ async function getCategories(req, res, next) {
 }
 
 /**
- * Fonction retournant une catégorie
+ * POST /api/v2/category
+ * @summary Category details
  */
 async function getCategory(req, res, next) {
     try {
@@ -55,7 +54,8 @@ async function getCategory(req, res, next) {
 }
 
 /**
- * Fonction retournant une categorie
+ * POST /api/v2/category/{id}
+ * @summary Category details by id
  */
 async function getCategoryById(req, res, next) {
     try {
@@ -66,8 +66,10 @@ async function getCategoryById(req, res, next) {
         return next(error);
     }
 }
+
 /**
- * Fonction pour ajouter ou mettre à jour une categorie
+ * PUT /api/v2/category
+ * @summary Add or update category
  */
 async function setCategory(req, res, next) {
     try {
@@ -97,9 +99,6 @@ async function deleteCategory(req, res, next) {
 
 /**
  * Met a jour le filtre passer dans le body si il contient un id_attribut sinon, le filtre sera testé
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
  */
 async function setFilter(req, res, next) {
     try {
@@ -112,9 +111,6 @@ async function setFilter(req, res, next) {
 }
 /**
  * Met a jour les filtres passer dans le body
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
  */
 async function setFilters(req, res, next) {
     try {
@@ -150,8 +146,6 @@ async function applyTranslatedAttribs(req, res, next) {
 }
 
 /**
- * @param {{}} postBody PostBody
- * @param {string} req_headers_authorization header Authorization
  * @deprecated
  */
 // eslint-disable-next-line no-unused-vars
