@@ -9,18 +9,30 @@
             <div class="box-content">
                 <form name="form" novalidate class="form-horizontal" role="form">
                     <div class="row">
-                            <div class="col-sm-12">
-                                <label class="col-sm-2 control-label" translate>order-info-payment.payMode</label>
-                                <div class="col-sm-10">
-                                    <select name="mode" class="form-control" ng-model="return.mode" required>
-                                        <option value="CHEQUE" translate>order-info-payment.cheque</option>
-                                        <option value="TRANSFER" translate>order-info-payment.vir</option>
-                                    </select>
-                                    <div ng-show="form.mode.$invalid" class="ns-error-message">
-                                        <div ng-show="form.mode.$error.required" translate>order-info-payment.fieldReq</div>
-                                    </div>
+                        <div class="col-sm-12">
+                            <label class="col-sm-2 control-label" translate>order-info-payment.payType</label>
+                            <div class="col-sm-10">
+                                <select name="mode" class="form-control" ng-model="return.type" ng-disabled="pay.disabled" required>
+                                    <option value="DEBIT" translate>order-info-payment.DEBIT</option>
+                                    <option value="CREDIT" translate>order-info-payment.CREDIT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <br>
+                        <div class="col-sm-12">
+                            <label class="col-sm-2 control-label" translate>order-info-payment.payMode</label>
+                            <div class="col-sm-10">
+                                <select name="mode" class="form-control" ng-model="return.mode" required>
+                                    <option value="CHEQUE" translate>order-info-payment.cheque</option>
+                                    <option value="TRANSFER" translate>order-info-payment.vir</option>
+                                </select>
+                                <div ng-show="form.mode.$invalid" class="ns-error-message">
+                                    <div ng-show="form.mode.$error.required" translate>order-info-payment.fieldReq</div>
                                 </div>
                             </div>
+                        </div>
                         <br>
                         <br>
                         <br>
