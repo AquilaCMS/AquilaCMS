@@ -28,7 +28,7 @@ module.exports = function (app) {
  */
 async function getUsers(req, res, next) {
     try {
-        const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        const PostBodyVerified = await authService.validateUserIsAllowed(req.info, req.body.PostBody, '_id');
         const result           = await usersServices.getUsers(PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -43,7 +43,7 @@ async function getUsers(req, res, next) {
  */
 async function getUser(req, res, next) {
     try {
-        const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        const PostBodyVerified = await authService.validateUserIsAllowed(req.info, req.body.PostBody, '_id');
         const result           = await usersServices.getUser(PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -57,7 +57,7 @@ async function getUser(req, res, next) {
  */
 async function getUserById(req, res, next) {
     try {
-        const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        const PostBodyVerified = await authService.validateUserIsAllowed(req.info, req.body.PostBody, '_id');
         const result           = await usersServices.getUserById(req.params.id, PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -88,25 +88,19 @@ async function getUserByAccountToken(req, res, next) {
  * @summary Add or update a user
  */
 async function setUser(req, res, next) {
-    let isAdmin = false;
     try {
-        if (req.headers && req.headers.authorization) {
-            const user = authService.getDecodedToken(req.headers.authorization);
-            if (user) {
-                isAdmin = user.info.isAdmin ? user.info.isAdmin : false;
-            } else {
-                return res.json({code: 'NOT_AUTHENTICATED', isAuthenticated: false});
-            }
+        if (!req.info) {
+            return res.json({code: 'NOT_AUTHENTICATED', isAuthenticated: false});
         }
 
         // Edit
         if (req.body._id) {
-            const result = await usersServices.setUser(req.body._id, req.body, isAdmin);
+            const result = await usersServices.setUser(req.body._id, req.body, req.info.isAdmin);
             return res.json({code: 'USER_UPDATE_SUCCESS', user: result});
         }
 
         // Create
-        const newUser = await usersServices.createUser(req.body, isAdmin);
+        const newUser = await usersServices.createUser(req.body, req.info.isAdmin);
         return res.status(201).send({user: newUser});
     } catch (error) {
         return next(error);

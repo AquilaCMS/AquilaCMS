@@ -45,8 +45,8 @@ module.exports = function (app) {
  */
 async function getOrders(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
-        if (!ServiceAuth.isAdmin(req.headers.authorization)) {
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
+        if (req.info && !req.info.isAdmin) {
             PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
@@ -74,7 +74,7 @@ async function setOrder(req, res, next) {
 
 async function getOrder(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         const result           = await ServiceOrder.getOrder(PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -90,7 +90,7 @@ async function getOrder(req, res, next) {
  */
 async function getOrderById(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         const result           = await ServiceOrder.getOrderById(req.params.id, PostBodyVerified);
         return res.json(result);
     } catch (error) {

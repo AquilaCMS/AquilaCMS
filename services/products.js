@@ -180,7 +180,8 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
  * @param keepReviews
  */
 const getPromosByProduct = async (PostBody, reqRes = undefined) => {
-    const product = await queryBuilder.findOne(PostBody, false, reqRes.req.headers.authorization);
+    const isAdmin = !!(reqRes.req && reqRes.req.info && reqRes.req.info.isAdmin);
+    const product = await queryBuilder.findOne(PostBody, false, isAdmin);
     if (!product) {
         return product;
     }
@@ -1063,7 +1064,7 @@ const downloadProduct = async (req, res) => {
 const getProductsListing = async (req, res) => {
     // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
-    if (req.params.withFilters || req.body.withFilters) {
+    if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
 

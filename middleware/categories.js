@@ -6,12 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const serviceAuth = require('../services/auth');
-
 const filterCategories = (req, res, next) => {
-    const {PostBody}      = req.body;
-    const {authorization} = req.headers;
-    if (!serviceAuth.isAdmin(authorization)) {
+    const {PostBody} = req.body;
+    if (req.info && !req.info.isAdmin) {
         const date           = new Date();
         PostBody.filter.$and = [
             {openDate: {$lte: date}},

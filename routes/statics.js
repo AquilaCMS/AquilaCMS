@@ -39,7 +39,7 @@ async function getStatics(req, res, next) {
     try {
         const {PostBody} = req.body;
         const result     = await ServiceStatic.getStatics(PostBody);
-        if (!req.headers.authorization || (req.info && !req.info.isAdmin)) {
+        if (req.info && !req.info.isAdmin) {
             // on boucle sur les resultats
             for (let i = 0; i < result.datas.length; i++) {
                 const page = result.datas[i];
@@ -82,7 +82,7 @@ async function getStatic(req, res, next) {
         } else {
             result = await ServiceStatic.getStatic(postBody);
         }
-        if ((!req.headers.authorization || (req.info && !req.info.isAdmin)) && result && result.translation) {
+        if ((req.info && !req.info.isAdmin) && result && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
@@ -104,7 +104,7 @@ async function getStaticById(req, res, next) {
 
     try {
         const result = await ServiceStatic.getStaticById(req.params.id, req.body.PostBody);
-        if ((!req.headers.authorization || (req.info && !req.info.isAdmin)) && result.translation) {
+        if ((req.info && !req.info.isAdmin) && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];

@@ -73,23 +73,18 @@ const login = async (req, res, next) => {
 /**
  * Validate user is allowed with PostBody
  */
-const validateUserIsAllowed = async (token, baseUrl, PostBody, field) => {
-    try {
-        if (!token) {
-            throw NSErrors.AccessUnauthorized;
-        }
-        const decoded = getDecodedToken(token);
-        if (decoded.info.isAdmin) {
-            return PostBody;
-        }
-        if (!PostBody.filter) {
-            PostBody.filter = {};
-        }
-        PostBody.filter[field] = decoded.userId;
-        return PostBody;
-    } catch (error) {
+const validateUserIsAllowed = async (user, PostBody, field) => {
+    if (!user) {
         throw NSErrors.AccessUnauthorized;
     }
+    if (user.isAdmin) {
+        return PostBody;
+    }
+    if (!PostBody.filter) {
+        PostBody.filter = {};
+    }
+    PostBody.filter[field] = user._id;
+    return PostBody;
 };
 
 /**
@@ -105,23 +100,14 @@ const validateUserIsAllowedWithoutPostBody = async (user, query, field) => {
 /**
  * Validate user is allowed without PostBody for RGPD
  */
-const validateUserAuthWithoutPostBody = async (token, id) => {
-    try {
-        if (!token) {
-            throw NSErrors.AccessUnauthorized;
-        }
-        const decoded = getDecodedToken(token);
-        if (decoded.info.isAdmin) {
-            return id;
-        }
-        return decoded.userId;
-    } catch (error) {
-        throw NSErrors.AccessUnauthorized;
-    }
+const validateUserAuthWithoutPostBody = async (user, id) => {
+    if (!user) throw NSErrors.AccessUnauthorized;
+    return user.isAdmin ? id : user._id;
 };
 
 /**
  * Check if admin
+ * @deprecated use `req.info.isAdmin` instead
  */
 function isAdmin(req_headers_authorization) {
     if (req_headers_authorization) {
