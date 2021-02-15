@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                  = require('moment-business-days');
 const path                    = require('path');
 const mongoose                = require('mongoose');
@@ -18,9 +26,6 @@ const {
     Configuration,
     Products,
     ProductsPreview,
-    ProductSimple,
-    ProductBundle,
-    ProductVirtual,
     Categories,
     SetAttributes,
     Attributes,
@@ -59,7 +64,6 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    let result = await queryBuilder.find(PostBody);
     if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -72,9 +76,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         delete PostBody.filter.$text;
-
-        result = await queryBuilder.find(PostBody);
     }
+    let result                 = await queryBuilder.find(PostBody);
     queryBuilder.defaultFields = defaultFields;
 
     // On supprime les reviews qui ne sont pas visible et verify
@@ -140,9 +143,9 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
-        product         = await queryBuilderPreview.findOne(PostBody);
+        product         = await queryBuilderPreview.findOne(PostBody, true);
     } else {
-        product = await queryBuilder.findOne(PostBody);
+        product = await queryBuilder.findOne(PostBody, true);
     }
     if (!product) {
         return product;
@@ -161,12 +164,12 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
         serviceReviews.keepVisibleAndVerify(product);
     }
 
+    if (product.associated_prds) {
+        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
+    }
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = product;
         product           = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-    }
-    if (product.associated_prds) {
-        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
     }
     return product;
 };
@@ -245,15 +248,30 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
-    let matchCategory = {_visible: true, active: true};
+    lang = servicesLanguages.getDefaultLang(lang);
     // Si admin alors on populate tout les documents sans restriction de visibilité ou d'actif
-    if (isAdmin) {
-        matchCategory = {};
+    if (!PostBody.filter) PostBody.filter = {};
+    if (!isAdmin) {
+        PostBody.filter = {
+            ...PostBody.filter,
+            _visible : true,
+            active   : true
+        };
     }
-    const menu = await Categories.findById(id).populate({
-        path  : 'productsList.id',
-        match : matchCategory
-    }).lean();
+    PostBody.filter = {
+        ...PostBody.filter,
+        [`translation.${lang}`] : {$exists: true}
+    };
+    if (!PostBody.structure) {
+        PostBody.structure = {};
+    }
+    PostBody.structure = {
+        ...PostBody.structure,
+        price : 1,
+        type  : 1
+    };
+
+    const menu = await Categories.findById(id).lean();
     if (menu === null) {
         throw NSErrors.CategoryNotFound;
     }
@@ -268,38 +286,22 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
-    lang = servicesLanguages.getDefaultLang(lang);
     // Si un productsList.id ne répond pas au match alors productsList.id === null
-    menu.productsList = menu.productsList.filter((p) => p.id !== null);
-    menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
-    if (PostBody.filter === undefined)  PostBody.filter = {};
-    const _config = await Configuration.findOne({}, {stockOrder: 1});
-    if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
+    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
         PostBody.structure.stock = 1;
     }
 
     // On verifie que les infos de PostBody sont correctes
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
     // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit)
-    // si PostBody.sort n'existe pas ou que sort.sortWeight existe
-    if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-        // on trie les sortWeight du plus petit au plus grand
-        if (PostBody.sort && PostBody.sort.sortWeight && PostBody.sort.sortWeight === 1 ) {
-            menu.productsList.sort((p1, p2) => p1.sortWeight  - p2.sortWeight);
-        } else {
-            menu.productsList.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        }
-    }
-    // Si il y a un tri sur les produits alors on va trier les produits dans le queryBuilder
-    const productListSorted = menu.productsList;
 
-    PostBody.filter._id = {$in: productListSorted.map((item) => item.id._id.toString())};
+    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
     // On récupére les produits de productList
     const result = await queryBuilder.find(PostBody, true);
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         // On ajoute le sortWeight correspondant au produit dans le doc produit
-        productListSorted.forEach((product) => {
-            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id._id.toString());
+        menu.productsList.forEach((product) => {
+            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (ProdFound) {
                 ProdFound.sortWeight = product.sortWeight;
@@ -307,9 +309,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         });
         // On trie les produits par poids
         result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        result.count = menu.productsList.length;
     }
-    if (_config.stockOrder.bookingStock !== 'none') {
+    if (global.envConfig.stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
             const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
@@ -322,14 +323,13 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
                 result.datas[i].stock.qty         = stockData.product.stock.qty;
                 result.datas[i].stock.orderable   = stockData.product.stock.orderable;
                 result.datas[i].stock.qty_real    = stockData.product.stock.qty_real;
-                // result.datas[i] = {...result.datas[i], label, dateShipped, status: product.stock.status, qty: product.stock.qty, orderable: product.stock.orderable, qty_real: product.stock.qty_real};
             }
         }
     }
 
     if (PostBody.structure && PostBody.structure.sortWeight) {
         for (let i = 0; i < result.datas.length; i++) {
-            const sortedPrd = productListSorted.find((sortedPrd) => sortedPrd.id._id.toString() === result.datas[i]._id.toString());
+            const sortedPrd = menu.productsList.find((sortedPrd) => sortedPrd.id.toString() === result.datas[i]._id.toString());
             if (sortedPrd) {
                 result.datas[i].sortWeight = sortedPrd.sortWeight;
             }
@@ -337,7 +337,6 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
 
     // On récupére tous les produits appartenant a cette categorie afin d'avoir le min et max
-    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id._id.toString())};
     let priceFilter;
     if (PostBody.filter.$and) {
         priceFilter = PostBody.filter.$and[0];
@@ -346,7 +345,11 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     }
     // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
     // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    let prds       = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
+    let prds       = await Products
+        .find(PostBody.filter, PostBody.structure)
+        .populate(PostBody.populate)
+        .sort(PostBody.sort)
+        .lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
 
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
@@ -402,15 +405,17 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const arraySpecialPrice = {et: [], ati: []};
 
     for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
-        } else {
-            arrayPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
-        } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
+        if (prd.price) {
+            if (prd.price.et.special) {
+                arrayPrice.et.push(prd.price.et.special);
+            } else {
+                arrayPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arrayPrice.ati.push(prd.price.ati.special);
+            } else {
+                arrayPrice.ati.push(prd.price.ati.normal);
+            }
         }
     }
 
@@ -418,15 +423,17 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
     for (const prd of prdsPrices) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
+        if (prd.price) {
+            if (prd.price.et.special) {
+                arraySpecialPrice.et.push(prd.price.et.special);
+            } else {
+                arraySpecialPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arraySpecialPrice.ati.push(prd.price.ati.special);
+            } else {
+                arraySpecialPrice.ati.push(prd.price.ati.normal);
+            }
         }
     }
 
@@ -435,18 +442,20 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
 
     // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
     for (let i = 0; i < result.datas.length; i++) {
-        if (!result.datas[i].images.length) continue;
-        const image = utilsMedias.getProductImageUrl(result.datas[i]);
-        if (!image) result.datas[i].images = [result.datas[i].images[0]];
-        else result.datas[i].images = [image];
+        if (result.datas[i].images) {
+            if (!result.datas[i].images.length) continue;
+            const image = utilsMedias.getProductImageUrl(result.datas[i]);
+            if (!image) result.datas[i].images = [result.datas[i].images[0]];
+            else result.datas[i].images = [image];
+        }
     }
 
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         prds.forEach((product, index) => {
-            const idx = productListSorted.findIndex((resProd) => resProd.id._id.toString() === product._id.toString());
+            const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
             // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
             if (idx > -1) {
-                prds[index].sortWeight = productListSorted[idx].sortWeight;
+                prds[index].sortWeight = menu.productsList[idx].sortWeight;
             } else {
                 prds[index].sortWeight = -1;
             }
@@ -456,37 +465,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
 
-    const products = prds.slice(skip, limit + skip);
-    // On transforme les produits en produit mongoose afin que la translation puisse être effectué après le res.json()
-    let tProducts = [];
-    for (let k = 0; k < products.length; k++) {
-        switch (products[k].type) {
-        case 'simple':
-            tProducts.push(new ProductSimple(products[k]));
-            // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
-            // on utilise la fonction addToStructure pour connaitre les champs a garder (obligatoire + demandés)
-            // permettra de récupérer le champ sortWeight également
-            // const newPrd = new ProductSimple(products[k]);
-            // if (Object.keys(PostBody.structure).length > 0) {
-            //     const structure = queryBuilder.addToStructure(PostBody.structure);
-            //     const productWithStructure = Object.keys(structure).map(k => (k in newPrd ? {[k]: newPrd[k]} : {})).reduce((res, o) => Object.assign(res, o), {});
-            //     tProducts.push(productWithStructure);
-            // } else {
-            //     tProducts.push(newPrd);
-            // }
-            break;
-        case 'virtual':
-            tProducts.push(new ProductVirtual(products[k]));
-            break;
-        case 'bundle':
-            const prd = await new ProductBundle(products[k]).populate(PostBody.populate || '').execPopulate();
-            tProducts.push(prd);
-            break;
-
-        default:
-            break;
-        }
-    }
+    let products = prds.slice(skip, limit + skip);
 
     // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
     // ce code ne marche pas car _doc n'exsite pas dans produits et removeFromStructure en a besoin
@@ -495,47 +474,62 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // }
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals.datas  = tProducts;
+        reqRes.res.locals.datas  = products;
         reqRes.req.body.PostBody = PostBody;
         const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-        tProducts                = productsDiscount.datas;
+        products                 = productsDiscount.datas;
         // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
         // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
-            tProducts = tProducts.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte) && pr <= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte);
-            });
-        }
+    }
+    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
+        products = products.filter((prd) =>  {
+            const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
+            return pr >= (
+                PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
+                || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
+            )
+            && pr <= (
+                PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
+                || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
+            );
+        });
     }
 
-    if (PostBody.sort && PostBody.sort['price.priceSort']) {
-        if (PostBody.sort['price.priceSort'] === '1') {
-            tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort > b.price.priceSort) {
-                    return 1;
-                }
-                if (b.price.priceSort > a.price.priceSort) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else {
-            tProducts = tProducts.sort((a, b) => {
-                if (a.price.priceSort > b.price.priceSort) {
-                    return -1;
-                }
-                if (b.price.priceSort > a.price.priceSort) {
-                    return 1;
-                }
-                return 0;
-            });
+    if (
+        PostBody.sort
+        && (
+            PostBody.sort['price.priceSort.et']
+            || PostBody.sort['price.priceSort.ati']
+        )
+    ) {
+        if (PostBody.sort['price.priceSort.et']) {
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.et');
+        } else if (PostBody.sort['price.priceSort.ati']) {
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
         }
     }
 
     return {
-        ...result, count : prds.length, datas : tProducts, priceMin, priceMax, specialPriceMin, specialPriceMax
+        count : prds.length,
+        datas : products,
+        priceMin,
+        priceMax,
+        specialPriceMin,
+        specialPriceMax
     };
+};
+
+const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
+    tProducts = tProducts.sort((a, b) => {
+        if (a.price.priceSort > b.price.priceSort) {
+            return Number(PostBody.sort[param]) === 1 ? 1 : -1;
+        }
+        if (b.price.priceSort > a.price.priceSort) {
+            return Number(PostBody.sort[param]) === 1 ? -1 : 1;
+        }
+        return 0;
+    });
+    return tProducts;
 };
 
 const getProductById = async (id, PostBody = null) => {
@@ -634,7 +628,7 @@ const setProduct = async (req) => {
                 reject(NSErrors.ProductUpdateError);
             }
             await ProductsPreview.deleteOne({code: req.body.code});
-            return resolve(result);
+            return resolve((await Products.findOne({code: result.code})).populated(['bundle_sections.products._id']));
         });
     });
 };
@@ -715,7 +709,14 @@ const deleteProduct = async (_id) => {
  * @param   {number?} qtecdé   Quantité a commander
  * @returns {object}  Informations de retour
  */
-const checkProductOrderable = (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0) => {
+    let prdStock = {};
+    // si objstock est un id, on recupere le produit
+    if (typeof objstock === 'string') {
+        prdStock = (await Products.findById(objstock)).stock;
+    } else {
+        prdStock = objstock;
+    }
     const datas = {
         selling : {// Affichage
             sellable : false,   // Produit vendable (affichage du bouton d'achat en gros)
@@ -734,7 +735,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // si qtecdé est null, c'est que l'on teste si un produit bundle est orderable ou non
     if (qtecdé === null) {
-        if (objstock.status === 'epu') {
+        if (prdStock.status === 'epu') {
             datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
             return datas;
         }
@@ -742,13 +743,13 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     const change_lib_stock = 5; // a récup en bdd
 
-    if (typeof objstock.date_selling !== 'undefined'/* && objstock.date_selling > date.now() */) {
-        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
-        datas.delivery.dates[0] = objstock.date_selling;
-    } else if (objstock.qty_real === 0 && objstock.status === 'epu') {
+    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
+        datas.delivery.dates[0] = prdStock.date_selling;
+    } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {
         datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
-    } else if (objstock.qty_real <= change_lib_stock) {
-        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
+    } else if (prdStock.qty_real <= change_lib_stock) {
+        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${prdStock.qty_real} produits disponibles`, en: `Only ${prdStock.qty_real} products available`}};
         datas.delivery.dates[0] = 'today';
         datas.selling.sellable  = true;
     } else {
@@ -759,7 +760,7 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 
     // Commandable ?
     if (qtecdé > 0 && datas.selling.sellable) {
-        if (qtecdé > objstock.qty_real) {
+        if (qtecdé > prdStock.qty_real) {
             datas.ordering.message = {code: 'NotEnoughPdts', translation: {fr: 'Pas assez de produits disponibles pour votre commande.', en: 'There not enough products in our stock for your order.'}};
         } else {
             datas.ordering.orderable = true;
@@ -1062,13 +1063,10 @@ const downloadProduct = async (req, res) => {
 
 const getProductsListing = async (req, res) => {
     // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
-    let result = {};
+    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters || req.body.withFilters) {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
-
-        // result.productsList = await Products.find(req.body.PostBody.filter);
 
         const attrs = await Attributes.find({usedInFilters: true});
         if (!result.filters) {
@@ -1083,8 +1081,6 @@ const getProductsListing = async (req, res) => {
         }));
 
         await servicesCategory.generateFilters(result, req.body.lang);
-    } else {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang);
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
@@ -1109,216 +1105,216 @@ const getProductsListing = async (req, res) => {
     }
     return result;
 };
-const getProductsAdminList = async (body, params) => {
-    // Filtre de base
-    const filter    = body.filter === undefined ? {} : body.filter;
-    const searchObj = body.searchObj;
-    filter.$or      = [];
+// const getProductsAdminList = async (body, params) => {
+//     // Filtre de base
+//     const filter    = body.filter === undefined ? {} : body.filter;
+//     const searchObj = body.searchObj;
+//     filter.$or      = [];
 
-    await Promise.all([
-        new Promise(((resolve, reject) => {
-            // Objet contenant d'autres paramètres de recherche
-            if (body.searchObj) {
-                if (body.q && searchObj.code) {
-                    filter.$or.push({code: searchObj.code});
-                    filter.$or.push({$text: {$search: body.q}});
-                } else if (body.q) {
-                    filter.$text = {$search: body.q};
-                } else if (searchObj.code) {
-                    filter.code = {$regex: `^(?=.*${searchObj.code.replace(/ /g, ')(?=.*')}).*$`, $options: 'i'};
-                }
+//     await Promise.all([
+//         new Promise(((resolve, reject) => {
+//             // Objet contenant d'autres paramètres de recherche
+//             if (body.searchObj) {
+//                 if (body.q && searchObj.code) {
+//                     filter.$or.push({code: searchObj.code});
+//                     filter.$or.push({$text: {$search: body.q}});
+//                 } else if (body.q) {
+//                     filter.$text = {$search: body.q};
+//                 } else if (searchObj.code) {
+//                     filter.code = {$regex: `^(?=.*${searchObj.code.replace(/ /g, ')(?=.*')}).*$`, $options: 'i'};
+//                 }
 
-                // Recherche parmi une liste déterminée de produits
-                if (searchObj.productsIds) {
-                    if (searchObj.inProducts) {
-                        filter._id = {$in: searchObj.productsIds};
-                    } else {
-                        filter._id = {$nin: searchObj.productsIds};
-                    }
-                }
+//                 // Recherche parmi une liste déterminée de produits
+//                 if (searchObj.productsIds) {
+//                     if (searchObj.inProducts) {
+//                         filter._id = {$in: searchObj.productsIds};
+//                     } else {
+//                         filter._id = {$nin: searchObj.productsIds};
+//                     }
+//                 }
 
-                if (filter.qty === true) {
-                    if (filter.$or[0] !== undefined) {
-                        filter.$or[0].stock = {qty: {$gt: 1}};
-                        filter.$or[1].stock = {qty: {$gt: 1}};
-                    } else {
-                        filter.stock = {qty: {$gt: 1}};
-                    }
-                }
-                delete filter.qty;
-                if (searchObj['price.ati.normal']) {
-                    filter['price.ati.normal'] = searchObj['price.ati.normal'];
-                }
-                // Recherche par actif/non actif
-                if (searchObj.active !== undefined) {
-                    filter.active = {$eq: searchObj.active};
-                }
-                // Recherche par visible/non visible
-                if (searchObj._visible !== undefined) {
-                    filter._visible = {$eq: searchObj._visible};
-                }
-                // Recherche par prix vente min et prix vente max
-                if (searchObj.priceSaleMin || searchObj.priceSaleMax) {
-                    filter['price.ati.normal'] = {};
-                }
-                if (searchObj.priceSaleMin) {
-                    filter['price.ati.normal'].$gte = searchObj.priceSaleMin;
-                }
-                if (searchObj.priceSaleMax) {
-                    filter['price.ati.normal'].$lte = searchObj.priceSaleMax;
-                }
-                // Recherche par mots cles
-                if (searchObj.nameId) {
-                    let nameCode = searchObj.nameId.split(' ');
-                    nameCode     = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
-                    filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
-                }
-                if (searchObj.type) {
-                    filter.type = searchObj.type;
-                }
+//                 if (filter.qty === true) {
+//                     if (filter.$or[0] !== undefined) {
+//                         filter.$or[0].stock = {qty: {$gt: 1}};
+//                         filter.$or[1].stock = {qty: {$gt: 1}};
+//                     } else {
+//                         filter.stock = {qty: {$gt: 1}};
+//                     }
+//                 }
+//                 delete filter.qty;
+//                 if (searchObj['price.ati.normal']) {
+//                     filter['price.ati.normal'] = searchObj['price.ati.normal'];
+//                 }
+//                 // Recherche par actif/non actif
+//                 if (searchObj.active !== undefined) {
+//                     filter.active = {$eq: searchObj.active};
+//                 }
+//                 // Recherche par visible/non visible
+//                 if (searchObj._visible !== undefined) {
+//                     filter._visible = {$eq: searchObj._visible};
+//                 }
+//                 // Recherche par prix vente min et prix vente max
+//                 if (searchObj.priceSaleMin || searchObj.priceSaleMax) {
+//                     filter['price.ati.normal'] = {};
+//                 }
+//                 if (searchObj.priceSaleMin) {
+//                     filter['price.ati.normal'].$gte = searchObj.priceSaleMin;
+//                 }
+//                 if (searchObj.priceSaleMax) {
+//                     filter['price.ati.normal'].$lte = searchObj.priceSaleMax;
+//                 }
+//                 // Recherche par mots cles
+//                 if (searchObj.nameId) {
+//                     let nameCode = searchObj.nameId.split(' ');
+//                     nameCode     = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
+//                     filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
+//                 }
+//                 if (searchObj.type) {
+//                     filter.type = searchObj.type;
+//                 }
 
-                if (searchObj.translation && searchObj.translation.name !== '') {
-                    return Languages.find({}).then(function (_languages) {
-                        for (let i = 0; i < _languages.length; i++) {
-                            if (searchObj.translation.name !== '') {
-                                const name                                     = {};
-                                name[`translation.${_languages[i].code}.name`] = {
-                                    $regex   : `^(?=.*${searchObj.translation.name.replace(/ /g, ')(?=.*')}).*$`,
-                                    $options : 'i'
-                                };
-                                filter.$or.push(name);
-                            }
-                        }
-                        resolve();
-                    }).catch(function (err) {
-                        reject(err);
-                    });
-                }
+//                 if (searchObj.translation && searchObj.translation.name !== '') {
+//                     return Languages.find({}).then(function (_languages) {
+//                         for (let i = 0; i < _languages.length; i++) {
+//                             if (searchObj.translation.name !== '') {
+//                                 const name                                     = {};
+//                                 name[`translation.${_languages[i].code}.name`] = {
+//                                     $regex   : `^(?=.*${searchObj.translation.name.replace(/ /g, ')(?=.*')}).*$`,
+//                                     $options : 'i'
+//                                 };
+//                                 filter.$or.push(name);
+//                             }
+//                         }
+//                         resolve();
+//                     }).catch(function (err) {
+//                         reject(err);
+//                     });
+//                 }
 
-                // Recherche par quantite min et quantite vente max
-                if (searchObj['stock.qty']) {
-                    filter['stock.qty'] = searchObj['stock.qty'];
-                }
-                if (searchObj.qtyMin || searchObj.qtyMax) {
-                    filter['stock.qty'] = {};
-                }
-                if (searchObj.qtyMin) {
-                    filter['stock.qty'].$gte = searchObj.qtyMin;
-                }
-                if (searchObj.qtyMax) {
-                    filter['stock.qty'].$lte = searchObj.qtyMax;
-                }
+//                 // Recherche par quantite min et quantite vente max
+//                 if (searchObj['stock.qty']) {
+//                     filter['stock.qty'] = searchObj['stock.qty'];
+//                 }
+//                 if (searchObj.qtyMin || searchObj.qtyMax) {
+//                     filter['stock.qty'] = {};
+//                 }
+//                 if (searchObj.qtyMin) {
+//                     filter['stock.qty'].$gte = searchObj.qtyMin;
+//                 }
+//                 if (searchObj.qtyMax) {
+//                     filter['stock.qty'].$lte = searchObj.qtyMax;
+//                 }
 
-                resolve();
-            } else {
-                if (body.q) {
-                    filter.$text = {$search: body.q};
-                }
+//                 resolve();
+//             } else {
+//                 if (body.q) {
+//                     filter.$text = {$search: body.q};
+//                 }
 
-                Languages.find({}).then(function (_languages) {
-                    for (let i = 0; i < _languages.length; i++) {
-                        const orLang                                     = {};
-                        orLang[`translation.${_languages[i].code}.name`] = new RegExp('.*', 'i');
-                        filter.$or.push(orLang);
-                    }
-                    resolve();
-                }).catch(function (err) {
-                    reject(err);
-                });
-            }
-        }))
-    ]);
+//                 Languages.find({}).then(function (_languages) {
+//                     for (let i = 0; i < _languages.length; i++) {
+//                         const orLang                                     = {};
+//                         orLang[`translation.${_languages[i].code}.name`] = new RegExp('.*', 'i');
+//                         filter.$or.push(orLang);
+//                     }
+//                     resolve();
+//                 }).catch(function (err) {
+//                     reject(err);
+//                 });
+//             }
+//         }))
+//     ]);
 
-    let sortObj = {};
-    if (body.sortObj) {
-        sortObj = body.sortObj;
-    }
-    const oIdCatProduct = {};
-    // Si on veut trier par sortWeight (qui est un attribut de categories.productsList)
-    if (sortObj.sortWeight && body.categoryId /* && Object.keys(body.searchObj).length === 0 */) {
-        // on récupére la categorie afin de trier productsList par sortWeight
-        const category = await Categories.findById(body.categoryId);
-        for (let i = 0; i < category.productsList.length; i++) {
-            const catProduct             = category.productsList[i];
-            oIdCatProduct[catProduct.id] = catProduct.sortWeight;
-        }
-    }
-    const results = await Promise.all([
-        new Promise((async (resolve, reject) => {
-            if (filter.$or.length === 0) {
-                delete filter.$or;
-            }
-            if (Object.keys(oIdCatProduct).length === 0) {
-                Products.find(filter, null, {
-                    skip  : (body.page - 1) * body.limit,
-                    limit : body.limit,
-                    sort  : sortObj
-                })
-                    .populate('location.country location.town')
-                    .then((prdFound) => resolve(prdFound))
-                    .catch((err) => reject(err));
-            } else {
-                const prdFound = await Products.find(filter);
-                for (let i = 0; i < prdFound.length; i++) {
-                    if (typeof oIdCatProduct[prdFound[i]._id.toString()] === 'undefined') {
-                        prdFound[i].sortWeight = -1; // sortWeight fictif que ne sera pas répercuté sur le front
-                        continue;
-                    }
-                    prdFound[i].sortWeight = oIdCatProduct[prdFound[i]._id];
-                }
-                let prdSorted;
-                if (sortObj.sortWeight === -1) {
-                    prdSorted = prdFound.sort((a, b) => b.sortWeight - a.sortWeight);
-                } else {
-                    prdSorted = prdFound.sort((a, b) => a.sortWeight - b.sortWeight);
-                }
-                prdSorted = prdSorted.splice((body.page - 1) * body.limit, body.limit);
-                resolve(prdSorted);
-            }
-        })), new Promise(((resolve, reject) => {
-            Products.countDocuments(filter, (err, count) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(count);
-            });
-        })), new Promise(((resolve, reject) => {
-            Products.findOne(filter).sort('-price.ati.normal').exec((err, maxProd) => {
-                if (err) {
-                    return reject(err);
-                }
-                if (!maxProd) {
-                    resolve(0);
-                } else {
-                    resolve(maxProd.price.ati.normal);
-                }
-            });
-        })), new Promise(((resolve, reject) => {
-            Products.findOne(filter).sort('price.ati.normal').exec((err, minProd) => {
-                if (err) {
-                    return reject(err);
-                }
-                if (!minProd) {
-                    resolve(0);
-                } else {
-                    resolve(minProd.price.ati.normal);
-                }
-            });
-        }))
-    ]);
+//     let sortObj = {};
+//     if (body.sortObj) {
+//         sortObj = body.sortObj;
+//     }
+//     const oIdCatProduct = {};
+//     // Si on veut trier par sortWeight (qui est un attribut de categories.productsList)
+//     if (sortObj.sortWeight && body.categoryId /* && Object.keys(body.searchObj).length === 0 */) {
+//         // on récupére la categorie afin de trier productsList par sortWeight
+//         const category = await Categories.findById(body.categoryId);
+//         for (let i = 0; i < category.productsList.length; i++) {
+//             const catProduct             = category.productsList[i];
+//             oIdCatProduct[catProduct.id] = catProduct.sortWeight;
+//         }
+//     }
+//     const results = await Promise.all([
+//         new Promise((async (resolve, reject) => {
+//             if (filter.$or.length === 0) {
+//                 delete filter.$or;
+//             }
+//             if (Object.keys(oIdCatProduct).length === 0) {
+//                 Products.find(filter, null, {
+//                     skip  : (body.page - 1) * body.limit,
+//                     limit : body.limit,
+//                     sort  : sortObj
+//                 })
+//                     .populate('location.country location.town')
+//                     .then((prdFound) => resolve(prdFound))
+//                     .catch((err) => reject(err));
+//             } else {
+//                 const prdFound = await Products.find(filter);
+//                 for (let i = 0; i < prdFound.length; i++) {
+//                     if (typeof oIdCatProduct[prdFound[i]._id.toString()] === 'undefined') {
+//                         prdFound[i].sortWeight = -1; // sortWeight fictif que ne sera pas répercuté sur le front
+//                         continue;
+//                     }
+//                     prdFound[i].sortWeight = oIdCatProduct[prdFound[i]._id];
+//                 }
+//                 let prdSorted;
+//                 if (sortObj.sortWeight === -1) {
+//                     prdSorted = prdFound.sort((a, b) => b.sortWeight - a.sortWeight);
+//                 } else {
+//                     prdSorted = prdFound.sort((a, b) => a.sortWeight - b.sortWeight);
+//                 }
+//                 prdSorted = prdSorted.splice((body.page - 1) * body.limit, body.limit);
+//                 resolve(prdSorted);
+//             }
+//         })), new Promise(((resolve, reject) => {
+//             Products.countDocuments(filter, (err, count) => {
+//                 if (err) {
+//                     return reject(err);
+//                 }
+//                 resolve(count);
+//             });
+//         })), new Promise(((resolve, reject) => {
+//             Products.findOne(filter).sort('-price.ati.normal').exec((err, maxProd) => {
+//                 if (err) {
+//                     return reject(err);
+//                 }
+//                 if (!maxProd) {
+//                     resolve(0);
+//                 } else {
+//                     resolve(maxProd.price.ati.normal);
+//                 }
+//             });
+//         })), new Promise(((resolve, reject) => {
+//             Products.findOne(filter).sort('price.ati.normal').exec((err, minProd) => {
+//                 if (err) {
+//                     return reject(err);
+//                 }
+//                 if (!minProd) {
+//                     resolve(0);
+//                 } else {
+//                     resolve(minProd.price.ati.normal);
+//                 }
+//             });
+//         }))
+//     ]);
 
-    const result = {
-        products : results[0],
-        count    : results[1],
-        priceMax : results[2],
-        priceMin : results[3]
-    };
+//     const result = {
+//         products : results[0],
+//         count    : results[1],
+//         priceMax : results[2],
+//         priceMin : results[3]
+//     };
 
-    if (params.trademark !== undefined) {
-        result.trademarks = results[4];
-    }
-    return result;
-};
+//     if (params.trademark !== undefined) {
+//         result.trademarks = results[4];
+//     }
+//     return result;
+// };
 
 const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
@@ -1373,7 +1369,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Commandable et on gère la reservation du stock
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (await ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {
@@ -1440,7 +1436,6 @@ module.exports = {
     applyTranslatedAttribs,
     downloadProduct,
     getProductsListing,
-    getProductsAdminList,
     updateStock,
     handleStock,
     calculStock,

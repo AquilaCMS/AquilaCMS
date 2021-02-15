@@ -10,6 +10,7 @@
             </button>
             <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"  ><span translate>category.detail.save2</span><i class="fa fa-floppy-o" aria-hidden="true"></i>
             </button>
+            <button style="pointer-events:auto" type="button" class="btn btn-default btn-s&q" ng-click="save(true)" ng-disabled="disableSave" ng-hide="hideSaveAndQuit" translate>ns.saveQuit</button>
             <br />
             <br />
         </div>
@@ -130,7 +131,7 @@
                         <tr id="createDate">
                             <td translate>category.detail.creationDate</td>
                             <td>
-                                {{category.creationDate | date:"dd MMMM yyyy"}}
+                                {{category.createdAt | date:"dd MMMM yyyy"}}
                             </td>
                         </tr>
                         <tr id="openDate">
@@ -280,14 +281,16 @@
                         </tr>
                         <tr role="row">
                             <th>
-                                <select ng-model="searchObj.slugMenus" ng-change="getProducts()" class="form-control">
+                                <select ng-model="searchObj.productInCategory" ng-change="getProducts()" class="form-control">
                                     <option value="" translate>category.detail.indifferent</option>
                                     <option value="true" translate>category.detail.oui</option>
                                     <option value="false" translate>category.detail.non</option>
                                 </select>
                             </th>
                             <th></th>
-                            <th></th>
+                            <th>
+                                <input type="text" ng-change="getProducts()" ng-model="searchObj.code" translate translate-attr-placeholder='category.detail.code' class="form-control" />
+                            </th>
                             <th>
                             </th>
                             <th>
@@ -330,7 +333,7 @@
                         </tr>
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
-                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" style="height: 80px;">
+                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" ng-show="product.check ? (searchObj.productInCategory == 'true' || searchObj.productInCategory == '' ? true : false) : (searchObj.productInCategory == 'false' || searchObj.productInCategory == '' ? true : false)"style="height: 80px;">
                             <td>
                                 <input type="checkbox" ng-model="product.check" ng-change="checkProduct($index);" ng-click="$event.stopPropagation()">
                             </td>

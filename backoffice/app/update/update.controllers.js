@@ -1,8 +1,8 @@
 
 const UpdateControllers = angular.module('aq.update.controllers', []);
 
-UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService', 'updateFactory','Config',
-    function ($scope, $http, toastService, updateFactory, Config) {
+UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService', 'updateFactory','ConfigV2',
+    function ($scope, $http, toastService, updateFactory, ConfigV2) {
 
         $scope.tab = "maj";
         $scope.disableSave = true;
@@ -18,34 +18,22 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             }
         };
 
-        $scope.config = Config.environment(function () {
-            if (!$scope.config.adminPrefix) {
-                $scope.config.adminPrefix = "admin";
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.config = config;
+            if (!$scope.config.environment.adminPrefix) {
+                $scope.config.environment.adminPrefix = "admin";
             }
         });
-        
 
         $scope.validate = function (tab) {
-                Config.save({ environment: $scope.config }).$promise.then   (function () {
-                    toastService.toast("success", "Configuration sauvegardée !");
-                }, function (err) {
-                    toastService.toast("danger", "Une erreur est survenue !");
-                    console.error(err);
-                });
-
-            function buildAdminUrl(appUrl, adminPrefix) {
-                let correctAppUrl;
-                if (!appUrl) {
-                    correctAppUrl = "/";
-                } else if (!appUrl.endsWith("/")) {
-                    correctAppUrl = `${appUrl}/`;
-                } else {
-                    correctAppUrl = appUrl;
-                }
-                return correctAppUrl + adminPrefix;
-            }
+            ConfigV2.save({ environment: $scope.config.environment }).$promise.then(function () {
+                toastService.toast("success", "Configuration sauvegardée !");
+            }, function (err) {
+                toastService.toast("danger", "Une erreur est survenue !");
+                console.error(err);
+            });
         };
-        
+
         $scope.local = {
             showLoading:false,
             verifyingUpdate:true,
@@ -67,9 +55,8 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
                 toastService.toast('danger', "Update failed :(");
                 console.error(err);
             });
-            
-        };
 
+        };
 
         $http.get('/v2/update/verifying').then((response) => {
             $scope.local.verifyingUpdate = false;
@@ -79,8 +66,6 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
         }, (err) => {
             toastService.toast('danger', 'Impossible de verifier la mise à jour');
         });
-
-
-
-    }]);
+    }]
+);
 

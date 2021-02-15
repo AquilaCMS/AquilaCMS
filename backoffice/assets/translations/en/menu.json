@@ -22,33 +22,38 @@
     "pages": "Pages",
     "BlocsCMS": "CMS Blocks",
     "categories": "Categories",
-    "mails": "Mails",
     "medias": "Media",
     "article": "Blog",
-    "css": "CSS",
-    "translate": "Translation",
 
     "galerie": "Gallery",
     "carousel": "Carousel",
     "agenda": "Agenda",
 
     "promotion": "Discount",
+
     "configuration": "Configuration",
-    "environnement": "Environment",
-    "stock&commandes": "Orders param",
+    "mails": "Mails",
     "modesExpedition": "Shippings",
     "territories": "Territories",
+    "langues": "Languages",
+    "modesPaiement": "Payment modes",
+    "admin": "Administrators",
+    
+    "pointsVente": "Points of sale",
+    
     "themes": "Themes",
     "design": "Design",
+    "css": "CSS",
+    "translate": "Translation",
 
-    "langues": "Languages",
+    "settings": "Settings",
+    "environnement": "Server settings",
+    "stock&commandes": "Orders param",
     "tachesPlanifiees": "Planned Tasks",
-    "modesPaiement": "Payment modes",
-    "pointsVente": "Points of sale",
+    "system": "System",
     "update": "Update",
 
     "modules": "Plugins",
 
-    "admin": "Administrators",
     "newsletter": "Newsletter"
 }

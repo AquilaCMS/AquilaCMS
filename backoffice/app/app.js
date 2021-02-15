@@ -69,38 +69,34 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productReviews",
     "aq.themes",
     "aq.productVirtual",
-    "aq.newsletter"
-
+    "aq.newsletter",
+    "aq.system",
 ]);
 
 //================================================
 // Check if the user is connected
 //================================================
-var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeout)
-{
+var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeout) {
     // Initialize a new promise
     var deferred = $q.defer();
 
-    $http.get("v2/auth/isauthenticated").then(function (resp)
-    {
-        if (!$rootScope.demoMode){
-            $http.get("config/environment/environment").then(function (resp) {
-                $rootScope.demoMode = resp.data.demoMode;
+    $http.get("v2/auth/isauthenticated").then(function (resp) {
+        if (!$rootScope.demoMode) {
+
+            $http.post("v2/config", {PostBody: {structure: {environment: 1}}}).then(function (response) {
+                $rootScope.demoMode = response.data.environment.demoMode;
             });
         }
         $rootScope.userInfo = resp.data.user;
-        if(resp.data.data)
-        {
+        if(resp.data.data) {
             window.localStorage.setItem("jwtAdmin", resp.data.data);
         }
-        $timeout(function ()
-        {
+
+        $timeout(function () {
             deferred.resolve();
         }, 0);
-    }).catch(function (err)
-    {
-        $timeout(function ()
-        {
+    }).catch(function (err) {
+        $timeout(function () {
             deferred.reject();
             $window.location.href = $window.location.pathname + "/login";
         }, 0);
@@ -110,8 +106,7 @@ var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeou
 };
 //================================================
 
-var checkAccess = function (route)
-{
+var checkAccess = function (route) {
     return [
         "$q", "$timeout", "$http", "$location", "$rootScope", "$window", "toastService",
         function ($q, $timeout, $http, $location, $rootScope, $window, toastService)
@@ -154,7 +149,7 @@ adminCatagenApp.config([
                 request: function (config)
                 {
                     if (window.localStorage.getItem("jwtAdmin")) {
-                        config.headers["Authorization"] = window.localStorage.getItem("jwtAdmin");
+                        config.headers.Authorization = window.localStorage.getItem("jwtAdmin");
                     }
                     if(config.url.indexOf("/") === 0)
                     {
@@ -244,7 +239,7 @@ adminCatagenApp.config([
 var namespaces = [
     "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules", "option",
     "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setOption", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
-    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual"
+    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system"
 ];
 adminCatagenApp
     .factory("customLoader", [
@@ -257,22 +252,38 @@ adminCatagenApp
 
                 $http.post('/v2/modules', {PostBody: {filter: {active: true, loadTranslationBack: true}, limit: 99}}).then(function (response)
                 {
-                    angular.forEach(response.data.datas, function (m) {
-                        $http.get("assets/translations/modules/" + m.name + '/' + options.key + "/" + m.name + ".json").then(function (tr)
-                        {
-                            translation[m.name] = tr.data;
-                        });
-                    });
-                    angular.forEach(namespaces, function (ns)
-                    {
-                        $http.get("assets/translations/" + options.key + "/" + ns + ".json").then(function (nsTranslation)
-                        {
-                            translation[ns] = nsTranslation.data;
+                    const translationArray = []; // {url:"", name:""}
 
-                            if(Object.keys(translation).length === namespaces.length)
+                    // Listing of translation for module
+                    for (let index = 0; index < response.data.datas.length; index++) {
+                        const m = response.data.datas[index];
+                        translationArray.push({
+                            url:"assets/translations/modules/" + m.name + '/' + options.key + "/" + m.name + ".json",
+                            name : m.name
+                        });
+                    }
+
+                    // Listing of translation for Aquila admin
+                    for (let index = 0; index < namespaces.length; index++) {
+                        const ns = namespaces[index];
+                        translationArray.push({
+                            url:"assets/translations/" + options.key + "/" + ns + ".json",
+                            name:ns
+                        });
+                    }
+
+                    let i = 0;
+                    angular.forEach(translationArray, function (element)
+                    {
+                        $http.get(element.url).then(function (nsTranslation)
+                        {
+                            translation[element.name] = nsTranslation.data;
+
+                            if(i === translationArray.length-1)
                             {
                                 deferred.resolve(translation);
                             }
+                            i++;
                         }).catch(function (err)
                         {
                             deferred.reject(err);

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path         = require('path');
 const mongoose     = require('mongoose');
 const {Gallery}    = require('../orm/models');
@@ -6,17 +14,16 @@ const mediasUtils  = require('../utils/medias');
 const NSErrors     = require('../utils/errors/NSErrors');
 const cacheService = require('./cache');
 
+const QueryBuilder     = require('../utils/QueryBuilder');
+const restrictedFields = [];
+const defaultFields    = ['*'];
+const queryBuilder     = new QueryBuilder(Gallery, restrictedFields, defaultFields);
+
 /**
  * @description Retourne toutes les galleries
  */
-const getGalleries = async () => {
-    const resultTmp = await Gallery.find({});
-    const result    = resultTmp.map((gallery) => {
-        gallery.itemCount = gallery.items.length;
-        delete gallery.items;
-        return gallery;
-    });
-    return {datas: result, count: result.length};
+const getGalleries = async (PostBody) => {
+    return queryBuilder.find(PostBody);
 };
 
 /**

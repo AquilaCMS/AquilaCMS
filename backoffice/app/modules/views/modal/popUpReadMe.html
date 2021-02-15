@@ -1,0 +1,28 @@
+
+<div class="modal-header">
+    <ol class="breadcrumb">
+        <li style="font-weight: bold;" translate>modules.modalReadMe.title</li>
+    </ol>
+</div>
+<style>
+    .no-margin{
+        margin:0;
+    }
+    .readme {
+        border-radius: 5px;
+        background-color: white;
+        padding: 20px;
+    }
+</style>
+<div class="modal-body" style="overflow:auto">
+    <div class="readme" >
+        <div style="padding: 10px" bind-html-compile="modalReadMe.dispReadMe">
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="modalReadMe.close()" translate>modules.modalReadMe.close</button>
+</div>

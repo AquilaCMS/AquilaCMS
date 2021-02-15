@@ -3,7 +3,6 @@
 
     "save": "Save",
     "saveQuit": "Save and quit",
-    "dup": "Duplicate",
     "delete": "Delete",
 
     "cmsBlocks": "CMS Blocks",
@@ -75,7 +74,7 @@
     "fields": {
         "code": "Product : Code",
         "qty": "Product : Quantity",
-        "creationDate": "Product : Creation date",
+        "createdAt": "Product : Creation date",
         "visible": "Product : Visible",
         "active": "Product : Active",
         "price_ati_normal": "Product : ATI price",

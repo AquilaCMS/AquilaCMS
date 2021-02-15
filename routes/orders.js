@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {Cart, Orders, PaymentMethods} = require('../orm/models');
 const orderService                   = require('../services/orders');
 const ServiceMail                    = require('../services/mail');
@@ -128,7 +136,11 @@ async function infoPayment(req, res, next) {
  */
 async function duplicateItemsFromOrderToCart(req, res, next) {
     try {
-        req.body.query = await ServiceAuth.validateUserIsAllowedWithoutPostBody(req.headers.authorization, req.baseUrl, {_id: req.body.idOrder || null}, 'customer.id');
+        req.body.query = await ServiceAuth.validateUserIsAllowedWithoutPostBody(
+            req.info,
+            {_id: req.body.idOrder || null},
+            'customer.id'
+        );
         return res.json(await orderService.duplicateItemsFromOrderToCart(req));
     } catch (err) {
         return next(err);
@@ -202,7 +214,7 @@ async function cancelOrder(req, res, next) {
 
 async function cancelOrderRequest(req, res, next) {
     try {
-        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.headers.authorization);
+        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.info);
         if (result) {
             return res.json({code: 'ORDER_ASK_CANCEL_SUCCESS'});
         }

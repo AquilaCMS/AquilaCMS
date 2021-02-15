@@ -80,28 +80,34 @@ adminCatagenDirectives.directive("nsDatepicker", function ()
                     scope.myDate = moment(new Date(ngModel.$modelValue)).format("L");
                 }
             };
-            scope.onDateChange = function ()
-            {
-                if(
-                    scope.myDate &&
-                    moment(scope.myDate, "DD/MM/YYYY").isValid()
-                )
-                {
-                    var dateElement = $("#datepicker_" + attrs.name, element);
-                    ngModel.$setViewValue(dateElement.datepicker("getDate"));
-                    dateElement.datepicker("refresh");
-                    $("#datepicker_" + attrs.name, element).removeClass(
-                        "invalid"
-                    );
-                }
-                else
-                {
-                    if(attrs.empty == 'true'){
+            scope.onDateChange = function (){
+                if(scope.myDate && moment(scope.myDate, "DD/MM/YYYY").isValid() ){
+                    if(scope.myDate !== ""){
                         var dateElement = $("#datepicker_" + attrs.name, element);
-                        ngModel.$setViewValue("");
+                        ngModel.$setViewValue(dateElement.datepicker("getDate"));
                         dateElement.datepicker("refresh");
+                        $("#datepicker_" + attrs.name, element).removeClass(
+                            "invalid"
+                        );
                     }else{
-                        $("#datepicker_" + attrs.name, element).addClass("invalid");
+                        dateElement.datepicker("refresh");
+                    }
+                }else{
+                    if(scope.myDate === ""){
+                        var dateElement = $("#datepicker_" + attrs.name, element);
+                        ngModel.$setViewValue(dateElement.datepicker("getDate"));
+                        dateElement.datepicker("refresh");
+                        $("#datepicker_" + attrs.name, element).removeClass(
+                            "invalid"
+                        );
+                    }else{
+                        if(attrs.empty == 'true'){
+                            var dateElement = $("#datepicker_" + attrs.name, element);
+                            ngModel.$setViewValue("");
+                            dateElement.datepicker("refresh");
+                        }else{
+                            $("#datepicker_" + attrs.name, element).addClass("invalid");
+                        }
                     }
                 }
             };
@@ -193,43 +199,38 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         restrict: "E",
         scope: {
             text: "=",
-            lang: "="
+            lang: "=",
+            mail: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
-            "$scope","$rootScope", "$filter", "$modal","$http",
-            function ($scope, $rootScope, $filter, $modal, $http) {
-                    $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            "$scope","$rootScope", "$filter", "$modal","$http","toastService",
+            function ($scope, $rootScope, $filter, $modal, $http, toastService) {
+                    let toolbarOption = "customAddShortcode";
+                    if($scope.mail){
+                        toolbarOption = "customAddMailVar";
+                    }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
                         extended_valid_elements: "*[*]",//allow empty <a>-tag
                         valid_children: "+a[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+area[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+article[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+aside[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+blockquote[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+body[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+button[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+canvas[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+caption[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+cite[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+col[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+datalist[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+dd[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+div[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+dl[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+dt[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+em[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+fieldset[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+figcaption[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+figure[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+footer[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+form[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h1[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h2[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h3[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h4[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h5[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h6[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+head[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+header[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+html[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+label[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+legend[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+li[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+link[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+main[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+map[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+menu[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+nav[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+ol[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+option[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+output[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+p[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+pre[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+section[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+span[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+strong[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+summary[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+sup[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+title[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+ul[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video]",
                         entity_encoding: "raw",
                         branding: false,
+                        height: "500",
                         convert_urls: false,
                         forced_root_block: false,
                         relative_urls: false,
                         selector: '#editor',
-                        plugins: 'code, fullscreen, preview, link',
+                        plugins: 'code, fullscreen, preview, link, autosave',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
-                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | customAddShortcode | customAddImg | fullscreen preview | code',
+                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | code',
                         fontsize_formats: '8px 10px 12px 14px 16px, 20px',
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
-                                editor.id = $scope.id;
-                                editor.on('init', () => {
-                                    if (!$scope.text){
-                                        tinyMCE.get($scope.id).selection.setContent("",  { no_events: false } );
-                                    }else{
-                                        tinyMCE.get($scope.id).selection.setContent($scope.text, { no_events: false } );
-                                    }
-                                    $('html,body').scrollTop(0);
-                                });
-
+                            $scope.tinymceId = editor.id;
                             editor.ui.registry.addButton('customAddImg', {
-                                //text: 'Ajouter une image',
                                 icon: "gallery",
                                 tooltip: 'Gallery',
                                 onAction: function () {
@@ -237,7 +238,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 }
                             });
                             editor.ui.registry.addButton('customLink', {
-                                //text: 'Ajouter un lien de page ou de catégorie',
                                 icon: "unlink",
                                 tooltip: 'Add Page or Category link',
                                 onAction: function () {
@@ -245,15 +245,68 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 }
                             });
                             editor.ui.registry.addButton('customAddShortcode', {
-                                //text: 'Ajouter une image',
                                 icon: "code-sample",
                                 tooltip: 'Add Shortcode',
                                 onAction: function () {
                                     $scope.addShortcode();
                                 }
                             });
+                            editor.ui.registry.addButton('customAddMailVar', {
+                                icon: "template",
+                                tooltip: 'Add mail variables',
+                                onAction: function () {
+                                    $scope.addMailVar($scope.mail);
+                                }
+                            });
                         }
                     };
+
+                $scope.addMailVar = function (code) {
+                    if (code === 'none') {
+                        toastService.toast('danger', "Veuillez sélectionner un type de mail");
+                    }else{
+                        const modalInstance = $modal.open({
+                            backdrop: 'static',
+                            keyboard: false,
+                            templateUrl: 'views/modals/add-mailvar-tinymce.html',
+                            controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
+                                function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
+                                    $scope.mailType = [];
+                                    MailTypeGet.query({ code }, function (mailType) {
+                                        $scope.mailType = mailType;
+                                    });
+                                    $scope.lang = $rootScope.adminLang;
+                                    $scope.selected = false;
+                                    $scope.mailTypeSelected = {};
+    
+                                    $scope.selectVariable = function (variable) {
+                                        $scope.selected = true;
+                                        $scope.variableSelected = variable;
+                                    }
+    
+                                    $scope.addMailVariable = function(variable){
+                                        $modalInstance.close(variable);
+                                    }
+    
+                                    $scope.cancel = function () {
+                                        $modalInstance.dismiss('cancel');
+                                    };
+                                }],
+                            resolve: {
+                            }
+                        });
+    
+                        modalInstance.result.then(function (variable) {
+                            variable = '{{' + variable + '}}';
+                            if ($scope.tinymceId) {
+                                tinyMCE.get($scope.tinymceId).selection.setContent(variable);
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                            } else {
+                                tinyMCE.activeEditor.selection.setContent(variable);
+                            }
+                        });
+                    }
+                };
 
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
@@ -301,7 +354,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $modalInstance.close({ string });
                                 }
 
-
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
                                 }, function errorCallback(response) {
@@ -318,9 +370,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     });
 
                     modalInstance.result.then(function (response) {
-                        if ($scope.id) {
-                            tinyMCE.get($scope.id).selection.setContent(response.string);
-                            $scope.text = tinyMCE.get($scope.id).getContent();
+                        if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent(response.string);
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
                         } else {
                             tinyMCE.activeEditor.selection.setContent(response.string);
                         }
@@ -416,7 +468,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $scope.imageSelected = image.link;
                                 };
 
-                                $scope.ok = function () {
+                                $scope.generate = function () {
                                     let url = $scope.imageSelected.split('medias/')[1];
                                     if($scope.size.max){
                                         url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
@@ -435,9 +487,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                             }
                         });
                         modalInstance.result.then(function (url) {
-                        if ($scope.id) {
-                            tinyMCE.get($scope.id).selection.setContent('<img src="' + url + '"/>');
-                            $scope.text = tinyMCE.get($scope.id).getContent();
+                            if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
                         } else {
                             tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
                         }
@@ -520,8 +572,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         });
 
                         modalInstance.result.then(function (response) {
-                                tinyMCE.get($scope.id).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                                $scope.text = tinyMCE.get($scope.id).getContent();
+                            if ($scope.tinymceId) {
+                                tinyMCE.get($scope.tinymceId).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                            } else {
+                                tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                            }
                         });
                     };
             }
@@ -600,7 +656,7 @@ adminCatagenDirectives.directive("nsButtons", function ()
             remove: "&remove",
             saveAndQuit: "&saveAndQuit",
             hideSaveAndQuit: "=",
-            duplicateProduct: "&?",
+            hideSave: "=",
             disableSave: "=?",
             isEditMode: "=",
             hideRemove: "=", //Si on est en Edit Mode mais qu'on ne veut pas la suppresion pour autant (par exemple sur un ou plusieurs éléments)
@@ -620,7 +676,20 @@ adminCatagenDirectives.directive("nsButtons", function ()
             {
                 scope.onLoad();
             }
+            scope.checkMoreButtons = function(){
+                if(scope.isEditMode && scope.moreButtons){
+                    for(let a of scope.moreButtons){
+                        if(a.isDisplayed != null){
+                            if(a.isDisplayed == false){
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
         }
+        
     };
 });
 
@@ -1484,12 +1553,12 @@ adminCatagenDirectives.directive("nsRule", [
                                         return "text";
                                 }
                             })(element.type);
-                            for(var i = 0, leni = langs.length; i < leni; i++)
-                                {
+                            for(var i = 0, leni = langs.length; i < leni; i++){
                                     let values = [];
-                                    for(var j = 0; j < Object.keys(element.translation).length; j++) {
-                                        const langKey = Object.keys(element.translation)[j]
-                                        values = values.concat(element.translation[langKey].values)
+                                    //we put only value of the correct languages
+                                    const langKey = langs[i].code;
+                                    if(element.translation[langKey]){
+                                        values = element.translation[langKey].values;
                                     }
                                     $scope.attributesClassed.push(
                                         {
@@ -1542,10 +1611,10 @@ adminCatagenDirectives.directive("nsRule", [
                                 name: 'qty'
                             },
                             {
-                                value: "creationDate",
+                                value: "createdAt",
                                 type: "date",
                                 params: {},
-                                name: 'creationDate'
+                                name: 'createdAt'
                             },
                             {
                                 value: "visible",
@@ -2113,12 +2182,13 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 onError: '&',
                 styleProp: '=',
                 lang: '=',
-                isSelected: '='
+                isSelected: '=',
+                uploadUrl: '=',
             },
             templateUrl: "views/templates/nsUploadFiles.html",
             controller: [
-                "$scope", "Upload",
-                function ($scope, Upload)
+                "$scope", "Upload", "toastService",
+                function ($scope, Upload, toastService)
                 {
                     $scope.disableUpload = false;
                     $scope.idOptional = "";
@@ -2191,6 +2261,19 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 insertDB: $scope.entity
                                             }
                                         });
+                                    }
+                                    else if ($scope.type === "genericFile"){
+                                        if(!$scope.uploadUrl){
+                                            throw ('Error use the parameter "upload-url" with "genericFile"');
+                                        }else{
+                                            $scope.up = Upload.upload({
+                                                url: $scope.uploadUrl,
+                                                method: 'POST',
+                                                data: {
+                                                    file: file
+                                                }
+                                            });
+                                        }
                                     }
                                     else {
                                         if ($scope.entity) {
@@ -2273,6 +2356,10 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 break;
                                             }
                                             case 'mediaMass': {
+                                                $scope.afterFunction();
+                                                break;
+                                            }
+                                            case 'genericFile': {
                                                 $scope.afterFunction();
                                                 break;
                                             }

@@ -65,49 +65,59 @@
                             <br/>
                             <div class="form-group row">
                                 <label for="location" class="col-sm-3 control-label" translate>picto.details.place</label>
+                                <style>
+                                    .paddingForTable{
+                                        padding-top: 10px;
+                                        padding-bottom: 10px;
+                                        text-align: center;
+                                    }
+                                </style>
                                 <div class="col-sm-9">
-                                    <div class="positions row">
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location2" translate>picto.details.topLeft</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location2
-                                       " value="TOP_LEFT">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location1" translate>picto.details.topCenter</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location1
-                                       " value="TOP_CENTER">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location3" translate>picto.details.topRight</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location3
-                                       " value="TOP_RIGHT">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location4" translate>picto.details.midLeft</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location4
-                                       " value="MIDDLE_LEFT">
-                                        </div>
-                                        <div class="col-sm-4 col-md-offset-4">
-                                            <label class="control-label" for="location5" translate>picto.details.midRight</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location5
-                                       " value="MIDDLE_RIGHT">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location6" translate>picto.details.botLeft</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location6
-                                       " value="BOTTOM_LEFT">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location7" translate>picto.details.botCenter</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location7
-                                       " value="BOTTOM_CENTER">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label" for="location8" translate>picto.details.botRight</label>
-                                            <input type="radio" ng-model="picto.location" name="location" id="location8
-                                       " value="BOTTOM_RIGHT">
-                                        </div>
-                                    </div>
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location2" translate>picto.details.topLeft</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location2" value="TOP_LEFT">
+                                                </td>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location1" translate>picto.details.topCenter</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location1" value="TOP_CENTER">
+                                                </td>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location3" translate>picto.details.topRight</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location3" value="TOP_RIGHT">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location4" translate>picto.details.midLeft</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location4" value="MIDDLE_LEFT">
+                                                </td>
+                                                <td>
+                                                    
+                                                </td>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location5" translate>picto.details.midRight</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location5" value="MIDDLE_RIGHT">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location6" translate>picto.details.botLeft</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location6" value="BOTTOM_LEFT">
+                                                </td>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location7" translate>picto.details.botCenter</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location7" value="BOTTOM_CENTER">
+                                                </td>
+                                                <td class="paddingForTable">
+                                                    <label class="control-label" for="location8" translate>picto.details.botRight</label><br/>
+                                                    <input type="radio" ng-model="picto.location" name="location" id="location8" value="BOTTOM_RIGHT">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <br/>
@@ -170,7 +180,7 @@
                     height: 85%;
                 }
 
-                form .form-group {}
+                /*form .form-group {}*/
 
                 .rule .operand select {
                     max-width: 100px;

@@ -86,7 +86,7 @@
                     <div class="form-group">
                         <label for="vat_rate" class="col-sm-2 control-label" translate>shipment.detail.tva</label>
                         <div class="col-sm-5">
-                                <select class="form-control" ng-options="tax.rate as tax.rate for tax in taxerate" ng-model="shipment.vat_rate" required></select>
+                                <select class="form-control" ng-options="tax.rate as tax.rate for tax in config.taxerate" ng-model="shipment.vat_rate" required></select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -144,10 +144,8 @@
                                 </select>
                             </div>
                         </div>
-
-
-                        <div bind-html-compile="shipment.component_template"></div>
                     </div>
+                    <div bind-html-compile="shipment.component_template"></div>
                 </div>
 
                 <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'">

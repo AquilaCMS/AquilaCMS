@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const authService                 = require('../services/auth');
 const usersServices               = require('../services/users');
@@ -15,19 +23,8 @@ module.exports = function (app) {
     app.post('/v2/getUserTypes', authentication, getUserTypes);
 };
 
-/**
- * @api {post} /v2/users Users listing
- * @apiName getUsers
- * @apiGroup Users
- * @apiVersion 2.0.0
- * @apiDescription Get listing of users
- * @apiUse headerAuth
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-Get all 10 first users matching "lookingforname" with default structure
-{"PostBody": {"filter": {"$or": [{"firstname": {"$regex": "lookingforname","$options": "i"}},{"lastname": {"$regex": "lookingforname","$options": "i"}}]},"limit": 10}}
- * @apiUse UserSchemaDefault
- * @apiUse ErrorPostBody
+/* POST /api/v2/users
+ * @summary Users list
  */
 async function getUsers(req, res, next) {
     try {
@@ -39,20 +36,10 @@ async function getUsers(req, res, next) {
     }
 }
 
+// {"PostBody":{"filter":{"email": "lookingfor@themail.com"},"structure":"*","limit":1}}
 /**
- * @api {post} /v2/user User details
- * @apiName getUser
- * @apiGroup Users
- * @apiVersion 2.0.0
- * @apiDescription Get one user
- * @apiUse headerAuth
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-Get the user matching "lookingfor@themail.com" with full structure
-{"PostBody":{"filter":{"email": "lookingfor@themail.com"},"structure":"*","limit":1}}
- * @apiUse UserSchema
- * @apiUse UserAddressSchema
- * @apiUse ErrorPostBody
+ * POST /api/v2/user
+ * @summary User details
  */
 async function getUser(req, res, next) {
     try {
@@ -66,12 +53,7 @@ async function getUser(req, res, next) {
 
 /**
  * POST /api/v2/user/{id}
- * @tags User
  * @summary Get user by id
- * @param {string} authorization.headers - authorization
- * @param {PostBody} request.bod.required - PostBody
- * @param {string} id.path.required - user id
- * @return {UserSchema} 200 - success
  */
 async function getUserById(req, res, next) {
     try {
@@ -90,10 +72,7 @@ async function getUserById(req, res, next) {
 
 /**
  * POST /api/v2/user/active/account
- * @tags User
  * @summary Get user by 'Activate Account Token'
- * @param {RequestAccountToken} request.body - activateAccountToken
- * @return {UserSchema} 200 - response success
  */
 async function getUserByAccountToken(req, res, next) {
     try {
@@ -106,7 +85,6 @@ async function getUserByAccountToken(req, res, next) {
 
 /**
  * PUT /api/v2/user
- * @tags User
  * @summary Add or update a user
  */
 async function setUser(req, res, next) {
@@ -137,7 +115,6 @@ async function setUser(req, res, next) {
 
 /**
  * PUT /api/v2/user/addresses
- * @tags User
  * @summary Update a user's addresses
  */
 async function setUserAddresses(req, res, next) {
@@ -150,7 +127,6 @@ async function setUserAddresses(req, res, next) {
 
 /**
  * DELETE /api/v2/user/{id}
- * @tags User
  * @summary Delete a user
  */
 async function deleteUser(req, res, next) {
@@ -164,7 +140,6 @@ async function deleteUser(req, res, next) {
 
 /**
  * POST /api/v2/getUserTypes
- * @tags User
  * @summary Get user types
  */
 async function getUserTypes(req, res, next) {
@@ -178,9 +153,7 @@ async function getUserTypes(req, res, next) {
 
 /**
  * PUT /api/v2/user/resetpassword
- * @tags User
  * @summary Reset password
- * @param {oneOf|TokenSendMail|changePassword|resetPassword} request.body parameter
  */
 async function resetpassword(req, res, next) {
     try {

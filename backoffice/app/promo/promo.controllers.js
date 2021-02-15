@@ -11,6 +11,7 @@ PromoControllers.controller("PromoListCtrl", [
         $scope.totalPromos = 0;
         $scope.searchPromoByName = "";
         $scope.sort = {type: "createdAt", reverse: false};
+        $scope.filter = {};
 
         $scope.detail = function (promo) {
             $location.url(`/promos/${promo._id}`);
@@ -39,10 +40,65 @@ PromoControllers.controller("PromoListCtrl", [
             $scope.searchPromoByName = searchPromoByName;
             $scope.onPageChange(1, {name: {$regex: searchPromoByName, $options: "i"}});
         };
-        $scope.onPageChange = function (page, filter) {
+
+        $scope.getPromo = function (page) {
             $scope.page = page;
-            $scope.getPromos($scope.page, filter);
+            $scope.getPromos($scope.page, getFilter());
         };
+
+        $scope.onPageChange = function (page) {
+            $scope.page = page;
+            $scope.getPromos($scope.page, getFilter());
+        };
+
+        function getFilter(){
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if (filterKeys[i].includes("amount")) {
+                    const key = filterKeys[i].split("_");
+                    const value = $scope.filter[filterKeys[i]];
+                    filter["payment.0.amount"] = {}
+                    filter["payment.0.amount"][key[0] === "min" ? "$gte" : "$lte"] = Number(value);
+                } else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                    const key = filterKeys[i].split("_");
+                    const value = $scope.filter[filterKeys[i]];
+
+                    if (filter[key[1]] === undefined) {
+                        filter[key[1]] = {};
+                    }
+                    filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
+                } else if(filterKeys[i].includes("active")) {
+                    if($scope.filter.active == "true"){
+                        filter["actif"] = true;
+                    }else if($scope.filter.active == "false"){
+                        filter["actif"] = false;
+                    }
+                } else if(filterKeys[i].includes("nextRules")) {
+                    if($scope.filter.nextRules == "true"){
+                        filter["applyNextRules"] = true;
+                    }else if($scope.filter.nextRules == "false"){
+                        filter["applyNextRules"] = false;
+                    }
+                } else if(filterKeys[i].includes("priority")) {
+                    if($scope.filter.priority != ""){
+                        filter["priority"] = $scope.filter.priority;
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            return filter;
+        }
     }
 ]);
 
@@ -54,7 +110,7 @@ PromoControllers.controller("PromoDetailCtrl", [
     "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2",
     function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2) {
         $scope.promo = {
-            discountType     : "Aet",
+            discountType     : null,
             actif            : false,
             gifts            : [],
             codes            : [],
@@ -471,7 +527,7 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
-        $scope.cloneDiscount = async function () {
+        const cloneDiscount = async function () {
             await $scope.save(false);
             PromoClone.clone({_id: $scope.promo._id}, function (response) {
                 if (response) {
@@ -480,6 +536,16 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
             });
         };
+
+        $scope.additionnalButtons = [
+            {
+                text: 'product.button.dup',
+                onClick: function () {
+                    cloneDiscount();
+                },
+                icon: '<i class="fa fa-clone" aria-hidden="true"></i>',
+            }
+        ];
     }
 ]);
 

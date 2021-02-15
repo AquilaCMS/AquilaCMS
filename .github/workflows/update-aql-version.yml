@@ -27,7 +27,8 @@ jobs:
 
         export todayDate=`date +%D | tr / .`
         export dayMonth=`echo ${todayDate::-3}`
-        export todayVersion="1.0${dayMonth}"
+        export year=`echo ${todayDate: -1}`
+        export todayVersion="1.${year}${dayMonth}"
         echo "Today version :"
         echo $todayVersion
 
@@ -56,7 +57,7 @@ jobs:
         echo "$newInfoFile" > package.json
         git add --force package.json
 
-        echo "::set-env name=newAquilaVersion::$newAquilaVersion"
+        echo "newAquilaVersion=$newAquilaVersion" >> $GITHUB_ENV
     - name: Commit file
       run: |
         git config --local user.email "action@github.com"

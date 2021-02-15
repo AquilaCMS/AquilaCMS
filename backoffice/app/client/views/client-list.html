@@ -3,15 +3,7 @@
         <div id="clientsList" class="tab-pane fade in active">
             <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
                 <div class="row">
-                    <div class="col-lg-11">
-                        <div class="dataTables_filter">
-                            <label>
-                                <input type="search" ng-change="search()"
-                                    ng-model="query.search" ng-model-options="{ debounce: 500 }" name="q" id="q" value=""  translate translate-attr-placeholder='client.list.ph1' class="search-field">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="col-lg-1" style="float:right">
                             <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('users')" style="cursor: pointer" ></i>
                     </div>
                 </div>
@@ -19,38 +11,38 @@
                     <thead>
                     <tr role="row" class="pointer">
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Email: activate to sort column descending">
-                            <a  ng-click="sort.type = 'email'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('email')" translate>
                                 client.list.email
                                 <span ng-show="sort.type == 'email' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'email' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Name: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'lastname'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('lastname')" translate>
                                 client.list.nom
                                 <span ng-show="sort.type == 'lastname' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'lastname' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Firstname: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'firstname'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('firstname')" translate>
                                 client.list.prenom
                                 <span ng-show="sort.type == 'firstname' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'firstname' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th  role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Société: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'company.name'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sortSearch('company.name')" translate>
                                 client.list.company
                                 <span ng-show="sort.type == 'company.name' && !sort.reverse" class="ico-chevron-down"></span>
                                 <span ng-show="sort.type == 'company.name' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-label="Creation date: activate to sort column ascending">
-                            <a  ng-click="sort.type = 'creationDate'; sort.reverse = !sort.reverse" translate>
+                            <a  ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse" translate>
                                 client.list.creationDate
-                                <span ng-show="sort.type == 'creationDate' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'creationDate' && sort.reverse" class="ico-chevron-up"></span>
+                                <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
                             </a>
                         </th>
                         <th ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
@@ -58,6 +50,25 @@
                             Actions
                         </th>-->
                     </tr>
+                    <tr role="row">
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.email" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.email' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.lastname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.nom' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.firstname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.prenom2' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="sortSearch()" ng-model="filter.company" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.companyName' class="form-control">
+                        </th>
+                        <th>
+                            <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="sortSearch()">
+                            </ns-datepicker>
+                        </th>
+                    </tr>
+
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                     <tr class="pointer"
@@ -68,7 +79,7 @@
                         <td data-label="Nom :" class="tdSize">{{client.lastname || client.company.contact.last_name}}</td>
                         <td data-label="Prénom :" class="tdSize">{{client.firstname || client.company.contact.first_name}}</td>
                         <td data-label="Société :" class="tdSize">{{client.company.name}}</td>
-                        <td data-label="Date de création :" class="tdSize">{{client.creationDate | date:"dd/MM/yyyy"}}</td>
+                        <td data-label="Date de création :" class="tdSize">{{client.createdAt | date:"dd/MM/yyyy"}}</td>
                         <td data-label="Quantité :" ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
                         <!--<td style="width: 25%">
                             <a href="#/clients/{{client._id}}" class="btn btn-blue btn-with-icon">
@@ -83,7 +94,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <pagination total-items="totalClients" page="currentClientsPage" on-select-page="onClientsPageChange(page)" items-per-page="nbItemsPerPage"
+                <pagination total-items="totalClients" page="currentClientsPage" on-select-page="onClientsPageChange(page+1)" items-per-page="nbItemsPerPage"
                 max-size="maxSize" boundary-links="true" rotate="false"></pagination>
             </div>
         </div>

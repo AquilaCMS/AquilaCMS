@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
@@ -12,11 +20,10 @@ const SuppliersSchema = new Schema({
     cpostal            : String,
     city               : String,
     mail               : String,
-    phone              : Number,
+    phone              : String,
     purchasing_manager : String,
-    active             : {type: Boolean, default: true},
-    creationDate       : {type: Date, default: Date.now}
-});
+    active             : {type: Boolean, default: true}
+}, {timestamps: true});
 
 SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
     const res = await this.find({name: supplierName});

@@ -7,7 +7,6 @@
                     form="form"
                     remove="removeProduct(product._id)"
                     save-and-quit="saveProduct(product, true)"
-                    duplicate-product="duplicateProduct()"
                     disable-save="disableSave"
                     additionnal-buttons="additionnalButtons"
                     more-buttons="moreButtons"
@@ -23,6 +22,9 @@
                     <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
                     <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
                     <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
+                    <li ng-repeat="tab in additionnalTabs">
+                        <a data-toggle="tab" href="{{tab.href}}" target="_self" translate="{{tab.title}}"></a>
+                    </li>
                 </ul>
             </div>
             <div class="tab-content">
@@ -151,32 +153,31 @@
                 </div>
 
                 <div id="categoriesLink" class="tab-pane fade">
-                    <h3 style="display: inline" translate>simple.linkedCat</h3>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-                            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
-                                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-                                <thead>
-                                    <tr role="row" style="cursor: pointer">
-                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
-                                            colspan="1"
-                                            style="width: 200px;" aria-sort="ascending"
-                                            aria-label="Username: activate to sort column descending" translate>
-                                            simple.catNom
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody role="alert" aria-live="polite" aria-relevant="all"
-                                       infinite-scroll="scroller.next()" infinite-scroll-distance="1"
-                                       infinite-scroll-immediate-check="true"
-                                       infinite-scroll-disabled='scroller.busy'>
-                                    <tr ng-class-odd="'odd'" ng-class-even="'even'"
-                                        ng-repeat="cat in categoriesLink | orderBy:sortType:sortReverse">
-                                        <td class="  sorting_1">{{cat.translation[lang].name}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <script type="text/ng-template" id="nodes_renderer.html" ui-tree="treeOptions">
+                        <div ui-tree-handle style="cursor:initial" class="tree-node tree-node-content cleanBorder" data-nodrag>
+                            <span style="margin-left: 5px;" data-nodrag>
+                                <input type="checkbox" ng-checked="catCheck(node)" ng-click="selectNode(node)" ng-disabled="catDisabled(node)">
+                            </span>
+                            <a class="pull-right btn btn-blue" style="height: 21px;margin-top: 5px;" ng-if="node.children.length > 0" ng-click="listChildren(node, this)" data-nodrag>
+                                <span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span>
+                            </a>
+                            <span class="tree-node-title" ng-class="{'tree-leaf': node.children.length == 0}">{{node.translation[lang].name && node.translation[lang].name !== "" ? node.translation[lang].name : (node.code + " (code)")}}</span>
                         </div>
+                        <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}" data-nodrag>
+                            <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder" data-nodrag></li>
+                        </ol>
+                    </script>
+                    <div ui-tree="treeOptions" ng-if="categories.length > 0" class="cleanBorder">
+                        <ol ui-tree-nodes="" ng-model="categories" id="tree-root">
+                            <li ng-repeat="node in categories" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                        </ol>
+                    </div>
+                    <div ng-if="categories.length == 0" translate>category.list.noCatCreated</div>
+                </div>
+                <div ng-repeat="tab in additionnalTabs" id="{{tab.id}}" class="tab-pane fade">
+                    <h3 style="display: inline" translate="tab.title"></h3>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div bind-html-compile="tab.content"></div>
                     </div>
                 </div>
             </div>

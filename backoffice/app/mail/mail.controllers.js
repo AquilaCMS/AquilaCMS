@@ -4,8 +4,11 @@ var MailControllers = angular.module("aq.mail.controllers", ['ui.bootstrap']);
  * Controller de la page contenant la liste des Mails
  */
 MailControllers.controller("MailListCtrl", [
-    "$scope", "$location", "MailGetAll", "$rootScope", function ($scope, $location, MailGetAll, $rootScope) {
+    "$scope", "$location", "Mail", "MailTypesGet", "$rootScope", function ($scope, $location, Mail, MailTypesGet, $rootScope) {
+        $scope.adminLang = $rootScope.adminLang;
         $scope.isEditMode = true;
+        $scope.filter = {};
+
         $scope.detail = function (mail) {
             $location.url("/mails/" + mail._id);
         };
@@ -14,9 +17,52 @@ MailControllers.controller("MailListCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        MailGetAll.query(function (mails) {
-            $scope.mails = mails;
+        $scope.getAllMails = function(){
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("isVisible")) {
+                    if($scope.filter.isVisible == "true"){
+                        filter["isVisible"] = true;
+                    }else if($scope.filter.isVisible == "false"){
+                        filter["isVisible"] = false;
+                    }
+                } else if(filterKeys[i].includes("subject")) {
+                    if($scope.filter.subject != ""){
+                        filter["translation."+$scope.defaultLang+".subject"] = { $regex: $scope.filter.subject, $options: "i" };
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            Mail.list({PostBody: {filter, structure: '*', limit: 100, page: 1}}, function ({datas, count}) {
+                $scope.mails = datas;
+            });
+        };
+
+        MailTypesGet.query({}, function (mailTypes) {
+            $scope.mailTypes = mailTypes;
         });
+        
+        $scope.getAllMails();
+
+        
+
+        $scope.getMailTypeDesc = function(type){
+            if ($scope.mailTypes && $scope.adminLang){
+                type = $scope.mailTypes.find(x => x.code === type).translation[$scope.adminLang].name;
+            }
+            return type;
+        }
     }
 ]);
 
@@ -32,6 +78,20 @@ MailControllers.controller("MailDetailCtrl", [
         $scope.nsUploadFiles = {
             isSelected: false
         };
+
+        $scope.langChange = function (lang) {
+            $scope.lang = lang;
+        };
+
+        $scope.additionnalButtons = [
+            {
+                text: 'mail.detail.test',
+                onClick: function () {
+                    $scope.openItemModal($scope.lang, $scope.mail.type)
+                },
+                icon:'<i class="fa fa-envelope-o" aria-hidden="true"></i>'
+            }
+        ]
 
         if($routeParams.mailId != "new")
         {
@@ -61,6 +121,8 @@ MailControllers.controller("MailDetailCtrl", [
         if($scope.isEditMode)
         {
             $scope.MailGetById();
+        }else{
+            $scope.mail.type = "";
         }
 
         $scope.after = function(){
@@ -103,7 +165,7 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.form.nsSubmitted = true;
             if($scope.form.$invalid)
             {
-                toastService.toast("success", "Mail sauvegardé !");
+                toastService.toast("danger", "Mail non sauvegardé !");
                 return;
             }
             var deferred = $q.defer();
@@ -174,7 +236,7 @@ MailControllers.controller("MailDetailCtrl", [
 
 
         //Ouverture de la modal d'envoie de mails test
-        $scope.openItemModal = function (lang) {
+        $scope.openItemModal = function (lang, mail) {
             $modal.open({
                 templateUrl: 'app/mail/views/mail-detail-test.html',
                 controller: 'MailDetailTestCtrl',
@@ -194,142 +256,31 @@ MailControllers.controller("MailDetailCtrl", [
 ]);
 
 MailControllers.controller("MailDetailTestCtrl", [
-    "$scope", "$q", "$routeParams", "$location", "toastService", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypesGet", "MailVariables", "TestMail", "mail", "$modalInstance","lang",
-    function ($scope, $q, $routeParams, $location, toastService, MailSave, MailUpdate, MailRemove, MailGetById, MailTypesGet, MailVariables, TestMail, mail,$modalInstance, lang) {
-        
+    "$scope", "$rootScope","$q", "$routeParams", "$location", "toastService", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypeGet", "MailVariables", "TestMail", "mail", "$modalInstance","lang",
+    function ($scope,$rootScope,$q, $routeParams, $location, toastService, MailSave, MailUpdate, MailRemove, MailGetById, MailTypeGet, MailVariables, TestMail, mail,$modalInstance, lang) {
         $scope.path = $routeParams.mailId; 
         $scope.mail = mail;
         $scope.lang = lang;
+        $scope.adminLang = $rootScope.adminLang;
         $scope.loading = false;
-        $scope.type = {
-            "register" : [
-                { name: 'firstname', value:'' },
-                { name: 'lastname', value:'' },
-                { name: 'company', value:'' },
-                { name: 'login', value: '' },
-                { name: 'name', value: ''},
-                { name: 'activate_account_token', value: '' }
-            ],
-            "activationAccount": [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'name', value: ''},
-                { name: 'activate_account_token' },
-            ],
-            "orderSuccess":  [
-                { name: 'taxdisplay' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'number' },
-                { name: 'dateReceipt' },
-                { name: 'hourReceipt' },
-                { name: 'address' },
-                { name: 'totalamount' },
-                { name: 'orderdata' },
-                { name: 'appUrl' },
-                { name: 'payment_type' },
-                { name: 'delivery_type' }
-            ],
-            "orderSuccessDeferred": [
-                { name: 'taxdisplay' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'number' },
-                { name: 'dateReceipt' },
-                { name: 'hourReceipt' },
-                { name: 'address' },
-                { name: 'totalamount' },
-                { name: 'orderdata' },
-                { name: 'appUrl' },
-                { name: 'payment_type' },
-                { name: 'delivery_type' }
-            ],
-            "orderSuccessCompany":   [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'taxdisplay' },
-                { name: 'number' },
-                { name: 'dateReceipt' },
-                { name: 'hourReceipt' },
-                { name: 'address' },
-                { name: 'totalamount' },
-                { name: 'appUrl' },
-                { name: 'customer_mobile_phone' },
-                { name: 'payment_type' },
-                { name: 'delivery_type' },
-                { name: 'shipment' }
-            ],
-            "sendRegisterForAdmin": [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'login', value: '' },
-                { name: 'fullname', value: '' },
-                { name: 'name', value: '' },
-                { name: 'company', value: '' }
-            ],
-            "passwordRecovery":    [
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'tokenlink' }
-            ],
-            "changeOrderStatus":  [
-                { name: 'appUrl' },
-                { name: 'number' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'company', value: '' },
-                { name: 'status' }
-            ],
-        
-            "contactMail":   [
-                { name: 'formDatas' },
-            ],
-            "rmaOrder":      [
-                { name: 'number' },
-                { name: 'date' },
-                { name: 'articles' },
-                { name: 'refund' },
-                { name: 'firstname', value: '' },
-                { name: 'lastname', value: '' },
-                { name: 'fullname', value: '' }
-            ],
-            "orderSent":     [
-                { name: 'number' },
-                { name: 'trackingUrl' },
-                { name: 'date' },
-                { name: 'transporterName' },
-                { name: 'address' },
-                { name: 'fullname', value: '' },
-                { name: 'company', value: '' },
-            ],
-            "requestCancelOrderNotify": [
-                {name: 'number'},
-                {name: 'status'},
-                {name: 'fullname'},
-                {name: 'name'},
-                {name: 'company'},
-                {name: 'firstname'},
-                {name: 'lastname'}
-            ]
+        MailTypeGet.query({code:$scope.mail.type}, function (mailType) {
+            $scope.mailType = mailType;
+        });
 
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
         };
-        $scope.dataMail = $scope.type[$scope.mail.type];
 
         //Envoie de mail test
-        $scope.testMail = function(){
+        $scope.testMail = function(variables){
             $scope.loading = true;
             if($scope.mail.to && $scope.mail.to !== "") {
-                for (var data in $scope.dataMail) {
-                    if($scope.dataMail[data] === undefined){
-                        $scope.dataMail[data] = "";
+                for (var data in variables) {
+                    if (variables[data].text === undefined){
+                        variables[data].text = "";
                     };
                 }
-                TestMail.query({ mail: $scope.mail, values: $scope.dataMail, lang: $scope.lang }, function (res) {
+                TestMail.query({ mail: $scope.mail, values: variables, lang: $scope.lang }, function (res) {
                     toastService.toast("success", "Mail Test envoyé.");
                     $scope.loading = false;
                     $modalInstance.close();

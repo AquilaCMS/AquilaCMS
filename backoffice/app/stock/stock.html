@@ -1,5 +1,5 @@
 <form name="form" class="form-horizontal" novalidate ng-submit="save()" role="form">
-    <ns-box data-title="stock.t1" title-icon="fa fa-cog fa-lg">
+    <ns-box data-title="stock.t1" title-icon="fa fa-cart-plus fa-lg">
         <ns-buttons form="form" save-and-quit="save(true)">
             <h3 style="margin-bottom: 20px" translate>stock.cartOrder</h3>
 
@@ -30,7 +30,7 @@
                 <div class="col-sm-11">
                     <label class="col-sm-5 control-label" translate>stock.additionnalFeesTax</label>
                     <div class="col-sm-6">
-                        <select class="form-control" ng-options="tax.rate as tax.rate for tax in taxerate" ng-model="stock.additionnalFees.tax"></select>
+                        <select class="form-control" ng-options="oneTaxRate.rate as oneTaxRate.rate for oneTaxRate in taxerate" ng-model="stock.additionnalFees.tax"></select>
                     </div>
                 </div>
             </div>

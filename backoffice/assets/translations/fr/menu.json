@@ -22,33 +22,38 @@
     "pages": "Pages",
     "BlocsCMS": "Blocs CMS",
     "categories": "Catégories",
-    "mails": "Mails",
     "medias": "Medias",
     "article": "Blog",
-    "css": "CSS",
-    "translate": "Traduction",
 
     "galerie": "Galerie",
     "carousel": "Carrousel",
     "agenda": "Agenda",
 
     "promotion": "Promotion",
+
     "configuration": "Configuration",
-    "environnement": "Environnement",
-    "stock&commandes": "Param commande",
+    "mails": "Mails",
     "modesExpedition": "Transporteurs",
-    "territories" : "Territoires",
+    "territories": "Territoires",
+    "langues": "Langues",
+    "modesPaiement": "Modes paiement",
+    "admin": "Administrateurs",
+
+    "pointsVente": "Points de vente",
+
     "themes": "Thèmes",
     "design": "Apparence",
+    "css": "CSS",
+    "translate": "Traduction",
 
-    "langues": "Langues",
+    "settings": "Paramètrages",
+    "environnement": "Paramètres serveur",
+    "stock&commandes": "Param commande",
     "tachesPlanifiees": "Tâches Planifiées",
-    "modesPaiement": "Modes paiement",
-    "pointsVente": "Points de vente",
+    "system": "Système",
     "update": "Mise à jour",
 
     "modules": "Modules",
 
-    "admin": "Administrateurs",
     "newsletter": "Newsletter"
 }

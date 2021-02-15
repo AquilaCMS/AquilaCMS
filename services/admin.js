@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {AdminInformation, Categories} = require('../orm/models');
 const servicesLanguages              = require('./languages');
 const utils                          = require('../utils/utils');
@@ -26,7 +34,7 @@ const getAdminInformation = async () => {
  * @description Delete adminInformation
  */
 const deleteAdminInformation = async (code) => {
-    await AdminInformation.updateOne({code}, {deleted: true});
+    await AdminInformation.updateOne({code}, {$set: {deleted: true}});
 };
 
 /**
@@ -40,11 +48,11 @@ const welcome = async () => {
             translation : {
                 en : {
                     title : 'Aquila',
-                    text  : 'Welcome on Aquila. You will find necessary informations of Aquila here. For more informations on how this admin works, you can read the documentation on <a href="https://www.aquila-cms.com/ressources-documentation">aquila-cms.com</ a>.'
+                    text  : 'Welcome on Aquila. You will find necessary informations of Aquila here. For more informations on how this admin works, you can read the documentation on <a href="https://www.aquila-cms.com/resources-documentation">aquila-cms.com</ a>.'
                 },
                 fr : {
                     title : 'Aquila',
-                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/ressources-documentation">aquila-cms.com</a>.'
+                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/fr/ressources-documentation">aquila-cms.com</a>.'
                 }
             }
         });

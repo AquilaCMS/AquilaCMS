@@ -1,13 +1,21 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose                     = require('mongoose');
 const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
 const packageManager               = require('../utils/packageManager');
-const encryption                   = require('../utils/encryption');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const modulesUtils                 = require('../utils/modules');
 const {isProd}                     = require('../utils/server');
 const {Configuration, ThemeConfig} = require('../orm/models');
+const updateService                = require('./update');
 
 const CSS_FOLDERS = [
     'public/static/css',
@@ -17,31 +25,26 @@ const CSS_FOLDERS = [
     'styles'
 ];
 
-const save = async (environment) => {
+/**
+ * Set theme
+ * @param {string} selectedTheme Name of the selected theme
+ */
+const changeTheme = async (selectedTheme) => {
     const oldConfig = await Configuration.findOne({});
-    let maintenance = false;
-    if (oldConfig && oldConfig.environment && oldConfig.environment.autoMaintenance === true && oldConfig.environment.maintenance === false) {
-        oldConfig.environment.maintenance = true;
-        await Configuration.updateOne({_id: oldConfig._id}, {$set: {environment: oldConfig.environment}});
-        maintenance = true;
-    }
 
-    if (environment && environment.mailPass !== undefined && environment.mailPass !== '') {
-        environment.mailPass = encryption.cipher(environment.mailPass);
-    }
-    await Configuration.updateOne({}, {environment});
     // Si le theme a changé
-    if (oldConfig.environment.currentTheme !== environment.currentTheme) {
+    if (oldConfig.environment.currentTheme !== selectedTheme) {
         console.log('Setup selected theme...');
         try {
-            await require('./modules').setFrontModules(environment.currentTheme);
-            await setConfigTheme(environment.currentTheme);
-            await installDependencies(environment.currentTheme);
-            if (oldConfig && oldConfig.environment && oldConfig.environment.autoMaintenance === true && oldConfig.environment.maintenance === true && maintenance === true) {
-                environment.maintenance = false;
-                await Configuration.updateOne({_id: oldConfig._id}, {$set: {environment}});
-            }
-            await buildTheme(environment.currentTheme);
+            await updateService.setMaintenance(true);
+            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
+
+            await require('./modules').setFrontModules(selectedTheme);
+            await setConfigTheme(selectedTheme);
+            await installDependencies(selectedTheme);
+            await buildTheme(selectedTheme);
+
+            await updateService.setMaintenance(false);
         } catch (err) {
             console.error(err);
         }
@@ -71,8 +74,6 @@ const uploadTheme = async (originalname, filepath) => {
         const packageTheme = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
         if (!packageTheme) {
             throw NSErrors.ThemePackageNotFound; // info.json not found in zip
-        } else if (JSON.parse(packageTheme.getData().toString()).name !== originalname.replace('.zip', '')) {
-            throw NSErrors.ThemeNameMissmatch;
         }
         const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
         if (moduleAquilaVersion) {
@@ -86,8 +87,8 @@ const uploadTheme = async (originalname, filepath) => {
         const themeName = originalname.split('.')
             .slice(0, -1)
             .join('.');
-        if (await fs.access(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
-            if (await fs.access(target_path_full)) {
+        if (await fs.hasAccess(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
+            if (await fs.hasAccess(target_path_full)) {
                 await fs.unlink(target_path_full);
             }
             console.log('New theme is ready to be selected (need to build)');
@@ -160,25 +161,54 @@ const deleteTheme = async (themePath) => {
     await removeConfigTheme(themePath);
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
-    if (await fs.access(path.join(global.appRoot, complete_Path))) {
+    if (await fs.hasAccess(path.join(global.appRoot, complete_Path))) {
         await fs.deleteRecursiveSync(path.join(global.appRoot, complete_Path));
     }
     console.log('Theme removed !');
 };
 
+const getDemoDatasFilesName = async () => {
+    const folder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`);
+    if (!fs.existsSync(folder)) return [];
+    const fileNames = await fs.readdir(folder);
+    for ( let i = (fileNames.length - 1); i >= 0; i--) {
+        if (fileNames[i].indexOf('json') === -1) {
+            fileNames.splice(i, 1);
+        } else {
+            fileNames.splice(i, 1, {name: fileNames[i], value: true});
+        }
+    }
+    return fileNames;
+};
 /**
  * @description Copy datas of selected theme models can be a .json or a .js
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames = null ) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
+    const listOfFile    = [];
     if (!fs.existsSync(themeDemoData)) {
         return {data, noDatas: true};
     }
-    await fs.access(themeDemoData, fs.constants.R_OK);
-    const listOfFile = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    if (!await fs.hasAccess(themeDemoData)) return data;
+    const listOfPath = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    if (!fileNames && listOfPath) {
+        for (let i = 0; i < listOfPath.length; i++) {
+            listOfFile.push(listOfPath[i]);
+        }
+    } else {
+        for (let j = 0; j < listOfPath.length; j++) {
+            for (let i = 0; i < fileNames.length; i++) {
+                if ( listOfPath[j].indexOf(fileNames[i].name) !== -1) {
+                    if (fileNames[i].value === true) {
+                        listOfFile.push(listOfPath[j]);
+                    }
+                }
+            }
+        }
+    }
     for (const value of listOfFile) {
         if ((await fs.lstat(value)).isDirectory()) {
             continue;
@@ -225,10 +255,10 @@ const copyDatas = async (themePath, override = true, configuration = null) => {
     }
     const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
-    if (!await fs.access(path.join(themeDemoData, 'files'), fs.constants.R_OK)) {
+    if (!(await fs.hasAccess(path.join(themeDemoData, 'files')))) {
         throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
     }
-    if (!await fs.access(photoPath, fs.constants.OK)) {
+    if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
         throw new Error(`"${photoPath}" is not writable`);
     }
     await fs.copyRecursiveSync(path.join(themeDemoData, 'files'), photoPath, override);
@@ -336,8 +366,19 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
     }
 };
 
+const listTheme = async () => {
+    const allTheme = [];
+    for (const element of await fs.readdir('./themes/')) {
+        const fileOrFolder = await fs.stat(`./themes/${element}`);
+        if (fileOrFolder.isDirectory()) {
+            allTheme.push(element);
+        }
+    }
+    return allTheme;
+};
+
 module.exports = {
-    save,
+    changeTheme,
     setConfigTheme,
     installDependencies,
     buildTheme,
@@ -348,5 +389,7 @@ module.exports = {
     setCustomCss,
     getAllCssComponentName,
     getThemePath,
-    loadTranslation
+    loadTranslation,
+    listTheme,
+    getDemoDatasFilesName
 };

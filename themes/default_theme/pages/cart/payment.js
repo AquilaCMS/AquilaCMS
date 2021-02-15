@@ -102,6 +102,17 @@ class CartPayment extends React.Component {
         const saveTransaction = new CustomEvent('saveTransaction', { detail: order });
         window.dispatchEvent(saveTransaction);
 
+        window.localStorage.setItem('order', JSON.stringify(order));
+
+        if (order.priceTotal.ati === 0) {
+            if (Router !== undefined) {
+                Router.pushRoute('cartSuccess', { lang: routerLang });
+            } else {
+                window.location.pathname = `/${routerLang}/cart/success`;
+            }
+            return;
+        }
+
         // Paiement de la commande
         try {
             if (paymentMethod.isDeferred === true) {
@@ -113,7 +124,6 @@ class CartPayment extends React.Component {
                 // await axios.get(`${getAPIUrl()}v2/mail/confirmation/client/${order._id}`);
 
                 // window.localStorage.removeItem('cart_id');
-                window.localStorage.setItem('order', JSON.stringify(order));
                 Router.pushRoute('cartSuccess', { lang: routerLang });
             } else {
                 // Paiement immédiat (CB...)
@@ -121,7 +131,6 @@ class CartPayment extends React.Component {
 
                 this.setState({ paymentForm }, () => {
                     // window.localStorage.removeItem('cart_id');
-                    window.localStorage.setItem('order', JSON.stringify(order));
                     document.getElementById('paymentid').submit(); // Redirige sur la page du mode de paiement
                 });
             }
@@ -209,7 +218,7 @@ class CartPayment extends React.Component {
                                                         <button
                                                             className="btn btn--grey"
                                                             style={{ float: 'left' }}
-                                                            onClick={() => Router.pushRoute('cartDelivery', { lang: routerLang })}
+                                                            onClick={() => Router.back()}
                                                             type="button"
                                                         >
                                                             {t('common:retour')}

@@ -5,21 +5,85 @@
       "name": "default_theme",
       "config": {
         "translation" : {
-          "fr" : {
-              "showFooter" : true,
-              "filters" : "left",
-              "reviews" : true,
-              "itsnumber" : 321, 
-              "itscolor" : "#CCCCCC"
-          }, 
-          "en" : {
-              "showFooter" : true, 
-              "filters" : "left",
-              "reviews" : true,
-              "itsnumber" : 123, 
-              "itscolor" : "#ABCDEF"
+          "fr": {
+            "values" :[
+              {
+                "key": "showFooter",
+                "value": true,
+                "name": "Afficher le footer",
+                "description": "Affiche ou masque le footer (bas du site)",
+                "group": "Général"
+              },
+              {
+                "key": "filters",
+                "value": "left",
+                "name": "Emplacement des filtres",
+                "description": "Permet d'afficher les filtres des catégories, soit à droite (right) soit à gauche (left) ou caché (none)",
+                "group": "Général"
+              },
+              {
+                "key": "reviews",
+                "value": true,
+                "name": "Gestion des avis clients",
+                "description": "Active la gestion des avis clients",
+                "group": "Général"
+              },
+              {
+                "key": "itsnumber",
+                "value": "#CCCCCC",
+                "name": "Number",
+                "description": "Ceci est un exemple pour un nombre",
+                "group": "Exemple"
+              },
+              {
+                "key": "itscolor",
+                "value": true,
+                "name": "Color",
+                "description": "Ceci est un exemple pour une couleur",
+                "group": "Exemple"
+              }
+            ]
+          },
+          "en": {
+            "values": [
+              {
+                "key": "showFooter",
+                "value": true,
+                "name": "Show footer",
+                "description": "Show or hide the footer ",
+                "group": "General"
+              },
+              {
+                "key": "filters",
+                "value": "left",
+                "name": "Filter location",
+                "description": "Allows you to display category filters, either on the right or on the left or hidden",
+                "group": "General"
+              },
+              {
+                "key": "reviews",
+                "value": true,
+                "name": "Customer reviews management",
+                "description": "Activate the management of customer reviews",
+                "group": "General"
+              },
+              {
+                "key": "itsnumber",
+                "value": "#CCCCCC",
+                "name": "Number",
+                "description": "This is an example for numbers",
+                "group": "Exemple"
+              },
+              {
+                "key": "itscolor",
+                "value": true,
+                "name": "Color",
+                "description": "This is an example for colors",
+                "group": "Exemple"
+              }
+            ]
           }
-      	}
+        }
       }
     }
   ]

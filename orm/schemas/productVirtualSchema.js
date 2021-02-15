@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
 const reviewService        = require('../../services/reviews');
@@ -13,7 +21,10 @@ const ProductVirtualSchema = new Schema({
 });
 
 ProductVirtualSchema.methods.updateData = async function (data, cb) {
-    data.price.priceSort = data.price.et.special === undefined || data.price.et.special === null ? data.price.et.normal : data.price.et.special;
+    data.price.priceSort = {
+        et  : data.price.et.special || data.price.et.normal,
+        ati : data.price.ati.special || data.price.ati.normal
+    };
     reviewService.computeAverageRateAndCountReviews(data);
     try {
         const updPrd = await this.model('VirtualProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});

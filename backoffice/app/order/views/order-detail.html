@@ -17,7 +17,7 @@
         <div class="col-md-2" style="background:#e57373;border: 1px solid #ef5350">
             <i class="fa fa-calendar-o" style="color: #ef5350"></i>
             <p>
-                <b style="font-size: 25px;">{{order.creationDate | date:'dd/MM/yyyy'}}</b> <b style="font-size: 15px;">{{order.creationDate | date:'HH:mm'}}</b>
+                <b style="font-size: 25px;">{{order.createdAt | date:'dd/MM/yyyy'}}</b> <b style="font-size: 15px;">{{order.createdAt | date:'HH:mm'}}</b>
                 <br />
                 <br/>
                 <span translate>order.friendlyInfo.date</span>
@@ -58,7 +58,7 @@
 
     <div class="row order-header order-emphase orderInfoOld">
         <div class="col-md-12">
-            <strong>{{order.number}} - {{order.creationDate | date:'dd/MM/yyyy HH:mm'}}
+            <strong>{{order.number}} - {{order.createdAt | date:'dd/MM/yyyy HH:mm'}}
             </strong>
         </div>
     </div>
@@ -77,7 +77,7 @@
                     <a target="_blank" ng-href="#/clients/{{order.customer.id}}" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-eye"></i></a>
                 </div>
                 <div class="box-content">
-                    <a target="_blank" ng-href="#/clients/{{order.customer.id._id}}">{{order.customer.fullname}}</a><br />
+                    {{order.customer.fullname}}<br />
                     {{order.customer.phone}}<br />
                     {{order.customer.email}}
                     <div ng-if="order.comment">
@@ -205,6 +205,9 @@
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->
                                         <div ng-if="item.opts.length > 0" translate>order.detail.opt <p ng-repeat="opt in item.opts">{{opt[0]}}</p></div>
                                         <div ng-show="item.id.trademark" class="trademark" translate>order.detail.marque</div>
+                                        <ul ng-if="item.type === 'bundle'" style="list-style: none;" bind-html-compile="displayProducts(item)">
+                                            
+                                        </ul>
                                         <!--<a ng-href="#/products/{{(item.item_details.itemType ? item.item_details.itemType : 'simple')}}/{{item.item_details._slug}}" target="_blank" class="btn btn-default">Voir</a>-->
                                     </div>
                                 </td>
@@ -291,7 +294,14 @@
             <div class="box subbox" style="min-height: 185px;">
                 <div class="box-header">
                     <h2 translate>order.detail.colis</h2>
-                    <a ng-click="addPackage()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
+                    <div
+                        ng-show="orderPackagePopup.length > 0"
+                        ng-repeat="orderPP in orderPackagePopup"
+                        bind-html-compile="orderPP.component_template">
+                    </div>
+                    <a ng-show="orderPackagePopup.length === 0" ng-click="addPackage()" style="float:right">
+                        <i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i>
+                    </a>
                 </div>
                 <div class="box-content">
                     <div ng-show="order.delivery.package.length > 0">
@@ -395,10 +405,10 @@
                                     {{payment.comment}}
                                 </td>
                                 <td data-label="Crée le :">
-                                    {{payment.creationDate | date:'dd/MM/yyyy'}}
+                                    {{payment.creationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
                                 <td data-label="Date :">
-                                    {{payment.operationDate | date:'dd/MM/yyyy'}}
+                                    {{payment.operationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
                                 <td data-label="Mode :">
                                     {{payment.mode | paymentMode}}
@@ -495,7 +505,7 @@
                                 <label translate>{{getTranslation(status.status)}}</label>
                                 <!-- <b translate>{{getStatus(status.status)}} </b> -->
                             </p>
-                           
+
                         </div>
                     </div>
                 </div>

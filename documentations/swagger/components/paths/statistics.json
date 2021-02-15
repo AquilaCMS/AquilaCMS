@@ -1,0 +1,90 @@
+{
+    "/v2/statistics/generate": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/globale": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/sell/canceledCart": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/sell/cag": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/sell/capp": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/sell/nbOrder": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/customer/topCustomer": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    },
+    "/api/v2/statistics/customer/newCustomer": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Statistics"
+            ]
+        }
+    }
+}

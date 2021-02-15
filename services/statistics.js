@@ -1,4 +1,13 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                    = require('moment-business-days');
+const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
 const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
@@ -16,12 +25,43 @@ exports.setProductViews = function (product_id) {
 };
 
 /**
+ * Construit et envoie les statistiques des précédents jours
+ */
+exports.sendMetrics = async function (licence, date) {
+    const stats = await exports.getGlobaleStats(date);
+    await axios.post('https://stats.aquila-cms.com/api/v2/metrics', {
+        stats,
+        licence
+    });
+    return 'Datas sent';
+};
+
+/**
+ * Récupère la date du premier client ou de la première commande
+ */
+exports.getFirstDayMetrics = async function () {
+    try {
+        const User  = await Users.find().sort({createdAt: 1}).limit(1);
+        const Order = await Orders.find().sort({createdAt: 1}).limit(1);
+        if (User.length === 1 || Order.length === 1) {
+            if (User[0].createdAt > Order[0].createdAt) {
+                return Order[0].createdAt;
+            }
+            return User[0].createdAt;
+        }
+        return false;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+/**
  * Generate a Statistic file
  */
 exports.generateStatistics = function (data) {
     try {
         const model     = data.currentRoute;
-        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
+        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['No datas'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
         console.error(error);
@@ -31,12 +71,40 @@ exports.generateStatistics = function (data) {
 /**
  * Get Globale Stats (accueil admin)
  */
-exports.getGlobaleStats = async function () {
-    const result = {
-        yesterday : await getGlobalStat('YESTERDAY'),
-        today     : await getGlobalStat('TODAY'),
-        month     : await getGlobalStat('MONTH')
-    };
+exports.getGlobaleStats = async function (date) {
+    let result;
+    if (date) {
+        result          = [];
+        const dateStart = date;
+        const date2     = new Date();
+        const diffDays  = Math.ceil(Math.abs(date2 - date) / (1000 * 60 * 60 * 24)) - 1;
+        let n           = 0;
+        while (n < diffDays ) {
+            const start = new Date(dateStart);
+            start.setDate(start.getDate() + n);
+            const end = new Date(dateStart);
+            end.setDate(end.getDate() + n + 1);
+            const res = await getGlobalStat('YESTERDAY', start, end);
+            let empty = true;
+            for (const prop in res) {
+                if (res[prop] > 0) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (!empty) {
+                res.date = start.toString();
+                result.push(res);
+            }
+            n++;
+        }
+    } else {
+        result = {
+            yesterday : await getGlobalStat('YESTERDAY'),
+            today     : await getGlobalStat('TODAY'),
+            month     : await getGlobalStat('MONTH')
+        };
+    }
 
     return result;
 };
@@ -44,16 +112,23 @@ exports.getGlobaleStats = async function () {
 /**
  * Get Globale Stat (accueil admin)
  */
-async function getGlobalStat(periode) {
-    let datas        = {};
-    let periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
-    let periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
-
-    if (periode === 'MONTH') {
-        periodeStart = periodeStart.add(-30, 'days');
-    } else if (periode === 'YESTERDAY') {
-        periodeStart = periodeStart.add(-1, 'days');
-        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+async function getGlobalStat(periode, dateStart, dateEnd) {
+    let datas = {};
+    let periodeStart;
+    let periodeEnd;
+    if (dateStart && dateEnd) {
+        periodeStart = moment(dateStart);
+        periodeEnd   = moment(dateEnd);
+        // periodeEnd = moment({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    } else {
+        periodeStart = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0}).add(1, 'days');
+        if (periode === 'MONTH') {
+            periodeStart = periodeStart.add(-30, 'days');
+        } else if (periode === 'YESTERDAY') {
+            periodeStart = periodeStart.add(-1, 'days');
+            periodeEnd   = moment({hour: 0, minute: 0, second: 0, millisecond: 0});
+        }
     }
 
     const sPeriodeStart = periodeStart.toISOString();
@@ -61,7 +136,7 @@ async function getGlobalStat(periode) {
 
     // --- Commande ---
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : sPeriodeStart,
             $lte : sPeriodeEnd
         },
@@ -83,31 +158,62 @@ async function getGlobalStat(periode) {
         }
     });
 
-    let orderTotalAmount = 0;
+    let orderTotalAmount        = 0; // prix des toutes les commandes
+    let nbOrderPaid             = 0; // nb de commandes payées
+    let nbOrderNotPaid          = 0; // nb de commandes non payées
+    let orderTotalAmountPaid    = 0; // prix total des commandes payées
+    let orderTotalAmountNotPaid = 0; // prix total des commandes non payées
+
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
+        if (!['PAYMENT_RECEIPT_PENDING', 'PAYMENT_CONFIRMATION_PENDING', 'RETURNED'].includes(allOrders[i].status)) {
+            nbOrderPaid++;
+            orderTotalAmountPaid += allOrders[i].priceTotal.ati;
+        } else {
+            nbOrderNotPaid++;
+            orderTotalAmountNotPaid += allOrders[i].priceTotal.ati;
+        }
     }
 
     // --- Fréquentation ---
     let attendance = 0;
-    if (periode === 'MONTH' || periode === 'YESTERDAY') {
+    let newClients;
+    if (dateStart && dateEnd) {
         const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
-        for ( let i = 0, _len = attendanceTab.length; i < _len; i++ ) {
+        for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
             attendance += attendanceTab[i].value;
         }
-    } else { // if (periode === "TODAY") {
-        const statsToday = await serviceStats.getStatstoday();
-        if (statsToday != null && statsToday.visit) {
-            attendance = statsToday.visit.length;
+        newClients = await exports.getNewCustomer('months', periodeStart, periodeEnd);
+    } else {
+        if (periode === 'MONTH' || periode === 'YESTERDAY') {
+            const attendanceTab = await serviceStats.getHistory('visit', periodeStart, periodeEnd, '$visit.date');
+            for (let i = 0, _len = attendanceTab.length; i < _len; i++) {
+                attendance += attendanceTab[i].value;
+            }
+        } else { // if (periode === "TODAY") {
+            const statsToday = await serviceStats.getStatstoday();
+            if (statsToday != null && statsToday.visit) {
+                attendance = statsToday.visit.length;
+            }
         }
+        newClients = await exports.getNewCustomer(periode, periodeStart, periodeEnd);
     }
+
+    const articlesNumber = await exports.getCapp(periode, periodeStart, periodeEnd);
 
     datas = {
         nbOrder     : allOrders.length,
         averageCart : allOrders.length === 0 ? 0 : orderTotalAmount / allOrders.length,
         ca          : orderTotalAmount,
         transfo     : allOrders.length > 0 && attendance > 0 ? ((allOrders.length / attendance) * 100) : 0,
-        attendance
+        nbArticle   : articlesNumber.datasObject.length,
+        newClient   : newClients.datasObject.length,
+        attendance,
+        nbOrderPaid,
+        nbOrderNotPaid,
+        orderTotalAmountPaid,
+        orderTotalAmountNotPaid
+
     };
 
     return datas;
@@ -174,11 +280,11 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
     const datas = [];
 
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id']).lean();
+    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/* .lean() */;
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
@@ -187,10 +293,13 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentId   = currentItem.code;
 
             // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
-            const realProduct = await require('./products').getProductById(currentItem.id._id);
-            let link          = '';
-            if (realProduct) {
-                link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+            let link = '';
+            if (currentItem.id && currentItem.id._id) {
+                const realProduct = await require('./products').getProductById(currentItem.id._id);
+
+                if (realProduct && realProduct.images[0]) {
+                    link = `/images/products/100x100-50/${realProduct.images[0]._id}/${realProduct.images[0].url.split('/')[realProduct.images[0].url.split('/').length - 1]}`;
+                }
             }
 
             if (!tabIDProduct.includes(currentId)) {
@@ -238,7 +347,7 @@ exports.getTopCustomer = async function (granularity, periodeStart, periodeEnd) 
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }
@@ -272,18 +381,18 @@ async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatc
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             },
@@ -307,18 +416,18 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allUsers = await Users.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }

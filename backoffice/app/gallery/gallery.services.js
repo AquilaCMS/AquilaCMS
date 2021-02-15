@@ -2,7 +2,7 @@ angular.module('aq.gallery.services', ['ngResource']).factory("GalleryService", 
     "$resource", function ($resource)
     {
         return $resource("/v2/:route/:id", {}, {
-            list: {method: "GET", params: {route: "galleries"}},
+            list: {method: "POST", params: {route: "galleries"}},
             detail: {method: "GET", params: {route: "gallery", id: ""}},
             save: {method: "PUT", params: {route: "gallery"}},
             delete: {method: "DELETE", params: {route: "gallery", id: ""}}

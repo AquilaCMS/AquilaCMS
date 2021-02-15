@@ -12,7 +12,11 @@
         "desc": "Description",
         "content": "Content",
         "preview": "Preview",
-        "group": "Group"
+        "group": "Group",
+        "html": "HTML",
+        "variables": "Vars",
+        "result": "Result",
+        "noVars": "No vars"
 
     }
 }

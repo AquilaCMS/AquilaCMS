@@ -3,7 +3,6 @@
 
     "save": "Sauvegarder",
     "saveQuit": "Sauvegarder et quitter",
-    "dup": "Dupliquer",
     "delete": "Supprimer",
 
     "cmsBlocks": "Blocs CMS",
@@ -75,7 +74,7 @@
     "fields": {
         "code": "Produit : Code",
         "qty": "Produit : Quantité en stock",
-        "creationDate": "Produit : Date de création",
+        "createdAt": "Produit : Date de création",
         "visible": "Produit : Visibilité",
         "active": "Produit : Actif",
         "price_ati_normal": "Produit : Prix TTC",

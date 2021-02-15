@@ -53,6 +53,7 @@
         "selectCountry" : "Selectionner un pays",
         "demoMode" : "Mode démo",
         "siteName" : "Nom du site",
+        "favicon" : "Lien du favicon",
         "billsPattern" : "Schéma des codes de facturation",
         "billsVariables" : "Variables disponibles : {year} pour l'année en cours et {numAuto} pour un numéro auto incrémenté. Exemple : MONSITE_{year}_{numAuto}",
         "menu": {
@@ -71,6 +72,7 @@
         "ttlCache": "Durée du cache en secondes",
         "database": "Base de données",
         "connectionString": "Chaine de connexion",
+        "datasAnonyme": "Envoyer les données anonymes :",
         "ssl": {
             "ssl": "SSL",
             "active": "Activée",

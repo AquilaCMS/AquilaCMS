@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose                                                 = require('mongoose');
 const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
 const QueryBuilder                                             = require('../utils/QueryBuilder');
@@ -60,10 +68,7 @@ const setAttribute = async (body) => {
         // Si le usedInFilters est changé et passe de true a false
             if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
             // Alors on supprime les categories.filtres dont l'_id est l'_id de l'attribut modifié
-                await Categories.updateMany(
-                    {'filters._id': attribute._id}, {$pull: {filters: {_id: attribute._id}}},
-                    {new: true, runValidators: true}
-                );
+                await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
             }
             const code = body.code;
             delete body.code;
@@ -187,7 +192,6 @@ async function applyAttribChanges(tab, attribute, model) {
         // on check que les valeurs du produit existe toujours les valeurs
             const valueLength = tab[i].attributes[attrIndex].translation[langs[ii]].value ? tab[i].attributes[attrIndex].translation[langs[ii]].value.length : 0;
             for (let iii = 0; iii < valueLength; iii++) {
-                console.log(!attribute.translation[langs[ii]].values.includes(tab[i].attributes[attrIndex].translation[langs[ii]].value[iii]));
                 if (!attribute.translation[langs[ii]].values.includes(tab[i].attributes[attrIndex].translation[langs[ii]].value[iii])) {
                     tab[i].attributes[attrIndex].translation[langs[ii]].value.splice(iii, 1);
                     isEdit = true;
@@ -195,7 +199,7 @@ async function applyAttribChanges(tab, attribute, model) {
             }
         }
         if (isEdit) {
-            await mongoose.model(model).updateOne({_id: tab[i]._id}, tab[i]);
+            await mongoose.model(model).updateOne({_id: tab[i]._id}, {$set: tab[i]});
         }
     }
 }

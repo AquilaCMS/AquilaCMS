@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment           = require('moment');
 const {
     Orders,
@@ -10,12 +18,12 @@ const {
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const aquilaEvents     = require('../utils/aquilaEvents');
+const NSErrors         = require('../utils/errors/NSErrors');
+const utils            = require('../utils');
 const ServiceMail      = require('./mail');
-const ServiceAuth      = require('./auth');
 const ServicePromo     = require('./promo');
 const ServiceCart      = require('./cart');
 const ServicesProducts = require('./products');
-const NSErrors         = require('../utils/errors/NSErrors');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Orders, restrictedFields, defaultFields);
@@ -25,7 +33,7 @@ aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = unde
         if (fields && (fields.status || (fields.$set && fields.$set.status))) {
             const _order = await Orders.findOne({_id: orderId, historyStatus: {$exists: true}});
             if (!_order) {
-                await Orders.updateOne({_id: orderId}, {historyStatus: []});
+                await Orders.updateOne({_id: orderId}, {$set: {historyStatus: []}});
             }
             const historyStatus = {status: fields.status || fields.$set.status};
             if (stringDate && typeof stringDate === 'string') {
@@ -75,7 +83,7 @@ const setStatus = async (_id, status, sendMail = true) => {
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
     if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
         // On supprime le panier sauf si la commande est en attente de paiement ou annulée
-        await Orders.updateOne({_id}, {cartId: null});
+        await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
     if (status === 'PAID' && global.envConfig.stockOrder.automaticBilling) {
@@ -202,7 +210,7 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: 'PAYMENT_PENDING', creationDate: {$lt: dateAgo}})
+    return Orders.find({status: 'PAYMENT_PENDING', createdAt: {$lt: dateAgo}})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -278,7 +286,11 @@ const rma = async (orderId, returnData) => {
         nom         : _order.addresses.billing.lastname,
         prenom      : _order.addresses.billing.firstname,
         societe     : _order.addresses.billing.companyName,
-        coordonnees : `${_order.addresses.billing.line1 + (_order.addresses.billing.line2 ? ` ${_order.addresses.billing.line2}` : '')}, ${_order.addresses.billing.zipcode} ${_order.addresses.billing.city + (_order.addresses.billing.country ? `, ${_order.addresses.billing.country}` : '')}`,
+        coordonnees : `${_order.addresses.billing.line1 + (_order.addresses.billing.line2
+            ? ` ${_order.addresses.billing.line2}`
+            : '')}, ${_order.addresses.billing.zipcode} ${_order.addresses.billing.city + (_order.addresses.billing.country
+            ? `, ${_order.addresses.billing.country}`
+            : '')}`,
         email       : _order.customer.email,
         paymentDate : new Date(),
         isPaid      : true,
@@ -312,7 +324,10 @@ const rma = async (orderId, returnData) => {
     data.items = _order.items.filter((item) => returnData.products.find((prd) => prd.product_id === item.id.toString()));
 
     for (let i = 0; i < data.items.length; i++) {
-        data.items[i] = {...(data.items[i].toObject()), quantity: returnData.products.find((prd) => prd.product_id === data.items[i].id.toString()).qty_returned};
+        data.items[i] = {
+            ...(data.items[i].toObject()),
+            quantity : returnData.products.find((prd) => prd.product_id === data.items[i].id.toString()).qty_returned
+        };
     }
 
     await Bills.create(data);
@@ -409,7 +424,12 @@ const duplicateItemsFromOrderToCart = async (req) => {
         // On teste que le produit existe, est visible et est actif
         if (productThatExists && productThatExists.bundle_sections && productThatExists.bundle_sections.length > 0) {
             // Code pour les menus
-            const item = {id: productThatExists._id, quantity: products[i].quantity, weight: productThatExists.weight, selections: []};
+            const item = {
+                id         : productThatExists._id,
+                quantity   : products[i].quantity,
+                weight     : productThatExists.weight,
+                selections : []
+            };
             // On parcours les sections
             for (let j = 0; j < products[i].selections.length; j++) {
                 item.selections.push({
@@ -419,7 +439,12 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 // Puis les produits des sections
                 for (let k = 0; k < products[i].selections[j].products.length; k++) {
                     // On vérifie que le produit existe, est visible et est actif
-                    const prd = await Products.findOne({_id: products[i].selections[j].products[k], active: true, _visible: true, 'stock.orderable': true});
+                    const prd = await Products.findOne({
+                        _id               : products[i].selections[j].products[k],
+                        active            : true,
+                        _visible          : true,
+                        'stock.orderable' : true
+                    });
                     if (prd) {
                         item.selections[j].products.push(products[i].selections[j].products[k]);
                     } else {
@@ -440,13 +465,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
                 }
                 item.code  = productThatExists.code;
                 item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-                let user   = null;
-                if (req.headers && req.headers.authorization) {
-                    user = await ServiceAuth.getDecodedToken(req.headers.authorization);
-                }
-                _cart = await productThatExists.addToCart(_cart, item, user ? user.info : {}, _lang.code);
+                _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
                 itemsPushed++;
-                _cart = await ServicePromo.checkForApplyPromo(user, _cart, _lang.code);
+                _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
                 await _cart.save();
             }
         } else if (productThatExists && productThatExists.stock && productThatExists.stock.orderable) {
@@ -467,13 +488,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
             }
             item.code  = productThatExists.code;
             item.image = require('../utils/medias').getProductImageUrl(productThatExists);
-            let user   = null;
-            if (req.headers && req.headers.authorization) {
-                user = await ServiceAuth.getDecodedToken(req.headers.authorization);
-            }
-            _cart = await productThatExists.addToCart(_cart, item, user ? user.info : {}, _lang.code);
+            _cart      = await productThatExists.addToCart(_cart, item, req.info, _lang.code);
             itemsPushed++;
-            _cart = await ServicePromo.checkForApplyPromo(user, _cart, _lang.code);
+            _cart = await ServicePromo.checkForApplyPromo(req.info, _cart, _lang.code);
             await _cart.save();
         } else {
             isErrorOccured = true;
@@ -502,7 +519,11 @@ const addPackage = async (orderId, pkgData) => {
     }
 
     await setStatus(orderId, status, false);
-    let _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {'delivery.package': pkgData}}, {new: true}).populate('delivery.method');
+    let _order = await Orders.findOneAndUpdate(
+        {_id: orderId},
+        {$push: {'delivery.package': pkgData}},
+        {new: true}
+    ).populate('delivery.method');
 
     const packages = {};
     for (let i = 0; i < _order.delivery.package.length; i++) {
@@ -537,7 +558,7 @@ const addPackage = async (orderId, pkgData) => {
     }
 
     _order = setItemStatus(_order, packages, 'DELIVERY_PROGRESS', 'DELIVERY_PARTIAL_PROGRESS');
-
+    await utils.modules.modulesLoadFunctions('addParcel', {order: _order});
     await _order.save();
 
     const _country = Territory.findOne({code: _order.addresses.delivery.isoCountryCode});
@@ -548,18 +569,31 @@ const addPackage = async (orderId, pkgData) => {
         country = _order.addresses.delivery.country;
     }
 
-    const dateDelivery = moment().add(_order.delivery.dateDelivery.delayDelivery, _order.delivery.dateDelivery.unitDelivery).add(_order.delivery.dateDelivery.delayPreparation, _order.delivery.dateDelivery.unitPreparation).format('DD/MM/YYYY');
+    const dateDelivery = moment()
+        .add(_order.delivery.dateDelivery.delayDelivery, _order.delivery.dateDelivery.unitDelivery)
+        .add(_order.delivery.dateDelivery.delayPreparation, _order.delivery.dateDelivery.unitPreparation)
+        .format('DD/MM/YYYY');
     try {
         await ServiceMail.sendGeneric('orderSent', _order.customer.email, {
-            number          : _order.number,
-            name            : _order.delivery.name,
-            fullname        : _order.customer.fullname,
-            company         : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : '',
+            number   : _order.number,
+            name     : _order.delivery.name,
+            fullname : _order.customer.fullname,
+            company  : _order.addresses.delivery.companyName
+                && _order.addresses.delivery.idMondialRelay
+                ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}`
+                : '',
             trackingUrl     : pkgData.tracking,
             date            : dateDelivery,
             transporterName : _order.delivery.name,
-            companyName     : _order.addresses.delivery.companyName && _order.addresses.delivery.idMondialRelay ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}` : '', // Legacy
-            address         : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2 ? ` ${_order.addresses.delivery.line2}` : '')}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country ? `, ${country}` : '')}`
+            companyName     : _order.addresses.delivery.companyName
+                && _order.addresses.delivery.idMondialRelay
+                ? `${_order.delivery.name}: ${_order.addresses.delivery.companyName}`
+                : '', // Legacy
+            address : `${_order.addresses.delivery.line1 + (_order.addresses.delivery.line2
+                ? ` ${_order.addresses.delivery.line2}`
+                : '')}, ${_order.addresses.delivery.zipcode} ${_order.addresses.delivery.city + (country
+                ? `, ${country}`
+                : '')}`
         });
     } catch (error) {
         console.error(error);
@@ -567,6 +601,7 @@ const addPackage = async (orderId, pkgData) => {
 };
 
 const delPackage = async (orderId, pkgId) => {
+    await utils.modules.modulesLoadFunctions('deleteParcel', {orderId, pkgId});
     return Orders.findOneAndUpdate({_id: orderId}, {$pull: {'delivery.package': {_id: pkgId}}}, {new: true}).populate('items.id');
 };
 
@@ -604,9 +639,8 @@ const updateStatus = async (body, params) => {
     throw NSErrors.StatusUpdateError;
 };
 
-const cancelOrderRequest = async (_id, authorizationToken) => {
-    const user  = await ServiceAuth.getDecodedToken(authorizationToken);
-    const order = await Orders.findOne({_id, 'customer.email': user.info.email});
+const cancelOrderRequest = async (_id, user) => {
+    const order = await Orders.findOne({_id, 'customer.email': user.email});
     if (order) {
         await setStatus(_id, 'ASK_CANCEL');
         return order.status = 'ASK_CANCEL';

@@ -6,11 +6,12 @@ var adminCatagenControllers = angular.module("adminCatagenControllers", []);
 
 // wrapper
 adminCatagenControllers.controller("wrapperCtrl", [
-    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "LanguagesApiV2", "$translate",
-    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, LanguagesApiV2, $translate)
+    "$rootScope", "$scope", "$route", "ConfigUpdate", "MenusList", "MenusCatalogList", "LanguagesApiV2", "$translate", "$http",
+    function ($rootScope, $scope, $route, ConfigUpdate, MenusList, MenusCatalogList, LanguagesApiV2, $translate, $http)
     {
 
         $scope.menus = MenusList;
+        $scope.menusCatalog = MenusCatalogList;
 
         function getLanguages() {
             LanguagesApiV2.list({PostBody: {filter: {}, limit: 99}}, function (languages)
@@ -42,6 +43,25 @@ adminCatagenControllers.controller("wrapperCtrl", [
                 console.log(up);
             });
         };
+
+        $http.get("v2/auth/isauthenticated").then(function (resp) {
+            $scope.accessList = resp.data.user.accessList;
+            // if(["orders", "payments", "invoices", "cart"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('transactions');
+            // }
+            // if(["products", "categories", "promos", "picto", "setAttributes", "attributes", "trademarks", "suppliers", "families"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('catalogue');
+            // }
+            // if(["medias", "articles", "cmsBlocks", "staticPage", "categories", "design", "mails", "gallery", "slider"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('site');
+            // }
+            // if(["clients", "setAttributes", "attributes", "reviews", "contacts", "newsletters"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('clientsMenu');
+            // }
+            // if(["environment", "stock", "mails", "shipments", "territories", "languages", "paymentMethods", "jobs", "list", "update"].every(num => $scope.accessList.includes(num))){
+            //     $scope.accessList.push('configuration');
+            // }
+        });
 
         window.addEventListener("getLanguages", function(e) { getLanguages() });
 
@@ -102,8 +122,9 @@ adminCatagenControllers.controller("loggedCtrl", [
 ]);
 
 adminCatagenControllers.controller("AdminCtrl", [
-    "$scope", "AdminScroll", "$modal", "ClientV2", function ($scope, AdminScroll, $modal, ClientV2)
-    {
+    "$scope", "AdminScroll", "$modal", "ClientV2", "$location",
+    function ($scope, AdminScroll, $modal, ClientV2, $location) {
+        $scope.filter = {};
         function init()
         {
             $scope.sortType = "lastname"; // set the default sort type
@@ -115,10 +136,24 @@ adminCatagenControllers.controller("AdminCtrl", [
         $scope.initValues = {start: 0, limit: 15};
         $scope.page = 1;
 
-        $scope.getClients = function(page = 1)
+        $scope.goToAdminDetails = function(clientId){
+            $location.path(`/list/detail/${clientId}`);
+        };
+
+        $scope.getClients = function(page)
         {
-            $scope.page = page;
-            ClientV2.list({PostBody: {filter: {isAdmin: true}, page: $scope.page, limit: $scope.initValues.limit}}, function (clientsList)
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if($scope.filter[filterKeys[i]].toString() != ""){
+                    filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                }
+            }
+            filter["isAdmin"] = true;
+            ClientV2.list({PostBody: {filter, page: $scope.page, limit: $scope.initValues.limit}}, function (clientsList)
             {
                 $scope.clients = clientsList.datas;
                 $scope.totalAdmin = clientsList.count;
@@ -204,41 +239,49 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"cart", translate:"admin-list.cart"},
 
             {code:"products", translate:"admin-list.catalPdts"},
-            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"categories", translate:"admin-list.siteCat"},
+            {code:"promos", translate:"admin-list.discount"},
+            {code:"picto", translate:"admin-list.picto"},
+            {code:"attributes", translate:"admin-list.catalAttr"},
+
             {code:"trademarks", translate:"admin-list.catalMarques"},
             {code:"suppliers", translate:"admin-list.catalFourn"},
             {code:"families", translate:"admin-list.families"},
-            {code:"attributes", translate:"admin-list.catalAttr"},
-            {code:"options", translate:"admin-list.catalOpt"},
-            {code:"picto", translate:"admin-list.picto"},
-
-            {code:"clients", translate:"admin-list.clients"},
-
+            
             {code:"staticPage", translate:"admin-list.siteStatic"},
             {code:"cmsBlocks", translate:"admin-list.siteCMS"},
-            {code:"categories", translate:"admin-list.siteCat"},
-            {code:"mails", translate:"admin-list.mails"},
-            {code:"medias", translate:"admin-list.siteMedias"},
-            {code:"articles", translate:"admin-list.siteArt"},
-            {code:"design", translate:"admin-list.design"},
-            {code:"translate", translate:"admin-list.translate"},
-
             {code:"gallery", translate:"admin-list.gallery"},
             {code:"slider", translate:"admin-list.slider"},
-            {code:"promos", translate:"admin-list.discount"},
+            {code:"medias", translate:"admin-list.siteMedias"},
+            {code:"articles", translate:"admin-list.siteArt"},
+            
+            {code:"clients", translate:"admin-list.clients"},
+            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"contacts", translate:"admin-list.contact"},
+            {code:"newsletters", translate:"admin-list.newsletters"},
 
             {code:"config", translate:"admin-list.confEnv"},
-            {code:"stock", translate:"admin-list.stock"},
+            {code:"mails", translate:"admin-list.mails"},
             {code:"shipments", translate:"admin-list.shipments"},
             {code:"territories", translate:"admin-list.territories"},
             {code:"languages", translate:"admin-list.confLang"},
-            {code:"jobs", translate:"admin-list.confTasks"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
+            {code:"admin", translate:"admin-list.admin"},
+            
+            {code:"stock", translate:"admin-list.stock"},
+            {code:"jobs", translate:"admin-list.confTasks"},
+            {code:"system", translate:"admin-list.system"},
             {code:"update", translate:"admin-list.update"},
 
+            {code:"themes", translate:"admin-list.themes"},
+            {code:"design", translate:"admin-list.design"},
+            {code:"translate", translate:"admin-list.translate"},
+
             {code:"modules", translate:"admin-list.modules"},
-            {code:"admin", translate:"admin-list.admin"},
-            {code:"statistics", translate:"admin-list.statistics"}
+
+            {code:"statistics", translate:"admin-list.statistics"},
+            
+            {code:"options", translate:"admin-list.catalOpt"}
         ];
 
         $scope.toggleSelection = function toggleSelection(access)
@@ -282,6 +325,10 @@ adminCatagenControllers.controller("AdminNewCtrl", [
                     else
                     {
                         console.error("Error!");
+                    }
+                }, function(error){
+                    if(error.data && error.data.message) {
+                        toastService.toast("danger", error.data.message);
                     }
                 });
             }
@@ -327,48 +374,55 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
         };
 
         $scope.accessList = [
-
             {code:"orders", translate:"admin-list.transComm"},
             {code:"payments", translate:"admin-list.transPay"},
             {code:"invoices", translate:"admin-list.invoices"},
             {code:"cart", translate:"admin-list.cart"},
 
             {code:"products", translate:"admin-list.catalPdts"},
-            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"categories", translate:"admin-list.siteCat"},
+            {code:"promos", translate:"admin-list.discount"},
+            {code:"picto", translate:"admin-list.picto"},
+            {code:"attributes", translate:"admin-list.catalAttr"},
+
             {code:"trademarks", translate:"admin-list.catalMarques"},
             {code:"suppliers", translate:"admin-list.catalFourn"},
             {code:"families", translate:"admin-list.families"},
-            {code:"attributes", translate:"admin-list.catalAttr"},
-            {code:"options", translate:"admin-list.catalOpt"},
-            {code:"picto", translate:"admin-list.picto"},
-
-            {code:"clients", translate:"admin-list.clients"},
-
+            
             {code:"staticPage", translate:"admin-list.siteStatic"},
             {code:"cmsBlocks", translate:"admin-list.siteCMS"},
-            {code:"categories", translate:"admin-list.siteCat"},
-            {code:"mails", translate:"admin-list.mails"},
-            {code:"medias", translate:"admin-list.siteMedias"},
-            {code:"articles", translate:"admin-list.siteArt"},
-            {code:"design", translate:"admin-list.design"},
-            {code:"translate", translate:"admin-list.translate"},
-
             {code:"gallery", translate:"admin-list.gallery"},
             {code:"slider", translate:"admin-list.slider"},
-            {code:"promos", translate:"admin-list.discount"},
+            {code:"medias", translate:"admin-list.siteMedias"},
+            {code:"articles", translate:"admin-list.siteArt"},
+            
+            {code:"clients", translate:"admin-list.clients"},
+            {code:"reviews", translate:"admin-list.reviews"},
+            {code:"contacts", translate:"admin-list.contact"},
+            {code:"newsletters", translate:"admin-list.newsletters"},
 
-            {code:"config", translate:"admin-list.confEnv"},
             {code:"stock", translate:"admin-list.stock"},
+            {code:"mails", translate:"admin-list.mails"},
             {code:"shipments", translate:"admin-list.shipments"},
             {code:"territories", translate:"admin-list.territories"},
             {code:"languages", translate:"admin-list.confLang"},
-            {code:"jobs", translate:"admin-list.confTasks"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
-            {code:"update", translate:"admin-list.update"},
-
-            {code:"modules", translate:"admin-list.modules"},
             {code:"admin", translate:"admin-list.admin"},
-            {code:"statistics", translate:"admin-list.statistics"}
+            
+            {code:"themes", translate:"admin-list.themes"},
+            {code:"design", translate:"admin-list.design"},
+            {code:"translate", translate:"admin-list.translate"},
+            
+            {code:"config", translate:"admin-list.confEnv"},
+            {code:"jobs", translate:"admin-list.confTasks"},
+            {code:"update", translate:"admin-list.update"},
+            {code:"system", translate:"admin-list.system"},
+            
+            {code:"modules", translate:"admin-list.modules"},
+
+            {code:"statistics", translate:"admin-list.statistics"},
+            
+            {code:"options", translate:"admin-list.catalOpt"}
         ];
 
         $scope.save = function (quit = false)
@@ -682,7 +736,7 @@ adminCatagenControllers.controller("ExportsCtrl", [
 ]);
 
 adminCatagenControllers.controller("InvoicesController", [
-    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location)
+    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', "ExportCollectionCSV", function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location, ExportCollectionCSV)
     {
         $scope.columns = InvoiceColumns;
         $scope.currentPage = 1;
@@ -691,12 +745,12 @@ adminCatagenControllers.controller("InvoicesController", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
         $scope.disabledButton = false;
 
         function init()
         {
-            $scope.sortType = "creationDate"; // set the default sort type
+            $scope.sortType = "createdAt"; // set the default sort type
             $scope.sortReverse = true;  // set the default sort order
         }
 
@@ -819,6 +873,12 @@ adminCatagenControllers.controller("InvoicesController", [
                         filter[key[1]] = {};
                     }
                     filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
+                } else if(filterKeys[i].includes("avoir")) {
+                    if($scope.filter.avoir == "true"){
+                        filter["avoir"] = true;
+                    }else if($scope.filter.avoir == "false"){
+                        filter["avoir"] = false;
+                    }
                 } else {
                     if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
                         filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
@@ -844,7 +904,7 @@ adminCatagenControllers.controller("InvoicesController", [
             $scope.getInvoices();
         }, 100);
 
-
+        $scope.export = ExportCollectionCSV;
     }
 ]);
 

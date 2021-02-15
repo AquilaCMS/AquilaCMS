@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path     = require('path');
 const mongoose = require('mongoose');
 const fs       = require('../utils/fsp');
@@ -14,10 +22,7 @@ const createModelData = async () => {
             schemas.push({collection: modelName, datas: model});
         }
     }
-    const exist = await !fs.access(path.join(themeFolder, '/demoDatas/'));
-    if (!exist) {
-        await fs.ensureDir(path.join(themeFolder, '/demoDatas/'));
-    }
+    await fs.mkdir(path.join(themeFolder, '/demoDatas/'), {recursive: true});
     const noCopy = ['users', 'configurations'];
     for (const data in schemas) {
         if (!noCopy.includes(schemas[data].collection) && schemas[data].datas.length !== 0) {
@@ -27,21 +32,12 @@ const createModelData = async () => {
     }
 
     const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
-    if (!await fs.access(path.join(global.appRoot, `${photoPath}`), fs.constants.R_OK)) {
-        // eslint-disable-next-line no-useless-catch
-        try {
-            if (!fs.existsSync(photoPath)) {
-                await fs.mkdir(photoPath);
-            }
-            if (!await fs.access(photoPath, fs.constants.R_OK)) {
-                throw new Error(`"${photoPath}" is not readable`);
-            }
-        } catch (err) {
-            throw err;
-        }
+    await fs.mkdir(photoPath, {recursive: true});
+    if (!await fs.hasAccess(photoPath)) {
+        throw new Error(`"${photoPath}" is not readable`);
     }
 
-    if (!await fs.access(photoPath, fs.constants.W_OK)) {
+    if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
         throw new Error(`"${photoPath}" is not writable`);
     }
 

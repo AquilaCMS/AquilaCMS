@@ -3,7 +3,7 @@
         "description": "",
         "properties": {
             "data"         : {"type": "object"},
-            "creationDate" : {"type": "string", "format": "date"}
+            "createdAt" : {"type": "date"}
         }
     }
 }

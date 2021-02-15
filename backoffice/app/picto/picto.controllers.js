@@ -6,10 +6,24 @@ PictoControllers.controller('PictoListCtrl', [
     '$location',
     function ($scope, PictoApi, $location) {
         $scope.pictos = [];
-        PictoApi.list({PostBody: {limit: 20}}, function (response) {
-            $scope.pictos = response.datas;
-        });
+        $scope.filter = {};
+        $scope.getPicto = function(){
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if($scope.filter[filterKeys[i]].toString() != ""){
+                    filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                }
+            }
+            PictoApi.list({PostBody: {filter, limit: 20}}, function (response) {
+                $scope.pictos = response.datas;
+            });
+        }
 
+        $scope.getPicto();
 
         $scope.detailsPicto = function (_id) {
             $location.url(`/picto/${_id}`);
@@ -56,6 +70,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
                         toastService.toast('success', 'Pictorisation : done');
                     });
                 },
+                icon: '<i class="fa fa-picture-o" aria-hidden="true"></i>',
             }
         ]
         RulesV2.query({PostBody: {filter: {owner_id: $routeParams.id}, structure: '*'}}, function (rule) {

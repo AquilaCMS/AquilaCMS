@@ -6,13 +6,24 @@
     "custom": "Custom:",
     "themeChoice": "Choice theme",
     "currentThemeVar":"Modify the variables of the current theme.",
-    "noThemeVar":"No variables of the current theme.",
+    "noThemeVar":"This theme is not customizable.",
     "myTheme":"My Themes",
     "customisation":"Customize",
+    "data":"Theme data",
     "themePort": "Theme port",
     "newtheme": "Add theme",
     "themeDatas": "Theme datas",
     "themeDatasLead": "Install theme datas",
     "themeDatasOverride": "Overwrite existing datas",
-    "remove": "Remove theme"
+    "remove": "Remove theme",
+    "required": "Required",
+    "noDefaultData" : "No default data for this theme",
+    "new": {
+        "createNewTheme": "Add a new theme",
+        "cancel": "Cancel"
+    },
+    "themeSelect":"Select this theme",
+    "themeInstallDependencies":"Install dependencies of the theme",
+    "themeCompile":"Compile the theme",
+    "themeDelete":"Delete the theme"
 }

@@ -1,0 +1,13 @@
+{
+    "/api/v2/getBreadcrumb": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Common"
+            ]
+        }
+    }
+}

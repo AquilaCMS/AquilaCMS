@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import {
-    NSCartResume, NSContext, NSToast, getCart, getLangPrefix, updateAddressesCart, getShipmentsCart, updateDeliveryCart
+    NSCartResume, NSContext, NSToast, cartToOrder, getCart, getLangPrefix, getShipmentsCart, updateDeliveryCart
 } from 'aqlrc';
 import nsModules from 'modules/list_modules';
 import Head from 'next/head';
@@ -43,6 +43,14 @@ class CartDelivery extends React.Component {
 
     onLangChange = async (lang) => {
         window.location.pathname = `${await getLangPrefix(lang)}/cart/delivery`;
+    }
+
+    relayPointAddressSavedListener = (e) => {
+        if (!this.state.isRelayPoint) {
+            return;
+        }
+        // true ou false
+        this.setState({ relayPointAddressSaved: e.detail });
     }
 
     componentDidMount = async () => {
@@ -102,13 +110,7 @@ class CartDelivery extends React.Component {
         });
 
         // Lorsque un point relais est saisi
-        document.addEventListener('relayPointAddressSaved', (e) => {
-            if (!this.state.isRelayPoint) {
-                return;
-            }
-            // true ou false
-            this.setState({ relayPointAddressSaved: e.detail });
-        });
+        document.addEventListener('relayPointAddressSaved', this.relayPointAddressSavedListener);
     }
 
     onChangeSelect = async (e, index) => {
@@ -136,7 +138,20 @@ class CartDelivery extends React.Component {
 
         // Modification du mode de livraison du panier
         try {
-            await updateDeliveryCart(cartId, shipments[index], cart.addresses.delivery.isoCountryCode, lang);
+            const updatedCart = await updateDeliveryCart(cartId, shipments[index], cart.addresses.delivery.isoCountryCode, lang);
+            if (updatedCart.priceTotal.ati === 0) {
+                // Transformation du panier en commande
+                const order = await cartToOrder(cartId, lang);
+
+                window.localStorage.removeItem('cart_id');
+                window.localStorage.setItem('order', JSON.stringify(order));
+
+                // Event pour Google Analytics
+                const saveTransaction = new CustomEvent('saveTransaction', { detail: order });
+                window.dispatchEvent(saveTransaction);
+
+                return Router.pushRoute('cartSuccess', { lang: routerLang });
+            }
 
             Router.pushRoute('cartPayment', { lang: routerLang });
         } catch (err) {
@@ -207,7 +222,7 @@ class CartDelivery extends React.Component {
                                                     }
                                                 </div>{ /* <!-- /.form__body --> */ }
                                                 <div className="form__actions  text-right" style={{ marginTop: '40px' }}>
-                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => {Router.pushRoute('cartAddress', { lang: this.state.routerLang });}} type="button">
+                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => {Router.back();}} type="button">
                                                         {t('common:retour')}
                                                     </button>
                                                     {shipments.length ? <button disabled={isRelayPoint && !relayPointAddressSaved} type="submit" className="form__btn btn btn--red">{t('common:valider')}</button> : ''}
@@ -224,6 +239,10 @@ class CartDelivery extends React.Component {
                 </CartStructure>
             </NSContext.Provider>
         );
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('relayPointAddressSaved', this.relayPointAddressSavedListener);
     }
 }
 

@@ -53,6 +53,7 @@
         "selectCountry" : "Select country",
         "demoMode" : "Demo mode",
         "siteName" : "Website name",
+        "favicon" : "Favicon link",
         "billsPattern" : "Billing pattern code",
         "billsVariables" : "Available variables : {year} for the current year and {numAuto} for an autoincremented number. Example : MYSITE_{year}_{numAuto}",
         "menu": {
@@ -71,6 +72,7 @@
         "ttlCache": "Cache duration in seconds",
         "database": "Database",
         "connectionString": "Connection chain",
+        "datasAnonyme": "Send anonymes datas :",
         "ssl": {
             "ssl": "SSL",
             "active": "Activate",

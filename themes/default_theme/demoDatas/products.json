@@ -27,7 +27,10 @@
           "normal": 17,
           "special": 13
         },
-        "priceSort": 10.83,
+        "priceSort": {
+          "et": 10.83,
+          "ati": 13
+        },
         "purchase": 10,
         "tax": 20
       },
@@ -85,17 +88,15 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 404,
       "associated_prds": [
         "5c667ff128a49c049c5863c9",
         "5d24a3e94aa9c1692db04ac7",
         "5d24a43a4aa9c1692db04ad8",
         "5d24a4844aa9c1692db04ae4"
-      ], 
-      "is_new": false,
+      ],
+      "is_new": true,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -180,12 +181,12 @@
       ],
       "pictos": [
         {
-          "_id" : "5f6c6d8a53464f269885a52b", 
-          "code" : "LoveIt", 
-          "image" : "loveit.png", 
-          "pictoId" : "5da09f77db0b3834cf91a506", 
-          "title" : "Love It", 
-          "location" : "TOP_LEFT"
+          "_id": "5f6c6d8a53464f269885a52b",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
         }
       ],
       "_id": "5c667f8a28a49c049c5863c8",
@@ -249,7 +250,10 @@
         "ati": {
           "normal": 22
         },
-        "priceSort": 18.33,
+        "priceSort": {
+          "et": 18.33,
+          "ati": 22
+        },
         "purchase": 9.8,
         "tax": 20
       },
@@ -293,7 +297,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 982,
       "associated_prds": [
         "5d24a43a4aa9c1692db04ad8",
@@ -303,7 +306,6 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -450,7 +452,10 @@
         "ati": {
           "normal": 25
         },
-        "priceSort": 20.83,
+        "priceSort": {
+          "et": 20.83,
+          "ati": 25
+        },
         "purchase": 3.75,
         "tax": 20
       },
@@ -480,12 +485,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 178,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:25:46.019Z",
       "attributes": [
         {
           "type": "color",
@@ -632,7 +635,10 @@
         "ati": {
           "normal": 17
         },
-        "priceSort": 14.17,
+        "priceSort": {
+          "et": 14.17,
+          "ati": 17
+        },
         "purchase": 10,
         "tax": 20
       },
@@ -662,12 +668,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 189,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:27:06.737Z",
       "attributes": [
         {
           "type": "color",
@@ -810,7 +814,10 @@
         "ati": {
           "normal": 17
         },
-        "priceSort": 14.17,
+        "priceSort": {
+          "et": 14.17,
+          "ati": 17
+        },
         "purchase": 4.54,
         "tax": 20
       },
@@ -825,12 +832,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 243,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:28:20.190Z",
       "attributes": [
         {
           "type": "color",
@@ -915,12 +920,12 @@
       ],
       "pictos": [
         {
-          "_id" : "5f6c6d8a53464f269885a52b", 
-          "code" : "LoveIt", 
-          "image" : "loveit.png", 
-          "pictoId" : "5da09f77db0b3834cf91a506", 
-          "title" : "Love It", 
-          "location" : "TOP_LEFT"
+          "_id": "5f6c6d8a53464f269885a52b",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
         }
       ],
       "_id": "5d24a4844aa9c1692db04ae4",
@@ -984,7 +989,10 @@
         "ati": {
           "normal": 8
         },
-        "priceSort": 6.67,
+        "priceSort": {
+          "et": 6.67,
+          "ati": 8
+        },
         "purchase": 11,
         "tax": 20
       },
@@ -1028,12 +1036,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 28,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:32:04.688Z",
       "attributes": [
         {
           "type": "color",
@@ -1176,7 +1182,10 @@
         "ati": {
           "normal": 8
         },
-        "priceSort": 6.67,
+        "priceSort": {
+          "et": 6.67,
+          "ati": 8
+        },
         "purchase": 1.58,
         "tax": 20
       },
@@ -1191,12 +1200,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 38,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:48:26.795Z",
       "attributes": [
         {
           "type": "color",
@@ -1279,7 +1286,16 @@
           "url": "photos/product/p/0/chaussette2.JPG"
         }
       ],
-      "pictos": [],
+      "pictos": [
+        {
+          "_id": "5fbe5e8ab739d135f4fce236",
+          "code": "LoveIt",
+          "image": "loveit.png",
+          "pictoId": "5da09f77db0b3834cf91a506",
+          "title": "Love It",
+          "location": "TOP_LEFT"
+        }
+      ],
       "_id": "5d3078aa4aa9c1692db05498",
       "type": "simple",
       "cmsBlocks": [],
@@ -1341,7 +1357,10 @@
         "ati": {
           "normal": 28
         },
-        "priceSort": 23.33,
+        "priceSort": {
+          "et": 23.33,
+          "ati": 28
+        },
         "purchase": 4.25,
         "tax": 20
       },
@@ -1356,12 +1375,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 425,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:53:34.890Z",
       "attributes": [
         {
           "type": "color",
@@ -1504,7 +1521,10 @@
         "ati": {
           "normal": 29
         },
-        "priceSort": 24.17,
+        "priceSort": {
+          "et": 24.17,
+          "ati": 29
+        },
         "purchase": 3,
         "tax": 20
       },
@@ -1548,12 +1568,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 385,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:54:30.441Z",
       "attributes": [
         {
           "type": "color",
@@ -1674,17 +1692,20 @@
     },
     {
       "_id": "5eb2cfdb6cdf0b436c831f23",
-      "price" : {
-        "et" : {
-            "normal" : 49.99
-        }, 
-        "ati" : {
-            "normal" : 59.99
-        }, 
-        "priceSort" : 49.99, 
-        "purchase" : 0, 
-        "tax" : 20
-    }, 
+      "price": {
+        "et": {
+          "normal": 49.99
+        },
+        "ati": {
+          "normal": 59.99
+        },
+        "priceSort": {
+          "et": 49.99,
+          "ati": 59.99
+        },
+        "purchase": 0,
+        "tax": 20
+      },
       "reviews": {
         "average": 0,
         "reviews_nb": 0,
@@ -1696,7 +1717,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 0,
       "associated_prds": [],
       "is_new": false,
@@ -1708,24 +1728,34 @@
           "_id": "5eb2cff36cdf0b436c831f27",
           "products": [
             {
-              "_id": "5eb3125b6cdf0b436c8326ce",
+              "_id": "5fda1d8a3cc9692058b04f6a",
               "id": "5c667ff128a49c049c5863c9",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": 3,
+                "et": 2.5
+              }
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326cf",
+              "_id": "5fda1d8a3cc9692058b04f6b",
               "id": "5d24a3e94aa9c1692db04ac7",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": -2,
+                "et": -1.67
+              }
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d0",
+              "_id": "5fda1d8a3cc9692058b04f6c",
               "id": "5d24a43a4aa9c1692db04ad8",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_weight": 250
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d1",
+              "_id": "5fda1d8a3cc9692058b04f6d",
               "id": "5d24a4844aa9c1692db04ae4",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_weight": -50
             }
           ],
           "ref": "thisrt",
@@ -1738,12 +1768,12 @@
           "_id": "5eb2dab66cdf0b436c83220b",
           "products": [
             {
-              "_id": "5eb3125b6cdf0b436c8326d3",
+              "_id": "5fda1d8a3cc9692058b04f6f",
               "id": "5d3079de4aa9c1692db0549d",
               "isDefault": false
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d4",
+              "_id": "5fda1d8a3cc9692058b04f70",
               "id": "5d307a164aa9c1692db054a4",
               "isDefault": false
             }
@@ -1758,19 +1788,29 @@
           "_id": "5eb2db8d6cdf0b436c83225e",
           "products": [
             {
-              "_id": "5eb3125b6cdf0b436c8326d6",
+              "_id": "5fda1d8a3cc9692058b04f72",
               "id": "5d3078aa4aa9c1692db05498",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": 10,
+                "et": 8.33
+              },
+              "modifier_weight": 150
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d7",
+              "_id": "5fda1d8a3cc9692058b04f73",
               "id": "5d3074d44aa9c1692db0534d",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": 10,
+                "et": 8.33
+              },
+              "modifier_weight": 150
             }
           ],
           "ref": "chaussette",
           "type": "SINGLE",
-          "isRequired": true,
+          "isRequired": false,
           "displayMode": "RADIO_BUTTON",
           "title": "Chaussette"
         }
@@ -1866,7 +1906,6 @@
           "canonical": "/en/my-products/full-outfit"
         }
       },
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "pictos": [],
       "createdAt": "2020-05-13T09:07:33.753Z",
       "updatedAt": "2020-05-20T14:02:13.859Z"

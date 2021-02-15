@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const NSErrors = require('../utils/errors/NSErrors');
 
 /**
@@ -6,7 +14,7 @@ const NSErrors = require('../utils/errors/NSErrors');
  * @param {string} code
  * @param {string} [authorization]
  */
-const getComponent = async (componentName, code, authorization = null) => {
+const getComponent = async (componentName, code, user = null) => {
     if (code === null) throw NSErrors.ComponentCodeNotFound;
     // Le component doit commencer par ns- sinon ce composant n'est pas valide
     if (!componentName.startsWith('ns-')) throw NSErrors.ComponentNotAllowed;
@@ -16,16 +24,26 @@ const getComponent = async (componentName, code, authorization = null) => {
     let models;
     let PostBody;
     switch (componentName) {
+    case 'megamenu':
     case 'menu':
         models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
-        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, authorization);
+        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
         return X;
     case 'cms':
         models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
         PostBody               = {filter: {code}, structure: {content: 1, translation: 1}};
-        return cmsBlockServices.getCMSBlock(PostBody);
+        const result           = await cmsBlockServices.getCMSBlock(PostBody);
+        if ((user && !user.isAdmin) && result && result.translation) {
+            // on boucle sur les langues contenue
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
+        return result;
     case 'gallery':
         models               = require(`../orm/models/${componentName}`);
         const ServiceGallery = require(`./${componentName}`);

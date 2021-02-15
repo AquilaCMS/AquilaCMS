@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-sm-3">
                     <label class="control-label" for="value_{{effect.type}}_{{$index}}" translate>ns.rule.value</label>
-                    <input type="number" id="value_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="value_{{effect.type}}_{{$index}}" ng-model="effect.value" required />
+                    <input type="number" step="any" id="value_{{effect.type}}_{{$index}}" class="form-control ng-valid" name="value_{{effect.type}}_{{$index}}" ng-model="effect.value" required />
                 </div>
             </div>
             <div class="condition" ng-repeat-end>
@@ -92,7 +92,7 @@
                                isActive required></ns-switch>
                     <input ng-if="condition.type === 'text'" class="form-control ng-valid" type="{{condition.type}}" name="value_{{condition.target}}_{{$index}}"
                            ng-disabled="condition.type === undefined" ng-model="condition.value" ng-required="{{false}}" />
-                    <input ng-if="condition.type === 'number'" class="form-control" type="{{condition.type}}" step="0.01" name="value_{{condition.target}}_{{$index}}"
+                    <input ng-if="condition.type === 'number'" class="form-control" type="{{condition.type}}" step="any" name="value_{{condition.target}}_{{$index}}"
                            ng-disabled="condition.type === undefined" ng-init="condition.value = cast(condition.value)" ng-model="condition.value" required />
                     <select ng-if="condition.type === 'select' && condition.attr === undefined && families[condition.target]"
                             name="value_{{condition.target}}_{{$index}}" class="form-control" ng-model="condition.value"

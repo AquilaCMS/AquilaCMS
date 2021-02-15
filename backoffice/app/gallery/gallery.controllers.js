@@ -1,14 +1,22 @@
 angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
     "$scope", "$location", "GalleryService", function ($scope, $location, GalleryService) {
         $scope.galleries = [];
+        $scope.filter = {code:""};
 
         $scope.goToGalleryDetails = function (galleryId) {
             $location.path("/component/gallery/" + galleryId);
         };
 
-        GalleryService.list({ skip: 0, limit: 100 }, function (res) {
-            $scope.galleries = res.datas;
-        });
+        $scope.getGallery = function(){
+            let filter = {};
+            if($scope.filter.code != ""){
+                filter["code"] = { $regex: $scope.filter.code, $options: "i" };
+            }
+            GalleryService.list({PostBody: { filter, skip: 0, limit: 100 }}, function (res) {
+                $scope.galleries = res.datas;
+            });
+        };
+        $scope.getGallery(); //get gallery list for the first time
     }
 ]).controller("GalleryDetailCtrl", [
     "$rootScope", "$scope", "$routeParams", "$location", "GalleryService", "GalleryItemService", "toastService", "$modal",
@@ -29,6 +37,61 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         else {
             $scope.gallery = { code: "", initItemNumber: 12, maxColumnNumber: 4 };
         }
+
+        var elementInDrag;
+        var pointToElement;
+        var saveURL;
+        var savePointElement;
+        var drop;
+        var inOther;
+
+        $scope.draggingStart = function (element){
+            drop = false;
+            elementInDrag = element.childNodes[1].style.backgroundImage;
+            pointToElement = element.childNodes[1];
+            element.childNodes[1].style.opacity = '0.5';
+        }
+
+        $scope.switchElement = function (element, where){
+            inOther = false;
+            if(element.childNodes[1] != pointToElement){
+                if(where == 'in'){
+                    inOther = true;
+                    saveURL = element.childNodes[1].style.backgroundImage;
+                    savePointElement = element;
+                    pointToElement.style.backgroundImage = element.childNodes[1].style.backgroundImage;
+                    element.childNodes[1].style.backgroundImage = elementInDrag;
+                    element.parentNode.className += ' fakeDrop';
+                }else if(where == 'out'){
+                    inOther = false;
+                    element.childNodes[1].style.backgroundImage = saveURL;
+                    pointToElement.style.backgroundImage = elementInDrag;
+                    element.parentNode.className = element.parentNode.className.replace('fakeDrop', '');
+                }
+            }
+            
+        }
+
+        $scope.draggingEnd = function (element){
+            drop = true;
+            element.childNodes[1].style.opacity = '1';
+            if(inOther){
+                //On switch car on est dans une autre
+                document.getElementById('dirty-button').click()
+                savePointElement.childNodes[1].style.backgroundImage = saveURL;
+                pointToElement.style.backgroundImage = elementInDrag;
+                savePointElement.parentNode.className = savePointElement.parentNode.className.replace('fakeDrop', '');
+            }else{
+                //On remet à zéro
+                if(savePointElement){
+                    savePointElement.childNodes[1].style.backgroundImage = saveURL;
+                    savePointElement.parentNode.className = savePointElement.parentNode.className.replace('fakeDrop', '');
+                }
+                pointToElement.style.backgroundImage = elementInDrag;
+            }
+        };
+
+
 
         $rootScope.dropEvent ? $rootScope.dropEvent() : null;
         $rootScope.dropEvent = $rootScope.$on("dropEvent", function (evt, dragged, dropped) {

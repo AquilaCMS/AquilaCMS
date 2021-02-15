@@ -1,0 +1,317 @@
+{
+    "/api/v2/users": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/userSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "authorization",
+                    "in": "headers",
+                    "description": "authorization",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "User"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Looking for name",
+                                "description": "Get all 10 first users matching 'lookingforname' with default structure",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "$or": [
+                                                {
+                                                    "firstname": {
+                                                        "$regex": "lookingforname",
+                                                        "$options": "i"
+                                                    }
+                                                },
+                                                {
+                                                    "lastname": {
+                                                        "$regex": "lookingforname",
+                                                        "$options": "i"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "limit": 10
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/user": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/userSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "authorization",
+                    "in": "headers",
+                    "description": "authorization",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "User"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "authorization",
+                    "in": "headers",
+                    "description": "authorization",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "User"
+            ]
+        }
+    },
+    "/api/v2/user/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/userSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "authorization",
+                    "in": "headers",
+                    "description": "authorization",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "user id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "User"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "delete": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "User id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "authorization",
+                    "in": "headers",
+                    "description": "authorization",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "User"
+            ]
+        }
+    },
+    "/api/v2/user/active/account": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "response success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/userSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "User"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/RequestAccountToken"
+                        }
+                    }
+                },
+                "description": "activateAccountToken",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/user/addresses": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "User"
+            ]
+        }
+    },
+    "/api/v2/user/resetpassword": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "User"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/TokenSendMail"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/changePassword"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/resetPassword"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "description": "parameter",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/getUserTypes": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "User"
+            ]
+        }
+    }
+}

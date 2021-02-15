@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 module.exports = {
     InvalidRequest : {
         fr : 'Requête invalide',
@@ -6,6 +14,10 @@ module.exports = {
     Unauthorized : {
         fr : 'Non autorisé',
         en : 'Unauthorized'
+    },
+    DesactivateAccount : {
+        fr : 'Compte désactivé',
+        en : 'Desactivate account'
     },
     BadLogin : {
         fr : 'Votre identifiant ou mot de passe est incorrect',
@@ -492,10 +504,10 @@ module.exports = {
     },
     ModuleNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du module ne corespondent pas',
-        en : 'EN-Le nom du theme, nom du dossier ou du zip du module ne corespondent pas'
+        en : 'The name of the theme, name of the module\'s folder or zip do not match'
     },
     ThemeNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du theme ne corespondent pas',
-        en : 'EN-Le nom du theme, nom du dossier ou du zip du theme ne corespondent pas'
+        en : 'The name of the theme, name of the module\'s folder or zip do not match'
     }
 };

@@ -5,6 +5,7 @@
         "properties": {
             "_id"     : {"type": "string", "format": "ObjectId"},
             "email"   : {"type": "string"},
+            "createdAt" : {"type": "date"},
             "segment" : {
                 "type": "array",
                 "items": {

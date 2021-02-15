@@ -4,6 +4,7 @@
         "properties": {
             "tag"         : {"type": "string", "required": true},
             "weight"      : {"type": "number"},
+            "createdAt"   : {"type": "date"},
             "translation" : {"type": "object"}
         }
     }

@@ -42,9 +42,13 @@
                     "overrideSendTo"    : {"type": "string"},
                     "photoPath"         : {"type": "string"},
                     "port"              : {"type": "number"},
+                    "sendMetrics"       : {"type": "boolean", "default": true},
                     "siteName"          : {"type": "string"},
                     "websiteCountry"    : {"type": "string"},
-                    "websiteTimezone"   : {"type": "string"}
+                    "websiteTimezone"   : {"type": "string"},
+                    "migration"         : {"type": "number"},
+                    "logPath"           : {"type": "string"},
+                    "errorPath"         : {"type": "string"}
                 }
             },
             "taxerate" : {

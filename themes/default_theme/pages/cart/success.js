@@ -159,7 +159,7 @@ class CartSuccess extends React.Component {
                                             <div className="section__container">
                                                 <div style={{ textAlign: 'center' }}>
                                                     <h5>
-                                                        {t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
+                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawal') : t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
                                                     </h5>
                                                     {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
                                                     <br />
@@ -178,9 +178,10 @@ class CartSuccess extends React.Component {
                                                     }
                                                     <br />
                                                     <h5>
-                                                        {t('success:page.deliveryDate')} :
+                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawalDate') : t('success:page.deliveryDate')} :
                                                     </h5>
                                                     <h6>
+                                                        {order.orderReceipt && order.orderReceipt.date && <strong>{moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>} {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
                                                         {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
                                                     </h6>
                                                 </div>
@@ -242,12 +243,33 @@ class CartSuccess extends React.Component {
                                                                                     <tr key={item.id._id} className="cart-item cart-item--small">
                                                                                         <td>
                                                                                             <div className="cart__container">
-                                                                                                <figure className="cart__image">
+                                                                                                <figure className="cart__image" style={{ width: '82px' }}>
                                                                                                     <img src={imgDefault} alt={imgAlt} />
                                                                                                 </figure>
 
                                                                                                 <h5 className="cart__title">
                                                                                                     {item.id.name}
+                                                                                                    {
+                                                                                                        item.selections && <ul style={{fontSize: '13px'}}>
+                                                                                                        {
+                                                                                                            item.selections.map((section) => (
+                                                                                                                section.products.map((productSection, indexSel) => (
+                                                                                                                <li style={{listStyle: 'none'}} key={indexSel}>{productSection.name} {`${
+                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                                        (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
+                                                                                                                        '+' :
+                                                                                                                        '') +
+                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
+                                                                                                                    ''
+                                                                                                                }`}</li>
+                                                                                                                ))
+                                                                                                            ))
+                                                                                                        }
+                                                                                                        </ul>
+                                                                                                    }
                                                                                                     <span
                                                                                                         className="cart__qty visible-sm-inline"
                                                                                                     > x {item.quantity}</span>

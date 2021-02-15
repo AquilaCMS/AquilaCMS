@@ -17,11 +17,10 @@ ProductServices.factory("Product", [
 ProductServices.factory("ProductsV2", [
     "$resource", function ($resource) {
         return $resource("v2/:type/:id", {}, {
-            list         : {method: "POST", params: {type: "products"}},
-            query        : {method: "POST", params: {type: "product"}},
-            save       : {method: "PUT", params: {type: "product"}},
-            delete  : {method: "DELETE", params: {type: "product"}},
-            adminList: { method: "POST", params: { type: "products", id: 'adminList'}},
+            list: {method: "POST", params: {type: "products"}},
+            query: {method: "POST", params: {type: "product"}},
+            save: {method: "PUT", params: {type: "product"}},
+            delete: {method: "DELETE", params: {type: "product"}},
             getPromos: {method: "POST", params: {type: 'product', id: 'promos'}, isArray: false},
             getDownloadHistory: {method: "POST", params: {type: 'downloadHistory'}, isArray: false},
             preview: {method: "POST", params: {type: 'product', id: 'preview'}, isArray: false},
@@ -138,7 +137,7 @@ ProductServices.service("ProductColumns", function () {
                     + "<span ng-show=\"local.sortType == 'price.ati.normal' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"
             },
-            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.priceSaleMin' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.priceSaleMax' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
+            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.min_priceSale' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.max_priceSale' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
             cell  : {label : "Price :",class: "text-right", component_template: "{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? product.price.ati.normal + ' €' : 'N/A'}}"}
         },
         {
@@ -149,8 +148,14 @@ ProductServices.service("ProductColumns", function () {
                     + "<span ng-show=\"local.sortType == 'stock.qty' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"
             },
-            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.qtyMin' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.qtyMax' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
+            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.min_qty' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.max_qty' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
             cell  : {label : "Quantity :",class: "text-right", component_template: "{{product.stock.qty !== undefined && product.stock.qty != null ? product.stock.qty : 'N/A'}}"}
         }
     ];
+});
+
+
+ProductServices.service('ProductsTabs', function ()
+{
+    return [];
 });

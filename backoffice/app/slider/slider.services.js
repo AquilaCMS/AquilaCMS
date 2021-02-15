@@ -13,6 +13,7 @@ angular.module('aq.slider.services', ['ngResource']).factory("SliderService", [
     {
         return $resource("/v2/slider/:id/:itemId", {}, {
             save: {method: "PUT", params: {id: "", itemId: "item"}},
+            saveSlider: {method: "PUT", params: {id: "", itemId: ""}},
             delete: {method: "DELETE", params: {id: "", itemId: ""}}
         });
     }

@@ -1,19 +1,26 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose = require('mongoose');
 const helper   = require('../../utils/utils');
 const Schema   = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const FamiliesSchema = new Schema({
-    code         : {type: String, required: true, unique: true},
-    name         : {type: String, required: true},
-    type         : {type: String, required: true, enum: ['universe', 'family', 'subfamily']},
-    creationDate : {type: Date, default: Date.now},
-    ancestors    : [{code: String, slug: String}],
-    slug         : {type: String, unique: true},
-    parent       : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
-    children     : [{type: ObjectId, ref: 'families'}],
-    details      : {}
-});
+    code      : {type: String, required: true, unique: true},
+    name      : {type: String, required: true},
+    type      : {type: String, required: true, enum: ['universe', 'family', 'subfamily']},
+    ancestors : [{code: String, slug: String}],
+    slug      : {type: String, unique: true},
+    parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
+    children  : [{type: ObjectId, ref: 'families'}],
+    details   : {}
+}, {timestamps: true});
 
 // FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 
@@ -41,16 +48,6 @@ FamiliesSchema.statics.addMenuInUniverse = async function ( familyCode, slugMenu
         f.menus.push(slugMenu);
         await f.save();
     }
-
-    // Add menu in products assigned to this universe
-    const productList = await Products.find({'whatami._universe_code': familyCode});
-    productList.forEach(async (product) => {
-        if ( product.slugMenus === undefined) product.slugMenus = [];
-        if ( product.slugMenus.indexOf(slugMenu) === -1) {
-            product.slugMenus.push(slugMenu);
-            await product.save();
-        }
-    });
 };
 
 // Remove menu from a family, and remove this menu from all products assigned to this universe
@@ -67,16 +64,6 @@ FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slug
         f.menus.splice(indexOfSlug, 1);
         await f.save();
     }
-
-    // Remove menu from products assigned to this universe
-    const productList = await Products.find({'whatami._universe_code': familyCode});
-    productList.forEach(async (p) => {
-        const prodIndexSlug = p.slugMenus.indexOf(slugMenu);
-        if ( prodIndexSlug > -1) {
-            p.slugMenus.splice(prodIndexSlug, 1);
-            await p.save();
-        }
-    });
 };
 
 module.exports = FamiliesSchema;

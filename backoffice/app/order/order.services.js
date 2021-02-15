@@ -29,6 +29,7 @@ OrderServices.service("Orders", [
             save: {method: "PUT", params: {route: "order"}},
             updateStatus: {method: "PUT", params: {route: "order", action: 'updateStatus'}},
             cancelOrder: {method: "POST", params: {route: "order", action: 'cancelOrder'}},
+            get: {method: "POST", params: {route: "order"}}
         });
     }
 ]);
@@ -48,3 +49,6 @@ OrderServices.service("OrderColumns", function ()
     return [];
 });
 
+OrderServices.service("OrderPackagePopup", function () {
+    return [];
+});

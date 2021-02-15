@@ -23,32 +23,48 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
     };
     $scope.getDatas();
 
-    $scope.before = function () {
-        $scope.showModuleLoading = true;
-    };
+    $scope.addPlugin = function (nodeParent) {
+        var modalInstance = $modal.open({
+            templateUrl: "app/modules/views/modal/modules-new.html",
+            controller: "PluginsNewCtrl",
+            resolve: {
+                toggleActive: function() {
+                    return $scope.toggleActive;
+                }
+            }
+        });
 
-    $scope.uploaded = function (module) {
-        $http.post('/v2/modules', {
-            PostBody : {
-                filter    : {},
-                limit     : 100,
-                populate  : [],
-                skip      : 0,
-                sort      : {},
-                structure : {},
-                page      : null
-            }
-        }).then(function (response) {
-            if (module.active) {
-                toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
-                $scope.toggleActive(module._id, module.name, true);
-            } else {
-                $scope.showModuleLoading = false;
-                toastService.toast('success', 'Module ajouté ! Pour l\'utiliser, il suffit de l\'activer');
-            }
-            $scope.modules = response.data.datas;
+        modalInstance.result.then(function () {
+            $scope.getDatas();
         });
     };
+
+    $scope.displayReadMe = function(nameModule) {
+        var responseFromAPI;
+        $http.post('/v2/modules/md', {
+            moduleName: nameModule
+        }).then(function (response) {
+            responseFromAPI = response.data.html;
+            if(!responseFromAPI || responseFromAPI == "") {
+                responseFromAPI = 'No ReadMe found';
+            }
+            $modal.open({
+                templateUrl: 'app/modules/views/modal/popUpReadMe.html',
+                controller: function ($scope, $modalInstance, reponse) {
+                    $scope.modalReadMe = {}
+                    $scope.modalReadMe.dispReadMe = reponse;
+                    $scope.modalReadMe.close = function () {
+                        $modalInstance.close();
+                    };
+                },
+                resolve: {
+                    reponse: function() {
+                        return responseFromAPI;
+                    }
+                }
+            });
+        });
+    }
 
     $scope.toggleActive = function (id, name, state) {
         $scope.showModuleLoading = true;
@@ -177,7 +193,8 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
     };
 
     $scope.restart = function (nomModule, active, deleteBool) {
-        $scope.config = ConfigV2.environment(function () {
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.config = config;
             $scope.showLoading = true;
             $http.get('/restart').catch((err) => {});
             if (active && !deleteBool) {
@@ -190,21 +207,17 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
 
             $interval(() => {
                 $http.get('/serverIsUp').then(() => {
-                    if ($scope.config.appUrl.slice(-1) !== '/') {
-                        $scope.config.appUrl += '/';
+                    if ($scope.config.environment.appUrl.slice(-1) !== '/') {
+                        $scope.config.environment.appUrl += '/';
                     }
-                    window.location = $scope.config.appUrl + $scope.config.adminPrefix;
-                    location.href   = $scope.config.appUrl + $scope.config.adminPrefix;
+                    const url = $scope.config.environment.appUrl + $scope.config.environment.adminPrefix;
+                    window.location = url;
+                    location.href   = url;
                 });
             }, 10000);
         });
     };
 
-    $scope.uploadError = function () {
-        $scope.getDatas();
-        $scope.showModuleLoading = false;
-        toastService.toast('danger', 'Problème à l\'ajout du module');
-    };
 }]);
 
 ModulesControllers.controller('ModulesCheckVersionCtrl', [
@@ -243,3 +256,49 @@ ModulesControllers.controller('ModulesCheckVersionCtrl', [
             $modalInstance.dismiss('cancel');
         };
     }]);
+
+
+ModulesControllers.controller("PluginsNewCtrl", [
+    "$scope", "$modalInstance", "toastService", "$http", "toggleActive",
+    function ($scope, $modalInstance, toastService, $http, toggleActive) {
+
+        $scope.before = function () {
+            $scope.showModuleLoading = true;
+        };
+
+        $scope.uploaded = function (module) {
+            $http.post('/v2/modules', {
+                PostBody : {
+                    filter    : {},
+                    limit     : 100,
+                    populate  : [],
+                    skip      : 0,
+                    sort      : {},
+                    structure : {},
+                    page      : null
+                }
+            }).then(function (response) {
+                if (module.active) {
+                    toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
+                    toggleActive(module._id, module.name, true);
+                } else {
+                    $scope.showModuleLoading = false;
+                    toastService.toast('success', 'Module ajouté ! Pour l\'utiliser, il suffit de l\'activer');
+                }
+                $scope.modules = response.data.datas;
+                $modalInstance.close("save");
+            });
+        };
+
+        $scope.uploadError = function () {
+            $scope.getDatas();
+            $scope.showModuleLoading = false;
+            toastService.toast('danger', 'Problème à l\'ajout du module');
+            $modalInstance.close();
+        };
+
+        $scope.cancel = function (){
+            $modalInstance.dismiss("cancel");
+        };
+    }
+]);

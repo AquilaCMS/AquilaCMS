@@ -13,5 +13,14 @@
     "cancel": "Cancel",
     "save": "Save",
     "api": "API",
-    "theme": "THEME"
+    "theme": "THEME",
+    "info": "Informations",
+    "modalReadMe" : {
+        "title":"README.md of the module",
+        "close":"Close"
+    },
+    "new": {
+        "createNewModule": "Add a new Plugin",
+        "cancel": "Cancel"
+    }
 }

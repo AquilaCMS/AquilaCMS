@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const crypto       = require('crypto');
 const mongoose     = require('mongoose');
 const {Users}      = require('../orm/models');
@@ -160,7 +168,7 @@ const generateTokenSendMail = async (email, lang) => {
         throw NSErrors.NotFound;
     }
     const {appUrl}  = global.envConfig.environment;
-    const tokenlink = `${appUrl + (global.envFile.front === 'react' ? '' : '#/')}resetpass?token=${resetPassToken}`;
+    const tokenlink = `${appUrl}resetpass?token=${resetPassToken}`;
 
     await servicesMail.sendResetPassword(email, tokenlink, lang);
     return {message: email};

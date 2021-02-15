@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {promisify} = require('util');
 const jwt         = require('jsonwebtoken');
 const NSErrors    = require('../utils/errors/NSErrors');
@@ -32,7 +40,7 @@ const login = async (req, res, next) => {
     const {username, password} = req.body;
     try {
         const {Users} = require('../orm/models');
-        let user      = await Users.findOne({email: {$regex: username, $options: 'i'}});
+        let user      = await Users.findOne({email: new RegExp(`^${username}$`, 'i')}); // Exact match with case insensitive
 
         if (!user) throw NSErrors.BadLogin;
         if (req.params.from === 'admin') {
@@ -41,6 +49,10 @@ const login = async (req, res, next) => {
 
         const isMatch = await user.validPassword(password);
         if (!isMatch) throw NSErrors.BadLogin;
+
+        if (!user.isActive) {
+            throw NSErrors.DesactivateAccount;
+        }
 
         const loginPassport = promisify(req.logIn);
         await loginPassport(user, {session: false});
@@ -83,28 +95,11 @@ const validateUserIsAllowed = async (token, baseUrl, PostBody, field) => {
 /**
  * Validate user is allowed without PostBody
  */
-const validateUserIsAllowedWithoutPostBody = async (token, baseUrl, query, field) => {
-    try {
-        if (!token) {
-            throw NSErrors.AccessUnauthorized;
-        }
-        const decoded         = getDecodedToken(token);
-        const {Configuration} = require('../orm/models');
-        const _config         = await Configuration.findOne({});
-        if (_config.environment.adminPrefix === undefined) {
-            _config.environment.adminPrefix = 'admin';
-        }
-        if (baseUrl.indexOf(`/${_config.environment.adminPrefix}`) === 0) {
-            return query;
-        }
-        if (!query) {
-            query = {};
-        }
-        query[field] = decoded.userId;
-        return query;
-    } catch (error) {
-        throw NSErrors.AccessUnauthorized;
-    }
+const validateUserIsAllowedWithoutPostBody = async (user, query, field) => {
+    if (user.isAdmin) return query;
+    if (!query) query = {};
+    query[field] = user._id;
+    return query;
 };
 
 /**

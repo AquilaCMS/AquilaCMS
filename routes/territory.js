@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {Territory}                 = require('../orm/models');
 const ServiceTerritory            = require('../services/territory');
@@ -13,10 +21,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/territories
- * @tags Territory
  * @summary Get a list of territory
- * @param {PostBody} request.body.required - PostBody
- * @return {ResponseTerritories} 200 - list of territories | territories
  */
 async function getTerritories(req, res, next) {
     try {
@@ -29,9 +34,7 @@ async function getTerritories(req, res, next) {
 
 /**
  * POST /api/v2/territory
- * @tags Territory
- * @param {PostBody} request.body.required - PostBody
- * @returns {TerritorySchema} territory
+ * @param {PostBody} request.body - PostBody
  */
 async function getTerritory(req, res, next) {
     try {
@@ -45,8 +48,6 @@ async function getTerritory(req, res, next) {
 /**
  * PUT /api/v2/territory
  * @summary Used for creating and updating territories
- * @tags Territory
- * @param {TerritorySchema} request.body.required - territory
  */
 async function setTerritory(req, res, next) {
     try {
@@ -59,10 +60,6 @@ async function setTerritory(req, res, next) {
 
 /**
  * POST /api/v2/territory/{id}
- * @tags Territory
- * @param {string} id.path.required - territory id
- * @param {PostBody} request.body - PostBody
- * @returns {TerritorySchema} territory
  */
 async function getTerritoryById(req, res, next) {
     try {
@@ -75,8 +72,6 @@ async function getTerritoryById(req, res, next) {
 
 /**
  * DELETE /api/v2/territory/{id}
- * @tags Territory
- * @param {string} id.path.required - territory id
  */
 async function deleteTerritory(req, res, next) {
     try {
@@ -89,7 +84,6 @@ async function deleteTerritory(req, res, next) {
 
 /**
  * GET /api/territory/countries
- * @tags Territory
  */
 async function listCountries(req, res, next) {
     try {

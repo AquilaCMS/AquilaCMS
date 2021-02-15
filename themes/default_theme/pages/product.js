@@ -105,6 +105,9 @@ class PageProduct extends NSPageProduct {
                     </Head>
                     <div className="main">
                         <div className="shell">
+                            {
+                                listModulePage('select-date')
+                            }
                             <NSBreadcrumb gNext={{ routes, Link }} />
 
                             <section className="section-product-main">
@@ -113,7 +116,7 @@ class PageProduct extends NSPageProduct {
 
                                     <h2 className="section__subtitle">{product.description1 && product.description1.title ? product.description1.title : null}</h2>
 
-                                    <div className="row-flex" style={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false ? { display: 'none' } : {}}>
+                                    <div className="row-flex" style={themeConfig && themeConfig.find(t => t.key === 'reviews') !== undefined && themeConfig.find(t => t.key === 'reviews').value === false ? { display: 'none' } : {}}>
                                         <div className="rating">
                                             <div className="rating-split align-star">
                                                 <NSDrawStars
@@ -226,7 +229,7 @@ class PageProduct extends NSPageProduct {
 
                                         <div className="product-price_reviews">
 
-                                            <div className="product-reviews hidden-xs" style={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false ? { display: 'none' } : {}}>
+                                            <div className="product-reviews hidden-xs" style={themeConfig && themeConfig.find(t => t.key === 'reviews') && themeConfig.find(t => t.key === 'reviews').value === false ? { display: 'none' } : {}}>
                                                 <div className="rating">
                                                     <div className="rating-split align-star">
                                                         <NSDrawStars
@@ -251,7 +254,9 @@ class PageProduct extends NSPageProduct {
                                                 </div>{/* <!-- /.rating --> */}
                                             </div>{/* <!-- /.product-reviews --> */}
                                             <div className="product-price hidden-xs">
-                                                <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                {
+                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                }
 
                                                 <strong>
                                                     <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
@@ -409,7 +414,7 @@ class PageProduct extends NSPageProduct {
                                 )
                             }
 
-                            <section className="section-ratings customer_reviews" id="reviews" hidden={themeConfig && themeConfig.reviews !== undefined && themeConfig.reviews === false}>
+                            <section className="section-ratings customer_reviews" id="reviews" hidden={themeConfig && themeConfig.find(t => t.key === 'reviews') && themeConfig.find(t => t.key === 'reviews').value === false}>
                                 <header className="section__head">
                                     <h4>{t('avisClients')}</h4>
                                 </header>{/* <!-- /.section__head --> */}
@@ -567,7 +572,7 @@ class PageProduct extends NSPageProduct {
                                             <NSBundleProduct product={product} />
 
                                             <div className="product-price">
-                                                <strong>{(product.price.ati.normal || 0).toFixed(2)} €</strong>
+                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} €</strong>
                                             </div>
                                         </div>
                                         <div className="form-footer">

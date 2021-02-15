@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongodb      = require('mongodb');
 const NSError      = require('../utils/errors/NSError');
 const NSErrors     = require('../utils/errors/NSErrors');
@@ -21,9 +29,12 @@ const log = (err) => {
  */
 const replaceErrors = (value) => {
     if (value instanceof Error || value instanceof NSError) {
-        const error = {};
+        const error   = {};
+        const ignored = ['stack'];
         Object.getOwnPropertyNames(value).forEach(function (key) {
-            error[key] = value[key];
+            if (ignored.indexOf(key) === -1) {
+                error[key] = value[key];
+            }
         });
         return error;
     }
@@ -99,7 +110,6 @@ const expressErrorHandler = (err, req, res, next) => {
             log(err);
         }
 
-        delete err.stack;
         return sendError(res, err);
     }
     return next();

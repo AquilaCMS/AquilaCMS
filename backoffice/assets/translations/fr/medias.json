@@ -7,8 +7,7 @@
         "cpLien": "Copier lien",
         "delete": "Supprimer",
         "uploadInsert" : "Inserer en base",
-        "uploadButton" : "Ajout en masse *",
-        "uploadInfo" : "* Seul les .zip sont accepté. Les images doivent être à la racine du .zip."
+        "uploadButton" : "Ajout en masse"
     },
     "new": {
         "t1": "Nouveau Média",
@@ -54,5 +53,10 @@
         "topRight":"Haut droite",
         "bottomLeft":"Bas gauche",
         "bottomRight":"Bas droite"
+    },
+    "multi":{
+        "title": "Ajout en masse",
+        "cancel":"Annuler",
+        "uploadInfo" : "Seul les .zip sont accepté. Les fichiers doivent être à la racine du .zip."
     }
 }
