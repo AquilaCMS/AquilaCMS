@@ -90,17 +90,17 @@ const initExpress = async (server, passport) => {
     server.set('port', global.port);
 
     // Use own policy
-    const contentSecurityPolicyValues = [
+    let contentSecurityPolicyValues = [
         "'self'",
         'https://cdnjs.cloudflare.com',
         'https://code.getmdl.io',
         "'unsafe-inline'"
     ];
-    if(global.envConfig && global.envConfig.environment) {
-        if(global.envConfig.environment.appUrl) {
+    if (global.envConfig && global.envConfig.environment) {
+        if (global.envConfig.environment.appUrl) {
             contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
         }
-        if(global.envConfig.environment.contentSecurityPolicyValues) {
+        if (global.envConfig.environment.contentSecurityPolicyValues) {
             contentSecurityPolicyValues = [
                 ...contentSecurityPolicyValues,
                 ...global.envConfig.environment.contentSecurityPolicyValues
