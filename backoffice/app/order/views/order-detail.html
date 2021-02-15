@@ -392,14 +392,14 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="payment in order.payment">
-                                <td data-label="Type :">
+                                <td data-label="Type :" translate>
                                     {{payment.type | paymentType}}
                                 </td>
                                 <td data-label="ID :">
                                     {{payment.transactionId}}
                                 </td>
-                                <td data-label="Etat :">
-                                    {{payment.status | paymentStatus}}
+                                <td data-label="Etat :" translate>
+                                    {{payment.status | paymentStatus }}
                                 </td>
                                 <td data-label="Commentaire :">
                                     {{payment.comment}}
@@ -410,7 +410,7 @@
                                 <td data-label="Date :">
                                     {{payment.operationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
-                                <td data-label="Mode :">
+                                <td data-label="Mode :" translate>
                                     {{payment.mode | paymentMode}}
                                 </td>
                                 <td data-label="Montant :">

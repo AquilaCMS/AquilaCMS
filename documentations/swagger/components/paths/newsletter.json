@@ -1,0 +1,44 @@
+{
+    "/api/v2/newsletter/{email}": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "description": "email to subscribe",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Newsletter"
+            ]
+        },
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "description": "email to subscribe",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Newsletter"
+            ]
+        }
+    }
+}

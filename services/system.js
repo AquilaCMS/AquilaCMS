@@ -1,13 +1,11 @@
-const path            = require('path');
-const fs              = require('../utils/fsp');
-const packageManager  = require('../utils/packageManager');
-const NSErrors        = require('../utils/errors/NSErrors');
-const ConfigServices  = require('./config');
-const {Configuration} = require('../orm/models');
+const path           = require('path');
+const fs             = require('../utils/fsp');
+const packageManager = require('../utils/packageManager');
+const NSErrors       = require('../utils/errors/NSErrors');
 
 const getLogsContent = async (fileName) => {
     const filePath = path.resolve(global.appRoot, fileName);
-    if (!(await fs.access(filePath, fs.constants.R_OK))) {
+    if (await fs.hasAccess(filePath)) {
         let fileContent  = '';
         let currentLines = '';
         try {
@@ -79,27 +77,8 @@ const changeNextVersion = async (body) => {
     if (result.code !== 0) throw NSErrors.InvalidRequest;
 };
 
-const getContentPolicy = async () => {
-    const actualConfig = await ConfigServices.getConfig();
-    let contentSecurity;
-    if (actualConfig.environment.contentSecurityPolicyValues) {
-        contentSecurity = {values: actualConfig.environment.contentSecurityPolicyValues};
-    } else {
-        contentSecurity =  {values: []};
-    }
-    return contentSecurity;
-};
-
-const setContentPolicy = async (body) => {
-    const actualConfig                                   = await ConfigServices.getConfig();
-    actualConfig.environment.contentSecurityPolicyValues = body.value;
-    await Configuration.updateOne({}, {$set: actualConfig});
-};
-
 module.exports = {
     getLogsContent,
     getNextVersion,
-    changeNextVersion,
-    getContentPolicy,
-    setContentPolicy
+    changeNextVersion
 };

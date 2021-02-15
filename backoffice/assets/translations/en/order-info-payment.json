@@ -7,5 +7,9 @@
     "det": "Details",
     "mailCli": "Customer e-mail",
     "cancel": "Cancel",
-    "valider": "Submit"
+    "valider": "Submit",
+    "DEBIT": "Refund",
+    "CREDIT": "Payment",
+    "payType": "Type of payment",
+    "amount": "Amount"
 }

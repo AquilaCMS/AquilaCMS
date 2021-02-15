@@ -81,7 +81,7 @@ async function getAllCssComponentName(req, res, next) {
 * Enregistre le contenu dans le fichier custom.css
 * @route POST /v2/themes/css/:cssName
 * @group Themes - Operations about themes
-* @param {string} datas.body.required - content to write in file
+* @param {string} datas.body - content to write in file
 * @param {string} cssName.params.required - content to write in file
 * @returns {object} 200 -
 * @returns {Error}  400 - design_theme_css_save

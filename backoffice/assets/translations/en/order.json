@@ -130,5 +130,21 @@
         "date" : "Date",
         "productNumber" : "Number of products",
         "status" : "Status"
+    },
+    "paymentStatus" : {
+        "DONE": "Done",
+        "TODO": "To do",
+        "FAILED": "Failed",
+        "CANCELED": "Canceled"
+    },
+    "paymentType": {
+        "CREDIT": "Payment",
+        "DEBIT": "Refund"
+    },
+    "paymentMode": {
+        "CB" : "Payment card",
+        "CHEQUE" : "Bank check",
+        "TRANSFER" : "Transfer",
+        "CASH" : "Cash"
     }
 }
