@@ -7,7 +7,7 @@ const {Configuration} = require('../orm/models');
 
 const getLogsContent = async (fileName) => {
     const filePath = path.resolve(global.appRoot, fileName);
-    if (!(await fs.access(filePath, fs.constants.R_OK))) {
+    if (await fs.hasAccess(filePath)) {
         let fileContent  = '';
         let currentLines = '';
         try {

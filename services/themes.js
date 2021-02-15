@@ -87,8 +87,8 @@ const uploadTheme = async (originalname, filepath) => {
         const themeName = originalname.split('.')
             .slice(0, -1)
             .join('.');
-        if (!(await fs.access(`${target_path_full.replace('.zip', '/')}next.config.js`))) {
-            if (!(await fs.access(target_path_full))) {
+        if (await fs.hasAccess(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
+            if (await fs.hasAccess(target_path_full)) {
                 await fs.unlink(target_path_full);
             }
             console.log('New theme is ready to be selected (need to build)');
@@ -161,7 +161,7 @@ const deleteTheme = async (themePath) => {
     await removeConfigTheme(themePath);
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
-    if (!(await fs.access(path.join(global.appRoot, complete_Path)))) {
+    if (await fs.hasAccess(path.join(global.appRoot, complete_Path))) {
         await fs.deleteRecursiveSync(path.join(global.appRoot, complete_Path));
     }
     console.log('Theme removed !');
@@ -192,7 +192,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     if (!fs.existsSync(themeDemoData)) {
         return {data, noDatas: true};
     }
-    await fs.access(themeDemoData, fs.constants.R_OK);
+    if (!await fs.hasAccess(themeDemoData)) return data;
     const listOfPath = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
     if (!fileNames && listOfPath) {
         for (let i = 0; i < listOfPath.length; i++) {
@@ -255,10 +255,10 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     }
     const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
     await fs.mkdir(photoPath, {recursive: true});
-    if (await fs.access(path.join(themeDemoData, 'files'), fs.constants.R_OK)) {
+    if (!(await fs.hasAccess(path.join(themeDemoData, 'files')))) {
         throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
     }
-    if (await fs.access(photoPath, fs.constants.W_OK)) {
+    if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
         throw new Error(`"${photoPath}" is not writable`);
     }
     await fs.copyRecursiveSync(path.join(themeDemoData, 'files'), photoPath, override);
