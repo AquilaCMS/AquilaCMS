@@ -107,7 +107,7 @@ const anonymizeModulesByUser = async (user) => {
         for (const module of _modules) {
             await new Promise(async (resolve, reject) => {
                 // Récupère les fichiers rgpd.js des modules
-                if (!(await fs.access(`${appdirname}/modules/${module.name}/rgpd.js`))) {
+                if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
                     await rgpd.anonymize(user, resolve, reject);
                 }
@@ -331,7 +331,7 @@ const anonymizeDatabase = async (cb) => {
     if (_modules.length >= 0) {
         for (const mod of _modules) {
             await new Promise(async (resolve, reject) => {
-                if (!(await fs.access(`${appdirname}/modules/${mod.name}/rgpd.js`))) {
+                if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
                     await rgpd.anonymizeDatabase(database, resolve, reject);
                 }

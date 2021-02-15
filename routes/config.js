@@ -116,14 +116,15 @@ const restart = async (req, res, next) => {
  * GET /api/robot
  * @tags Configuration
  */
-async function getRobot(req, res) {
+async function getRobot(req, res, next) {
     try {
-        if (!(await fs.access('robots.txt'))) {
+        if (await fs.hasAccess('robots.txt')) {
             const file = await fs.readFile('robots.txt', {encoding: 'utf-8'});
             return res.json({robot: file.toString()});
         }
-    } catch (error) {
         return res.json({robot: ''});
+    } catch (err) {
+        next(err);
     }
 }
 
