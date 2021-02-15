@@ -27,10 +27,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/carts
- * @tags Cart
  * @summary Listing of carts
- * @security api_key
- * @param {PostBody} request.body.required - PostBody
  */
 const getCarts = async (req, res, next) => {
     try {
@@ -41,8 +38,7 @@ const getCarts = async (req, res, next) => {
 };
 
 /**
- * GET /v2/cart/user/{idclient}
- * @tags Cart
+ * GET /api/v2/cart/user/{idclient}
  * @summary Get cart(s) for this client
  */
 const getCartforClient = async (req, res, next) => {
@@ -54,8 +50,7 @@ const getCartforClient = async (req, res, next) => {
 };
 
 /**
- * Post /api/v2/cart/:id
- * @tags Cart
+ * POST /api/v2/cart/{id}
  * @summary Get cart by id
  */
 const getCartById = async (req, res, next) => {
@@ -71,6 +66,10 @@ const getCartById = async (req, res, next) => {
     }
 };
 
+/**
+ * POST /api/v2/cart/to/order
+ * @summary Transform cart to order
+ */
 async function setCartToOrder(req, res, next) {
     try {
         const result = await ServiceCart.cartToOrder(req.body.cartId, req.info, req.body.lang);
@@ -81,7 +80,8 @@ async function setCartToOrder(req, res, next) {
 }
 
 /**
- * Fonction supprimant un panier
+ * DELETE /api/v2/cart/:cartId/item/:itemId
+ * @summary Delete an item in cart
  */
 async function deleteCartItem(req, res, next) {
     try {
@@ -92,6 +92,10 @@ async function deleteCartItem(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/item
+ * @summary Add an item in cart
+ */
 const addItem = async (req, res, next) => {
     // Check if user has cart in progress
     // YES : add product
@@ -107,6 +111,10 @@ const addItem = async (req, res, next) => {
     }
 };
 
+/**
+ * PUT /api/v2/cart/updateQty
+ * @summary Update an item quantity in cart
+ */
 async function updateQty(req, res, next) {
     try {
         const result = await ServiceCart.updateQty(req);
@@ -119,6 +127,10 @@ async function updateQty(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/comment
+ * @summary Update comment in cart
+ */
 async function updateComment(req, res, next) {
     try {
         const result = await ServiceCart.setComment(req.body.cartId, req.body.comment);
@@ -129,6 +141,10 @@ async function updateComment(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/addresses
+ * @summary Update address in cart
+ */
 async function updateAddresses(req, res, next) {
     try {
         const result = await ServiceCart.setCartAddresses(req.body.cartId, req.body.addresses);
@@ -139,6 +155,10 @@ async function updateAddresses(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/delivery
+ * @summary Update delivery address in cart
+ */
 async function updateDelivery(req, res, next) {
     try {
         const result = await ServiceCart.updateDelivery(req.body);

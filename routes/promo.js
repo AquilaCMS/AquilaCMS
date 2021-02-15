@@ -20,6 +20,10 @@ module.exports = function (app) {
     app.delete('/v2/promo/:promoId/code/:codeId',    authentication, adminAuth, deletePromoCode);
 };
 
+/**
+ * GET /api/v2/promo/check/code/{code}/{cartId}/{lang}
+ * @summary Validate discount code and return the new cart
+ */
 async function checkCodePromoByCode(req, res, next) {
     try {
         const result = await ServicePromo.checkForApplyPromo(req.info, req.params.cartId, req.params.lang, req.params.code);

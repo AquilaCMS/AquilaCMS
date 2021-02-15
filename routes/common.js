@@ -40,7 +40,8 @@ const serverIsUp = (req, res) => {
 };
 
 /**
- * Fonction retournant le breadcrumb
+ * POST /api/v2/getBreadcrumb
+ * @summary Get current breadcrumb
  */
 async function getBreadcrumb(req, res, next) {
     try {

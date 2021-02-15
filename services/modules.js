@@ -90,9 +90,7 @@ const initModule = async (zipFile) => {
     const extractZipFilePath = zipFilePath.replace('.zip', '/');
 
     // move the file from the temporary location to the intended location
-    if (!fs.existsSync(path.resolve(global.appRoot, moduleFolder))) {
-        await fs.mkdir(path.resolve(global.appRoot, moduleFolder));
-    }
+    await fs.mkdir(path.resolve(global.appRoot, moduleFolder), {recursive: true});
     await fs.copyFile(
         path.resolve(global.appRoot, filepath),
         path.resolve(global.appRoot, zipFilePath)
@@ -376,7 +374,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const copy    = path.resolve(`backoffice/app/${myModule.name}`);
         const copyF   = path.resolve(`modules/${myModule.name}/app/`);
         const copyTab = [];
-        if (!(await fs.access(copyF, fs.constants.W_OK))) {
+        if (await fs.hasAccess(copyF)) {
             try {
                 await fs.copyRecursiveSync(
                     path.resolve(global.appRoot, copyF),
@@ -393,7 +391,7 @@ const activateModule = async (idModule, toBeChanged) => {
             console.log('Loading back translation for module...');
             const src  = path.resolve('modules', myModule.name, 'translations/back');
             const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
-            if (fs.existsSync(src)) {
+            if (await fs.hasAccess(src)) {
                 try {
                     await fs.copyRecursiveSync(
                         path.resolve(global.appRoot, src),
@@ -414,7 +412,7 @@ const activateModule = async (idModule, toBeChanged) => {
             for (let i = 0; i < files.length; i++) {
                 const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
                 const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
-                if (fs.existsSync(src)) {
+                if (await fs.hasAccess(src)) {
                     try {
                         await fs.copyRecursiveSync(src, dest, true);
                     } catch (err) {
@@ -497,8 +495,8 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
 
         // Suppression des fichiers copiés
         for (let i = 0; i < _module.files.length; i++) {
-            if (!(await fs.access(_module.files[i]))) {
-                if ((await fs.lstatSync(_module.files[i])).isDirectory()) {
+            if (await fs.hasAccess(_module.files[i])) {
+                if ((await fs.lstat(_module.files[i])).isDirectory()) {
                     await new Promise((resolve) => rimraf(_module.files[i], (err) => {
                         if (err) console.error(err);
                         resolve();
@@ -616,7 +614,7 @@ const setFrontModules = async (theme) => {
         const oneModule = listModules[index];
 
         // Est ce que ce module comprend du front ?
-        if (!(await fs.access(`./${oneModule.path}`))) {
+        if (await fs.hasAccess(`./${oneModule.path}`)) {
             // Ecrire dans le fichier s'il n'est pas déjà dedans
             await setFrontModuleInTheme(oneModule.path, theme || global.envConfig.environment.currentTheme);
         }
@@ -640,8 +638,8 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     }
 
     // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!await fs.access(pathModule)) return;
-    const currentTheme = theme || global.envConfig.environment.currentTheme;// serviceTheme.getThemePath(); // Bug
+    if (!await fs.hasAccess(pathModule)) return;
+    const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
     const resultDir    = await fs.readdir(pathModule);
 
     // Pour chaque fichier front du module
@@ -653,7 +651,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         const info                  = await fs.readFile(path.resolve(savePath, 'info.json'));
         let type                    = JSON.parse(info).info.type;
         type                        = type ? `type: '${type}'` : '';
-        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleNomComposant.js ->nomcomposant
+        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleNomComposant.js -> nomcomposant
         const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
         const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
         const result                = await fs.readFile(pathListModules, 'utf8');
@@ -719,7 +717,7 @@ const activeFrontModule = async (pathModule, bRemove) => {
     require('../utils/utils').tmp_use_route('modules_service', 'activeFrontModule');
 
     // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!await fs.access(pathModule)) return;
+    if (!await fs.hasAccess(pathModule)) return;
     await modulesUtils.createListModuleFile(global.envConfig.environment.currentTheme);
     await setFrontModuleInTheme(pathModule, bRemove);
     await themesService.buildTheme(global.envConfig.environment.currentTheme);

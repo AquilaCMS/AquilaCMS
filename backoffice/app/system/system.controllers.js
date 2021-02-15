@@ -16,14 +16,6 @@ SystemControllers.controller("systemGeneralController", [
             newPolicy: ""
         };
 
-        $scope.getContentPolicy = function(){
-            System.getContentPolicy({}, function(response){
-                $scope.contentPolicy.content = response.values;
-            }, function (error){
-                toastService.toast("danger", "API error");
-            });
-        };
-
         $scope.removePolicy = function(value){
             const index = $scope.contentPolicy.content.indexOf(value);
             if (index > -1) {
@@ -223,6 +215,10 @@ SystemControllers.controller("systemGeneralController", [
                     }
                 }
             }
+            if($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)){
+                $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
+                $scope.contentPolicy.newPolicy = "";
+            }
             ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
                 $scope.system.environment.cacheTTL = $scope.system.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
@@ -234,15 +230,6 @@ SystemControllers.controller("systemGeneralController", [
                         ...$scope.system
                     }
                 }).then((response) => {
-                    if($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)){
-                        $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
-                        $scope.contentPolicy.newPolicy = "";
-                    }
-                    System.setContentPolicy({value: $scope.contentPolicy.content}, function(response){
-                        toastService.toast("success", "Saved");
-                    }, function (error){
-                        toastService.toast("danger", "API error");
-                    });
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
                         $interval(() => {

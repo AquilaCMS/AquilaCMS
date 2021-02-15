@@ -13,25 +13,7 @@ module.exports = function (app) {
     app
         .post('/v2/system/log/file', authentication, adminAuth, getLogsContent)
         .get('/v2/system/next/get', authentication, adminAuth, getNextVersion)
-        .post('/v2/system/next/change', authentication, adminAuth, changeNextVersion)
-        .get('/v2/system/contentPolicy/get', authentication, adminAuth, getContentPolicy)
-        .post('/v2/system/contentPolicy/set', authentication, adminAuth, setContentPolicy);
-};
-
-const getContentPolicy = async (req, res, next) => {
-    try {
-        return res.json(await ServiceSystem.getContentPolicy());
-    } catch (err) {
-        return next(err);
-    }
-};
-
-const setContentPolicy = async (req, res, next) => {
-    try {
-        return res.json(await ServiceSystem.setContentPolicy(req.body));
-    } catch (err) {
-        return next(err);
-    }
+        .post('/v2/system/next/change', authentication, adminAuth, changeNextVersion);
 };
 
 const getLogsContent = async (req, res, next) => {
@@ -45,7 +27,6 @@ const getLogsContent = async (req, res, next) => {
 
 /**
  * GET /api/config/next
- * @tags Configuration
  */
 const getNextVersion = async (req, res, next) => {
     try {
@@ -58,7 +39,6 @@ const getNextVersion = async (req, res, next) => {
 
 /**
  * POST /api/config/next
- * @tags Configuration
  */
 const changeNextVersion = async (req, res, next) => {
     try {
