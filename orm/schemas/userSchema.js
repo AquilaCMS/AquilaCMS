@@ -104,14 +104,6 @@ const UserSchema = new Schema({
     billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
     addresses        : [AddressSchema],
     isAdmin          : {type: Boolean, default: false},
-    campaign         : {
-        referer      : String,
-        utm_campaign : String,
-        utm_medium   : String,
-        utm_source   : String,
-        utm_content  : String,
-        utm_term     : String
-    },
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
     payementChoice       : String,
