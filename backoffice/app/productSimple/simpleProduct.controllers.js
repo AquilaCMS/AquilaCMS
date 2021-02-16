@@ -126,7 +126,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     const newCode = prompt("Saisir le code du nouveau produit : ");
                     if (newCode) {
                         const newPrd = {...$scope.product, code: newCode};
-                        delete newPrd._id;
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
                             toastService.toast("success", "Produit dupliqué !");

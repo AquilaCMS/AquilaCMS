@@ -134,7 +134,12 @@
             if(fieldId === "appUrl" && fieldValue === "http://") {
                 return fieldError + "- Website url needs a real url<br/>";
             }
-
+            if(fieldId === "password") {
+                const passwordValidator = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$");
+                if(!passwordValidator.test(fieldValue)){
+                    return fieldError + "- Password is incorrect (1 uppercase letter, 1 lowercase letter, 1 number)<br/>";
+                }
+            }
             if(fieldValue === "") {
                 fieldError = fieldError + "- " + fieldId + " is empty<br/>";
             }
@@ -348,22 +353,22 @@
                 <hr />
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="firstname" name="firstname">
+                    <input class="mdl-textfield__input" type="text" id="firstname" name="firstname" required>
                     <label class="mdl-textfield__label" for="firstname">Administrator's firstname</label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="lastname" name="lastname">
+                    <input class="mdl-textfield__input" type="text" id="lastname" name="lastname" required>
                     <label class="mdl-textfield__label" for="lastname">Administrator's lastname</label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="email" id="email" name="email">
+                    <input class="mdl-textfield__input" type="email" id="email" name="email" required>
                     <label class="mdl-textfield__label" for="email">Administrator's email</label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="password" id="password" name="password">
+                    <input class="mdl-textfield__input" type="password" id="password" name="password" required>
                     <label class="mdl-textfield__label" for="password">Administrator's password</label>
                 </div>
 
