@@ -22,7 +22,7 @@ const getCMSBlock  = async (PostBody) => {
 };
 
 const getCMSBlockById = async (id, PostBody = null) => {
-    return queryBuilder.findOne(id, PostBody);
+    return queryBuilder.findById(id, PostBody);
 };
 
 const setCMSBlock = async (body) => {
