@@ -70,7 +70,6 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
-    set_options : {type: ObjectId, ref: 'setoptions'}, // Fin Module Options
     images      : [
         {
             url              : String,

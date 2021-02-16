@@ -121,7 +121,6 @@ class NSErrors {
     static get PromoUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoUpdateError'); }
     static get ResetPasswordMailContentAdminNotExists() { return this.makeErrorAlias(NSErrors.NotFound, 'ResetPasswordMailContentAdminNotExists'); }
     static get SetAttributeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SetAttributeNotFound'); }
-    static get SetOptionNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SetOptionNotFound'); }
     static get ShipmentUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ShipmentUpdateError'); }
     static get SliderUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'SliderUpdateError'); }
     static get StaticNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'StaticNotFound'); }

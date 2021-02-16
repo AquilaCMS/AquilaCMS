@@ -155,10 +155,6 @@ module.exports = {
         fr : 'Jeu d\'attributs introuvable',
         en : 'Set attributes not found'
     },
-    SetOptionNotFound : {
-        fr : 'Jeu d\'options introuvable',
-        en : 'Set option not found'
-    },
     LoginSubscribeEmailExisting : {
         fr : 'Un compte avec cet email existe déjà',
         en : 'An account with this email already existing'

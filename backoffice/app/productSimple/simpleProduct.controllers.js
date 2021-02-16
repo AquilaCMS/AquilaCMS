@@ -2,9 +2,9 @@
 const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", []);
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
-    "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "SetOption", "SetOptionId", "toastService", "CategoryV2",
+    "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
     "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
-    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, SetOption, SetOptionId, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
+    function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.additionnalTabs = ProductsTabs;
@@ -60,7 +60,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.init = function () {
             $scope.product = ProductService.getProductObject();
             $scope.product.type = "simple";
-            $scope.product.set_options_all = SetOption.query();
 
             $scope.product.price = {purchase: 0, et: {normal: 0}, ati: {normal: 0}};
             $scope.product.stock = {qty: 0, qty_booked: 0};
@@ -75,16 +74,9 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: $routeParams.type}, structure: '*', populate: ["set_attributes", "associated_prds"], withPromos: false}}, function (product) {
                 $scope.product = product;
 
-                if ($scope.product.set_options !== undefined) {
-                    SetOptionId.fOne({id: $scope.product.set_options}, function (setOpt) {
-                        $scope.product.set_options_name = setOpt.name;
-                    });
-                }
-
                 genAttributes();
-
-                $scope.product.set_options_all = SetOption.query();
                 getCategories();
+                
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
                         $scope.product.images[i].component_template = ImportedProductImage.component_template;

@@ -1,9 +1,9 @@
 var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []);
 
 BundleProductControllers.controller("BundleProductCtrl", [
-    "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
+    "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "toastService", "CategoryV2",
     "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs)
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -66,17 +66,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             {
                 $scope.product = product;
 
-                if($scope.product.set_options !== undefined)
-                {
-                    SetOptionId.fOne({id: $scope.product.set_options}, function (setOpt)
-                    {
-                        $scope.product.set_options_name = setOpt.name;
-                    });
-                }
-
                 genAttributes();
-
-                $scope.product.set_options_all = SetOption.query();
             });
             $scope.promos = ProductsV2.getPromos({PostBody: { filter: {code: $routeParams.code}, structure: '*'}}, function (result) {
                 $scope.promos = result.datas.promos;
@@ -92,7 +82,6 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $scope.product = ProductService.getProductObject();
             $scope.product.type = "bundle";
             $scope.product.bundle_sections = [];
-            $scope.product.set_options_all = SetOption.query();
 
             $scope.product.price = {purchase: 0, et: {normal: 0}, ati: {normal: 0}};
             $scope.product.qty = 0;

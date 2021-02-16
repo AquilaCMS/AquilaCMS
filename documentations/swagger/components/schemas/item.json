@@ -67,8 +67,7 @@
                     }
                 }
             },
-            "atts" : {"type": "array"},
-            "opts" : {"type": "array"}
+            "atts" : {"type": "array"}
         }
     }
 }
