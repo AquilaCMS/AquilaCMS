@@ -137,7 +137,7 @@
             if(fieldId === "password") {
                 const passwordValidator = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$");
                 if(!passwordValidator.test(fieldValue)){
-                    return fieldError + "- Password is incorrect (1 uppercase letter, 1 lowercase letter, 1 number)<br/>";
+                    return fieldError + "- Password is incorrect (6 characters, 1 uppercase letter, 1 lowercase letter, 1 number)<br/>";
                 }
             }
             if(fieldValue === "") {
