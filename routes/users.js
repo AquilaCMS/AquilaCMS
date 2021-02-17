@@ -89,18 +89,17 @@ async function getUserByAccountToken(req, res, next) {
  */
 async function setUser(req, res, next) {
     try {
-        if (!req.info) {
-            return res.json({code: 'NOT_AUTHENTICATED', isAuthenticated: false});
-        }
+        let isAdmin = false;
+        if (req.info) isAdmin = req.info.isAdmin;
 
         // Edit
         if (req.body._id) {
-            const result = await usersServices.setUser(req.body._id, req.body, req.info.isAdmin);
+            const result = await usersServices.setUser(req.body._id, req.body, isAdmin);
             return res.json({code: 'USER_UPDATE_SUCCESS', user: result});
         }
 
         // Create
-        const newUser = await usersServices.createUser(req.body, req.info.isAdmin);
+        const newUser = await usersServices.createUser(req.body, isAdmin);
         return res.status(201).send({user: newUser});
     } catch (error) {
         return next(error);
