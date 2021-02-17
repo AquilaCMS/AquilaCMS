@@ -17,12 +17,8 @@ const retrieveUser = async (req, res, next) => {
             const decoded = getDecodedToken(req.headers.authorization);
             if (decoded) {
                 if (decoded.type === 'USER') {
-                    try {
-                        const user = await authenticate(req, res);
-                        req.info   = user.info;
-                    } catch (err) {
-                        return next(err);
-                    }
+                    const user = await authenticate(req, res);
+                    req.info   = user.info;
                 }
                 if (decoded.type === 'GUEST') {
                     req.info = decoded;
