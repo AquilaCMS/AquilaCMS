@@ -27,7 +27,7 @@ module.exports = function (app) {
 async function getCMSBlocks(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlocks(req.body.PostBody);
-        if (!req.headers.authorization || (req.info && !req.info.isAdmin)) {
+        if (req.info && !req.info.isAdmin) {
             // on boucle sur les resultats
             for (let i = 0; i < result.datas.length; i++) {
                 const block = result.datas[i];

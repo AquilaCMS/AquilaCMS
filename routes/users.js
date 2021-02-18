@@ -28,7 +28,7 @@ module.exports = function (app) {
  */
 async function getUsers(req, res, next) {
     try {
-        const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        const PostBodyVerified = await authService.validateUserIsAllowed(req.info, req.body.PostBody, '_id');
         const result           = await usersServices.getUsers(PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -43,7 +43,7 @@ async function getUsers(req, res, next) {
  */
 async function getUser(req, res, next) {
     try {
-        const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        const PostBodyVerified = await authService.validateUserIsAllowed(req.info, req.body.PostBody, '_id');
         const result           = await usersServices.getUser(PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -57,7 +57,7 @@ async function getUser(req, res, next) {
  */
 async function getUserById(req, res, next) {
     try {
-        const PostBodyVerified = await authService.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, '_id');
+        const PostBodyVerified = await authService.validateUserIsAllowed(req.info, req.body.PostBody, '_id');
         const result           = await usersServices.getUserById(req.params.id, PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -88,16 +88,9 @@ async function getUserByAccountToken(req, res, next) {
  * @summary Add or update a user
  */
 async function setUser(req, res, next) {
-    let isAdmin = false;
     try {
-        if (req.headers && req.headers.authorization) {
-            const user = authService.getDecodedToken(req.headers.authorization);
-            if (user) {
-                isAdmin = user.info.isAdmin ? user.info.isAdmin : false;
-            } else {
-                return res.json({code: 'NOT_AUTHENTICATED', isAuthenticated: false});
-            }
-        }
+        let isAdmin = false;
+        if (req.info) isAdmin = req.info.isAdmin;
 
         // Edit
         if (req.body._id) {

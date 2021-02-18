@@ -75,7 +75,7 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
     let id_client = null;
     if (user) {
         name                             = '';
-        const {firstname, lastname, _id} = user.info;
+        const {firstname, lastname, _id} = user;
         id_client                        = _id;
         if (firstname) name += firstname;
         if (lastname) name += ` ${lastname.trim().substring(0, 1)}.`;
