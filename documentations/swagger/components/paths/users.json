@@ -24,18 +24,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "User"
             ],
@@ -95,18 +83,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "User"
             ],
@@ -126,18 +102,6 @@
             "deprecated": false,
             "security": [],
             "responses": {},
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "User"
             ]
@@ -160,16 +124,6 @@
                 }
             },
             "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
                 {
                     "name": "id",
                     "in": "path",
@@ -206,16 +160,6 @@
                     "in": "path",
                     "description": "User id",
                     "required": true,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
                     "deprecated": false,
                     "schema": {
                         "type": "string"

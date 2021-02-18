@@ -24,18 +24,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "Static"
             ],
@@ -47,7 +35,12 @@
                         },
                         "examples": {
                             "example1": {
-                                "summary": "Get all french pages",
+                                "summary": "Get all pages",
+                                "description": "Get 10 pages with default fields for current language'",
+                                "value": {"PostBody":{"limit" : 10}}
+                            },
+                            "example2": {
+                                "summary": "Get a specific french page",
                                 "description": "Get the french pages for slug 'mon_slug' with the default fields except one field 'metadesc'",
                                 "value": {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
                             }
@@ -66,9 +59,9 @@
             "responses": {},
             "parameters": [
                 {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
+                    "name": "id",
+                    "in": "path",
+                    "description": "Static's id",
                     "required": false,
                     "deprecated": false,
                     "schema": {
@@ -110,8 +103,8 @@
                         },
                         "examples": {
                             "example1": {
-                                "summary": "Get page",
-                                "description": "Get the page for code 'mycode' with the default fields for default language",
+                                "summary": "Get specific page",
+                                "description": "Get the page for code 'mycode' with default fields for the default language",
                                 "value": {"PostBody":{"filter":{"code":"mycode"}}}
                             }
                         }
@@ -137,18 +130,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "Static"
             ],
@@ -156,7 +137,7 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#/components/schemas/PostBody"
+                            "$ref": "#/components/schemas/staticsSchema"
                         }
                     }
                 },
