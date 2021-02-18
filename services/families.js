@@ -28,7 +28,11 @@ const saveFamily = async (family) => {
     if (family._id) {
         _family = await Families.findOneAndUpdate({_id: family._id}, family);
     } else {
-        _family = await Families.create(family);
+        try {
+            _family = await Families.create(family);
+        } catch (error) {
+            throw NSErrors.FamilyCodeExisting;
+        }
     }
     if (family.id_parent) {
         await Families.findOneAndUpdate({_id: family.id_parent}, {$push: {children: _family._id}}, {new: true});

@@ -247,8 +247,8 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
         };
     }]);
 
-FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter', '$modalInstance', 'FamilyV2', 'familyType', 'parent',
-    function ($scope, $location, $filter, $modalInstance, FamilyV2, familyType, parent)     {
+FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter', '$modalInstance', 'FamilyV2', 'familyType', 'parent','toastService',
+    function ($scope, $location, $filter, $modalInstance, FamilyV2, familyType, parent,toastService)     {
         // $scope.parents = Family.query();
         let parentsList = []
 
@@ -288,6 +288,7 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
         };
 
         $scope.save = function (data) {
+            debugger;
             data.id_parent = data.parent;
             FamilyV2.save(data, function (fam) {
                 if (fam && fam._id) {
@@ -296,6 +297,9 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
                 } else {
                     console.error("Error!");
                 }
+            }, function (e) {
+                debugger;
+                    toastService.toast("danger", e.data.message);
             });
         };
 
