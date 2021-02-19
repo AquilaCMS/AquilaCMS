@@ -53,17 +53,6 @@
                 }
             },
             "isAdmin"          : {"type": "boolean", "default": false},
-            "campaign"         : {
-                "type": "object",
-                "properties": {
-                    "referer"      : {"type": "string"},
-                    "utm_campaign" : {"type": "string"},
-                    "utm_medium"   : {"type": "string"},
-                    "utm_source"   : {"type": "string"},
-                    "utm_content"  : {"type": "string"},
-                    "utm_term"     : {"type": "string"}
-                }
-            },
             "price"                : {"type": "string"},
             "taxDisplay"           : {"type": "boolean", "default": true},
             "payementChoice"       : {"type": "string"},

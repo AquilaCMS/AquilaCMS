@@ -396,7 +396,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                 phone_mobile : _user.phone_mobile,
                 company      : _user.company,
                 status       : _user.status,
-                campaign     : _user.campaign,
                 birthDate    : _user.birthDate,
                 details      : _user.details,
                 type         : _user.type

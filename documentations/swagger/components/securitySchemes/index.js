@@ -1,8 +1,13 @@
 module.exports = {
     securitySchemes : {
-        api_key : {
+        user_authorization : {
             type : 'apiKey',
-            name : 'authorization',
+            name : 'Authorization',
+            in   : 'header'
+        },
+        admin_authorization : {
+            type : 'apiKey',
+            name : 'Authorization',
             in   : 'header'
         }
     }

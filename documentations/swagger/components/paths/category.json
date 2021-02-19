@@ -102,6 +102,7 @@
         "put": {
             "responses": {},
             "tags": ["Category"],
+            "security": [{"admin_authorization": []}],
             "requestBody": {
                 "description": "",
                 "content": {

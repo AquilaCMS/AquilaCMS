@@ -29,7 +29,6 @@ const ModulesSchema               = require('./modulesSchema');
 const NewsSchema                  = require('./newsSchema');
 const NewsPreviewSchema           = require('./newsPreviewSchema');
 const NewslettersSchema           = require('./newslettersSchema');
-const OptsSchema                  = require('./optsSchema');
 const OrdersSchema                = require('./ordersSchema');
 const PaymentMethodsSchema        = require('./paymentMethodsSchema');
 const PictosSchema                = require('./pictosSchema');
@@ -45,7 +44,6 @@ const RelayPointSchema            = require('./relayPointSchema');
 const RulesSchema                 = require('./rulesSchema');
 const SequencesSchema             = require('./sequencesSchema');
 const SetAttributesSchema         = require('./setAttributesSchema');
-const SetOptionsSchema            = require('./setOptionsSchema');
 const ShipmentSchema              = require('./shipmentSchema');
 const SliderSchema                = require('./sliderSchema');
 const StaticsPreviewSchema        = require('./staticsPreviewSchema');
@@ -83,7 +81,6 @@ module.exports = {
     NewsSchema,
     NewsPreviewSchema,
     NewslettersSchema,
-    OptsSchema,
     OrdersSchema,
     PaymentMethodsSchema,
     PictosSchema,
@@ -99,7 +96,6 @@ module.exports = {
     RulesSchema,
     SequencesSchema,
     SetAttributesSchema,
-    SetOptionsSchema,
     ShipmentSchema,
     SliderSchema,
     StaticsPreviewSchema,

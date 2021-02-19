@@ -129,6 +129,21 @@
         "date" : "Date de commande",
         "productNumber" : "Nombre de produits",
         "status" : "Statut"
+    },
+    "paymentStatus" : {
+        "DONE": "Effectué",
+        "TODO": "A effectuer",
+        "FAILED": "Non effectué",
+        "CANCELED": "Annulé"
+    },
+    "paymentType": {
+        "CREDIT": "Règlement",
+        "DEBIT": "Remboursement"
+    },
+    "paymentMode": {
+        "CB" : "Carte Bancaire",
+        "CHEQUE" : "Chèque",
+        "TRANSFER" : "Virement",
+        "CASH" : "Espèces"
     }
-    
 }

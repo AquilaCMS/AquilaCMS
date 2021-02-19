@@ -1,10 +1,7 @@
 {
-    "info" : {
-        "version" : "2.0.0",
-        "title"   : "Documentation for AquilaCMS's API",
-        "licence" : {
-            "name" : "OSL3.0"
-        }
-    },
-    "filesPattern" : ["routes/*.js"]
+    "customCss"       : ".curl-command { display: none }",
+    "customSiteTitle" : "Aquila : Api's documentation",
+    "swaggerOptions"  : {
+        "docExpansion" : "none"
+    }
 }

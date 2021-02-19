@@ -12,23 +12,23 @@ const {authenticate}    = require('./passport');
 const {getDecodedToken} = require('../services/auth');
 
 const retrieveUser = async (req, res, next) => {
-    if (req.headers.authorization) {
-        const decoded = getDecodedToken(req.headers.authorization);
-        if (decoded) {
-            if (decoded.type === 'USER') {
-                try {
+    try {
+        if (req.headers.authorization) {
+            const decoded = getDecodedToken(req.headers.authorization);
+            if (decoded) {
+                if (decoded.type === 'USER') {
                     const user = await authenticate(req, res);
                     req.info   = user.info;
-                } catch (err) {
-                    return next(err);
+                }
+                if (decoded.type === 'GUEST') {
+                    req.info = decoded;
                 }
             }
-            if (decoded.type === 'GUEST') {
-                req.info = decoded;
-            }
         }
+        return next();
+    } catch (err) {
+        next(err);
     }
-    return next();
 };
 
 /**

@@ -353,7 +353,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     toastService.toast("danger", "La commande est déjà dans cet état !");
                 }else if(data == "PAID"){
                     $scope.editStatus = false;
-                    $scope.addInfoPayment();
+                    $scope.addInfoPayment("PAID");
                 } else if (data == "DELIVERY_PARTIAL_PROGRESS" || data == "DELIVERY_PROGRESS") {
                     $scope.editStatus = false;
                     $scope.addPackage(data);
@@ -551,7 +551,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             });
         };
 
-        $scope.addInfoPayment = function ()
+        $scope.addInfoPayment = function (status)
         {
             $modal.open({
                 windowClass: "modal-large",
@@ -561,6 +561,10 @@ OrderControllers.controller("OrderDetailCtrl", [
                     item: function ()
                     {
                         return $scope.order;
+                    },
+                    status: function ()
+                    {
+                        return status;
                     }
                 }
             }).result.then(function ()
@@ -889,11 +893,28 @@ OrderControllers.controller("RMANewCtrl", [
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService)
-    {
+    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService",
+    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService) {
         $scope.order = angular.copy(item);
-        $scope.return = {comment: "", mode: "", sendMail: true, amount: $scope.order.priceTotal.ati, type: "CREDIT", status: "DONE", products: []};
+
+        $scope.return = {
+            comment: "",
+            mode: "",
+            sendMail: true,
+            amount: $scope.order.priceTotal.ati,
+            type: "CREDIT",
+            status: "DONE",
+            products: []
+        };
+
+        $scope.pay = {
+            disabled: false,
+        };
+    
+        if(status && status == "PAID"){
+            $scope.return.type = "CREDIT";
+            $scope.pay.disabled = true;
+        }
 
         $scope.defaultLang = $rootScope.languages.find(function (lang)
         {

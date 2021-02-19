@@ -121,7 +121,6 @@ class NSErrors {
     static get PromoUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'PromoUpdateError'); }
     static get ResetPasswordMailContentAdminNotExists() { return this.makeErrorAlias(NSErrors.NotFound, 'ResetPasswordMailContentAdminNotExists'); }
     static get SetAttributeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SetAttributeNotFound'); }
-    static get SetOptionNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SetOptionNotFound'); }
     static get ShipmentUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ShipmentUpdateError'); }
     static get SliderUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'SliderUpdateError'); }
     static get StaticNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'StaticNotFound'); }
@@ -143,6 +142,7 @@ class NSErrors {
     static get LoginSubscribeEmailExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'LoginSubscribeEmailExisting'); }
     static get MailCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailCodeAlreadyExists'); }
     static get ProductCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductCodeExisting'); }
+    static get FamilyCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'FamilyCodeExisting'); }
     static get ProductIdExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductIdExisting'); }
     static get PromoCodePromoExists() { return this.makeErrorAlias(NSErrors.Conflict, 'PromoCodePromoExists'); }
     static get PromoCodePromoLimitClientMax() { return this.makeErrorAlias(NSErrors.Conflict, 'PromoCodePromoLimitClientMax'); }
@@ -159,7 +159,6 @@ class NSErrors {
     static get RequiredModuleDependencies() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'RequiredModuleDependencies'); }
     static get ModuleAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleAquilaVersionNotSatisfied'); }
     static get ThemeAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemeAquilaVersionNotSatisfied'); }
-
     static get InternalError() { return new NSError(500, 'InternalError'); }
     static get PaymentFailed() { return new NSError(500, 'PaymentFailed'); }
     static get TranslateDeleteError() { return this.makeErrorAlias(NSErrors.InternalError, 'TranslateDeleteError'); }

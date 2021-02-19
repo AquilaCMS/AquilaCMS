@@ -6,9 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose     = require('mongoose');
-const NSErrors     = require('./errors/NSErrors');
-const servicesAuth = require('../services/auth');
+const mongoose = require('mongoose');
+const NSErrors = require('./errors/NSErrors');
 
 class PostBodyCheck {
     /**
@@ -100,7 +99,7 @@ module.exports = class QueryBuilder {
      * @param {string} [header_authorization=null] header_authorization
      * @return {{datas: {} | mongoose.Model<this>, count: mongoose.Model<this>}} returns datas found and total of element
      */
-    async find(PostBody, lean = false, header_authorization = null) {
+    async find(PostBody, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
         const postBodyChecked                                  = this.verifyPostBody(PostBody);
         const {limit, skip, filter, populate, sort, structure} = postBodyChecked;
@@ -113,7 +112,7 @@ module.exports = class QueryBuilder {
         } else {
             datas = await this.model.find(filter, addStructure).sort(sort).skip(skip).limit(limit).populate(populate);
         }
-        await this.removeFromStructure(structure, datas, header_authorization);
+        await this.removeFromStructure(structure, datas, isAdmin);
         return {datas, count};
     }
 
@@ -129,10 +128,10 @@ module.exports = class QueryBuilder {
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object
-     * @param {string} [header_authorization=null] header_authorization
+     * @param {string} [isAdmin=false] header_authorization
      * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
-    async findOne(PostBody = null, lean = false, header_authorization = null) {
+    async findOne(PostBody = null, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
         if (!PostBody.filter) throw NSErrors.PostBodyFilterUndefined;
         if (!Object.keys(PostBody.filter).length) throw NSErrors.PostBodyFilterUndefined;
@@ -147,7 +146,7 @@ module.exports = class QueryBuilder {
         } else {
             datas = await this.model.findOne(filter, addStructure).populate(populate);
         }
-        await this.removeFromStructure(structure, datas, header_authorization);
+        await this.removeFromStructure(structure, datas, isAdmin);
         return datas;
     }
 
@@ -163,17 +162,17 @@ module.exports = class QueryBuilder {
      *
      * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
      * @param {boolean} [lean=false] transform a mongoose object to object
-     * @param {string} [header_authorization=null] header_authorization
+     * @param {boolean} [isAdmin=false] header_authorization
      * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
-    async findById(id, PostBody = null, header_authorization = null) {
+    async findById(id, PostBody = null, isAdmin = false) {
         // création d'un objet PostBody avec des valeurs par défaut
         const postBodyCheck         = this.verifyPostBody(PostBody, 'findById');
         const {populate, structure} = postBodyCheck;
         if (!mongoose.Types.ObjectId.isValid(id)) throw NSErrors.InvalidObjectIdError;
         const addStructure = this.addToStructure(structure);
         const datas        = await this.model.findById(id, addStructure).populate(populate);
-        await this.removeFromStructure(structure, datas, header_authorization);
+        await this.removeFromStructure(structure, datas, isAdmin);
         return datas;
     }
 
@@ -225,10 +224,9 @@ module.exports = class QueryBuilder {
      * On supprime les champs
      * @param {*} structure
      * @param {*} datas
-     * @param header_authorization
+     * @param isAdmin
      */
-    async removeFromStructure(structure, datas, header_authorization = null) {
-        const isAdmin = servicesAuth.isAdmin(header_authorization);
+    async removeFromStructure(structure, datas, isAdmin = false) {
         if (!datas || datas.length === 0 || isAdmin || structure === '*') return;
         const structureRemove = [...this.restrictedFields];
         Object.entries(structure)

@@ -27,7 +27,7 @@ FamilyServices.factory('Familytype', ['$resource', function ($resource)
 
 FamilyServices.factory('childrenfamily', ['$resource', function ($resource)
 {
-    return $resource('families/f/:id', {}, {
-        query: {method: 'GET', params: {id: ''}, isArray: true}
+    return $resource('family/:id', {}, {
+        query: {method: 'POST', params: {id: ''}, isArray: true}
     });
 }]);

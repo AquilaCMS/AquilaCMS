@@ -537,7 +537,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                         );
                         if (cat) {
                             // Get product setted manually
-                            cat.productsList = oldCat.productsList.filter(ou => ou.checked || productsIds.includes(ou.id));
+                            cat.productsList = oldCat.productsList.filter((ou) => ou.checked || productsIds.includes(ou.id));
 
                             // On transforme la liste de produit en object dont la key est l'_id du produit
                             // nous pourrons ainsi facilement trouver les produits
@@ -561,9 +561,8 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                             }
                             await cat.save();
                         }
-                    }
                     // Segementation picto
-                    else if (splittedRulesKeys[i] === 'picto') {
+                    } else if (splittedRulesKeys[i] === 'picto') {
                         let picto;
                         // fix 'feature-pictorisation' (https://trello.com/c/1ys0BQt3/1721-feature-pictorisation-dans-picto)
                         if (!optionPictoId || optionPictoId === splittedRules[splittedRulesKeys[i]][j].owner_id) {

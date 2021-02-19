@@ -85,11 +85,6 @@
                     }
                 }
             },
-            "set_options" : {
-                "type": "string",
-                "format": "ObjectId",
-                "description": "ref setoptions"
-            },
             "images"      : {
                 "type": "array",
                 "items": {
