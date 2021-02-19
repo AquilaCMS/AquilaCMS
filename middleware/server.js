@@ -93,7 +93,6 @@ const initExpress = async (server, passport) => {
     let contentSecurityPolicyValues = [
         "'self'",
         'https://cdnjs.cloudflare.com',
-        'https://code.getmdl.io',
         "'unsafe-inline'"
     ];
     if (global.envConfig && global.envConfig.environment) {
@@ -107,15 +106,14 @@ const initExpress = async (server, passport) => {
             ];
         }
     }
-
-    // server.use(helmet.contentSecurityPolicy({
-    //     directives : {
-    //         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-    //         'script-src' : contentSecurityPolicyValues
-    //     },
-    //     // reportOnly ignore the CSP error, but report it
-    //     reportOnly : false
-    // }));
+    server.use(helmet.contentSecurityPolicy({
+        directives : {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            'script-src' : contentSecurityPolicyValues
+        },
+        // reportOnly ignore the CSP error, but report it
+        reportOnly : false
+    }));
     server.use(helmet.dnsPrefetchControl({allow: true}));
     server.use(helmet.originAgentCluster());
     server.use(helmet.frameguard({action: 'sameorigin'}));
