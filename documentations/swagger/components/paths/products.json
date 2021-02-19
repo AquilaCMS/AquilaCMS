@@ -26,18 +26,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "Product"
             ],
@@ -70,18 +58,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "Product"
             ],
@@ -115,16 +91,6 @@
                 }
             },
             "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
                 {
                     "name": "id",
                     "in": "path",
@@ -180,16 +146,6 @@
                 }
             },
             "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
                 {
                     "name": "id",
                     "in": "path",
