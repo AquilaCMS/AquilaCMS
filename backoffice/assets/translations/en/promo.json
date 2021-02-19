@@ -75,11 +75,16 @@
     "list": {
         "t1": "Discounts",
         "ph1": "Search...",
-        "nom": "Name",
         "type": "Type",
         "dateDeb": "Start date",
         "dateFin": "End date",
         "dateCre": "Creation date",
-        "actif": "Active"
+        "actif": "Active",
+        "noActif": "Not active",
+        "no": "No",
+        "yes": "Yes",
+        "indiff": "Indifferent",
+        "priority": "Priority",
+        "name": "Name"
     }
 }

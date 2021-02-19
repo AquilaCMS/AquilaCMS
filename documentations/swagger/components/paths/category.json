@@ -1,0 +1,118 @@
+{
+    "/api/v2/categories": {
+        "post": {
+            "tags": ["Category"],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/categoriesSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/category/{id}": {
+        "post": {
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/categoriesSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": ["Category"],
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Category id",
+                    "required": true,
+                    "schema":{
+                        "type": "string"
+                    }
+                }
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/category": {
+        "post": {
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/categoriesSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": ["Category"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        },
+        "put": {
+            "responses": {},
+            "tags": ["Category"],
+            "security": [{"admin_authorization": []}],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -4,11 +4,12 @@
     "refArt": "Item reference",
     "nomArt": "Item name",
     "qt": "Quantity",
-    "ret": "returned",
-    "exp": "sent",
-    "liv": "to ship",
     "all": "All",
     "part": "Partial",
     "add": "Add",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "ret": "returned",
+    "exp": "sent",
+    "ord": "ordered",
+    "liv": "to ship"
 }

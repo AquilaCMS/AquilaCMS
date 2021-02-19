@@ -1,0 +1,60 @@
+{
+    "/api/v2/component/{componentName}/{code}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success response",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "examples": {
+                                "test name": {
+                                    "value": "{\r\n\"coucou\": \"truc\"\r\n}"
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad request response",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "componentName",
+                    "in": "path",
+                    "description": "componentName always start with \"ns-\"",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "code",
+                    "in": "path",
+                    "description": "code",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Component"
+            ]
+        }
+    }
+}

@@ -1,6 +1,14 @@
-const {Families, Products} = require('../orm/models');
-const QueryBuilder         = require('../utils/QueryBuilder');
-const NSErrors             = require('../utils/errors/NSErrors');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const {Families}   = require('../orm/models');
+const QueryBuilder = require('../utils/QueryBuilder');
+const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -20,7 +28,11 @@ const saveFamily = async (family) => {
     if (family._id) {
         _family = await Families.findOneAndUpdate({_id: family._id}, family);
     } else {
-        _family = await Families.create(family);
+        try {
+            _family = await Families.create(family);
+        } catch (error) {
+            throw NSErrors.FamilyCodeExisting;
+        }
     }
     if (family.id_parent) {
         await Families.findOneAndUpdate({_id: family.id_parent}, {$push: {children: _family._id}}, {new: true});
@@ -31,25 +43,6 @@ const saveFamily = async (family) => {
 const deleteFamily = async (_id) => {
     if (!_id) throw NSErrors.UnprocessableEntity;
     const result = await Families.findOneAndDelete({_id});
-
-    // On supprime la famille de la famille parente
-    await Families.updateOne({children: result._id}, {$pull: {children: result._id}});
-
-    const where  = {};
-    const action = {};
-    if (result.type === 'universe') {
-        where.universe = result.slug;
-        action.$unset  = {universe: '', family: '', subfamily: ''};
-    } else if (result.type === 'family') {
-        where.family  = result.slug;
-        action.$unset = {family: '', subfamily: ''};
-    } else {
-        where.subfamily = result.slug;
-        action.$unset   = {subfamily: ''};
-    }
-
-    await Products.updateMany(where, action);
-
     return result.ok === 1;
 };
 

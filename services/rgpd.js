@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const MongoClient  = require('mongodb').MongoClient;
 const ObjectID     = require('mongodb').ObjectID;
 const {v4: uuidv4} = require('uuid');
@@ -99,7 +107,7 @@ const anonymizeModulesByUser = async (user) => {
         for (const module of _modules) {
             await new Promise(async (resolve, reject) => {
                 // Récupère les fichiers rgpd.js des modules
-                if (await fs.access(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
                     await rgpd.anonymize(user, resolve, reject);
                 }
@@ -148,8 +156,8 @@ const anonymizeUser = async (id) => {
             addresses        : [
                 generateFakeAddresses({firstname: firstName, lastname: lastName, _id: new ObjectID()})
             ],
-            birthDate    : faker.date.past(),
-            creationDate : new Date()
+            birthDate : faker.date.past(),
+            createdAt : new Date()
         }
     });
 };
@@ -180,9 +188,9 @@ const copyDatabase = async (cb) => {
     }
 };
 
-function mongodump(uri) {
+async function mongodump(uri) {
     const data = MongoURI.parse(uri);
-    let cmd    = createConnectionStringMongoose(data);
+    let cmd    = await createConnectionStringMongoose(data);
     if (data.database) {
         cmd += ` --db ${data.database}`;
     }
@@ -197,9 +205,9 @@ function mongodump(uri) {
     });
 }
 
-function mongorestore(uri) {
+async function mongorestore(uri) {
     const data = MongoURI.parse(uri);
-    const cmd  = createConnectionStringMongoose(data);
+    const cmd  = await createConnectionStringMongoose(data);
     return new Promise((resolve, reject) => {
         exec(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`, (error, stdout) => {
             if (error) {
@@ -260,8 +268,8 @@ const anonymizeDatabase = async (cb) => {
                 addresses        : [
                     generateFakeAddresses({firstname: firstName, lastname: lastName, _id: new ObjectID()})
                 ],
-                birthDate    : faker.date.past(),
-                creationDate : new Date()
+                birthDate : faker.date.past(),
+                createdAt : new Date()
             }
         });
     }
@@ -323,7 +331,7 @@ const anonymizeDatabase = async (cb) => {
     if (_modules.length >= 0) {
         for (const mod of _modules) {
             await new Promise(async (resolve, reject) => {
-                if (await fs.access(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
+                if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
                     await rgpd.anonymizeDatabase(database, resolve, reject);
                 }

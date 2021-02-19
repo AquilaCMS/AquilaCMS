@@ -12,6 +12,7 @@
         "nameLink": "Nom du lien :",
         "type": "Type :",
         "addShortcode": "Ajouter un Shortcode",
+        "addMailVar": "Ajouter une variable de mail",
         "noParameters": "Ce Shortcode ne contient pas de paramètres.",
         "back": "Retour"
     }

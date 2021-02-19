@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const bcrypt            = require('bcrypt');
 const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
@@ -91,23 +99,15 @@ const UserSchema = new Schema({
             phone      : String
         }
     },
-    status           : String,
-    creationDate     : {type: Date, default: Date.now},
-    delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
-    billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
-    addresses        : [AddressSchema],
-    isAdmin          : {type: Boolean, default: false},
-    campaign         : {
-        referer      : String,
-        utm_campaign : String,
-        utm_medium   : String,
-        utm_source   : String,
-        utm_content  : String,
-        utm_term     : String
-    },
+    status               : String,
+    delivery_address     : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
+    billing_address      : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
+    addresses            : [AddressSchema],
+    isAdmin              : {type: Boolean, default: false},
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
     payementChoice       : String,
+    isActive             : {type: Boolean, default: true},
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
@@ -131,7 +131,9 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ]
-});
+}, {timestamps: true});
+
+UserSchema.index({email: 1});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});

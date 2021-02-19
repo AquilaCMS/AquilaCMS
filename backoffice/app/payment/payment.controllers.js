@@ -79,7 +79,7 @@ PaymentControllers.controller("PaymentListCtrl", [
                             number        : _orders[i].number,
                             customer      : _orders[i].customer,
                             addresses     : _orders[i].addresses,
-                            creationDate  : _orders[i].payment.creationDate,
+                            createdAt     : _orders[i].payment.createdAt,
                             operationDate : _orders[i].payment.operationDate,
                             status        : _orders[i].payment.status,
                             mode          : _orders[i].payment.mode,

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const fs                          = require('fs');
 const path                        = require('path');
 const {exec}                      = require('child_process');
@@ -20,7 +28,7 @@ module.exports = function (app) {
  * Fonction retournant un fichier contenant toutes les données d'un utilisateur au format JSON dans un fichier txt
  */
 async function exportData(req, res, next) {
-    const userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+    const userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     if (userVerified) {
         try {
             // On récupère les infos de l'user, ses commandes et ses factures
@@ -134,7 +142,7 @@ function dump(cmd) {
 async function deleteUserDatas(req, res, next) {
     let userVerified = null;
     try {
-        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     } catch (err) {
         throw NSErrors.AccessUnauthorized;
     }
@@ -155,7 +163,7 @@ async function deleteUserDatas(req, res, next) {
 async function anonymizeUser(req, res, next) {
     let userVerified = null;
     try {
-        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     } catch (err) {
         throw NSErrors.AccessUnauthorized;
     }

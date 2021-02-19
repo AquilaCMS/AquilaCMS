@@ -74,23 +74,39 @@ ProductDirectives.directive("nsProductsList", function () {
 
                         const filter = angular.copy($scope.queryFilter);
                         // Si pagination avec recherche
-                        if ($scope.f.nameFilter.length > 0) {
-                            ProductsV2.adminList({filter, q: $scope.f.nameFilter, page, limit: $scope.nbItemsPerPage}, function ({datas, count}) {
-                                for (let prd of datas) {
-                                    prd.images = prd.images.filter(i => i.default)
-                                }
-                                $scope.products = datas;
-                                $scope.totalItems = count;
-                            });
-                        } else {
-                            ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
-                                for (let prd of datas) {
-                                    prd.images = prd.images.filter(i => i.default)
-                                }
-                                $scope.products = datas;
-                                $scope.totalItems = count;
-                            });
-                        }
+                        console.log("open popup");
+                        // if ($scope.f.nameFilter.length > 0) {
+                        const paramsV2 = {
+                            lang: "fr",
+                            PostBody: {
+                                filter:{}, // q: $scope.f.nameFilter
+                                structure: {
+                                    code: 1,
+                                    supplier_ref:1 // TODO : faire le populate !
+                                },
+                                limit: $scope.nbItemsPerPage,
+                                page
+                            }
+                        };
+                        // TODO adminList : Edit prd, popup crossselling call this. Pb with filter, etc
+                        ProductsV2.list(paramsV2, function (res) {
+                            // for (let prd of res.datas) {
+                            //     prd.images = prd.images.filter(i => i.default)
+                            // }
+                            $scope.products = res.datas;
+                            $scope.addStyle($scope.products)
+                            $scope.totalItems = res.count;
+                        });
+                        // } else {
+                        //     ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
+                        //         for (let prd of datas) {
+                        //             prd.images = prd.images.filter(i => i.default)
+                        //         }
+                        //         $scope.products = datas;
+                        //         $scope.addStyle($scope.products)
+                        //         $scope.totalItems = count;
+                        //     });
+                        // }
 
                         // $scope.queryFilter.supplier_ref = "";
                     });
@@ -101,20 +117,19 @@ ProductDirectives.directive("nsProductsList", function () {
                             prd.images = prd.images.filter(i => i.default)
                         }
                         $scope.products = productsList;
+                        $scope.addStyle($scope.products)
                     });
                 };
                 // modifie le style css en selectionnee et de cette maniere il permet de garder le champ selectione lors du changement de page
-                $scope.getSelectStyle = function (product) {
-                    for (let i = 0; i < $scope.$parent.selectedProducts.length; i++) {
-                        if ($scope.$parent.selectedProducts[i]._id == product._id) {
-                            if ($scope.$parent.selectedProducts[i]._selected) {
-                                return "background-color: #3f51b5;color: white;";
+                $scope.addStyle = function (allProducts) {
+                    for(product of allProducts){
+                        for (selectProduct of $scope.$parent.$parent.$parent.selectedProducts) {
+                            if (selectProduct._id == product._id) {
+                                product.style = {"background-color": "#3f51b5", "color": "white"};
+                                continue;
                             }
-
-                            return "background-color: #3f51b5;color: white;";
                         }
                     }
-                    return "background-color: '';color: '';";
                 };
 
                 $scope.defaultLang = $rootScope.languages.find(function (lang) {
@@ -128,40 +143,45 @@ ProductDirectives.directive("nsProductsList", function () {
                     return $scope.$parent.product._id != product._id;
                 };
                 $scope.search = function () {
-                    const filter = angular.copy($scope.queryFilter);
-                    const searchObj = {
-                        code : '',
-                        translation : {
-                            name : ''
+                    let filterObj = {};
+                    if($scope.queryFilter.type){
+                        filterObj["type"] = $scope.queryFilter.type;
+                    }
+                    if($scope.f.codeFilter && $scope.f.codeFilter != ""){
+                        filterObj["code"] = { $regex: $scope.f.codeFilter, $options: "i" };
+                    }
+                    if($scope.f.nameFilter && $scope.f.nameFilter != ""){
+                        filterObj[`translation.${$scope.defaultLang}.name`] = { $regex: $scope.f.nameFilter, $options: "i" };
+                    }
+                    if($scope.queryFilter.supplier_ref && $scope.queryFilter.supplier_ref != "") {
+                        filterObj["supplier_ref"] = $scope.queryFilter.supplier_ref;
+                    }
+                    // lang : "fr" ???
+                    const paramsV2 = {
+                        lang: "fr",
+                        PostBody: {
+                            filter: filterObj,
+                            structure: {
+                                code: 1,
+                                active: 1,
+                                _visible: 1,
+                                stock: 1
+                            },
+                            limit: $scope.nbItemsPerPage,
+                            page: 1
                         }
                     };
-                    searchObj.translation.name = $scope.f.nameFilter;
-                    searchObj.code = $scope.f.codeFilter;
-
-                    if (filter.supplier_ref == "") {
-                        delete filter.supplier_ref;
-                    }
-                    if ($scope.f.nameFilter.length > 0 || $scope.f.codeFilter.length > 0) {
-                        ProductsV2.adminList({filter, page: 1, limit: $scope.nbItemsPerPage, searchObj}, function (res) {
-                            for (let prd of res.products) {
-                                prd.images = prd.images.filter(i => i.default)
-                            }
-                            $scope.products = res.products;
-                            $scope.totalItems = res.count;
-                            $scope.currentPage = 1;
-                        });
-                    } else {
-                        filter.page = 1;
-                        filter.limit = $scope.nbItemsPerPage;
-                        ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page: 1}}, function (res) {
-                            for (let prd of res.datas) {
-                                prd.images = prd.images.filter(i => i.default)
-                            }
-                            $scope.products = res.datas;
-                            $scope.totalItems = res.count;
-                            $scope.currentPage = 1;
-                        });
-                    }
+                    //console.log("filter popup");
+                    // TODO adminList : Edit prd, popup crossselling search call this. Pb with filter, etc
+                    ProductsV2.list(paramsV2, function (res) {
+                        for (let prd of res.datas) {
+                            prd.images = prd.images.filter(i => i.default)
+                        }
+                        $scope.products = res.datas;
+                        $scope.totalItems = res.count;
+                        $scope.currentPage = 1;
+                        $scope.addStyle($scope.products); //we colorize product alerady added
+                    });
                 };
             }
         ]
@@ -267,7 +287,7 @@ ProductDirectives.directive("nsProductPrice", function () {
             "$scope", "ConfigV2", "$rootScope", function ($scope, ConfigV2, $rootScope) {
                 $scope.langs = [];
                 $scope.stockLabels = [];
-                $scope.taxerate = [];
+                $scope.config = {};
                 $scope.lang = "";
 
                 $scope.lang = $rootScope.languages.find(function (lang) {
@@ -275,18 +295,21 @@ ProductDirectives.directive("nsProductPrice", function () {
                 }).code;
                 $scope.langs = $rootScope.languages;
 
-                ConfigV2.taxerate(function (taxerate) {
-                    $scope.taxerate = taxerate.map(t => t.rate);
-                    if ($scope.taxerate.length > 0 && $scope.product && $scope.product.price && !$scope.product.price.tax) {
-                        // $scope.product.price.tax = $scope.taxerate[$scope.taxerate.length - 1].rate;
+                ConfigV2.get({PostBody: {structure: {taxerate: 1, stockOrder: 1}}}, function (config) {
+                    $scope.config = config;
+                    $scope.config.taxerate = $scope.config.taxerate.map(t => t.rate);
+                    if (
+                        $scope.config
+                        && $scope.config.taxerate.length > 0
+                        && $scope.product
+                        && $scope.product.price
+                        && !$scope.product.price.tax
+                    ) {
+                        // $scope.product.price.tax = $scope.config.taxerate[$scope.config.taxerate.length - 1].rate;
                         $scope.product.price.tax = 0;
                     }
-                });
-
-
-                ConfigV2.stockOrder(function (cfg) {
-                    if (Object.keys(cfg).length > 2) {
-                        $scope.stockLabels = cfg.labels;
+                    if (Object.keys(config.stockOrder).length > 2) {
+                        $scope.stockLabels = config.stockOrder.labels;
                     }
                 });
 
@@ -436,6 +459,10 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                 };
                 $scope.removeElementAssociatedPrds = function (index) {
                     $scope.associatedPrds.splice(index, 1);
+                    if($scope.selectedProducts){
+                        let index2 = $scope.selectedProducts.indexOf($scope.associatedPrds[index])
+                        $scope.selectedProducts.splice(index2, 1);
+                    }
                     $scope.product.associated_prds = $scope.associatedPrds.map(function (item) {
                         return item._id;
                     });

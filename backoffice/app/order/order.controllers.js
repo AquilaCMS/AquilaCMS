@@ -12,7 +12,7 @@ OrderControllers.controller("OrderListCtrl", [
         $scope.nbItemsPerPage = 12;
         $scope.maxSize = 10;
         $scope.filter = {};
-        $scope.sort = {type: "creationDate", reverse: true};
+        $scope.sort = {type: "createdAt", reverse: true};
         $scope.export = ExportCollectionCSV;
 
         $scope.getOrders = function (page)
@@ -81,7 +81,7 @@ OrderControllers.controller("OrderListCtrl", [
         function init()
         {
             $scope.sort = {
-                type: "creationDate", // set the default sort type
+                type: "createdAt", // set the default sort type
                 reverse: true // set the default sort order
             };
         }
@@ -120,6 +120,32 @@ OrderControllers.controller("OrderDetailCtrl", [
             $anchorScroll();
 
             $scope.changeStatus();// Si changeStatusId
+        }
+
+        $scope.displayProducts = function (item) {
+            var displayHtml = '';
+            for (var i = 0; i < item.selections.length; i++) {
+                var section = item.selections[i];
+                for (var j = 0; j < section.products.length; j++) {
+                    var productSection = section.products[j];
+                    const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
+                        (bundleSection &&
+                        bundleSection.products.find((product) => product.id === productSection.id) &&
+                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price &&
+                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] &&
+                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
+                        // HT
+                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ? '(ET: +' : '(') +
+                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
+                            // prix TTC
+                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ? '+' : '') +
+                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)'
+                        : ''
+                    }`}</li>`
+                }
+            }
+            return displayHtml;
         }
 
         $scope.init = function () {
@@ -233,7 +259,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         {
             if($scope.order.delivery && $scope.order.delivery.dateDelivery && $scope.order.delivery.dateDelivery.delayDelivery && $scope.order.delivery.dateDelivery.delayPreparation)
             {
-                return $scope.order.delivery ? moment($scope.order.creationDate)
+                return $scope.order.delivery ? moment($scope.order.createdAt)
                     .add($scope.order.delivery.dateDelivery.delayDelivery, $scope.order.delivery.dateDelivery.unitDelivery)
                     .add($scope.order.delivery.dateDelivery.delayPreparation, $scope.order.delivery.dateDelivery.unitPreparation)
                     .format("L") : moment().format("L");
@@ -327,7 +353,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     toastService.toast("danger", "La commande est déjà dans cet état !");
                 }else if(data == "PAID"){
                     $scope.editStatus = false;
-                    $scope.addInfoPayment();
+                    $scope.addInfoPayment("PAID");
                 } else if (data == "DELIVERY_PARTIAL_PROGRESS" || data == "DELIVERY_PROGRESS") {
                     $scope.editStatus = false;
                     $scope.addPackage(data);
@@ -525,7 +551,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             });
         };
 
-        $scope.addInfoPayment = function ()
+        $scope.addInfoPayment = function (status)
         {
             $modal.open({
                 windowClass: "modal-large",
@@ -535,6 +561,10 @@ OrderControllers.controller("OrderDetailCtrl", [
                     item: function ()
                     {
                         return $scope.order;
+                    },
+                    status: function ()
+                    {
+                        return status;
                     }
                 }
             }).result.then(function ()
@@ -688,6 +718,9 @@ OrderControllers.controller("PackagesNewCtrl", [
 
         $scope.sendPackage = function ()
         {
+            var buttonAdd = angular.element(document.getElementById('buttonAdd'));
+            buttonAdd.attr('disabled',"true");
+
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
             $scope.error = "";
@@ -727,6 +760,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             }
             else
             {
+                buttonAdd.removeAttr('disabled');
                 $scope.error = "Colis vide";
                 $scope.partial = true;
             }
@@ -752,9 +786,9 @@ OrderControllers.controller("RMANewCtrl", [
             return lang.defaultLanguage;
         }).code;
 
-        ConfigV2.taxerate(function (data) {
-            $scope.taxerate = data;
-            $scope.return.tax = data[0].rate;
+        ConfigV2.get({PostBody: {structure: {taxerate: 1}}}, function (config) {
+            $scope.taxerate = config.taxerate;
+            $scope.return.tax = config.taxerate[0].rate;
         });
 
         for(var i = $scope.order.items.length - 1; i >= 0; i--)
@@ -859,11 +893,28 @@ OrderControllers.controller("RMANewCtrl", [
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService)
-    {
+    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService",
+    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService) {
         $scope.order = angular.copy(item);
-        $scope.return = {comment: "", mode: "", sendMail: true, amount: $scope.order.priceTotal.ati, type: "CREDIT", status: "DONE", products: []};
+
+        $scope.return = {
+            comment: "",
+            mode: "",
+            sendMail: true,
+            amount: $scope.order.priceTotal.ati,
+            type: "CREDIT",
+            status: "DONE",
+            products: []
+        };
+
+        $scope.pay = {
+            disabled: false,
+        };
+    
+        if(status && status == "PAID"){
+            $scope.return.type = "CREDIT";
+            $scope.pay.disabled = true;
+        }
 
         $scope.defaultLang = $rootScope.languages.find(function (lang)
         {

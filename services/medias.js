@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const AdmZip       = require('adm-zip');
 const moment       = require('moment');
 const path         = require('path');
@@ -11,7 +19,6 @@ const {
     News,
     Gallery,
     Slider,
-    Opts,
     Mail
 }                      = require('../orm/models');
 const utils        = require('../utils/utils');
@@ -62,7 +69,7 @@ const downloadAllDocuments = async () => {
 /**
  * @description Upload zip with all medias
  */
-const uploadAllMedias = async (reqFile, insertDB) => {
+const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     console.log('Upload medias start...');
 
     const path_init   = reqFile.path;
@@ -97,7 +104,8 @@ const uploadAllMedias = async (reqFile, insertDB) => {
         if (insertDB) {
             await Medias.create({
                 link : `medias/${filename}`,
-                name : name_file
+                name : name_file,
+                group
             });
         }
     });
@@ -339,7 +347,7 @@ const uploadFiles = async (body, files) => {
         extension
     }, async () => {
         // Check if the name is already used
-        if (!(await fsp.existsSync(pathFinal, target_path_full))) {
+        if (!fsp.existsSync(path.resolve(pathFinal, target_path_full))) {
             target_path_full = pathFinal + target_path_full;
         } else {
             name             = `${files[0].originalname}_${Date.now()}`;
@@ -381,13 +389,13 @@ const uploadFiles = async (body, files) => {
         }
 
         result.translation[body.lang].attachments.push({path: target_path_full, name: files[0]});
-        await Mail.updateOne({_id: body._id}, {translation: result.translation});
+        await Mail.updateOne({_id: body._id}, {$set: {translation: result.translation}});
         return result.translation;
     }
     case 'picto': {
         const result = await Pictos.findOne({_id: body._id});
         await deleteFileAndCacheFile(`medias/picto/${result.filename}`, 'picto');
-        await Pictos.updateOne({_id: body._id}, {filename: name + extension});
+        await Pictos.updateOne({_id: body._id}, {$set: {filename: name + extension}});
         return {name: name + extension};
     }
     case 'language': {
@@ -395,20 +403,20 @@ const uploadFiles = async (body, files) => {
         if (result.img) {
             await utilsMedias.deleteFile(result.img);
         }
-        await Languages.updateOne({_id: body._id}, {img: target_path_full});
+        await Languages.updateOne({_id: body._id}, {$set: {img: target_path_full}});
         return {name: name + extension, path: target_path_full};
     }
     case 'article': {
         const result = await News.findOne({_id: body._id});
         await deleteFileAndCacheFile(result.img, 'blog');
-        await News.updateOne({_id: body._id}, {img: target_path_full, extension: path.extname(target_path_full)});
+        await News.updateOne({_id: body._id}, {$set: {img: target_path_full, extension: path.extname(target_path_full)}});
         return {name: name + extension, path: target_path_full};
     }
     case 'media': {
         if (body._id && body._id !== '') {
             const result = await Medias.findOne({_id: body._id});
             await deleteFileAndCacheFile(result.link, 'medias');
-            await Medias.updateOne({_id: body._id}, {link: target_path_full, extension: path.extname(target_path_full)});
+            await Medias.updateOne({_id: body._id}, {$set: {link: target_path_full, extension: path.extname(target_path_full)}});
             return {name: name + extension, path: target_path_full, id: body._id};
         }
         const media = await Medias.create({link: target_path_full, extension: path.extname(target_path_full)});
@@ -503,25 +511,25 @@ const uploadFiles = async (body, files) => {
 
         return {name: name + extension, path: target_path_full};
     }
-    case 'option': {
-        const values = body.entity.values;
-        for (let i = 0; i < values.length; i++) {
-            delete values[i].$hashKey;
-        }
+    // case 'option': {
+    //     const values = body.entity.values;
+    //     for (let i = 0; i < values.length; i++) {
+    //         delete values[i].$hashKey;
+    //     }
 
-        const path = body.entity.value[body.entity.line];
-        await utilsMedias.deleteFile(path);
+    //     const path = body.entity.value[body.entity.line];
+    //     await utilsMedias.deleteFile(path);
 
-        values[body.entity.lineIndex][body.entity.line] = target_path_full;
+    //     values[body.entity.lineIndex][body.entity.line] = target_path_full;
 
-        await Opts.updateOne({_id: body._id}, {$set: {values}});
+    //     await Opts.updateOne({_id: body._id}, {$set: {values}});
 
-        return {name: name + extension, path: target_path_full};
-    }
+    //     return {name: name + extension, path: target_path_full};
+    // }
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
         await deleteFileAndCacheFile(result.img, 'category');
-        await Categories.updateOne({_id: body._id}, {img: target_path_full, extension: path.extname(target_path_full), alt: body.alt});
+        await Categories.updateOne({_id: body._id}, {$set: {img: target_path_full, extension: path.extname(target_path_full), alt: body.alt}});
         return {name: name + extension, path: target_path_full};
     }
     default:

@@ -18,13 +18,9 @@
             "universe"           : {"type": "string"},
             "family"             : {"type": "string"},
             "subfamily"          : {"type": "string"},
-            "slugMenus"          : {
-                "type": "array",
-                "items": {"type": "string"}
-            },
             "component_template" : {"type": "string"},
             "weight"             : {"type": "number", "default": 0, "description": "Le poids du produit"},
-            "creationDate"       : {"type": "string", "format": "date", "default": "Date.now"},
+            "createdAt"          : {"type": "date"},
             "price"              : {
                 "type": "object",
                 "properties": {
@@ -88,11 +84,6 @@
                         "position"    : {"type": "number", "default": 1}
                     }
                 }
-            },
-            "set_options" : {
-                "type": "string",
-                "format": "ObjectId",
-                "description": "ref setoptions"
             },
             "images"      : {
                 "type": "array",

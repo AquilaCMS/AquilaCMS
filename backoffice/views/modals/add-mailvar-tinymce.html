@@ -1,0 +1,70 @@
+<style>
+    .modal-dialog {
+        width: 1200px;
+        padding:30px;
+    }
+
+    .modal {
+    z-index: 30050 !important;
+}
+.modal-backdrop {
+    z-index: 30040 !important;
+}
+    /* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: black; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
+
+.shortcode:hover{
+    cursor:pointer;
+}
+</style>
+
+<div style="height:100%">
+    <div class="modal-header" translate>
+        tinymce.modal.addMailVar
+    </div>
+    <div class="modal-body">
+        <div class="row" style="overflow:scroll;overflow-x: hidden;padding:10px 20px;box-shadow: 0px 0px 10px 3px gray;margin:0 20px; height: 70vh;">
+            <div style="text-align:center;margin:20px 0px">
+                <h2>{{mailType.translation[lang].name}}</h2>
+            </div>
+            <div ng-repeat="variable in mailType.translation[lang].variables | orderBy:'-weight'">
+                <div class="col-md-4 shortcode" style="padding:10px;" ng-click="selectVariable(variable.value)">
+                    <div ng-if="variableSelected !== variable.value"
+                        style="border:2px solid black;border-radius:8px;padding:10px;height:100px">
+                        <label>{{variable.description}}</label>
+                        <pre>{{'{'+'{'+variable.value+'}'+'}'}}</pre>
+                    </div>
+                    <div ng-if="variableSelected === variable.value"
+                        style="border:2px solid black;border-radius:8px;padding:10px;height:100px;box-shadow: 0px 0px 20px 5px #576fa1;">
+                        <label>{{variable.description}}</label>
+                        <pre>{{'{'+'{'+variable.value+'}'+'}'}}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()" translate>tinymce.modal.cancel</button>
+        <button class="btn btn-default" ng-disabled="!selected" ng-click="addMailVariable(variableSelected)" translate>tinymce.modal.add</button>
+    </div>
+</div>

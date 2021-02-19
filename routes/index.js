@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const fs       = require('fs');
 const path     = require('path');
 const NSErrors = require('../utils/errors/NSErrors');
@@ -52,6 +60,8 @@ const manageExceptionsRoutes = async (req, res, next) => {
             res.sendFile(path.join(global.appRoot, 'bo/build/index.html'));
         }
     } else if (req.url === '/sitemap.xml' || req.url === '/robots.txt') {
+        res.sendFile(path.join(global.appRoot, req.url));
+    } else if (req.url.startsWith('/google')) {
         res.sendFile(path.join(global.appRoot, req.url));
     } else if (req.url && req.url.startsWith('/images') && req.url.split('/').length === 6) {
         const type    = req.url.split('/')[2];

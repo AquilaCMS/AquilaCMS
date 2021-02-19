@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const imagemin                    = require('imagemin');
 const imageminGifsicle            = require('imagemin-gifsicle');
 const imageminJpegtran            = require('imagemin-jpegtran');
@@ -55,7 +63,7 @@ const deleteFile = async (filePath) => {
         await utilsModules.modulesLoadFunctions('removeFile', {key: filePath}, async () => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = path.resolve(pathUpload, filePath);
-            if (pathToRemove && await fsp.access(pathToRemove)) {
+            if (pathToRemove && fsp.existsSync(pathToRemove)) {
                 try {
                     await fsp.unlink(pathToRemove);
                 } catch (err) {
@@ -73,7 +81,7 @@ const deleteFolder = async (folderPath) => {
         await utilsModules.modulesLoadFunctions('removeFolder', {folder: folderPath}, async () => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = path.resolve(pathUpload, folderPath);
-            if (await fsp.access(pathToRemove)) {
+            if (fsp.existsSync(pathToRemove)) {
                 await fsp.deleteRecursiveSync(pathToRemove);
             }
         });
@@ -108,7 +116,7 @@ const existsFile = async (key) => {
         return utilsModules.modulesLoadFunctions('existsFile', {key}, async () => {
             const pathUpload  = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToCheck = path.resolve(pathUpload, key);
-            if (pathToCheck && await fsp.access(pathToCheck)) {
+            if (pathToCheck && await fsp.existsSync(pathToCheck)) {
                 return true;
             }
             return false;

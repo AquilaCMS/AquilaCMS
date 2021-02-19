@@ -9,10 +9,10 @@ import {
 } from 'aqlrc';
 import ReactPagination from 'react-js-pagination';
 import Layout from 'components/Layout';
+import { listModulePage } from 'lib/utils';
 import { withI18next } from 'lib/withI18n';
 import routes, { Link, Router } from 'routes';
 import CMS from 'components/CMS';
-import { listModulePage } from 'lib/utils';
 import Error from './_error';
 
 /**
@@ -59,6 +59,9 @@ class PageCategory extends NSPageCategory {
 
                         <div className="main">
                             <div className="shell">
+                                {
+                                    listModulePage('select-date')
+                                }
                                 <NSBreadcrumb gNext={{ routes, Link }} />
 
                                 { nsCms_extraText2 && nsCms_extraText2.content !== '' && <div style={{ marginBottom: '20px' }}><CMS content={nsCms_extraText2.content} hide_error="1" /></div> }
@@ -154,9 +157,9 @@ class PageCategory extends NSPageCategory {
                                     </div>{/* <!-- /.bar-filters --> */}
                                 </div>{/* <!-- /.tab-filter --> */}
 
-                                <div className="container container--flex align-top" style={themeConfig && themeConfig.filters && themeConfig.filters === 'right' ? { flexDirection: "row-reverse" } : {}}>
+                                <div className="container container--flex align-top" style={themeConfig && themeConfig.find(t => t.key === 'filters') && themeConfig.find(t => t.key === 'filters').value === 'right' ? { flexDirection: "row-reverse" } : {}}>
 
-                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2" style={themeConfig && themeConfig.filters && themeConfig.filters === 'none' ? { display: "none" } : {}}>
+                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2" style={themeConfig && themeConfig.find(t => t.key === 'filters') && themeConfig.find(t => t.key === 'filters').value === 'none' ? { display: "none" } : {}}>
                                         {
                                             <NSFilters
                                                 category={category}

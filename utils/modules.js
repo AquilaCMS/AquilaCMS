@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path     = require('path');
 const fs       = require('./fsp');
 const utils    = require('./utils');
@@ -9,11 +17,13 @@ let loadedModules;
 /**
  * Module : Charge les fonctions dans les init.js des modules si besoin
  */
-const modulesLoadFunctions = async (property, params = {}, functionToExecute) => {
+const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
         return global.moduleExtend[property].function(params);
     }
-    return functionToExecute();
+    if (functionToExecute && typeof functionToExecute === 'function') {
+        return functionToExecute();
+    }
 };
 
 /**
@@ -24,7 +34,7 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
     try {
         modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
         await fs.ensureDir(modules_folder);
-        const isFileExists = await fs.access(`${modules_folder}/list_modules.js`);
+        const isFileExists = await fs.hasAccess(`${modules_folder}/list_modules.js`);
         if (!isFileExists) {
             await fs.writeFile(`${modules_folder}/list_modules.js`, 'export default [];');
         }
@@ -172,7 +182,7 @@ const modulesLoadInit = async (server) => {
     }
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
-        if (await fs.access(initModuleFile)) {
+        if (fs.existsSync(initModuleFile)) {
             process.stdout.write(`- ${loadedModules[i].name}`);
             try {
                 const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
@@ -192,7 +202,7 @@ const modulesLoadInit = async (server) => {
     if (loadedModules.length > 0) {
         console.log('Finish init loading modules');
     } else {
-        console.log('no modules to load');
+        console.log('No modules to load');
     }
 };
 
@@ -208,7 +218,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                 // Récupère les fichiers initAfter.js des modules
                 await new Promise(async (resolve, reject) => {
                     try {
-                        if (await fs.access(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
+                        if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
                             process.stdout.write(`- ${mod.name}`);
                             if (!mod.valid) {
                                 const isValid = await utils.checkModuleRegistryKey(mod.name);

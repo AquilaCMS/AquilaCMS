@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {Cart, Orders, PaymentMethods} = require('../orm/models');
 const orderService                   = require('../services/orders');
 const ServiceMail                    = require('../services/mail');
@@ -37,8 +45,8 @@ module.exports = function (app) {
  */
 async function getOrders(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
-        if (!ServiceAuth.isAdmin(req.headers.authorization)) {
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
+        if (req.info && !req.info.isAdmin) {
             PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
@@ -66,7 +74,7 @@ async function setOrder(req, res, next) {
 
 async function getOrder(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         const result           = await ServiceOrder.getOrder(PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -82,7 +90,7 @@ async function getOrder(req, res, next) {
  */
 async function getOrderById(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'customer.id');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         const result           = await ServiceOrder.getOrderById(req.params.id, PostBodyVerified);
         return res.json(result);
     } catch (error) {
@@ -206,7 +214,7 @@ async function cancelOrder(req, res, next) {
 
 async function cancelOrderRequest(req, res, next) {
     try {
-        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.headers.authorization);
+        const result = await orderService.cancelOrderRequest(req.params.id || req.body.id, req.info);
         if (result) {
             return res.json({code: 'ORDER_ASK_CANCEL_SUCCESS'});
         }

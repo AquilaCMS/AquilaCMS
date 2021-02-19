@@ -45,8 +45,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.client",
     "aq.attribute",
     "aq.setAttributes",
-    "aq.option",
-    "aq.setOptions",
     "aq.order",
     "aq.cart",
     "aq.payment",
@@ -69,38 +67,34 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productReviews",
     "aq.themes",
     "aq.productVirtual",
-    "aq.newsletter"
-
+    "aq.newsletter",
+    "aq.system",
 ]);
 
 //================================================
 // Check if the user is connected
 //================================================
-var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeout)
-{
+var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeout) {
     // Initialize a new promise
     var deferred = $q.defer();
 
-    $http.get("v2/auth/isauthenticated").then(function (resp)
-    {
-        if (!$rootScope.demoMode){
-            $http.get("config/environment/environment").then(function (resp) {
-                $rootScope.demoMode = resp.data.demoMode;
+    $http.get("v2/auth/isauthenticated").then(function (resp) {
+        if (!$rootScope.demoMode) {
+
+            $http.post("v2/config", {PostBody: {structure: {environment: 1}}}).then(function (response) {
+                $rootScope.demoMode = response.data.environment.demoMode;
             });
         }
         $rootScope.userInfo = resp.data.user;
-        if(resp.data.data)
-        {
+        if(resp.data.data) {
             window.localStorage.setItem("jwtAdmin", resp.data.data);
         }
-        $timeout(function ()
-        {
+
+        $timeout(function () {
             deferred.resolve();
         }, 0);
-    }).catch(function (err)
-    {
-        $timeout(function ()
-        {
+    }).catch(function (err) {
+        $timeout(function () {
             deferred.reject();
             $window.location.href = $window.location.pathname + "/login";
         }, 0);
@@ -110,8 +104,7 @@ var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeou
 };
 //================================================
 
-var checkAccess = function (route)
-{
+var checkAccess = function (route) {
     return [
         "$q", "$timeout", "$http", "$location", "$rootScope", "$window", "toastService",
         function ($q, $timeout, $http, $location, $rootScope, $window, toastService)
@@ -154,7 +147,7 @@ adminCatagenApp.config([
                 request: function (config)
                 {
                     if (window.localStorage.getItem("jwtAdmin")) {
-                        config.headers["Authorization"] = window.localStorage.getItem("jwtAdmin");
+                        config.headers.Authorization = window.localStorage.getItem("jwtAdmin");
                     }
                     if(config.url.indexOf("/") === 0)
                     {
@@ -242,9 +235,9 @@ adminCatagenApp.config([
 ]);
 
 var namespaces = [
-    "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules", "option",
-    "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setOption", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
-    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual"
+    "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules",
+    "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
+    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system"
 ];
 adminCatagenApp
     .factory("customLoader", [

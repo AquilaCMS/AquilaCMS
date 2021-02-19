@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const ServiceComponent = require('../services/component');
 
 module.exports = function (app) {
@@ -7,19 +15,11 @@ module.exports = function (app) {
 /**
  * POST /api/v2/component/{componentName}/{code}
  * @summary TODO
- * @tags Component
- * @param {string} componentName.path.required - componentName always start with "ns-"
- * @param {string} code.path.required - code
- * @param {string} authorization.header - authorization
- * @return {object} 200 - success response | test name | {
- * "coucou": "truc"
- * }
- * @return {object} 400 - Bad request response
  */
 async function getComponent(req, res, next) {
     try {
         const {componentName, code} = req.params;
-        const result                = await ServiceComponent.getComponent(componentName, code, req.headers.authorization);
+        const result                = await ServiceComponent.getComponent(componentName, code, req.info);
         return res.json(result);
     } catch (error) {
         return next(error);

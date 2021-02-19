@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path         = require('path');
 const spdy         = require('spdy');
 const mongoose     = require('mongoose');
@@ -62,7 +70,7 @@ const getOrCreateEnvFile = async () => {
     try {
         let envFile;
         const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
-        if (await fs.access(path.resolve(global.envPath))) {
+        if (fs.existsSync(path.resolve(global.envPath))) {
             envFile = await fs.readFile(global.envPath);
             envFile = JSON.parse(envFile);
             if (!envFile[getEnv('AQUILA_ENV')]) {
@@ -154,23 +162,39 @@ const logVersion = async () => {
 };
 
 const startListening = async (server) => {
-    if (global.envFile && global.envFile.ssl && global.envFile.ssl.key
-        && global.envFile.ssl.cert && global.envFile.ssl.active
-        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key))
-        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))
-    ) {
-        spdy.createServer({
-            key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
-            cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
-            spdy : {
-                protocols : ['h2', 'http1.1'],
-                plain     : false,
-                ssl       : true
-            }
-        }, server).listen(global.port, (err) => {
-            if (err) throw err;
-            console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
-        });
+    if (global.envFile && global.envFile.ssl && global.envFile.ssl.active) {
+        const {key, cert} = global.envFile.ssl;
+        if (!key || !cert) {
+            throw new Error('SSL Error - need a cert and a key file');
+        }
+        const keyPath  = path.resolve(global.appRoot, key);
+        const certPath = path.resolve(global.appRoot, cert);
+        try {
+            await fs.access(keyPath);
+            await fs.access(certPath);
+        } catch (err) {
+            console.error('SSL is enabled but invalid');
+            console.error('Access to the key file and certification file is not possible');
+            throw new Error('SSL Error - Path to cert or key file are invalid');
+        }
+        try {
+            spdy.createServer({
+                key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
+                cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
+                spdy : {
+                    protocols : ['h2', 'http1.1'],
+                    plain     : false,
+                    ssl       : true
+                }
+            }, server).listen(global.port, (err) => {
+                if (err) throw err;
+                global.isServerSecure = true;
+                console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+            });
+        } catch (error) {
+            console.error(error);
+            throw new Error('SSL Error - Cert or Key file are invalid');
+        }
     } else {
         server.listen(global.port, (err) => {
             if (err) throw err;

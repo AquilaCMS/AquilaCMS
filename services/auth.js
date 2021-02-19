@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {promisify} = require('util');
 const jwt         = require('jsonwebtoken');
 const NSErrors    = require('../utils/errors/NSErrors');
@@ -32,7 +40,7 @@ const login = async (req, res, next) => {
     const {username, password} = req.body;
     try {
         const {Users} = require('../orm/models');
-        let user      = await Users.findOne({email: {$regex: username, $options: 'i'}});
+        let user      = await Users.findOne({email: new RegExp(`^${username}$`, 'i')}); // Exact match with case insensitive
 
         if (!user) throw NSErrors.BadLogin;
         if (req.params.from === 'admin') {
@@ -41,6 +49,10 @@ const login = async (req, res, next) => {
 
         const isMatch = await user.validPassword(password);
         if (!isMatch) throw NSErrors.BadLogin;
+
+        if (!user.isActive) {
+            throw NSErrors.DesactivateAccount;
+        }
 
         const loginPassport = promisify(req.logIn);
         await loginPassport(user, {session: false});
@@ -61,23 +73,18 @@ const login = async (req, res, next) => {
 /**
  * Validate user is allowed with PostBody
  */
-const validateUserIsAllowed = async (token, baseUrl, PostBody, field) => {
-    try {
-        if (!token) {
-            throw NSErrors.AccessUnauthorized;
-        }
-        const decoded = getDecodedToken(token);
-        if (decoded.info.isAdmin) {
-            return PostBody;
-        }
-        if (!PostBody.filter) {
-            PostBody.filter = {};
-        }
-        PostBody.filter[field] = decoded.userId;
-        return PostBody;
-    } catch (error) {
+const validateUserIsAllowed = async (user, PostBody, field) => {
+    if (!user) {
         throw NSErrors.AccessUnauthorized;
     }
+    if (user.isAdmin) {
+        return PostBody;
+    }
+    if (!PostBody.filter) {
+        PostBody.filter = {};
+    }
+    PostBody.filter[field] = user._id;
+    return PostBody;
 };
 
 /**
@@ -93,23 +100,14 @@ const validateUserIsAllowedWithoutPostBody = async (user, query, field) => {
 /**
  * Validate user is allowed without PostBody for RGPD
  */
-const validateUserAuthWithoutPostBody = async (token, id) => {
-    try {
-        if (!token) {
-            throw NSErrors.AccessUnauthorized;
-        }
-        const decoded = getDecodedToken(token);
-        if (decoded.info.isAdmin) {
-            return id;
-        }
-        return decoded.userId;
-    } catch (error) {
-        throw NSErrors.AccessUnauthorized;
-    }
+const validateUserAuthWithoutPostBody = async (user, id) => {
+    if (!user) throw NSErrors.AccessUnauthorized;
+    return user.isAdmin ? id : user._id;
 };
 
 /**
  * Check if admin
+ * @deprecated use `req.info.isAdmin` instead
  */
 function isAdmin(req_headers_authorization) {
     if (req_headers_authorization) {

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const ServiceShipment             = require('../services/shipment');
@@ -41,7 +49,8 @@ async function getShipment(req, res, next) {
 }
 
 /**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * POST /api/v2/shipments/filter
+ * @summary Get shipments for country and an order
  */
 async function getShipmentsFilter(req, res, next) {
     try {

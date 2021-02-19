@@ -1,0 +1,141 @@
+{
+    "/api/v2/territories": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "list of territories",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResponseTerritories"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Territory"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/territory": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Territory"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Territory"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/TerritorySchema"
+                        }
+                    }
+                },
+                "description": "territory",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/territory/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Territory id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Territory"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "delete": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "territory id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Territory"
+            ]
+        }
+    },
+    "/api/territory/countries": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Territory"
+            ]
+        }
+    }
+}

@@ -1,5 +1,12 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {getUserFromRequest}        = require('../middleware/server');
 const ServicePromo                = require('../services/promo');
 
 module.exports = function (app) {
@@ -13,10 +20,13 @@ module.exports = function (app) {
     app.delete('/v2/promo/:promoId/code/:codeId',    authentication, adminAuth, deletePromoCode);
 };
 
+/**
+ * GET /api/v2/promo/check/code/{code}/{cartId}/{lang}
+ * @summary Validate discount code and return the new cart
+ */
 async function checkCodePromoByCode(req, res, next) {
     try {
-        const user   = getUserFromRequest(req);
-        const result = await ServicePromo.checkForApplyPromo(user, req.params.cartId, req.params.lang, req.params.code);
+        const result = await ServicePromo.checkForApplyPromo(req.info, req.params.cartId, req.params.lang, req.params.code);
         return res.json(result);
     } catch (error) {
         return next(error);

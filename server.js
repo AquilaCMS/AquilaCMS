@@ -1,23 +1,33 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 require('dotenv').config();
-const express           = require('express');
-const passport          = require('passport');
-const path              = require('path');
-const next              = require('next').default;
-const i18nextMiddleware = require('i18next-http-middleware');
-global.envPath          = null;
-global.envFile          = null;
-global.appRoot          = path.resolve(__dirname);
-global.port             = process.env.PORT || 3010;
-global.defaultLang      = '';
-global.moduleExtend     = {};
-global.translate        = require('./utils/translate');
-const utils             = require('./utils/utils');
-const npm               = require('./utils/npm');
-const fs                = require('./utils/fsp');
-const translation       = require('./utils/translation');
-const serverUtils       = require('./utils/server');
-const utilsModules      = require('./utils/modules');
-const utilsThemes       = require('./utils/themes');
+const express                           = require('express');
+const passport                          = require('passport');
+const path                              = require('path');
+const next                              = require('next').default;
+const i18nextMiddleware                 = require('i18next-http-middleware');
+const {makeExecutableSchema, loadFiles} = require('graphql-tools');
+const {ApolloServer}                    = require('apollo-server-express');
+global.envPath                          = null;
+global.envFile                          = null;
+global.appRoot                          = path.resolve(__dirname);
+global.port                             = process.env.PORT || 3010;
+global.defaultLang                      = '';
+global.moduleExtend                     = {};
+global.translate                        = require('./utils/translate');
+const utils                             = require('./utils/utils');
+const npm                               = require('./utils/npm');
+const fs                                = require('./utils/fsp');
+const translation                       = require('./utils/translation');
+const serverUtils                       = require('./utils/server');
+const utilsModules                      = require('./utils/modules');
+const utilsThemes                       = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -114,10 +124,8 @@ const initServer = async () => {
         }
 
         middlewareServer.initExpress(server, passport);
-        const {makeExecutableSchema, loadFiles} = require('graphql-tools');
-        const {ApolloServer}                    = require('apollo-server-express');
-        const {Modules}                         = require('./orm/models');
-        let directiveResolvers                  = require('./graphql/directives');
+        const {Modules}        = require('./orm/models');
+        let directiveResolvers = require('./graphql/directives');
 
         const modules        = await Modules.find({active: true});
         const graphqlPath    = path.join(global.appRoot, 'graphql');

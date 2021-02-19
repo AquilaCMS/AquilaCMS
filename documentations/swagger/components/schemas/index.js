@@ -24,7 +24,6 @@ const modules          = require('./modules.json');
 const myPromo          = require('./myPromo.json');
 const newsletters      = require('./newsletters.json');
 const news             = require('./news.json');
-const opts             = require('./opts.json');
 const orders           = require('./orders.json');
 const paymentMethods   = require('./paymentMethods.json');
 const pictos           = require('./pictos.json');
@@ -37,7 +36,6 @@ const relayPoint       = require('./relayPoint.json');
 const rules            = require('./rules.json');
 const sequences        = require('./sequences.json');
 const setAttributes    = require('./setAttributes.json');
-const setOptions       = require('./setOptions.json');
 const shipment         = require('./shipment.json');
 const shortcodes       = require('./shortcodes.json');
 const slider           = require('./slider.json');
@@ -79,7 +77,6 @@ module.exports = {
     ...myPromo,
     ...newsletters,
     ...news,
-    ...opts,
     ...orders,
     ...paymentMethods,
     ...pictos,
@@ -92,7 +89,6 @@ module.exports = {
     ...rules,
     ...sequences,
     ...setAttributes,
-    ...setOptions,
     ...shipment,
     ...shortcodes,
     ...slider,

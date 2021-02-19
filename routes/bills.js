@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const ServiceBills                = require('../services/bills');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
@@ -23,7 +31,7 @@ module.exports = function (app) {
  */
 async function getBills(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'client');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'client');
         return res.status(200).json(await ServiceBills.getBills(PostBodyVerified));
     } catch (error) {
         return next(error);
@@ -70,7 +78,7 @@ async function orderToBill(req, res, next) {
  */
 async function generatePDF(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'client');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'client');
         const response         = await ServiceBills.generatePDF(PostBodyVerified);
         return response.pipe(res);
     } catch (error) {

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment   = require('moment-business-days');
 const utils    = require('../utils/utils');
 const NSErrors = require('../utils/errors/NSErrors');
@@ -91,7 +99,7 @@ const getBreadcrumb = async (url) => {
 
 const exportData = async (model, PostBody) => {
     moment.locale(global.defaultLang);
-    const models = ['users', 'products', 'orders'];
+    const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
         PostBody           = !PostBody || PostBody === {}   ? {} : PostBody;
         PostBody.filter    = !PostBody.filter               ? {} : PostBody.filter;

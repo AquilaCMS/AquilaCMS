@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const fs                  = require('fs');
 const mongoose            = require('mongoose');
 const aquilaEvents        = require('../../utils/aquilaEvents');
@@ -21,10 +29,8 @@ const ProductsSchema = new Schema({
     universe           : String,
     family             : String,
     subfamily          : String,
-    slugMenus          : {type: [String], index: true},
     component_template : String,
     weight             : {type: Number, default: 0}, // Le poids du produit
-    creationDate       : {type: Date, default: Date.now},
     price              : {
         purchase : Number,
         tax      : Number,
@@ -64,8 +70,7 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
-    set_options : {type: ObjectId, ref: 'setoptions'}, // Fin Module Options
-    images      : [
+    images : [
         {
             url              : String,
             name             : String,
@@ -132,7 +137,6 @@ ProductsSchema.index({
     universe                           : 'text',
     family                             : 'text',
     subfamily                          : 'text',
-    slugMenus                          : 'text',
     code_ean                           : 'text',
     'specific.custom_text1'            : 'text',
     'specific.custom_text2'            : 'text',
@@ -292,7 +296,10 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
         throw NSErrors.CartQuantityError;
     }
     const ServicePromo = require('../../services/promo');
-    const prd          = await ServicePromo.checkPromoCatalog([item], user, lang);
+    let prd            = [item];
+    if (item.type !== 'bundle') {
+        prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
+    }
     if (prd && prd[0] && prd[0].price) {
         if (prd[0].price.et && prd[0].price.et.special !== undefined) {
             this.price.et.special = prd[0].price.et.special;

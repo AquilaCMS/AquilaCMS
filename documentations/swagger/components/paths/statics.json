@@ -1,0 +1,149 @@
+{
+    "/api/v2/statics": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/staticsSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Static"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all pages",
+                                "description": "Get 10 pages with default fields for current language'",
+                                "value": {"PostBody":{"limit" : 10}}
+                            },
+                            "example2": {
+                                "summary": "Get a specific french page",
+                                "description": "Get the french pages for slug 'mon_slug' with the default fields except one field 'metadesc'",
+                                "value": {"lang":"fr","PostBody":{"limit":1,"filter":{"translation.fr.slug":"mon_slug"},"structure":{"translation.fr.metaDesc":0}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/static/{id}": {
+        "delete": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Static's id",
+                    "required": false,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Static"
+            ]
+        }
+    },
+    "/api/v2/static": {
+        "post": {
+            "deprecated": false,
+            "summary": "Static (page) details",
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/staticsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Static"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get specific page",
+                                "description": "Get the page for code 'mycode' with default fields for the default language",
+                                "value": {"PostBody":{"filter":{"code":"mycode"}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "summary": "Create/update static (page)",
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/staticsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Static"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/staticsSchema"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    }
+}

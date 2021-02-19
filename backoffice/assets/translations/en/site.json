@@ -27,6 +27,9 @@
         "urlKey": "URL Key",
         "title": "Title",
         "visible": "Visible",
+        "yes": "Yes",
+        "no": "No",
+        "indiff": "Indifferent",
         "creaDate": "Creation date"
     }
 }

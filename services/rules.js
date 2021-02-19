@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {
     Rules,
     Users,
@@ -241,7 +249,7 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                     }
                 } else {
                     let tItems = [];
-                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product.id, target, value));
+                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product, target, value));
                     if (tItems.length) isTrue = true;
                 }
             }
@@ -302,7 +310,7 @@ async function testRulesOnUser(rule, user, cart = undefined) {
                 // ex: on applique une réduction si le panier contient des articles avec le code: 17WONDERSB01 et le slug: jeux-de-societe/abyss
                 // si le produit1 contient le code 17WONDERSB01 et que le produit2 contient le slug jeux-de-societe/abyss
                 // alors la condition sera vrai car c'est sur l'ensemble des produits du panier que ces conditions sont verifiées
-                const tItems = cart.items.filter((product) => conditionOperator(condition.operator, product.id, target, value));
+                const tItems = cart.items.filter((product) => conditionOperator(condition.operator, product, target, value));
                 if (tItems.length) isTrue = true;
             }
             tCondition.push(isTrue);
@@ -518,6 +526,8 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
             for (let i = 0; i < splittedRulesKeys.length; i++) {
                 for (let j = 0; j < splittedRules[splittedRulesKeys[i]].length; j++) {
                     const productsIds = _products[j].map((prd) => prd._id);
+
+                    // Segmentation Categories
                     if (splittedRulesKeys[i] === 'category') {
                         const oldCat = await Categories.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, active: true});
                         const cat    = await Categories.findOneAndUpdate(
@@ -526,6 +536,9 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                             {new: true}
                         );
                         if (cat) {
+                            // Get product setted manually
+                            cat.productsList = oldCat.productsList.filter((ou) => ou.checked || productsIds.includes(ou.id));
+
                             // On transforme la liste de produit en object dont la key est l'_id du produit
                             // nous pourrons ainsi facilement trouver les produits
                             const oProductsListCat = {};
@@ -537,7 +550,7 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                             }
                             for (let k = 0; k < productsIds.length; k++) {
                                 if (!oProductsListCat[productsIds[k].toString()]) {
-                                    cat.productsList.push({id: productsIds[k], checked: true});
+                                    cat.productsList.push({id: productsIds[k], checked: false});
                                 } else {
                                     cat.productsList.push({
                                         id         : productsIds[k],
@@ -548,9 +561,11 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                             }
                             await cat.save();
                         }
+                    // Segementation picto
                     } else if (splittedRulesKeys[i] === 'picto') {
                         let picto;
-                        if (!optionPictoId) {
+                        // fix 'feature-pictorisation' (https://trello.com/c/1ys0BQt3/1721-feature-pictorisation-dans-picto)
+                        if (!optionPictoId || optionPictoId === splittedRules[splittedRulesKeys[i]][j].owner_id) {
                             picto = await Pictos.findOne({_id: splittedRules[splittedRulesKeys[i]][j].owner_id, enabled: true});
                         } else {
                             picto = await Pictos.findOne({_id: optionPictoId, enabled: true});

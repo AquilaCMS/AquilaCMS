@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose = require('mongoose');
 const fs       = require('../../utils/fsp');
 
@@ -57,7 +65,6 @@ const CartSchema = new Schema({
             onAllSite   : Boolean,
             openDate    : Date,
             closeDate   : Date,
-            slugMenus   : [String],
             priceATI    : {type: Number, required: true} // TODO P3 : renommer en amountATI - 2X - (y a til une raison de renommer ?)
         }
     ],
@@ -253,7 +260,7 @@ async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await fs.access(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+        if (await fs.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
             const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }

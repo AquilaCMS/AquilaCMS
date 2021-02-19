@@ -5,8 +5,16 @@
     <title>Aquila - Installer</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.js"
+        integrity="sha512-mPYFRGkgrXvIQo9eMKjv5vuy73j7kXXelllj3W49nVCKarBVOUxNai2dnqVIp8QnnVS7AKHwdFyZSVibSqWtkw=="
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"
+    ></script>
 
     <style>
         .demo-card-square.mdl-card {
@@ -134,7 +142,12 @@
             if(fieldId === "appUrl" && fieldValue === "http://") {
                 return fieldError + "- Website url needs a real url<br/>";
             }
-
+            if(fieldId === "password") {
+                const passwordValidator = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$");
+                if(!passwordValidator.test(fieldValue)){
+                    return fieldError + "- Password is incorrect (6 characters, 1 uppercase letter, 1 lowercase letter, 1 number)<br/>";
+                }
+            }
             if(fieldValue === "") {
                 fieldError = fieldError + "- " + fieldId + " is empty<br/>";
             }
@@ -269,11 +282,11 @@
             <div class="mdl-card__actions mdl-card--border">
                 <div class="mdl-layout__header-row">
                     <div class="mdl-layout-spacer"></div>
-                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" onclick="NextStep()">
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="nextStep">
                         Next
                     </button>
                 </div>
-                <a style="font-size: 10px; color: rgb(63,81,181); cursor: pointer;" onclick="RecoverConfiguration()">
+                <a style="font-size: 10px; color: rgb(63,81,181); cursor: pointer;" id="recoverConfiguration">
                     Recover existing configuration
                 </a>
             </div>
@@ -302,7 +315,7 @@
                         value="mongodb://localhost:27017/">
                     <label class="mdl-textfield__label" for="databaseAdd">Connection string to MongoDB</label>
                 </div>
-                <button type="button" onclick="testDB();" class="testDB mdl-button mdl-js-button mdl-button--primary" style="float: right;margin-top: -15px;">
+                <button type="button" id="testDB" class="testDB mdl-button mdl-js-button mdl-button--primary" style="float: right;margin-top: -15px;">
                     Test connection
                 </button>
                 <div id="testDBLoader" style="display: none;">
@@ -348,22 +361,22 @@
                 <hr />
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="firstname" name="firstname">
+                    <input class="mdl-textfield__input" type="text" id="firstname" name="firstname" required>
                     <label class="mdl-textfield__label" for="firstname">Administrator's firstname</label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="lastname" name="lastname">
+                    <input class="mdl-textfield__input" type="text" id="lastname" name="lastname" required>
                     <label class="mdl-textfield__label" for="lastname">Administrator's lastname</label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="email" id="email" name="email">
+                    <input class="mdl-textfield__input" type="email" id="email" name="email" required>
                     <label class="mdl-textfield__label" for="email">Administrator's email</label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="password" id="password" name="password">
+                    <input class="mdl-textfield__input" type="password" id="password" name="password" required>
                     <label class="mdl-textfield__label" for="password">Administrator's password</label>
                 </div>
 
@@ -411,7 +424,7 @@
             </div>
 
             <div style="color:red;display: none;text-align: center;" id="errorArea">
-            </div>  
+            </div>
 
 
             <div id="toast-container" class="mdl-js-snackbar mdl-snackbar">
@@ -454,10 +467,26 @@
             event.preventDefault();
             Configuration();
         });
+
         document.getElementById("recoverStep").addEventListener("submit", function(event){
             event.preventDefault();
             Recover();
         });
+
+        document.getElementById("nextStep").addEventListener("click", function(event) {
+            event.preventDefault();
+            NextStep();
+        })
+
+        document.getElementById("recoverConfiguration").addEventListener("click", function(event) {
+            event.preventDefault();
+            RecoverConfiguration();
+        })
+
+        document.getElementById("testDB").addEventListener("click", function(event) {
+            event.preventDefault();
+            testDB();
+        })
 
         const wkhtmltopdfIsValid = JSON.parse('{{wkhtmltopdf}}');
         let valid = `<span style="color: green;"><i class="material-icons">check_circle</i></span>`;

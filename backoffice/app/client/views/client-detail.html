@@ -22,7 +22,7 @@
                     <div class="row">
                         <!-- ------------- General --------------- -->
                         <div class="col-md-6">
-                            <div class="box subbox">
+                            <div style="padding: 11px 13px 45px;" class="box subbox">
                                 <div class="box-header">
                                     <h2 translate="">client.detail.t3</h2>
                                 </div>
@@ -111,6 +111,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div>
+                                        <div>
+                                            <label class="col-sm-2 control-label" translate>client.detail.active</label>
+                                            <div class="col-sm-10">
+                                                <ns-switch ng-model="client.isActive" name="activeAccount"></ns-switch>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +167,7 @@
                                         <div class="col-sm-12">
                                             <label class="col-sm-2 control-label" translate>client.detail.inscription</label>
                                             <div class="col-sm-10">
-                                                <span class="input-span">{{client.creationDate | date}}</span>
+                                                <span class="input-span">{{client.createdAt | date}}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -389,13 +397,13 @@
                                             <tr ng-if="orders.length > 0 && carts.length > 0">
                                                 <td colspan="4"></td>
                                             </tr>
-                                            <tr ng-repeat="order in orders | orderBy:'-creationDate'">
+                                            <tr ng-repeat="order in orders | orderBy:'-createdAt'">
                                                 <td><a href="#/orders/{{order._id}}"><span translate>client.detail.commande</span>#{{order.number}}</a></td>
                                                 <td>{{order.priceTotal.ati| number: 2}} &euro;</td>
                                                 <td>
                                                     <ns-status-label type="order" status="order.status"></ns-status-label>
                                                 </td>
-                                                <td>{{order.creationDate| date:"dd/MM/yyyy '-' hh:mm"}}</td>
+                                                <td>{{order.createdAt| date:"dd/MM/yyyy '-' hh:mm"}}</td>
                                             </tr>
                                         </table>
                                     </div>

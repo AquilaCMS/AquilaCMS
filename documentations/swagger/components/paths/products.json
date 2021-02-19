@@ -1,0 +1,176 @@
+{
+    "/api/v2/products": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/productsSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/product": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/product/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "product id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/products/category/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/productsSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "category id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    }
+}

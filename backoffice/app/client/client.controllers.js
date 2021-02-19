@@ -9,13 +9,49 @@ ClientControllers.controller("ClientCtrl", [
         $scope.columns = ClientColumns;
 
         function init() {
-            $scope.sort = {};
+            $scope.sort = {
+                type    : "createdAt",
+                reverse : true
+            };
         }
 
+        function getFilter(){
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("company")) {
+                    if($scope.filter.company != ""){
+                        filter["company.name"] = { $regex: $scope.filter.company, $options: "i" };
+                    }
+                } else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                    const key = filterKeys[i].split("_");
+                    const value = $scope.filter[filterKeys[i]];
+
+                    if (filter[key[1]] === undefined) {
+                        filter[key[1]] = {};
+                    }
+                    filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            filter["isAdmin"] = false;
+            return filter;
+        }
+        $scope.filter = {};
         init();
         $scope.valeurTri = -1;
-        $scope.tri = {creationDate : -1}
-        $scope.sortSearch = function(valeur){
+        $scope.tri = {createdAt : -1}
+        $scope.sortSearch = function(){
             $scope.valeurTri;
             if($scope.valeurTri == 1){
                 $scope.valeurTri = -1;
@@ -24,20 +60,12 @@ ClientControllers.controller("ClientCtrl", [
                 $scope.valeurTri = 1;
                 //$scope.sort.reverse = true;
             }
-            $scope.tri = {}
-            $scope.tri[valeur] = $scope.valeurTri
             valeurPage = $scope.page;
+
+            let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
-                filter : {
-                    $or : [
-                        {firstname: {$regex: $scope.query.search, $options: 'i'}},
-                        {lastname: {$regex: $scope.query.search, $options: 'i'}},
-                        {email: {$regex: $scope.query.search, $options: 'i'}},
-                        {'company.name': {$regex: $scope.query.search, $options: 'i'}}
-                    ],
-                    isAdmin : false
-                },
-                structure : {'details': 1, creationDate: 1, company : 1},
+                filter,
+                structure : {createdAt: 1, company : 1},
                 valeurPage,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -74,17 +102,10 @@ ClientControllers.controller("ClientCtrl", [
             }
 
             $scope.currentClientsPage = page;
+            let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
-                filter : {
-                    $or : [
-                        {firstname: {$regex: $scope.query.search, $options: 'i'}},
-                        {lastname: {$regex: $scope.query.search, $options: 'i'}},
-                        {email: {$regex: $scope.query.search, $options: 'i'}},
-                        {'company.name': {$regex: $scope.query.search, $options: 'i'}}
-                    ],
-                    isAdmin : false
-                },
-                structure : {'details': 1, creationDate: 1},
+                filter,
+                structure : {createdAt: 1, company : 1},
                 page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -340,7 +361,13 @@ ClientControllers.controller("ClientDetailCtrl", [
             }, function(err) {
                 console.error(err)
                 if(err.data.code === 'login_subscribe_email_existing') {
+                    if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
                     toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
+                    }else{
+                        toastService.toast('danger', 'Email already exists');
+                    }
+                }else{
+                    toastService.toast('danger', 'Error during creation');
                 }
             })
         };

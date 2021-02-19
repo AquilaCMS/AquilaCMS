@@ -5,6 +5,7 @@
             "dateStart"     : {"type": "Date"},
             "dateEnd"       : {"type": "Date"},
             "actif"         : {"type": "boolean", "default": false},
+            "createdAt"     : {"type": "date"},
             "type"          : {"type": "string", "enum": ["1", "2"], "required": true, "description": "Promo panier (type: 1) ou catalogue (type: 2)"},
             "name"          : {"type": "string", "required": true},
             "description"   : {"type": "string", "required": true},

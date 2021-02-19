@@ -9,7 +9,7 @@
     "status": "Status",
     "prixTTC": "ATI Price",
     "type": "Type",
-
+    "indiff": "Indifferent",
     "start": "Start",
     "end": "End",
     "export": "Export",

@@ -18,26 +18,30 @@ ProductControllers.controller("ProductBeforeCreateCtrl", [
 ]);
 
 ProductControllers.controller("SelectProductsCtrl", [
-    "$scope", "$modalInstance", "queryFilter", function ($scope, $modalInstance, queryFilter) {
+    "$scope", "$modalInstance", "queryFilter", "toastService", function ($scope, $modalInstance, queryFilter, toastService) {
         ;
         $scope.queryFilter = queryFilter;
-        $scope.selectedProducts = [];
+        if(!$scope.$parent.selectedProducts){
+            $scope.$parent.selectedProducts = $scope.$parent.associatedPrds || [];
+        }
         $scope.selectProduct = function (product, ev) {
             let push = true;
             if (product._selected != true) {
-                for (let i = 0; i < $scope.selectedProducts.length; i++) {
-                    if ($scope.selectedProducts[i]._id == product._id) {
+                for (let i = 0; i < $scope.$parent.selectedProducts.length; i++) {
+                    if ($scope.$parent.selectedProducts[i]._id == product._id) {
                         push = false;
                     }
                 }
                 if (push) {
-                    $scope.selectedProducts.push(product);
+                    $scope.$parent.selectedProducts.push(product);
                     product._selected = true;
+                    product.style = {"background-color": "#3f51b5", "color": "white"};
                 } else {
-                    var index = $scope.selectedProducts.findIndex(function (currProduct) {
+                    var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
                         return currProduct.id == product.id;
                     });
-                    $scope.selectedProducts.splice(index, 1);
+                    $scope.$parent.selectedProducts.splice(index, 1);
+                    product.style = {"background-color": "", "color": ""};
                     // $(ev.target).closest('tr').children('td').css({
                     //     'background-color': '',
                     //     'color': ''
@@ -49,10 +53,11 @@ ProductControllers.controller("SelectProductsCtrl", [
                 //     'color': 'white'
                 // });
             } else {
-                var index = $scope.selectedProducts.findIndex(function (currProduct) {
+                product.style = {"background-color": "", "color": ""};
+                var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
                     return currProduct.code == product.code;
                 });
-                $scope.selectedProducts.splice(index, 1);
+                $scope.$parent.selectedProducts.splice(index, 1);
                 // $(ev.target).closest('tr').children('td').css({
                 //     'background-color': '',
                 //     'color': ''
@@ -62,7 +67,33 @@ ProductControllers.controller("SelectProductsCtrl", [
         };
 
         $scope.validate = function (products) {
-            $modalInstance.close(products);
+            $scope.$parent.selectedProducts;
+            let final = []
+            let long = products.length
+            let change = false;
+            for(let i = 0; i < long; i++){
+                if(products[i]){
+                    if(products[i].style){
+                        delete products[i].style
+                    }
+                }
+                if($scope.$parent.associatedPrds.length == 0){
+                    final.push(products[i])
+                }else{
+                    for(alreadyAssocied of $scope.$parent.associatedPrds){
+                        if(alreadyAssocied._id != products[i]._id){
+                            final.push(products[i])
+                        }
+                    }
+                    if(!change){
+                        change = true;
+                    }
+                }
+            }
+            if(change){
+                toastService.toast('success', "Pensez à valider vos modifications");
+            }
+            $modalInstance.close(final);
         };
 
 
@@ -83,8 +114,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.maxSize = 10;
         $scope.searchObj = {};
         $scope.filter = {};
-        $scope.currProductId = "";
-        $scope.currProductSlugs = [];
         $scope.local = {sortType: "code", sortReverse: false};
         $scope.productTypes = NSConstants.productTypes;
         $scope.export = ExportCollectionCSV;
@@ -119,6 +148,11 @@ ProductControllers.controller("ProductListCtrl", [
             } catch (e) {
                 return '';
             }
+        };
+        $scope.collapse = function () {
+          if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+            document.getElementById('collapseIcon').className =  "ico-arrow-up"
+          }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
         };
 
         $scope.getAttributesClassed = function () {
@@ -177,8 +211,8 @@ ProductControllers.controller("ProductListCtrl", [
                         };
                     } else if (filterKeys[i] === "images") {
                         params.filter["images.url"] = {$regex: $scope.filter[filterKeys[i]], $options: "i"};
-                    } else if (filterKeys[i] === "creationDate") {
-                        params.filter.creationDate = {$gte: moment(new Date($scope.filter[filterKeys[i]])), $lt: moment(new Date($scope.filter[filterKeys[i]])).add(1, 'd')};
+                    } else if (filterKeys[i] === "createdAt") {
+                        params.filter.createdAt = {$gte: moment(new Date($scope.filter[filterKeys[i]])), $lt: moment(new Date($scope.filter[filterKeys[i]])).add(1, 'd')};
                     } else {
                         params.filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]], $options: "i"};
                     }
@@ -203,7 +237,31 @@ ProductControllers.controller("ProductListCtrl", [
             }
 
             if (Object.keys($scope.searchObj).length > 0) {
-                params.searchObj = $scope.searchObj;
+                const filterKeys = Object.keys($scope.searchObj);
+                const filterLength = filterKeys.length;
+                let newFilter = {};
+                for (var i = 0; i < filterLength; i++) {
+                    if(filterKeys[i] == "translation"){
+                        newFilter[`translation.${$scope.filterLang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
+                    }else if(filterKeys[i] == "active" || filterKeys[i] == "_visible"){
+                        newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
+                    }else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                        const key = filterKeys[i].split("_");
+                        const value = $scope.searchObj[filterKeys[i]];
+                        if (key[1] == "priceSale") {
+                            if(typeof newFilter['price.ati.normal'] === "undefined"){
+                                newFilter['price.ati.normal'] = {}
+                            }
+                            newFilter['price.ati.normal'][key[0] === "min" ? "$gte" : "$lte"] = value;
+                        }else if(key[1] == "qty"){
+                            if(typeof newFilter["stock.qty"] === "undefined"){
+                                newFilter["stock.qty"] = {}
+                            }
+                            newFilter['stock.qty'][key[0] === "min" ? "$gte" : "$lte"] = value;
+                        }
+                    }
+                }
+                params.filter = {...params.filter, ...newFilter};
             }
 
             params.sortObj = {};
@@ -213,35 +271,26 @@ ProductControllers.controller("ProductListCtrl", [
                 params.sortObj[$scope.local.sortType] = 1;
             }
 
-            ProductsV2.adminList(params, function (res) {
-                getProductImg(0, res.products);
-
-                $scope.products = res.products;
+            const paramsV2 = {
+                lang: "fr",
+                PostBody: {
+                    filter: params.filter, // // TODO adminList - searchObj : Filters don't work except for code
+                    structure: {
+                        code: 1,
+                        active: 1,
+                        _visible: 1,
+                        stock: 1
+                    },
+                    limit: 12,
+                    page: $scope.currentPage,
+                    sort: params.sortObj
+                }
+            };
+            ProductsV2.list(paramsV2, function (res) {
+                getProductImg(0, res.datas); // what the hell is that ?!
+                $scope.products = res.datas;
                 $scope.totalItems = res.count;
             });
-        };
-
-        $scope.updateProduct = function (field, data) {
-            console.log(`${field} : ${data}`);
-            const d = $q.defer();
-            $http.post("/product/update", {
-                _id   : $scope.currProductId, value : data, field
-            }).success(function (res) {
-                res = res || {};
-                if (res.status === true) { // {status: "ok"}
-                    d.resolve();
-                } else { // {status: "error", msg: "..."}
-                    d.resolve(res.msg);
-                }
-            }).error(function (e) {
-                d.reject("Server error!");
-            });
-            return d.promise;
-        };
-
-        $scope.setCurrProduct = function (pId, pSmenus) {
-            $scope.currProductId = pId;
-            $scope.currProductSlugs = pSmenus;
         };
 
         $scope.goToProductDetails = function (productType, productSlug) {
@@ -301,8 +350,9 @@ ProductControllers.controller("nsProductGeneral", [
                 controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
                     $scope.product = product;
                     $scope.adminUrl = "";
-                    $scope.config = ConfigV2.environment(function () {
-                            $scope.adminUrl = $scope.config.adminPrefix;
+                    ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+                        $scope.config = config
+                        $scope.adminUrl = $scope.config.environment.adminPrefix;
                     });
 
                     CategoryV2.list({ PostBody: { filter: { 'productsList.id': $scope.product._id }, limit: 99 } }, function (categoriesLink) {

@@ -14,7 +14,7 @@
                 }
             },
             "invoiceFileName" : {"type": "string"},
-            "creationDate"    : {"type": "string", "format": "date", "default": "Date.now"},
+            "createdAt"    : {"type": "string", "format": "date", "default": "Date.now"},
             "lang"            : {"type": "string", "description": "Permet de connaitre la langue utilisé lors de la commande"},
             "cartId"          : {"type": "string", "format": "ObjectId", "ref": "cart"},
             "promos"          : {
@@ -77,17 +77,6 @@
                         "$ref": "#/components/schemas/companySchema"
                     },
                     "status"   : {"type": "string"},
-                    "campaign" : {
-                        "type": "object",
-                        "properties": {
-                            "referer"      : {"type": "string"},
-                            "utm_campaign" : {"type": "string"},
-                            "utm_medium"   : {"type": "string"},
-                            "utm_source"   : {"type": "string"},
-                            "utm_content"  : {"type": "string"},
-                            "utm_term"     : {"type": "string"}
-                        }
-                    },
                     "birthDate" : {"type": "string", "format": "date"},
                     "details"   : {"type": "object"},
                     "type"      : {"type": "string", "description": "garder sous cette forme, sinon il croit qu'on définit le type de \"customer\""}
@@ -269,7 +258,7 @@
                     "required": ["mode"],
                     "properties": {
                         "type"          : {"type": "string", "enum": ["DEBIT", "CREDIT"]},
-                        "creationDate"  : {"type": "string", "format": "date", "default": "Date.now"},
+                        "createdAt"     : {"type": "date"},
                         "operationDate" : {"type": "string", "format": "date"},
                         "status"        : {"type": "string", "enum": ["TODO", "DONE", "CANCELED", "FAILED"]},
                         "mode"          : {"type": "string"},

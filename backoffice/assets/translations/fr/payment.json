@@ -44,7 +44,9 @@
         "order": "Commande",
         "customer": "Client",
         "date": "Date",
-        "prixTTC": "Montant TTC"
+        "prixTTC": "Montant TTC",
+        "nb": "Numero de commande",
+        "mail": "Email client"
     },
     "list2": {
         "priceTotal": {

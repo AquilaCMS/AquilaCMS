@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                      = require('moment-business-days');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceStatistics           = require('../services/statistics');
@@ -15,7 +23,6 @@ module.exports = function (app) {
 
 /**
  * POST /v2/statistics/generate
- * @tags Statistics
  * @summary Generate Statistics file (admin)
  */
 async function generateStatistics(req, res, next) {
@@ -29,7 +36,6 @@ async function generateStatistics(req, res, next) {
 
 /**
  * GET /api/v2/statistics/globale
- * @tags Statistics
  * @summary Getting Globale Stats (accueil admin)
  */
 async function getGlobaleStats(req, res, next) {
@@ -43,7 +49,6 @@ async function getGlobaleStats(req, res, next) {
 
 /**
  * GET /api/v2/statistics/sell/canceledCart
- * @tags Statistics
  * @summary Number of abandoned cart
  */
 async function getCanceledCart(req, res, next) {
@@ -58,7 +63,6 @@ async function getCanceledCart(req, res, next) {
 
 /**
  * GET /api/v2/statistics/sell/cag
- * @tags Statistics
  * @summary Global profit
  */
 async function getCag(req, res, next) {
@@ -73,7 +77,6 @@ async function getCag(req, res, next) {
 
 /**
  * GET /api/v2/statistics/sell/capp
- * @tags Statistics
  * @summary Profit by products
  */
 async function getCapp(req, res, next) {
@@ -88,7 +91,6 @@ async function getCapp(req, res, next) {
 
 /**
  * GET /api/v2/statistics/sell/nbOrder
- * @tags Statistics
  * @summary Number of orders
  */
 async function getNbOrder(req, res, next) {
@@ -103,7 +105,6 @@ async function getNbOrder(req, res, next) {
 
 /**
  * GET /api/v2/statistics/customer/topCustomer
- * @tags Statistics
  * @summary Getting top customers stats
  */
 async function getTopCustomer(req, res, next) {
@@ -118,7 +119,6 @@ async function getTopCustomer(req, res, next) {
 
 /**
  * GET /api/v2/statistics/customer/newCustomer
- * @tags Statistics
  * @summary Getting new customers stats
  */
 async function getNewCustomer(req, res, next) {

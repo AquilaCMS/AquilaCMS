@@ -1,4 +1,10 @@
-const {isAdmin} = require('../services/auth');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
 
 /**
  * Add the fields to true to the filter
@@ -6,8 +12,7 @@ const {isAdmin} = require('../services/auth');
 const securityForceActif = (arrayFieldsToActivate) => {
     return (req, res, next) => {
         // TODO : appeler securityForceFilter() pour factoriser
-        const {authorization} = req.headers;
-        if (!isAdmin(authorization)) {
+        if (req.info && !req.info.isAdmin) {
             if (!req.body.PostBody) req.body.PostBody = {};
             const {PostBody} = req.body;
             if (!PostBody.filter) {
@@ -29,8 +34,7 @@ const securityForceActif = (arrayFieldsToActivate) => {
  */
 const securityForceFilter = (arrayFieldsToActivate) => {
     return (req, res, next) => {
-        const {authorization} = req.headers;
-        if (!isAdmin(authorization)) {
+        if (req.info && !req.info.isAdmin) {
             if (!req.body.PostBody) req.body.PostBody = {};
             const {PostBody} = req.body;
             if (!PostBody.filter) {
