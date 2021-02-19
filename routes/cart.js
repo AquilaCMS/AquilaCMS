@@ -20,9 +20,9 @@ module.exports = function (app) {
     app.delete('/v2/cart/:cartId/item/:itemId', deleteCartItem);
     app.get('/v2/cart/user/:idclient',  authentication, adminAuth, getCartforClient);
     app.delete('/v2/cart/discount/:cartId', removeDiscount);
-    app.put('/v2/cart/addresses', updateAddresses);
+    app.put('/v2/cart/addresses', authentication, updateAddresses);
     app.put('/v2/cart/delivery', authentication, updateDelivery);
-    app.put('/v2/cart/comment', updateComment);
+    app.put('/v2/cart/comment', authentication, updateComment);
 };
 
 /**

@@ -1,23 +1,8 @@
 {
-    "/api/config/data": {
-        "get": {
-            "deprecated": true,
-            "security": [],
-            "responses": {},
-            "parameters": [],
-            "tags": [
-                "Configuration"
-            ]
-        }
-    },
-    "/api/v2/config/{key}": {
+    "/api/v2/config": {
         "post": {
             "deprecated": false,
-            "security": [
-                {
-                    "api_key": []
-                }
-            ],
+            "security": [],
             "responses": {
                 "200": {
                     "description": "success",
@@ -56,12 +41,10 @@
                 "description": "PostBody",
                 "required": false
             }
-        }
-    },
-    "/api/v2/config": {
+        },
         "put": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",
@@ -96,30 +79,10 @@
             }
         }
     },
-    "/api/config/next": {
-        "get": {
-            "deprecated": false,
-            "security": [],
-            "responses": {},
-            "parameters": [],
-            "tags": [
-                "Configuration"
-            ]
-        },
-        "post": {
-            "deprecated": false,
-            "security": [],
-            "responses": {},
-            "parameters": [],
-            "tags": [
-                "Configuration"
-            ]
-        }
-    },
     "/api/restart": {
         "get": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -130,7 +93,7 @@
     "/api/robot": {
         "get": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -139,7 +102,7 @@
         },
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",

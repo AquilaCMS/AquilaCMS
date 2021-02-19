@@ -55,7 +55,7 @@
     "/api/v2/static/{id}": {
         "delete": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [
                 {
@@ -117,7 +117,7 @@
         "put": {
             "deprecated": false,
             "summary": "Create/update static (page)",
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",

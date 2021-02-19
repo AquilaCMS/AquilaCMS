@@ -2,7 +2,7 @@
     "/api/v2/carts": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -23,7 +23,7 @@
     "/api/v2/cart/user/{idclient}": {
         "get": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {
                 "200": {
                     "description": "",
@@ -125,7 +125,7 @@
     "/api/v2/cart/to/order": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"user_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -218,7 +218,7 @@
     "/api/v2/cart/comment": {
         "put": {
             "deprecated": false,
-            "security": [],
+            "security": [{"user_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -239,7 +239,7 @@
     "/api/v2/cart/addresses": {
         "put": {
             "deprecated": false,
-            "security": [],
+            "security": [{"user_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -263,6 +263,7 @@
             "tags": [
                 "Cart"
             ],
+            "security": [{"user_authorization": []}],
             "requestBody": {
                 "description": "",
                 "content": {
