@@ -24,6 +24,7 @@ module.exports = function (app) {
 
 /**
  * GET /api/config/data
+ * @deprecated
  */
 const getConfigTheme = async (req, res, next) => {
     try {

@@ -14,10 +14,10 @@
                                 "type": "string"
                             }
                         },
-                        "skip"      : {"type": "number", "default": 0},
+                        "skip"      : {"type": "integer", "default": 0},
                         "sort"      : {"type": "object"},
                         "structure" : {"type": "object"},
-                        "page"      : {"type": "page", "default": null}
+                        "page"      : {"type": "integer", "default": null}
                 }
             }
         }

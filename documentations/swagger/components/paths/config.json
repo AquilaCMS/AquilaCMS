@@ -13,7 +13,11 @@
     "/api/v2/config/{key}": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [
+                {
+                    "api_key": []
+                }
+            ],
             "responses": {
                 "200": {
                     "description": "success",

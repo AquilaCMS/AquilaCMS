@@ -25,7 +25,6 @@
     "test": "exit 0"
   },
   "dependencies": {
-    "@aquilacms/express-jsdoc-swagger": "^1.0.6",
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
     "axios": "0.21.1",
@@ -84,6 +83,7 @@
     "showdown": "^1.9.1",
     "slug": "3.3.0",
     "spdy": "4.0.2",
+    "swagger-ui-express-updated": "^4.1.8",
     "uuid": "8.2.0",
     "validator": "13.1.1",
     "webpack": "4.43.0",

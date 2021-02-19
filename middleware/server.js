@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
+const swaggerUi                       = require('swagger-ui-express-updated');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
 const express                         = require('express');
@@ -168,21 +168,10 @@ const initExpress = async (server, passport) => {
     });
 
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
-    const configFile  = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')));
-    const swaggerFile = require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js'));
-    await expressJSDocSwagger(server)(
-        {...configFile, baseDir: global.appRoot},
-        swaggerFile,
-        {
-            opts : {
-                customCss       : '.curl-command { display: none }',
-                customSiteTitle : 'Aquila : Api\'s documentation',
-                swaggerOptions  : {
-                    docExpansion : 'none'
-                }
-            }
-        }
-    );
+    server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
+        require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
+        JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
+    ));
 };
 
 const maintenance = async (req, res, next) => {
