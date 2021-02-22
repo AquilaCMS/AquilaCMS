@@ -226,6 +226,13 @@ const duplicateProduct = async (idProduct, newCode) => {
         status     : 'liv'
     };
     doc.code    = newCode;
+    for (const lang of Object.entries(doc.translation)) {
+        if (doc.translation[lang[0]].canonical) {
+            delete doc.translation[lang[0]].canonical;
+        }
+    }
+    doc.active   = false;
+    doc._visible = false;
     await doc.save();
     return doc;
 };
