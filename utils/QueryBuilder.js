@@ -203,9 +203,10 @@ module.exports = class QueryBuilder {
             return  {};
         }
         Object.entries(structure).forEach(([key, value]) => {
-            if (this.restrictedFields.includes(key)) console.log('includes ');
-            else if (value === 1) structureAdd.push(key);
-            else if (typeof structure[key] === 'object' && structure[key].$meta) structureAdd.push({[key]: value});
+            if (!this.restrictedFields.includes(key)) {
+                if (value === 1) structureAdd.push(key);
+                else if (typeof structure[key] === 'object' && structure[key].$meta) structureAdd.push({[key]: value});
+            }
         });
         const defaultProjection = [...this.defaultFields, ...structureAdd];
         const oProjection       = {};
@@ -231,8 +232,7 @@ module.exports = class QueryBuilder {
         const structureRemove = [...this.restrictedFields];
         Object.entries(structure)
             .forEach(([key, value]) => {
-                if (this.restrictedFields.includes(key)) console.log('includes ');
-                else if (value === 0) structureRemove.push(key);
+                if (!this.restrictedFields.includes(key) && value === 0) structureRemove.push(key);
             });
         if (datas.length) {
             for (let i = 0; i < datas.length; i++) {
