@@ -218,7 +218,7 @@
     "/api/v2/cart/comment": {
         "put": {
             "deprecated": false,
-            "security": [{"user_authorization": []}],
+            "security": [],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -239,7 +239,7 @@
     "/api/v2/cart/addresses": {
         "put": {
             "deprecated": false,
-            "security": [{"user_authorization": []}],
+            "security": [],
             "responses": {},
             "parameters": [],
             "tags": [
