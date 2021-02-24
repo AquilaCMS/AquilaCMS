@@ -1,7 +1,0 @@
-scalar Date
-scalar Any
-scalar ObjectId
-
-extend type Subscription {
-  tick: Int!
-}
