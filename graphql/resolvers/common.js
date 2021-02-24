@@ -1,4 +1,4 @@
-const resovlers = {
+const resolvers = {
     Subscription : {
         tick : {
             subscribe : (_, __, context) => {
@@ -28,4 +28,4 @@ const resovlers = {
     }
 };
 
-module.exports = resovlers;
+module.exports = resolvers;
