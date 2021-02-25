@@ -106,9 +106,12 @@ const initExpress = async (server, passport) => {
             ];
         }
     }
+    const contentSecurityPolicyString = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicyValues ? global.envConfig.environment.contentSecurityPolicyValues.join(' ') : '';
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            'font-src'   : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
+            'img-src'    : [`'self' ${contentSecurityPolicyString}`, 'data:'],
             'script-src' : contentSecurityPolicyValues
         },
         // reportOnly ignore the CSP error, but report it
