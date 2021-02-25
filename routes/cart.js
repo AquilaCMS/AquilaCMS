@@ -161,7 +161,7 @@ async function updateAddresses(req, res, next) {
  */
 async function updateDelivery(req, res, next) {
     try {
-        const result = await ServiceCart.updateDelivery(req.body);
+        const result = await ServiceCart.updateDelivery(req.body, req.query ? req.query.removeDeliveryDatas : false);
         await ServiceCart.linkCustomerToCart(result.data.cart, req);
         return res.send(result.data.cart);
     } catch (err) {
