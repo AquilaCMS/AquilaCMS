@@ -33,7 +33,7 @@ ProductSimpleSchema.virtual('stock.qty_real').get(function () {
     return this.stock.qty - this.stock.qty_booked;
 });
 
-ProductSimpleSchema.methods.updateData = async function (data, cb) {
+ProductSimpleSchema.methods.updateData = async function (data) {
     data.price.priceSort = {
         et  : data.price.et.special || data.price.et.normal,
         ati : data.price.ati.special || data.price.ati.normal
@@ -41,9 +41,9 @@ ProductSimpleSchema.methods.updateData = async function (data, cb) {
     reviewService.computeAverageRateAndCountReviews(data);
     try {
         const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
-        return cb(null, updPrd);
-    } catch (err) {
-        return cb(err);
+        return updPrd;
+    } catch (error) {
+        return error;
     }
 };
 

@@ -26,8 +26,12 @@ const getCMSBlockById = async (id, PostBody = null) => {
 };
 
 const setCMSBlock = async (body) => {
-    if (body._id) return CmsBlocks.updateOne({_id: body._id}, {$set: body});
-    return CmsBlocks.create(body);
+    try {
+        if (body._id) return CmsBlocks.updateOne({_id: body._id}, {$set: body});
+        return CmsBlocks.create(body);
+    } catch (error) {
+        throw NSErrors(error.code);
+    }
 };
 
 const deleteCMSBlock = async (code) => {

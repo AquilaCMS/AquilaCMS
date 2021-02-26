@@ -115,6 +115,10 @@ module.exports = {
         fr : 'Catégorie déjà existante',
         en : 'Category already exist'
     },
+    SlugAlreadyExist : {
+        fr : 'Le slug existe déjà',
+        en : 'Slug already exist'
+    },
     CmsBlockNotFound : {
         fr : 'Bloc CMS non trouvé',
         en : 'CMS Block not found'

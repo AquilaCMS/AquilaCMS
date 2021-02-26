@@ -150,6 +150,7 @@ class NSErrors {
     static get SitemapInUse() { return this.makeErrorAlias(NSErrors.Conflict, 'SitemapInUse'); }
     static get UserAlreadyExist() { return this.makeErrorAlias(NSErrors.Conflict, 'UserAlreadyExist'); }
     static get categoryAlreadyExist() { return this.makeErrorAlias(NSErrors.Conflict, 'categoryAlreadyExist'); }
+    static get SlugAlreadyExist() { return this.makeErrorAlias(NSErrors.Conflict, 'SlugAlreadyExist'); }
 
     static get Teapot() { return new NSError(418, 'Teapot'); }
 

@@ -14,6 +14,24 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(News, restrictedFields, defaultFields);
 
+const checkSlugExist = async (doc) => {
+    const arg = {$or: []};
+    if (doc.translation) {
+        for (const lang of Object.entries(doc.translation)) {
+            if (doc.translation[lang[0]]) {
+                arg.$or.push({[`translation.${lang[0]}.slug`]: doc.translation[lang[0]].slug});
+            }
+        }
+    }
+    if (doc._id) {
+        arg._id = {$nin: [doc._id]};
+    }
+
+    if (await News.countDocuments(arg) > 0) {
+        throw NSErrors.SlugAlreadyExist;
+    }
+};
+
 const getNews = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
@@ -23,6 +41,7 @@ const getNew = async (PostBody) => {
 };
 
 const saveNew = async (_new) => {
+    await checkSlugExist(_new);
     if (!_new) throw NSErrors.UnprocessableEntity;
     if (_new._id) {
         return News.findOneAndUpdate({_id: _new._id}, _new);

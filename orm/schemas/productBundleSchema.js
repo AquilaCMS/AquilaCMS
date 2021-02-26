@@ -50,7 +50,7 @@ const ProductBundleSchema = new Schema({
     return this.stock.qty - this.stock.qty_booked;
 }); */
 
-ProductBundleSchema.methods.updateData = async function (data, cb) {
+ProductBundleSchema.methods.updateData = async function (data) {
     const updatedData           = data;
     updatedData.price.priceSort = {
         et  : updatedData.price.et.special || updatedData.price.et.normal,
@@ -62,9 +62,9 @@ ProductBundleSchema.methods.updateData = async function (data, cb) {
     }
     try {
         const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
-        return cb(null, updPrd);
-    } catch (err) {
-        return cb(err);
+        return updPrd;
+    } catch (error) {
+        return error;
     }
 };
 

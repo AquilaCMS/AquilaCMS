@@ -233,6 +233,7 @@ const duplicateProduct = async (idProduct, newCode) => {
     }
     doc.active   = false;
     doc._visible = false;
+    await checkSlugExist(doc);
     await doc.save();
     return doc;
 };
@@ -627,17 +628,26 @@ const setProduct = async (req) => {
     if (!product) throw NSErrors.ProductNotFound;
     // On met à jour le slug du produit
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
-    return new Promise((resolve, reject) => {
-        product.updateData(req.body, async (err, result) => {
-            if (err && err.message === 'slug trop court') {
-                reject(NSErrors.ProductUpdateSlugError);
-            } else if (err) {
-                reject(NSErrors.ProductUpdateError);
+    await checkSlugExist(req.body);
+    const result = await product.updateData(req.body);
+    await ProductsPreview.deleteOne({code: req.body.code});
+    await Products.findOne({code: result.code}).populated(['bundle_sections.products._id']);
+};
+
+const checkSlugExist = async (doc) => {
+    const arg = {$or: []};
+    if (doc.translation) {
+        for (const lang of Object.entries(doc.translation)) {
+            if (doc.translation[lang[0]]) {
+                arg.$or.push({[`translation.${lang[0]}.slug`]: doc.translation[lang[0]].slug});
             }
-            await ProductsPreview.deleteOne({code: req.body.code});
-            return resolve((await Products.findOne({code: result.code})).populated(['bundle_sections.products._id']));
-        });
-    });
+        }
+    }
+
+    arg._id = doc._id ? [doc._id] : [];
+    if (await Products.countDocuments(arg) > 0) {
+        throw NSErrors.SlugAlreadyExist;
+    }
 };
 
 const createProduct = async (req) => {
@@ -676,7 +686,8 @@ const createProduct = async (req) => {
         return result;
     }
     req.body.code = utils.slugify(req.body.code);
-    const res     = await Products.create(req.body);
+    await checkSlugExist(req.body);
+    const res = await Products.create(req.body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };

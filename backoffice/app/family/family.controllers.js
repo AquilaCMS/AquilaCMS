@@ -288,18 +288,15 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
         };
 
         $scope.save = function (data) {
-            debugger;
             data.id_parent = data.parent;
             FamilyV2.save(data, function (fam) {
                 if (fam && fam._id) {
-                // $location.path("/families");
                     $modalInstance.close();
                 } else {
                     console.error("Error!");
                 }
             }, function (e) {
-                debugger;
-                    toastService.toast("danger", e.data.message);
+                toastService.toast("danger", e.data.message);
             });
         };
 

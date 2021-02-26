@@ -14,6 +14,24 @@ const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];
 const queryBuilder     = new QueryBuilder(Statics, restrictedFields, defaultFields);
 
+const checkSlugExist = async (doc) => {
+    const arg = {$or: []};
+    if (doc.translation) {
+        for (const lang of Object.entries(doc.translation)) {
+            if (doc.translation[lang[0]]) {
+                arg.$or.push({[`translation.${lang[0]}.slug`]: doc.translation[lang[0]].slug});
+            }
+        }
+    }
+    if (doc._id) {
+        arg._id = {$nin: [doc._id]};
+    }
+
+    if (await Statics.countDocuments(arg) > 0) {
+        throw NSErrors.SlugAlreadyExist;
+    }
+};
+
 const getStatics = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
@@ -27,10 +45,12 @@ const getStaticById = async (id, PostBody = null) => {
 };
 
 const setStatic = async (req) => {
+    await checkSlugExist(req.body);
     return Statics.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
 const createStatic = async (req) => {
+    await checkSlugExist(req.body);
     return Statics.create(req.body);
 };
 

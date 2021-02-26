@@ -94,7 +94,7 @@ StaticsSchema.pre('updateOne', async function (next) {
 });
 
 StaticsSchema.pre('findOneAndUpdate', async function (next) {
-    utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 StaticsSchema.pre('save', async function (next) {
