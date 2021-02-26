@@ -1,5 +1,5 @@
 const types = `
-    type Configuration {
+    type Configuration @cacheControl(maxAge: 5) {
         _id: String!
         licence: Licence
         environment: Environment

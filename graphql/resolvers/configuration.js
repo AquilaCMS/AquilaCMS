@@ -1,6 +1,7 @@
 const resolvers = {
     Query : {
-        getConfiguration : async () => {
+        getConfiguration : async (parent, args, context, info) => {
+            info.cacheControl.setCacheHint({maxAge: 60, scope: 'PRIVATE'});
             const {Configuration} = require('../../orm/models');
             return Configuration.findOne({}).lean();
         }
