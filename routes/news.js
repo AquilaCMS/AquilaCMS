@@ -52,6 +52,10 @@ async function getNew(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/site/new
+ * @summary Set new
+ */
 async function saveNew(req, res, next) {
     try {
         await ServicesPreview.deleteNewPreview(req.body.code);
@@ -61,6 +65,10 @@ async function saveNew(req, res, next) {
     }
 }
 
+/**
+ * DELETE /api/v2/site/new/{_id}
+ * @summary Delete new
+ */
 async function deleteNew(req, res, next) {
     try {
         await servicesNews.deleteNew(req.params._id);
@@ -70,12 +78,6 @@ async function deleteNew(req, res, next) {
     }
 }
 
-/**
- *
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- */
 async function previewNew(req, res, next) {
     try {
         let preview  = {};

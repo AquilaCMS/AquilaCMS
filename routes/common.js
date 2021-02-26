@@ -21,6 +21,10 @@ module.exports = function (app) {
     app.post('/v2/calculStock', middlewareServer.deprecatedRoute, calculStock);
 };
 
+/**
+ * POST /api/cookienotice
+ * @summary Set cookie notice
+ */
 function setCookieNotice(req, res, next) {
     try {
         const cookie = req.cookies.cookie_notice;
@@ -35,6 +39,10 @@ function setCookieNotice(req, res, next) {
     }
 }
 
+/**
+ * GET /api/serverIsUp
+ * @summary Check if server is alive
+ */
 const serverIsUp = (req, res) => {
     return res.status(200).end();
 };

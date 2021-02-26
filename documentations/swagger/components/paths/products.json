@@ -66,6 +66,43 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get product by slug",
+                                "description": "Get product in english version, filtering by slug, with default structure and populate associated_prds & bundle_sections",
+                                "value": {"lang":"en","countviews":true,"withFilters":false,"PostBody":{"filter":{"translation.en.slug":"slug-in-en"},"populate":["associated_prds","bundle_sections.products.id"]}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
                         }
                     }
                 },
@@ -116,6 +153,25 @@
                 "description": "PostBody",
                 "required": false
             }
+        },
+        "delete": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Product"
+            ]
         }
     },
     "/api/v2/products/category/{id}": {
@@ -157,6 +213,45 @@
                     }
                 }
             ],
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all products by category id",
+                                "description": "Get products by category in french, with specific structure",
+                                "value": {"lang":"fr","PostBody":{"filter":{},"structure":{"slug":1,"pos":1,"price":1,"type":1,"translation":1,"images":1,"bundle_sections":1},"populate":["bundle_sections.products.id"],"limit":15,"page":1,"sort":{"sortWeight":-1}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/v2/product/promos": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
             "tags": [
                 "Product"
             ],

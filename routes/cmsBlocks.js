@@ -68,6 +68,10 @@ async function getCMSBlock(req, res, next) {
     }
 }
 
+/**
+ * POST /v2/cmsBlock/{id}
+ * @summary Get one CMSBlock by id
+ */
 async function getCMSBlockById(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlockById(req.params.id, req.body.PostBody);
@@ -85,6 +89,10 @@ async function getCMSBlockById(req, res, next) {
     }
 }
 
+/**
+ * PUT /v2/cmsBlock
+ * @summary Set CMSBlock
+ */
 async function setCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.setCMSBlock(req.body);
@@ -94,6 +102,10 @@ async function setCMSBlock(req, res, next) {
     }
 }
 
+/**
+ * DELETE /v2/cmsBlock/:code
+ * @summary Delete CMSBlock
+ */
 async function deleteCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.deleteCMSBlock(req.params.code);
