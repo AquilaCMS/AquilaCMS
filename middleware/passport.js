@@ -9,7 +9,6 @@
 /*
  * Passport / Authentification
  */
-// const LocalStrategy = require('passport-local').Strategy;
 const passportJWT  = require('passport-jwt');
 const NSErrors     = require('../utils/errors/NSErrors');
 const aquilaEvents = require('../utils/aquilaEvents');

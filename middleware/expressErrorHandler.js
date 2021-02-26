@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongodb      = require('mongodb');
-const NSError      = require('../utils/errors/NSError');
-const NSErrors     = require('../utils/errors/NSErrors');
-const errorMessage = require('../utils/translate/errors');
+const {mongo: {MongoError}} = require('mongoose');
+const NSError               = require('../utils/errors/NSError');
+const NSErrors              = require('../utils/errors/NSErrors');
+const errorMessage          = require('../utils/translate/errors');
 
 const mongoErrorCodeToNsError = {
     11000 : NSErrors.Conflict
@@ -91,7 +91,7 @@ const expressErrorHandler = (err, req, res, next) => {
         else if (req.body && req.body.lang) lang = req.body.lang;
         else if (global.defaultLang) lang = global.defaultLang;
 
-        if (err instanceof mongodb.MongoError) {
+        if (err instanceof MongoError) {
             log(err);
             const knownError = mongoErrorCodeToNsError[err.code];
             if (knownError) err = knownError;
