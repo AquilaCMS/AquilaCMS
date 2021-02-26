@@ -15,6 +15,7 @@ const i18nextMiddleware      = require('i18next-http-middleware');
 const {makeExecutableSchema} = require('@graphql-tools/schema');
 const {loadFiles}            = require('@graphql-tools/load-files');
 const {ApolloServer}         = require('apollo-server-express');
+const {InMemoryLRUCache}     = require('apollo-server-caching');
 global.envPath               = null;
 global.envFile               = null;
 global.appRoot               = path.resolve(__dirname);
@@ -152,9 +153,14 @@ const initServer = async () => {
                     };
                 }, {})
             }),
-            introspection : true,
-            playground    : true,
-            context       : async ({req, res}) => {
+            introspection    : true,
+            playground       : true,
+            cacheControl     : true,
+            persistedQueries : {
+                cache : new InMemoryLRUCache(),
+                ttl   : 900
+            },
+            context : async ({req, res}) => {
                 if (!req.headers.authorization) return {};
                 const {getDecodedToken} = require('./services/auth');
                 const {authenticate}    = require('./middleware/passport');
