@@ -36,8 +36,8 @@
                 <section style="background-image: url(css/images/login-bg.jpg)" class="section-login">
                     <div class="section-inner">
                         <div class="form-login">
-                            <form>
-                                <div class="form-head"><a href="#" class="logo logo-secondary"><img src="css/images/logo-secondary.png" alt="" width="156" height="143"></a></div>
+                            <form id="form1">
+                                <div class="form-head"><a href="" class="logo logo-secondary"><img src="css/images/logo-secondary.png" alt="" width="156" height="143"></a></div>
                                 <!-- /.form-head-->
                                 <div class="form-body">
                                     <div class="form-row">
@@ -69,7 +69,62 @@
                                 </div>
                                 <!-- /.form-actions-->
                             </form>
-
+                            <form id="form2" style="display:none;">
+                                <div class="form-head"><a href="" class="logo logo-secondary"><img src="css/images/logo-secondary.png" alt="" width="156" height="143"></a></div>
+                                <!-- /.form-head-->
+                                <div class="form-body">
+                                    <div class="form-row">
+                                        <label for="field-email2" class="form-label hidden">email</label>
+                                        <div class="form-controls">
+                                            <input id="field-email2" type="text" name="username" value="" placeholder="Email" class="field" autofocus  />
+                                            <span class="icon">
+                                                <img src="css/images/image-user-dark.png" alt="" width="34" height="70">
+                                            </span>
+                                        </div>
+                                        <!-- /.form-controls-->
+                                    </div>
+                                </div>
+                                <!-- /.form-body-->
+                                <div class="form-actions">
+                                    <button type="submit" class="form-btn">Reset Password</button>
+                                </div>
+                                <!-- /.form-actions-->
+                            </form>
+                            <form id="form3" style="display:none;">
+                                <div class="form-head"><a href="" class="logo logo-secondary"><img src="css/images/logo-secondary.png" alt="" width="156" height="143"></a></div>
+                                <!-- /.form-head-->
+                                <div class="form-body">
+                                    <div class="form-row">
+                                        <label for="new-password1" class="form-label hidden">email</label>
+                                        <div class="form-controls">
+                                            <input id="new-password1" type="password" name="password1" value="" placeholder="New password" class="field" autofocus  />
+                                            <span class="icon">
+                                                <img src="css/images/image-padlock-dark.png" alt="" width="23" height="70">
+                                            </span>
+                                        </div>
+                                        <!-- /.form-controls-->
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="new-password2" class="form-label hidden">email</label>
+                                        <div class="form-controls">
+                                            <input id="new-password2" type="password" name="password2" value="" placeholder="New password" class="field"  />
+                                            <span class="icon">
+                                                <img src="css/images/image-padlock-dark.png" alt="" width="23" height="70">
+                                            </span>
+                                        </div>
+                                        <!-- /.form-controls-->
+                                    </div>
+                                </div>
+                                <!-- /.form-body-->
+                                <div class="form-actions">
+                                    <button type="submit" class="form-btn">Reset Password</button>
+                                </div>
+                                <!-- /.form-actions-->
+                            </form>
+                            <div id="passwordForgot" style="text-align: center;cursor:pointer;color: blue;" onclick="changeForm()">Forgot your password? Reset your password</div>
+                            <div id="resetPass" style="text-align: center;color: blue;"></div>
+                            <div id="resetedPass" style="display: none;text-align: center;color: #ff0000;">Password is incorrect (6 characters, 1 uppercase letter, 1 lowercase letter, 1 number)</div>
+                            <div id="api-error" style="display: none;text-align: center;color: #ff0000;">An error has occurred</div>
                             <div id="error_msg_bad_login" style="display: none; text-align: center; color: #ff0000;">Bad login</div>
                             <div id="error_msg_disable_account" style="display: none; text-align: center; color: #ff0000;">Disabled account</div>
                         </div>
