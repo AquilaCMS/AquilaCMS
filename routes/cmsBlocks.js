@@ -12,13 +12,13 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 module.exports = function (app) {
     app.post('/v2/cmsBlocks', getCMSBlocks);
     app.post('/v2/cmsBlock', getCMSBlock);
-    app.post('/v2/cmsBlock/:code', getCMSBlockById);
+    app.post('/v2/cmsBlock/:id', getCMSBlockById);
     app.put('/v2/cmsBlock', authentication, adminAuth, setCMSBlock);
     app.delete('/v2/cmsBlock/:code', authentication, adminAuth, deleteCMSBlock);
 };
 
 /**
- * PUT /api/v2/cmsBlocks
+ * POST /api/v2/cmsBlocks
  * @summary List of CMSBlocks
  * @apiSuccess {Array}  datas           Array of CMSBlocks
  * @apiSuccess {String} datas.code      Code of the CMSBlock
@@ -27,7 +27,7 @@ module.exports = function (app) {
 async function getCMSBlocks(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlocks(req.body.PostBody);
-        if (!req.headers.authorization || (req.info && !req.info.isAdmin)) {
+        if (req.info && !req.info.isAdmin) {
             // on boucle sur les resultats
             for (let i = 0; i < result.datas.length; i++) {
                 const block = result.datas[i];
@@ -70,7 +70,7 @@ async function getCMSBlock(req, res, next) {
 
 async function getCMSBlockById(req, res, next) {
     try {
-        const result = await ServiceCmsBlock.getCMSBlockById(req.params.code, req.body.PostBody);
+        const result = await ServiceCmsBlock.getCMSBlockById(req.params.id, req.body.PostBody);
         if ((!req.headers.autorization || (req.info && !req.info.isAdmin)) && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {

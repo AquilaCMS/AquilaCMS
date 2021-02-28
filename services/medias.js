@@ -19,7 +19,6 @@ const {
     News,
     Gallery,
     Slider,
-    Opts,
     Mail
 }                      = require('../orm/models');
 const utils        = require('../utils/utils');
@@ -512,21 +511,21 @@ const uploadFiles = async (body, files) => {
 
         return {name: name + extension, path: target_path_full};
     }
-    case 'option': {
-        const values = body.entity.values;
-        for (let i = 0; i < values.length; i++) {
-            delete values[i].$hashKey;
-        }
+    // case 'option': {
+    //     const values = body.entity.values;
+    //     for (let i = 0; i < values.length; i++) {
+    //         delete values[i].$hashKey;
+    //     }
 
-        const path = body.entity.value[body.entity.line];
-        await utilsMedias.deleteFile(path);
+    //     const path = body.entity.value[body.entity.line];
+    //     await utilsMedias.deleteFile(path);
 
-        values[body.entity.lineIndex][body.entity.line] = target_path_full;
+    //     values[body.entity.lineIndex][body.entity.line] = target_path_full;
 
-        await Opts.updateOne({_id: body._id}, {$set: {values}});
+    //     await Opts.updateOne({_id: body._id}, {$set: {values}});
 
-        return {name: name + extension, path: target_path_full};
-    }
+    //     return {name: name + extension, path: target_path_full};
+    // }
     case 'category': {
         const result = await Categories.findOne({_id: body._id});
         await deleteFileAndCacheFile(result.img, 'category');

@@ -39,7 +39,7 @@ async function saveFamily(req, res, next) {
         const result = await ServicesFamilies.saveFamily(req.body);
         return res.json(result);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 }
 async function deleteFamily(req, res, next) {

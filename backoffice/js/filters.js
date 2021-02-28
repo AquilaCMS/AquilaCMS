@@ -138,10 +138,12 @@ adminCatagenFilters.filter('orderStatus', ['NSConstants', function(NSConstants) 
 
 adminCatagenFilters.filter('paymentType', function() {
   return function (item) {
+    //this function return a translation code of the translation file : "order.json"
+    //the returned value need the be translated
     if (item == "DEBIT") {
-      return "Remboursement";
+      return "order.paymentType.DEBIT";
     } else if (item == "CREDIT") {
-      return "Règlement";
+      return "order.paymentType.CREDIT";
     }
     return item;
   }
@@ -149,29 +151,33 @@ adminCatagenFilters.filter('paymentType', function() {
 
 adminCatagenFilters.filter('paymentStatus', function() {
   return function (item) {
+    //this function return a translation code of the translation file : "order.json"
+    //the returned value need the be translated
     if (item == "DONE") {
-      return "Effectué";
+      return "order.paymentStatus.DONE";
     } else if (item == "TODO") {
-      return "A effectuer";
+      return "order.paymentStatus.TODO";
     } else if (item == "FAILED") {
-      return "Non effectué";
+      return "order.paymentStatus.FAILED";
     } else if (item == "CANCELED") {
-      return "Annulé";
+      return "order.paymentStatus.CANCELED";
     }
     return item;
   }
 });
 
 adminCatagenFilters.filter('paymentMode', function() {
+  //this function return a translation code of the translation file : "order.json"
+  //the returned value need the be translated
   return function (item) {
     if (item == "CB") {
-      return "CB";
+      return "order.paymentMode.CB";
     } else if (item == "CHEQUE") {
-      return "Chèque";
+      return "order.paymentMode.CHEQUE";
     } else if (item == "TRANSFER") {
-      return "Virement";
+      return "order.paymentMode.TRANSFER";
     } else if (item == "CASH") {
-      return "Espèces";
+      return "order.paymentMode.CASH";
     }
     return item;
   }

@@ -89,14 +89,6 @@ const OrdersSchema = new Schema({
             }
         },
         status   : String,
-        campaign : {
-            referer      : String,
-            utm_campaign : String,
-            utm_medium   : String,
-            utm_source   : String,
-            utm_content  : String,
-            utm_term     : String
-        },
         birthDate : Date,
         details   : {},
         type      : {type: String} // garder sous cette forme, sinon il croit qu'on définit le type de "customer"

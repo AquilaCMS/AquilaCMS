@@ -143,6 +143,10 @@ module.exports = {
         fr : 'Code produit déjà existant',
         en : 'Product code already exists'
     },
+    FamilyCodeExisting : {
+        fr : 'Code famille déjà existant',
+        en : 'Family code already exists'
+    },
     ProductNotFound : {
         fr : 'Produit non trouvé',
         en : 'Product not found'
@@ -154,10 +158,6 @@ module.exports = {
     SetAttributeNotFound : {
         fr : 'Jeu d\'attributs introuvable',
         en : 'Set attributes not found'
-    },
-    SetOptionNotFound : {
-        fr : 'Jeu d\'options introuvable',
-        en : 'Set option not found'
     },
     LoginSubscribeEmailExisting : {
         fr : 'Un compte avec cet email existe déjà',

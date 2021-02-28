@@ -210,50 +210,6 @@ adminCatagenServices.factory("CategoryByProduct", [
     }
 ]);
 
-// Module Options
-
-adminCatagenServices.factory("SetOption", [
-    "$resource", function ($resource)
-    {
-        return $resource("setOptions/:setOptionCode", {}, {
-            get: {method: "GET", params: {setOptionCode: ""}},
-            save: {method: "POST", params: {}},
-            query: {method: "GET", isArray: true},
-            remove: {method: "DELETE", params: {setOptionCode: ""}}
-        });
-    }
-]);
-
-adminCatagenServices.factory("SetOptionId", [
-    "$resource", function ($resource)
-    {
-        return $resource("setOptions/fOne", {}, {
-            fOne: {method: "POST", params: {}}
-        });
-    }
-]);
-
-adminCatagenServices.factory("Opt", [
-    "$resource", function ($resource)
-    {
-        return $resource("opts/:optCode", {}, {
-            get: {method: "GET", params: {optCode: ""}},
-            save: {method: "POST", params: {}},
-            queryClassed: {method: "GET", isArray: true},
-            remove: {method: "DELETE", params: {optCode: ""}}
-        });
-    }
-]);
-
-adminCatagenServices.factory("OptId", [
-    "$resource", function ($resource)
-    {
-        return $resource("opts/fOne", {}, {
-            fOne: {method: "POST", params: {}}, queryOrphans: {method: "GET", isArray: true}
-        });
-    }
-]);
-
 adminCatagenServices.factory("ConfigUpdate", [
     "$resource", function ($resource)
     {

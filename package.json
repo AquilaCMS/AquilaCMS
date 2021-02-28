@@ -1,6 +1,6 @@
 {
   "name": "aquila-cms",
-  "version": "1.102.15",
+  "version": "1.102.19",
   "description": "CMS e-commerce",
   "main": "server.js",
   "license": "OSL-3.0",
@@ -20,12 +20,11 @@
     "reload": "pm2 reload ecosystem.config.js --update-env && pm2 restart server && pm2 log server",
     "build:win": "next build .\\themes\\%npm_config_theme%",
     "build:linux": "next build ./themes/${npm_config_theme}",
-    "lint": "eslint --ext *.js,*.json,*.jsx .",
-    "lint:fix": "eslint --fix --ext *.js,*.json,*.jsx .",
+    "lint": "eslint --ext .js,.jsx .",
+    "lint:fix": "eslint --fix --ext .js,.jsx .",
     "test": "exit 0"
   },
   "dependencies": {
-    "@aquilacms/express-jsdoc-swagger": "^1.0.6",
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
     "axios": "0.21.1",
@@ -84,6 +83,7 @@
     "showdown": "^1.9.1",
     "slug": "3.3.0",
     "spdy": "4.0.2",
+    "swagger-ui-express-updated": "^4.1.8",
     "uuid": "8.2.0",
     "validator": "13.1.1",
     "webpack": "4.43.0",
@@ -106,6 +106,6 @@
     }
   },
   "lint-staged": {
-    "*.{ts,js}": "eslint --fix"
+    "*.{ts,js,jsx,tsx}": "eslint --fix"
   }
 }

@@ -7,5 +7,9 @@
     "det": "Détails",
     "mailCli": "Mail client",
     "cancel": "Annuler",
-    "valider": "Valider"
+    "valider": "Valider",
+    "DEBIT": "Remboursement",
+    "CREDIT": "Paiement",
+    "payType" : "Type de réglement",
+    "amount": "Montant"
 }

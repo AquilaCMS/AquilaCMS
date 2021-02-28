@@ -30,14 +30,14 @@
               },
               {
                 "key": "itsnumber",
-                "value": "#CCCCCC",
+                "value": 2021,
                 "name": "Number",
                 "description": "Ceci est un exemple pour un nombre",
                 "group": "Exemple"
               },
               {
                 "key": "itscolor",
-                "value": true,
+                "value": "#CCCCCC",
                 "name": "Color",
                 "description": "Ceci est un exemple pour une couleur",
                 "group": "Exemple"
@@ -69,14 +69,14 @@
               },
               {
                 "key": "itsnumber",
-                "value": "#CCCCCC",
+                "value": 2021,
                 "name": "Number",
                 "description": "This is an example for numbers",
                 "group": "Exemple"
               },
               {
                 "key": "itscolor",
-                "value": true,
+                "value": "#CCCCCC",
                 "name": "Color",
                 "description": "This is an example for colors",
                 "group": "Exemple"

@@ -28,7 +28,7 @@ module.exports = function (app) {
  * Fonction retournant un fichier contenant toutes les données d'un utilisateur au format JSON dans un fichier txt
  */
 async function exportData(req, res, next) {
-    const userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+    const userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     if (userVerified) {
         try {
             // On récupère les infos de l'user, ses commandes et ses factures
@@ -142,7 +142,7 @@ function dump(cmd) {
 async function deleteUserDatas(req, res, next) {
     let userVerified = null;
     try {
-        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     } catch (err) {
         throw NSErrors.AccessUnauthorized;
     }
@@ -163,7 +163,7 @@ async function deleteUserDatas(req, res, next) {
 async function anonymizeUser(req, res, next) {
     let userVerified = null;
     try {
-        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     } catch (err) {
         throw NSErrors.AccessUnauthorized;
     }

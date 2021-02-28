@@ -50,16 +50,6 @@
                     "schema": {
                         "type": "string"
                     }
-                },
-                {
-                    "name": "authorization",
-                    "in": "header",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
                 }
             ],
             "tags": [

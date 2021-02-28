@@ -31,7 +31,7 @@ module.exports = function (app) {
  */
 async function getBills(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'client');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'client');
         return res.status(200).json(await ServiceBills.getBills(PostBodyVerified));
     } catch (error) {
         return next(error);
@@ -78,7 +78,7 @@ async function orderToBill(req, res, next) {
  */
 async function generatePDF(req, res, next) {
     try {
-        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.headers.authorization, req.baseUrl, req.body.PostBody, 'client');
+        const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'client');
         const response         = await ServiceBills.generatePDF(PostBodyVerified);
         return response.pipe(res);
     } catch (error) {

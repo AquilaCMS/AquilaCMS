@@ -77,17 +77,6 @@
                         "$ref": "#/components/schemas/companySchema"
                     },
                     "status"   : {"type": "string"},
-                    "campaign" : {
-                        "type": "object",
-                        "properties": {
-                            "referer"      : {"type": "string"},
-                            "utm_campaign" : {"type": "string"},
-                            "utm_medium"   : {"type": "string"},
-                            "utm_source"   : {"type": "string"},
-                            "utm_content"  : {"type": "string"},
-                            "utm_term"     : {"type": "string"}
-                        }
-                    },
                     "birthDate" : {"type": "string", "format": "date"},
                     "details"   : {"type": "object"},
                     "type"      : {"type": "string", "description": "garder sous cette forme, sinon il croit qu'on définit le type de \"customer\""}

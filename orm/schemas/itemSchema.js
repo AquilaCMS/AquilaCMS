@@ -47,7 +47,6 @@ const itemsSchema = new Schema({
         }
     },
     atts        : [],
-    opts        : [],
     typeDisplay : {type: String, default: undefined}
 }, {discriminatorKey: 'type'});
 

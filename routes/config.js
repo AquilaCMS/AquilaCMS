@@ -12,7 +12,6 @@ const serviceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
-const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
     app.put('/v2/config', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
@@ -24,7 +23,7 @@ module.exports = function (app) {
 };
 
 /**
- * GET /api/config/data
+ * @deprecated
  */
 const getConfigTheme = async (req, res, next) => {
     try {
@@ -36,22 +35,13 @@ const getConfigTheme = async (req, res, next) => {
 };
 
 /**
- * POST /api/v2/config/{key}
+ * POST /api/v2/config
  * @summary Get config of the website
  */
 const getConfig = async (req, res, next) => {
     try {
         const {PostBody} = req.body;
-        let userInfo;
-        if (req.headers && req.headers.authorization) {
-            try {
-                userInfo = getDecodedToken(req.headers.authorization);
-                if (userInfo) userInfo = userInfo.info;
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        const config = await serviceConfig.getConfig(PostBody, userInfo);
+        const config     = await serviceConfig.getConfig(PostBody, req.info);
         return res.json(config);
     } catch (e) {
         return next(e);

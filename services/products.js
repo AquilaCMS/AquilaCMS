@@ -28,8 +28,7 @@ const {
     ProductsPreview,
     Categories,
     SetAttributes,
-    Attributes,
-    Languages
+    Attributes
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
@@ -181,7 +180,8 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
  * @param keepReviews
  */
 const getPromosByProduct = async (PostBody, reqRes = undefined) => {
-    const product = await queryBuilder.findOne(PostBody, false, reqRes.req.headers.authorization);
+    const isAdmin = !!(reqRes.req && reqRes.req.info && reqRes.req.info.isAdmin);
+    const product = await queryBuilder.findOne(PostBody, false, isAdmin);
     if (!product) {
         return product;
     }
@@ -1064,7 +1064,7 @@ const downloadProduct = async (req, res) => {
 const getProductsListing = async (req, res) => {
     // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
-    if (req.params.withFilters || req.body.withFilters) {
+    if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
 
@@ -1105,216 +1105,6 @@ const getProductsListing = async (req, res) => {
     }
     return result;
 };
-// const getProductsAdminList = async (body, params) => {
-//     // Filtre de base
-//     const filter    = body.filter === undefined ? {} : body.filter;
-//     const searchObj = body.searchObj;
-//     filter.$or      = [];
-
-//     await Promise.all([
-//         new Promise(((resolve, reject) => {
-//             // Objet contenant d'autres paramètres de recherche
-//             if (body.searchObj) {
-//                 if (body.q && searchObj.code) {
-//                     filter.$or.push({code: searchObj.code});
-//                     filter.$or.push({$text: {$search: body.q}});
-//                 } else if (body.q) {
-//                     filter.$text = {$search: body.q};
-//                 } else if (searchObj.code) {
-//                     filter.code = {$regex: `^(?=.*${searchObj.code.replace(/ /g, ')(?=.*')}).*$`, $options: 'i'};
-//                 }
-
-//                 // Recherche parmi une liste déterminée de produits
-//                 if (searchObj.productsIds) {
-//                     if (searchObj.inProducts) {
-//                         filter._id = {$in: searchObj.productsIds};
-//                     } else {
-//                         filter._id = {$nin: searchObj.productsIds};
-//                     }
-//                 }
-
-//                 if (filter.qty === true) {
-//                     if (filter.$or[0] !== undefined) {
-//                         filter.$or[0].stock = {qty: {$gt: 1}};
-//                         filter.$or[1].stock = {qty: {$gt: 1}};
-//                     } else {
-//                         filter.stock = {qty: {$gt: 1}};
-//                     }
-//                 }
-//                 delete filter.qty;
-//                 if (searchObj['price.ati.normal']) {
-//                     filter['price.ati.normal'] = searchObj['price.ati.normal'];
-//                 }
-//                 // Recherche par actif/non actif
-//                 if (searchObj.active !== undefined) {
-//                     filter.active = {$eq: searchObj.active};
-//                 }
-//                 // Recherche par visible/non visible
-//                 if (searchObj._visible !== undefined) {
-//                     filter._visible = {$eq: searchObj._visible};
-//                 }
-//                 // Recherche par prix vente min et prix vente max
-//                 if (searchObj.priceSaleMin || searchObj.priceSaleMax) {
-//                     filter['price.ati.normal'] = {};
-//                 }
-//                 if (searchObj.priceSaleMin) {
-//                     filter['price.ati.normal'].$gte = searchObj.priceSaleMin;
-//                 }
-//                 if (searchObj.priceSaleMax) {
-//                     filter['price.ati.normal'].$lte = searchObj.priceSaleMax;
-//                 }
-//                 // Recherche par mots cles
-//                 if (searchObj.nameId) {
-//                     let nameCode = searchObj.nameId.split(' ');
-//                     nameCode     = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
-//                     filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
-//                 }
-//                 if (searchObj.type) {
-//                     filter.type = searchObj.type;
-//                 }
-
-//                 if (searchObj.translation && searchObj.translation.name !== '') {
-//                     return Languages.find({}).then(function (_languages) {
-//                         for (let i = 0; i < _languages.length; i++) {
-//                             if (searchObj.translation.name !== '') {
-//                                 const name                                     = {};
-//                                 name[`translation.${_languages[i].code}.name`] = {
-//                                     $regex   : `^(?=.*${searchObj.translation.name.replace(/ /g, ')(?=.*')}).*$`,
-//                                     $options : 'i'
-//                                 };
-//                                 filter.$or.push(name);
-//                             }
-//                         }
-//                         resolve();
-//                     }).catch(function (err) {
-//                         reject(err);
-//                     });
-//                 }
-
-//                 // Recherche par quantite min et quantite vente max
-//                 if (searchObj['stock.qty']) {
-//                     filter['stock.qty'] = searchObj['stock.qty'];
-//                 }
-//                 if (searchObj.qtyMin || searchObj.qtyMax) {
-//                     filter['stock.qty'] = {};
-//                 }
-//                 if (searchObj.qtyMin) {
-//                     filter['stock.qty'].$gte = searchObj.qtyMin;
-//                 }
-//                 if (searchObj.qtyMax) {
-//                     filter['stock.qty'].$lte = searchObj.qtyMax;
-//                 }
-
-//                 resolve();
-//             } else {
-//                 if (body.q) {
-//                     filter.$text = {$search: body.q};
-//                 }
-
-//                 Languages.find({}).then(function (_languages) {
-//                     for (let i = 0; i < _languages.length; i++) {
-//                         const orLang                                     = {};
-//                         orLang[`translation.${_languages[i].code}.name`] = new RegExp('.*', 'i');
-//                         filter.$or.push(orLang);
-//                     }
-//                     resolve();
-//                 }).catch(function (err) {
-//                     reject(err);
-//                 });
-//             }
-//         }))
-//     ]);
-
-//     let sortObj = {};
-//     if (body.sortObj) {
-//         sortObj = body.sortObj;
-//     }
-//     const oIdCatProduct = {};
-//     // Si on veut trier par sortWeight (qui est un attribut de categories.productsList)
-//     if (sortObj.sortWeight && body.categoryId /* && Object.keys(body.searchObj).length === 0 */) {
-//         // on récupére la categorie afin de trier productsList par sortWeight
-//         const category = await Categories.findById(body.categoryId);
-//         for (let i = 0; i < category.productsList.length; i++) {
-//             const catProduct             = category.productsList[i];
-//             oIdCatProduct[catProduct.id] = catProduct.sortWeight;
-//         }
-//     }
-//     const results = await Promise.all([
-//         new Promise((async (resolve, reject) => {
-//             if (filter.$or.length === 0) {
-//                 delete filter.$or;
-//             }
-//             if (Object.keys(oIdCatProduct).length === 0) {
-//                 Products.find(filter, null, {
-//                     skip  : (body.page - 1) * body.limit,
-//                     limit : body.limit,
-//                     sort  : sortObj
-//                 })
-//                     .populate('location.country location.town')
-//                     .then((prdFound) => resolve(prdFound))
-//                     .catch((err) => reject(err));
-//             } else {
-//                 const prdFound = await Products.find(filter);
-//                 for (let i = 0; i < prdFound.length; i++) {
-//                     if (typeof oIdCatProduct[prdFound[i]._id.toString()] === 'undefined') {
-//                         prdFound[i].sortWeight = -1; // sortWeight fictif que ne sera pas répercuté sur le front
-//                         continue;
-//                     }
-//                     prdFound[i].sortWeight = oIdCatProduct[prdFound[i]._id];
-//                 }
-//                 let prdSorted;
-//                 if (sortObj.sortWeight === -1) {
-//                     prdSorted = prdFound.sort((a, b) => b.sortWeight - a.sortWeight);
-//                 } else {
-//                     prdSorted = prdFound.sort((a, b) => a.sortWeight - b.sortWeight);
-//                 }
-//                 prdSorted = prdSorted.splice((body.page - 1) * body.limit, body.limit);
-//                 resolve(prdSorted);
-//             }
-//         })), new Promise(((resolve, reject) => {
-//             Products.countDocuments(filter, (err, count) => {
-//                 if (err) {
-//                     return reject(err);
-//                 }
-//                 resolve(count);
-//             });
-//         })), new Promise(((resolve, reject) => {
-//             Products.findOne(filter).sort('-price.ati.normal').exec((err, maxProd) => {
-//                 if (err) {
-//                     return reject(err);
-//                 }
-//                 if (!maxProd) {
-//                     resolve(0);
-//                 } else {
-//                     resolve(maxProd.price.ati.normal);
-//                 }
-//             });
-//         })), new Promise(((resolve, reject) => {
-//             Products.findOne(filter).sort('price.ati.normal').exec((err, minProd) => {
-//                 if (err) {
-//                     return reject(err);
-//                 }
-//                 if (!minProd) {
-//                     resolve(0);
-//                 } else {
-//                     resolve(minProd.price.ati.normal);
-//                 }
-//             });
-//         }))
-//     ]);
-
-//     const result = {
-//         products : results[0],
-//         count    : results[1],
-//         priceMax : results[2],
-//         priceMin : results[3]
-//     };
-
-//     if (params.trademark !== undefined) {
-//         result.trademarks = results[4];
-//     }
-//     return result;
-// };
 
 const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
@@ -1340,23 +1130,6 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
     }
     await prd.save();
 };
-
-function make_pattern(search_string) {
-    require('../utils/utils').tmp_use_route('products_api', 'make_pattern');
-    // escape meta characters
-    search_string = search_string.replace(/([|()[{.+*?^$\\])/g, '\\$1');
-
-    // split into words
-    const words = search_string.split(/\s+/);
-
-    // sort by length
-    const length_comp = (a, b) => b.length - a.length;
-    words.sort(length_comp);
-
-    // join as alternatives
-    const regexp = words.join('|');
-    return new RegExp(regexp, 'g');
-}
 
 const handleStock = async (item, _product, inStockQty) => {
     const {Configuration} = require('../orm/models');
