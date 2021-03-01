@@ -28,7 +28,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control" ng-model="contentPolicy.newPolicy">
+                                            <input form="otherForm" type="text" class="form-control" ng-keypress="($event.charCode==13) ? addPolicy(contentPolicy.newPolicy) : return" ng-model="contentPolicy.newPolicy">
                                         </td>
                                     </tr>
                                 </tbody>
