@@ -133,7 +133,7 @@ const initExpress = async (server, passport) => {
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');
-    if (serverUtils.getEnv() !== 'test' && global.envFile.logs && global.envFile.logs.http) {
+    if (serverUtils.getEnv('NODE_ENV') !== 'test' && global.envFile.logs && global.envFile.logs.http) {
         server.use(morgan('combined', {stream: require('../utils/logger').stream}));
         server.use(morgan('dev'));
     }
