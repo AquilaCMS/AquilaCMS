@@ -10,6 +10,7 @@ $(document).ready(function () {
         $("#api-error").hide();
         $("#resetPass").hide();
         $("#resetedPass").hide();
+        $("#samePass").hide();
     }
 
     var url = window.location.href;
@@ -85,7 +86,7 @@ $(document).ready(function () {
                     $("#api-error").show();
                 }
             }else{
-                
+                $("#samePass").show();
             }
         }else{
             $("#resetedPass").show();
