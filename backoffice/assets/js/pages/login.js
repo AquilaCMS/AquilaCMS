@@ -48,7 +48,7 @@ $(document).ready(function () {
             const response = await $.post(window.location.origin + "/api/v2/user/resetpassword", {
                 email: $("#field-email2", this).val()
             });
-            document.getElementById('resetPass').innerHTML = "<strong>Email envoyé à " + $("#field-email2", this).val() + "</strong>";
+            document.getElementById('resetPass').innerHTML = "<strong>Email sent to " + $("#field-email2", this).val() + "</strong>";
             document.getElementById('resetPass').style.display = "block";
         } catch (err) {
             $("#api-error").show();
@@ -74,8 +74,8 @@ $(document).ready(function () {
         e.preventDefault();
         hideError();
         const passwordValidator = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$");
-        if(passwordValidator.test($("#new-password1", this).val())){
-            if($("#new-password1", this).val() == $("#new-password2", this).val()){
+        if($("#new-password1", this).val() == $("#new-password2", this).val()){
+            if(passwordValidator.test($("#new-password1", this).val())){
                 try {
                     const response = await $.post(window.location.origin + "/api/v2/user/resetpassword", {
                         password: $("#new-password1", this).val() ,
@@ -86,10 +86,10 @@ $(document).ready(function () {
                     $("#api-error").show();
                 }
             }else{
-                $("#samePass").show();
+                $("#resetedPass").show();
             }
         }else{
-            $("#resetedPass").show();
+            $("#samePass").show();
         }
     });
 
