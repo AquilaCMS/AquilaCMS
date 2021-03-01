@@ -631,15 +631,15 @@ const setProduct = async (req) => {
     await checkSlugExist(req.body);
     const result = await product.updateData(req.body);
     await ProductsPreview.deleteOne({code: req.body.code});
-    await Products.findOne({code: result.code}).populated(['bundle_sections.products._id']);
+    await Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
 };
 
 const checkSlugExist = async (doc) => {
     const arg = {$or: []};
     if (doc.translation) {
         for (const [lang] of Object.entries(doc.translation)) {
-            if (doc.translation[lang].canonical) {
-                delete doc.translation[lang].canonical;
+            if (doc.translation[lang].slug) {
+                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
             }
         }
     }
