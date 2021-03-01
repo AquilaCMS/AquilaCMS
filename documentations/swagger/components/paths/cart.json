@@ -2,7 +2,7 @@
     "/api/v2/carts": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -23,7 +23,7 @@
     "/api/v2/cart/user/{idclient}": {
         "get": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {
                 "200": {
                     "description": "",
@@ -125,7 +125,7 @@
     "/api/v2/cart/to/order": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"user_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -143,7 +143,7 @@
             }
         }
     },
-    "/api/v2/cart/:cartId/item/:itemId": {
+    "/api/v2/cart/{cartId}/item/{itemId}": {
         "delete": {
             "deprecated": false,
             "security": [],
@@ -160,6 +160,27 @@
                 },
                 {
                     "name": "itemId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ]
+        }
+    },
+    "/v2/cart/discount/{cartId}": {
+        "delete": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "cartId",
                     "in": "path",
                     "description": "",
                     "required": true,
@@ -263,6 +284,7 @@
             "tags": [
                 "Cart"
             ],
+            "security": [{"user_authorization": []}],
             "requestBody": {
                 "description": "",
                 "content": {

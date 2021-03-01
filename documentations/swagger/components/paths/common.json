@@ -9,5 +9,27 @@
                 "Common"
             ]
         }
+    },
+    "/api/cookienotice": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Common"
+            ]
+        }
+    },
+    "/api/serverIsUp": {
+        "get": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Common"
+            ]
+        }
     }
 }

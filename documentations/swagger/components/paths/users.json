@@ -2,7 +2,7 @@
     "/api/v2/users": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",
@@ -24,18 +24,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "User"
             ],
@@ -82,7 +70,7 @@
     "/api/v2/user": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",
@@ -95,18 +83,6 @@
                     }
                 }
             },
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "User"
             ],
@@ -126,18 +102,6 @@
             "deprecated": false,
             "security": [],
             "responses": {},
-            "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
             "tags": [
                 "User"
             ]
@@ -146,7 +110,7 @@
     "/api/v2/user/{id}": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",
@@ -160,16 +124,6 @@
                 }
             },
             "parameters": [
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
                 {
                     "name": "id",
                     "in": "path",
@@ -198,7 +152,7 @@
         },
         "delete": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {},
             "parameters": [
                 {
@@ -206,16 +160,6 @@
                     "in": "path",
                     "description": "User id",
                     "required": true,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                {
-                    "name": "authorization",
-                    "in": "headers",
-                    "description": "authorization",
-                    "required": false,
                     "deprecated": false,
                     "schema": {
                         "type": "string"
@@ -263,7 +207,7 @@
     "/api/v2/user/addresses": {
         "put": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -272,7 +216,7 @@
         }
     },
     "/api/v2/user/resetpassword": {
-        "put": {
+        "post": {
             "deprecated": false,
             "security": [],
             "responses": {},
@@ -306,7 +250,7 @@
     "/api/v2/getUserTypes": {
         "post": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [

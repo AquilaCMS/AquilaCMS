@@ -86,7 +86,8 @@ async function setCategory(req, res, next) {
 }
 
 /**
- * Fonction supprimant une categorie
+ * DELETE /v2/category/{id}
+ * @summary Remove category
  */
 async function deleteCategory(req, res, next) {
     try {
@@ -98,7 +99,8 @@ async function deleteCategory(req, res, next) {
 }
 
 /**
- * Met a jour le filtre passer dans le body si il contient un id_attribut sinon, le filtre sera testé
+ * PUT /v2/category/{id}/filter
+ * @summary Set one filter
  */
 async function setFilter(req, res, next) {
     try {
@@ -109,8 +111,10 @@ async function setFilter(req, res, next) {
         return next(error);
     }
 }
+
 /**
- * Met a jour les filtres passer dans le body
+ * PUT /v2/category/{id}/filters
+ * @summary Set filters
  */
 async function setFilters(req, res, next) {
     try {

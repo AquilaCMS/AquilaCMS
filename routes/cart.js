@@ -80,7 +80,7 @@ async function setCartToOrder(req, res, next) {
 }
 
 /**
- * DELETE /api/v2/cart/:cartId/item/:itemId
+ * DELETE /api/v2/cart/{cartId}/item/{itemId}
  * @summary Delete an item in cart
  */
 async function deleteCartItem(req, res, next) {
@@ -161,7 +161,7 @@ async function updateAddresses(req, res, next) {
  */
 async function updateDelivery(req, res, next) {
     try {
-        const result = await ServiceCart.updateDelivery(req.body);
+        const result = await ServiceCart.updateDelivery(req.body, req.query ? req.query.removeDeliveryDatas : false);
         await ServiceCart.linkCustomerToCart(result.data.cart, req);
         return res.send(result.data.cart);
     } catch (err) {
@@ -169,6 +169,10 @@ async function updateDelivery(req, res, next) {
     }
 }
 
+/**
+ * DELETE /v2/cart/discount/{cartId}
+ * @summary Remove discount in cart
+ */
 async function removeDiscount(req, res, next) {
     try {
         const result = await ServiceCart.removeDiscount(req.params.cartId);

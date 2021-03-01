@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const expressJSDocSwagger             = require('@aquilacms/express-jsdoc-swagger');
+const swaggerUi                       = require('swagger-ui-express-updated');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
 const express                         = require('express');
@@ -93,7 +93,6 @@ const initExpress = async (server, passport) => {
     let contentSecurityPolicyValues = [
         "'self'",
         'https://cdnjs.cloudflare.com',
-        'https://code.getmdl.io',
         "'unsafe-inline'"
     ];
     if (global.envConfig && global.envConfig.environment) {
@@ -107,15 +106,18 @@ const initExpress = async (server, passport) => {
             ];
         }
     }
-
-    // server.use(helmet.contentSecurityPolicy({
-    //     directives : {
-    //         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-    //         'script-src' : contentSecurityPolicyValues
-    //     },
-    //     // reportOnly ignore the CSP error, but report it
-    //     reportOnly : false
-    // }));
+    const contentSecurityPolicyString = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicyValues ? global.envConfig.environment.contentSecurityPolicyValues.join(' ') : '';
+    server.use(helmet.contentSecurityPolicy({
+        directives : {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            'font-src'   : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
+            'img-src'    : [`'self' ${contentSecurityPolicyString}`, 'data:'],
+            'script-src' : contentSecurityPolicyValues,
+            'frame-src'  : [`'self' ${contentSecurityPolicyString}`]
+        },
+        // reportOnly ignore the CSP error, but report it
+        reportOnly : false
+    }));
     server.use(helmet.dnsPrefetchControl({allow: true}));
     server.use(helmet.originAgentCluster());
     server.use(helmet.frameguard({action: 'sameorigin'}));
@@ -168,21 +170,10 @@ const initExpress = async (server, passport) => {
     });
 
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
-    const configFile  = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')));
-    const swaggerFile = require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js'));
-    await expressJSDocSwagger(server)(
-        {...configFile, baseDir: global.appRoot},
-        swaggerFile,
-        {
-            opts : {
-                customCss       : '.curl-command { display: none }',
-                customSiteTitle : 'Aquila : Api\'s documentation',
-                swaggerOptions  : {
-                    docExpansion : 'none'
-                }
-            }
-        }
-    );
+    server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
+        require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
+        JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
+    ));
 };
 
 const maintenance = async (req, res, next) => {
