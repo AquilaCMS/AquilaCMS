@@ -88,7 +88,7 @@ const OrdersSchema = new Schema({
                 phone      : String
             }
         },
-        status   : String,
+        status    : String,
         birthDate : Date,
         details   : {},
         type      : {type: String} // garder sous cette forme, sinon il croit qu'on définit le type de "customer"

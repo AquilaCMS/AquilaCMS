@@ -99,11 +99,11 @@ const UserSchema = new Schema({
             phone      : String
         }
     },
-    status           : String,
-    delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
-    billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
-    addresses        : [AddressSchema],
-    isAdmin          : {type: Boolean, default: false},
+    status               : String,
+    delivery_address     : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
+    billing_address      : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
+    addresses            : [AddressSchema],
+    isAdmin              : {type: Boolean, default: false},
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
     payementChoice       : String,
