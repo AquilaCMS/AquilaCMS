@@ -13,7 +13,6 @@ const aquilaEvents      = require('./aquilaEvents');
 const encryption        = require('./encryption');
 const fsp               = require('./fsp');
 const modules           = require('./modules');
-const npm               = require('./npm');
 const packageManager    = require('./packageManager');
 const translation       = require('./translation');
 const utils             = require('./utils');
@@ -31,7 +30,6 @@ module.exports = {
     encryption,
     fsp,
     modules,
-    npm,
     packageManager,
     translation,
     utils,
