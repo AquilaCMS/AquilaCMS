@@ -145,7 +145,7 @@ async function removeConfigTheme(theme) {
 const installDependencies = async (theme) => {
     console.log('Installing new theme\'s dependencies...');
     const cmdTheme = `./themes/${theme}`;
-    await packageManager.execCmd(`yarn install${isProd() ? ' --prod' : ''}`, cmdTheme);
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, cmdTheme);
 };
 
 /**
