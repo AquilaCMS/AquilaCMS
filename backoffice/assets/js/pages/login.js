@@ -11,6 +11,7 @@ $(document).ready(function () {
         $("#resetPass").hide();
         $("#resetedPass").hide();
         $("#samePass").hide();
+        $("#email-error").hide();
     }
 
     var url = window.location.href;
@@ -51,8 +52,15 @@ $(document).ready(function () {
             document.getElementById('resetPass').innerHTML = "<strong>Email sent to " + $("#field-email2", this).val() + "</strong>";
             document.getElementById('resetPass').style.display = "block";
         } catch (err) {
-            $("#api-error").show();
-
+            if(err.responseJSON){
+                if(err.responseJSON.code && err.responseJSON.code == "NotFound"){
+                    $("#email-error").show(); //TODO
+                }else{
+                    $("#api-error").show();
+                }
+            }else{
+                $("#api-error").show();
+            }
         }
     });
 
