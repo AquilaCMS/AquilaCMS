@@ -60,12 +60,8 @@ ProductBundleSchema.methods.updateData = async function (data) {
         // On met à jour le slug du produit
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
     }
-    try {
-        const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
-        return updPrd;
-    } catch (error) {
-        return error;
-    }
+    const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
+    return updPrd;
 };
 
 ProductBundleSchema.methods.addToCart = async function (cart, item) {

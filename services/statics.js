@@ -17,15 +17,13 @@ const queryBuilder     = new QueryBuilder(Statics, restrictedFields, defaultFiel
 const checkSlugExist = async (doc) => {
     const arg = {$or: []};
     if (doc.translation) {
-        for (const lang of Object.entries(doc.translation)) {
-            if (doc.translation[lang[0]]) {
-                arg.$or.push({[`translation.${lang[0]}.slug`]: doc.translation[lang[0]].slug});
+        for (const [lang] of Object.entries(doc.translation)) {
+            if (doc.translation[lang]) {
+                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
             }
         }
     }
-    if (doc._id) {
-        arg._id = {$nin: [doc._id]};
-    }
+    if (doc._id) arg._id = {$nin: [doc._id]};
 
     if (await Statics.countDocuments(arg) > 0) {
         throw NSErrors.SlugAlreadyExist;

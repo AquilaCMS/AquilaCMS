@@ -24,9 +24,9 @@ const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultF
 const checkSlugExist = async (doc) => {
     const arg = {$or: []};
     if (doc.translation) {
-        for (const lang of Object.entries(doc.translation)) {
-            if (doc.translation[lang[0]]) {
-                arg.$or.push({[`translation.${lang[0]}.slug`]: doc.translation[lang[0]].slug});
+        for (const [lang] of Object.entries(doc.translation)) {
+            if (doc.translation[lang]) {
+                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
             }
         }
     }
@@ -189,17 +189,8 @@ const createCategory = async (req) => {
         }
         _menu.save();
     }
-    let saved;
-    try {
-        saved = await newMenu.save();
-        return saved;
-    } catch (error) {
-        if (error && error.code === 11000) {
-            throw NSErrors.Conflict;
-        } else {
-            throw NSErrors[error.code];
-        }
-    }
+    const saved = await newMenu.save();
+    return saved;
 };
 
 const deleteCategory = async (id) => {

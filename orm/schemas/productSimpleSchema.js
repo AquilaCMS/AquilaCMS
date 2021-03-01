@@ -39,12 +39,8 @@ ProductSimpleSchema.methods.updateData = async function (data) {
         ati : data.price.ati.special || data.price.ati.normal
     };
     reviewService.computeAverageRateAndCountReviews(data);
-    try {
-        const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
-        return updPrd;
-    } catch (error) {
-        return error;
-    }
+    const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    return updPrd;
 };
 
 ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) {

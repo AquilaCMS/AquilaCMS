@@ -637,14 +637,13 @@ const setProduct = async (req) => {
 const checkSlugExist = async (doc) => {
     const arg = {$or: []};
     if (doc.translation) {
-        for (const lang of Object.entries(doc.translation)) {
-            if (doc.translation[lang[0]]) {
-                arg.$or.push({[`translation.${lang[0]}.slug`]: doc.translation[lang[0]].slug});
+        for (const [lang] of Object.entries(doc.translation)) {
+            if (doc.translation[lang].canonical) {
+                delete doc.translation[lang].canonical;
             }
         }
     }
-
-    arg._id = doc._id ? [doc._id] : [];
+    if (doc._id) arg._id = {$nin: [doc._id]};
     if (await Products.countDocuments(arg) > 0) {
         throw NSErrors.SlugAlreadyExist;
     }
