@@ -17,6 +17,7 @@ const path                            = require('path');
 const {v1: uuidv1}                    = require('uuid');
 const {fsp, translation, serverUtils} = require('../utils');
 const {retrieveUser}                  = require('./authentication');
+const {isProd}                        = require('../utils/server');
 
 const getUserFromRequest = async (req) => {
     const user = null;
@@ -106,11 +107,17 @@ const initExpress = async (server, passport) => {
             ];
         }
     }
+    const directives = {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'script-src' : contentSecurityPolicyValues
+    };
+    if (!isProd()) {
+        directives['script-src'].push('http://cdn.jsdelivr.net');
+        directives['script-src'].push("'unsafe-eval'");
+        directives['img-src'].push('http://cdn.jsdelivr.net');
+    }
     server.use(helmet.contentSecurityPolicy({
-        directives : {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'script-src' : contentSecurityPolicyValues
-        },
+        directives,
         // reportOnly ignore the CSP error, but report it
         reportOnly : false
     }));
