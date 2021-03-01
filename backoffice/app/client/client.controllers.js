@@ -253,15 +253,17 @@ ClientControllers.controller("ClientDetailCtrl", [
                     for(let i = 0; i < $scope.client.addresses.length; i++)
                     {
                         var isoCountryCode = $scope.client.addresses[i].isoCountryCode;
-                        ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
-                        {
-                            // On récupére le nom du pays
-                            $scope.client.addresses[i].country = response.name;
-                        }, function (error) {
-                            console.error("Impossible de récupérer le pays des clients", error);
-                            // si une erreur se produit on met le code iso du pays dans country
-                            $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
-                        });
+                        if(isoCountryCode){
+                            ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
+                            {
+                                // On récupére le nom du pays
+                                $scope.client.addresses[i].country = response.name;
+                            }, function (error) {
+                                console.error("Impossible de récupérer le pays des clients", error);
+                                // si une erreur se produit on met le code iso du pays dans country
+                                $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
+                            });
+                        }
                     }
                 }
 
