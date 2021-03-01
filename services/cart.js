@@ -517,47 +517,57 @@ const linkCustomerToCart = async (cart, req) => {
     return cart;
 };
 
-const updateDelivery = async (datas) => {
-    let {shipment}                       = datas;
-    const {lang, cartId, isoCountryCode} = datas;
-    const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
-    if (!shipment.countries || !shipment.preparation) {
-        const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
-        shipment        = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
-    }
-    const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
-    const delaysT       = country.translation;
-    const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
-    const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
-    const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
-    const delivery      = {
-        method : shipment._id,
-        value  : {
-            ati : arrayPrices[shipment.code] ? arrayPrices[shipment.code] : 0,
-            et  : arrayPrices[shipment.code] ? (arrayPrices[shipment.code] / (vat + 1)) : 0,
-            vat : shipment.vat_rate ? shipment.vat_rate : 20
-        },
-        code         : shipment.code,
-        name         : shipment.name,
-        url          : shipment.url,
-        date         : shipment.dateDelivery,
-        dateDelivery : {
-            delayDelivery    : delays.delay,
-            unitDelivery     : delays.unit,
-            delayPreparation : (shipment.preparation && shipment.preparation.delay) ? shipment.preparation.delay : 0,
-            unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
+const updateDelivery = async (datas, removeDeliveryDatas = false) => {
+    let cart = {};
+    if (removeDeliveryDatas) {
+        cart = await Cart.findOneAndUpdate({_id: datas.cartId}, {$unset: {delivery: {}, orderReceipt: ''}}, {new: true});
+    } else {
+        let {shipment}                       = datas;
+        const {lang, cartId, isoCountryCode} = datas;
+        const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
+        if (!shipment.countries || !shipment.preparation) {
+            const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
+            shipment        = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
         }
-    };
-    const cart          = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
-    if (!cart) {
-        throw NSErrors.CartInactive;
-    }
-    if (cart.orderReceipt.method === 'delivery') {
-        cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
-        cart.addresses.billing  = cart.customer.id.addresses[cart.customer.id.billing_address];
-        await cart.save();
+        const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
+        const delaysT       = country.translation;
+        const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
+        const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
+        const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
+        const delivery      = {
+            method : shipment._id,
+            value  : {
+                ati : arrayPrices[shipment.code] ? arrayPrices[shipment.code] : 0,
+                et  : arrayPrices[shipment.code] ? (arrayPrices[shipment.code] / (vat + 1)) : 0,
+                vat : shipment.vat_rate ? shipment.vat_rate : 20
+            },
+            code         : shipment.code,
+            name         : shipment.name,
+            url          : shipment.url,
+            date         : shipment.dateDelivery,
+            dateDelivery : {
+                delayDelivery    : delays.delay,
+                unitDelivery     : delays.unit,
+                delayPreparation : (shipment.preparation && shipment.preparation.delay) ? shipment.preparation.delay : 0,
+                unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
+            }
+        };
+        cart                = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
+        if (!cart) {
+            throw NSErrors.CartInactive;
+        }
+        if (cart.orderReceipt.method === 'delivery') {
+            cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
+            cart.addresses.billing  = cart.customer.id.addresses[cart.customer.id.billing_address];
+            await cart.save();
+        }
     }
     return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
+};
+
+const removeDelivery = async (body) => {
+    const cart = await Cart.updateOne({_id: body.cart_id}, {$unset: {delivery: '', 'orderReceipt.method': ''}});
+    return cart;
 };
 
 const removeDiscount = async (id) => {
@@ -631,5 +641,6 @@ module.exports = {
     addItem,
     updateDelivery,
     removeDiscount,
-    validateForCheckout
+    validateForCheckout,
+    removeDelivery
 };

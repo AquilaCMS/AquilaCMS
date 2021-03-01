@@ -161,7 +161,7 @@ const getUserTypes = async (query) => {
  * @param {*} lang lang du client
  * @see https://github.com/Automattic/mongoose/issues/7984 can't use updateOne
  */
-const generateTokenSendMail = async (email, lang) => {
+const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
     const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
     if (!user) {
@@ -170,8 +170,11 @@ const generateTokenSendMail = async (email, lang) => {
     const {appUrl}  = global.envConfig.environment;
     const tokenlink = `${appUrl}resetpass?token=${resetPassToken}`;
 
-    await servicesMail.sendResetPassword(email, tokenlink, lang);
-    return {message: email};
+    if (sendMail) {
+        await servicesMail.sendResetPassword(email, tokenlink, lang);
+        return {message: email};
+    }
+    return {tokenlink};
 };
 
 const changePassword = async (email, password) => {

@@ -10,11 +10,11 @@ const language    = require('./language.json');
 const newsletter  = require('./newsletter.json');
 const products    = require('./products.json');
 const shipments   = require('./shipments.json');
-const site        = require('./site.json');
+const news        = require('./news.json');
 const statics     = require('./statics.json');
 const statistics  = require('./statistics.json');
 const territories = require('./territories.json');
-const theme       = require('./theme.json');
+const themeConfig = require('./themeConfig.json');
 const users       = require('./users.json');
 
 module.exports = {
@@ -27,13 +27,13 @@ module.exports = {
     ...config,
     ...discount,
     ...language,
+    ...news,
     ...newsletter,
     ...products,
     ...shipments,
-    ...site,
     ...statics,
     ...statistics,
     ...territories,
-    ...theme,
+    ...themeConfig,
     ...users
 };

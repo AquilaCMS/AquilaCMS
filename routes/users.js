@@ -20,7 +20,7 @@ module.exports = function (app) {
     app.put('/v2/user', setUser);
     app.put('/v2/user/admin', authentication, adminAuth, setUser);
     app.delete('/v2/user/:id', authentication, adminAuth, deleteUser);
-    app.post('/v2/getUserTypes', authentication, getUserTypes);
+    app.post('/v2/getUserTypes', authentication, adminAuth, getUserTypes);
 };
 
 /* POST /api/v2/users
@@ -145,7 +145,7 @@ async function getUserTypes(req, res, next) {
 }
 
 /**
- * PUT /api/v2/user/resetpassword
+ * POST /api/v2/user/resetpassword
  * @summary Reset password
  */
 async function resetpassword(req, res, next) {

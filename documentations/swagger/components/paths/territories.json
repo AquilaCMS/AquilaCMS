@@ -55,7 +55,7 @@
         },
         "put": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -108,7 +108,7 @@
         },
         "delete": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
             "responses": {},
             "parameters": [
                 {

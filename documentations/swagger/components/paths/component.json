@@ -12,8 +12,48 @@
                                 "type": "object"
                             },
                             "examples": {
-                                "test name": {
-                                    "value": "{\r\n\"coucou\": \"truc\"\r\n}"
+                                "ns-gallery": {
+                                    "value": "{\r\n\"datas\": [\r\n{\r\n\"src\": \"medias/gallery/imagename.jpg\",\r\n\"srcset\": [\r\n\"medias/gallery/imagename.jpg\"\r\n],\r\n\"content\": \"\",\r\n\"alt\": \"alt name\",\r\n\"order\": 1,\r\n\"extension\": \".jpg\"\r\n}\r\n],\r\n\"count\": 1,\r\n\"maxColumnNumber\": 3\r\n}"
+                                },
+                                "ns-cms" : {
+                                    "value":{
+                                        "code": "header",
+                                        "content": "html content",
+                                        "description": "descr"
+                                    }
+                                },
+                                "ns-menu" : {
+                                    "value":{
+                                        "action": "catalog",
+                                        "children": [
+                                            {
+                                                "action": "catalog",
+                                                "displayOrder": 1,
+                                                "code": "catcode",
+                                                "productsList": [
+                                                    {
+                                                        "checked": false,
+                                                        "sortWeight": 0,
+                                                        "_id": "5da57915de6bed65e1d2a8ad",
+                                                        "id": "5c667f8a28a49c049c5863c8"
+                                                    }
+                                                ],
+                                                "slug": {
+                                                    "en": "my-slugen",
+                                                    "fr": "slugfr"
+                                                },
+                                                "name": "product name",
+                                                "metaDescription": "meta description",
+                                                "extraText": "html content"
+                                            }
+                                        ],
+                                        "code": "menu-header",
+                                        "slug": {
+                                            "fr": "menu-header",
+                                            "en": "menu-header"
+                                        },
+                                        "name": "Menu header"
+                                    }
                                 }
                             }
                         }
@@ -50,21 +90,39 @@
                     "schema": {
                         "type": "string"
                     }
-                },
-                {
-                    "name": "authorization",
-                    "in": "header",
-                    "description": "authorization",
-                    "required": false,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
                 }
             ],
             "tags": [
                 "Component"
-            ]
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get ns-gallery",
+                                "description": "Get gallery in english.<br/>Specify in parameters : 'componentName' : 'ns-gallery' and 'code' : 'code_gallery'",
+                                "value": {"lang":"en"}
+                            },
+                            "example2": {
+                                "summary": "Get ns-cms",
+                                "description": "Get BlockCMS in english.<br/>Specify in parameters : 'componentName' : 'ns-cms' and 'code' : 'code_cms'",
+                                "value": {"lang":"en"}
+                            },
+                            "example3": {
+                                "summary": "Get ns-menu",
+                                "description": "Get menu.<br/>Specify in parameters : 'componentName' : 'ns-menu' and 'code' : 'code_menu'",
+                                "value": {"lang":"en"}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
         }
     }
 }

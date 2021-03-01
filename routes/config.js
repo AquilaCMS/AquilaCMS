@@ -23,7 +23,7 @@ module.exports = function (app) {
 };
 
 /**
- * GET /api/config/data
+ * @deprecated
  */
 const getConfigTheme = async (req, res, next) => {
     try {
@@ -35,7 +35,7 @@ const getConfigTheme = async (req, res, next) => {
 };
 
 /**
- * POST /api/v2/config/{key}
+ * POST /api/v2/config
  * @summary Get config of the website
  */
 const getConfig = async (req, res, next) => {

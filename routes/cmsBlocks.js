@@ -54,7 +54,7 @@ async function getCMSBlocks(req, res, next) {
 async function getCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlock(req.body.PostBody);
-        if ((!req.headers.authorization || (req.info && !req.info.isAdmin)) && result.translation) {
+        if (req.info && !req.info.isAdmin && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
@@ -68,10 +68,14 @@ async function getCMSBlock(req, res, next) {
     }
 }
 
+/**
+ * POST /v2/cmsBlock/{id}
+ * @summary Get one CMSBlock by id
+ */
 async function getCMSBlockById(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlockById(req.params.id, req.body.PostBody);
-        if ((!req.headers.autorization || (req.info && !req.info.isAdmin)) && result.translation) {
+        if (req.info && !req.info.isAdmin && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
@@ -85,6 +89,10 @@ async function getCMSBlockById(req, res, next) {
     }
 }
 
+/**
+ * PUT /v2/cmsBlock
+ * @summary Set CMSBlock
+ */
 async function setCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.setCMSBlock(req.body);
@@ -94,6 +102,10 @@ async function setCMSBlock(req, res, next) {
     }
 }
 
+/**
+ * DELETE /v2/cmsBlock/:code
+ * @summary Delete CMSBlock
+ */
 async function deleteCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.deleteCMSBlock(req.params.code);

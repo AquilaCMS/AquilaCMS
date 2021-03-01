@@ -63,6 +63,58 @@
                 "description": "PostBody",
                 "required": false
             }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/newsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "News"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/site/new/{_id}": {
+        "delete": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "_id",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "News"
+            ]
         }
     }
 }
