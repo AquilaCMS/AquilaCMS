@@ -153,8 +153,8 @@ const initServer = async () => {
                     };
                 }, {})
             }),
-            introspection    : !serverUtils.isProd(),
-            playground       : !serverUtils.isProd(),
+            introspection    : !serverUtils.isProd,
+            playground       : !serverUtils.isProd,
             cacheControl     : true,
             persistedQueries : {
                 cache : new InMemoryLRUCache(),

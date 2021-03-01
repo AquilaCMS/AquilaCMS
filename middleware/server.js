@@ -111,7 +111,7 @@ const initExpress = async (server, passport) => {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         'script-src' : contentSecurityPolicyValues
     };
-    if (!isProd()) {
+    if (!isProd) {
         directives['script-src'].push('http://cdn.jsdelivr.net');
         directives['script-src'].push("'unsafe-eval'");
         directives['img-src'].push('http://cdn.jsdelivr.net');
