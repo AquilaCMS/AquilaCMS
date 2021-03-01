@@ -146,23 +146,27 @@ const genSitemap = async () => {
 
             for (let i = 0, leni = articles.length; i < leni; i++) {
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
-                    const _article = articles[i].translation[languages[j].code];
-                    const lang     = _languages[languages[j].code];
-                    if (_article.slug) {
-                        const xhtml = [];
-                        const url   = {
-                            loc        : `${appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '')}blog/${_article.slug}`,
-                            lastmod    : moment().format('YYYY-MM-DD'),
-                            changefreq : sitemapConf.blog.frequency,
-                            priority   : sitemapConf.blog.priority
-                        };
-                        if (languages.length > 1) {
-                            for (let k = 0, lenk = languages.length; k < lenk; k++) {
-                                xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}"`);
+                    if (articles[i].translation[languages[j].code] !== undefined) {
+                        const _article = articles[i].translation[languages[j].code];
+                        const lang     = _languages[languages[j].code];
+                        if (_article.slug) {
+                            const xhtml = [];
+                            const url   = {
+                                loc        : `${appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : '')}blog/${_article.slug}`,
+                                lastmod    : moment().format('YYYY-MM-DD'),
+                                changefreq : sitemapConf.blog.frequency,
+                                priority   : sitemapConf.blog.priority
+                            };
+                            if (languages.length > 1) {
+                                for (let k = 0, lenk = languages.length; k < lenk; k++) {
+                                    if (articles[i].translation[languages[k].code] !== undefined) {
+                                        xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}"`);
+                                    }
+                                }
+                                url.xhtml = xhtml;
                             }
-                            url.xhtml = xhtml;
+                            sitemap.url.push(url);
                         }
-                        sitemap.url.push(url);
                     }
                 }
             }
