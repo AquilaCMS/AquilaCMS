@@ -16,12 +16,26 @@ $(document).ready(function () {
 
     var url = window.location.href;
     var urlObject = new URL(url);
-    if(urlObject.searchParams.get("token")){
-        document.getElementById('form1').style.display = "none";
-        document.getElementById('form2').style.display = "none";
-        document.getElementById('form3').style.display = "block";
-        document.getElementById('passwordForgot').style.display = "none";
+    async function testToken(){
+        if(urlObject.searchParams.get("token")){
+            document.getElementById('form1').style.display = "none";
+            document.getElementById('form2').style.display = "none";
+            document.getElementById('form3').style.display = "block";
+            document.getElementById('passwordForgot').style.display = "none";
+            try {
+                const response = await $.post(window.location.origin + "/api/v2/user/resetpassword", {
+                    token: urlObject.searchParams.get("token")
+                });
+                if(response.message === 'Token invalide'){
+                    window.location.href = window.location.origin + window.location.pathname;
+                }
+            } catch (err) {
+                $("#api-error").show();
+            }
+        }
     }
+    testToken();
+
 
     $("#form1").submit(async function (e) {
         e.preventDefault();
