@@ -19,7 +19,7 @@ const themeCompile = async (theme) => {
     try {
         theme = theme || global.envConfig.environment.currentTheme;
         theme = path.resolve(global.appRoot, 'themes', theme);
-        await packageManager.execCmd(`yarn install ${isProd() ? ' --prod' : ''}`, `${theme}`);
+        await packageManager.execCmd(`yarn install ${isProd ? ' --prod' : ''}`, `${theme}`);
         await nextBuild(theme);
     } catch (err) {
         console.error(err);

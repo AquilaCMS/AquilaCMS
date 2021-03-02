@@ -372,7 +372,7 @@ async function execDefine(job, option) {
             if (api.startsWith('/')) api = api.substr(1);
             api = global.envConfig.environment.appUrl + api;
         }
-        if (!utils.IsJsonString(params)) {
+        if (!utils.isJsonString(params)) {
             throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
         }
         result = await axios[httpMethod](api, JSON.parse(params));

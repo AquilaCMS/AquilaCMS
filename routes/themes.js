@@ -141,7 +141,7 @@ async function packageInstall(req, res, next) {
             themPath = `./themes/${themesServices.getThemePath()}`;
         }
         await packageManager.execCmd(
-            `yarn install${serverUtils.isProd() ? ' --prod' : ''}`,
+            `yarn install${serverUtils.isProd ? ' --prod' : ''}`,
             path.resolve(`./themes/${themPath}`)
         );
         return res.json();

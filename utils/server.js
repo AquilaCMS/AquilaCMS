@@ -19,6 +19,7 @@ const fs           = require('./fsp');
  * @returns {String} property
  */
 const getEnv = (property) =>  {
+    if (!property) throw new Error('property is mandatory');
     let env = process.env[property];
     if (!env && property === 'AQUILA_ENV') env = 'aquila';
     if (!env && property === 'NODE_ENV') env = 'production';
@@ -29,12 +30,7 @@ const getEnv = (property) =>  {
  * check if in prod or not
  * @returns {boolean}
  */
-const isProd = () => {
-    if (getEnv('NODE_ENV') === 'production') {
-        return true;
-    }
-    return false;
-};
+const isProd = getEnv('NODE_ENV') === 'production';
 
 const updateEnv = async () => {
     let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();

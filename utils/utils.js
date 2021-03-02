@@ -247,7 +247,7 @@ let compare = (item1, item2) => {
     }
 };
 
-const IsJsonString = (str) => {
+const isJsonString = (str) => {
     try {
         JSON.parse(str);
     } catch (e) {
@@ -257,21 +257,15 @@ const IsJsonString = (str) => {
 };
 
 module.exports = {
-    // utils/datas
     downloadFile,
     json2csv,
-    // utils/helpers
     getObjFromDotStr,
     detectDuplicateInArray,
-    // services/seo ou utils/utils : Strings for slugs
     slugify,
-    // utils/utils : Dev info
     tmp_use_route,
-    // utils/utils : Taxes
     toET,
-    // utils/utils : Retrocompatibilité
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,
-    IsJsonString
+    isJsonString
 };

@@ -31,7 +31,7 @@ const {
     middlewareServer
 }                           = require('./middleware');
 
-const dev    = !serverUtils.isProd();
+const dev    = !serverUtils.isProd;
 const server = express();
 
 // ATTENTION, ne pas require des services directement en haut de ce fichier
