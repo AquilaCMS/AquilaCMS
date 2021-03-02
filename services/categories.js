@@ -16,28 +16,11 @@ const QueryBuilder     = require('../utils/QueryBuilder');
 const NSErrors         = require('../utils/errors/NSErrors');
 const ServiceRules     = require('./rules');
 const ServiceLanguages = require('./languages');
+const utilsDatabase    = require('../utils/database');
 
 const restrictedFields = ['clickable'];
 const defaultFields    = ['_id', 'code', 'action', 'translation'];
 const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultFields);
-
-const checkSlugExist = async (doc) => {
-    const arg = {$or: []};
-    if (doc.translation) {
-        for (const [lang] of Object.entries(doc.translation)) {
-            if (doc.translation[lang]) {
-                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
-            }
-        }
-    }
-    if (doc._id) {
-        arg._id = {$nin: [doc._id]};
-    }
-
-    if (await Categories.countDocuments(arg) > 0) {
-        throw NSErrors.SlugAlreadyExist;
-    }
-};
 
 const getCategories = async (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -170,12 +153,12 @@ const getCategoryById = async (id, PostBody = null) => {
     return queryBuilder.findById(id, PostBody);
 };
 const setCategory     = async (req) => {
-    await checkSlugExist(req.body);
+    await utilsDatabase.checkSlugExist(req.body, Categories);
     return Categories.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
 const createCategory = async (req) => {
-    await checkSlugExist(req.body);
+    await utilsDatabase.checkSlugExist(req.body, Categories);
     const newMenu   = new Categories(req.body);
     const id_parent = req.body.id_parent;
     const _menu     = await Categories.findOne({_id: id_parent});

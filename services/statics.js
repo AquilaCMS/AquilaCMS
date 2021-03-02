@@ -6,29 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {Statics}    = require('../orm/models');
-const QueryBuilder = require('../utils/QueryBuilder');
-const NSErrors     = require('../utils/errors/NSErrors');
+const {Statics}     = require('../orm/models');
+const QueryBuilder  = require('../utils/QueryBuilder');
+const NSErrors      = require('../utils/errors/NSErrors');
+const utilsDatabase = require('../utils/database');
 
 const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];
 const queryBuilder     = new QueryBuilder(Statics, restrictedFields, defaultFields);
-
-const checkSlugExist = async (doc) => {
-    const arg = {$or: []};
-    if (doc.translation) {
-        for (const [lang] of Object.entries(doc.translation)) {
-            if (doc.translation[lang]) {
-                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
-            }
-        }
-    }
-    if (doc._id) arg._id = {$nin: [doc._id]};
-
-    if (await Statics.countDocuments(arg) > 0) {
-        throw NSErrors.SlugAlreadyExist;
-    }
-};
 
 const getStatics = async (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -43,12 +28,12 @@ const getStaticById = async (id, PostBody = null) => {
 };
 
 const setStatic = async (req) => {
-    await checkSlugExist(req.body);
+    await utilsDatabase.checkSlugExist(req.body, Statics);
     return Statics.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
 const createStatic = async (req) => {
-    await checkSlugExist(req.body);
+    await utilsDatabase.checkSlugExist(req.body, Statics);
     return Statics.create(req.body);
 };
 

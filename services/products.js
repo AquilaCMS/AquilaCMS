@@ -22,6 +22,7 @@ const servicesCategory        = require('./categories');
 const serviceSetAttributs     = require('./setAttributes');
 const servicePromos           = require('./promo');
 const serviceReviews          = require('./reviews');
+const utilsDatabase           = require('../utils/database');
 const {
     Configuration,
     Products,
@@ -233,7 +234,7 @@ const duplicateProduct = async (idProduct, newCode) => {
     }
     doc.active   = false;
     doc._visible = false;
-    await checkSlugExist(doc);
+    await utilsDatabase.checkSlugExist(doc, Products);
     await doc.save();
     return doc;
 };
@@ -628,25 +629,10 @@ const setProduct = async (req) => {
     if (!product) throw NSErrors.ProductNotFound;
     // On met à jour le slug du produit
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
-    await checkSlugExist(req.body);
+    await utilsDatabase.checkSlugExist(req.body, Products);
     const result = await product.updateData(req.body);
     await ProductsPreview.deleteOne({code: req.body.code});
     await Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
-};
-
-const checkSlugExist = async (doc) => {
-    const arg = {$or: []};
-    if (doc.translation) {
-        for (const [lang] of Object.entries(doc.translation)) {
-            if (doc.translation[lang].slug) {
-                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
-            }
-        }
-    }
-    if (doc._id) arg._id = {$nin: [doc._id]};
-    if (await Products.countDocuments(arg) > 0) {
-        throw NSErrors.SlugAlreadyExist;
-    }
 };
 
 const createProduct = async (req) => {
@@ -685,7 +671,7 @@ const createProduct = async (req) => {
         return result;
     }
     req.body.code = utils.slugify(req.body.code);
-    await checkSlugExist(req.body);
+    await utilsDatabase.checkSlugExist(req.body, Products);
     const res = await Products.create(req.body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
