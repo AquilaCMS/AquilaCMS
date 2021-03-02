@@ -18,9 +18,24 @@ class CartAddress extends React.Component {
         const { cmsBlocks, lang } = ctx.nsGlobals;
         const cmsLegalTxt = await getCmsBlock('legalTxt', cmsBlocks, lang, ctx);
 
+        const jwt  = ctx.query.jwt;
+        const getCartId = ctx.query.cartid;
+
+        // Create a cookies instance
+        if (jwt && ctx.req) {
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() + 2);
+            ctx.res.cookie('jwt', jwt, {
+                expires: currentDate,
+                httpOnly: false,
+                encode: String
+            })
+        }
+
         return {
+            getCartId,
             cmsLegalTxt,
-            userRequired : { url: '/cart/login', route: 'cartLogin' },
+            userRequired : jwt ? {} : { url: '/cart/login', route: 'cartLogin' },
             layoutCms    : { header: 'header_cart', footer: 'footer_cart' }
         };
     };
@@ -47,7 +62,10 @@ class CartAddress extends React.Component {
     }
 
     componentDidMount = async () => {
-        const { lang, routerLang } = this.props;
+        const { getCartId, lang, routerLang } = this.props;
+        if (getCartId) {
+            window.localStorage.setItem('cart_id', getCartId);
+        }
         const cartId = window.localStorage.getItem('cart_id');
         if (!cartId) {
             return Router.pushRoute('cart', { lang: routerLang });
