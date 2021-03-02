@@ -1,6 +1,7 @@
 import React from 'react';
 import Slider from 'react-slick';
 import { NSContext } from 'aqlrc';
+import PropTypes from 'prop-types'
 import CMS from './CMS';
 
 /**
@@ -11,7 +12,11 @@ import CMS from './CMS';
 class BlockSlider extends React.Component {
     render() {
         const {
-            autoplay, arrows, adaptiveHeight, dots, draggable
+            autoplay,
+            arrows,
+            adaptiveHeight,
+            dots,
+            draggable
         } = this.props;
         const settings = {
             autoplay,
@@ -51,8 +56,18 @@ class BlockSlider extends React.Component {
             </>
         );
     }
+}
 
-    static contextType = NSContext;
+BlockSlider.contextType = NSContext
+
+BlockSlider.propTypes = {
+    autoplay: PropTypes.bool,
+    arrows: PropTypes.bool,
+    adaptiveHeight: PropTypes.bool,
+    dots: PropTypes.bool,
+    draggable: PropTypes.bool,
+    t: PropTypes.func.isRequired,
+    ['ns-code']: PropTypes.string
 }
 
 export default BlockSlider;

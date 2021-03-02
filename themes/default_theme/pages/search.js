@@ -19,10 +19,10 @@ class PageSearch extends NSPageSearch {
         super(props);
         this.state = {
             ...props,
-            itemsPerPages : 15,
-            productsList  : props.products,
-            selectedSort  : JSON.stringify({ field: 'sortWeight', sortValue: -1 }),
-            gridDisplay   : false,
+            itemsPerPages: 15,
+            productsList: props.products,
+            selectedSort: JSON.stringify({ field: 'sortWeight', sortValue: -1 }),
+            gridDisplay: false,
         };
     }
 
