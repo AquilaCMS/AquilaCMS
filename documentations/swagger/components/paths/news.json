@@ -24,6 +24,18 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all news",
+                                "description": "Get 10 news with default fields for current language",
+                                "value": {"PostBody":{"filter": {}, "structure": "*", "limit": 10, "page": 1}}
+                            },
+                            "example2": {
+                                "summary": "Get a news with a slug",
+                                "description": "Get a news from a slug, 'here THE_SLUG'",
+                                "value": {"PostBody":{"filter":{"translation.fr.slug": "THE_SLUG"},"structure":"*","limit":10,"page":1}}
+                            }
                         }
                     }
                 },
@@ -57,6 +69,13 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get a new with id",
+                                "description": "Get a new with the id, you need to replace 'THE_ID'",
+                                "value": {"PostBody":{"filter": {"_id": "THE_ID"},"structure": "*"}}
+                            }
                         }
                     }
                 },
