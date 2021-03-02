@@ -12,7 +12,6 @@ const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
-const utilsDatabase    = require('../utils/database');
 const queryBuilder     = new QueryBuilder(News, restrictedFields, defaultFields);
 
 const getNews = async (PostBody) => {
@@ -24,7 +23,6 @@ const getNew = async (PostBody) => {
 };
 
 const saveNew = async (_new) => {
-    await utilsDatabase.checkSlugExist(_new, News);
     if (!_new) throw NSErrors.UnprocessableEntity;
     if (_new._id) {
         return News.findOneAndUpdate({_id: _new._id}, _new);

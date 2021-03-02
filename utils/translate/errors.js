@@ -151,6 +151,10 @@ module.exports = {
         fr : 'Code famille déjà existant',
         en : 'Family code already exists'
     },
+    CodeExisting : {
+        fr : 'Code déjà existant',
+        en : 'Code already exists'
+    },
     ProductNotFound : {
         fr : 'Produit non trouvé',
         en : 'Product not found'

@@ -70,22 +70,33 @@ const checkIfReplicaSet = async () => {
  * @param {*} doc
  * @param {mongoose.Schema<any>} model schema needed to be check for translation validation
  */
+const checkSlugExist = async (doc, modelName) => {
+    const query = {$or: []};
+    if (!doc || !doc.translation) return;
 
-const checkSlugExist = async (doc, model) => {
-    const arg = {$or: []};
-    if (doc.translation) {
-        for (const [lang] of Object.entries(doc.translation)) {
-            if (doc.translation[lang]) {
-                arg.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
-            }
+    for (const [lang] of Object.entries(doc.translation)) {
+        if (doc.translation[lang]) {
+            query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
         }
     }
     if (doc._id) {
-        arg._id = {$nin: [doc._id]};
+        query._id = {$nin: [doc._id]};
     }
 
-    if (await model.countDocuments(arg) > 0) {
+    if (await mongoose.model(modelName).exists(query)) {
         throw NSErrors.SlugAlreadyExist;
+    }
+};
+
+const checkCode = async (modelName, id, code) => {
+    if (!code) return;
+
+    const query = {code};
+    if (id) {
+        query._id = {$ne: id};
+    }
+    if (await mongoose.model(modelName).exists(query)) {
+        throw NSErrors.CodeExisting;
     }
 };
 
@@ -1335,5 +1346,6 @@ module.exports = {
     populateItems,
     preUpdates,
     testdb,
-    checkSlugExist
+    checkSlugExist,
+    checkCode
 };

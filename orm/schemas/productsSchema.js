@@ -253,7 +253,13 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('product', that._id, that.code);
+    await utilsDatabase.checkSlugExist(that, 'product');
+}
+
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
@@ -278,10 +284,12 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('save', async function (next) {
+    await preUpdates(this);
     this.price.priceSort = {
         et  : this.price.et.special || this.price.et.normal,
         ati : this.price.ati.special || this.price.ati.normal

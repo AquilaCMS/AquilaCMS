@@ -143,6 +143,7 @@ class NSErrors {
     static get MailCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailCodeAlreadyExists'); }
     static get ProductCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductCodeExisting'); }
     static get FamilyCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'FamilyCodeExisting'); }
+    static get CodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'CodeExisting'); }
     static get ProductIdExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductIdExisting'); }
     static get PromoCodePromoExists() { return this.makeErrorAlias(NSErrors.Conflict, 'PromoCodePromoExists'); }
     static get PromoCodePromoLimitClientMax() { return this.makeErrorAlias(NSErrors.Conflict, 'PromoCodePromoLimitClientMax'); }
