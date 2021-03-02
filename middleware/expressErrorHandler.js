@@ -88,7 +88,7 @@ const expressErrorHandler = (err, req, res, next) => {
         let lang = 'en';
         if (req.headers && req.headers.lang) lang = req.headers.lang;
         else if (req.query && req.query.lang) lang = req.query.lang;
-        else if (req.body && req.body.lang) lang = req.body.lang;
+        else if (req.body && req.body.lang && typeof req.body.lang === 'string') lang = req.body.lang;
         else if (global.defaultLang) lang = global.defaultLang;
 
         if (err instanceof MongoError) {
