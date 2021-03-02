@@ -34,6 +34,28 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all products",
+                                "description": "Get all products with the default structure '*'",
+                                "value": {"PostBody":{"filter":{},"structure":"*","limit":12,"sort":{"code":1}}}
+                            },
+                            "example2": {
+                                "summary": "Get all products filtered",
+                                "description": "Get all products filtered with a special structure",
+                                "value": {"PostBody":{"filter":{},"structure":{"code":1,"active":1,"_visible":1,"stock":1},"limit":12,"sort":{"code":1}}}
+                            },
+                            "example3": {
+                                "summary": "Get products filtered by code",
+                                "description": "Get all products filtered by code, you need to replace THE_CODE by the correct code",
+                                "value": {"PostBody":{"filter":{"code":"THE_CODE"},"structure":"*","limit":12,"sort":{"code":1}}}
+                            },
+                            "example4": {
+                                "summary": "Get products between two price",
+                                "description": "Get products between two price, '$gte' (here 10) is the minimum price and '$lte' (here 20) is the maximum price",
+                                "value": {"PostBody":{"filter":{"price.ati.normal": {"$gte": 10, "$lte": 21}}},"structure":"*","limit":12,"sort":{"code":1}}
+                            }
                         }
                     }
                 },
@@ -53,6 +75,13 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/productsSchema"
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Get one product",
+                                    "description": "Get one product with the correct code. In this example, we populate the result to have more data",
+                                    "value": {"PostBody":{"filter":{"code":"THE_CODE"},"structure":"*","populate":["set_attributes","associated_prds"],"withPromos":false}}
+                                }
                             }
                         }
                     }

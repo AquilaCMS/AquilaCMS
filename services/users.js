@@ -167,9 +167,14 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     if (!user) {
         throw NSErrors.NotFound;
     }
-    const {appUrl}  = global.envConfig.environment;
-    const tokenlink = `${appUrl}resetpass?token=${resetPassToken}`;
-
+    const {appUrl, adminPrefix} = global.envConfig.environment;
+    let link;
+    if (user.isAdmin) {
+        link = `${appUrl}${adminPrefix}/login`;
+    } else {
+        link = `${appUrl}resetpass`;
+    }
+    const tokenlink = `${link}?token=${resetPassToken}`;
     if (sendMail) {
         await servicesMail.sendResetPassword(email, tokenlink, lang);
         return {message: email};
