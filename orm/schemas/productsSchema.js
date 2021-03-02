@@ -254,8 +254,8 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
 };
 
 async function preUpdates(that) {
-    await utilsDatabase.checkCode('product', that._id, that.code);
-    await utilsDatabase.checkSlugExist(that, 'product');
+    await utilsDatabase.checkCode('products', that._id, that.code);
+    await utilsDatabase.checkSlugExist(that, 'products');
 }
 
 ProductsSchema.pre('findOneAndUpdate', async function (next) {

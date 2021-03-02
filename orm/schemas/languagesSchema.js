@@ -6,9 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
-const helper   = require('../../utils/utils');
+const mongoose      = require('mongoose');
+const Schema        = mongoose.Schema;
+const helper        = require('../../utils/utils');
+const utilsDatabase = require('../../utils/database');
 
 const LanguagesSchema = new Schema({
     code            : {type: String, required: true, unique: true},
@@ -19,7 +20,22 @@ const LanguagesSchema = new Schema({
     status          : {type: String, enum: ['visible', 'invisible', 'removing'], default: 'invisible'}
 });
 
-LanguagesSchema.pre('save', function (next) {
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('languages', that._id, that.code);
+}
+
+LanguagesSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, LanguagesSchema);
+});
+
+LanguagesSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, LanguagesSchema);
+});
+
+LanguagesSchema.pre('save', async function (next) {
+    await preUpdates(this);
     this.code = helper.slugify(this.code);
     next();
 });

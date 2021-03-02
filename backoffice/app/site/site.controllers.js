@@ -138,7 +138,11 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
                 }
             }, function (err)
             {
-                toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                if(err){
+                    toastService.toast("danger", err.data.message);
+                }else{
+                    toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                }
             });
         };
     }
