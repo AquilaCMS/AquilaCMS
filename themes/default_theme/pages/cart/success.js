@@ -158,39 +158,43 @@ class CartSuccess extends React.Component {
                                         </div>
                                         <div className="section__body" style={{ marginTop: '20px' }}>
                                             <div className="section__container">
-                                                <div style={{ textAlign: 'center' }}>
-                                                    <h5>
-                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawal') : t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
-                                                    </h5>
-                                                    {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
-                                                    <br />
-                                                    {order.addresses.delivery.line1}
-                                                    {order.addresses.delivery.line2 && <br />}
-                                                    {order.addresses.delivery.line2}
-                                                    <br />
-                                                    {`${order.addresses.delivery.zipcode} ${order.addresses.delivery.city}`}
-                                                    <br />
-                                                    {order.addresses.delivery.isoCountryCode}
-                                                    <br />
-                                                    {
-                                                        order.addresses.delivery.phone
-                                                            ? `T. ${order.addresses.delivery.phone}`
-                                                            : ''
-                                                    }
-                                                    <br />
-                                                    <h5>
-                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawalDate') : t('success:page.deliveryDate')} :
-                                                    </h5>
-                                                    <h6>
-                                                        {
-                                                            order.orderReceipt
-                                                            && order.orderReceipt.date
-                                                            && <strong>
-                                                                {moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>}
-                                                        {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
-                                                        {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
-                                                    </h6>
-                                                </div>
+                                                {
+                                                    ((order.orderReceipt && order.orderReceipt.date) || (order.delivery && order.delivery.date)) && (
+                                                        <div style={{ textAlign: 'center' }}>
+                                                            <h5>
+                                                                {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawal') : t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
+                                                            </h5>
+                                                            {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
+                                                            <br />
+                                                            {order.addresses.delivery.line1}
+                                                            {order.addresses.delivery.line2 && <br />}
+                                                            {order.addresses.delivery.line2}
+                                                            <br />
+                                                            {`${order.addresses.delivery.zipcode} ${order.addresses.delivery.city}`}
+                                                            <br />
+                                                            {order.addresses.delivery.isoCountryCode}
+                                                            <br />
+                                                            {
+                                                                order.addresses.delivery.phone
+                                                                    ? `T. ${order.addresses.delivery.phone}`
+                                                                    : ''
+                                                            }
+                                                            <br />
+                                                            <h5>
+                                                                {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawalDate') : t('success:page.deliveryDate')} :
+                                                            </h5>
+                                                            <h6>
+                                                                {
+                                                                    order.orderReceipt
+                                                                    && order.orderReceipt.date
+                                                                    && <strong>
+                                                                        {moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>}
+                                                                {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
+                                                                {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
+                                                            </h6>
+                                                        </div>
+                                                    )
+                                                }
                                             </div>
                                         </div>
                                         <div className="section__body" style={{ marginTop: '30px' }}>
