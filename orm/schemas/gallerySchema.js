@@ -6,8 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose      = require('mongoose');
+const Schema        = mongoose.Schema;
+const utilsDatabase = require('../../utils/database');
 /**
  * schema d'une gallerie photo et/ou video
  */
@@ -26,5 +27,25 @@ const GallerySchema = new Schema({
         extension : {type: String, default: '.jpg'}
     }]
 }, {timestamps: true});
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('gallery', that._id, that.code);
+}
+
+GallerySchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
+});
+
+GallerySchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
+});
+
+GallerySchema.pre('save', async function (next) {
+    await preUpdates(this);
+    const errors = await GallerySchema.statics.translationValidation(undefined, this);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+});
 
 module.exports = GallerySchema;

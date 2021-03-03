@@ -36,8 +36,9 @@ LanguagesSchema.pre('findOneAndUpdate', async function (next) {
 
 LanguagesSchema.pre('save', async function (next) {
     await preUpdates(this);
-    this.code = helper.slugify(this.code);
-    next();
+    this.code    = helper.slugify(this.code);
+    const errors = await LanguagesSchema.statics.translationValidation(undefined, this);
+    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
 module.exports = LanguagesSchema;
