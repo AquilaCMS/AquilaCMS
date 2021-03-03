@@ -148,6 +148,7 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
 };
 
 const getCategoryById = async (id, PostBody = null) => {
+    require('../utils/utils').tmp_use_route('categories_service', 'getCategoryById');
     return queryBuilder.findById(id, PostBody);
 };
 const setCategory     = async (req) => {
