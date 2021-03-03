@@ -288,7 +288,6 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
         };
 
         $scope.save = function (data) {
-            debugger;
             data.id_parent = data.parent;
             FamilyV2.save(data, function (fam) {
                 if (fam && fam._id) {
@@ -298,7 +297,6 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
                     console.error("Error!");
                 }
             }, function (e) {
-                debugger;
                     toastService.toast("danger", e.data.message);
             });
         };
