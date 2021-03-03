@@ -66,7 +66,7 @@ BlockSlider.propTypes = {
     adaptiveHeight: PropTypes.bool,
     dots: PropTypes.bool,
     draggable: PropTypes.bool,
-    t: PropTypes.func.isRequired,
+    t: PropTypes.func,
     ['ns-code']: PropTypes.string
 }
 
