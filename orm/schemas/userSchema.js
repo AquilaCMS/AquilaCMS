@@ -75,7 +75,6 @@ const UserSchema = new Schema({
         }
     },
     code     : {type: String, unique: true, sparse: true},
-    active   : {type: Boolean},
     civility : {
         type : Number,
         enum : [0, 1] // 0 pour homme, 1 pour femme
