@@ -110,10 +110,11 @@ const initExpress = async (server, passport) => {
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'font-src'   : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
-            'img-src'    : [`'self' ${contentSecurityPolicyString}`, 'data:'],
-            'script-src' : contentSecurityPolicyValues,
-            'frame-src'  : [`'self' ${contentSecurityPolicyString}`]
+            'font-src'    : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
+            'img-src'     : [`'self' ${contentSecurityPolicyString}`, 'data:'],
+            'script-src'  : contentSecurityPolicyValues,
+            'frame-src'   : [`'self' ${contentSecurityPolicyString}`],
+            'connect-src' : [`'self' ${contentSecurityPolicyString}`]
         },
         // reportOnly ignore the CSP error, but report it
         reportOnly : false
