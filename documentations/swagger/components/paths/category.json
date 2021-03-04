@@ -29,6 +29,45 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all categories",
+                                "description": "Get 10 categories with default fields for current language'",
+                                "value": {
+                                    "PostBody": {
+                                        "limit": 10
+                                    }
+                                }
+                            },
+                            "example2": {
+                                "summary": "Get all catalog type categories",
+                                "description": "Get all categories which are catalog type with the default fields",
+                                "value": {
+                                    "PostBody": {
+                                        "limit": 10,
+                                        "filter": {
+                                            "action": "catalog"
+                                        }
+                                    }
+                                }
+                            },
+                            "example3": {
+                                "summary": "Get a specific french category",
+                                "description": "Get the french category for slug 'myslug' with the default fields except one field 'img'",
+                                "value": {
+                                    "lang": "fr",
+                                    "PostBody": {
+                                        "limit": 1,
+                                        "filter": {
+                                            "translation.fr.slug": "myslug"
+                                        },
+                                        "structure": {
+                                            "img": 0
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -67,6 +106,25 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get specific category",
+                                "description": "Get the category for the matched parameter with default fields for the default language",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {},
+                                        "limit": 1,
+                                        "populate": [
+                                            "string"
+                                        ],
+                                        "skip": 0,
+                                        "sort": {},
+                                        "structure": {},
+                                        "page": null
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -113,6 +171,19 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get specific category",
+                                "description": "Get the category for code 'mycode' with default fields for the default language",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "code": "mycode"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -128,6 +199,16 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Update a category",
+                                "description": "Update the french name of category for the matched _id",
+                                "value": {
+                                    "_id":"myId",
+                                    "translation.fr.name":"New name FR"
+                                }
+                            }
                         }
                     }
                 }

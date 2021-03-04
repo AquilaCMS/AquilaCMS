@@ -111,6 +111,16 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Update a CMSBlock",
+                                "description": "Update the english description of a CMSBlock for the matched _id",
+                                "value": {
+                                    "_id": "myId",
+                                    "translation.en.description": "New description in english"
+                                }
+                            }
                         }
                     }
                 },
