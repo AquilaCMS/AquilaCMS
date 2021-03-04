@@ -369,7 +369,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                         toastService.toast('danger', 'Email already exists');
                     }
                 }else{
-                    toastService.toast('danger', 'Error during creation');
+                    toastService.toast('danger', err.data.message);
                 }
             })
         };

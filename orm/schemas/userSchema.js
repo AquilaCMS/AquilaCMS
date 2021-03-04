@@ -13,6 +13,7 @@ const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
 const Schema            = mongoose.Schema;
 const ObjectId          = Schema.ObjectId;
+const NSErrors          = require('../../utils/errors/NSErrors');
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
@@ -178,6 +179,15 @@ UserSchema.pre('remove', async function (next) {
 
 UserSchema.pre('save', function (next) {
     this.wasNew = this.isNew;
+    next();
+});
+
+UserSchema.pre('findOneAndUpdate', async function (next) {
+    console.log(this);
+    const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
+    if (users > 0) {
+        throw NSErrors.LoginSubscribeEmailExisting;
+    }
     next();
 });
 

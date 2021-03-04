@@ -56,6 +56,10 @@ const setUser = async (id, info, isAdmin = false) => {
             delete info.email;
             delete info.isAdmin;
         }
+        const userBase = await Users.findOne({_id: id});
+        if (userBase.email !== info.email) {
+            info.isActiveAccount = false;
+        }
         if (info.birthDate) info.birthDate = new Date(info.birthDate);
         const userUpdated = await Users.findOneAndUpdate({_id: id}, info, {new: true});
         if (!userUpdated) throw NSErrors.UpdateUserInvalid;
