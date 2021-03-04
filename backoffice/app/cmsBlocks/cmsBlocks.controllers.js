@@ -80,7 +80,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 $scope.getGroups()
             });
         } else {
-            $scope.cmsBlock = {group: ""};
+            $scope.cmsBlock = {group: "",translation:{}};
             $scope.selectedDropdownItem = "";
 
             $scope.getGroups()
@@ -127,7 +127,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
             $scope.cmsBlock.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
-            $scope.generateContent()
+            $scope.generateContent();
 
             await CmsBlocksApi.save($scope.cmsBlock, function (res) {
                 toastService.toast("success", "Bloc CMS sauvegardé !");
@@ -159,9 +159,6 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         };
 
         $scope.langChange = function (lang) {
-            if ($scope.cmsBlock && !$scope.cmsBlock.translation[lang].html) {
-                $scope.cmsBlock.translation[lang].html = $scope.cmsBlock.translation[lang].content
-            }
             $scope.lang = lang;
         }
 

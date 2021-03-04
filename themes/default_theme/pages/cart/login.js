@@ -3,6 +3,7 @@ import Head from 'next/head';
 import {
     NSContext, getCmsBlock, getLangPrefix
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import CartStructure from 'components/CartStructure';
 import Login from 'components/Login';
 import { withI18next } from 'lib/withI18n';
@@ -20,7 +21,7 @@ class CartLogin extends React.Component {
 
         return {
             cmsLegalTxt,
-            layoutCms : { header: 'header_cart', footer: 'footer_cart' }
+            layoutCms: { header: 'header_cart', footer: 'footer_cart' }
         };
     };
 
@@ -28,7 +29,7 @@ class CartLogin extends React.Component {
         super(props);
         this.state = {
             ...props,
-            email : ''
+            email: ''
         };
     }
 
@@ -59,6 +60,13 @@ class CartLogin extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+CartLogin.propTypes = {
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func.isRequired,
 }
 
 export default withI18next(['login'])(CartLogin);

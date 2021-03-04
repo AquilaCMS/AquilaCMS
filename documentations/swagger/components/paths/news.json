@@ -1,5 +1,5 @@
 {
-    "/api/v2/shipments/filter": {
+    "/api/v2/site/news": {
         "post": {
             "deprecated": false,
             "security": [],
@@ -9,7 +9,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/shipmentSchema"
+                                "$ref": "#/components/schemas/newsSchema"
                             }
                         }
                     }
@@ -17,13 +17,25 @@
             },
             "parameters": [],
             "tags": [
-                "Shipment"
+                "News"
             ],
             "requestBody": {
                 "content": {
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all news",
+                                "description": "Get 10 news with default fields for current language",
+                                "value": {"PostBody":{"filter": {}, "limit": 10, "page": 1}}
+                            },
+                            "example2": {
+                                "summary": "Get a news with a slug",
+                                "description": "Get a news from a slug",
+                                "value": {"PostBody":{"filter":{"translation.fr.slug": "THE_SLUG"},"limit":1}}
+                            }
                         }
                     }
                 },
@@ -32,7 +44,7 @@
             }
         }
     },
-    "/api/v2/shipments": {
+    "/api/v2/site/new": {
         "post": {
             "deprecated": false,
             "security": [],
@@ -42,7 +54,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/shipmentSchema"
+                                "$ref": "#/components/schemas/newsSchema"
                             }
                         }
                     }
@@ -50,46 +62,20 @@
             },
             "parameters": [],
             "tags": [
-                "Shipment"
+                "News"
             ],
             "requestBody": {
                 "content": {
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
-                        }
-                    }
-                },
-                "description": "PostBody",
-                "required": false
-            }
-        }
-    },
-    "/api/v2/shipment": {
-        "post": {
-            "deprecated": false,
-            "security": [],
-            "responses": {
-                "200": {
-                    "description": "success",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/shipmentSchema"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get a new with id",
+                                "description": "Get a specific new in french with default structure",
+                                "value": {"lang":"fr", "PostBody":{"filter": {"_id": "THE_ID"}}}
                             }
-                        }
-                    }
-                }
-            },
-            "parameters": [],
-            "tags": [
-                "Shipment"
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/PostBody"
                         }
                     }
                 },
@@ -99,14 +85,14 @@
         },
         "put": {
             "deprecated": false,
-            "security": [],
+            "security": [{"admin_authorization": []}],
             "responses": {
                 "200": {
                     "description": "success",
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/shipmentSchema"
+                                "$ref": "#/components/schemas/newsSchema"
                             }
                         }
                     }
@@ -114,7 +100,7 @@
             },
             "parameters": [],
             "tags": [
-                "Shipment"
+                "News"
             ],
             "requestBody": {
                 "content": {
@@ -129,14 +115,14 @@
             }
         }
     },
-    "/api/v2/shipments/{id}": {
+    "/api/v2/site/new/{_id}": {
         "delete": {
             "deprecated": false,
             "security": [{"admin_authorization": []}],
             "responses": {},
             "parameters": [
                 {
-                    "name": "id",
+                    "name": "_id",
                     "in": "path",
                     "description": "",
                     "required": true,
@@ -146,7 +132,7 @@
                 }
             ],
             "tags": [
-                "Shipment"
+                "News"
             ]
         }
     }

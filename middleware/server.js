@@ -106,10 +106,14 @@ const initExpress = async (server, passport) => {
             ];
         }
     }
+    const contentSecurityPolicyString = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicyValues ? global.envConfig.environment.contentSecurityPolicyValues.join(' ') : '';
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'script-src' : contentSecurityPolicyValues
+            'font-src'   : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
+            'img-src'    : [`'self' ${contentSecurityPolicyString}`, 'data:'],
+            'script-src' : contentSecurityPolicyValues,
+            'frame-src'  : [`'self' ${contentSecurityPolicyString}`]
         },
         // reportOnly ignore the CSP error, but report it
         reportOnly : false
@@ -129,7 +133,7 @@ const initExpress = async (server, passport) => {
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');
-    if (serverUtils.getEnv() !== 'test' && global.envFile.logs && global.envFile.logs.http) {
+    if (serverUtils.getEnv('NODE_ENV') !== 'test' && global.envFile.logs && global.envFile.logs.http) {
         server.use(morgan('combined', {stream: require('../utils/logger').stream}));
         server.use(morgan('dev'));
     }

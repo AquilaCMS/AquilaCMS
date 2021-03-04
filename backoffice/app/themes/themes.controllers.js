@@ -77,13 +77,16 @@ ThemesController.controller("ThemesCtrl", [
         $scope.packageInstall = function () {
             if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
                 $scope.isLoading = true;
+                $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 $http.post("/v2/themes/package/install", { themeName: $scope.config.environment.currentTheme }).then(function (response) {
                     toastService.toast("success", "Succès");
                     $scope.isLoading = false;
+                    $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                 }, function (err) {
                     $scope.isLoading = false;
+                    $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                     toastService.toast("danger", "Error !");
                 });
@@ -95,13 +98,16 @@ ThemesController.controller("ThemesCtrl", [
         $scope.packageBuild = function () {
             if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
                 $scope.isLoading = true;
+                $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 $http.post("/v2/themes/package/build", { themeName: $scope.config.environment.currentTheme }).then(function (response) {
                     toastService.toast("success", "Succès");
                     $scope.isLoading = false;
+                    $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                 }, function (err) {
                     $scope.isLoading = false;
+                    $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                     toastService.toast("danger", "Error !");
                 });
@@ -161,10 +167,13 @@ ThemesController.controller("ThemesCtrl", [
 
         $scope.validate = function (tab) {
             if(tab == 'config'){
+                $scope.showLoading2 = true;
                 ThemeConfig.update({config : $scope.themeConfig.variables}, function (response,err) {
                     if(err.errmsg){
+                        $scope.showLoading2 = false;
                         toastService.toast("danger", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
                     }else{
+                        $scope.showLoading2 = false;
                         toastService.toast("success", "Variables sauvegardées.");
                         $scope.keys = {};
                         $scope.themeConfig.variables = {};

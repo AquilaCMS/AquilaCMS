@@ -13,7 +13,8 @@ langs.map((l) => {
     for (const ns in namespaces) {
         try {
             theme_assets[l.code][namespaces[ns]] = require(`assets/i18n/${l.code}/${namespaces[ns]}.json`);
-        } catch (e) {}
+            // eslint-disable-next-line no-empty
+        } catch (e) { }
     }
 });
 

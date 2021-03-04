@@ -4,11 +4,19 @@ import App from 'next/app';
 import Head from 'next/head';
 import parse from 'html-react-parser';
 import {
-    NSToast, initAqlrc, initLangAqlrc, getCmsBlock, initPage, jwtManager, getUser, logoutUser, scrollToTop
+    NSToast,
+    initAqlrc,
+    initLangAqlrc,
+    getCmsBlock,
+    initPage,
+    jwtManager,
+    getUser,
+    logoutUser,
+    scrollToTop
 } from 'aqlrc';
 import getAPIUrl from 'lib/getAPIUrl';
 import { Router } from 'routes';
-import {getModulesHookFunctionsByType} from '../lib/utils';
+import { getModulesHookFunctionsByType } from '../lib/utils';
 import 'styles/global.css';
 import 'public/static/css/slider.css';
 import 'rc-slider/assets/index.css';
@@ -44,7 +52,7 @@ class AquilaApp extends App {
             }
             if (!cache || (cache && Date.now() >= cache.date)) {
                 const resConf = await axios.post(`${getAPIUrl(bundle.ctx)}v2/config`, {
-                    PostBody: {structure: {environment: 1}}
+                    PostBody: { structure: { environment: 1 } }
                 });
                 appurl = resConf.data.environment.appUrl;
                 sitename = resConf.data.environment.siteName;
@@ -54,7 +62,7 @@ class AquilaApp extends App {
                 langs = resLangs.data.datas;
                 if (typeof window !== 'undefined') {
                     window.localStorage.setItem('cache', JSON.stringify({
-                        appurl, sitename, demo, favicon, langs, date : Date.now() + 172800000
+                        appurl, sitename, demo, favicon, langs, date: Date.now() + 172800000
                     }));
                 }
             } else {
@@ -68,9 +76,9 @@ class AquilaApp extends App {
             // Récupération des blocs CMS existants
             // On se basera sur cette liste afin d'éviter de récupérer des blocs CMS qui n'existent pas (ce qui peut arriver)
             const resCms = await axios.post(`${getAPIUrl(bundle.ctx)}v2/cmsBlocks`, {
-                PostBody : {
-                    structure : { translation: 0 },
-                    limit     : 99
+                PostBody: {
+                    structure: { translation: 0 },
+                    limit: 99
                 }
             });
             const cmsBlocks = resCms.data.count > 0 ? resCms.data.datas : [];
@@ -119,15 +127,15 @@ class AquilaApp extends App {
                 if (user) {
                     try {
                         const PostBody = {
-                            structure : {
-                                isActiveAccount   : 1,
-                                company           : 1,
-                                civility          : 1,
-                                preferredLanguage : 1,
-                                type              : 1,
-                                addresses         : 1,
-                                delivery_address  : 1,
-                                billing_address   : 1
+                            structure: {
+                                isActiveAccount: 1,
+                                company: 1,
+                                civility: 1,
+                                preferredLanguage: 1,
+                                type: 1,
+                                addresses: 1,
+                                delivery_address: 1,
+                                billing_address: 1
                             }
                         };
                         user = await getUser(user._id, PostBody, bundle.ctx);
@@ -165,15 +173,15 @@ class AquilaApp extends App {
                 ...initData,
                 demo,
                 favicon,
-                cmsHead       : cmsHead.content,
-                messageCookie : cmsCookieBanner.content,
+                cmsHead: cmsHead.content,
+                messageCookie: cmsCookieBanner.content,
                 appurl,
                 sitename,
                 cmsBlocks,
-                themeConfig   : themeConfig.data.config.values,
-                currentUrl    : bundle.ctx.asPath, // => NSMenu
+                themeConfig: themeConfig.data.config.values,
+                currentUrl: bundle.ctx.asPath, // => NSMenu
                 user,
-                gNext         : { Router },
+                gNext: { Router },
                 langs,
                 lang,
                 routerLang,
@@ -206,7 +214,7 @@ class AquilaApp extends App {
         /* Évènements levés pour Google Analytics */
         const init = new CustomEvent('init', {});
         window.dispatchEvent(init);
-        let logPageView = new CustomEvent('logPageView', {detail: {url: window.location.pathname}});
+        let logPageView = new CustomEvent('logPageView', { detail: { url: window.location.pathname } });
         window.dispatchEvent(logPageView);
 
         Router.onRouteChangeStart = () => {
@@ -216,7 +224,7 @@ class AquilaApp extends App {
 
         Router.router.events.on('routeChangeComplete', (url) => {
             if (typeof window !== 'undefined' && window.location.hash === '') scrollToTop(1000);
-            const onChangeLogPageView = new CustomEvent('logPageView', {detail: {url}});
+            const onChangeLogPageView = new CustomEvent('logPageView', { detail: { url } });
             window.dispatchEvent(onChangeLogPageView);
         });
 
@@ -234,7 +242,7 @@ class AquilaApp extends App {
                 <Head>
                     <meta property="og:site_name" content={pageProps.sitename} />
                     <meta itemProp="name" content={pageProps.sitename} />
-                    { pageProps.favicon && <link rel="shortcut icon" href={pageProps.favicon} /> }
+                    {pageProps.favicon && <link rel="shortcut icon" href={pageProps.favicon} />}
                     {
                         !pageProps.demo ? <meta name="robots" content="index,follow" />
                             : (
@@ -256,7 +264,7 @@ class AquilaApp extends App {
                                 </>
                             )
                     }
-                    { pageProps.cmsHead ? parse(pageProps.cmsHead) : null }
+                    {pageProps.cmsHead ? parse(pageProps.cmsHead) : null}
                 </Head>
                 <Component {...pageProps} />
             </>

@@ -70,7 +70,7 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
-    images      : [
+    images : [
         {
             url              : String,
             name             : String,

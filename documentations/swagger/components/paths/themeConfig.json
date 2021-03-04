@@ -1,5 +1,5 @@
 {
-    "/api/v2/site/news": {
+    "/api/v2/themeConfig": {
         "post": {
             "deprecated": false,
             "security": [],
@@ -9,7 +9,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/newsSchema"
+                                "$ref": "#/components/schemas/themeConfigSchema"
                             }
                         }
                     }
@@ -17,7 +17,45 @@
             },
             "parameters": [],
             "tags": [
-                "News"
+                "ThemeConfig"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get theme configuration",
+                                "description": "Get theme configuration in default language",
+                                "value": {"PostBody":{}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/themeConfigSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "ThemeConfig"
             ],
             "requestBody": {
                 "content": {
@@ -32,7 +70,7 @@
             }
         }
     },
-    "/api/v2/site/new": {
+    "/api/v2/themeConfig/{key}": {
         "post": {
             "deprecated": false,
             "security": [],
@@ -42,7 +80,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/newsSchema"
+                                "$ref": "#/components/schemas/themeConfigSchema"
                             }
                         }
                     }
@@ -50,7 +88,7 @@
             },
             "parameters": [],
             "tags": [
-                "News"
+                "ThemeConfig"
             ],
             "requestBody": {
                 "content": {

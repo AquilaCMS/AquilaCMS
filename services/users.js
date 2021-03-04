@@ -56,6 +56,10 @@ const setUser = async (id, info, isAdmin = false) => {
             delete info.email;
             delete info.isAdmin;
         }
+        const userBase = await Users.findOne({_id: id});
+        if (userBase.email !== info.email) {
+            info.isActiveAccount = false;
+        }
         if (info.birthDate) info.birthDate = new Date(info.birthDate);
         const userUpdated = await Users.findOneAndUpdate({_id: id}, info, {new: true});
         if (!userUpdated) throw NSErrors.UpdateUserInvalid;
@@ -161,16 +165,23 @@ const getUserTypes = async (query) => {
  * @param {*} lang lang du client
  * @see https://github.com/Automattic/mongoose/issues/7984 can't use updateOne
  */
-const generateTokenSendMail = async (email, lang) => {
+const generateTokenSendMail = async (email, lang, sendMail = true) => {
     const resetPassToken = crypto.randomBytes(26).toString('hex');
     const user           = await Users.findOneAndUpdate({email}, {resetPassToken}, {new: true});
     if (!user) {
         throw NSErrors.NotFound;
     }
-    const {appUrl}  = global.envConfig.environment;
-    const tokenlink = `${appUrl}resetpass?token=${resetPassToken}`;
-
-    await servicesMail.sendResetPassword(email, tokenlink, lang);
+    const {appUrl, adminPrefix} = global.envConfig.environment;
+    let link;
+    if (user.isAdmin) {
+        link = `${appUrl}${adminPrefix}/login`;
+    } else {
+        link = `${appUrl}resetpass`;
+    }
+    const tokenlink = `${link}?token=${resetPassToken}`;
+    if (sendMail) {
+        await servicesMail.sendResetPassword(email, tokenlink, lang);
+    }
     return {message: email};
 };
 

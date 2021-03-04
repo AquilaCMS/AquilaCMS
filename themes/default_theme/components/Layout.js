@@ -1,11 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import {
-    NSContext, NSToast, NSCookieBanner
+    NSContext,
+    NSToast,
+    NSCookieBanner
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import { withRouter } from 'next/router';
 import CMS from './CMS';
-import { Router } from 'routes';
+// import { Router } from 'routes';
 import { withI18next } from 'lib/withI18n';
 import { listModulePage } from 'lib/utils';
 
@@ -96,8 +99,8 @@ class Layout extends React.Component {
                 {children}
                 {
                     themeConfig
-                    && themeConfig.find(t => t.key === 'showFooter')
-                    && themeConfig.find(t => t.key === 'showFooter').value
+                        && themeConfig.find(t => t.key === 'showFooter')
+                        && themeConfig.find(t => t.key === 'showFooter').value
                         ? <CMS ns-code="footer" content={footer} />
                         : ''
                 }
@@ -113,12 +116,20 @@ class Layout extends React.Component {
             </>
         );
     }
-
-    static defaultProps = {
-        header : '',
-        footer : '',
-    };
-
-    static contextType = NSContext;
 }
+
+Layout.defaultProps = {
+    header: '',
+    footer: '',
+};
+
+Layout.contextType = NSContext;
+
+Layout.propTypes = {
+    header: PropTypes.string,
+    footer: PropTypes.string,
+    children: PropTypes.node,
+    t: PropTypes.func,
+}
+
 export default withRouter(withI18next(['common'])(Layout));

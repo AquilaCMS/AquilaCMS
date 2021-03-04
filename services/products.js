@@ -226,6 +226,13 @@ const duplicateProduct = async (idProduct, newCode) => {
         status     : 'liv'
     };
     doc.code    = newCode;
+    for (const lang of Object.entries(doc.translation)) {
+        if (doc.translation[lang[0]].canonical) {
+            delete doc.translation[lang[0]].canonical;
+        }
+    }
+    doc.active   = false;
+    doc._visible = false;
     await doc.save();
     return doc;
 };
@@ -933,49 +940,6 @@ function checkAttribsValidity(array) {
     return true;
 }
 
-const applyTranslatedAttribs = async (PostBody) => {
-    require('../utils/utils').tmp_use_route('products_service', 'applyTranslatedAttribs');
-
-    try {
-        // On récupere ts les produits
-        let _products = [];
-        if (PostBody === {} || PostBody === undefined) {
-            _products = await Products.find({});
-        } else {
-            _products = [await queryBuilder.find(PostBody)];
-        }
-        // On récupere ts les attributs
-        const _attribs = await Attributes.find({});
-
-        // On boucle sur les produits
-        for (let i = 0; i < _products.length; i++) {
-            if (_products[i].attributes !== undefined) {
-                // On boucle sur les attributs du produit [i]
-                for (let j = 0; j < _products[i].attributes.length; j++) {
-                    // On recupere l'attribut original correspondant a l'attribut [j] du produit [i]
-                    const attrib = _attribs.find((attrib) => attrib._id.toString() === _products[i].attributes[j].id.toString());
-
-                    if (attrib && attrib.translation) {
-                        // On boucle sur chaque langue dans laquelle l'attribut original est traduit
-                        for (let k = 0; k < Object.keys(attrib.translation).length; k++) {
-                            const lang = Object.keys(attrib.translation)[k];
-                            if (_products[i].attributes[j].translation[lang] === undefined) {
-                                _products[i].attributes[j].translation[lang] = {name: ''};
-                            }
-                            _products[i].attributes[j].translation[lang].name = attrib.translation[lang].name;
-                        }
-                    }
-                }
-                await Products.updateOne({_id: _products[i]._id}, {$set: {attributes: _products[i].attributes}});
-            }
-        }
-        return 'OK';
-    } catch (e) {
-        console.error(e);
-        return 'ERROR';
-    }
-};
-
 function getTaxDisplay(user) {
     if (user && user.taxDisplay !== undefined) {
         if (!user.taxDisplay) {
@@ -1206,7 +1170,6 @@ module.exports = {
     deleteProduct,
     checkProductOrderable,
     controlAllProducts,
-    applyTranslatedAttribs,
     downloadProduct,
     getProductsListing,
     updateStock,

@@ -20,7 +20,6 @@ global.defaultLang      = '';
 global.moduleExtend     = {};
 global.translate        = require('./utils/translate');
 const utils             = require('./utils/utils');
-const npm               = require('./utils/npm');
 const fs                = require('./utils/fsp');
 const translation       = require('./utils/translation');
 const serverUtils       = require('./utils/server');
@@ -32,7 +31,7 @@ const {
     middlewareServer
 }                           = require('./middleware');
 
-const dev    = !serverUtils.isProd();
+const dev    = !serverUtils.isProd;
 const server = express();
 
 // ATTENTION, ne pas require des services directement en haut de ce fichier
@@ -54,7 +53,6 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const init = async () => {
-    await npm.npmLoad({});
     await serverUtils.getOrCreateEnvFile();
     require('./utils/logger')();
     await serverUtils.logVersion();

@@ -121,7 +121,7 @@ const createDynamicLangFile = async () => {
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
-    fs.writeFileSync('./config/dynamic_langs.js', contentFile);
+    await fs.writeFile('./config/dynamic_langs.js', contentFile);
 };
 
 module.exports = {

@@ -27,13 +27,13 @@
                 <div class="col-sm-11">
                     <label for="comment" class="col-sm-2 control-label" translate>job.detail.commentaire</label>
                     <div class="col-sm-6" ng-show="job.data.flag != 'system'">
-                        <input type="text" class="form-control" id="comment" name="comment" ng-model="job.data.comment" required>
+                        <input type="text" class="form-control" id="comment" name="comment" ng-model="job.data.comment[lang]" required>
                         <div class="ns-error-message" ng-show="form.comment.$touched || form.nsSubmitted">
                             <div ng-show="form.comment.$error.required" translate>job.detail.fieldRequired</div>
                         </div>
                     </div>
                     <div class="col-sm-6" ng-show="job.data.flag == 'system'">
-                        {{job.data.comment}}
+                        {{job.data.comment[lang]}}
                     </div>
                 </div>
             </div>

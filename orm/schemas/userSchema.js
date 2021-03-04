@@ -13,6 +13,7 @@ const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
 const Schema            = mongoose.Schema;
 const ObjectId          = Schema.ObjectId;
+const NSErrors          = require('../../utils/errors/NSErrors');
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
@@ -75,7 +76,6 @@ const UserSchema = new Schema({
         }
     },
     code     : {type: String, unique: true, sparse: true},
-    active   : {type: Boolean},
     civility : {
         type : Number,
         enum : [0, 1] // 0 pour homme, 1 pour femme
@@ -99,11 +99,11 @@ const UserSchema = new Schema({
             phone      : String
         }
     },
-    status           : String,
-    delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
-    billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
-    addresses        : [AddressSchema],
-    isAdmin          : {type: Boolean, default: false},
+    status               : String,
+    delivery_address     : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
+    billing_address      : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
+    addresses            : [AddressSchema],
+    isAdmin              : {type: Boolean, default: false},
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
     payementChoice       : String,
@@ -111,7 +111,6 @@ const UserSchema = new Schema({
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
-    migrated             : {type: Boolean, default: false},
     birthDate            : Date,
     presentInLastImport  : {type: Boolean},
     accessList           : [{type: String}],
@@ -179,6 +178,15 @@ UserSchema.pre('remove', async function (next) {
 
 UserSchema.pre('save', function (next) {
     this.wasNew = this.isNew;
+    next();
+});
+
+UserSchema.pre('findOneAndUpdate', async function (next) {
+    console.log(this);
+    const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
+    if (users > 0) {
+        throw NSErrors.LoginSubscribeEmailExisting;
+    }
     next();
 });
 

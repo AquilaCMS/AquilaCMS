@@ -11,7 +11,6 @@
                 "default"  : "generateUserPassword"
             },
             "code"     : {"type": "string"},
-            "active"   : {"type": "boolean"},
             "civility" : {
                 "type" : "number",
                 "enum" : [0, 1],
@@ -59,7 +58,6 @@
             "isActiveAccount"      : {"type": "boolean", "default": false},
             "activateAccountToken" : {"type": "string"},
             "resetPassToken"       : {"type": "string"},
-            "migrated"             : {"type": "boolean", "default": false},
             "birthDate"            : {"type": "string", "format": "date"},
             "presentInLastImport"  : {"type": "boolean"},
             "accessList"           : {"type": "array", "items": {"type": "string"}},

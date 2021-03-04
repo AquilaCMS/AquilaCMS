@@ -14,6 +14,18 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all carts",
+                                "description": "Get all carts",
+                                "value": {"PostBody":{"structure":"*","limit":9999}}
+                            },
+                            "example2": {
+                                "summary": "Get all carts filtered",
+                                "description": "Get all carts sorted, and populated",
+                                "value": {"PostBody":{"filter":{},"structure":{"updatedAt":1},"limit":9999,"populate":["customer.id"],"sort":{"updatedAt":1}}}
+                            }
                         }
                     }
                 }
@@ -143,7 +155,7 @@
             }
         }
     },
-    "/api/v2/cart/:cartId/item/:itemId": {
+    "/api/v2/cart/{cartId}/item/{itemId}": {
         "delete": {
             "deprecated": false,
             "security": [],
@@ -160,6 +172,27 @@
                 },
                 {
                     "name": "itemId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ]
+        }
+    },
+    "/v2/cart/discount/{cartId}": {
+        "delete": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "cartId",
                     "in": "path",
                     "description": "",
                     "required": true,
@@ -218,7 +251,7 @@
     "/api/v2/cart/comment": {
         "put": {
             "deprecated": false,
-            "security": [{"user_authorization": []}],
+            "security": [],
             "responses": {},
             "parameters": [],
             "tags": [
@@ -239,7 +272,7 @@
     "/api/v2/cart/addresses": {
         "put": {
             "deprecated": false,
-            "security": [{"user_authorization": []}],
+            "security": [],
             "responses": {},
             "parameters": [],
             "tags": [

@@ -6,7 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
 const NSErrors = require('../utils/errors/NSErrors');
 
 /**
@@ -28,27 +27,6 @@ const getMailType = async (code) => {
     return MailType.findOne({code});
 };
 
-/**
- *
- * @param {*} body les data a enregistrer
- * @param {*} _id si l'_id existe alors on met a jour sinon on update
- */
-const setMailType = async (body, _id = null) => {
-    require('../utils/utils').tmp_use_route('mailType_service', 'setMailType');
-    const {MailType} = require('../orm/models');
-    let result;
-    if (_id) {
-        // Update
-        if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-        result = await MailType.findByIdAndUpdate(_id, {$set: body}, {new: true, runValidators: true});
-        if (!result) throw NSErrors.MailTypeUpdateError;
-    } else {
-        // Create
-        result = await MailType.create(body);
-    }
-    return result;
-};
-
 const deleteMailType = async (code) => {
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
@@ -65,6 +43,5 @@ const deleteMailType = async (code) => {
 module.exports = {
     getMailTypes,
     getMailType,
-    setMailType,
     deleteMailType
 };
