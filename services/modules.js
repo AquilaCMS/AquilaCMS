@@ -53,20 +53,6 @@ const setModuleConfigById = async (_id, config) => {
 };
 
 /**
- * Permet modifier une partie de la configuration (champ conf) d'un module
- * @param name {string} nom/code du module
- * @param field {string} le champ à modifier
- * @param value {*} la valeur définir dans le champ
- * @returns {Promise<*>} Retourne la nouvelle configuration du module
- */
-const setPartialConfig = async (name, field, value) => {
-    require('../utils/utils').tmp_use_route('modules_service', 'setPartialConfig');
-    const upd              = {};
-    upd[`config.${field}`] = value;
-    return Modules.updateOne({name}, {$set: upd}, {new: true});
-};
-
-/**
  * unzip module in `modules` folder
  * and save module added in database
  * @param {Object} zipFile file information from express
@@ -709,21 +695,6 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
 };
 
 /**
- * Permet d'ajouter dans le fichier montheme/modules/list_modules.js le ou les import(s) permettant d'utiliser le front du module sur le theme
- * @param {*} pathModule : chemin du module coté back
- * @param {*} bRemove : si true alors on supprime le ou les import(s) du fichier montheme/modules/list_modules.js, si false alors on ajout le ou les import(s)
- */
-const activeFrontModule = async (pathModule, bRemove) => {
-    require('../utils/utils').tmp_use_route('modules_service', 'activeFrontModule');
-
-    // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!await fs.hasAccess(pathModule)) return;
-    await modulesUtils.createListModuleFile(global.envConfig.environment.currentTheme);
-    await setFrontModuleInTheme(pathModule, bRemove);
-    await themesService.buildTheme(global.envConfig.environment.currentTheme);
-};
-
-/**
  * Fonction permettant de supprimer un import dans themes/${currentTheme}/modules/list_modules.js
  * @param {*} jsxModuleToImport { jsx: require('./ModuleMonModule.js').default, code: 'aq-monmodule' },
  * @param {*} exportDefaultListModule [{ jsx: require('./ModuleMonModule1.js').default, code: 'aq-monmodule1' }, ...]
@@ -898,7 +869,6 @@ module.exports = {
     getModules,
     getModule,
     setModuleConfigById,
-    setPartialConfig,
     initModule,
     checkDependenciesAtInstallation,
     checkDependenciesAtUninstallation,
@@ -908,7 +878,6 @@ module.exports = {
     setFrontModules,
     setFrontModuleInTheme,
     addOrRemoveThemeFiles,
-    activeFrontModule,
     removeImport,
     removeFromListModule,
     removeModuleAddon,

@@ -527,24 +527,6 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     if (promo.rules_id) {
         const promoRules = await promo.populate('rules_id').execPopulate();
         if (promoRules.rules_id.conditions.length > 0 || promoRules.rules_id.other_rules.length > 0) {
-            // TODO P5 (chaud): a supprimer si test avancé OK
-            // On verifie que la requête s'effectue uniquement sur la collection product
-            // const onlyProductRequest = ServiceRules.onlyProductRequest([promoRules.rules_id]);
-            // if (onlyProductRequest) {
-            //     const query = await ServiceRules.applyRecursiveRules([promoRules.rules_id], {});
-            //     const productFound = await Products.findOne(query);
-            //     if (!productFound) {
-            //         await removePromoFromCart(cart);
-            //         throw global.errors_list.promo_code_promo_not_authorized;
-            //     }
-            //     // On recherche dans chaque item du cart si cart.items[i].id === productFound._id
-            //     const tItems = cart.items.filter(product => product.id._id.toString() === productFound._id.toString());
-            //     // Si aucun produit du panier ne correspond au produit trouvé avec les rules alors on renvoie une erreur
-            //     if (!tItems.length) {
-            //         await removePromoFromCart(cart);
-            //         throw global.errors_list.promo_code_promo_not_authorized;
-            //     }
-            // } else {
             const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promoRules.rules_id, user, cart);
             const ifStatement = promoUtils.createIfStatement(tCondition);
             try {
