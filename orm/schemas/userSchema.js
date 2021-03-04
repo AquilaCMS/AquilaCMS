@@ -111,7 +111,6 @@ const UserSchema = new Schema({
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
-    migrated             : {type: Boolean, default: false},
     birthDate            : Date,
     presentInLastImport  : {type: Boolean},
     accessList           : [{type: String}],

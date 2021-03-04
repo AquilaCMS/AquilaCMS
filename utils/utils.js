@@ -180,14 +180,6 @@ const getObjFromDotStr = (obj, str) => {
     }, obj);
 };
 
-/* temp : determiner les routes non utilisés */
-// eslint-disable-next-line no-unused-vars
-const tmp_use_route = async (api, fct) => {
-    // Delete this function as soon as possible
-    console.error(`/!\\ Si vous voyez ce message, merci de supprimer l'appel à tmp_use_route() dans la foncion ${api} / ${fct}`);
-};
-/* End temp : determiner les routes non utilisés */
-
 /**
  * Check if two objects or arrays are equal
  * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
@@ -262,7 +254,6 @@ module.exports = {
     getObjFromDotStr,
     detectDuplicateInArray,
     slugify,
-    tmp_use_route,
     toET,
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
