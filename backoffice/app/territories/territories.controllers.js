@@ -55,7 +55,7 @@ TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi"
 			{
 				TerritoriesApi.remove({terr: 'territory', action: id}, function (response) {
 					toastService.toast("success", "Territoire supprimé");
-					$scope.loadDatas();
+					$scope.getTerritories();
 				});
 			}
 		};
