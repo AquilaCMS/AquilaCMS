@@ -4,11 +4,23 @@
         "airbnb-base"
     ],
     "plugins": [
-        "align-assignments"
+        "align-assignments",
+        "chai-friendly"
     ],
     "env": {
-        "es6": true
+        "es6": true,
+        "node": true,
+        "mocha": true
     },
+    "overrides": [
+        {
+            "files": ["*.test.js", "*.spec.js"],
+            "rules": {
+                "no-unused-expressions": "off",
+                "chai-friendly/no-unused-expressions": "error"
+            }
+        }
+    ],
     "rules": {
         "align-assignments/align-assignments": ["error"],
         "arrow-body-style": "off",
