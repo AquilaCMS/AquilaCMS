@@ -179,10 +179,6 @@ describe('Users', () => {
 
     });
 
-    describe('PUT /api/v2/user/admin', () => {
-
-    });
-
     describe('DELETE /api/v2/user/:id', () => {
         beforeEach(async () => {
             await Users.deleteMany({isAdmin: false});

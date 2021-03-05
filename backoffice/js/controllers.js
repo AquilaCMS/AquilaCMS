@@ -19,7 +19,7 @@ adminCatagenControllers.controller("wrapperCtrl", [
                 $scope.languages = languages.datas;
                 $rootScope.languages = languages.datas;
                 var lang = languages.datas.find(_lang => _lang.defaultLanguage).code
-    
+
                 moment.locale(lang);
                 $rootScope.adminLang = lang;
                 $translate.use(lang);
@@ -247,14 +247,14 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"trademarks", translate:"admin-list.catalMarques"},
             {code:"suppliers", translate:"admin-list.catalFourn"},
             {code:"families", translate:"admin-list.families"},
-            
+
             {code:"staticPage", translate:"admin-list.siteStatic"},
             {code:"cmsBlocks", translate:"admin-list.siteCMS"},
             {code:"gallery", translate:"admin-list.gallery"},
             {code:"slider", translate:"admin-list.slider"},
             {code:"medias", translate:"admin-list.siteMedias"},
             {code:"articles", translate:"admin-list.siteArt"},
-            
+
             {code:"clients", translate:"admin-list.clients"},
             {code:"reviews", translate:"admin-list.reviews"},
             {code:"contacts", translate:"admin-list.contact"},
@@ -267,7 +267,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"languages", translate:"admin-list.confLang"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
             {code:"admin", translate:"admin-list.admin"},
-            
+
             {code:"stock", translate:"admin-list.stock"},
             {code:"jobs", translate:"admin-list.confTasks"},
             {code:"system", translate:"admin-list.system"},
@@ -280,7 +280,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             {code:"modules", translate:"admin-list.modules"},
 
             {code:"statistics", translate:"admin-list.statistics"},
-            
+
             {code:"options", translate:"admin-list.catalOpt"}
         ];
 
@@ -315,7 +315,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             if(user.email && user.firstname && user.lastname)
             {
                 user.isAdmin = true;
-                ClientV2.saveAdmin(user, function (msg)
+                ClientV2.save(user, function (msg)
                 {
                     if(msg.user)
                     {
@@ -388,14 +388,14 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             {code:"trademarks", translate:"admin-list.catalMarques"},
             {code:"suppliers", translate:"admin-list.catalFourn"},
             {code:"families", translate:"admin-list.families"},
-            
+
             {code:"staticPage", translate:"admin-list.siteStatic"},
             {code:"cmsBlocks", translate:"admin-list.siteCMS"},
             {code:"gallery", translate:"admin-list.gallery"},
             {code:"slider", translate:"admin-list.slider"},
             {code:"medias", translate:"admin-list.siteMedias"},
             {code:"articles", translate:"admin-list.siteArt"},
-            
+
             {code:"clients", translate:"admin-list.clients"},
             {code:"reviews", translate:"admin-list.reviews"},
             {code:"contacts", translate:"admin-list.contact"},
@@ -408,20 +408,20 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             {code:"languages", translate:"admin-list.confLang"},
             {code:"paymentMethods", translate:"admin-list.paymentModes"},
             {code:"admin", translate:"admin-list.admin"},
-            
+
             {code:"themes", translate:"admin-list.themes"},
             {code:"design", translate:"admin-list.design"},
             {code:"translate", translate:"admin-list.translate"},
-            
+
             {code:"config", translate:"admin-list.confEnv"},
             {code:"jobs", translate:"admin-list.confTasks"},
             {code:"update", translate:"admin-list.update"},
             {code:"system", translate:"admin-list.system"},
-            
+
             {code:"modules", translate:"admin-list.modules"},
 
             {code:"statistics", translate:"admin-list.statistics"},
-            
+
             {code:"options", translate:"admin-list.catalOpt"}
         ];
 
