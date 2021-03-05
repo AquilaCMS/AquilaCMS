@@ -85,7 +85,6 @@ ClientServices.factory('ClientV2', ['$resource', function ($resource)
 		delete: {method: 'DELETE', params: {type: 'user'}},
         getUserTypes: {method: 'POST', params: {type: 'getUserTypes'}, isArray: true},
         resetpassword: {method: 'POST', params: {type: 'user', id: 'resetpassword'}},
-        saveAdmin: {method: 'PUT', params: {type: 'user', id: 'admin'}},
         testUser: {method: 'POST', params: {type: 'rules', id: 'testUser'}, isArray: true}
     });
 }]);
