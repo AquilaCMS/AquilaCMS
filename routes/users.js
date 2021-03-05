@@ -18,7 +18,6 @@ module.exports = function (app) {
     app.post('/v2/user/active/account', getUserByAccountToken);
     app.put('/v2/user/addresses', authentication, setUserAddresses);
     app.put('/v2/user', setUser);
-    app.put('/v2/user/admin', authentication, adminAuth, setUser);
     app.delete('/v2/user/:id', authentication, adminAuth, deleteUser);
     app.post('/v2/getUserTypes', authentication, adminAuth, getUserTypes);
 };
