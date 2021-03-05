@@ -51,7 +51,7 @@ const ConfigurationSchema = new Schema({
         migration             : {type: Number},
         contentSecurityPolicy : {
             values : {type: [String]},
-            active : {type: Boolean, default: true}
+            active : {type: Boolean, default: false}
         }
 
     },

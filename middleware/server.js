@@ -81,6 +81,51 @@ const serverUseRequest = async (req, res, next) => {
     return next();
 };
 
+const useHelmet = async (server) => {
+    const envContentSecurityPolicy = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy ? global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy : {values: [], active: false};
+
+    // If security is active
+    if (envContentSecurityPolicy.active) {
+        // Use own policy
+        let contentSecurityPolicyValues = [
+            "'self'",
+            'https://cdnjs.cloudflare.com',
+            "'unsafe-inline'",
+            "'unsafe-eval'"
+        ];
+        if (global.envConfig && global.envConfig.environment) {
+            if (global.envConfig.environment.appUrl) {
+                contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
+            }
+            if (global.envConfig.environment.contentSecurityPolicy.values) {
+                contentSecurityPolicyValues = [
+                    ...contentSecurityPolicyValues,
+                    ...global.envConfig.environment.contentSecurityPolicy.values
+                ];
+            }
+        }
+        const contentSecurityPolicyString = envContentSecurityPolicy.values ? global.envConfig.environment.contentSecurityPolicy.values.join(' ') : '';
+        server.use(helmet.contentSecurityPolicy({
+            directives : {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                'font-src'    : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
+                'img-src'     : [`'self' ${contentSecurityPolicyString}`, 'data:'],
+                'script-src'  : contentSecurityPolicyValues,
+                'frame-src'   : [`'self' ${contentSecurityPolicyString}`],
+                'connect-src' : [`'self' ${contentSecurityPolicyString}`]
+            },
+            // reportOnly ignore the CSP error, but report it
+            reportOnly : false
+        }));
+        server.use(helmet.dnsPrefetchControl({allow: true}));
+        server.use(helmet.originAgentCluster());
+        server.use(helmet.frameguard({action: 'sameorigin'}));
+        server.use(helmet.hsts());
+        server.use(helmet.ieNoOpen());
+        server.use(helmet.noSniff());
+    }
+};
+
 /**
  * initialize express server configuration
  * @param {Express} server server
@@ -89,42 +134,7 @@ const serverUseRequest = async (req, res, next) => {
 const initExpress = async (server, passport) => {
     server.set('port', global.port);
 
-    // Use own policy
-    let contentSecurityPolicyValues = [
-        "'self'",
-        'https://cdnjs.cloudflare.com',
-        "'unsafe-inline'"
-    ];
-    if (global.envConfig && global.envConfig.environment) {
-        if (global.envConfig.environment.appUrl) {
-            contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
-        }
-        if (global.envConfig.environment.contentSecurityPolicy.values) {
-            contentSecurityPolicyValues = [
-                ...contentSecurityPolicyValues,
-                ...global.envConfig.environment.contentSecurityPolicy.values
-            ];
-        }
-    }
-    const contentSecurityPolicyString = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy.values ? global.envConfig.environment.contentSecurityPolicy.values.join(' ') : '';
-    server.use(helmet.contentSecurityPolicy({
-        directives : {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            'font-src'    : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
-            'img-src'     : [`'self' ${contentSecurityPolicyString}`, 'data:'],
-            'script-src'  : contentSecurityPolicyValues,
-            'frame-src'   : [`'self' ${contentSecurityPolicyString}`],
-            'connect-src' : [`'self' ${contentSecurityPolicyString}`]
-        },
-        // reportOnly ignore the CSP error, but report it
-        reportOnly : global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy && global.envConfig.environment.contentSecurityPolicy.active ? global.envConfig.environment.contentSecurityPolicy.active : false
-    }));
-    server.use(helmet.dnsPrefetchControl({allow: true}));
-    server.use(helmet.originAgentCluster());
-    server.use(helmet.frameguard({action: 'sameorigin'}));
-    server.use(helmet.hsts());
-    server.use(helmet.ieNoOpen());
-    server.use(helmet.noSniff());
+    useHelmet(server);
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
