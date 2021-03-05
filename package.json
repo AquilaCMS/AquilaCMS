@@ -22,7 +22,8 @@
     "build:linux": "next build ./themes/${npm_config_theme}",
     "lint:check": "eslint --ext js,jsx .",
     "lint:fix": "eslint --fix --ext js,jsx .",
-    "test": "nyc mocha --exit"
+    "test": "mocha --exit",
+    "coverage": "nyc npm run test"
   },
   "dependencies": {
     "adm-zip": "0.4.16",
