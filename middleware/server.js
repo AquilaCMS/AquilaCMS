@@ -99,14 +99,14 @@ const initExpress = async (server, passport) => {
         if (global.envConfig.environment.appUrl) {
             contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
         }
-        if (global.envConfig.environment.contentSecurityPolicyValues) {
+        if (global.envConfig.environment.contentSecurityPolicy.values) {
             contentSecurityPolicyValues = [
                 ...contentSecurityPolicyValues,
-                ...global.envConfig.environment.contentSecurityPolicyValues
+                ...global.envConfig.environment.contentSecurityPolicy.values
             ];
         }
     }
-    const contentSecurityPolicyString = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicyValues ? global.envConfig.environment.contentSecurityPolicyValues.join(' ') : '';
+    const contentSecurityPolicyString = global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy.values ? global.envConfig.environment.contentSecurityPolicy.values.join(' ') : '';
     server.use(helmet.contentSecurityPolicy({
         directives : {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
@@ -117,7 +117,7 @@ const initExpress = async (server, passport) => {
             'connect-src' : [`'self' ${contentSecurityPolicyString}`]
         },
         // reportOnly ignore the CSP error, but report it
-        reportOnly : false
+        reportOnly : global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy && global.envConfig.environment.contentSecurityPolicy.active ? global.envConfig.environment.contentSecurityPolicy.active : false
     }));
     server.use(helmet.dnsPrefetchControl({allow: true}));
     server.use(helmet.originAgentCluster());

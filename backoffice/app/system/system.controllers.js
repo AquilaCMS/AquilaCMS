@@ -11,7 +11,7 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.contentPolicy = {
-            active: true,
+            // active: true,
             content: [],
             newPolicy: ""
         };
@@ -37,8 +37,8 @@ SystemControllers.controller("systemGeneralController", [
             $scope.system.environment.errorPath = $scope.system.environment.errorPath || '';
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
-            if($scope.system.environment.contentSecurityPolicyValues){
-                $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicyValues;
+            if($scope.system.environment.contentSecurityPolicy.values){
+                $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicy.values;
             }
             $scope.ssl = {
                 cert    : $scope.system.environment.ssl.cert    || '',
@@ -222,6 +222,8 @@ SystemControllers.controller("systemGeneralController", [
             ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
                 $scope.system.environment.cacheTTL = $scope.system.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
+                $scope.system.environment.contentSecurityPolicy.values = $scope.contentPolicy.content;
+
                 Upload.upload({
                     url: 'v2/config',
                     method: 'PUT',
