@@ -182,7 +182,6 @@ UserSchema.pre('save', function (next) {
 });
 
 UserSchema.pre('findOneAndUpdate', async function (next) {
-    console.log(this);
     const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
     if (users > 0) {
         throw NSErrors.LoginSubscribeEmailExisting;
