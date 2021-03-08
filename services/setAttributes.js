@@ -73,7 +73,6 @@ exports.createOrUpdateSetAttribute = async function (req) {
         await Products.updateMany({set_attributes: setAttribute.id}, {$set: {'reviews.questions': tQuestions}});
         return {status: true};
     }
-    if (setAttribute && !updateF) return {alreadyExist: true};
     await SetAttributes.create({code, name, questions, type});
     return {status: true};
 };

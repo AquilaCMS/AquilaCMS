@@ -295,8 +295,16 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
                 } else {
                     console.error("Error!");
                 }
-            }, function (e) {
-                toastService.toast("danger", e.data.message);
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
+                }
             });
         };
 

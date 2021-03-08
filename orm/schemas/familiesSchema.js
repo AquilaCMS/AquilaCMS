@@ -6,10 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const helper   = require('../../utils/utils');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const mongoose      = require('mongoose');
+const helper        = require('../../utils/utils');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
+const ObjectId      = Schema.ObjectId;
 
 const FamiliesSchema = new Schema({
     code      : {type: String, required: true, unique: true},
@@ -24,7 +25,8 @@ const FamiliesSchema = new Schema({
 
 // FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 
-FamiliesSchema.pre('save', function (next) {
+FamiliesSchema.pre('save', async function (next) {
+    await preUpdates(this);
     if (!this.slug) this.slug = `${helper.slugify(this.name)}-${this.code}`;
     return next();
 });
@@ -84,5 +86,19 @@ FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slug
         await f.save();
     }
 };
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('families', that._id, that.code);
+}
+
+FamiliesSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, FamiliesSchema);
+});
+
+FamiliesSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, FamiliesSchema);
+});
 
 module.exports = FamiliesSchema;

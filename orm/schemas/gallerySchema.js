@@ -44,8 +44,7 @@ GallerySchema.pre('updateOne', async function (next) {
 
 GallerySchema.pre('save', async function (next) {
     await preUpdates(this);
-    const errors = await GallerySchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    next();
 });
 
 module.exports = GallerySchema;
