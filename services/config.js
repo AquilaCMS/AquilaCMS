@@ -19,8 +19,8 @@ const restrictedFields = [];
 const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Configuration, restrictedFields, defaultFields);
 
-const getConfig = async (PostBody = {filter: {_id: {$exists: true}}, structure: '*'}, user = null) => {
-    PostBody    = merge({filter: {_id: {$exists: true}}, structure: '*'}, PostBody);
+const getConfig = async (PostBody = {filter: {}}, user = null) => {
+    PostBody    = merge({filter: {}}, PostBody);
     let isAdmin = true;
     if (!user || !user.isAdmin) {
         isAdmin                       = false;
