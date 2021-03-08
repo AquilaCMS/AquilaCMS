@@ -6,8 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose      = require('mongoose');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
 
 const PictosSchema = new Schema({
     _id           : {type: Schema.ObjectId, auto: true},
@@ -17,6 +18,25 @@ const PictosSchema = new Schema({
     location      : {type: String}, // Lieux d'affichage du picto sur l'image du produit...
     enabled       : {type: Boolean, default: false},
     usedInFilters : {type: Boolean, default: false}
+});
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('pictos', that._id, that.code);
+}
+
+PictosSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, PictosSchema);
+});
+
+PictosSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, PictosSchema);
+});
+
+PictosSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
 });
 
 module.exports = PictosSchema;
