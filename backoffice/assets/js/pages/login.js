@@ -48,7 +48,7 @@ $(document).ready(function () {
             window.localStorage.setItem("jwtAdmin", response.data);
             location.href = "/" + window.location.pathname.split("/")[1];
         } catch (err) {
-            if(err.responseJSON.code === "DesactivateAccount"){
+            if(err.responseJSON.code === "DeactivateAccount"){
                 $("#error_msg_disable_account").show();
             }else{
                 $("#error_msg_bad_login").show();
