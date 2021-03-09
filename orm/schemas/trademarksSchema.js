@@ -32,19 +32,18 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('trademarks', that._id, that.code);
 }
 
+/*
 TrademarksSchema.pre('updateOne', async function (next) {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, TrademarksSchema);
 });
-
-TrademarksSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, TrademarksSchema);
+*/
+TrademarksSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update);
 });
 
 TrademarksSchema.pre('save', async function (next) {
-    await preUpdates(this);
     this.code = slugify(this.name);
+    await preUpdates(this);
     return next();
 });
 

@@ -6,10 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const utilsDatabase = require('../../utils/database');
-const NSErrors      = require('../../utils/errors/NSErrors');
-const Schema        = mongoose.Schema;
+const mongoose = require('mongoose');
+const NSErrors = require('../../utils/errors/NSErrors');
+const Schema   = mongoose.Schema;
 
 const MediasSchema = new Schema({
     name      : String,
@@ -32,14 +31,12 @@ async function preUpdates(that) {
     // here it is that.name because that.code does not exist
 }
 
-MediasSchema.pre('updateOne', async function (next) {
+MediasSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, MediasSchema);
 });
 
-MediasSchema.pre('findOneAndUpdate', async function (next) {
+MediasSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, MediasSchema);
 });
 
 MediasSchema.pre('save', async function (next) {

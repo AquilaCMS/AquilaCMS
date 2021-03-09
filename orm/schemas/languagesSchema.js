@@ -24,14 +24,12 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('languages', that._id, that.code);
 }
 
-LanguagesSchema.pre('updateOne', async function (next) {
+LanguagesSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, LanguagesSchema);
 });
 
-LanguagesSchema.pre('findOneAndUpdate', async function (next) {
+LanguagesSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, LanguagesSchema);
 });
 
 LanguagesSchema.pre('save', async function (next) {

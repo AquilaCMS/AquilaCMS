@@ -24,14 +24,12 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('pictos', that._id, that.code);
 }
 
-PictosSchema.pre('updateOne', async function (next) {
+PictosSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
-PictosSchema.pre('findOneAndUpdate', async function (next) {
+PictosSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
 PictosSchema.pre('save', async function (next) {
