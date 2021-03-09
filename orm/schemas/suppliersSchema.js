@@ -6,8 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose      = require('mongoose');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
 
 const SuppliersSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -35,5 +36,24 @@ SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
         cb(sp._id, res);
     }
 };
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('suppliers', that._id, that.code);
+}
+
+SuppliersSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, SuppliersSchema);
+});
+
+SuppliersSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, SuppliersSchema);
+});
+
+SuppliersSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
+});
 
 module.exports = SuppliersSchema;

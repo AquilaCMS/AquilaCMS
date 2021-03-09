@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose  = require('mongoose');
-const {slugify} = require('../../utils/utils');
-
-const Schema = mongoose.Schema;
+const mongoose      = require('mongoose');
+const {slugify}     = require('../../utils/utils');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
 
 const TrademarksSchema = new Schema({
     code   : {type: String, unique: true},
@@ -28,7 +28,22 @@ TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb 
     cb(trademarkName, res);
 };
 
-TrademarksSchema.pre('save', function (next) {
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('trademarks', that._id, that.code);
+}
+
+TrademarksSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, TrademarksSchema);
+});
+
+TrademarksSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, TrademarksSchema);
+});
+
+TrademarksSchema.pre('save', async function (next) {
+    await preUpdates(this);
     this.code = slugify(this.name);
     return next();
 });
