@@ -33,14 +33,15 @@ async function preUpdates(that) {
 }
 
 /*
-TrademarksSchema.pre('updateOne', async function (next) {
+TrademarksSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
 });
-*/
+
 TrademarksSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update);
+    //we don't update the code but the name
 });
-
+*/
 TrademarksSchema.pre('save', async function (next) {
     this.code = slugify(this.name);
     await preUpdates(this);
