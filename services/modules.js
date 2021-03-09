@@ -400,7 +400,7 @@ const activateModule = async (idModule, toBeChanged) => {
                 const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
                 if (await fs.hasAccess(src)) {
                     try {
-                        await fs.copyRecursiveSync(src, dest, true);
+                        await fs.copyRecursive(src, dest, true);
                     } catch (err) {
                         console.error(err);
                     }
