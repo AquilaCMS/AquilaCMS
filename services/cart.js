@@ -52,10 +52,11 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((i) => i.id), user, lang, false);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(cart, user, lang, false);
+        if(cart.items && cart.items.length) console.log("ITEMS: ", cart.items[0])
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if(cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();

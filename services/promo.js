@@ -185,6 +185,28 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
     if ((!products || !products.length) && (!products || !products.items || !products.items.length)) return [];
     // On récupére les promos catalogue en cours (on est après la date de début et avant la date de fin)
     // Ou dont la date de début et de fin est null
+    if ((!products || !products.length) && (products.items  && products.items.length)) {
+        products =  products.items.map((product) => {
+            if (product.type === 'bundle') {
+                return {
+                    ...product.id,
+                    price : {
+                        ...product.id.price,
+                        ati : {
+                            normal  : product.price.unit.ati,
+                            special : product.price.special ? product.price.special.ati : undefined
+                        },
+                        et : {
+                            normal  : product.price.unit.et,
+                            special : product.price.special ? product.price.special.et : undefined
+                        }
+
+                    }
+                };
+            }
+            return product.id;
+        });
+    }
     const returnedPromos = [];
     const currentDate    = new Date(Date.now());
     const promos         = await Promo.find(
@@ -796,7 +818,7 @@ function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
 }
 
 async function resetCartProductPrice(cart, j) {
-    if (cart.items[j].noRecalculatePrice) {
+    if (cart.items[j].noRecalculatePrice ||cart.items[j].type === 'bundle') {
         return cart;
     }
     // on recupere le produit en base et on y réapplique ses valeur (prix)
