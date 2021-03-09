@@ -85,14 +85,12 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('slider', that._id, that.code);
 }
 
-SliderSchema.pre('updateOne', async function (next) {
+SliderSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, SliderSchema);
 });
 
-SliderSchema.pre('findOneAndUpdate', async function (next) {
+SliderSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, SliderSchema);
 });
 
 SliderSchema.pre('save', async function (next) {
