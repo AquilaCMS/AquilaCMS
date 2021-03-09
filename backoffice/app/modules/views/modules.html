@@ -50,11 +50,12 @@
                         {{module.version}}
                     </td>
                     <td>
+                        
                         <toggle
                             ng-model="module.active"
                             ng-change="toggleActive(module._id, module.name, module.active)"
-                            on="Activé"
-                            off="Désactivé"
+                            on="{{'modules.activate' | translate}}"
+                            off="{{'modules.deactivate' | translate}}"
                             onstyle="btn btn-success btnsuccess"
                             offstyle="btn btn-red"
                         ></toggle>
