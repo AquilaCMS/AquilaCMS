@@ -275,7 +275,7 @@ const getCustomCss = async (cssName) => {
         const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
-                return fs.readFile(fullPath);
+                return (await fs.readFile(fullPath)).toString();
             }
         } catch (err) {
             console.error(err);

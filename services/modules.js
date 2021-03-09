@@ -446,10 +446,10 @@ const activateModule = async (idModule, toBeChanged) => {
         );
         await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
-        return Modules.find({});
+        return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({});
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
 };
@@ -546,10 +546,10 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module desactivated');
-        return Modules.find({});
+        return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({});
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
 };
