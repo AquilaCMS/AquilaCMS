@@ -185,7 +185,7 @@ const initModule = async (zipFile) => {
         }
         try {
             console.log('removing file in module folder...');
-            await fs.deleteRecursiveSync(extractZipFilePath);
+            await fs.deleteRecursive(extractZipFilePath);
         } catch (err) {
             console.error(err);
         }
@@ -362,7 +362,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
-                await fs.copyRecursiveSync(
+                await fs.copyRecursive(
                     path.resolve(global.appRoot, copyF),
                     path.resolve(global.appRoot, copy),
                     true
@@ -379,7 +379,7 @@ const activateModule = async (idModule, toBeChanged) => {
             const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
-                    await fs.copyRecursiveSync(
+                    await fs.copyRecursive(
                         path.resolve(global.appRoot, src),
                         path.resolve(global.appRoot, dest),
                         true

@@ -140,8 +140,8 @@ const saveEnvConfig = async (body) => {
         // traitement spécifique
         if (environment.demoMode) {
             const seoService = require('./seo');
-            seoService.removeSitemap(); // Supprime le sitemap.xml
-            seoService.manageRobotsTxt(false); // Interdire le robots.txt
+            await seoService.removeSitemap(); // Supprime le sitemap.xml
+            await seoService.manageRobotsTxt(false); // Interdire le robots.txt
         }
     }
 

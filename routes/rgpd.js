@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const fs                          = require('fs');
 const path                        = require('path');
 const {exec}                      = require('child_process');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
 const rgpdServices                = require('../services/rgpd');
 const {Modules}                   = require('../orm/models');
+const fs                          = require('../utils/fsp');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const appdirname                  = path.dirname(require.main.filename);
 
@@ -43,7 +43,7 @@ async function exportData(req, res, next) {
             if (_modules.length >= 0) {
                 for (const module of _modules) {
                     await new Promise(async (resolve, reject) => {
-                        if (fs.existsSync(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                        if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
                             const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
                             const data   = await rgpd.exportData(userData, resolve, reject);
                             modulesData += `\n\n${module.name} :\n`;

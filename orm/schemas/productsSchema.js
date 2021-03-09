@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const fs                  = require('fs');
 const mongoose            = require('mongoose');
+const fs                  = require('../../utils/fsp');
 const aquilaEvents        = require('../../utils/aquilaEvents');
 const NSErrors            = require('../../utils/errors/NSErrors');
 const utils               = require('../../utils/utils');
@@ -261,7 +261,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
                     try {
-                        await fs.unlinkSync(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
+                        await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
                     } catch (error) {
                         console.log(error);
                     }
@@ -308,44 +308,21 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
             this.price.ati.special = prd[0].price.ati.special;
         }
     }
-    await new Promise((resolve, reject) => {
-        fs.access('modules/priceRules.js', async (err) =>  {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    item.price = {
-                        vat  : {rate: this.price.tax},
-                        unit : {
-                            et  : this.price.et.normal,
-                            ati : this.price.ati.normal
-                        }
-                    };
+    item.price = {
+        vat  : {rate: this.price.tax},
+        unit : {
+            et  : this.price.et.normal,
+            ati : this.price.ati.normal
+        }
+    };
 
-                    if (this.price.et.special !== undefined && this.price.et.special !== null) {
-                        item.price.special = {
-                            et  : this.price.et.special,
-                            ati : this.price.ati.special
-                        };
-                    }
-                    resolve();
-                } else {
-                    reject(err);
-                }
-            } else {
-                // eslint-disable-next-line import/no-unresolved
-                const priceRules = require('../modules/priceRules');
-                priceRules(item, this, function (err, calculatedPrice) {
-                    if (err) return reject(err);
-                    item.price = {
-                        vat  : {rate: this.price.tax},
-                        unit : {ati: calculatedPrice}
-                    };
-                    resolve();
-                });
-            }
-        });
-    });
+    if (this.price.et.special !== undefined && this.price.et.special !== null) {
+        item.price.special = {
+            et  : this.price.et.special,
+            ati : this.price.ati.special
+        };
+    }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
-    // cb(null, resp);
     return resp;
 };
 
