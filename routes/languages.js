@@ -47,7 +47,7 @@ async function saveLang(req, res, next) {
         const result = await servicesLanguages.saveLang(req.body.lang);
         return res.json(result);
     } catch (e) {
-        return next(e);
+        next(e);
     }
 }
 
