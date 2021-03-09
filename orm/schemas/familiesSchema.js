@@ -91,14 +91,12 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('families', that._id, that.code);
 }
 
-FamiliesSchema.pre('updateOne', async function (next) {
+FamiliesSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
 
-FamiliesSchema.pre('findOneAndUpdate', async function (next) {
+FamiliesSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
 
 module.exports = FamiliesSchema;
