@@ -53,14 +53,12 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('shipments', that._id, that.code);
 }
 
-ShipmentSchema.pre('updateOne', async function (next) {
+ShipmentSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, ShipmentSchema);
 });
 
-ShipmentSchema.pre('findOneAndUpdate', async function (next) {
+ShipmentSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, ShipmentSchema);
 });
 
 ShipmentSchema.pre('save', async function (next) {

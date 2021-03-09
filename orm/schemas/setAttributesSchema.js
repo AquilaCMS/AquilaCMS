@@ -28,14 +28,12 @@ async function preUpdates(that) {
     await utilsDatabase.checkCode('setAttributes', that._id, that.code);
 }
 
-SetAttributesSchema.pre('updateOne', async function (next) {
+SetAttributesSchema.pre('updateOne', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, SetAttributesSchema);
 });
 
-SetAttributesSchema.pre('findOneAndUpdate', async function (next) {
+SetAttributesSchema.pre('findOneAndUpdate', async function () {
     await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, SetAttributesSchema);
 });
 
 SetAttributesSchema.pre('save', async function (next) {
