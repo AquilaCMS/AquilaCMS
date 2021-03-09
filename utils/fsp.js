@@ -48,13 +48,17 @@ const ensureDir = (path) => {
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
  * @param {string | Buffer | URL} dest A path to a file or directory.
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
- * @param {string[]} except A path to a file or directory.
- * Array of names for excepted files and folders
+ * @param {string[]} excludes Array of paths to exclude (does not support glob/pattern).
  */
-const copyRecursiveSync = async (src, dest, override = false, except = []) => {
-    if (except !== [] && except.includes(src.split('\\')[src.split('\\').length - 1])) {
-        return;
+const copyRecursive = async (src, dest, override = false, excludes = []) => {
+    if (Array.isArray(excludes)) {
+        for (const pth of excludes) {
+            if (path.resolve(pth) === path.resolve(src)) return;
+        }
     }
+    // if (excludes !== [] && excludes.includes(src.split('\\')[src.split('\\').length - 1])) {
+    //     return;
+    // }
     try {
         let srcAccess = false;
         try {
@@ -65,11 +69,11 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
         if (srcAccess && srcStat.isDirectory()) {
             await fsp.mkdir(path.dirname(dest), {recursive: true});
             for (const childItemName of await fsp.readdir(src, 'utf-8')) {
-                await copyRecursiveSync(
+                await copyRecursive(
                     path.resolve(src, childItemName),
                     path.resolve(dest, childItemName),
                     override,
-                    except
+                    excludes
                 );
             }
         } else {
@@ -82,7 +86,9 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
                 } catch (err) {}
             }
         }
-    } catch (except) { console.error(except); }
+    } catch (err) {
+        console.error(err);
+    }
 };
 
 /**
@@ -90,15 +96,15 @@ const copyRecursiveSync = async (src, dest, override = false, except = []) => {
  * @param {string | Buffer | URL} filePath A path to a file or directory.
  * If a URL is provided, it must use the `file:` protocol. URL support is _experimental_.
  */
-const deleteRecursiveSync = async (filePath) => {
-    if (fs.existsSync(filePath)) {
+const deleteRecursive = async (filePath) => {
+    if (await hasAccess(filePath)) {
         const statFile = await fsp.lstat(filePath);
         if (statFile.isFile()) {
             await fsp.unlink(filePath);
         } else if (statFile.isDirectory()) {
-            if (fs.existsSync(filePath)) {
+            if (await hasAccess(filePath)) {
                 for (const file of await fsp.readdir(filePath, 'utf-8')) {
-                    await deleteRecursiveSync(path.resolve(filePath, file));
+                    await deleteRecursive(path.resolve(filePath, file));
                 }
                 await fsp.rmdir(filePath);
             }
@@ -143,6 +149,6 @@ module.exports = {
     hasAccess,
     ensureDir,
     moveFile,
-    copyRecursiveSync,
-    deleteRecursiveSync
+    copyRecursive,
+    deleteRecursive
 };

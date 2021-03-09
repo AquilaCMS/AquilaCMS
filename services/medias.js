@@ -354,9 +354,9 @@ const uploadFiles = async (body, files) => {
             target_path_full = `${pathFinal + target_path}${name}${extension}`;
         }
 
-        await fsp.copyRecursiveSync(tmp_path, target_path_full);
+        await fsp.copyRecursive(tmp_path, target_path_full);
         if ((await fsp.stat(tmp_path)).isDirectory()) {
-            await fsp.deleteRecursiveSync(tmp_path);
+            await fsp.deleteRecursive(tmp_path);
         } else {
             await fsp.unlink(tmp_path);
         }

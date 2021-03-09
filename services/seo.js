@@ -6,12 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const util         = require('util');
-const fs           = require('fs');
 const js2xmlparser = require('js2xmlparser');
 const moment       = require('moment');
+const fs           = require('../utils/fsp');
 const NSErrors     = require('../utils/errors/NSErrors');
-const fsWriteFile  = util.promisify(fs.writeFile);
+
 const {
     Languages,
     Statics,
@@ -21,7 +20,13 @@ const {
 }                   = require('../orm/models');
 
 let inCrawl       = false;
-const sitemapConf = {home: {frequency: 'daily', priority: '1.0'}, product: {frequency: 'weekly', priority: '0.5'}, category: {frequency: 'daily', priority: '0.8'}, blog: {frequency: 'weekly', priority: '0.5'}, other: {frequency: 'weekly', priority: '0.2'}};
+const sitemapConf = {
+    home     : {frequency: 'daily', priority: '1.0'},
+    product  : {frequency: 'weekly', priority: '0.5'},
+    category : {frequency: 'daily', priority: '0.8'},
+    blog     : {frequency: 'weekly', priority: '0.5'},
+    other    : {frequency: 'weekly', priority: '0.2'}
+};
 
 const genSitemap = async () => {
     // Vérifier qu'on est pas en mode "demoMode"
@@ -29,7 +34,7 @@ const genSitemap = async () => {
         throw NSErrors.DemoMode;
     }
 
-    manageRobotsTxt(true);
+    await manageRobotsTxt(true);
 
     if (inCrawl === false) {
         console.log(`\x1b[5m\x1b[33m ${new Date()} Début de la génération du sitemap\x1b[0m`);
@@ -192,7 +197,7 @@ const genSitemap = async () => {
                 sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
             }
 
-            await fsWriteFile('./sitemap.xml', sitemapString);
+            await fs.writeFile('./sitemap.xml', sitemapString);
             inCrawl = false;
             console.log(`\x1b[5m\x1b[32m ${new Date()} Fin de la génération du sitemap\x1b[0m`);
         } catch (err) {
@@ -207,17 +212,17 @@ const genSitemap = async () => {
 /*
 * Remove sitemap.xml
 */
-const removeSitemap = () => {
+const removeSitemap = async () => {
     const filePath = './sitemap.xml';
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+    if (await fs.hasAccess(filePath)) {
+        await fs.unlink(filePath);
     }
 };
 
 /*
 * Allow / Disallow seo in robots.txt
 */
-const manageRobotsTxt = (allow = true) => {
+const manageRobotsTxt = async (allow = true) => {
     const filePath  = './robots.txt';
     let contentFile = `User-agent: *
 Allow: /`;
@@ -227,7 +232,7 @@ Allow: /`;
 Disallow: /`;
     }
 
-    fs.writeFileSync(filePath, contentFile);
+    await fs.writeFile(filePath, contentFile);
 };
 
 /*

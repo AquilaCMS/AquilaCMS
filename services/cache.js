@@ -7,7 +7,7 @@
  */
 
 const glob           = require('glob');
-const fs             = require('fs');
+const fs             = require('../utils/fsp');
 const {deleteFolder} = require('../utils/medias');
 const utilsModules   = require('../utils/modules');
 
@@ -68,7 +68,7 @@ function deleteFileCache(filePathCache) {
             console.error(err);
         } else {
             for (let i = 0; i < files.length; i++) {
-                await fs.unlinkSync(files[i]);
+                await fs.unlink(files[i]);
                 console.log(`image deleted => ${filePathCache}`);
             }
         }

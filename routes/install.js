@@ -77,7 +77,7 @@ module.exports = (installRouter) => {
             res.status(500).send(`Error : ${JSON.stringify(err)}`);
 
             // Recréation du env.json 'vide'
-            fs.unlinkSync('./config/env.json');
+            await fs.unlink('./config/env.json');
             await require('../utils/server').getOrCreateEnvFile();
         }
     });
