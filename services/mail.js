@@ -958,17 +958,7 @@ async function sendMailPendingCarts(cart) {
         }
         content = content.replace(htmlItem, templateItems);
     }
-    let dateReceipt = '';
-    let hourReceipt = '';
-    if (cart.orderReceipt && cart.orderReceipt.date) {
-        const d       = cart.orderReceipt.date;
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
-        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
-    }
+
     const datas = {
         '{{taxdisplay}}'         : global.translate.common[taxDisplay][lang],
         '{{customer.fullname}}'  : customer.fullname,
@@ -976,8 +966,6 @@ async function sendMailPendingCarts(cart) {
         '{{customer.firstname}}' : customer.firstname,
         '{{customer.lastname}}'  : customer.lastname,
         '{{quantityBreaks}}'     : '',
-        '{{order.dateReceipt}}'  : dateReceipt,
-        '{{order.hourReceipt}}'  : hourReceipt,
         '{{order.priceTotal}}'   : cart.priceTotal[taxDisplay].toFixed(2)
     };
 

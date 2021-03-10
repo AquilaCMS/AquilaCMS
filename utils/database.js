@@ -1229,7 +1229,35 @@ const initDBValues = async () => {
                         {
                             value       : 'customer.lastname',
                             description : 'Nom du client'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'HT ou TTC'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
+                        // {
+                        //     value       : 'startitems',
+                        //     description : 'Insérer avant les informations produits'
+                        // },
+                        // {
+                        //     value       : 'enditems',
+                        //     description : 'Insérer après les informations produits'
+                        // }
                     ]
 
                 },
@@ -1243,7 +1271,35 @@ const initDBValues = async () => {
                         {
                             value       : 'customer.lastname',
                             description : 'Customer lastname'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'ATI or ET'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
+                        // {
+                        //     value       : 'startitems',
+                        //     description : 'Insert before products informations'
+                        // },
+                        // {
+                        //     value       : 'enditems',
+                        //     description : 'Insert after products informations'
+                        // }
                     ]
 
                 }
