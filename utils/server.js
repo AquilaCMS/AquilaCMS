@@ -74,6 +74,7 @@ const getOrCreateEnvFile = async () => {
                 try {
                     envFile = JSON.parse(envFile);
                 } catch (error) {
+                    console.error('Access to the env file is possible but the file is invalid');
                     throw new Error('Cannot read env.json');
                 }
             }
