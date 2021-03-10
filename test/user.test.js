@@ -1,9 +1,9 @@
-const chai                  = require('chai');
-const chaiHttp              = require('chai-http');
-const {Users}               = require('../orm/models');
-const app                   = require('../server');
-const createAccountAndLogin = require('./utils/createUserAdminAndLogin');
-const createUser            = require('./utils/createUser');
+const chai                    = require('chai');
+const chaiHttp                = require('chai-http');
+const {Users}                 = require('../orm/models');
+const app                     = require('../server');
+const createUserAdminAndLogin = require('./utils/createUserAdminAndLogin');
+const createUser              = require('./utils/createUser');
 
 chai.use(chaiHttp);
 chai.should();
@@ -14,7 +14,7 @@ let credentials;
 
 describe('Users', () => {
     beforeEach(async () => {
-        credentials = await createAccountAndLogin();
+        credentials = await createUserAdminAndLogin();
     });
 
     describe('POST /api/v2/users', () => {
