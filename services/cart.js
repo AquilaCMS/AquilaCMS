@@ -23,6 +23,7 @@ const ServicePromo      = require('./promo');
 const ServiceShipment   = require('./shipment');
 const ServicesProducts  = require('./products');
 const servicesTerritory = require('./territory');
+const servicesMail      = require('./mail');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
@@ -586,6 +587,18 @@ const validateForCheckout = (cart) => {
     return {code: 'VALID'};
 };
 
+const mailPendingCarts = async () => {
+    try {
+        const carts = await Cart.find({});
+        for (const cart of carts) {
+            await servicesMail.sendMailPendingCarts(cart);
+        }
+    } catch (error) {
+        console.error('mailPendingCarts', error);
+        throw error;
+    }
+};
+
 module.exports = {
     getCarts,
     getCartforClient,
@@ -602,5 +615,6 @@ module.exports = {
     updateDelivery,
     removeDiscount,
     validateForCheckout,
-    removeDelivery
+    removeDelivery,
+    mailPendingCarts
 };

@@ -7,7 +7,7 @@
                 <div class="col-sm-11">
                     <label for="cartExpireTimeout" class="col-sm-5 control-label" translate>stock.delExp</label>
                     <div class="col-sm-1">
-                        <input id="cartExpireTimeout" type="number" class="form-control" min="0" ng-model="stock.cartExpireTimeout" required />
+                        <input id="cartExpireTimeout" ng-change="pendingCartCheck()" type="number" class="form-control" min="0" ng-model="stock.cartExpireTimeout" required />
                         <div class="ns-error-message">
                             <div ng-show="(form.name.$dirty || form.nsSubmitted) && form.name.$error.required" translate>stock.fieldReq</div>
                         </div>
@@ -26,6 +26,21 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <label for="requestMailPendingCarts" class="col-sm-5 control-label" translate>stock.requestMailPendingCarts</label> <i style="float:left;padding-top: 10px;" class="fa fa-question-circle" popover="{{'stock.requestMailPendingCartsHelp' | translate}}"
+                        popover-trigger="mouseenter" aria-hidden="true"></i>
+                    <div class="col-sm-1">
+                            <input id="requestMailPendingCarts" type="number" class="form-control" min="0" max="{{stock.cartExpireTimeout - 1}}"
+                                ng-model="stock.requestMailPendingCarts" required />
+                        <div class="ns-error-message">
+                            <div ng-show="(form.name.$dirty || form.nsSubmitted) && form.name.$error.required" translate>
+                                stock.fieldReq</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <div class="col-sm-11">
                     <label class="col-sm-5 control-label" translate>stock.additionnalFeesTax</label>

@@ -26,6 +26,7 @@ const {
 }                      = require('../orm/models');
 
 const QueryBuilder     = require('../utils/QueryBuilder');
+const users            = require('../orm/models/users');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Mail, restrictedFields, defaultFields);
@@ -737,7 +738,8 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
 
             try {
                 transporter = nodemailer.createTransport(options);
-                return transporter.sendMail(mailOptions);
+                const res   = await transporter.sendMail(mailOptions);
+                return res;
             } catch (err) {
                 console.error('Send mail error', err);
                 throw err;
@@ -908,6 +910,93 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 }
 
+async function sendMailPendingCarts(cart) {
+    const customer                                  = await users.findOne({_id: cart.customer.id});
+    const lang                                      = customer.preferredLanguage;
+    const mailTo                                    = cart.customer.email;
+    const taxDisplay                                = cart.paidTax ? 'ati' : 'et';
+    const mailDatas                                 = await getMailDataByTypeAndLang('pendingCarts', lang);
+    let {content}                                   = mailDatas;
+    const {subject, from, fromName, pathAttachment} = mailDatas;
+
+    let templateItems  = '';
+    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    if (itemTemplate && itemTemplate[0]) {
+        const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
+        for (const item of cart.items) {
+            const prdData = {
+                '{{product.quantity}}'         : item.quantity,
+                '{{product.name}}'             : item.name,
+                '{{product.specialUnitPrice}}' : '',
+                '{{product.bundleName}}'       : item.name,
+                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.basePrice}}'        : '',
+                '{{product.descPromo}}'        : '',
+                '{{product.descPromoT}}'       : '',
+                '{{product.sumSpecialPrice}}'  : ''
+            };
+            if (item.parent) {
+                prdData['{{product.bundleName}}'] = cart.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+            }
+            let basePrice  = null;
+            let descPromo  = '';
+            let descPromoT = '';
+            if (cart.quantityBreaks && cart.quantityBreaks.productsId.length) {
+                // On check si le produit courant a recu une promo
+                const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
+                if (prdPromoFound) {
+                    basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
+                    descPromo                         = basePrice.toFixed(2);
+                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    prdData['{{product.basePrice}}']  = basePrice;
+                    prdData['{{product.descPromo}}']  = descPromo;
+                    prdData['{{product.descPromoT}}'] = descPromoT;
+                }
+            }
+            templateItems += await generateHTML(htmlItem, prdData);
+        }
+        content = content.replace(htmlItem, templateItems);
+    }
+    let dateReceipt = '';
+    let hourReceipt = '';
+    if (cart.orderReceipt && cart.orderReceipt.date) {
+        const d       = cart.orderReceipt.date;
+        const _config = global.envConfig;
+        if (!_config) {
+            throw NSErrors.ConfigurationNotFound;
+        }
+        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
+        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
+    }
+    const datas = {
+        '{{taxdisplay}}'         : global.translate.common[taxDisplay][lang],
+        '{{customer.fullname}}'  : customer.fullname,
+        '{{customer.name}}'      : customer.fullname,
+        '{{customer.firstname}}' : customer.firstname,
+        '{{customer.lastname}}'  : customer.lastname,
+        '{{quantityBreaks}}'     : '',
+        '{{order.dateReceipt}}'  : dateReceipt,
+        '{{order.hourReceipt}}'  : hourReceipt,
+        '{{order.priceTotal}}'   : cart.priceTotal[taxDisplay].toFixed(2)
+    };
+
+    if (cart.quantityBreaks && cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
+        datas['{{quantityBreaks}}'] = cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
+    }
+
+    if (cart.delivery && cart.delivery.price && cart.delivery.price[taxDisplay]) {
+        mailDatas['{{delivery.price}}'] = cart.delivery.price[taxDisplay].toFixed(2);
+    }
+
+    if (cart.promos && cart.promos.length && (cart.promos[0].productsId.length === 0)) {
+        datas['{{promo.discount}}'] = cart.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        datas['{{promo.code}}']     = cart.promos[0].code;
+    }
+    const htmlBody = generateHTML(content, datas);
+    return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, pathAttachment});
+}
+
 const sendError = async (error) => {
     const errorMail = await Mail.findOne({type: 'error'});
 
@@ -944,5 +1033,6 @@ module.exports = {
     sendGeneric,
     sendContact,
     sendMailOrderRequestCancel,
+    sendMailPendingCarts,
     sendError
 };

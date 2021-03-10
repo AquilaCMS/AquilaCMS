@@ -71,6 +71,7 @@
                 "properties": {
                     "cartExpireTimeout"         : {"type": "number"},
                     "pendingOrderCancelTimeout" : {"type": "number"},
+                    "requestMailPendingCarts"   : {"type": "number" },
                     "bookingStock"              : {"type": "string", "enum": ["commande", "panier", "none", "payment"]},
                     "labels"                    : {
                         "type": "array",

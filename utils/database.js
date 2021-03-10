@@ -1214,6 +1214,40 @@ const initDBValues = async () => {
 
                 }
             }
+        },
+        {
+            code        : 'pendingCarts',
+            position    : 13,
+            translation : {
+                fr : {
+                    name      : 'Relancer par mail les paniers en attente',
+                    variables : [
+                        {
+                            value       : 'customer.firstname',
+                            description : 'Prénom du client'
+                        },
+                        {
+                            value       : 'customer.lastname',
+                            description : 'Nom du client'
+                        }
+                    ]
+
+                },
+                en : {
+                    name      : 'Send mail to pending carts',
+                    variables : [
+                        {
+                            value       : 'customer.firstname',
+                            description : 'Customer firstname'
+                        },
+                        {
+                            value       : 'customer.lastname',
+                            description : 'Customer lastname'
+                        }
+                    ]
+
+                }
+            }
         }
     ];
     // Populate mailType in BDD
