@@ -276,9 +276,16 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                         $location.path("/site/articles/detail/" + response._id);
                     }
                 }
-            }, function (err)
-            {
-                toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error during save');
+                }
                 $scope.disableSave = false;
             });
         };

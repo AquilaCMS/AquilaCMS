@@ -89,7 +89,7 @@ NewsSchema.pre('updateOne', async function (next) {
 });
 
 NewsSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+    await preUpdates(this._update);
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
