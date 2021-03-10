@@ -35,11 +35,7 @@ describe('Statics', () => {
                 .send(staticPage);
             expect(res).to.have.status(200);
             expect(res.body.url).to.be.a('string').and.satisfy((msg) => {
-                const text = `preview=${staticPage._id}`;
-                if (msg.endsWith(text)) {
-                    return true;
-                }
-                return false;
+                return msg.endsWith(`preview=${staticPage._id}`);
             });
         });
     });
