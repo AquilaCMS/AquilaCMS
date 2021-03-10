@@ -18,7 +18,7 @@ describe('News', () => {
         credentials = await createUserAdminAndLogin();
     });
 
-    describe('POST /v2/site/news', () => {
+    describe('POST /api/v2/site/news', () => {
         it('Create news and get it with the ID', async () => {
             news      = await createNews();
             const res = await chai.request(app)
@@ -36,11 +36,7 @@ describe('News', () => {
                 .send(news);
             expect(res).to.have.status(200);
             expect(res.body.url).to.be.a('string').and.satisfy((msg) => {
-                const text = `preview=${news._id}`;
-                if (msg.endsWith(text)) {
-                    return true;
-                }
-                return false;
+                return msg.endsWith(`preview=${news._id}`);
             });
         });
         it('Create news and delete it (use the ID)', async () => {
@@ -53,10 +49,10 @@ describe('News', () => {
         });
     });
 
-    describe('PUT /v2/site/new', () => {
+    describe('PUT /api/v2/site/new', () => {
         it('Try creating a news with slug that already exists', async () => {
             const slug = faker.lorem.slug();
-            news       = await createNews(slug);
+            news       = await createNews({slug});
             const res  = await chai.request(app)
                 .put('/api/v2/site/new')
                 .set('authorization', credentials.token)
@@ -65,7 +61,7 @@ describe('News', () => {
         });
     });
 
-    describe('DELETE /v2/site/new/:id', () => {
+    describe('DELETE /api/v2/site/new/:id', () => {
         it('Get all news of the first page and delete them one by one', async () => {
             news      = await createNews();
             const res = await chai.request(app)

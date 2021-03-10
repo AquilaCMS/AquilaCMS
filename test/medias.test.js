@@ -18,7 +18,7 @@ describe('Medias', () => {
         credentials = await createUserAdminAndLogin();
     });
 
-    describe('POST /v2/media', () => {
+    describe('POST /api/v2/media', () => {
         it('Create Medias and get it with the id', async () => {
             media     = await createMedias();
             const res = await chai.request(app)
@@ -29,7 +29,7 @@ describe('Medias', () => {
             expect(res.body.name).be.equals(media.name);
         });
     });
-    describe('DELETE /v2/media/:id', () => {
+    describe('DELETE /api/v2/media/:id', () => {
         it('Create media and delete it (use the ID)', async () => {
             media      = await createMedias();
             const link = `/api/v2/media/${media._id}`;
@@ -40,7 +40,7 @@ describe('Medias', () => {
         });
     });
 
-    describe('PUT /v2/media', () => {
+    describe('PUT /api/v2/media', () => {
         it('Try creating a medias', async () => {
             const nameOfMedia = faker.lorem.slug();
             const res         = await chai.request(app)
@@ -50,17 +50,16 @@ describe('Medias', () => {
             expect(res).to.have.status(200);
         });
         it('Try creating a media with code (name) that already exists', async () => {
-            const name   = faker.lorem.slug();
-            media        = await createMedias(name);
-            const object = {media: {link: '', name, group: ''}};
-            const res    = await chai.request(app)
+            const name = faker.lorem.slug();
+            media      = await createMedias({name});
+            const res  = await chai.request(app)
                 .put('/api/v2/media')
                 .set('authorization', credentials.token)
-                .send(object);
+                .send({media: {link: '', name, group: ''}});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
     });
-    describe('DELETE /v2/media/:id', () => {
+    describe('DELETE /api/v2/media/:id', () => {
         it('Get all media of the first page and delete them one by one', async () => {
             media     = await createMedias();
             const res = await chai.request(app)

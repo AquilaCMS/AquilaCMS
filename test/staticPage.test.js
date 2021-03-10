@@ -13,12 +13,12 @@ const expect = chai.expect;
 let credentials;
 let staticPage;
 
-describe('StaticPage', () => {
+describe('Statics', () => {
     beforeEach(async () => {
         credentials = await createUserAdminAndLogin();
     });
 
-    describe('POST /v2/static/', () => {
+    describe('POST /api/v2/static/', () => {
         it('Create staticPage and get it with the code', async () => {
             staticPage = await createStaticPage();
             const res  = await chai.request(app)
@@ -44,21 +44,20 @@ describe('StaticPage', () => {
             });
         });
     });
-    describe('DELETE /v2/static/:id', () => {
+    describe('DELETE /api/v2/static/:id', () => {
         it('Create news and delete it (use the ID)', async () => {
             staticPage = await createStaticPage();
-            const link = `/api/v2/static/${staticPage._id}`;
             const res  = await chai.request(app)
-                .delete(link)
+                .delete(`/api/v2/static/${staticPage._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
     });
 
-    describe('PUT /v2/static', () => {
+    describe('PUT /api/v2/static', () => {
         it('Try creating a news with code that already exists', async () => {
             const code = faker.lorem.slug();
-            staticPage = await createStaticPage(code, '', '');
+            staticPage = await createStaticPage({code, content: '', title: ''});
             const res  = await chai.request(app)
                 .put('/api/v2/static')
                 .set('authorization', credentials.token)
