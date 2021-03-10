@@ -5,12 +5,12 @@ const {Users} = require('../../orm/models');
 
 const expect = chai.expect;
 
-const createUserAdminAndLogin = async () => {
+const createUserAdminAndLogin = async (email = null, password = null) => {
     await Users.deleteMany({});
 
     const doc  = {
-        email           : faker.internet.email(),
-        password        : 'dm0W3#96OC',
+        email           : email || faker.internet.email(),
+        password        : password || 'dm0W3#96OC',
         firstName       : faker.name.firstName(),
         lastName        : faker.name.lastName(),
         isAdmin         : true,

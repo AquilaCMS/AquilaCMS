@@ -68,7 +68,15 @@ const getOrCreateEnvFile = async () => {
         const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
         if (fs.existsSync(path.resolve(global.envPath))) {
             envFile = await fs.readFile(global.envPath);
-            envFile = JSON.parse(envFile);
+            if (envFile.toString() === '') {
+                envFile = {};
+            } else {
+                try {
+                    envFile = JSON.parse(envFile);
+                } catch (error) {
+                    throw new Error('Cannot read env.json');
+                }
+            }
             if (!envFile[getEnv('AQUILA_ENV')]) {
                 console.error('no correct NODE_ENV specified, generating new env in env.json');
                 const newEnv                  = generateNewEnv(envExample);
