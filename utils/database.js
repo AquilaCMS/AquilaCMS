@@ -8,6 +8,7 @@
 
 const mongoose = require('mongoose');
 mongoose.set('debug', false);
+const NSErrors = require('./errors/NSErrors');
 let connection = false;
 
 const connect = async () => {
@@ -62,6 +63,41 @@ const checkIfReplicaSet = async () => {
             });
         });
     });
+};
+
+/**
+ * Check if slug is unique for this collection and language
+ * @param {*} doc
+ * @param {mongoose.Schema<any>} model schema needed to be check for translation validation
+ */
+const checkSlugExist = async (doc, modelName) => {
+    const query = {$or: []};
+    if (!doc || !doc.translation) return;
+
+    for (const [lang] of Object.entries(doc.translation)) {
+        if (doc.translation[lang]) {
+            query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
+        }
+    }
+    if (doc._id) {
+        query._id = {$nin: [doc._id]};
+    }
+
+    if (await mongoose.model(modelName).exists(query)) {
+        throw NSErrors.SlugAlreadyExist;
+    }
+};
+
+const checkCode = async (modelName, id, code) => {
+    if (!code) return;
+
+    const query = {code};
+    if (id) {
+        query._id = {$ne: id};
+    }
+    if (await mongoose.model(modelName).exists(query)) {
+        throw NSErrors.CodeExisting;
+    }
 };
 
 const initDBValues = async () => {
@@ -1309,5 +1345,7 @@ module.exports = {
     applyMigrationIfNeeded,
     populateItems,
     preUpdates,
-    testdb
+    testdb,
+    checkSlugExist,
+    checkCode
 };

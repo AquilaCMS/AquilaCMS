@@ -627,17 +627,9 @@ const setProduct = async (req) => {
     if (!product) throw NSErrors.ProductNotFound;
     // On met à jour le slug du produit
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
-    return new Promise((resolve, reject) => {
-        product.updateData(req.body, async (err, result) => {
-            if (err && err.message === 'slug trop court') {
-                reject(NSErrors.ProductUpdateSlugError);
-            } else if (err) {
-                reject(NSErrors.ProductUpdateError);
-            }
-            await ProductsPreview.deleteOne({code: req.body.code});
-            return resolve((await Products.findOne({code: result.code})).populated(['bundle_sections.products._id']));
-        });
-    });
+    const result = await product.updateData(req.body);
+    await ProductsPreview.deleteOne({code: req.body.code});
+    await Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
 };
 
 const createProduct = async (req) => {

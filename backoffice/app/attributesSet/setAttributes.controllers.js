@@ -38,16 +38,7 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
             data["update"] = false;
             data.type = $scope.type
             SetAttributesV2.save(data, function (msg) {
-                console.log(msg)
-                if(msg.alreadyExist)
-                {
-                    toastService.toast("warning", "Un jeu d'attribut existe déjà avec ce code");
-                    if(isQuit)
-                    {
-                        $location.path(`/${$scope.type}/setAttributes/${data["code"]}`);
-                    }
-                }
-                else if(msg.status)
+                if(msg.status)
                 {
                     toastService.toast("success", "Sauvegarde effectuée");
                     if(isQuit)
@@ -58,6 +49,16 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
                 else
                 {
                     console.error("Error!");
+                }
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
                 }
             });
         };

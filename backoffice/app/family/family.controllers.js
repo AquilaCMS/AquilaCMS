@@ -291,13 +291,20 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
             data.id_parent = data.parent;
             FamilyV2.save(data, function (fam) {
                 if (fam && fam._id) {
-                // $location.path("/families");
                     $modalInstance.close();
                 } else {
                     console.error("Error!");
                 }
-            }, function (e) {
-                    toastService.toast("danger", e.data.message);
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
+                }
             });
         };
 

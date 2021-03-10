@@ -124,7 +124,11 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
                 }
             }, function (err) {
                     console.error(err);
-                    toastService.toast("danger", "Echec de la sauvegarde");
+                    if(err.data && err.data.message){
+                        toastService.toast("danger", err.data.message);
+                    }else{
+                        toastService.toast("danger", "Echec de la sauvegarde");
+                    }
                 });
         }
 
