@@ -50,7 +50,7 @@ const ProductBundleSchema = new Schema({
     return this.stock.qty - this.stock.qty_booked;
 }); */
 
-ProductBundleSchema.methods.updateData = async function (data, cb) {
+ProductBundleSchema.methods.updateData = async function (data) {
     const updatedData           = data;
     updatedData.price.priceSort = {
         et  : updatedData.price.et.special || updatedData.price.et.normal,
@@ -60,12 +60,8 @@ ProductBundleSchema.methods.updateData = async function (data, cb) {
         // On met à jour le slug du produit
         updatedData._slug = `${helper.slugify(updatedData.name)}-${updatedData.id}`;
     }
-    try {
-        const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
-        return cb(null, updPrd);
-    } catch (err) {
-        return cb(err);
-    }
+    const updPrd = await this.model('BundleProduct').findOneAndUpdate({_id: this._id}, {$set: updatedData}, {new: true});
+    return updPrd;
 };
 
 ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) {

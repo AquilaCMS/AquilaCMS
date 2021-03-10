@@ -44,7 +44,7 @@ const getConfig = async (req, res, next) => {
         const config     = await serviceConfig.getConfig(PostBody, req.info);
         return res.json(config);
     } catch (e) {
-        return next(e);
+        next(e);
     }
 };
 
