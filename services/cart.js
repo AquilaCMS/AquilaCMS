@@ -13,7 +13,8 @@ const {
     Orders,
     Products,
     Promo,
-    Languages
+    Languages,
+    Configuration
 }                       = require('../orm/models');
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
@@ -24,6 +25,7 @@ const ServiceShipment   = require('./shipment');
 const ServicesProducts  = require('./products');
 const servicesTerritory = require('./territory');
 const servicesMail      = require('./mail');
+const ServiceJob        = require('./job');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
@@ -589,10 +591,27 @@ const validateForCheckout = (cart) => {
 
 const mailPendingCarts = async () => {
     try {
-        const carts = await Cart.find({});
-        for (const cart of carts) {
-            await servicesMail.sendMailPendingCarts(cart);
+        const config = await Configuration.findOne();
+        const now    = moment(new Date());
+        if (config.stockOrder.requestMailPendingCarts) {
+            const job   = await ServiceJob.getModuleJobByName('Mail to pending carts');
+            const limit = moment(new Date());
+            limit.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+            let filter = {};
+            if (job.attrs.data.lastExecutionResult) {
+                const lastRun = moment(new Date(job.attrs.data.lastExecutionResult.split(' : ')[1].substr(0, job.attrs.data.lastExecutionResult.split(' : ')[1].length - 1)));
+                lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                filter = {updatedAt: {$lte: limit, $gte: lastRun}};
+            } else {
+                filter = {updatedAt: {$lte: limit}};
+            }
+            const carts = await Cart.find(filter);
+            for (const cart of carts) {
+                await servicesMail.sendMailPendingCarts(cart);
+            }
+            return `Success : ${now.toString()}`;
         }
+        return `Success : ${now.toString()}`;
     } catch (error) {
         console.error('mailPendingCarts', error);
         throw error;
