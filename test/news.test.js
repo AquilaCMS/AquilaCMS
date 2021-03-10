@@ -11,7 +11,6 @@ chai.should();
 const expect = chai.expect;
 
 let credentials;
-let news;
 
 describe('News', () => {
     beforeEach(async () => {
@@ -20,8 +19,8 @@ describe('News', () => {
 
     describe('POST /api/v2/site/news', () => {
         it('Create news and get it with the ID', async () => {
-            news      = await createNews();
-            const res = await chai.request(app)
+            const news = await createNews();
+            const res  = await chai.request(app)
                 .post('/api/v2/site/new')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: news._id}}});
@@ -29,8 +28,8 @@ describe('News', () => {
             expect(res.body.translation.fr.title).be.equals(news.translation.fr.title);
         });
         it('Create news and get the preview URL', async () => {
-            news      = await createNews();
-            const res = await chai.request(app)
+            const news = await createNews();
+            const res  = await chai.request(app)
                 .post('/api/v2/site/preview')
                 .set('authorization', credentials.token)
                 .send(news);
@@ -40,7 +39,7 @@ describe('News', () => {
             });
         });
         it('Create news and delete it (use the ID)', async () => {
-            news       = await createNews();
+            const news = await createNews();
             const link = `/api/v2/site/new/${news._id}`;
             const res  = await chai.request(app)
                 .delete(link)
@@ -52,8 +51,8 @@ describe('News', () => {
     describe('PUT /api/v2/site/new', () => {
         it('Try creating a news with slug that already exists', async () => {
             const slug = faker.lorem.slug();
-            news       = await createNews({slug});
-            const res  = await chai.request(app)
+            await createNews({slug});
+            const res = await chai.request(app)
                 .put('/api/v2/site/new')
                 .set('authorization', credentials.token)
                 .send({translation: {fr: {slug, title: 'zerzerzerzer', content: {resume: '', text: ''}}}});
@@ -63,7 +62,7 @@ describe('News', () => {
 
     describe('DELETE /api/v2/site/new/:id', () => {
         it('Get all news of the first page and delete them one by one', async () => {
-            news      = await createNews();
+            await createNews();
             const res = await chai.request(app)
                 .post('/api/v2/site/news')
                 .set('authorization', credentials.token)

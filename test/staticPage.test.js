@@ -11,7 +11,6 @@ chai.should();
 const expect = chai.expect;
 
 let credentials;
-let staticPage;
 
 describe('Statics', () => {
     beforeEach(async () => {
@@ -20,8 +19,8 @@ describe('Statics', () => {
 
     describe('POST /api/v2/static/', () => {
         it('Create staticPage and get it with the code', async () => {
-            staticPage = await createStaticPage();
-            const res  = await chai.request(app)
+            const staticPage = await createStaticPage();
+            const res        = await chai.request(app)
                 .post('/api/v2/static')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {code: staticPage.code}}});
@@ -29,8 +28,8 @@ describe('Statics', () => {
             expect(res.body.translation.fr.title).be.equals(staticPage.translation.fr.title);
         });
         it('Create staticPage and get the preview URL', async () => {
-            staticPage = await createStaticPage();
-            const res  = await chai.request(app)
+            const staticPage = await createStaticPage();
+            const res        = await chai.request(app)
                 .post('/api/v2/static/preview')
                 .set('authorization', credentials.token)
                 .send(staticPage);
@@ -46,8 +45,8 @@ describe('Statics', () => {
     });
     describe('DELETE /api/v2/static/:id', () => {
         it('Create news and delete it (use the ID)', async () => {
-            staticPage = await createStaticPage();
-            const res  = await chai.request(app)
+            const staticPage = await createStaticPage();
+            const res        = await chai.request(app)
                 .delete(`/api/v2/static/${staticPage._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
@@ -57,8 +56,8 @@ describe('Statics', () => {
     describe('PUT /api/v2/static', () => {
         it('Try creating a news with code that already exists', async () => {
             const code = faker.lorem.slug();
-            staticPage = await createStaticPage({code, content: '', title: ''});
-            const res  = await chai.request(app)
+            await createStaticPage({code, content: '', title: ''});
+            const res = await chai.request(app)
                 .put('/api/v2/static')
                 .set('authorization', credentials.token)
                 .send({type: 'page', group: null, translation: {fr: {variables: [], html: '', content: '', title: ''}}, code});

@@ -11,7 +11,6 @@ chai.should();
 const expect = chai.expect;
 
 let credentials;
-let media;
 
 describe('Medias', () => {
     beforeEach(async () => {
@@ -20,8 +19,8 @@ describe('Medias', () => {
 
     describe('POST /api/v2/media', () => {
         it('Create Medias and get it with the id', async () => {
-            media     = await createMedias();
-            const res = await chai.request(app)
+            const media = await createMedias();
+            const res   = await chai.request(app)
                 .post('/api/v2/media')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: media._id}, limit: 99}});
@@ -31,9 +30,9 @@ describe('Medias', () => {
     });
     describe('DELETE /api/v2/media/:id', () => {
         it('Create media and delete it (use the ID)', async () => {
-            media      = await createMedias();
-            const link = `/api/v2/media/${media._id}`;
-            const res  = await chai.request(app)
+            const media = await createMedias();
+            const link  = `/api/v2/media/${media._id}`;
+            const res   = await chai.request(app)
                 .delete(link)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
@@ -51,8 +50,8 @@ describe('Medias', () => {
         });
         it('Try creating a media with code (name) that already exists', async () => {
             const name = faker.lorem.slug();
-            media      = await createMedias({name});
-            const res  = await chai.request(app)
+            await createMedias({name});
+            const res = await chai.request(app)
                 .put('/api/v2/media')
                 .set('authorization', credentials.token)
                 .send({media: {link: '', name, group: ''}});
@@ -61,7 +60,7 @@ describe('Medias', () => {
     });
     describe('DELETE /api/v2/media/:id', () => {
         it('Get all media of the first page and delete them one by one', async () => {
-            media     = await createMedias();
+            await createMedias();
             const res = await chai.request(app)
                 .post('/api/v2/medias')
                 .set('authorization', credentials.token)
