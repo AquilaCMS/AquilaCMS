@@ -9,6 +9,7 @@
 const {mongo: {MongoError}} = require('mongoose');
 const NSError               = require('../utils/errors/NSError');
 const NSErrors              = require('../utils/errors/NSErrors');
+const {getEnv}              = require('../utils/server');
 const errorMessage          = require('../utils/translate/errors');
 
 const mongoErrorCodeToNsError = {
@@ -77,10 +78,12 @@ const applyTranslation = (err, lang) => {
 const expressErrorHandler = (err, req, res, next) => {
     if (err) {
         if (!err.status) err.status = 500;
-        if (err instanceof NSError && err.level !== 'none') {
-            console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
-        } else if (!(err instanceof NSError)) {
-            console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+        if (getEnv('NODE_ENV') !== 'test') {
+            if (err instanceof NSError && err.level !== 'none') {
+                console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+            } else if (!(err instanceof NSError)) {
+                console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+            }
         }
 
         let lang = 'en';
@@ -90,22 +93,22 @@ const expressErrorHandler = (err, req, res, next) => {
         else if (global.defaultLang) lang = global.defaultLang;
 
         if (err instanceof MongoError) {
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
             const knownError = mongoErrorCodeToNsError[err.code];
             if (knownError) err = knownError;
             err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
         } else if (err instanceof NSError) {
             err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
         } else if (err instanceof Object && !(err instanceof Error)) {
             err.message = applyTranslation(err, lang);
             delete err.translations;
             if (!err.message) err = NSErrors.InternalError;
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
         } else if (err instanceof Object && err instanceof Error) {
             err.message = applyTranslation(err, lang);
             delete err.translations;
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
         }
 
         return sendError(res, err);
