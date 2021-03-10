@@ -6,19 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip         = require('adm-zip');
-const path           = require('path');
-const mongoose       = require('mongoose');
-const rimraf         = require('rimraf');
-const semver         = require('semver');
-const packageManager = require('../utils/packageManager');
-const QueryBuilder   = require('../utils/QueryBuilder');
-const modulesUtils   = require('../utils/modules');
-const serverUtils    = require('../utils/server');
-const fs             = require('../utils/fsp');
-const NSErrors       = require('../utils/errors/NSErrors');
-const {Modules}      = require('../orm/models');
-const themesService  = require('./themes');
+const AdmZip           = require('adm-zip');
+const path             = require('path');
+const mongoose         = require('mongoose');
+const rimraf           = require('rimraf');
+const semver           = require('semver');
+const {isEqual}        = require('../utils/utils');
+const packageManager   = require('../utils/packageManager');
+const QueryBuilder     = require('../utils/QueryBuilder');
+const modulesUtils     = require('../utils/modules');
+const {isProd, getEnv} = require('../utils/server');
+const fs               = require('../utils/fsp');
+const NSErrors         = require('../utils/errors/NSErrors');
+const {Modules}        = require('../orm/models');
+const themesService    = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -65,8 +66,9 @@ const setModuleConfigById = async (_id, config) => {
  * @param {string} file.path
  * @param {string} file.size
  */
-const initModule = async (zipFile) => {
-    const {originalname, path: filepath} = zipFile;
+const initModule = async (files) => {
+    if (!files || files.length === 0) throw NSErrors.MissingParameters;
+    const {originalname, path: filepath} = files[0];
     if (path.extname(originalname) !== '.zip') {
         throw NSErrors.InvalidFile;
     }
@@ -422,18 +424,24 @@ const activateModule = async (idModule, toBeChanged) => {
                     packagePath = path.resolve(installPath, 'package.json');
                 }
                 if (myModule.packageDependencies[apiOrTheme]) {
-                    const packageJSON        = JSON.parse(await fs.readFile(packagePath));
-                    packageJSON.dependencies = {
+                    const packageJSON  = JSON.parse(await fs.readFile(packagePath));
+                    const dependencies = {
                         ...packageJSON.dependencies,
                         ...myModule.packageDependencies[apiOrTheme],
                         ...toBeChanged[apiOrTheme]
                     };
-
-                    packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                    await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                    console.log(`Installing dependencies of the module in ${position}...`);
-                    await packageManager.execCmd('yarn install', installPath);
-                    await packageManager.execCmd('yarn upgrade', installPath);
+                    if (!isEqual(packageJSON.dependencies, dependencies)) {
+                        packageJSON.dependencies = {
+                            ...packageJSON.dependencies,
+                            ...myModule.packageDependencies[apiOrTheme],
+                            ...toBeChanged[apiOrTheme]
+                        };
+                        packageJSON.dependencies = orderPackages(packageJSON.dependencies);
+                        await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                        console.log(`Installing dependencies of the module in ${position}...`);
+                        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                        await packageManager.execCmd('yarn upgrade', installPath);
+                    }
                 }
             }
         }
@@ -545,7 +553,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         }
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
-        console.log('Module desactivated');
+        console.log('Module deactivated');
         return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
@@ -689,7 +697,7 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
         }
     }
     // Rebuild du theme
-    if (serverUtils.getEnv('NODE_ENV') === 'production') {
+    if (getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
     }
 };

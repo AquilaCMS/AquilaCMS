@@ -42,7 +42,10 @@
                 }
             },
             "status"           : {"type": "string"},
-            "createdAt"     : {"type": "date"},
+            "createdAt"     : {
+                "type": "string",
+                "format": "date"
+            },
             "delivery_address" : {"type": "number", "default": -1, "description": "index définissant l'addresse de livraison dans users.addresses"},
             "billing_address"  : {"type": "number", "default": -1, "description": "index définissant l'addresse de facturation dans users.addresses"},
             "addresses"        : {

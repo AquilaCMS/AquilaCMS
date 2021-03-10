@@ -71,7 +71,7 @@ async function getModule(req, res, next) {
 const uploadModule = async (req, res, next) => {
     req.setTimeout(300000);
     try {
-        const moduleInstalled = await serviceModule.initModule(req.files[0]);
+        const moduleInstalled = await serviceModule.initModule(req.files);
         return res.json(moduleInstalled);
     } catch (error) {
         return next(error);

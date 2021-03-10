@@ -5,8 +5,15 @@
             "code"         : {"type": "string", "required": true},
             "type"         : {"type": "string", "required": true},
             "active"       : {"type": "boolean", "default": false},
-            "createdAt" : {"type": "date"},
-            "updatedAt"   : {"type": "date", "default": "Date.now"},
+            "createdAt" : {
+                "type": "string",
+                "format": "date"
+            },
+            "updatedAt"   : {
+                "type": "string",
+                "format": "date",
+                "default": "Date.now"
+            },
             "group"        : {"type": "string", "default": ""},
             "translation"  : {"type": "object"}
         }
