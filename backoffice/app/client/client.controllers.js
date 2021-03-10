@@ -186,7 +186,7 @@ ClientControllers.controller("ClientDetailCtrl", [
             });
         }
 
-        
+        getAttributesClient();
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item.type;
@@ -268,7 +268,6 @@ ClientControllers.controller("ClientDetailCtrl", [
                 }
 
                 genAttributes();
-                getAttributesClient();
 
                 $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
 
