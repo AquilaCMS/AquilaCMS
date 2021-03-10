@@ -5,6 +5,8 @@
     "desc": "Description",
     "ver": "Version",
     "actif": "Actif ?",
+    "activate":"Activé",
+    "deactivate":"Désactivé",
     "actions": "ACTIONS",
     "config": "Configurer",
     "delete": "Supprimer",

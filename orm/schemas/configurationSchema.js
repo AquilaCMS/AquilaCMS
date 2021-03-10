@@ -45,11 +45,15 @@ const ConfigurationSchema = new Schema({
             active   : {type: Boolean, default: true},
             lastSent : {type: Date}
         },
-        siteName                    : {type: String, required: true},
-        websiteCountry              : {type: String, required: true},
-        websiteTimezone             : {type: String},
-        migration                   : {type: Number},
-        contentSecurityPolicyValues : {type: [String]}
+        siteName              : {type: String, required: true},
+        websiteCountry        : {type: String, required: true},
+        websiteTimezone       : {type: String},
+        migration             : {type: Number},
+        contentSecurityPolicy : {
+            values : {type: [String]},
+            active : {type: Boolean, default: false}
+        }
+
     },
     taxerate : {
         type : [

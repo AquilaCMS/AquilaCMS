@@ -157,14 +157,15 @@ adminCatagenDirectives.directive("nsSwitch", [
             {
                 scope.switchName = attrs.name;
                 scope.disableSwitch = (attrs.disableSwitch === "true") || false;
-                $translate("ns.switch.yes").then(function (yes)
-                {
-                    scope.yes_value = attrs.yesValue || yes;
-                });
-                $translate("ns.switch.no").then(function (no)
-                {
-                    scope.no_value = attrs.noValue || no;
-                });
+
+                setTimeout(function(){
+                    $translate("ns.switch.yes").then(function (yes) {
+                        scope.yes_value = attrs.yesValue || yes;
+                    });
+                    $translate("ns.switch.no").then(function (no) {
+                        scope.no_value = attrs.noValue || no;
+                    });
+                }, 10);
 
                 ngModel.$render = function ()
                 {

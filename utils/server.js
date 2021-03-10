@@ -19,6 +19,7 @@ const fs           = require('./fsp');
  * @returns {String} property
  */
 const getEnv = (property) =>  {
+    if (!property) throw new Error('property is mandatory');
     let env = process.env[property];
     if (!env && property === 'AQUILA_ENV') env = 'aquila';
     if (!env && property === 'NODE_ENV') env = 'production';
@@ -29,12 +30,7 @@ const getEnv = (property) =>  {
  * check if in prod or not
  * @returns {boolean}
  */
-const isProd = () => {
-    if (getEnv('NODE_ENV') === 'production') {
-        return true;
-    }
-    return false;
-};
+const isProd = getEnv('NODE_ENV') === 'production';
 
 const updateEnv = async () => {
     let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
@@ -190,6 +186,7 @@ const startListening = async (server) => {
                 if (err) throw err;
                 global.isServerSecure = true;
                 console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+                server.emit('started');
             });
         } catch (error) {
             console.error(error);
@@ -199,6 +196,7 @@ const startListening = async (server) => {
         server.listen(global.port, (err) => {
             if (err) throw err;
             console.log(`%sserver listening on port ${global.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
+            server.emit('started');
         });
     }
 };

@@ -53,20 +53,6 @@ const setModuleConfigById = async (_id, config) => {
 };
 
 /**
- * Permet modifier une partie de la configuration (champ conf) d'un module
- * @param name {string} nom/code du module
- * @param field {string} le champ à modifier
- * @param value {*} la valeur définir dans le champ
- * @returns {Promise<*>} Retourne la nouvelle configuration du module
- */
-const setPartialConfig = async (name, field, value) => {
-    require('../utils/utils').tmp_use_route('modules_service', 'setPartialConfig');
-    const upd              = {};
-    upd[`config.${field}`] = value;
-    return Modules.updateOne({name}, {$set: upd}, {new: true});
-};
-
-/**
  * unzip module in `modules` folder
  * and save module added in database
  * @param {Object} zipFile file information from express
@@ -199,7 +185,7 @@ const initModule = async (zipFile) => {
         }
         try {
             console.log('removing file in module folder...');
-            await fs.deleteRecursiveSync(extractZipFilePath);
+            await fs.deleteRecursive(extractZipFilePath);
         } catch (err) {
             console.error(err);
         }
@@ -376,7 +362,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
-                await fs.copyRecursiveSync(
+                await fs.copyRecursive(
                     path.resolve(global.appRoot, copyF),
                     path.resolve(global.appRoot, copy),
                     true
@@ -393,7 +379,7 @@ const activateModule = async (idModule, toBeChanged) => {
             const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
-                    await fs.copyRecursiveSync(
+                    await fs.copyRecursive(
                         path.resolve(global.appRoot, src),
                         path.resolve(global.appRoot, dest),
                         true
@@ -460,10 +446,10 @@ const activateModule = async (idModule, toBeChanged) => {
         );
         await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
-        return Modules.find({});
+        return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({});
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
 };
@@ -560,10 +546,10 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
         console.log('Module desactivated');
-        return Modules.find({});
+        return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({});
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
 };
@@ -706,21 +692,6 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
     if (serverUtils.getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
     }
-};
-
-/**
- * Permet d'ajouter dans le fichier montheme/modules/list_modules.js le ou les import(s) permettant d'utiliser le front du module sur le theme
- * @param {*} pathModule : chemin du module coté back
- * @param {*} bRemove : si true alors on supprime le ou les import(s) du fichier montheme/modules/list_modules.js, si false alors on ajout le ou les import(s)
- */
-const activeFrontModule = async (pathModule, bRemove) => {
-    require('../utils/utils').tmp_use_route('modules_service', 'activeFrontModule');
-
-    // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!await fs.hasAccess(pathModule)) return;
-    await modulesUtils.createListModuleFile(global.envConfig.environment.currentTheme);
-    await setFrontModuleInTheme(pathModule, bRemove);
-    await themesService.buildTheme(global.envConfig.environment.currentTheme);
 };
 
 /**
@@ -898,7 +869,6 @@ module.exports = {
     getModules,
     getModule,
     setModuleConfigById,
-    setPartialConfig,
     initModule,
     checkDependenciesAtInstallation,
     checkDependenciesAtUninstallation,
@@ -908,7 +878,6 @@ module.exports = {
     setFrontModules,
     setFrontModuleInTheme,
     addOrRemoveThemeFiles,
-    activeFrontModule,
     removeImport,
     removeFromListModule,
     removeModuleAddon,

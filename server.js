@@ -31,7 +31,7 @@ const {
     middlewareServer
 }                           = require('./middleware');
 
-const dev    = !serverUtils.isProd();
+const dev    = !serverUtils.isProd;
 const server = express();
 
 // ATTENTION, ne pas require des services directement en haut de ce fichier
@@ -154,3 +154,5 @@ const startServer = async () => {
         setTimeout(() => process.exit(1), 2000);
     }
 })();
+
+module.exports = server;

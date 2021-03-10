@@ -133,8 +133,6 @@ module.exports = class QueryBuilder {
      */
     async findOne(PostBody = null, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
-        if (!PostBody.filter) throw NSErrors.PostBodyFilterUndefined;
-        if (!Object.keys(PostBody.filter).length) throw NSErrors.PostBodyFilterUndefined;
         // création d'un objet PostBody avec des valeurs par défaut
         const postBodyCheck                 = this.verifyPostBody(PostBody, 'findOne');
         const {filter, populate, structure} = postBodyCheck;

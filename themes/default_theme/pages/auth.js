@@ -1,6 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { NSContext, getCmsBlock, getLangPrefix } from 'aqlrc';
+import PropTypes from 'prop-types'
 import Layout from 'components/Layout';
 import Login from 'components/Login';
 import { withI18next } from 'lib/withI18n';
@@ -54,6 +55,13 @@ class Auth extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+Auth.propTypes = {
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func
 }
 
 export default withI18next(['login'])(Auth);

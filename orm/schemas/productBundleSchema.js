@@ -64,7 +64,7 @@ ProductBundleSchema.methods.updateData = async function (data) {
     return updPrd;
 };
 
-ProductBundleSchema.methods.addToCart = async function (cart, item) {
+ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) {
     if (!item.selections) {
         throw NSErrors.ProductInvalid;
     }
@@ -104,7 +104,7 @@ ProductBundleSchema.methods.addToCart = async function (cart, item) {
     };
     item.type       = 'bundle';
     item.weight    += modifiers.weight;
-    const _cart     = await this.basicAddToCart(cart, item);
+    const _cart     = await this.basicAddToCart(cart, item, user);
     return _cart;
 };
 

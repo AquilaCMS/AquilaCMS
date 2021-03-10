@@ -78,11 +78,9 @@ const expressErrorHandler = (err, req, res, next) => {
     if (err) {
         if (!err.status) err.status = 500;
         if (err instanceof NSError && err.level !== 'none') {
-            console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}"
-                ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+            console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
         } else if (!(err instanceof NSError)) {
-            console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}"
-                ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+            console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
         }
 
         let lang = 'en';

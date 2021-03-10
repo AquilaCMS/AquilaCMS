@@ -1,8 +1,16 @@
 import React from 'react';
 import moment from 'moment';
 import {
-    NSCartResume, NSContext, NSToast, cartToOrder, getCart, getLangPrefix, getShipmentsCart, updateDeliveryCart
+    NSCartResume,
+    NSContext,
+    NSToast,
+    cartToOrder,
+    getCart,
+    getLangPrefix,
+    getShipmentsCart,
+    updateDeliveryCart
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import nsModules from 'modules/list_modules';
 import Head from 'next/head';
 import CartStructure from 'components/CartStructure';
@@ -15,10 +23,10 @@ import { Link, Router } from 'routes';
  */
 
 class CartDelivery extends React.Component {
-    static getInitialProps = async function (ctx) {
+    static getInitialProps = async function () {
         return {
-            userRequired : { url: '/cart/login', route: 'cartLogin' },
-            layoutCms    : { header: 'header_cart', footer: 'footer_cart' }
+            userRequired: { url: '/cart/login', route: 'cartLogin' },
+            layoutCms: { header: 'header_cart', footer: 'footer_cart' }
         };
     };
 
@@ -26,18 +34,18 @@ class CartDelivery extends React.Component {
         super(props);
         this.state = {
             ...props,
-            cart : {
-                items : []
+            cart: {
+                items: []
             },
-            shipments                : [],
-            arrayPrices              : [],
-            isRelayPoint           : false, // Check si on selectionne le transporteur en point relais
+            shipments: [],
+            arrayPrices: [],
+            isRelayPoint: false, // Check si on selectionne le transporteur en point relais
             // si un point relais est selectionné alors l'utilisateur doit sauvegarder l'adresse de livraison
-            relayPointAddressSaved : false,
+            relayPointAddressSaved: false,
             // Addresse de livraison initial: si l'utilisateur choisi un point relais alors cart.addresses.delivery
             // sera l'addresse du point relais selectionné. Si il choisi un autre mode d'expédition après avoir selectionné un point relais,
             // alors on ajoutera deliveryAddress a cart.addresses.delivery
-            deliveryAddress          : null
+            deliveryAddress: null
         };
     }
 
@@ -84,10 +92,10 @@ class CartDelivery extends React.Component {
         let shipments;
         try {
             const PostBody = {
-                limit     : 999999,
-                structure : {
-                    component_template_front : 1,
-                    config                   : 1
+                limit: 999999,
+                structure: {
+                    component_template_front: 1,
+                    config: 1
                 }
             };
             shipments = await getShipmentsCart(cart, null, lang, PostBody);
@@ -104,9 +112,9 @@ class CartDelivery extends React.Component {
         this.setState({
             deliveryAddress,
             cart,
-            index       : shipments.datas.findIndex((ship) => ship._id === cart.delivery.method),
-            shipments   : shipments.datas,
-            arrayPrices : shipments.arrayPrices
+            index: shipments.datas.findIndex((ship) => ship._id === cart.delivery.method),
+            shipments: shipments.datas,
+            arrayPrices: shipments.arrayPrices
         });
 
         // Lorsque un point relais est saisi
@@ -131,8 +139,8 @@ class CartDelivery extends React.Component {
             return NSToast.warn('delivery:choose_delivery_mode');
         }
 
-         // Un point relais a été selectionné mais aucune addresse n'a été sauvegardé
-         if (isRelayPoint && !relayPointAddressSaved) {
+        // Un point relais a été selectionné mais aucune addresse n'a été sauvegardé
+        if (isRelayPoint && !relayPointAddressSaved) {
             return NSToast.warn('delivery:choose_relay_point');
         }
 
@@ -199,7 +207,7 @@ class CartDelivery extends React.Component {
                                             <form onSubmit={(e) => { e.preventDefault(); this.selectDelivery(); }}>
                                                 <div className="form__head hidden-xs">
                                                     <h3>{t('delivery:livraison')}</h3>
-                                                </div>{ /* <!-- /.form__head --> */ }
+                                                </div>{ /* <!-- /.form__head --> */}
 
                                                 <div className="form__body">
                                                     {
@@ -214,23 +222,23 @@ class CartDelivery extends React.Component {
                                                                         <em>{t('delivery:livraisonApartir')} {ship ? moment(ship.dateDelivery).format('DD/MM/YYYY') : '-'}
                                                                         </em>
                                                                     </label>
-                                                                </div>{ /* <!-- /.radio --> */ }
+                                                                </div>{ /* <!-- /.radio --> */}
                                                                 <strong className="delivery-price">{arrayPrices[ship.code].toFixed(2)}€</strong>
-                                                                {(ship.component_template_front && nsModules) ? this.displayFrontModule(ship, index) : null }
+                                                                {(ship.component_template_front && nsModules) ? this.displayFrontModule(ship, index) : null}
                                                             </div>
                                                         )) : <p>{t('delivery:no_shipment')}</p>
                                                     }
-                                                </div>{ /* <!-- /.form__body --> */ }
+                                                </div>{ /* <!-- /.form__body --> */}
                                                 <div className="form__actions  text-right" style={{ marginTop: '40px' }}>
-                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => {Router.back();}} type="button">
+                                                    <button className="btn btn--grey" style={{ float: 'left' }} onClick={() => { Router.back(); }} type="button">
                                                         {t('common:retour')}
                                                     </button>
                                                     {shipments.length ? <button disabled={isRelayPoint && !relayPointAddressSaved} type="submit" className="form__btn btn btn--red">{t('common:valider')}</button> : ''}
                                                 </div>
                                             </form>
-                                        </div>{ /* <!-- /.form-shipping-address --> */ }
-                                    </div>{ /* <!-- /.section__content --> */ }
-                                </div>{ /* <!-- /.content --> */ }
+                                        </div>{ /* <!-- /.form-shipping-address --> */}
+                                    </div>{ /* <!-- /.section__content --> */}
+                                </div>{ /* <!-- /.content --> */}
 
                                 {cart.items !== undefined && <NSCartResume t={t} gNext={{ Link }} showAddresses />}
                             </div>
@@ -244,6 +252,16 @@ class CartDelivery extends React.Component {
     componentWillUnmount() {
         document.removeEventListener('relayPointAddressSaved', this.relayPointAddressSavedListener);
     }
+}
+
+CartDelivery.propTypes = {
+    lang: PropTypes.string,
+    routerLang: PropTypes.string,
+    user: PropTypes.object,
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func
 }
 
 export default withI18next(['delivery', 'cart', 'common'])(CartDelivery);

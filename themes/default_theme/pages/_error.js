@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'
 import { Link } from 'routes';
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
@@ -26,10 +27,10 @@ class Error extends React.Component {
             <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
                 <div style={{ minHeight: '500px', position: 'relative', textAlign: 'center' }}>
                     <div style={{
-                        position  : 'absolute',
-                        top       : '50%',
-                        left      : '50%',
-                        transform : 'translate(-50%, -50%)'
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)'
                     }}
                     >
                         <p style={{ fontSize: '30pt' }}>404 {t('notFound')}</p>
@@ -42,16 +43,22 @@ class Error extends React.Component {
 }
 
 Error.defaultProps = {
-    contentHtml : {
-        content : '',
+    contentHtml: {
+        content: '',
     },
-    oCmsHeader : {
-        content : '',
+    oCmsHeader: {
+        content: '',
     },
-    oCmsFooter : {
-        content : '',
+    oCmsFooter: {
+        content: '',
     },
-    message : '404 Not found',
+    message: '404 Not found',
 };
+
+Error.propTypes = {
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    t: PropTypes.func,
+}
 
 export default withI18next(['common'])(Error);

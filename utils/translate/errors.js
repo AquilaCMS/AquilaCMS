@@ -15,7 +15,7 @@ module.exports = {
         fr : 'Non autorisé',
         en : 'Unauthorized'
     },
-    DesactivateAccount : {
+    DeactivateAccount : {
         fr : 'Compte désactivé',
         en : 'Desactivate account'
     },

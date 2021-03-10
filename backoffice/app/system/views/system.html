@@ -14,6 +14,9 @@
                     <div>
                         <h3 translate>system.environment.security.contentPolicy.title</h3>
                         <div class="form-group">
+                            <ns-switch ng-model="system.environment.contentSecurityPolicy.active" yes-value="Oui" no-value="Non" name="contentPolicyActive"></ns-switch>
+                        </div>
+                        <div class="form-group">
                             <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
                                 <thead>
                                     <tr>
@@ -28,7 +31,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control" ng-model="contentPolicy.newPolicy">
+                                            <input form="otherForm" type="text" class="form-control" ng-keypress="($event.charCode==13) ? addPolicy(contentPolicy.newPolicy) : return" ng-model="contentPolicy.newPolicy">
                                         </td>
                                     </tr>
                                 </tbody>

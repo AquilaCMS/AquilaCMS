@@ -3,6 +3,7 @@ import Head from 'next/head';
 import {
     NSContext, NSToast, getLangPrefix, resetPasswordUser
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
 import { Router } from 'routes';
@@ -29,7 +30,7 @@ class ResetPass extends React.Component {
         }
 
         return {
-            hash : ctx.query.token,
+            hash: ctx.query.token,
         };
     };
 
@@ -37,8 +38,8 @@ class ResetPass extends React.Component {
         super(props);
         this.state = {
             ...props,
-            password      : '',
-            passwordCheck : '',
+            password: '',
+            passwordCheck: '',
         };
     }
 
@@ -82,7 +83,7 @@ class ResetPass extends React.Component {
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
                     <Head>
-                        <title>{sitename} | {t('page.title')}</title>
+                        <title>{sitename} | {t('resetpass:page.title')}</title>
                         <meta property="og:type" content="website" />
                     </Head>
                     <section className="section-sign-in shell">
@@ -90,20 +91,20 @@ class ResetPass extends React.Component {
                             <div className="form form-login form-login--alt" style={{ width: '50%' }}>
                                 <form onSubmit={(e) => this.handlePasswordSubmit(e)} method="post">
                                     <div className="form__head">
-                                        <h2>{t('page.password_recovery.title')}</h2>
-                                        <h3>{t('page.password_recovery.sub_title')}</h3>
+                                        <h2>{t('resetpass:page.password_recovery.title')}</h2>
+                                        <h3>{t('resetpass:page.password_recovery.sub_title')}</h3>
                                     </div>
 
                                     <div className="form__body">
                                         <div className="form__row">
-                                            <label htmlFor="password" className="form__label">{t('page.password_recovery.password.label')}</label>
+                                            <label htmlFor="password" className="form__label">{t('resetpass:page.password_recovery.password.label')}</label>
 
                                             <div className="form__controls">
                                                 <input type="password" className="field" name="password" id="password" value={password} onChange={(e) => this.handleChangePassword(e)} required />
                                             </div>
                                         </div>
                                         <div className="form__row">
-                                            <label htmlFor="passwordCheck" className="form__label">{t('page.password_recovery.passwordCheck.label')}</label>
+                                            <label htmlFor="passwordCheck" className="form__label">{t('resetpass:page.password_recovery.passwordCheck.label')}</label>
 
                                             <div className="form__controls">
                                                 <input type="password" className="field" name="passwordCheck" id="passwordCheck" value={passwordCheck} onChange={(e) => this.handleChangePassword(e)} required />
@@ -113,7 +114,7 @@ class ResetPass extends React.Component {
 
                                     <div className="form__actions text-center" style={{ display: 'flex', justifyContent: 'center' }}>
                                         <button type="submit" className="form__btn btn btn--red">
-                                            {t('page.password_recovery.button_label')}
+                                            {t('resetpass:page.password_recovery.button_label')}
                                         </button>
                                     </div>
                                 </form>
@@ -124,6 +125,14 @@ class ResetPass extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+ResetPass.propTypes = {
+    routerLang: PropTypes.string,
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func.isRequired
 }
 
 export default withI18next(['resetpass', 'login'])(ResetPass);

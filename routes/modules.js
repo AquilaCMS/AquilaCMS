@@ -10,7 +10,6 @@ const showdown                    = require('showdown');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const serviceModule               = require('../services/modules');
 const NSErrors                    = require('../utils/errors/NSErrors');
-const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
@@ -20,9 +19,7 @@ module.exports = function (app) {
     app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
-
-    // Deprecated
-    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, authentication, adminAuth, setModuleConfigById);
+    app.put('/v2/module/config/:id',  authentication, adminAuth, setModuleConfigById);
 };
 
 const checkDependencies = async (req, res, next) => {
@@ -118,10 +115,6 @@ const getModuleMd = async (req, res, next) => {
 
 /**
  * Permet de mettre a jour la configuration du module dont l'id est passé en parametre
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
  */
 async function setModuleConfigById(req, res, next) {
     try {

@@ -18,10 +18,7 @@ module.exports = function (app) {
     app.post('/v2/category/execRules', authentication, adminAuth, execRules);
     app.post('/v2/category/canonical', authentication, adminAuth, execCanonical);
     app.post('/v2/category/applyTranslatedAttribs', applyTranslatedAttribs);
-    app.post('/v2/category/:id', securityForceActif(['active']), getCategoryById);
     app.put('/v2/category', authentication, adminAuth, setCategory);
-    app.put('/v2/category/:id/filters', setFilters);
-    app.put('/v2/category/:id/filter', setFilter);
     app.delete('/v2/category/:id', authentication, adminAuth, deleteCategory);
 };
 
@@ -47,20 +44,6 @@ async function getCategory(req, res, next) {
     try {
         const {PostBody, withFilter, lang} = req.body;
         const result                       = await ServiceCategory.getCategory(PostBody, withFilter, lang);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-/**
- * POST /api/v2/category/{id}
- * @summary Category details by id
- */
-async function getCategoryById(req, res, next) {
-    try {
-        const {PostBody} = req.body;
-        const result     = await ServiceCategory.getCategoryById(req.params.id, PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -95,34 +78,6 @@ async function deleteCategory(req, res, next) {
         return res.status(200).end();
     } catch (err) {
         return next(err);
-    }
-}
-
-/**
- * PUT /v2/category/{id}/filter
- * @summary Set one filter
- */
-async function setFilter(req, res, next) {
-    try {
-        // Met a jour le filtre dont l'id est passé en parametre
-        const result = await ServiceCategory.setFilter(req.params.id, req.body);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
-    }
-}
-
-/**
- * PUT /v2/category/{id}/filters
- * @summary Set filters
- */
-async function setFilters(req, res, next) {
-    try {
-        // Met a jour les filtres d'une categorie
-        const result = await ServiceCategory.setFilters(req.params.id, req.body);
-        return res.json(result);
-    } catch (error) {
-        return next(error);
     }
 }
 

@@ -185,6 +185,28 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
     if ((!products || !products.length) && (!products || !products.items || !products.items.length)) return [];
     // On récupére les promos catalogue en cours (on est après la date de début et avant la date de fin)
     // Ou dont la date de début et de fin est null
+    if ((!products || !products.length) && (products.items  && products.items.length)) {
+        products =  products.items.map((product) => {
+            if (product.type === 'bundle') {
+                return {
+                    ...product.id,
+                    price : {
+                        ...product.id.price,
+                        ati : {
+                            normal  : product.price.unit.ati,
+                            special : product.price.special ? product.price.special.ati : undefined
+                        },
+                        et : {
+                            normal  : product.price.unit.et,
+                            special : product.price.special ? product.price.special.et : undefined
+                        }
+
+                    }
+                };
+            }
+            return product.id;
+        });
+    }
     const returnedPromos = [];
     const currentDate    = new Date(Date.now());
     const promos         = await Promo.find(
@@ -527,24 +549,6 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     if (promo.rules_id) {
         const promoRules = await promo.populate('rules_id').execPopulate();
         if (promoRules.rules_id.conditions.length > 0 || promoRules.rules_id.other_rules.length > 0) {
-            // TODO P5 (chaud): a supprimer si test avancé OK
-            // On verifie que la requête s'effectue uniquement sur la collection product
-            // const onlyProductRequest = ServiceRules.onlyProductRequest([promoRules.rules_id]);
-            // if (onlyProductRequest) {
-            //     const query = await ServiceRules.applyRecursiveRules([promoRules.rules_id], {});
-            //     const productFound = await Products.findOne(query);
-            //     if (!productFound) {
-            //         await removePromoFromCart(cart);
-            //         throw global.errors_list.promo_code_promo_not_authorized;
-            //     }
-            //     // On recherche dans chaque item du cart si cart.items[i].id === productFound._id
-            //     const tItems = cart.items.filter(product => product.id._id.toString() === productFound._id.toString());
-            //     // Si aucun produit du panier ne correspond au produit trouvé avec les rules alors on renvoie une erreur
-            //     if (!tItems.length) {
-            //         await removePromoFromCart(cart);
-            //         throw global.errors_list.promo_code_promo_not_authorized;
-            //     }
-            // } else {
             const tCondition  = await ServiceRules.applyRecursiveRulesDiscount(promoRules.rules_id, user, cart);
             const ifStatement = promoUtils.createIfStatement(tCondition);
             try {
@@ -814,7 +818,7 @@ function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
 }
 
 async function resetCartProductPrice(cart, j) {
-    if (cart.items[j].noRecalculatePrice) {
+    if (cart.items[j].noRecalculatePrice ||cart.items[j].type === 'bundle') {
         return cart;
     }
     // on recupere le produit en base et on y réapplique ses valeur (prix)

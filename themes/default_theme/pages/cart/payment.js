@@ -1,8 +1,18 @@
 import React from 'react';
 import Head from 'next/head';
 import {
-    NSCartResume, NSContext, NSToast, getCart, getPayementMethodsCart, getLangPrefix, jwtManager, cartToOrder, deferredPaymentOrder, immediatePaymentOrder
+    NSCartResume,
+    NSContext,
+    NSToast,
+    getCart,
+    getPayementMethodsCart,
+    getLangPrefix,
+    jwtManager,
+    cartToOrder,
+    deferredPaymentOrder,
+    immediatePaymentOrder
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import CartStructure from 'components/CartStructure';
 import { withI18next } from 'lib/withI18n';
 import { Link, Router } from 'routes';
@@ -14,10 +24,10 @@ import nsModules from 'modules/list_modules';
  */
 
 class CartPayment extends React.Component {
-    static getInitialProps = async function (ctx) {
+    static getInitialProps = async function () {
         return {
-            userRequired : { url: '/cart/login', route: 'cartLogin' },
-            layoutCms    : { header: 'header_cart', footer: 'footer_cart' }
+            userRequired: { url: '/cart/login', route: 'cartLogin' },
+            layoutCms: { header: 'header_cart', footer: 'footer_cart' }
         };
     };
 
@@ -25,11 +35,11 @@ class CartPayment extends React.Component {
         super(props);
         this.state = {
             ...props,
-            cart : {
-                items : []
+            cart: {
+                items: []
             },
-            paymentMethods : [],
-            paymentForm    : null
+            paymentMethods: [],
+            paymentForm: null
         };
     }
 
@@ -53,8 +63,8 @@ class CartPayment extends React.Component {
 
             // Récupération des modes de paiement
             PostBody = {
-                structure : { component_template_front: 1, makePayment: 1, details: 1 },
-                limit     : 100
+                structure: { component_template_front: 1, makePayment: 1, details: 1 },
+                limit: 100
             };
             paymentMethods = await getPayementMethodsCart(lang, PostBody);
         } catch (err) {
@@ -72,7 +82,7 @@ class CartPayment extends React.Component {
 
         this.setState({
             cart,
-            paymentMethods : paymentMethods.datas
+            paymentMethods: paymentMethods.datas
         });
     }
 
@@ -171,8 +181,8 @@ class CartPayment extends React.Component {
                                 {pm.description}
                             </label>
                         ) : (
-                            <label htmlFor={`field-payment-card-${pm.code}`}>{pm.code}</label>
-                        )}
+                                <label htmlFor={`field-payment-card-${pm.code}`}>{pm.code}</label>
+                            )}
                     </div>
                 </div>
             );
@@ -181,7 +191,7 @@ class CartPayment extends React.Component {
 
     render() {
         const {
-            oCmsHeader, oCmsFooter, routerLang, sitename, t
+            oCmsHeader, oCmsFooter, sitename, t
         } = this.props;
         const {
             cart, pm, paymentMethods, paymentForm
@@ -242,6 +252,15 @@ class CartPayment extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+CartPayment.propTypes = {
+    lang: PropTypes.string,
+    routerLang: PropTypes.string,
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func.isRequired,
 }
 
 export default withI18next(['cart', 'payment'])(CartPayment);

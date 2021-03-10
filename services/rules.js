@@ -328,34 +328,6 @@ async function testRulesOnUser(rule, user, cart = undefined) {
     }
 }
 
-/**
- * Permet de checker si une autre collection que produit est utilisé. Si uniquement produit est utilisé nous pourrons
- * appliquer les règle avec la fonction applyRecursiveRules
- * Nous allons itérer récursivement a travers les rules et other rules afin de savoir si le target d'une condition commence par colNames[i]
- * Si tel est le cas alors nous n'utiliseront pas applyRecursiveRules
- * @param {*} _rules
- */
-function onlyProductRequest(_rules) {
-    utils.tmp_use_route('rules_service', 'onlyProductRequest');
-
-    let onlyProduct = true;
-    for (let i = 0; i < _rules.length; i++) {
-        const rule = _rules[i];
-        for (let j = 0; j < rule.conditions.length; j++) {
-            const condition = rule.conditions[j];
-            // colNames est le nom des collections (c'est une variable en global)
-            const tColNamesFound = colNames.filter((colName) =>  condition.target.startsWith(`${colName}.`));
-            // Si un colNames est trouvé dans le target alors on return false
-            if (tColNamesFound.length > 0) return false;
-        }
-        if (rule.other_rules && rule.other_rules.length > 0) {
-            onlyProduct = onlyProductRequest(rule.other_rules);
-            if (onlyProduct === false) return onlyProduct;
-        }
-    }
-    return onlyProduct;
-}
-
 async function applyRecursiveRules(_rules, query) {
     // Pour chaque règle
     for (let i = 0; i < _rules.length; i++) {
@@ -602,23 +574,14 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
     return result;
 };
 
-const stopExecOnError = (owner_type) => {
-    utils.tmp_use_route('rules_service', 'stopExecOnError');
-
-    inSegment[owner_type] = false;
-    console.log(`\x1b[1m\x1b[31mCatégorisation(${owner_type}) automatique en erreur réinitialisé\x1b[0m`);
-};
-
 module.exports = {
     listRules,
     queryRule,
     testUser,
     setRule,
     deleteRule,
-    stopExecOnError,
     execRules,
     applyRecursiveRules,
-    onlyProductRequest,
     applyRecursiveRulesDiscount
 };
 
