@@ -266,6 +266,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                     }
                 }
 
+                // recup les attributs (tous les attr users en gros)
                 genAttributes();
 
                 $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
@@ -277,6 +278,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 $scope.client.oldEmail = response.email;
                 $scope.isEditMode = true;
 
+                // on recup ceux lié a cet user
                 getAttributesClient();
 
                 $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
