@@ -100,11 +100,11 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
     item.price      = {
         // TODO P3 : se baser sur le produit normal pour ce schémas - Request somewhere later
         vat  : {rate: this.price.tax},
-        unit : {et: this.price.et.normal += modifiers.price.et, ati: this.price.ati.normal += modifiers.price.ati}
+        unit : {et: this.price.et.normal + modifiers.price.et, ati: this.price.ati.normal + modifiers.price.ati}
     };
     item.type       = 'bundle';
     item.weight    += modifiers.weight;
-    const _cart     = await this.basicAddToCart(cart, item, user);
+    const _cart     = await this.basicAddToCart(cart, item, user, lang);
     return _cart;
 };
 
@@ -113,7 +113,7 @@ ProductBundleSchema.methods.getBundlePrdsModifiers = async function (selections)
     const itemPrdBundle = await this.model('products').findOne({_id: this._id});
     if (itemPrdBundle && selections && selections.length) {
         for (const selection of selections) {
-            const itemPrdBundleSection = itemPrdBundle.bundle_sections.find((bundle_section) => bundle_section.ref);
+            const itemPrdBundleSection = itemPrdBundle.bundle_sections.find((bundle_section) => bundle_section.ref === selection.bundle_section_ref);
             for (const product of selection.products) {
                 const itemPrdBundleSectionProduct = itemPrdBundleSection.products.find((itemPrdBundleSectionPrd) => itemPrdBundleSectionPrd.id.toString() === product);
                 if (itemPrdBundleSectionProduct && itemPrdBundleSectionProduct.modifier_price && itemPrdBundleSectionProduct.modifier_price.et && itemPrdBundleSectionProduct.modifier_price.ati) {

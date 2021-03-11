@@ -307,28 +307,28 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     let prd            = [item];
     if (item.type !== 'bundle') {
         prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
-    }
-    if (prd && prd[0] && prd[0].price) {
-        if (prd[0].price.et && prd[0].price.et.special !== undefined) {
-            this.price.et.special = prd[0].price.et.special;
+        if (prd && prd[0] && prd[0].type !== "bundle" && prd[0].price) {
+            if (prd[0].price.et && prd[0].price.et.special !== undefined) {
+                this.price.et.special = prd[0].price.et.special;
+            }
+            if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
+                this.price.ati.special = prd[0].price.ati.special;
+            }
         }
-        if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
-            this.price.ati.special = prd[0].price.ati.special;
-        }
-    }
-    item.price = {
-        vat  : {rate: this.price.tax},
-        unit : {
-            et  : this.price.et.normal,
-            ati : this.price.ati.normal
-        }
-    };
-
-    if (this.price.et.special !== undefined && this.price.et.special !== null) {
-        item.price.special = {
-            et  : this.price.et.special,
-            ati : this.price.ati.special
+        item.price = {
+            vat  : {rate: this.price.tax},
+            unit : {
+                et  : this.price.et.normal,
+                ati : this.price.ati.normal
+            }
         };
+
+        if (this.price.et.special !== undefined && this.price.et.special !== null) {
+            item.price.special = {
+                et  : this.price.et.special,
+                ati : this.price.ati.special
+            };
+        }
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
     return resp;
