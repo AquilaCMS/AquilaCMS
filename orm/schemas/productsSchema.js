@@ -130,47 +130,11 @@ const ProductsSchema = new Schema({
     usePushEach      : true
 });
 ProductsSchema.index({_visible: 1, active: 1});
-ProductsSchema.index({
-    code                               : 'text',
-    trademark                          : 'text',
-    type                               : 'text',
-    universe                           : 'text',
-    family                             : 'text',
-    subfamily                          : 'text',
-    code_ean                           : 'text',
-    'specific.custom_text1'            : 'text',
-    'specific.custom_text2'            : 'text',
-    'specific.custom_text3'            : 'text',
-    'specific.custom_supplier_code'    : 'text',
-    'specific.custom_traitement'       : 'text',
-    'specific.custom_code_fabrication' : 'text',
-    // "cmsBlocks.title"                  : "text",
-    // "cmsBlocks.text"                   : "text",
-    'images.url'                       : 'text',
-    'images.name'                      : 'text',
-    'images.alt'                       : 'text',
-    'pictos.code'                      : 'text',
-    'pictos.url'                       : 'text',
-    'pictos.title'                     : 'text',
-    'pictos.location'                  : 'text',
-    'attributes.code'                  : 'text'
-}, {name: 'textSearchIndex', default_language: 'french'});
-
-/* translation:
- slug: requis, unique entre les produits, pas entre ses langues
- name
- title
- metaDesc
- canonical
- description1: {
-    title
-    text
-  }
- description2: {
-    title
-    text
-  }
- */
+// ProductsSchema.index({
+//     code        : 'text',
+//     trademark   : 'text',
+//     code_ean    : 'text',
+// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
@@ -307,7 +271,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     let prd            = [item];
     if (item.type !== 'bundle') {
         prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
-        if (prd && prd[0] && prd[0].type !== "bundle" && prd[0].price) {
+        if (prd && prd[0] && prd[0].type !== 'bundle' && prd[0].price) {
             if (prd[0].price.et && prd[0].price.et.special !== undefined) {
                 this.price.et.special = prd[0].price.et.special;
             }

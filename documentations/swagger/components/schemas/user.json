@@ -6,10 +6,6 @@
             "email" : {
                 "type"     : "string"
             },
-            "password" : {
-                "type"     : "string",
-                "default"  : "generateUserPassword"
-            },
             "code"     : {"type": "string"},
             "civility" : {
                 "type" : "number",
