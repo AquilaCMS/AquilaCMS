@@ -1,7 +1,8 @@
 const faker  = require('faker');
 const {News} = require('../../orm/models');
 
-const createNews = (slug = null) => {
+const createNews = (params = {slug: null}) => {
+    const {slug}     = params;
     const news       = new News();
     news.translation = {
         fr : {

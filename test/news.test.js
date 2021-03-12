@@ -11,17 +11,16 @@ chai.should();
 const expect = chai.expect;
 
 let credentials;
-let news;
 
 describe('News', () => {
     beforeEach(async () => {
         credentials = await createUserAdminAndLogin();
     });
 
-    describe('POST /v2/site/news', () => {
+    describe('POST /api/v2/site/news', () => {
         it('Create news and get it with the ID', async () => {
-            news      = await createNews();
-            const res = await chai.request(app)
+            const news = await createNews();
+            const res  = await chai.request(app)
                 .post('/api/v2/site/new')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: news._id}}});
@@ -29,22 +28,18 @@ describe('News', () => {
             expect(res.body.translation.fr.title).be.equals(news.translation.fr.title);
         });
         it('Create news and get the preview URL', async () => {
-            news      = await createNews();
-            const res = await chai.request(app)
+            const news = await createNews();
+            const res  = await chai.request(app)
                 .post('/api/v2/site/preview')
                 .set('authorization', credentials.token)
                 .send(news);
             expect(res).to.have.status(200);
             expect(res.body.url).to.be.a('string').and.satisfy((msg) => {
-                const text = `preview=${news._id}`;
-                if (msg.endsWith(text)) {
-                    return true;
-                }
-                return false;
+                return msg.endsWith(`preview=${news._id}`);
             });
         });
         it('Create news and delete it (use the ID)', async () => {
-            news       = await createNews();
+            const news = await createNews();
             const link = `/api/v2/site/new/${news._id}`;
             const res  = await chai.request(app)
                 .delete(link)
@@ -53,11 +48,11 @@ describe('News', () => {
         });
     });
 
-    describe('PUT /v2/site/new', () => {
+    describe('PUT /api/v2/site/new', () => {
         it('Try creating a news with slug that already exists', async () => {
             const slug = faker.lorem.slug();
-            news       = await createNews(slug);
-            const res  = await chai.request(app)
+            await createNews({slug});
+            const res = await chai.request(app)
                 .put('/api/v2/site/new')
                 .set('authorization', credentials.token)
                 .send({translation: {fr: {slug, title: 'zerzerzerzer', content: {resume: '', text: ''}}}});
@@ -65,9 +60,9 @@ describe('News', () => {
         });
     });
 
-    describe('DELETE /v2/site/new/:id', () => {
+    describe('DELETE /api/v2/site/new/:id', () => {
         it('Get all news of the first page and delete them one by one', async () => {
-            news      = await createNews();
+            await createNews();
             const res = await chai.request(app)
                 .post('/api/v2/site/news')
                 .set('authorization', credentials.token)
