@@ -611,7 +611,7 @@ const mailPendingCarts = async () => {
                 nbMails++;
                 await servicesMail.sendMailPendingCarts(cart);
             }
-            return `Success, ${nbMails} mails sent : ${now.toString()}`;
+            return `Success, ${nbMails} mail(s) sent : ${now.toString()}`;
         }
         return `Success : ${now.toString()}`;
     } catch (error) {
