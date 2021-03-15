@@ -121,6 +121,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.filtersAttribs = {};
         $scope.langs = [];
         $scope.filterLang = "";
+        $scope.showLoader = false;
 
         function getProductImg(prdIndex, products) {
             if (products && products.length > 0) {
@@ -162,6 +163,7 @@ ProductControllers.controller("ProductListCtrl", [
         };
 
         $scope.getProducts = function (page) {
+            $scope.showLoader = true;
             const search = $scope.searchObj;
             const filter = $scope.filter;
             let pageAdmin = {location: "products", page: 1};
@@ -290,6 +292,7 @@ ProductControllers.controller("ProductListCtrl", [
                 getProductImg(0, res.datas); // what the hell is that ?!
                 $scope.products = res.datas;
                 $scope.totalItems = res.count;
+                $scope.showLoader = false;
             });
         };
 
