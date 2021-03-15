@@ -4,8 +4,6 @@ const faker                   = require('faker');
 const app                     = require('../server');
 const createUserAdminAndLogin = require('./utils/createUserAdminAndLogin');
 const createSuppliers         = require('./utils/createSuppliers');
-const createUser              = require('./utils/createUser');
-const createMedias            = require('./utils/createMedias');
 
 chai.use(chaiHttp);
 chai.should();
@@ -17,7 +15,6 @@ let credentials;
 describe('Suppliers', () => {
     beforeEach(async () => {
         credentials = await createUserAdminAndLogin();
-        await createUser({email: 'hello@nextsourcia.com', password: 'helloWorld1', admin: true});
     });
 
     describe('POST /api/v2/supplier', () => {
@@ -33,7 +30,7 @@ describe('Suppliers', () => {
     });
     describe('DELETE /api/v2/supplier/:id', () => {
         it('Create supplier and delete it (use the ID)', async () => {
-            const supplier = await createMedias();
+            const supplier = await createSuppliers();
             const res      = await chai.request(app)
                 .delete(`/api/v2/supplier/${supplier._id}`)
                 .set('authorization', credentials.token);
