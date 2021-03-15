@@ -606,10 +606,12 @@ const mailPendingCarts = async () => {
                 filter = {updatedAt: {$lte: limit}};
             }
             const carts = await Cart.find(filter);
+            let nbMails = 0;
             for (const cart of carts) {
+                nbMails++;
                 await servicesMail.sendMailPendingCarts(cart);
             }
-            return `Success : ${now.toString()}`;
+            return `Success, ${nbMails} mails sent : ${now.toString()}`;
         }
         return `Success : ${now.toString()}`;
     } catch (error) {
