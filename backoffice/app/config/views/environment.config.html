@@ -59,9 +59,7 @@
                     </div>
                     <div class="form-group">
                         <label translate>config.environment.prefixeURL</label>
-                        <input type="text" class="form-control" ng-model="config.environment.adminPrefix" popover-ns type="button"
-                            class="btn btn-default" data-toggle="popover" data-placement="top" data-html="true"
-                            title="config.environment.t2" data-content="Modifier ce champ redémarrera l'application, l'ancienne URL ne sera plus accessible !">
+                        <input type="text" class="form-control" ng-model="config.environment.adminPrefix" type="button" class="btn btn-default" popover="{{'config.environment.prefixURL' | translate}}" popover-trigger="mouseenter" >
                     </div>
                     <hr/>
                     <div class="form-group">

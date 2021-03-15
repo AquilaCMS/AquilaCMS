@@ -1,7 +1,8 @@
 {
     "environment": {
-        "t1": "Environnement",
+        "t1": "Paramètres serveur",
         "t2": "Attention !",
+        "prefixURL": "Attention ! Modifier ce champ redemarrera l'application, l'ancienne URL ne sera plus accessible !",
         "sendMail":"Envoyer",
         "sendMailTest":"Envoyer un Email de Test",
         "test":"Tester",
