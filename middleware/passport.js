@@ -91,7 +91,7 @@ const init = async (pp) => {
 const authenticate = (req, res) => new Promise((resolve, reject) => {
     passport.authenticate('jwt', {session: false}, (err, user) => {
         if (err) reject(err);
-        else if (!user) reject(NSErrors.Unauthorized);
+        // else if (!user) reject(NSErrors.Unauthorized);
         resolve(user);
     })(req, res);
 });
