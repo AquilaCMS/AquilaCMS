@@ -4,7 +4,6 @@ const faker                   = require('faker');
 const app                     = require('../server');
 const createUserAdminAndLogin = require('./utils/createUserAdminAndLogin');
 const createPictos            = require('./utils/createPictos');
-const createUser              = require('./utils/createUser');
 
 chai.use(chaiHttp);
 chai.should();
@@ -16,7 +15,6 @@ let credentials;
 describe('Pictos', () => {
     beforeEach(async () => {
         credentials = await createUserAdminAndLogin();
-        await createUser({email: 'hello@nextsourcia.com', password: 'helloWorld1', admin: true});
     });
 
     describe('POST /api/v2/picto', () => {
