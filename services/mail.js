@@ -911,7 +911,8 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
 }
 
 async function sendMailPendingCarts(cart) {
-    const customer                                  = await users.findOne({_id: cart.customer.id});
+    const customer = await users.findOne({_id: cart.customer.id});
+    if (!customer) return;
     const lang                                      = customer.preferredLanguage;
     const mailTo                                    = cart.customer.email;
     const taxDisplay                                = cart.paidTax ? 'ati' : 'et';
@@ -983,6 +984,7 @@ async function sendMailPendingCarts(cart) {
     }
     const htmlBody = generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, pathAttachment});
+    // TODO CartMail : analyser le retour de sendMail pour renvoyer la bonne info
 }
 
 const sendError = async (error) => {

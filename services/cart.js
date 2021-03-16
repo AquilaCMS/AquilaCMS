@@ -598,6 +598,7 @@ const mailPendingCarts = async () => {
             const limit = moment(new Date());
             limit.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
             let filter = {};
+            // TODO CartMail : prendre lastFinishedAt
             if (job.attrs.data.lastExecutionResult) {
                 const lastRun = moment(new Date(job.attrs.data.lastExecutionResult.split(' : ')[1].substr(0, job.attrs.data.lastExecutionResult.split(' : ')[1].length - 1)));
                 lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
@@ -605,11 +606,12 @@ const mailPendingCarts = async () => {
             } else {
                 filter = {updatedAt: {$lte: limit}};
             }
+            // TODO CartMail : Ca doit filtré de base par customer.email != "" ou undefined pour ne pas recu les panier anonyme
             const carts = await Cart.find(filter);
             let nbMails = 0;
             for (const cart of carts) {
-                nbMails++;
-                await servicesMail.sendMailPendingCarts(cart);
+                nbMails++; // TODO CartMail : Faux car sendMailPendingCarts ne va peut etre pas envoyer d'email
+                await servicesMail.sendMailPendingCarts(cart); // TODO CartMail : récupérer une info pour savoir si le mail a été envoyé ou non
             }
             return `Success, ${nbMails} mail(s) sent : ${now.toString()}`;
         }
