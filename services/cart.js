@@ -598,20 +598,22 @@ const mailPendingCarts = async () => {
             const limit = moment(new Date());
             limit.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
             let filter = {};
-            // TODO CartMail : prendre lastFinishedAt
-            if (job.attrs.data.lastExecutionResult) {
-                const lastRun = moment(new Date(job.attrs.data.lastExecutionResult.split(' : ')[1].substr(0, job.attrs.data.lastExecutionResult.split(' : ')[1].length - 1)));
+            if (job.attrs.lastFinishedAt) {
+                const lastRun = moment(job.attrs.lastFinishedAt);
                 lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
-                filter = {updatedAt: {$lte: limit, $gte: lastRun}};
+                filter = {updatedAt: {$lte: limit, $gte: lastRun}, customer: {$exists: true, $ne: null}};
             } else {
-                filter = {updatedAt: {$lte: limit}};
+                filter = {updatedAt: {$lte: limit}, customer: {$exists: true, $ne: null}};
             }
-            // TODO CartMail : Ca doit filtré de base par customer.email != "" ou undefined pour ne pas recu les panier anonyme
             const carts = await Cart.find(filter);
             let nbMails = 0;
             for (const cart of carts) {
-                nbMails++; // TODO CartMail : Faux car sendMailPendingCarts ne va peut etre pas envoyer d'email
-                await servicesMail.sendMailPendingCarts(cart); // TODO CartMail : récupérer une info pour savoir si le mail a été envoyé ou non
+                try {
+                    await servicesMail.sendMailPendingCarts(cart);
+                    nbMails++;
+                } catch (error) {
+                    console.error(error);
+                }
             }
             return `Success, ${nbMails} mail(s) sent : ${now.toString()}`;
         }
