@@ -613,6 +613,7 @@ const mailPendingCarts = async () => {
                     nbMails++;
                 } catch (error) {
                     console.error(error);
+                    throw error;
                 }
             }
             return `Success, ${nbMails} mail(s) sent : ${now.toString()}`;
