@@ -29,6 +29,9 @@
             <br>
         </div>
     </div>
+    <div ng-show="showLoader" style="text-align: center;">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+    </div>
 
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
         <div class="row">
@@ -127,9 +130,6 @@
                 </tr>
             </tbody>
         </table>
-        <div ng-show="showLoader" style="text-align: center;">
-            <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
-        </div>
         <pagination ng-if="totalItems > nbItemsPerPage" total-items="totalItems" page="currentPage" on-select-page="getProducts(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                     rotate="false"></pagination>
     </div>
