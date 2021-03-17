@@ -46,6 +46,7 @@ const verifyingUpdate = async () => {
 };
 
 const update = async () => {
+    //test
     console.log('Update Aquila...');
     const git = simpleGit('./');
     if (!fsp.existsSync(path.resolve('./.github'), {recursive: true})) {
