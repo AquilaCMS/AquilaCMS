@@ -46,12 +46,9 @@ const verifyingUpdate = async () => {
 };
 
 const update = async () => {
-    //test4
     console.log('Update Aquila...');
     const git = simpleGit('./');
-    let a = true;
-    if (a) {
-    //if (!fsp.existsSync(path.resolve('./.git'), {recursive: true})) {
+    if (!fsp.existsSync(path.resolve('./.git'), {recursive: true})) {
         if (!fsp.existsSync(updateAquila, {recursive: true})) {
             fsp.mkdirSync(updateAquila, {recursive: true});
         }
