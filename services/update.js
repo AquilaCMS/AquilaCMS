@@ -6,14 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const axios                    = require('axios');
-const AdmZip                   = require('adm-zip');
-const path                     = require('path');
+const axios  = require('axios');
+const AdmZip = require('adm-zip');
+const path   = require('path');
+// const simpleGit                = require('simple-git');
 const fsp                      = require('../utils/fsp');
 const packageManager           = require('../utils/packageManager');
 const {isProd}                 = require('../utils/server');
 const {Modules, Configuration} = require('../orm/models');
 const tmpPath                  = path.resolve('./uploads/temp');
+// const updateAquila             = path.resolve('./updateAquila');
 
 /**
  * Compare local version with distant version
@@ -44,8 +46,18 @@ const verifyingUpdate = async () => {
 };
 
 const update = async () => {
-    console.log('Update Aquila...');
-
+    // console.log('Update Aquila...');
+    // const git = simpleGit('./');
+    // if (!fsp.mkdirSync(updateAquila, {recursive: true})) {
+    //     fsp.mkdirSync(updateAquila, {recursive: true});
+    // }
+    // try {
+    //     await git.pull();
+    //     await git.clone('https://github.com/AquilaCMS/AquilaCMS.git'[updateAquila]);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+    // return;
     await setMaintenance(true);
 
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
