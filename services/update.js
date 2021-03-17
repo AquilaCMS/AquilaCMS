@@ -46,7 +46,7 @@ const verifyingUpdate = async () => {
 };
 
 const update = async () => {
-    //test3
+    //test4
     console.log('Update Aquila...');
     const git = simpleGit('./');
     let a = true;
