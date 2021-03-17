@@ -46,19 +46,27 @@ const verifyingUpdate = async () => {
 };
 
 const update = async () => {
-    //test
     console.log('Update Aquila...');
     const git = simpleGit('./');
-    if (!fsp.mkdirSync(updateAquila, {recursive: true})) {
-        fsp.mkdirSync(updateAquila, {recursive: true});
+    const a   = false;
+    if (a) {
+    // if (!fsp.existsSync(path.resolve('./.github'), {recursive: true})) {
+        if (!fsp.existsSync(updateAquila, {recursive: true})) {
+            fsp.mkdirSync(updateAquila, {recursive: true});
+        }
+        try {
+            await git.pull();
+        } catch (error) {
+            console.log(error);
+        }
+        return;
     }
     try {
-        await git.pull();
-        await git.clone('https://github.com/AquilaCMS/AquilaCMS.git'[updateAquila]);
+        await git.clone('git+ssh://git@github.com:AquilaCMS/AquilaCMS.git'[updateAquila]);
+        console.log('test');
     } catch (error) {
         console.log(error);
     }
-    return;
     await setMaintenance(true);
 
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
