@@ -49,7 +49,7 @@ const update = async () => {
     //test2
     console.log('Update Aquila...');
     const git = simpleGit('./');
-    let a = false;
+    let a = true;
     if (a) {
     //if (!fsp.existsSync(path.resolve('./.git'), {recursive: true})) {
         if (!fsp.existsSync(updateAquila, {recursive: true})) {
