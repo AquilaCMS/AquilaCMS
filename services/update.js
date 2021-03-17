@@ -6,9 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const axios  = require('axios');
-const AdmZip = require('adm-zip');
-const path   = require('path');
+const axios                    = require('axios');
+const AdmZip                   = require('adm-zip');
+const path                     = require('path');
 const simpleGit                = require('simple-git');
 const fsp                      = require('../utils/fsp');
 const packageManager           = require('../utils/packageManager');
@@ -48,9 +48,7 @@ const verifyingUpdate = async () => {
 const update = async () => {
     console.log('Update Aquila...');
     const git = simpleGit('./');
-    const a   = false;
-    if (a) {
-    // if (!fsp.existsSync(path.resolve('./.github'), {recursive: true})) {
+    if (!fsp.existsSync(path.resolve('./.github'), {recursive: true})) {
         if (!fsp.existsSync(updateAquila, {recursive: true})) {
             fsp.mkdirSync(updateAquila, {recursive: true});
         }
