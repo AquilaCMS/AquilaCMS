@@ -14,14 +14,14 @@
                         </select>
                     </div>
                 </div>
-               <div class="row">
+                <div class="row">
                     <div class="form-group col-sm-6" ng-repeat="attrib in attribs">
                         <label for="" class="col-sm-4 control-label">{{attrib.translation[filterLang].name}}</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" ng-change="onChange(attrib.code, filtersAttribs[attrib.code])" ng-model="filtersAttribs[attrib.code]">
                         </div>
                     </div>
-               </div>
+                </div>
                 <br>
                 <button type="button" style="margin-right: 5%;" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
                 <button class="btn btn-default" style="margin-left: 5%;" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button> 
@@ -29,11 +29,11 @@
             <br>
         </div>
     </div>
-    <div ng-show="showLoader" style="text-align: center;">
-        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
-    </div>
 
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
+        <div ng-show="showLoader" style="text-align: center;position: absolute;top: initial;left: initial;right: initial;bottom: initial;width: 75%;" id="overlayModule">
+            <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+        </div>
         <div class="row">
             <div class="col-lg-12" style="height: 45px;">
                 <br>
