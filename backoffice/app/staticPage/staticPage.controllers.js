@@ -194,24 +194,26 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         }
 
         $scope.generateContent = function () {
-            if ($scope.static && $scope.static.translation[$scope.lang] && $scope.static.translation[$scope.lang].html) {
-
-                var founds = [...$scope.static.translation[$scope.lang].html.matchAll(/{{([^}]*)}}/gm)];
+            for (const value of Object.entries($scope.static.translation)) {
+                if ($scope.static && $scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
+    
+                    var founds = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)];
+                    
+                    $scope.static.translation[value[0]].content = $scope.static.translation[value[0]].html;
+                    var missingVariables = [];
                 
-                $scope.static.translation[$scope.lang].content = $scope.static.translation[$scope.lang].html;
-                var missingVariables = [];
-            
-                for (var i = 0; i < founds.length; i++) {
-                    var variable = $scope.static.translation[$scope.lang].variables.find(_var => _var.label === founds[i][1])
-                    if(variable) {
-                        $scope.static.translation[$scope.lang].content = $scope.static.translation[$scope.lang].content.replace(founds[i][0], variable ? variable.value : '')
-                    } else {
-                        missingVariables.push(founds[i][1])
+                    for (var i = 0; i < founds.length; i++) {
+                        var variable = $scope.static.translation[value[0]].variables.find(_var => _var.label === founds[i][1])
+                        if(variable) {
+                            $scope.static.translation[value[0]].content = $scope.static.translation[value[0]].content.replace(founds[i][0], variable ? variable.value : '')
+                        } else {
+                            missingVariables.push(founds[i][1])
+                        }
                     }
-                }
-                
-                if (missingVariables.length) {
-                    toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                    
+                    if (missingVariables.length) {
+                        toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                    }
                 }
             }
         }       

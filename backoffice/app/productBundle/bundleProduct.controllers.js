@@ -62,7 +62,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             $scope.isEditMode = true;
 
-            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: 'bundle'}, structure: '*', populate: ["set_attributes", "bundle_sections.products.id"], withPromos: false}}, function (product)
+            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: 'bundle'}, structure: '*', populate: ["set_attributes", "bundle_sections.products.id", "associated_prds"], withPromos: false}}, function (product)
             {
                 $scope.product = product;
 
