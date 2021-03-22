@@ -12,4 +12,11 @@ const createPictos = (params = {code: null, name: null, enabled: null}) => {
     return picto.save();
 };
 
-module.exports = createPictos;
+const deleteAllPictos = async () => {
+    await Pictos.deleteMany({});
+};
+
+module.exports = {
+    createPictos,
+    deleteAllPictos
+};

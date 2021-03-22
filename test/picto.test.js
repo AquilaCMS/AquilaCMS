@@ -1,9 +1,9 @@
-const chai                    = require('chai');
-const chaiHttp                = require('chai-http');
-const faker                   = require('faker');
-const app                     = require('../server');
-const createUserAdminAndLogin = require('./utils/createUserAdminAndLogin');
-const createPictos            = require('./utils/createPictos');
+const chai                            = require('chai');
+const chaiHttp                        = require('chai-http');
+const faker                           = require('faker');
+const app                             = require('../server');
+const createUserAdminAndLogin         = require('./utils/createUserAdminAndLogin');
+const {createPictos, deleteAllPictos} = require('./utils/createPictos');
 
 chai.use(chaiHttp);
 chai.should();
@@ -14,6 +14,7 @@ let credentials;
 
 describe('Pictos', () => {
     beforeEach(async () => {
+        await deleteAllPictos();
         credentials = await createUserAdminAndLogin();
     });
 
@@ -27,6 +28,25 @@ describe('Pictos', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(picto.name);
         });
+        it('Create picto and get it with the id - w/o authentication', async () => {
+            const picto = await createPictos();
+            const res   = await chai.request(app)
+                .post('/api/v2/picto')
+                .send({PostBody: {filter: {_id: picto._id}, limit: 99}});
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Create picto and get it with the id - w/o the good id', async () => {
+            await createPictos();
+            const res = await chai.request(app)
+                .post('/api/v2/picto')
+                .set('authorization', credentials.token)
+                .send({PostBody: {filter: {_id: '111111111111111111111111'}, limit: 99}});
+            expect(res).to.have.status(200);
+            expect(res.body.datas.length).to.be.equal(0);
+            expect(res.body.count).to.be.equal(0);
+        });
     });
     describe('DELETE /api/v2/picto/:id', () => {
         it('Create picto and delete it (use the ID)', async () => {
@@ -35,6 +55,23 @@ describe('Pictos', () => {
                 .delete(`/api/v2/picto/${picto._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
+        });
+        it('Create picto and delete it - w/o authentication', async () => {
+            const picto = await createPictos();
+            const res   = await chai.request(app)
+                .delete(`/api/v2/media/${picto._id}`);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Create picto and delete it - w/o the good ID', async () => {
+            await createPictos();
+            const res = await chai.request(app)
+                .delete('/api/v2/picto/111111111111111111111111')
+                .set('authorization', credentials.token);
+            expect(res).to.have.status(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('Le pictogramme est introuvable.');
         });
     });
 
@@ -58,6 +95,16 @@ describe('Pictos', () => {
                 .send({location: 'TOP_LEFT', enabled: false, code: codeRandom, title: nameRandom, filename: ''});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
+        it('Try creating a picto - w/o authentication', async () => {
+            const codeRandom = faker.lorem.slug();
+            const nameRandom = faker.name.title();
+            const res        = await chai.request(app)
+                .put('/api/v2/picto')
+                .send({location: 'TOP_LEFT', enabled: false, code: codeRandom, title: nameRandom, filename: ''});
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
     });
     describe('DELETE /api/v2/picto/:id', () => {
         it('Get all picto of the first page and delete them one by one', async () => {
@@ -70,6 +117,23 @@ describe('Pictos', () => {
                 const deleteOne = await chai.request(app).delete(`/api/v2/picto/${element._id}`).set('authorization', credentials.token);
                 expect(deleteOne).to.have.status(200);
             }
+        });
+        it('Try delete a picto - w/o authentication', async () => {
+            const picto = await createPictos();
+            const res   = await chai.request(app)
+                .delete(`/api/v2/picto/${picto._id}`);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Try delete a picto - w/o the good ID', async () => {
+            await createPictos();
+            const res = await chai.request(app)
+                .delete('/api/v2/picto/111111111111111111111111')
+                .set('authorization', credentials.token);
+            expect(res).to.have.status(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('Le pictogramme est introuvable.');
         });
     });
 });
