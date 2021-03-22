@@ -8,4 +8,11 @@ const createTrademarks = (params = {name: null}) => {
     return trademarks.save();
 };
 
-module.exports = createTrademarks;
+const deleteAllTrademarks = async () => {
+    await Trademarks.deleteMany({});
+};
+
+module.exports = {
+    createTrademarks,
+    deleteAllTrademarks
+};
