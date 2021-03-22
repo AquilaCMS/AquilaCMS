@@ -1,6 +1,7 @@
 <ns-box data-title="translate.t1" title-icon="fa fa-language fa-lg">
 
     <form name="form" role="form" ng-submit="local.saveTranslate()">
+        <ns-buttons disable-save="disableSave" return-path="/" form="form" hide-save-and-quit="true" additionnal-buttons="additionnalButtons"></ns-buttons>
 
         <div translate>translate.translateFile</div>
         <ns-translation ng-model="local.lang" class="pull-left"></ns-translation>
@@ -8,16 +9,13 @@
             <option ng-repeat="oneItem in local.allTranslateNames" value="{{oneItem}}">{{oneItem}}</option>
         </select>
 
-        <ns-buttons disable-save="disableSave" return-path="/" form="form" hide-save-and-quit="true">
-            <button class="btn btn-success" style="position: absolute;right: 40%;top: 216px;" ng-click="local.compileFront()" translate>translate.reboot</button>
-
-
-            <div style="text-align: center">
-                <textarea style="width:95%;height:500px" ng-model="local.customTranslate" required></textarea>
-            </div>
-            <br/>
-            <div style="font-size: 11px" translate>translate.nb</div>
-
-        </ns-buttons>
+        <div style="font-size: 12px" translate>translate.nb</div>
+        <br/>
+        <div style="text-align: center">
+            <textarea style="width:95%;height:500px" ng-model="local.customTranslate" required></textarea>
+        </div>
     </form>
+    <div ng-show="showLoader" id="overlayModule">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+    </div>
 </ns-box>
