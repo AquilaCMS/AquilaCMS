@@ -68,26 +68,11 @@
                 <div style="margin-bottom: 5px" ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
         </div>
     </div>
-    <style>
-        .box .titleOfBox{
-            padding: 10px;
-        }
-        .box{
-            padding-top: 0px;
-        }
-        .box .textInBox{
-            padding: 10px;
-            word-break: break-word;
-        }
-        .multipleBoxInLine{
-            margin-bottom: 20px;
-        }
-    </style>
     <div class="row">
         <div class="col-md-4 multipleBoxInLine">
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
-                    <h2 translate class="titleOfBox">order.detail.compteCli</h2>
+                    <h2 translate>order.detail.compteCli</h2>
                     <a target="_blank" ng-href="#/clients/{{order.customer.id}}" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-eye"></i></a>
                 </div>
                 <div class="box-content textInBox">
@@ -104,7 +89,7 @@
         <div class="col-md-4 multipleBoxInLine">
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
-                    <h2 class="titleOfBox" translate>order.detail.billAdd</h2>
+                    <h2 translate>order.detail.billAdd</h2>
                     <a ng-click="changeAddress('billing')" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-edit"></i></a>
                 </div>
                 <div ng-show="editableMode" class="box-content">
@@ -137,7 +122,7 @@
         <div class="col-md-4">
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
-                    <h2 class="titleOfBox" translate>order.detail.delivAdd</h2>
+                    <h2 translate>order.detail.delivAdd</h2>
                     <a ng-click="changeAddress('delivery')" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-edit"></i></a>
                 </div>
                 <div ng-show="editableMode" class="box-content">
@@ -193,8 +178,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box subbox" style="padding-bottom:0px;">
-                <div class="box-header" style="margin-bottom:0px;">
-                    <h2 class="titleOfBox" translate>order.detail.orderDet</h2>
+                <div class="box-header box-header-table">
+                    <h2 translate>order.detail.orderDet</h2>
                 </div>
                 <div class="box-content" style="overflow: auto;">
                     <table class="mediumTable table order-cart">
@@ -306,10 +291,10 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 multipleBoxInLine">
             <div class="box subbox" style="padding-bottom:0px;">
-                <div class="box-header" style="margin-bottom:0px;">
-                    <h2 class="titleOfBox" translate>order.detail.colis</h2>
+                <div class="box-header box-header-table">
+                    <h2 translate>order.detail.colis</h2>
                     <div
                         ng-show="orderPackagePopup.length > 0"
                         ng-repeat="orderPP in orderPackagePopup"
@@ -355,7 +340,7 @@
         <div class="col-md-6">
             <div class="box subbox" style="min-height: 185px;">
                 <div class="box-header">
-                    <h2 class="titleOfBox" translate>order.detail.trans</h2>
+                    <h2 translate>order.detail.trans</h2>
                 </div>
                 <div class="box-content">
                     <div ng-show="order.delivery">
@@ -388,9 +373,9 @@
     <br />
     <div class="row">
         <div class="col-md-12">
-            <div class="box subbox" style="padding-bottom:0px;">
-                <div class="box-header" style="margin-bottom:0px;">
-                    <h2 class="titleOfBox" translate>order.detail.reglRemb</h2>
+            <div class="box subbox">
+                <div class="box-header box-header-table">
+                    <h2 translate>order.detail.reglRemb</h2>
                     <a ng-click="addInfoPayment()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
                 </div>
                 <div class="box-content" style="overflow:auto;">
@@ -443,12 +428,12 @@
     <br />
     <div class="row">
         <div class="col-md-6 multipleBoxInLine">
-            <div class="box subbox" style="padding-bottom:0px;">
-                <div class="box-header"  style="margin-bottom:0px;">
-                    <h2 class="titleOfBox" translate>order.detail.retour</h2>
+            <div class="box subbox">
+                <div class="box-header box-header-table">
+                    <h2 translate>order.detail.retour</h2>
                     <a ng-click="returnItem()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
                 </div>
-                <div class="box-content" style="overflow:auto;">
+                <div class="box-content">
                     <div ng-show="order.rma.length > 0">
                         <table class="table">
                             <thead>
@@ -494,7 +479,7 @@
         <div class="col-md-6">
             <div class="box subbox">
                 <div class="box-header">
-                    <h2 class="titleOfBox" translate id="changeStatusId">order.detail.status</h2>
+                    <h2 translate id="changeStatusId">order.detail.status</h2>
                     <!-- <label style="color:white;margin-right:10px;float:right">{{order.status | orderStatus}}</label> -->
                     <a ng-click="changeStatus()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-edit"></i></a>
                 </div>

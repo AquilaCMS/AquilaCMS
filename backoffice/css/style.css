@@ -2964,17 +2964,44 @@ input:-webkit-autofill {
     background: #dfe6ee;
     border: 1px solid #bec4ca;
     border-radius: 3px;
-    padding: 11px 0px 25px;
+    padding: 0px;
 }
 
 .box+.box {
     margin-top: 43px;
 }
 
+.box-header-table{
+    margin-bottom: 0px !important;
+}
+
 .box .box-header {
     background: #576fa1;
     padding: 10px 0;
     margin-bottom: 23px;
+}
+
+
+.box .box-header h2{
+    padding: 10px;
+}
+
+.box .textInBox{
+    padding: 10px 10px 20px;
+    word-break: break-word;
+}
+
+.multipleBoxInLine{
+    margin-bottom: 20px;
+}
+
+.box table {
+    overflow: auto;
+}
+
+.fsbox h2{
+    padding-left: 66px !important;
+    padding-top: 6px !important;
 }
 
 .box .box-header:after {
