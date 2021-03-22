@@ -9,4 +9,11 @@ const createSuppliers = (params = {code: null, name: null}) => {
     return suppliers.save();
 };
 
-module.exports = createSuppliers;
+const deleteAllSuppliers = async () => {
+    await Suppliers.deleteMany({});
+};
+
+module.exports = {
+    createSuppliers,
+    deleteAllSuppliers
+};
