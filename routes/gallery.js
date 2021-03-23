@@ -6,17 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceGallery = require('../services/gallery');
+const ServiceGallery              = require('../services/gallery');
+const {authentication, adminAuth} = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/galleries', getGalleries);
+    app.post('/v2/galleries', authentication, adminAuth, getGalleries);
     app.get('/v2/gallery/:_id', getGallery);
     app.get('/v2/gallery/:code/items', getItemsGallery);
-    app.put('/v2/gallery', setGallery);
-    app.put('/v2/gallery/:_id/item', setItemGallery);
-    app.put('/v2/gallery/:_id/items', setItemsGallery);
-    app.delete('/v2/gallery/:_id', deleteGallery);
-    app.delete('/v2/gallery/:_id/:_id_item', deleteItemGallery);
+    app.put('/v2/gallery', authentication, adminAuth, setGallery);
+    app.put('/v2/gallery/:_id/item', authentication, adminAuth, setItemGallery);
+    app.put('/v2/gallery/:_id/items', authentication, adminAuth, setItemsGallery);
+    app.delete('/v2/gallery/:_id', authentication, adminAuth, deleteGallery);
+    app.delete('/v2/gallery/:_id/:_id_item', authentication, adminAuth, deleteItemGallery);
 };
 
 /**
