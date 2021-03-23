@@ -183,6 +183,10 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     productSelected(){
                         let newObj = [];
                         for(let oneProd of section.products){
+                            oneProd.id.modifier = {
+                                modifier_weight: oneProd.modifier_weight,
+                                modifier_price: oneProd.modifier_price
+                            }
                             newObj.push(oneProd.id);
                         }
                         return newObj;
@@ -191,7 +195,18 @@ BundleProductControllers.controller("BundleProductCtrl", [
             });
             modalInstance.result.then(function (products) {
                 section.products = products.map((item) => {
-                    return {id: item, isDefault: false};
+                    let productReturned       = {};
+                    productReturned.id        = item;
+                    productReturned.isDefault = false;
+                    if(item.modifier){
+                        if(item.modifier.modifier_price){
+                            productReturned.modifier_price = item.modifier.modifier_price;
+                        }
+                        if(item.modifier.modifier_weight){
+                            productReturned.modifier_weight = item.modifier.modifier_weight
+                        }
+                    }
+                    return productReturned;
                 });
             });
         };
