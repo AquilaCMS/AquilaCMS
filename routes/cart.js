@@ -102,7 +102,7 @@ const addItem = async (req, res, next) => {
     // NO : create and add
     try {
         const result = await ServiceCart.addItem(req);
-        if (result.data.cart) {
+        if (result && result.data && result.data.cart) {
             return res.json(result.data.cart);
         }
         return res.status(400).json(result);

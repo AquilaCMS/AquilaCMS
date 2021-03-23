@@ -9,6 +9,17 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
             currentTranslate  : '',
             lang : "fr"
         };
+        $scope.showLoader = false;
+        $scope.additionnalButtons = [
+            {
+                text: 'translate.reboot',
+                onClick: function () {
+                    $scope.local.compileFront();
+                },
+                icon: '<i class="fa fa-file-text" aria-hidden="true"></i>'
+            }
+        ];
+
 
         $scope.langChange = function (lang)
         {
@@ -56,11 +67,15 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
         };
 
         $scope.local.compileFront = function() {
-
+            $scope.showLoader = true;
             $http.post('/v2/themes/package/build/', {"themeName":""}).then((response) => {
-                 $http.get('/restart').then((response) => {
+                toastService.toast('success', "Build succeed, restarting the server");
+                $scope.showLoader = false;
+                $http.get('/restart').then((response) => {
 
                 });
+            }).catch(function(error){
+                toastService.toast('danger', "Build failed");
             });
         }
 

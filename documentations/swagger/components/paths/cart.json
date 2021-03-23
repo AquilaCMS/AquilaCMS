@@ -220,7 +220,24 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#components/schemas/PostBody"
+                            "description": "",
+                            "properties": {
+                                "cartId" : {"type": "string"},
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id" : {"type": "string"},
+                                        "quantity" : {"type": "number"}
+                                    }
+                                }
+                            }
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Add product to new cart",
+                                "description": "Add product to new cart",
+                                "value": {"cartId":null,"item":{"id":"5f2aae034168fe0b983ca913","quantity":1}}
+                            }
                         }
                     }
                 }

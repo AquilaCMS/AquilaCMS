@@ -5,7 +5,7 @@
 
     <div class="row start_stats orderInfoColor" style="margin: 30px auto;">
 
-        <div class="col-md-2" style="background:#7986cb;border: 1px solid #5c6bc0">
+        <div class="col-md-2" style="background:#7986cb;border: 1px solid #5c6bc0;">
             <i class="fa fa-key" style="color: #5c6bc0"></i>
             <p>
                 <b style="font-size: 25px;">{{order.number}}</b>
@@ -56,7 +56,7 @@
     </div>
 
 
-    <div class="row order-header order-emphase orderInfoOld">
+    <div class="row order-header order-emphase orderInfoOld" style="margin-bottom:25px;margin-top:25px;">
         <div class="col-md-12">
             <strong>{{order.number}} - {{order.createdAt | date:'dd/MM/yyyy HH:mm'}}
             </strong>
@@ -68,15 +68,14 @@
                 <div style="margin-bottom: 5px" ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
         </div>
     </div>
-
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4 multipleBoxInLine">
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
                     <h2 translate>order.detail.compteCli</h2>
                     <a target="_blank" ng-href="#/clients/{{order.customer.id}}" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-eye"></i></a>
                 </div>
-                <div class="box-content">
+                <div class="box-content textInBox">
                     {{order.customer.fullname}}<br />
                     {{order.customer.phone}}<br />
                     {{order.customer.email}}
@@ -87,7 +86,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 multipleBoxInLine">
             <div class="box subbox" style="min-height: 256px;">
                 <div class="box-header">
                     <h2 translate>order.detail.billAdd</h2>
@@ -108,7 +107,7 @@
                     <span editable-text="order.addresses.billing.city" onbeforesave="updateOrder('addresses.billing.city', $data)">{{ order.addresses.billing.city || '&nbsp;' }}</span><br />
                     <span editable-text="order.addresses.billing.country" onbeforesave="updateOrder('addresses.billing.country', $data)">{{ order.addresses.billing.country || '&nbsp;' }}</span>
                 </div>
-                <div ng-hide="editableMode" class="box-content">
+                <div ng-hide="editableMode" class="box-content textInBox">
                     {{order.addresses.billing.firstname}}&nbsp;{{order.addresses.billing.lastname}}<br />
                     {{order.addresses.billing.companyName}}<br />
                     {{order.addresses.billing.line1}}<br />
@@ -144,7 +143,7 @@
                     <span editable-text="order.addresses.delivery.city" onbeforesave="updateOrder('addresses.delivery.city', $data)">{{ order.addresses.delivery.city || '&nbsp;' }}</span><br />
                     <span editable-text="order.addresses.delivery.country" onbeforesave="updateOrder('addresses.delivery.country', $data)">{{ order.addresses.delivery.country || '&nbsp;' }}</span>
                 </div>
-                <div ng-hide="editableMode" class="box-content">
+                <div ng-hide="editableMode" class="box-content textInBox">
                     <div ng-show="order.orderReceipt.method === 'delivery'">
                         {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
                         {{order.addresses.delivery.line1}}<br />
@@ -178,9 +177,11 @@
     <br />
     <div class="row">
         <div class="col-md-12">
-            <div class="box subbox">
-                <div class="box-header"><h2 translate>order.detail.orderDet</h2></div>
-                <div class="box-content">
+            <div class="box subbox" style="padding-bottom:0px;">
+                <div class="box-header box-header-table">
+                    <h2 translate>order.detail.orderDet</h2>
+                </div>
+                <div class="box-content" style="overflow: auto;">
                     <table class="mediumTable table order-cart">
                         <thead>
                             <tr class="order-emphase">
@@ -196,10 +197,10 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="item in order.items">
-                                <td class="order-cart-img" width="126" data-label="Code :">
+                                <td class="order-cart-img" data-label="Code :">
                                     {{item.code}}
                                 </td>
-                                <td width="300" data-label="Description :">
+                                <td data-label="Description :">
                                     <div class="details-box">
                                         <div style="font-size: 20px" class="name">{{item.name}}<span ng-show="item.parent"> - {{getParentItem(item.parent)}}</span></div>
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->
@@ -290,9 +291,9 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-6">
-            <div class="box subbox" style="min-height: 185px;">
-                <div class="box-header">
+        <div class="col-md-6 multipleBoxInLine">
+            <div class="box subbox" style="padding-bottom:0px;">
+                <div class="box-header box-header-table">
                     <h2 translate>order.detail.colis</h2>
                     <div
                         ng-show="orderPackagePopup.length > 0"
@@ -303,7 +304,7 @@
                         <i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i>
                     </a>
                 </div>
-                <div class="box-content">
+                <div class="box-content" style="overflow:auto;">
                     <div ng-show="order.delivery.package.length > 0">
                         <table class="table">
                             <thead>
@@ -325,9 +326,8 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <br />
                     </div>
-                    <div ng-hide="order.delivery.package.length > 0" translate>
+                    <div ng-hide="order.delivery.package.length > 0" class="textInBox" translate>
                         order.detail.noPack
                     </div>
                     <!-- <div class="order-add-button">
@@ -339,7 +339,9 @@
         </div>
         <div class="col-md-6">
             <div class="box subbox" style="min-height: 185px;">
-                <div class="box-header"><h2 translate>order.detail.trans</h2></div>
+                <div class="box-header">
+                    <h2 translate>order.detail.trans</h2>
+                </div>
                 <div class="box-content">
                     <div ng-show="order.delivery">
                         <table>
@@ -372,11 +374,11 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box subbox">
-                <div class="box-header">
+                <div class="box-header box-header-table">
                     <h2 translate>order.detail.reglRemb</h2>
                     <a ng-click="addInfoPayment()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
                 </div>
-                <div class="box-content">
+                <div class="box-content" style="overflow:auto;">
                     <table class="mediumTable table">
                         <thead>
                             <tr>
@@ -425,9 +427,9 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 multipleBoxInLine">
             <div class="box subbox">
-                <div class="box-header">
+                <div class="box-header box-header-table">
                     <h2 translate>order.detail.retour</h2>
                     <a ng-click="returnItem()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-plus"></i></a>
                 </div>
@@ -464,7 +466,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div ng-hide="order.rma.length > 0" translate>
+                    <div ng-hide="order.rma.length > 0" class="textInBox" translate>
                         order.detail.noRet
                     </div>
                     <!-- <div class="order-add-button">
@@ -481,7 +483,7 @@
                     <!-- <label style="color:white;margin-right:10px;float:right">{{order.status | orderStatus}}</label> -->
                     <a ng-click="changeStatus()" style="float:right"><i style="color:white;padding:6px 10px 0 0" class="fa fa-2x fa-edit"></i></a>
                 </div>
-                <div class="box-content">
+                <div class="box-content textInBox">
                         <div class="align-center">
                             <div ng-show="editStatus">
                                 <div style="margin-bottom:10px">

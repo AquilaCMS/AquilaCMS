@@ -18,84 +18,46 @@ ProductControllers.controller("ProductBeforeCreateCtrl", [
 ]);
 
 ProductControllers.controller("SelectProductsCtrl", [
-    "$scope", "$modalInstance", "queryFilter", "toastService", function ($scope, $modalInstance, queryFilter, toastService) {
-        ;
+    "$scope", "$modalInstance", "queryFilter", "toastService", "productSelected",
+    function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
         $scope.queryFilter = queryFilter;
-        if(!$scope.$parent.selectedProducts){
-            $scope.$parent.selectedProducts = $scope.$parent.associatedPrds || [];
+        $scope.selectedProducts = productSelected || [];
+        //$scope.selectedProducts = $scope.$parent.associatedPrds || [];
+        for(let oneProduct of $scope.selectedProducts){
+            oneProduct._selected = true;
+            oneProduct.style = {"background-color": "#3f51b5", "color": "white"};
         }
+
         $scope.selectProduct = function (product, ev) {
-            let push = true;
-            if (product._selected != true) {
-                for (let i = 0; i < $scope.$parent.selectedProducts.length; i++) {
-                    if ($scope.$parent.selectedProducts[i]._id == product._id) {
-                        push = false;
+            if (typeof product._selected ==='undefined' && typeof product.style ==='undefined'){
+                //le produit n'a jamais était selectionné
+                $scope.selectedProducts.push(product);
+                product._selected = true;
+                product.style = {"background-color": "#3f51b5", "color": "white"};
+            }else{
+                let index = 0;
+                for(let oneProduct of $scope.selectedProducts){
+                    if(oneProduct._id === product._id){
+                        break
+                    }else{
+                        index++;
                     }
                 }
-                if (push) {
-                    $scope.$parent.selectedProducts.push(product);
-                    product._selected = true;
-                    product.style = {"background-color": "#3f51b5", "color": "white"};
-                } else {
-                    var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
-                        return currProduct.id == product.id;
-                    });
-                    $scope.$parent.selectedProducts.splice(index, 1);
-                    product.style = {"background-color": "", "color": ""};
-                    // $(ev.target).closest('tr').children('td').css({
-                    //     'background-color': '',
-                    //     'color': ''
-                    // });
-                    product._selected = false;
+                if(index > -1){
+                    $scope.selectedProducts.splice(index, 1);
                 }
-                // $(ev.target).closest('tr').children('td').css({
-                //     'background-color': '#3f51b5',
-                //     'color': 'white'
-                // });
-            } else {
-                product.style = {"background-color": "", "color": ""};
-                var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
-                    return currProduct.code == product.code;
-                });
-                $scope.$parent.selectedProducts.splice(index, 1);
-                // $(ev.target).closest('tr').children('td').css({
-                //     'background-color': '',
-                //     'color': ''
-                // });
-                product._selected = false;
+                delete product.style;
+                delete product._selected;
             }
         };
 
-        $scope.validate = function (products) {
-            $scope.$parent.selectedProducts;
-            let final = []
-            let long = products.length
-            let change = false;
-            for(let i = 0; i < long; i++){
-                if(products[i]){
-                    if(products[i].style){
-                        delete products[i].style
-                    }
-                }
-                if($scope.$parent.associatedPrds.length == 0){
-                    final.push(products[i])
-                }else{
-                    for(alreadyAssocied of $scope.$parent.associatedPrds){
-                        if(alreadyAssocied._id != products[i]._id){
-                            final.push(products[i])
-                        }
-                    }
-                    if(!change){
-                        change = true;
-                    }
-                }
+        $scope.validate = function () {
+            for(let oneProduct of $scope.selectedProducts){
+                delete oneProduct._selected;
+                delete oneProduct.style;
             }
-            if(change){
-                toastService.toast('success', "Pensez à valider vos modifications");
-            }
-            $modalInstance.close(final);
+            $modalInstance.close($scope.selectedProducts);
         };
-
 
         $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
@@ -121,6 +83,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.filtersAttribs = {};
         $scope.langs = [];
         $scope.filterLang = "";
+        $scope.showLoader = false;
 
         function getProductImg(prdIndex, products) {
             if (products && products.length > 0) {
@@ -162,6 +125,7 @@ ProductControllers.controller("ProductListCtrl", [
         };
 
         $scope.getProducts = function (page) {
+            $scope.showLoader = true;
             const search = $scope.searchObj;
             const filter = $scope.filter;
             let pageAdmin = {location: "products", page: 1};
@@ -281,7 +245,7 @@ ProductControllers.controller("ProductListCtrl", [
                         _visible: 1,
                         stock: 1
                     },
-                    limit: 12,
+                    limit: $scope.nbItemsPerPage,
                     page: $scope.currentPage,
                     sort: params.sortObj
                 }
@@ -290,6 +254,7 @@ ProductControllers.controller("ProductListCtrl", [
                 getProductImg(0, res.datas); // what the hell is that ?!
                 $scope.products = res.datas;
                 $scope.totalItems = res.count;
+                $scope.showLoader = false;
             });
         };
 
@@ -392,5 +357,103 @@ ProductControllers.controller("nsProductGeneral", [
 
         window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
 
+    }
+]);
+
+ProductControllers.controller("nsProductCategories", [
+    "$scope", "$filter", "CategoryV2",
+    function ($scope, $filter, CategoryV2) {
+        $scope.selectNode = function(node){
+            //we get the actual productsList
+            var tab = node.productsList;
+            const productID = $scope.product._id;
+            let count = 0;
+            const lenTab = tab.length;
+            for(let oneObject of tab){
+                if(oneObject.id == productID){
+                    if(count > -1) {
+                        tab.splice(count, 1);
+                    }
+                    break;
+                }else{
+                    count++;
+                }
+            }
+            if(count == lenTab) {
+                tab.push({id: productID, checked: true});
+            }
+            //we save
+            CategoryV2.save({_id: node._id, productsList: tab}, function () {
+
+            });
+        };
+
+        $scope.getCategories = function() {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
+            {
+                $scope.categories = response.datas;
+                //we expand all the categories
+                $scope.expandAll();
+            });
+        }
+        
+        $scope.catDisabled = function (node){
+            let final = false;
+            if(node.action == "page"){
+                final = true;
+            }else{
+                if(node.productsList){
+                    for(let oneChild of node.productsList){
+                        if(oneChild.id == $scope.product._id){
+                            final = !oneChild.checked;
+                            break;
+                        }
+                    }
+                }
+            }
+            return final;
+        };
+
+        $scope.catCheck = function (node){
+            let final = false;
+            if(node.productsList){
+                for(let oneChild of node.productsList){
+                    if(oneChild.id == $scope.product._id){
+                        final = true;
+                        break;
+                    }
+                }
+            }
+            return final;
+        };
+
+        $scope.expandAll = function(){
+            for(let oneCat of $scope.categories){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                    oneCat.nodes = response.datas;
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                    for(let oneNode of oneCat.nodes){
+                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                            oneNode.nodes = response.datas;
+                            $scope.$broadcast('angular-ui-tree:expand-all');
+                        });
+                    }
+                });
+            }
+            //or use the $scope.listChildren()
+        }
+
+        $scope.listChildren = function (cat, scope) {
+            for(let oneNode of cat.nodes){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                    oneNode.nodes = response.datas;
+                });
+            }
+            scope.toggle();
+        };
+
+
+        
+        $scope.getCategories();
     }
 ]);

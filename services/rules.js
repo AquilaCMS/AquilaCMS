@@ -509,7 +509,9 @@ const execRules = async (owner_type, products = [], optionPictoId = undefined) =
                         );
                         if (cat) {
                             // Get product setted manually
-                            cat.productsList = oldCat.productsList.filter((ou) => ou.checked || productsIds.includes(ou.id));
+                            if (oldCat) {
+                                cat.productsList = oldCat.productsList.filter((ou) => ou.checked || productsIds.includes(ou.id));
+                            }
 
                             // On transforme la liste de produit en object dont la key est l'_id du produit
                             // nous pourrons ainsi facilement trouver les produits

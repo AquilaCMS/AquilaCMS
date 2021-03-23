@@ -211,7 +211,6 @@ class CartPayment extends React.Component {
                                     <div className="content content--left">
                                         <div className="section__content">
                                             <div className="form-payment">
-                                                <form action="?" method="post">
                                                     <div className="form__head">
                                                         <h3 className="hidden-xs">{t('common:steps.paiement')}</h3>
 
@@ -237,7 +236,6 @@ class CartPayment extends React.Component {
                                                             {t('common:steps.paiement')}
                                                         </button>
                                                     </div>
-                                                </form>
                                                 <div className="content" dangerouslySetInnerHTML={{ __html: paymentForm }} hidden />
                                             </div>
                                         </div>{/* <!-- /.section__content --> */}
