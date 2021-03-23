@@ -18,31 +18,33 @@ describe('Sliders', () => {
         credentials = await createUserAdminAndLogin();
     });
 
-    describe('POST /api/v2/slider', () => {
+    describe('POST /api/v2/sliders', () => {
         it('Create slider and get it with the code', async () => {
             const slider = await createSlider();
             const res    = await chai.request(app)
-                .post('/api/v2/slider')
+                .post('/api/v2/sliders')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {code: slider.code}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body.name).be.equals(slider.name);
+            expect(res.body.datas[0].name).be.equals(slider.name);
         });
         it('Create slider and get it with the id - w/o authentication', async () => {
             const slider = await createSlider();
             const res    = await chai.request(app)
-                .post('/api/v2/slider')
+                .post('/api/v2/sliders')
                 .send({PostBody: {filter: {_id: slider._id}, limit: 99}});
             expect(res).to.have.status(200);
+            expect(res.body.datas[0].name).be.equals(slider.name);
         });
         it('Create slider and get it with the id - w/o the good id', async () => {
             await createSlider();
             const res = await chai.request(app)
-                .post('/api/v2/slider')
+                .post('/api/v2/sliders')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: '111111111111111111111111'}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body).to.be.equal(null);
+            expect(res.body.datas.length).to.be.equal(0);
+            expect(res.body.count).to.be.equal(0);
         });
     });
     describe('DELETE /api/v2/slider/:id', () => {

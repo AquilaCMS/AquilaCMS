@@ -22,27 +22,30 @@ describe('Medias', () => {
         it('Create Medias and get it with the id', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
-                .post('/api/v2/media')
+                .post('/api/v2/medias')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: media._id}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body.name).be.equals(media.name);
+            expect(res.body.datas[0].name).be.equals(media.name);
         });
         it('Create Medias and get it with the id - w/o authentication', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
-                .post('/api/v2/media')
+                .post('/api/v2/medias')
                 .send({PostBody: {filter: {_id: media._id}, limit: 99}});
-            expect(res).to.have.status(200);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
         });
         it('Create Medias and get it with the id - w/o the good id', async () => {
             await createMedias();
             const res = await chai.request(app)
-                .post('/api/v2/media')
+                .post('/api/v2/medias')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: '111111111111111111111111'}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body).to.be.equal(null);
+            expect(res.body.datas.length).to.be.equal(0);
+            expect(res.body.count).to.be.equal(0);
         });
     });
     describe('DELETE /api/v2/media/:id', () => {

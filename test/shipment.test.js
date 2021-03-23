@@ -18,31 +18,33 @@ describe('Shipments', () => {
         credentials = await createUserAdminAndLogin();
     });
 
-    describe('POST /api/v2/shipment', () => {
+    describe('POST /api/v2/shipments', () => {
         it('Create shipment and get it with the code', async () => {
             const shipment = await createShipments();
             const res      = await chai.request(app)
-                .post('/api/v2/shipment')
+                .post('/api/v2/shipments')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {code: shipment.code}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body.name).be.equals(shipment.name);
+            expect(res.body.datas[0].name).be.equals(shipment.name);
         });
         it('Create shipment and get it with the id - w/o authentication', async () => {
             const shipment = await createShipments();
             const res      = await chai.request(app)
-                .post('/api/v2/shipment')
+                .post('/api/v2/shipments')
                 .send({PostBody: {filter: {_id: shipment._id}, limit: 99}});
             expect(res).to.have.status(200);
+            expect(res.body.datas[0].name).be.equals(shipment.translation.fr.name);
         });
         it('Create shipment and get it with the id - w/o the good id', async () => {
             await createShipments();
             const res = await chai.request(app)
-                .post('/api/v2/shipment')
+                .post('/api/v2/shipments')
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: '111111111111111111111111'}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body).to.be.equal(null);
+            expect(res.body.datas.length).to.be.equal(0);
+            expect(res.body.count).to.be.equal(0);
         });
     });
     describe('DELETE /api/v2/shipment/:id', () => {
