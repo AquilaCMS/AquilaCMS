@@ -170,23 +170,33 @@ BundleProductControllers.controller("BundleProductCtrl", [
 
         $scope.addBundleProduct = function (section)
         {
+            debugger
             var modalInstance = $modal.open({
-                templateUrl: "app/product/views/modals/selectproducts.html", controller: "SelectProductsCtrl", windowClass: "modal-big", scope: $scope, resolve: {
-                    queryFilter: function ()
-                    {
+                templateUrl: "app/product/views/modals/selectproducts.html",
+                controller: "SelectProductsCtrl",
+                windowClass: "modal-big",
+                scope: $scope,
+                resolve: {
+                    queryFilter: function (){
                         return {
                             type: "simple"
                         };
+                    },
+                    productSelected(){
+                        let newObj = [];
+                        for(let oneProd of section.products){
+                            newObj.push(oneProd.id);
+                        }
+                        return newObj;
                     }
                 }
             });
             modalInstance.result.then(function (products)
             {
-                var newProducts = products.map(function (item)
-                {
+                debugger
+                section.products = products.map((item) => {
                     return {id: item, isDefault: false};
                 });
-                section.products = section.products.concat(newProducts);
             });
         };
 

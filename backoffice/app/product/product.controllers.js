@@ -18,84 +18,47 @@ ProductControllers.controller("ProductBeforeCreateCtrl", [
 ]);
 
 ProductControllers.controller("SelectProductsCtrl", [
-    "$scope", "$modalInstance", "queryFilter", "toastService", function ($scope, $modalInstance, queryFilter, toastService) {
-        ;
+    "$scope", "$modalInstance", "queryFilter", "toastService", "productSelected",
+    function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
         $scope.queryFilter = queryFilter;
-        if(!$scope.$parent.selectedProducts){
-            $scope.$parent.selectedProducts = $scope.$parent.associatedPrds || [];
+        $scope.selectedProducts = productSelected || [];
+        debugger
+        //$scope.selectedProducts = $scope.$parent.associatedPrds || [];
+        for(let oneProduct of $scope.selectedProducts){
+            oneProduct._selected = true;
+            oneProduct.style = {"background-color": "#3f51b5", "color": "white"};
         }
+
         $scope.selectProduct = function (product, ev) {
-            let push = true;
-            if (product._selected != true) {
-                for (let i = 0; i < $scope.$parent.selectedProducts.length; i++) {
-                    if ($scope.$parent.selectedProducts[i]._id == product._id) {
-                        push = false;
+            if (typeof product._selected ==='undefined' && typeof product.style ==='undefined'){
+                //le produit n'a jamais était selectionné
+                $scope.selectedProducts.push(product);
+                product._selected = true;
+                product.style = {"background-color": "#3f51b5", "color": "white"};
+            }else{
+                let index = 0;
+                for(let oneProduct of $scope.selectedProducts){
+                    if(oneProduct._id === product._id){
+                        break
+                    }else{
+                        index++;
                     }
                 }
-                if (push) {
-                    $scope.$parent.selectedProducts.push(product);
-                    product._selected = true;
-                    product.style = {"background-color": "#3f51b5", "color": "white"};
-                } else {
-                    var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
-                        return currProduct.id == product.id;
-                    });
-                    $scope.$parent.selectedProducts.splice(index, 1);
-                    product.style = {"background-color": "", "color": ""};
-                    // $(ev.target).closest('tr').children('td').css({
-                    //     'background-color': '',
-                    //     'color': ''
-                    // });
-                    product._selected = false;
+                if(index > -1){
+                    $scope.selectedProducts.splice(index, 1);
                 }
-                // $(ev.target).closest('tr').children('td').css({
-                //     'background-color': '#3f51b5',
-                //     'color': 'white'
-                // });
-            } else {
-                product.style = {"background-color": "", "color": ""};
-                var index = $scope.$parent.selectedProducts.findIndex(function (currProduct) {
-                    return currProduct.code == product.code;
-                });
-                $scope.$parent.selectedProducts.splice(index, 1);
-                // $(ev.target).closest('tr').children('td').css({
-                //     'background-color': '',
-                //     'color': ''
-                // });
-                product._selected = false;
+                delete product.style;
+                delete product._selected;
             }
         };
 
-        $scope.validate = function (products) {
-            $scope.$parent.selectedProducts;
-            let final = []
-            let long = products.length
-            let change = false;
-            for(let i = 0; i < long; i++){
-                if(products[i]){
-                    if(products[i].style){
-                        delete products[i].style
-                    }
-                }
-                if($scope.$parent.associatedPrds.length == 0){
-                    final.push(products[i])
-                }else{
-                    for(alreadyAssocied of $scope.$parent.associatedPrds){
-                        if(alreadyAssocied._id != products[i]._id){
-                            final.push(products[i])
-                        }
-                    }
-                    if(!change){
-                        change = true;
-                    }
-                }
+        $scope.validate = function () {
+            for(let oneProduct of $scope.selectedProducts){
+                delete oneProduct._selected;
+                delete oneProduct.style;
             }
-            if(change){
-                toastService.toast('success', "Pensez à valider vos modifications");
-            }
-            $modalInstance.close(final);
+            $modalInstance.close($scope.selectedProducts);
         };
-
 
         $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
