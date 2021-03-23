@@ -1,9 +1,9 @@
-const chai                    = require('chai');
-const chaiHttp                = require('chai-http');
-const faker                   = require('faker');
-const app                     = require('../server');
-const createUserAdminAndLogin = require('./utils/createUserAdminAndLogin');
-const createShipments         = require('./utils/createShipments');
+const chai                                  = require('chai');
+const chaiHttp                              = require('chai-http');
+const faker                                 = require('faker');
+const app                                   = require('../server');
+const createUserAdminAndLogin               = require('./utils/createUserAdminAndLogin');
+const {createShipments, deleteAllShipments} = require('./utils/createShipments');
 
 chai.use(chaiHttp);
 chai.should();
@@ -14,6 +14,7 @@ let credentials;
 
 describe('Shipments', () => {
     beforeEach(async () => {
+        await deleteAllShipments();
         credentials = await createUserAdminAndLogin();
     });
 
@@ -27,6 +28,22 @@ describe('Shipments', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(shipment.name);
         });
+        it('Create shipment and get it with the id - w/o authentication', async () => {
+            const shipment = await createShipments();
+            const res      = await chai.request(app)
+                .post('/api/v2/shipment')
+                .send({PostBody: {filter: {_id: shipment._id}, limit: 99}});
+            expect(res).to.have.status(200);
+        });
+        it('Create shipment and get it with the id - w/o the good id', async () => {
+            await createShipments();
+            const res = await chai.request(app)
+                .post('/api/v2/shipment')
+                .set('authorization', credentials.token)
+                .send({PostBody: {filter: {_id: '111111111111111111111111'}, limit: 99}});
+            expect(res).to.have.status(200);
+            expect(res.body).to.be.equal(null);
+        });
     });
     describe('DELETE /api/v2/shipment/:id', () => {
         it('Create shipment and delete it (use the ID)', async () => {
@@ -35,6 +52,23 @@ describe('Shipments', () => {
                 .delete(`/api/v2/shipment/${shipment._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
+        });
+        it('Create shipment and delete it - w/o authentication', async () => {
+            const shipment = await createShipments();
+            const res      = await chai.request(app)
+                .delete(`/api/v2/shipment/${shipment._id}`);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Create shipment and delete it - w/o the good ID', async () => {
+            await createShipments();
+            const res = await chai.request(app)
+                .delete('/api/v2/shipment/111111111111111111111111')
+                .set('authorization', credentials.token);
+            expect(res).to.have.status(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('Le Shipment est introuvable');
         });
     });
 
@@ -58,6 +92,16 @@ describe('Shipments', () => {
                 .send({type: 'DELIVERY', countries: [], code: codeRandom, translation: {fr: {name: nameRandom}}});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
+        it('Try creating a shipment - w/o authentication', async () => {
+            const codeRandom = faker.lorem.slug();
+            const nameRandom = faker.name.title();
+            const res        = await chai.request(app)
+                .put('/api/v2/shipment')
+                .send({type: 'DELIVERY', countries: [], code: codeRandom, translation: {fr: {name: nameRandom}}});
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
     });
     describe('DELETE /api/v2/shipment/:id', () => {
         it('Get all shipment of the first page and delete them one by one', async () => {
@@ -67,9 +111,28 @@ describe('Shipments', () => {
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {}, structure: '*', limit: 20, page: 1}});
             for (const element of res.body.datas) {
-                const deleteOne = await chai.request(app).delete(`/api/v2/shipment/${element._id}`).set('authorization', credentials.token);
+                const deleteOne = await chai.request(app)
+                    .delete(`/api/v2/shipment/${element._id}`)
+                    .set('authorization', credentials.token);
                 expect(deleteOne).to.have.status(200);
             }
+        });
+        it('Try delete a shipment - w/o authentication', async () => {
+            const shipment = await createShipments();
+            const res      = await chai.request(app)
+                .delete(`/api/v2/shipment/${shipment._id}`);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Try shipment a shipment - w/o the good ID', async () => {
+            await createShipments();
+            const res = await chai.request(app)
+                .delete('/api/v2/shipment/111111111111111111111111')
+                .set('authorization', credentials.token);
+            expect(res).to.have.status(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('Le Shipment est introuvable');
         });
     });
 });

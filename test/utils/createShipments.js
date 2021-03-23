@@ -15,4 +15,11 @@ const createShipments = (params = {code: null, name: null}) => {
     return shipment.save();
 };
 
-module.exports = createShipments;
+const deleteAllShipments = async () => {
+    await Shipments.deleteMany({});
+};
+
+module.exports = {
+    createShipments,
+    deleteAllShipments
+};

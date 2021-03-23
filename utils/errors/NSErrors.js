@@ -118,6 +118,7 @@ class NSErrors {
     static get ResetPasswordMailContentAdminNotExists() { return this.makeErrorAlias(NSErrors.NotFound, 'ResetPasswordMailContentAdminNotExists'); }
     static get SetAttributeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SetAttributeNotFound'); }
     static get ShipmentUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ShipmentUpdateError'); }
+    static get ShipmentNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ShipmentNotFound'); }
     static get SliderUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'SliderUpdateError'); }
     static get StaticNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'StaticNotFound'); }
     static get StatusUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'StatusUpdateError'); }

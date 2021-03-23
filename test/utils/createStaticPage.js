@@ -18,4 +18,11 @@ const createStaticPage = (params = {code: null, content: null, title: null}) => 
     return staticPage.save();
 };
 
-module.exports = createStaticPage;
+const deleteAllStaticPage = async () => {
+    await Statics.deleteMany({});
+};
+
+module.exports = {
+    createStaticPage,
+    deleteAllStaticPage
+};
