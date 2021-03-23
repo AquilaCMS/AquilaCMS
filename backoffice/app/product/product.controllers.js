@@ -397,3 +397,101 @@ ProductControllers.controller("nsProductGeneral", [
 
     }
 ]);
+
+ProductControllers.controller("nsProductCategories", [
+    "$scope", "$filter", "CategoryV2",
+    function ($scope, $filter, CategoryV2) {
+        $scope.selectNode = function(node){
+            //we get the actual productsList
+            var tab = node.productsList;
+            const productID = $scope.product._id;
+            let count = 0;
+            const lenTab = tab.length;
+            for(let oneObject of tab){
+                if(oneObject.id == productID){
+                    if(count > -1) {
+                        tab.splice(count, 1);
+                    }
+                    break;
+                }else{
+                    count++;
+                }
+            }
+            if(count == lenTab) {
+                tab.push({id: productID, checked: true});
+            }
+            //we save
+            CategoryV2.save({_id: node._id, productsList: tab}, function () {
+
+            });
+        };
+
+        $scope.getCategories = function() {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
+            {
+                $scope.categories = response.datas;
+                //we expand all the categories
+                $scope.expandAll();
+            });
+        }
+        
+        $scope.catDisabled = function (node){
+            let final = false;
+            if(node.action == "page"){
+                final = true;
+            }else{
+                if(node.productsList){
+                    for(let oneChild of node.productsList){
+                        if(oneChild.id == $scope.product._id){
+                            final = !oneChild.checked;
+                            break;
+                        }
+                    }
+                }
+            }
+            return final;
+        };
+
+        $scope.catCheck = function (node){
+            let final = false;
+            if(node.productsList){
+                for(let oneChild of node.productsList){
+                    if(oneChild.id == $scope.product._id){
+                        final = true;
+                        break;
+                    }
+                }
+            }
+            return final;
+        };
+
+        $scope.expandAll = function(){
+            for(let oneCat of $scope.categories){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                    oneCat.nodes = response.datas;
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                    for(let oneNode of oneCat.nodes){
+                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                            oneNode.nodes = response.datas;
+                            $scope.$broadcast('angular-ui-tree:expand-all');
+                        });
+                    }
+                });
+            }
+            //or use the $scope.listChildren()
+        }
+
+        $scope.listChildren = function (cat, scope) {
+            for(let oneNode of cat.nodes){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                    oneNode.nodes = response.datas;
+                });
+            }
+            scope.toggle();
+        };
+
+
+        
+        $scope.getCategories();
+    }
+]);

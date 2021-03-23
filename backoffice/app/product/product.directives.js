@@ -471,3 +471,18 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
         ]
     };
 });
+
+ProductDirectives.directive("nsProductCategories", function () {
+    return {
+        restrict : "E",
+        scope    : {
+            product     : "=",
+            lang        : "=",
+            isEditMode  : "=",
+            productType : "=?",
+            form        : "="
+        },
+        templateUrl : "app/product/views/templates/nsProductCategories.html",
+        controller  : 'nsProductCategories'
+    };
+});

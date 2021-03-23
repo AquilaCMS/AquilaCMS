@@ -21,7 +21,7 @@
                     <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
                     <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
                     <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
-                    <li><a data-toggle="tab" href="#categoriesLink" target="_self" ng-click="getCategoriesLink()" translate>simple.linkedCat</a></li>
+                    <li><a data-toggle="tab" href="#categoriesLink" target="_self" translate>simple.linkedCat</a></li>
                     <li><a data-toggle="tab" href="#downloadHistory" target="_self" ng-click="getDownloadHistory(downloadHistoryPage)" translate>product.virtual.downloadHistory</a></li>
                 </ul>
             </div>
@@ -152,32 +152,7 @@
 
                 <div id="categoriesLink" class="tab-pane fade">
                     <h3 style="display: inline" translate>simple.linkedCat</h3>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-                            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
-                                    id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-                                <thead>
-                                    <tr role="row" style="cursor: pointer">
-                                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
-                                            colspan="1"
-                                            style="width: 200px;" aria-sort="ascending"
-                                            aria-label="Username: activate to sort column descending" translate>
-                                            simple.catNom
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody role="alert" aria-live="polite" aria-relevant="all"
-                                       infinite-scroll="scroller.next()" infinite-scroll-distance="1"
-                                       infinite-scroll-immediate-check="true"
-                                       infinite-scroll-disabled='scroller.busy'>
-                                    <tr ng-class-odd="'odd'" ng-class-even="'even'"
-                                        ng-repeat="cat in categoriesLink | orderBy:sortType:sortReverse">
-                                        <td class="  sorting_1">{{cat.translation[lang].name}} ({{cat.active ? 'active' : 'inactive'}})</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <ns-product-categories product="product" lang="lang" is-edit-mode="isEditMode" product-type="'virtual'" form="form"></ns-product-categories>
                 </div>
                 <div id="downloadHistory" class="tab-pane fade">
                     <h3 style="display: inline" translate>product.virtual.downloadHistory</h3>
