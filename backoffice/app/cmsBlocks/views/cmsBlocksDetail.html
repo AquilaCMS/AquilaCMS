@@ -81,8 +81,7 @@
                     <div ng-repeat="var in cmsBlock.translation[lang].variables">
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <label style="max-width: 150px;" class="col-sm-1 control-label">{{var.label}}</label>
-                                <br />
+                                <label class="control-label" style="max-width: 150px;padding-left:10px;text-align: left;">{{var.label}}</label>
                                 <textarea rows="1" class="form-control" ng-model="var.value"></textarea>
                             </div>
                         </div>
