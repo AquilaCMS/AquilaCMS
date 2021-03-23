@@ -13,4 +13,11 @@ const createSlider = (params = {code: null}) => {
     return slider.save();
 };
 
-module.exports = createSlider;
+const deleteAllSlider = async () => {
+    await Slider.deleteMany({});
+};
+
+module.exports = {
+    createSlider,
+    deleteAllSlider
+};

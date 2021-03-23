@@ -1,9 +1,9 @@
-const chai                    = require('chai');
-const chaiHttp                = require('chai-http');
-const faker                   = require('faker');
-const app                     = require('../server');
-const createUserAdminAndLogin = require('./utils/createUserAdminAndLogin');
-const createSlider            = require('./utils/createSlider');
+const chai                            = require('chai');
+const chaiHttp                        = require('chai-http');
+const faker                           = require('faker');
+const app                             = require('../server');
+const createUserAdminAndLogin         = require('./utils/createUserAdminAndLogin');
+const {createSlider, deleteAllSlider} = require('./utils/createSlider');
 
 chai.use(chaiHttp);
 chai.should();
@@ -14,6 +14,7 @@ let credentials;
 
 describe('Sliders', () => {
     beforeEach(async () => {
+        await deleteAllSlider();
         credentials = await createUserAdminAndLogin();
     });
 
@@ -27,6 +28,22 @@ describe('Sliders', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(slider.name);
         });
+        it('Create slider and get it with the id - w/o authentication', async () => {
+            const slider = await createSlider();
+            const res    = await chai.request(app)
+                .post('/api/v2/slider')
+                .send({PostBody: {filter: {_id: slider._id}, limit: 99}});
+            expect(res).to.have.status(200);
+        });
+        it('Create slider and get it with the id - w/o the good id', async () => {
+            await createSlider();
+            const res = await chai.request(app)
+                .post('/api/v2/slider')
+                .set('authorization', credentials.token)
+                .send({PostBody: {filter: {_id: '111111111111111111111111'}, limit: 99}});
+            expect(res).to.have.status(200);
+            expect(res.body).to.be.equal(null);
+        });
     });
     describe('DELETE /api/v2/slider/:id', () => {
         it('Create slider and delete it (use the ID)', async () => {
@@ -35,6 +52,23 @@ describe('Sliders', () => {
                 .delete(`/api/v2/slider/${slider._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
+        });
+        it('Create slider and delete it - w/o authentication', async () => {
+            const slider = await createSlider();
+            const res    = await chai.request(app)
+                .delete(`/api/v2/slider/${slider._id}`);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Create slider and delete it - w/o the good ID', async () => {
+            await createSlider();
+            const res = await chai.request(app)
+                .delete('/api/v2/slider/111111111111111111111111')
+                .set('authorization', credentials.token);
+            expect(res).to.have.status(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('Item non trouvé');
         });
     });
 
@@ -56,6 +90,15 @@ describe('Sliders', () => {
                 .send({code: codeRandom, autoplay: true, pauseOnHover: true, infinite: true, autoplaySpeed: 2000, items: []});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
+        it('Try creating a slider - w/o authentication', async () => {
+            const codeRandom = faker.lorem.slug();
+            const res        = await chai.request(app)
+                .put('/api/v2/slider')
+                .send({code: codeRandom, autoplay: true, pauseOnHover: true, infinite: true, autoplaySpeed: 2000, items: []});
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
     });
     describe('DELETE /api/v2/slider/:id', () => {
         it('Get all slider of the first page and delete them one by one', async () => {
@@ -65,9 +108,28 @@ describe('Sliders', () => {
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {}, structure: '*', limit: 20, page: 1}});
             for (const element of res.body.datas) {
-                const deleteOne = await chai.request(app).delete(`/api/v2/slider/${element._id}`).set('authorization', credentials.token);
+                const deleteOne = await chai.request(app)
+                    .delete(`/api/v2/slider/${element._id}`)
+                    .set('authorization', credentials.token);
                 expect(deleteOne).to.have.status(200);
             }
+        });
+        it('Try delete a slider - w/o authentication', async () => {
+            const slider = await createSlider();
+            const res    = await chai.request(app)
+                .delete(`/api/v2/slider/${slider._id}`);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
+        });
+        it('Try delete a slider - w/o the good ID', async () => {
+            await createSlider();
+            const res = await chai.request(app)
+                .delete('/api/v2/slider/111111111111111111111111')
+                .set('authorization', credentials.token);
+            expect(res).to.have.status(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.equal('Item non trouvé');
         });
     });
 });

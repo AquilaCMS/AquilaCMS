@@ -17,4 +17,11 @@ const createNews = (params = {slug: null}) => {
     return news.save();
 };
 
-module.exports = createNews;
+const deleteAllNews = async () => {
+    await News.deleteMany({});
+};
+
+module.exports = {
+    createNews,
+    deleteAllNews
+};
