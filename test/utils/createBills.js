@@ -12,7 +12,6 @@ const createBills = (params = {id: null, montant: null, facture: null, email: nu
     bill.isPaid                         = faker.random.boolean();
     bill.nom                            = faker.name.lastName();
     bill.prenom                         = faker.name.firstName();
-    bill.prenom                         = faker.name.firstName();
     bill.client                         = '5fe301f3ab37321a541ade1b';
     bill.createdAt                      = '2020-12-23T13:56:40.358Z';
     bill.order_id                       = id || '5fe31187ab37321a541ade81';
