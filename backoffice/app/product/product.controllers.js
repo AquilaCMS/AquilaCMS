@@ -283,7 +283,7 @@ ProductControllers.controller("ProductListCtrl", [
                         _visible: 1,
                         stock: 1
                     },
-                    limit: 12,
+                    limit: $scope.nbItemsPerPage,
                     page: $scope.currentPage,
                     sort: params.sortObj
                 }
