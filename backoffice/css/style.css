@@ -2960,6 +2960,18 @@ input:-webkit-autofill {
         Section Table
 \* ------------------------------------------------------------ */
 
+.buttonIconStyle{
+    color:white;
+    padding: 0px;
+}
+
+.caseOfIcon{
+    float: right;
+    padding: 19px;
+    background-color: #576fa1;
+    /* change here the color */
+}
+
 .box {
     background: #dfe6ee;
     border: 1px solid #bec4ca;
@@ -2977,13 +2989,14 @@ input:-webkit-autofill {
 
 .box .box-header {
     background: #576fa1;
-    padding: 10px 0;
+    padding: 0px 0;
     margin-bottom: 23px;
 }
 
 
 .box .box-header h2{
     padding: 10px;
+    margin: 10px 0px 10px;
 }
 
 .box .textInBox{
