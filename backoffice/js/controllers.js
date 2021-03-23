@@ -810,7 +810,23 @@ adminCatagenControllers.controller("InvoicesController", [
                 })
             }).error(function (data) {
                 $scope.disabledButton = false;
-                toastService.toast('danger', data.translations[$rootScope.adminLang]);
+                if(data){
+                    if(data.translations){
+                        if(data.translations[$rootScope.adminLang]){
+                            toastService.toast('danger', data.translations[$rootScope.adminLang]);
+                        }else{
+                            toastService.toast('danger', "API Error");
+                        }
+                    }else if(data.message){
+                        toastService.toast('danger', data.message);
+                    }else if(data.code){
+                        toastService.toast('danger', data.code);
+                    }else{
+                        toastService.toast('danger', "API Error");
+                    }
+                }else{
+                    toastService.toast('danger', "API Error");
+                }
             });
         };
 
