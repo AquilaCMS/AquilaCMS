@@ -123,8 +123,7 @@ describe('Promo', () => {
                 .put('/api/v2/promo')
                 .set('authorization', credentials.token)
                 .send({name, description: desc, type: '1'});
-            console.log(res.body);// TODO
-            expect(res).to.have.status(200);
+            expect(res).to.have.status(409);
             expect(res.body.code).to.be.equal('CodeExisting');
         });
         it('Try creating a promo - w/o authentication', async () => {
