@@ -53,8 +53,7 @@ describe('Gallery', () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .get(`/api/v2/gallery/${gallery._id}`)
-                .set('authorization', credentials.token)
-                .send({PostBody: {filter: {_id: gallery._id}, limit: 99}});
+                .set('authorization', credentials.token);
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(gallery.name);
         });
