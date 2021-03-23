@@ -168,9 +168,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
         };
 
-        $scope.addBundleProduct = function (section)
-        {
-            debugger
+        $scope.addBundleProduct = function (section) {
             var modalInstance = $modal.open({
                 templateUrl: "app/product/views/modals/selectproducts.html",
                 controller: "SelectProductsCtrl",
@@ -191,9 +189,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                 }
             });
-            modalInstance.result.then(function (products)
-            {
-                debugger
+            modalInstance.result.then(function (products) {
                 section.products = products.map((item) => {
                     return {id: item, isDefault: false};
                 });

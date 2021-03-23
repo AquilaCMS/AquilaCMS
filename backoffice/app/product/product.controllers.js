@@ -22,7 +22,6 @@ ProductControllers.controller("SelectProductsCtrl", [
     function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
         $scope.queryFilter = queryFilter;
         $scope.selectedProducts = productSelected || [];
-        debugger
         //$scope.selectedProducts = $scope.$parent.associatedPrds || [];
         for(let oneProduct of $scope.selectedProducts){
             oneProduct._selected = true;
