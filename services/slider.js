@@ -46,7 +46,9 @@ const createSlider = async (req) => {
 };
 
 const deleteSlider = async (req) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) throw NSErrors.UnprocessableEntity;
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        throw NSErrors.UnprocessableEntity;
+    }
     const doc = await Slider.findOneAndRemove({_id: req.params.id});
     if (!doc) {
         throw NSErrors.SliderNotFound;
