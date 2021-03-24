@@ -62,7 +62,6 @@ async function getOrders(req, res, next) {
 async function setOrder(req, res, next) {
     // On update la commande
     try {
-        console.log(req.body.order);
         if (req.body.order._id) {
             const order  = req.body.order;
             const result = await ServiceOrder.setOrder(order);

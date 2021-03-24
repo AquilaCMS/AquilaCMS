@@ -18,7 +18,7 @@ describe('Bills', () => {
     });
 
     describe('POST /api/v2/bills', () => {
-        it('Create bill and get it with the code', async () => {
+        it('Should bill and get it with the code', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bills')
@@ -27,7 +27,7 @@ describe('Bills', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].name).be.equals(bill.name);
         });
-        it('Create bill and get it with the id - w/o authentication', async () => {
+        it('Should not retrieve bill if no authorization token send', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bills')
@@ -36,7 +36,7 @@ describe('Bills', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('AccessUnauthorized');
         });
-        it('Create bill and get it with the id - w/o the good id', async () => {
+        it('Should create a bill and don t get it when sending a wrong id', async () => {
             await createBills();
             const res = await chai.request(app)
                 .post('/api/v2/bills')
@@ -56,7 +56,7 @@ describe('Bills', () => {
                 .send({PostBody: {structure: {__v: 0}, filter: {_id: bill._id}}});
             expect(res).to.have.status(500);
         });
-        it('Create bill and get it with the id - w/o authentication', async () => {
+        it('Should not retrieve bill if no authorization token send', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bill')

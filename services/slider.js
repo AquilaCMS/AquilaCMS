@@ -49,7 +49,7 @@ const deleteSlider = async (req) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) throw NSErrors.UnprocessableEntity;
     const doc = await Slider.findOneAndRemove({_id: req.params.id});
     if (!doc) {
-        throw NSErrors.NotFound;
+        throw NSErrors.SliderNotFound;
     }
     for (let i = 0; i < doc.items.length; i++) {
         await mediasUtils.deleteFile(doc.items[i].src);
