@@ -19,7 +19,7 @@ describe('Gallery', () => {
     });
 
     describe('POST /api/v2/galleries', () => {
-        it('Should gallery and get it with the id', async () => {
+        it('Should create a gallery and get it with the id', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .post('/api/v2/galleries')
@@ -28,7 +28,7 @@ describe('Gallery', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(gallery.code);
         });
-        it('Should gallery and get it with the id - w/o authentication', async () => {
+        it('Should create a gallery and try get it with the id but fail (no authentication)', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .post('/api/v2/galleries')
@@ -37,7 +37,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Should gallery and get it with the id - w/o the good id', async () => {
+        it('Should create a gallery and try get it with a wrong ID and fail', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .post('/api/v2/galleries')
@@ -49,7 +49,7 @@ describe('Gallery', () => {
         });
     });
     describe('POST /api/v2/gallery', () => {
-        it('Should gallery and get it with the id', async () => {
+        it('Should create a gallery and get it with the id', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .get(`/api/v2/gallery/${gallery._id}`)
@@ -57,7 +57,7 @@ describe('Gallery', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(gallery.name);
         });
-        it('Should gallery and get it with the id - w/o authentication', async () => {
+        it('Should create a gallery and try get it with the id buty fail (no authentication)', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .get(`/api/v2/gallery/${gallery._id}`);
@@ -65,7 +65,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal(gallery.code);
         });
-        it('Should gallery and get it with the id - w/o the good id', async () => {
+        it('Should create a gallery and try get it with a (wrong) id', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .get('/api/v2/gallery/111111111111111111111111')
@@ -76,14 +76,14 @@ describe('Gallery', () => {
         });
     });
     describe('DELETE /api/v2/gallery/:id', () => {
-        it('Should gallery and delete it (use the ID)', async () => {
+        it('Should create a gallery and delete it (use the ID)', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .delete(`/api/v2/gallery/${gallery._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Should gallery and delete it - w/o authentication', async () => {
+        it('Should gallery and try delete it (no authentication)', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .delete(`/api/v2/gallery/${gallery._id}`);
@@ -91,7 +91,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Should gallery and delete it - w/o the good ID', async () => {
+        it('Should create a gallery and try delete it with a (wrong) ID', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .delete('/api/v2/gallery/111111111111111111111111')
@@ -112,7 +112,7 @@ describe('Gallery', () => {
             expect(res).to.have.status(200);
             expect(res.body.code).to.be.equal(code);
         });
-        it('Try creating a gallery with code (name) that already exists', async () => {
+        it('Try creating a gallery with code that already exists', async () => {
             const code = faker.lorem.slug();
             await createGallery({code});
             const res = await chai.request(app)
@@ -121,7 +121,7 @@ describe('Gallery', () => {
                 .send({code, initItemNumber: 12, maxColumnNumber: 4});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
-        it('Try creating a gallery - w/o authentication', async () => {
+        it('Try creating a gallery but fail (no authentication)', async () => {
             const code = faker.lorem.slug();
             const res  = await chai.request(app)
                 .put('/api/v2/gallery')
@@ -146,7 +146,7 @@ describe('Gallery', () => {
                 expect(deleteOne).to.have.status(200);
             }
         });
-        it('Try delete a gallery - w/o authentication', async () => {
+        it('Try delete a gallery but fail (no authentication)', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .delete(`/api/v2/gallery/${gallery._id}`);
@@ -154,7 +154,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Try delete a gallery - w/o the good ID', async () => {
+        it('Try delete a gallery with a (wrong) ID but fail', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .delete('/api/v2/gallery/111111111111111111111111')

@@ -19,7 +19,7 @@ describe('Medias', () => {
     });
 
     describe('POST /api/v2/media', () => {
-        it('Should Medias and get it with the id', async () => {
+        it('Should create a medias and get it with the id', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .post('/api/v2/medias')
@@ -28,7 +28,7 @@ describe('Medias', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].name).be.equals(media.name);
         });
-        it('Should Medias and get it with the id - w/o authentication', async () => {
+        it('Should create a medias and try get it with the ID (no authentication)', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .post('/api/v2/medias')
@@ -37,7 +37,7 @@ describe('Medias', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Should Medias and get it with the id - w/o the good id', async () => {
+        it('Should Medias and get it with a (wrong) ID', async () => {
             await createMedias();
             const res = await chai.request(app)
                 .post('/api/v2/medias')
@@ -49,14 +49,14 @@ describe('Medias', () => {
         });
     });
     describe('DELETE /api/v2/media/:id', () => {
-        it('Should media and delete it (use the ID)', async () => {
+        it('Should create a media and delete it (use the ID)', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .delete(`/api/v2/media/${media._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Should media and delete it - w/o authentication', async () => {
+        it('Should create a media and try delete it (no authentication)', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .delete(`/api/v2/media/${media._id}`);
@@ -64,7 +64,7 @@ describe('Medias', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Should media and delete it - w/o the good ID', async () => {
+        it('Should create a media and delete it with a (wrong) ID', async () => {
             await createMedias();
             const res = await chai.request(app)
                 .delete('/api/v2/media/111111111111111111111111')
@@ -93,7 +93,7 @@ describe('Medias', () => {
                 .send({media: {link: '', name, group: ''}});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
-        it('Try creating a medias - w/o authentication', async () => {
+        it('Try creating a medias but fail (no authentication)', async () => {
             const nameOfMedia = faker.lorem.slug();
             const res         = await chai.request(app)
                 .put('/api/v2/media')
@@ -116,7 +116,7 @@ describe('Medias', () => {
                 expect(deleteOne).to.have.status(200);
             }
         });
-        it('Try delete a media - w/o authentication', async () => {
+        it('Try delete a media but fail (no authentication)', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .delete(`/api/v2/media/${media._id}`);
@@ -124,7 +124,7 @@ describe('Medias', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Try delete a media - w/o the good ID', async () => {
+        it('Try delete a media with a (wrong) ID and fail', async () => {
             await createMedias();
             const res = await chai.request(app)
                 .delete('/api/v2/media/111111111111111111111111')

@@ -19,7 +19,7 @@ describe('Category', () => {
     });
 
     describe('POST /api/v2/categories', () => {
-        it('Should category and get it with the id', async () => {
+        it('Should create a category and get it with category id', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/categories')
@@ -28,7 +28,7 @@ describe('Category', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(category.code);
         });
-        it('Should category and get it with the id - w/o authentication', async () => {
+        it('Should try get a category and get it with the id - w/o authentication', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/categories')
@@ -36,7 +36,7 @@ describe('Category', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(category.code);
         });
-        it('Should category and and don t get it when sending a wrong id', async () => {
+        it('Should create a category and try get it with a wrong id (and not found it)', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .post('/api/v2/categories')
@@ -48,7 +48,7 @@ describe('Category', () => {
         });
     });
     describe('POST /api/v2/category', () => {
-        it('Should category and get it with the id', async () => {
+        it('Should create a category and get it with the id', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/category')
@@ -57,7 +57,7 @@ describe('Category', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(category.name);
         });
-        it('Should category and get it with the id - w/o authentication', async () => {
+        it('Should create category and get it with the id - w/o authentication', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/category')
@@ -66,7 +66,7 @@ describe('Category', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal(category.code);
         });
-        it('Should category and get it with the id - w/o the good id', async () => {
+        it('Should create category and try get it with the id but with a wrong id', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .post('/api/v2/category/')
@@ -77,14 +77,14 @@ describe('Category', () => {
         });
     });
     describe('DELETE /api/v2/category/:id', () => {
-        it('Should category and delete it (use the ID)', async () => {
+        it('Should create a category and delete it (use the ID)', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .delete(`/api/v2/category/${category._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Should category and delete it - w/o authentication', async () => {
+        it('Should create a category and try delete it (w/o authentication)', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .delete(`/api/v2/category/${category._id}`);
@@ -92,7 +92,7 @@ describe('Category', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Should category and delete it - w/o the good ID', async () => {
+        it('Should create a category and try delete it (with a wrong ID)', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .delete('/api/v2/category/111111111111111111111111')
@@ -128,7 +128,7 @@ describe('Category', () => {
                 .send({id_parent: null, translation: {fr: {name, slug}}, code});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
-        it('Try creating a category->children->children', async () => {
+        it('Try creating a category with a children with children', async () => {
             const code1 = faker.lorem.slug();
             const name1 = faker.lorem.slug();
             const slug1 = faker.lorem.slug();
@@ -188,7 +188,7 @@ describe('Category', () => {
                 expect(deleteOne).to.have.status(200);
             }
         });
-        it('Try delete a category - w/o authentication', async () => {
+        it('Try delete a category but fail (no authentication)', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .delete(`/api/v2/category/${category._id}`);
@@ -196,7 +196,7 @@ describe('Category', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Try delete a category - w/o the good ID', async () => {
+        it('Try delete a category but fail (wrong ID)', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .delete('/api/v2/category/111111111111111111111111')

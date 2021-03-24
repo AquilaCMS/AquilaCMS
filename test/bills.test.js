@@ -18,7 +18,7 @@ describe('Bills', () => {
     });
 
     describe('POST /api/v2/bills', () => {
-        it('Should bill and get it with the code', async () => {
+        it('Should create a bill and get it with the bill code', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bills')
@@ -36,7 +36,7 @@ describe('Bills', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('AccessUnauthorized');
         });
-        it('Should create a bill and don t get it when sending a wrong id', async () => {
+        it('Should try get a bills (with a wrong id) but get nothing', async () => {
             await createBills();
             const res = await chai.request(app)
                 .post('/api/v2/bills')

@@ -19,7 +19,7 @@ describe('Statics', () => {
     });
 
     describe('POST /api/v2/static/', () => {
-        it('Should staticPage and get it with the code', async () => {
+        it('Should create a staticPage and get it with the code', async () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .post('/api/v2/static')
@@ -28,7 +28,7 @@ describe('Statics', () => {
             expect(res).to.have.status(200);
             expect(res.body.translation.fr.title).be.equals(staticPage.translation.fr.title);
         });
-        it('Should staticPage and get the preview URL', async () => {
+        it('Should create a staticPage and get the preview URL', async () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .post('/api/v2/static/preview')
@@ -39,14 +39,15 @@ describe('Statics', () => {
                 return msg.endsWith(`preview=${staticPage._id}`);
             });
         });
-        it('Should staticPage and get it with the id - w/o authentication', async () => {
+        it('Should create a staticPage and get it with the id - w/o authentication', async () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .post('/api/v2/static/')
                 .send({PostBody: {filter: {_id: staticPage._id}, limit: 99}});
             expect(res).to.have.status(200);
+            expect(res.body.title).be.equals(staticPage.translation.fr.title);
         });
-        it('Should staticPage and get it with the id - w/o the good id', async () => {
+        it('Should create a staticPage and try get it with a (wrong) ID', async () => {
             await createStaticPage();
             const res = await chai.request(app)
                 .post('/api/v2/static/')
@@ -57,14 +58,14 @@ describe('Statics', () => {
         });
     });
     describe('DELETE /api/v2/static/:id', () => {
-        it('Should staticPage and delete it (use the ID)', async () => {
+        it('Should create a staticPage and delete it (use the ID)', async () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .delete(`/api/v2/static/${staticPage._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Should staticPage and delete it - w/o authentication', async () => {
+        it('Should staticPage and try to delete it (no authentication)', async () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .delete(`/api/v2/static/${staticPage._id}`);
@@ -72,7 +73,7 @@ describe('Statics', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Should staticPage and delete it - w/o the good ID', async () => {
+        it('Should create a staticPage and try delete it with a (wrong) ID', async () => {
             await createStaticPage();
             const res = await chai.request(app)
                 .delete('/api/v2/static/111111111111111111111111')
@@ -101,7 +102,7 @@ describe('Statics', () => {
                 .send({type: 'page', group: null, translation: {fr: {variables: [], html: '', content: '', title: ''}}, code});
             expect(res.body.code).to.be.equal('CodeExisting');
         });
-        it('Try creating a staticPage - w/o authentication', async () => {
+        it('Try creating a staticPage but fail (no authentication)', async () => {
             const code = faker.lorem.slug();
             const res  = await chai.request(app)
                 .put('/api/v2/static')
@@ -126,7 +127,7 @@ describe('Statics', () => {
                 expect(deleteOne).to.have.status(200);
             }
         });
-        it('Try delete a staticPage - w/o authentication', async () => {
+        it('Try delete a staticPage but fail (no authentication)', async () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .delete(`/api/v2/static/${staticPage._id}`);
@@ -134,7 +135,7 @@ describe('Statics', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Try delete a staticPage - w/o the good ID', async () => {
+        it('Try delete a staticPage wit a (wrong) ID and fail', async () => {
             await createStaticPage();
             const res = await chai.request(app)
                 .delete('/api/v2/static/111111111111111111111111')
