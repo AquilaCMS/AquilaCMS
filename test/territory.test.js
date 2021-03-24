@@ -19,7 +19,7 @@ describe('Territory', () => {
     });
 
     describe('POST /api/v2/territory', () => {
-        it('Create territory and get it with the id', async () => {
+        it('Should territory and get it with the id', async () => {
             const territory = await createTerritory();
             const res       = await chai.request(app)
                 .post('/api/v2/territories')
@@ -29,14 +29,14 @@ describe('Territory', () => {
             expect(res.body.datas[0].translation.fr.name).be.equals(territory.translation.fr.name);
             expect(res.body.datas[0].code).be.equals(territory.code);
         });
-        it('Create territory and get it with the id - w/o authentication', async () => {
+        it('Should territory and get it with the id - w/o authentication', async () => {
             const territory = await createTerritory();
             const res       = await chai.request(app)
                 .post('/api/v2/territories')
                 .send({PostBody: {filter: {_id: territory._id}, limit: 99}});
             expect(res).to.have.status(200);
         });
-        it('Create territory and get it with the id - w/o the good id', async () => {
+        it('Should territory and get it with the id - w/o the good id', async () => {
             await createTerritory();
             const res = await chai.request(app)
                 .post('/api/v2/territories')
@@ -48,14 +48,14 @@ describe('Territory', () => {
         });
     });
     describe('DELETE /api/v2/territory/:id', () => {
-        it('Create territory and delete it (use the ID)', async () => {
+        it('Should territory and delete it (use the ID)', async () => {
             const territory = await createTerritory();
             const res       = await chai.request(app)
                 .delete(`/api/v2/territory/${territory._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create territory and delete it - w/o authentication', async () => {
+        it('Should territory and delete it - w/o authentication', async () => {
             const territory = await createTerritory();
             const res       = await chai.request(app)
                 .delete(`/api/v2/territory/${territory._id}`);
@@ -63,7 +63,7 @@ describe('Territory', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create territory and delete it - w/o the good ID', async () => {
+        it('Should territory and delete it - w/o the good ID', async () => {
             await createTerritory();
             const res = await chai.request(app)
                 .delete('/api/v2/territory/111111111111111111111111')

@@ -19,7 +19,7 @@ describe('Pictos', () => {
     });
 
     describe('POST /api/v2/picto', () => {
-        it('Create picto and get it with the code', async () => {
+        it('Should picto and get it with the code', async () => {
             const picto = await createPictos();
             const res   = await chai.request(app)
                 .post('/api/v2/picto')
@@ -28,7 +28,7 @@ describe('Pictos', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(picto.name);
         });
-        it('Create picto and get it with the id - w/o authentication', async () => {
+        it('Should picto and get it with the id - w/o authentication', async () => {
             const picto = await createPictos();
             const res   = await chai.request(app)
                 .post('/api/v2/picto')
@@ -37,7 +37,7 @@ describe('Pictos', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create picto and get it with the id - w/o the good id', async () => {
+        it('Should picto and get it with the id - w/o the good id', async () => {
             await createPictos();
             const res = await chai.request(app)
                 .post('/api/v2/picto')
@@ -49,14 +49,14 @@ describe('Pictos', () => {
         });
     });
     describe('DELETE /api/v2/picto/:id', () => {
-        it('Create picto and delete it (use the ID)', async () => {
+        it('Should picto and delete it (use the ID)', async () => {
             const picto = await createPictos();
             const res   = await chai.request(app)
                 .delete(`/api/v2/picto/${picto._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create picto and delete it - w/o authentication', async () => {
+        it('Should picto and delete it - w/o authentication', async () => {
             const picto = await createPictos();
             const res   = await chai.request(app)
                 .delete(`/api/v2/media/${picto._id}`);
@@ -64,7 +64,7 @@ describe('Pictos', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create picto and delete it - w/o the good ID', async () => {
+        it('Should picto and delete it - w/o the good ID', async () => {
             await createPictos();
             const res = await chai.request(app)
                 .delete('/api/v2/picto/111111111111111111111111')

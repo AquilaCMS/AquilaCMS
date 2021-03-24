@@ -120,6 +120,7 @@ class NSErrors {
     static get ShipmentUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'ShipmentUpdateError'); }
     static get ShipmentNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ShipmentNotFound'); }
     static get SliderUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'SliderUpdateError'); }
+    static get SliderNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'SliderNotFound'); }
     static get StaticNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'StaticNotFound'); }
     static get StatusUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'StatusUpdateError'); }
     static get TradeMarkNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'TradeMarkNotFound'); }

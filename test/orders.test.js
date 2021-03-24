@@ -18,7 +18,7 @@ describe('Orders', () => {
     });
 
     describe('POST /api/v2/orders', () => {
-        it('Create order and get it with the id', async () => {
+        it('Should order and get it with the id', async () => {
             const order = await createOrders();
             const res   = await chai.request(app)
                 .post('/api/v2/orders')
@@ -27,7 +27,7 @@ describe('Orders', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(order.code);
         });
-        it('Create order and get it with the id - w/o authentication', async () => {
+        it('Should order and get it with the id - w/o authentication', async () => {
             const order = await createOrders();
             const res   = await chai.request(app)
                 .post('/api/v2/orders')
@@ -36,7 +36,7 @@ describe('Orders', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('AccessUnauthorized');
         });
-        it('Create order and get it with the id - w/o the good id', async () => {
+        it('Should order and get it with the id - w/o the good id', async () => {
             await createOrders();
             const res = await chai.request(app)
                 .post('/api/v2/orders')

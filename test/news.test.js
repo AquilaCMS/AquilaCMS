@@ -19,7 +19,7 @@ describe('News', () => {
     });
 
     describe('POST /api/v2/site/news', () => {
-        it('Create news and get it with the ID', async () => {
+        it('Should news and get it with the ID', async () => {
             const news = await createNews();
             const res  = await chai.request(app)
                 .post('/api/v2/site/new')
@@ -28,7 +28,7 @@ describe('News', () => {
             expect(res).to.have.status(200);
             expect(res.body.translation.fr.title).be.equals(news.translation.fr.title);
         });
-        it('Create news and get the preview URL', async () => {
+        it('Should news and get the preview URL', async () => {
             const news = await createNews();
             const res  = await chai.request(app)
                 .post('/api/v2/site/preview')
@@ -39,7 +39,7 @@ describe('News', () => {
                 return msg.endsWith(`preview=${news._id}`);
             });
         });
-        it('Create news and get it with the id - w/o authentication', async () => {
+        it('Should news and get it with the id - w/o authentication', async () => {
             const news = await createNews();
             const res  = await chai.request(app)
                 .post('/api/v2/site/new')
@@ -47,7 +47,7 @@ describe('News', () => {
             expect(res).to.have.status(204);
             expect(Object.keys(res.body).length).to.be.equal(0);
         });
-        it('Create news and get it with the id - w/o the good id', async () => {
+        it('Should news and get it with the id - w/o the good id', async () => {
             await createNews();
             const res = await chai.request(app)
                 .post('/api/v2/site/new')
@@ -58,14 +58,14 @@ describe('News', () => {
         });
     });
     describe('DELETE /api/v2/site/:id', () => {
-        it('Create news and delete it (use the ID)', async () => {
+        it('Should news and delete it (use the ID)', async () => {
             const news = await createNews();
             const res  = await chai.request(app)
                 .delete(`/api/v2/site/new/${news._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create news and delete it - w/o authentication', async () => {
+        it('Should news and delete it - w/o authentication', async () => {
             const news = await createNews();
             const res  = await chai.request(app)
                 .delete(`/api/v2/site/new/${news._id}`);
@@ -73,7 +73,7 @@ describe('News', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create news and delete it - w/o the good ID', async () => {
+        it('Should news and delete it - w/o the good ID', async () => {
             await createNews();
             const res = await chai.request(app)
                 .delete('/api/v2/site/new/111111111111111111111111')

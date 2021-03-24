@@ -19,7 +19,7 @@ describe('Shipments', () => {
     });
 
     describe('POST /api/v2/shipments', () => {
-        it('Create shipment and get it with the code', async () => {
+        it('Should shipment and get it with the code', async () => {
             const shipment = await createShipments();
             const res      = await chai.request(app)
                 .post('/api/v2/shipments')
@@ -28,7 +28,7 @@ describe('Shipments', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].name).be.equals(shipment.name);
         });
-        it('Create shipment and get it with the id - w/o authentication', async () => {
+        it('Should shipment and get it with the id - w/o authentication', async () => {
             const shipment = await createShipments();
             const res      = await chai.request(app)
                 .post('/api/v2/shipments')
@@ -36,7 +36,7 @@ describe('Shipments', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].name).be.equals(shipment.translation.fr.name);
         });
-        it('Create shipment and get it with the id - w/o the good id', async () => {
+        it('Should shipment and get it with the id - w/o the good id', async () => {
             await createShipments();
             const res = await chai.request(app)
                 .post('/api/v2/shipments')
@@ -48,14 +48,14 @@ describe('Shipments', () => {
         });
     });
     describe('DELETE /api/v2/shipment/:id', () => {
-        it('Create shipment and delete it (use the ID)', async () => {
+        it('Should shipment and delete it (use the ID)', async () => {
             const shipment = await createShipments();
             const res      = await chai.request(app)
                 .delete(`/api/v2/shipment/${shipment._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create shipment and delete it - w/o authentication', async () => {
+        it('Should shipment and delete it - w/o authentication', async () => {
             const shipment = await createShipments();
             const res      = await chai.request(app)
                 .delete(`/api/v2/shipment/${shipment._id}`);
@@ -63,7 +63,7 @@ describe('Shipments', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create shipment and delete it - w/o the good ID', async () => {
+        it('Should shipment and delete it - w/o the good ID', async () => {
             await createShipments();
             const res = await chai.request(app)
                 .delete('/api/v2/shipment/111111111111111111111111')

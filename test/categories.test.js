@@ -19,7 +19,7 @@ describe('Category', () => {
     });
 
     describe('POST /api/v2/categories', () => {
-        it('Create category and get it with the id', async () => {
+        it('Should category and get it with the id', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/categories')
@@ -28,7 +28,7 @@ describe('Category', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(category.code);
         });
-        it('Create category and get it with the id - w/o authentication', async () => {
+        it('Should category and get it with the id - w/o authentication', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/categories')
@@ -36,7 +36,7 @@ describe('Category', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(category.code);
         });
-        it('Create category and get it with the id - w/o the good id', async () => {
+        it('Should category and and don t get it when sending a wrong id', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .post('/api/v2/categories')
@@ -48,7 +48,7 @@ describe('Category', () => {
         });
     });
     describe('POST /api/v2/category', () => {
-        it('Create category and get it with the id', async () => {
+        it('Should category and get it with the id', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/category')
@@ -57,7 +57,7 @@ describe('Category', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(category.name);
         });
-        it('Create category and get it with the id - w/o authentication', async () => {
+        it('Should category and get it with the id - w/o authentication', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .post('/api/v2/category')
@@ -66,7 +66,7 @@ describe('Category', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal(category.code);
         });
-        it('Create category and get it with the id - w/o the good id', async () => {
+        it('Should category and get it with the id - w/o the good id', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .post('/api/v2/category/')
@@ -77,14 +77,14 @@ describe('Category', () => {
         });
     });
     describe('DELETE /api/v2/category/:id', () => {
-        it('Create category and delete it (use the ID)', async () => {
+        it('Should category and delete it (use the ID)', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .delete(`/api/v2/category/${category._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create category and delete it - w/o authentication', async () => {
+        it('Should category and delete it - w/o authentication', async () => {
             const category = await createCategory();
             const res      = await chai.request(app)
                 .delete(`/api/v2/category/${category._id}`);
@@ -92,7 +92,7 @@ describe('Category', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create category and delete it - w/o the good ID', async () => {
+        it('Should category and delete it - w/o the good ID', async () => {
             await createCategory();
             const res = await chai.request(app)
                 .delete('/api/v2/category/111111111111111111111111')

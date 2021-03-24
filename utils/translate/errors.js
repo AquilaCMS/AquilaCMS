@@ -443,6 +443,10 @@ module.exports = {
         fr : 'Impossible de mettre à jour le carousel',
         en : 'Cannot update this slider'
     },
+    SliderNotFound : {
+        fr : 'Slider introuvable',
+        en : 'Slider not found'
+    },
     StaticNotFound : {
         fr : 'Static non trouvé',
         en : 'Static not found'

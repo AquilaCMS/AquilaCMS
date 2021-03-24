@@ -19,7 +19,7 @@ describe('Trademarks', () => {
     });
 
     describe('POST /api/v2/trademarks', () => {
-        it('Create trademarkss and get it with the id', async () => {
+        it('Should trademarkss and get it with the id', async () => {
             const trademarks = await createTrademarks();
             const res        = await chai.request(app)
                 .post('/api/v2/trademark')
@@ -28,7 +28,7 @@ describe('Trademarks', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(trademarks.name);
         });
-        it('Create trademark and get it with the id - w/o authentication', async () => {
+        it('Should trademark and get it with the id - w/o authentication', async () => {
             const trademarks = await createTrademarks();
             const res        = await chai.request(app)
                 .post('/api/v2/trademark')
@@ -37,7 +37,7 @@ describe('Trademarks', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create trademark and get it with the id - w/o the good id', async () => {
+        it('Should trademark and get it with the id - w/o the good id', async () => {
             await createTrademarks();
             const res = await chai.request(app)
                 .post('/api/v2/trademark')
@@ -48,14 +48,14 @@ describe('Trademarks', () => {
         });
     });
     describe('DELETE /api/v2/trademarks/:id', () => {
-        it('Create trademarks and delete it (use the ID)', async () => {
+        it('Should trademarks and delete it (use the ID)', async () => {
             const trademarks = await createTrademarks();
             const res        = await chai.request(app)
                 .delete(`/api/v2/trademark/${trademarks._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create trademarks and delete it - w/o authentication', async () => {
+        it('Should trademarks and delete it - w/o authentication', async () => {
             const trademarks = await createTrademarks();
             const res        = await chai.request(app)
                 .delete(`/api/v2/trademark/${trademarks._id}`);
@@ -63,7 +63,7 @@ describe('Trademarks', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create trademarks and delete it - w/o the good ID', async () => {
+        it('Should trademarks and delete it - w/o the good ID', async () => {
             await createTrademarks();
             const res = await chai.request(app)
                 .delete('/api/v2/trademark/111111111111111111111111')

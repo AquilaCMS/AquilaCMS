@@ -48,7 +48,7 @@ describe('Bills', () => {
         });
     });
     describe('POST /api/v2/bills/generatePDF', () => {
-        it('Generate PDF of bills', async () => {
+        it('Should not generate PDF of bills (not working)', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bills/generatePDF')

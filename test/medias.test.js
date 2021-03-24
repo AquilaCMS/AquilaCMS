@@ -19,7 +19,7 @@ describe('Medias', () => {
     });
 
     describe('POST /api/v2/media', () => {
-        it('Create Medias and get it with the id', async () => {
+        it('Should Medias and get it with the id', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .post('/api/v2/medias')
@@ -28,7 +28,7 @@ describe('Medias', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].name).be.equals(media.name);
         });
-        it('Create Medias and get it with the id - w/o authentication', async () => {
+        it('Should Medias and get it with the id - w/o authentication', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .post('/api/v2/medias')
@@ -37,7 +37,7 @@ describe('Medias', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create Medias and get it with the id - w/o the good id', async () => {
+        it('Should Medias and get it with the id - w/o the good id', async () => {
             await createMedias();
             const res = await chai.request(app)
                 .post('/api/v2/medias')
@@ -49,14 +49,14 @@ describe('Medias', () => {
         });
     });
     describe('DELETE /api/v2/media/:id', () => {
-        it('Create media and delete it (use the ID)', async () => {
+        it('Should media and delete it (use the ID)', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .delete(`/api/v2/media/${media._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create media and delete it - w/o authentication', async () => {
+        it('Should media and delete it - w/o authentication', async () => {
             const media = await createMedias();
             const res   = await chai.request(app)
                 .delete(`/api/v2/media/${media._id}`);
@@ -64,7 +64,7 @@ describe('Medias', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create media and delete it - w/o the good ID', async () => {
+        it('Should media and delete it - w/o the good ID', async () => {
             await createMedias();
             const res = await chai.request(app)
                 .delete('/api/v2/media/111111111111111111111111')

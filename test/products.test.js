@@ -19,7 +19,7 @@ describe('Products', () => {
     });
 
     describe('POST /api/v2/products', () => {
-        it('Create product and get it with the id', async () => {
+        it('Should product and get it with the id', async () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .post('/api/v2/products')
@@ -28,7 +28,7 @@ describe('Products', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].translation.fr.name).be.equals(product.translation.fr.name);
         });
-        it('Create product and get it with the id - w/o authentication', async () => {
+        it('Should product and get it with the id - w/o authentication', async () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .post('/api/v2/products')
@@ -37,7 +37,7 @@ describe('Products', () => {
             expect(res.body.datas[0].name).be.equals(product.translation.fr.name);
             expect(res.body.datas[0].slug.fr).be.equals(product.translation.fr.slug);
         });
-        it('Create product and get it with the id - w/o the good id', async () => {
+        it('Should product and get it with the id - w/o the good id', async () => {
             await createProduct();
             const res = await chai.request(app)
                 .post('/api/v2/products')
@@ -49,7 +49,7 @@ describe('Products', () => {
         });
     });
     describe('POST /api/v2/product', () => {
-        it('Create product and get it with the id', async () => {
+        it('Should product and get it with the id', async () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .post('/api/v2/product')
@@ -58,7 +58,7 @@ describe('Products', () => {
             expect(res).to.have.status(200);
             expect(res.body.translation.fr.name).be.equals(product.translation.fr.name);
         });
-        it('Create product and get it with the id - w/o authentication', async () => {
+        it('Should product and get it with the id - w/o authentication', async () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .post('/api/v2/product')
@@ -66,7 +66,7 @@ describe('Products', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(product.translation.fr.name);
         });
-        it('Create product and get it with the id - w/o the good id', async () => {
+        it('Should product and get it with the id - w/o the good id', async () => {
             await createProduct();
             const res = await chai.request(app)
                 .post('/api/v2/product/')
@@ -77,14 +77,14 @@ describe('Products', () => {
         });
     });
     describe('DELETE /api/v2/product/:id', () => {
-        it('Create product and delete it (use the ID)', async () => {
+        it('Should product and delete it (use the ID)', async () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .delete(`/api/v2/product/${product._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create product and delete it - w/o authentication', async () => {
+        it('Should product and delete it - w/o authentication', async () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .delete(`/api/v2/product/${product._id}`);
@@ -92,7 +92,7 @@ describe('Products', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create product and delete it - w/o the good ID', async () => {
+        it('Should product and delete it - w/o the good ID', async () => {
             await createProduct();
             const res = await chai.request(app)
                 .delete('/api/v2/product/111111111111111111111111')

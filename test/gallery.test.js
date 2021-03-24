@@ -19,7 +19,7 @@ describe('Gallery', () => {
     });
 
     describe('POST /api/v2/galleries', () => {
-        it('Create gallery and get it with the id', async () => {
+        it('Should gallery and get it with the id', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .post('/api/v2/galleries')
@@ -28,7 +28,7 @@ describe('Gallery', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(gallery.code);
         });
-        it('Create gallery and get it with the id - w/o authentication', async () => {
+        it('Should gallery and get it with the id - w/o authentication', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .post('/api/v2/galleries')
@@ -37,7 +37,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create gallery and get it with the id - w/o the good id', async () => {
+        it('Should gallery and get it with the id - w/o the good id', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .post('/api/v2/galleries')
@@ -49,7 +49,7 @@ describe('Gallery', () => {
         });
     });
     describe('POST /api/v2/gallery', () => {
-        it('Create gallery and get it with the id', async () => {
+        it('Should gallery and get it with the id', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .get(`/api/v2/gallery/${gallery._id}`)
@@ -57,7 +57,7 @@ describe('Gallery', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(gallery.name);
         });
-        it('Create gallery and get it with the id - w/o authentication', async () => {
+        it('Should gallery and get it with the id - w/o authentication', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .get(`/api/v2/gallery/${gallery._id}`);
@@ -65,7 +65,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal(gallery.code);
         });
-        it('Create gallery and get it with the id - w/o the good id', async () => {
+        it('Should gallery and get it with the id - w/o the good id', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .get('/api/v2/gallery/111111111111111111111111')
@@ -76,14 +76,14 @@ describe('Gallery', () => {
         });
     });
     describe('DELETE /api/v2/gallery/:id', () => {
-        it('Create gallery and delete it (use the ID)', async () => {
+        it('Should gallery and delete it (use the ID)', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .delete(`/api/v2/gallery/${gallery._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create gallery and delete it - w/o authentication', async () => {
+        it('Should gallery and delete it - w/o authentication', async () => {
             const gallery = await createGallery();
             const res     = await chai.request(app)
                 .delete(`/api/v2/gallery/${gallery._id}`);
@@ -91,7 +91,7 @@ describe('Gallery', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create gallery and delete it - w/o the good ID', async () => {
+        it('Should gallery and delete it - w/o the good ID', async () => {
             await createGallery();
             const res = await chai.request(app)
                 .delete('/api/v2/gallery/111111111111111111111111')

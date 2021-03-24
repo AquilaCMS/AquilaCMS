@@ -19,7 +19,7 @@ describe('Suppliers', () => {
     });
 
     describe('POST /api/v2/supplier', () => {
-        it('Create supplier and get it with the code', async () => {
+        it('Should supplier and get it with the code', async () => {
             const supplier = await createSuppliers();
             const res      = await chai.request(app)
                 .post('/api/v2/supplier')
@@ -28,14 +28,14 @@ describe('Suppliers', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(supplier.name);
         });
-        it('Create supplier and get it with the id - w/o authentication', async () => {
+        it('Should supplier and get it with the id - w/o authentication', async () => {
             const supplier = await createSuppliers();
             const res      = await chai.request(app)
                 .post('/api/v2/supplier')
                 .send({PostBody: {filter: {_id: supplier._id}, limit: 99}});
             expect(res).to.have.status(200);
         });
-        it('Create supplier and get it with the id - w/o the good id', async () => {
+        it('Should supplier and get it with the id - w/o the good id', async () => {
             await createSuppliers();
             const res = await chai.request(app)
                 .post('/api/v2/supplier')
@@ -46,14 +46,14 @@ describe('Suppliers', () => {
         });
     });
     describe('DELETE /api/v2/supplier/:id', () => {
-        it('Create supplier and delete it (use the ID)', async () => {
+        it('Should supplier and delete it (use the ID)', async () => {
             const supplier = await createSuppliers();
             const res      = await chai.request(app)
                 .delete(`/api/v2/supplier/${supplier._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create supplier and delete it - w/o authentication', async () => {
+        it('Should supplier and delete it - w/o authentication', async () => {
             const supplier = await createSuppliers();
             const res      = await chai.request(app)
                 .delete(`/api/v2/supplier/${supplier._id}`);
@@ -61,7 +61,7 @@ describe('Suppliers', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create supplier and delete it - w/o the good ID', async () => {
+        it('Should supplier and delete it - w/o the good ID', async () => {
             await createSuppliers();
             const res = await chai.request(app)
                 .delete('/api/v2/supplier/111111111111111111111111')

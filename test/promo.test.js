@@ -19,7 +19,7 @@ describe('Promo', () => {
     });
 
     describe('POST /api/v2/promos', () => {
-        it('Create promo and get it with the id', async () => {
+        it('Should promo and get it with the id', async () => {
             const promo = await createPromo();
             const res   = await chai.request(app)
                 .post('/api/v2/promos')
@@ -28,7 +28,7 @@ describe('Promo', () => {
             expect(res).to.have.status(200);
             expect(res.body.datas[0].code).be.equals(promo.code);
         });
-        it('Create promo and get it with the id - w/o authentication', async () => {
+        it('Should promo and get it with the id - w/o authentication', async () => {
             const promo = await createPromo();
             const res   = await chai.request(app)
                 .post('/api/v2/promos')
@@ -37,7 +37,7 @@ describe('Promo', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create promo and get it with the id - w/o the good id', async () => {
+        it('Should promo and get it with the id - w/o the good id', async () => {
             await createPromo();
             const res = await chai.request(app)
                 .post('/api/v2/promos')
@@ -49,7 +49,7 @@ describe('Promo', () => {
         });
     });
     describe('POST /api/v2/promo', () => {
-        it('Create promo and get it with the id', async () => {
+        it('Should promo and get it with the id', async () => {
             const promo = await createPromo();
             const res   = await chai.request(app)
                 .post('/api/v2/promo/')
@@ -58,7 +58,7 @@ describe('Promo', () => {
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(promo.name);
         });
-        it('Create promo and get it with the id - w/o authentication', async () => {
+        it('Should promo and get it with the id - w/o authentication', async () => {
             const promo = await createPromo();
             const res   = await chai.request(app)
                 .post('/api/v2/promo')
@@ -67,7 +67,7 @@ describe('Promo', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create promo and get it with the id - w/o the good id', async () => {
+        it('Should promo and get it with the id - w/o the good id', async () => {
             await createPromo();
             const res = await chai.request(app)
                 .post('/api/v2/promo')
@@ -78,14 +78,14 @@ describe('Promo', () => {
         });
     });
     describe('DELETE /api/v2/promo/:id', () => {
-        it('Create promo and delete it (use the ID)', async () => {
+        it('Should promo and delete it (use the ID)', async () => {
             const promo = await createPromo();
             const res   = await chai.request(app)
                 .delete(`/api/v2/promo/${promo._id}`)
                 .set('authorization', credentials.token);
             expect(res).to.have.status(200);
         });
-        it('Create promo and delete it - w/o authentication', async () => {
+        it('Should promo and delete it - w/o authentication', async () => {
             const promo = await createPromo();
             const res   = await chai.request(app)
                 .delete(`/api/v2/promo/${promo._id}`);
@@ -93,7 +93,7 @@ describe('Promo', () => {
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');
         });
-        it('Create promo and delete it - w/o the good ID', async () => {
+        it('Should promo and delete it - w/o the good ID', async () => {
             await createPromo();
             const res = await chai.request(app)
                 .delete('/api/v2/promo/111111111111111111111111')
