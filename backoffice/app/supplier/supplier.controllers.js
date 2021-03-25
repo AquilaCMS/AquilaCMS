@@ -50,9 +50,17 @@ SupplierControllers.controller("SupplierNewCtrl", [
                 $location.path("/suppliers/" + response.code);
 
             }
-            }, function (err) {
-                console.error(err);
-                toastService.toast("danger", "Une erreur interne est survenue.");
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    console.error(err);
+                    toastService.toast("danger", "Une erreur interne est survenue.");
+                }
             });
         };
 

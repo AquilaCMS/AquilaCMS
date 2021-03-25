@@ -66,6 +66,16 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
                 toastService.toast("warning", 'Entrez une valeur pour le nom');
                 console.error("Error!");
             }
+        }, function(error){
+            if(error.data){
+                if(error.data.message && error.data.message != ""){
+                    toastService.toast("danger",  error.data.message);
+                }
+            }else if(error && error.code != ""){
+                toastService.toast("danger", error.code);
+            }else{
+                toastService.toast("danger", 'Error');
+            }
         });
     };
 
@@ -85,20 +95,30 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
 
     $scope.save = function (data)
     {
-        TrademarksV2.save(data, function (msg)
-        {
-            if(msg._id)
-            {
-                console.log("Trademark Saved!");
-                toastService.toast("success", 'Marque sauvegardée');
-                $location.path("/trademarks");
-            }
-            else
-            {
-                toastService.toast("warning", 'Entrez une valeur pour le nom');
-                console.error("Error!");
-            }
-        });
+        if(data.name != ""){
+            TrademarksV2.save(data, function (msg) {
+                if(msg._id) {
+                    console.log("Trademark Saved!");
+                    toastService.toast("success", 'Marque sauvegardée');
+                    $location.path("/trademarks");
+                } else {
+                    toastService.toast("warning", 'Entrez une valeur pour le nom');
+                    console.error("Error!");
+                }
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
+                }
+            });
+        }else{
+            toastService.toast("warning", 'Enter a value');
+        }
     };
 
     $scope.reset();

@@ -6,7 +6,10 @@
             "code"         : {"type": "string"},
             "name"         : {"type": "string"},
             "active"       : {"type": "boolean", "default": true},
-            "createdAt"    : {"type": "date"}
+            "createdAt"    : {
+                "type": "string",
+                "format": "date"
+            }
         }
     }
 }

@@ -4,8 +4,8 @@
         "required": ["owner_id", "owner_type", "operand"],
         "properties": {
             "owner_id"   : {"type": "ObjectId"},
-            "owner_type" : {"type": "String"},
-            "operand"    : {"type": "String"},
+            "owner_type" : {"type": "string"},
+            "operand"    : {"type": "string"},
             "conditions" : {
                 "type": "array",
                 "items": {

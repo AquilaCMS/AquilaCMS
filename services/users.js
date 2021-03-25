@@ -14,7 +14,7 @@ const QueryBuilder = require('../utils/QueryBuilder');
 const aquilaEvents = require('../utils/aquilaEvents');
 const NSErrors     = require('../utils/errors/NSErrors');
 
-const restrictedFields = ['_slug'];
+const restrictedFields = ['password'];
 const defaultFields    = ['_id', 'firstname', 'lastname', 'email'];
 const queryBuilder     = new QueryBuilder(Users, restrictedFields, defaultFields);
 

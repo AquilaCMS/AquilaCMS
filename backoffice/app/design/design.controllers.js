@@ -24,7 +24,7 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
                     $scope.local.customCSS = response.data;
                 },
                 (err) => {
-                    toastService.toast('danger', err.data.translations.fr);
+                    toastService.toast('danger', err.data.message);
                 }
             );
         };
@@ -36,7 +36,7 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
                     toastService.toast('success', 'Design sauvegardés !');
                 },
                 (err) => {
-                    toastService.toast('danger', err.data.translations.fr);
+                    toastService.toast('danger', err.data.message);
                 }
             );
         };

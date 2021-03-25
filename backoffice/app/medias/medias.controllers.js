@@ -139,8 +139,17 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             MediaApiV2.save({media: $scope.media}, function (response) {
                 toastService.toast("success", "Media sauvegardé !");
                 $location.path("/medias");
-            }, function (err) {
-                toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    console.log(error);
+                    toastService.toast("danger", 'Error');
+                }
             });
         };
 

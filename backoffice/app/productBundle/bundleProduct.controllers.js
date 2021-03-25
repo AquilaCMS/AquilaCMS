@@ -62,7 +62,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             $scope.isEditMode = true;
 
-            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: 'bundle'}, structure: '*', populate: ["set_attributes", "bundle_sections.products.id"], withPromos: false}}, function (product)
+            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: 'bundle'}, structure: '*', populate: ["set_attributes", "bundle_sections.products.id", "associated_prds"], withPromos: false}}, function (product)
             {
                 $scope.product = product;
 
@@ -168,25 +168,46 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
         };
 
-        $scope.addBundleProduct = function (section)
-        {
+        $scope.addBundleProduct = function (section) {
             var modalInstance = $modal.open({
-                templateUrl: "app/product/views/modals/selectproducts.html", controller: "SelectProductsCtrl", windowClass: "modal-big", scope: $scope, resolve: {
-                    queryFilter: function ()
-                    {
+                templateUrl: "app/product/views/modals/selectproducts.html",
+                controller: "SelectProductsCtrl",
+                windowClass: "modal-big",
+                scope: $scope,
+                resolve: {
+                    queryFilter: function (){
                         return {
                             type: "simple"
                         };
+                    },
+                    productSelected(){
+                        let newObj = [];
+                        for(let oneProd of section.products){
+                            oneProd.id.modifier = {
+                                modifier_weight: oneProd.modifier_weight,
+                                modifier_price: oneProd.modifier_price
+                            }
+                            newObj.push(oneProd.id);
+                        }
+                        return newObj;
                     }
                 }
             });
-            modalInstance.result.then(function (products)
-            {
-                var newProducts = products.map(function (item)
-                {
-                    return {id: item, isDefault: false};
+            modalInstance.result.then(function (products) {
+                section.products = products.map((item) => {
+                    let productReturned       = {};
+                    productReturned.id        = item;
+                    productReturned.isDefault = false;
+                    if(item.modifier){
+                        if(item.modifier.modifier_price){
+                            productReturned.modifier_price = item.modifier.modifier_price;
+                        }
+                        if(item.modifier.modifier_weight){
+                            productReturned.modifier_weight = item.modifier.modifier_weight
+                        }
+                    }
+                    return productReturned;
                 });
-                section.products = section.products.concat(newProducts);
             });
         };
 
@@ -363,13 +384,6 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $location.path("/products");
         };
 
-        $scope.getCategoriesLink = function (){
-            if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
-                    $scope.categoriesLink = categoriesLink.datas;
-                });
-            }
-        };
         
         $scope.moreButtons = [
             {

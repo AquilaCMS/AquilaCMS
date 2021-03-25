@@ -12,7 +12,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                 limit     : 100,
                 populate  : [],
                 skip      : 0,
-                sort      : {},
+                sort      : {active:-1,name:1},
                 structure : {},
                 page      : null
             }
@@ -181,7 +181,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                         limit     : 100,
                         populate  : [],
                         skip      : 0,
-                        sort      : {},
+                        sort: { active: -1, name: 1 },
                         structure : {},
                         page      : null
                     }
@@ -273,7 +273,7 @@ ModulesControllers.controller("PluginsNewCtrl", [
                     limit     : 100,
                     populate  : [],
                     skip      : 0,
-                    sort      : {},
+                    sort: { active: -1, name: 1 },
                     structure : {},
                     page      : null
                 }

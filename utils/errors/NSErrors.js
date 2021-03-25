@@ -42,8 +42,8 @@ class NSErrors {
     static get OrderNotCancelable() { return this.makeErrorAlias(NSErrors.BadRequest, 'OrderNotCancelable'); }
 
     static get Unauthorized() { return new NSError(401, 'Unauthorized', undefined, 'none'); }
-    static get DesactivateAccount() { return new NSError(401, 'DesactivateAccount', undefined, 'none'); }
-    static get UserNotLogin() { return new NSError(401, 'UserNotLogin'); }
+    static get DeactivateAccount() { return this.makeErrorAlias(NSErrors.Unauthorized, 'DeactivateAccount', undefined, 'none'); }
+    static get UserNotLogin() { return this.makeErrorAlias(NSErrors.Unauthorized, 'UserNotLogin'); }
     static get BadLogin() { return this.makeErrorAlias(NSErrors.Unauthorized, 'BadLogin', undefined, 'none'); }
     static get MissingHeaderAuthorize() { return this.makeErrorAlias(NSErrors.Unauthorized, 'MissingHeaderAuthorize', undefined, 'none'); }
 
@@ -57,10 +57,6 @@ class NSErrors {
     static get PromoCodePromoNotAuthorized() { return this.makeErrorAlias(NSErrors.Forbidden, 'PromoCodePromoNotAuthorized'); }
     static get ComponentNotAllowed() { return this.makeErrorAlias(NSErrors.Forbidden, 'ComponentNotAllowed'); }
 
-    /**
-     * @apiDefine NotFound
-     * @apiError NotFound No result for this request
-     */
     static get NotFound() { return new NSError(404, 'NotFound'); }
     static get AccountUserNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'AccountUserNotFound'); }
     static get AgendaUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'AgendaUpdateError'); }
@@ -134,6 +130,7 @@ class NSErrors {
     static get ModuleMainFolder() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleMainFolder' ); }
     static get ModuleInfoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleInfoNotFound'); }
     static get ThemePackageNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemePackageNotFound'); }
+    static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
     static get DesignThemeRemoveCurrent() { return this.makeErrorAlias(NSErrors.Conflict, 'DesignThemeRemoveCurrent'); }
@@ -143,6 +140,7 @@ class NSErrors {
     static get MailCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailCodeAlreadyExists'); }
     static get ProductCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductCodeExisting'); }
     static get FamilyCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'FamilyCodeExisting'); }
+    static get CodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'CodeExisting'); }
     static get ProductIdExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductIdExisting'); }
     static get PromoCodePromoExists() { return this.makeErrorAlias(NSErrors.Conflict, 'PromoCodePromoExists'); }
     static get PromoCodePromoLimitClientMax() { return this.makeErrorAlias(NSErrors.Conflict, 'PromoCodePromoLimitClientMax'); }
@@ -150,6 +148,7 @@ class NSErrors {
     static get SitemapInUse() { return this.makeErrorAlias(NSErrors.Conflict, 'SitemapInUse'); }
     static get UserAlreadyExist() { return this.makeErrorAlias(NSErrors.Conflict, 'UserAlreadyExist'); }
     static get categoryAlreadyExist() { return this.makeErrorAlias(NSErrors.Conflict, 'categoryAlreadyExist'); }
+    static get SlugAlreadyExist() { return this.makeErrorAlias(NSErrors.Conflict, 'SlugAlreadyExist'); }
 
     static get Teapot() { return new NSError(418, 'Teapot'); }
 
@@ -159,8 +158,9 @@ class NSErrors {
     static get RequiredModuleDependencies() { return this.makeErrorAlias(NSErrors.UnprocessableEntity, 'RequiredModuleDependencies'); }
     static get ModuleAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleAquilaVersionNotSatisfied'); }
     static get ThemeAquilaVersionNotSatisfied() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemeAquilaVersionNotSatisfied'); }
+
     static get InternalError() { return new NSError(500, 'InternalError'); }
-    static get PaymentFailed() { return new NSError(500, 'PaymentFailed'); }
+    static get PaymentFailed() { return this.makeErrorAlias(NSErrors.InternalError, 'PaymentFailed'); }
     static get TranslateDeleteError() { return this.makeErrorAlias(NSErrors.InternalError, 'TranslateDeleteError'); }
     static get ModuleNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ModuleNameMissmatch'); }
     static get ThemeNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ThemeNameMissmatch'); }

@@ -165,15 +165,8 @@ const createCategory = async (req) => {
         }
         _menu.save();
     }
-    let saved;
-    try {
-        saved = await newMenu.save();
-        return saved;
-    } catch (error) {
-        if (error && error.code === 11000) {
-            throw NSErrors.Conflict;
-        }
-    }
+    const saved = await newMenu.save();
+    return saved;
 };
 
 const deleteCategory = async (id) => {
@@ -256,7 +249,7 @@ const execRules = async () => {
 const execCanonical = async () => {
     try {
         // Toutes les catégorie actives
-        const categories             = await Categories.find({active: true}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);

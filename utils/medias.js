@@ -82,7 +82,7 @@ const deleteFolder = async (folderPath) => {
             const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
             const pathToRemove = path.resolve(pathUpload, folderPath);
             if (fsp.existsSync(pathToRemove)) {
-                await fsp.deleteRecursiveSync(pathToRemove);
+                await fsp.deleteRecursive(pathToRemove);
             }
         });
     }

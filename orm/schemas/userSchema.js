@@ -106,15 +106,12 @@ const UserSchema = new Schema({
     isAdmin              : {type: Boolean, default: false},
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
-    payementChoice       : String,
     isActive             : {type: Boolean, default: true},
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
     birthDate            : Date,
-    presentInLastImport  : {type: Boolean},
     accessList           : [{type: String}],
-    details              : {},
     type                 : String,
     preferredLanguage    : String,
     set_attributes       : {type: ObjectId, ref: 'setAttributes', index: true},
@@ -182,7 +179,6 @@ UserSchema.pre('save', function (next) {
 });
 
 UserSchema.pre('findOneAndUpdate', async function (next) {
-    console.log(this);
     const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
     if (users > 0) {
         throw NSErrors.LoginSubscribeEmailExisting;

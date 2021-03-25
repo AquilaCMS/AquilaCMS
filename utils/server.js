@@ -68,7 +68,16 @@ const getOrCreateEnvFile = async () => {
         const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
         if (fs.existsSync(path.resolve(global.envPath))) {
             envFile = await fs.readFile(global.envPath);
-            envFile = JSON.parse(envFile);
+            if (envFile.toString() === '') {
+                envFile = {};
+            } else {
+                try {
+                    envFile = JSON.parse(envFile);
+                } catch (error) {
+                    console.error('Access to the env file is possible but the file is invalid');
+                    throw new Error('Cannot read env.json');
+                }
+            }
             if (!envFile[getEnv('AQUILA_ENV')]) {
                 console.error('no correct NODE_ENV specified, generating new env in env.json');
                 const newEnv                  = generateNewEnv(envExample);
@@ -186,6 +195,7 @@ const startListening = async (server) => {
                 if (err) throw err;
                 global.isServerSecure = true;
                 console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+                server.emit('started');
             });
         } catch (error) {
             console.error(error);
@@ -195,6 +205,7 @@ const startListening = async (server) => {
         server.listen(global.port, (err) => {
             if (err) throw err;
             console.log(`%sserver listening on port ${global.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
+            server.emit('started');
         });
     }
 };

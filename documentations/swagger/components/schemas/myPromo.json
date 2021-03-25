@@ -4,11 +4,11 @@
         "properties": {
             "promoId"     : {"type": "string", "format": "ObjectId", "description": "ref promo"},
             "promoCodeId" : {"type": "string", "format": "ObjectId", "description": "L'id d'un promo.codes[i].code"},
-            "discountATI" : {"type": "Number", "default": null},
-            "discountET"  : {"type": "Number", "default": null},
-            "name"        : {"type": "String"},
-            "description" : {"type": "String"},
-            "code"        : {"type": "String"},
+            "discountATI" : {"type": "number", "default": null},
+            "discountET"  : {"type": "number", "default": null},
+            "name"        : {"type": "string"},
+            "description" : {"type": "string"},
+            "code"        : {"type": "string"},
             "gifts"       : {
                 "type": "array",
                 "items": {
