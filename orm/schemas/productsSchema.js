@@ -48,14 +48,6 @@ const ProductsSchema = new Schema({
         }
     },
     presentInLastImport : {type: Boolean},    // True if product is still present in last import, set visible to false
-    specific            : {
-        custom_text1            : String,
-        custom_text2            : String,
-        custom_text3            : String,
-        custom_supplier_code    : String,
-        custom_traitement       : String,
-        custom_code_fabrication : String
-    },
     associated_prds : [{type: ObjectId, ref: 'products'}],
     set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
