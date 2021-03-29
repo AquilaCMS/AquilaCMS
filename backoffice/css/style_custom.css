@@ -287,10 +287,11 @@ table.ns-table-grey td
 
     .fsbox
     {
-        margin-top: 60px;
+        margin-top: -30px;
         margin-bottom: 0px !important;
         position: fixed;
         width: calc(100% - 250px);
+        transition: width .3s;
     }
 
     .fsboxM
@@ -321,8 +322,11 @@ table.ns-table-grey td
 
     .boxTop > .box-content
     {
+        right: 0px;
         padding: 45px;
-        padding-top: 150px;
+        margin-top: 90px;
+        background-color: #dfe6ee;
+        transition: width .3s;
     }
 
     .boxTop > .box-header
