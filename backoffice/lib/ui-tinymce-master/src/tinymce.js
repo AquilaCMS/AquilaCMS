@@ -62,8 +62,8 @@ angular.module('ui.tinymce', [])
         var debouncedUpdate = (function(debouncedUpdateDelay) {
           var debouncedUpdateTimer;
           return function(ed) {
-	        $timeout.cancel(debouncedUpdateTimer);
-	         debouncedUpdateTimer = $timeout(function() {
+            $timeout.cancel(debouncedUpdateTimer);
+            debouncedUpdateTimer = $timeout(function() {
               return (function(ed) {
                 if (ed.isDirty()) {
                   ed.save();
@@ -138,6 +138,9 @@ angular.module('ui.tinymce', [])
           if (options.baseURL){
             tinymce.baseURL = options.baseURL;
           }
+          options.toolbar+= ", codeeditor";
+          options.plugins+= ", codeeditor";
+          options.codeeditor_font_size = 14;
           var maybeInitPromise = tinymce.init(options);
           if(maybeInitPromise && typeof maybeInitPromise.then === 'function') {
             maybeInitPromise.then(function() {
