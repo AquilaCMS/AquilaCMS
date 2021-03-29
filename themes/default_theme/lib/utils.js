@@ -61,7 +61,7 @@ async function countProductInCartByProduct(product) {
 function listModulePage(type, props = {}) {
     return nsModules.filter((m) => m.type === type).map((m, index) => {
         const Comp = m.jsx.default;
-        return React.createElement(Comp, {key: index + m.code, gNext: { Head, Link }, ...props});
+        return React.createElement(Comp, { key: index + m.code, gNext: { Head, Link }, ...props });
     });
 }
 

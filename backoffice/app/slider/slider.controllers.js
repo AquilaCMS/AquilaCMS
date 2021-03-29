@@ -139,10 +139,16 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
                 {
                     $location.path("/component/slider");
                 }
-            }, function (err)
-            {
-                console.error(err);
-                toastService.toast("danger", "Echec de la sauvegarde");
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
+                }
             });
         };
 

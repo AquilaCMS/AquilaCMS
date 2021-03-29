@@ -75,7 +75,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                 $scope.product = product;
 
                 genAttributes();
-                getCategories();
                 
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
@@ -276,15 +275,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $location.path("/products");
         };
 
-        $scope.getCategoriesLink = function (){
-            if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
-                    $scope.categoriesLink = categoriesLink.datas;
-                });
-            }
-        };
-
-
         $scope.momentDate = function (date) {
             if (date === null) {
                 return '*';
@@ -298,90 +288,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
 
 
 
-        /*----------------------------------------------------------------- Catory tab -------------------------------------------------------------------*/
-
-        $scope.selectNode = function(node){
-            //we get the actual productsList
-            var tab = node.productsList;
-            const productID = $scope.product._id;
-            let count = 0;
-            const lenTab = tab.length;
-            for(let oneObject of tab){
-                if(oneObject.id == productID){
-                    if(count > -1) {
-                        tab.splice(count, 1);
-                    }
-                    break;
-                }else{
-                    count++;
-                }
-            }
-            if(count == lenTab) {
-                tab.push({id: productID, checked: true});
-            }
-            //we save
-            CategoryV2.save({_id: node._id, productsList: tab}, function () {
-
-            });
-        };
-
-        function getCategories() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
-            {
-                $scope.categories = response.datas;
-                //we expand all the categories
-                $scope.expandAll();
-            });
-        }
-        
-        $scope.catDisabled = function (node){
-            let final = false;
-            if(node.action == "page"){
-                final = true;
-            }else{
-                for(let oneChild of node.productsList){
-                    if(oneChild.id == $scope.product._id){
-                        final = !oneChild.checked;
-                        break;
-                    }
-                }
-            }
-            return final;
-        };
-
-        $scope.catCheck = function (node){
-            let final = false;
-            for(let oneChild of node.productsList){
-                if(oneChild.id == $scope.product._id){
-                    final = true;
-                    break;
-                }
-            }
-            return final;
-        };
-
-        $scope.expandAll = function(){
-            for(let oneCat of $scope.categories){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                    oneCat.nodes = response.datas;
-                    $scope.$broadcast('angular-ui-tree:expand-all');
-                    for(let oneNode of oneCat.nodes){
-                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                            oneNode.nodes = response.datas;
-                            $scope.$broadcast('angular-ui-tree:expand-all');
-                        });
-                    }
-                });
-            }
-            //or use the $scope.listChildren()
-        }
-
-        $scope.listChildren = function (cat, scope) {
-            CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
-                cat.nodes = response.datas;
-                scope.toggle();
-            });
-        };
 
     }
 ]);

@@ -14,14 +14,14 @@
                         </select>
                     </div>
                 </div>
-               <div class="row">
+                <div class="row">
                     <div class="form-group col-sm-6" ng-repeat="attrib in attribs">
                         <label for="" class="col-sm-4 control-label">{{attrib.translation[filterLang].name}}</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" ng-change="onChange(attrib.code, filtersAttribs[attrib.code])" ng-model="filtersAttribs[attrib.code]">
                         </div>
                     </div>
-               </div>
+                </div>
                 <br>
                 <button type="button" style="margin-right: 5%;" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
                 <button class="btn btn-default" style="margin-left: 5%;" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button> 
@@ -111,7 +111,7 @@
                     </th>
                 </tr>
             </thead>
-            <tbody role="alert" aria-live="polite" aria-relevant="all">
+            <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
                 <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products"
                 ng-click="goToProductDetails(product.type, product.code)" style="height: 80px; cursor: pointer">
                     <td data-label="Code :" class="text-center" style="vertical-align: middle">{{product.code}}</td>
@@ -127,6 +127,9 @@
                 </tr>
             </tbody>
         </table>
+        <div ng-show="showLoader" style="text-align: center;">
+            <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+        </div>
         <pagination ng-if="totalItems > nbItemsPerPage" total-items="totalItems" page="currentPage" on-select-page="getProducts(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                     rotate="false"></pagination>
     </div>

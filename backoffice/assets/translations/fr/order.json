@@ -2,23 +2,24 @@
     "status": {
         "histo": "Historique du statut de la commande",
         "close": "Fermer",
-        "PAYMENT_PENDING":"En attente de paiement",
-        "PAYMENT_RECEIPT_PENDING":"En attente de réception de paiement",
-        "PAYMENT_CONFIRMATION_PENDING":"En attente de confirmation de paiement",
-        "PAYMENT_FAILED":"Echec de paiment",
-        "PAID":"Payé",
-        "PROCESSING":"En cours de traitement",
-        "PROCESSED":"Préparé",
-        "BILLED":"Facturé",
-        "DELIVERY_PROGRESS":"Expédié",
-        "DELIVERY_PARTIAL_PROGRESS":"Expédié partiel",
-        "FINISHED":"Traité",
-        "CANCELED":"Annulé",
-        "ASK_CANCEL":"Annulation demandé par le client",
-        "RETURNED":"Retour"
+        "PAYMENT_PENDING": "En attente de paiement",
+        "PAYMENT_RECEIPT_PENDING": "En attente de réception de paiement",
+        "PAYMENT_CONFIRMATION_PENDING": "En attente de confirmation de paiement",
+        "PAYMENT_FAILED": "Echec de paiment",
+        "PAID": "Payé",
+        "PROCESSING": "En cours de traitement",
+        "PROCESSED": "Préparé",
+        "BILLED": "Facturé",
+        "DELIVERY_PROGRESS": "Expédié",
+        "DELIVERY_PARTIAL_PROGRESS": "Expédié partiel",
+        "FINISHED": "Traité",
+        "CANCELED": "Annulé",
+        "ASK_CANCEL": "Annulation demandé par le client",
+        "RETURNED": "Retour"
     },
     "detail": {
         "t1": "Détail commande",
+        "t2": "Détail panier",
         "addPack": "Ajouter un colis",
         "saisirRet": "Saisir un Retour",
         "paiement": "Paiement",
@@ -88,8 +89,8 @@
         "zipcode": "Code Postal",
         "city": "Ville",
         "country": "Pays",
-        "modifyAddress":"Modifier l'adresse",
-        "save":"Sauvegarder",
+        "modifyAddress": "Modifier l'adresse",
+        "save": "Sauvegarder",
         "cancel": "Annuler",
         "transactionId": "ID de la transaction"
     },
@@ -124,13 +125,13 @@
         },
         "status": "Tous"
     },
-    "friendlyInfo" : {
-        "order" : "N° de commande",
-        "date" : "Date de commande",
-        "productNumber" : "Nombre de produits",
-        "status" : "Statut"
+    "friendlyInfo": {
+        "order": "N° de commande",
+        "date": "Date de commande",
+        "productNumber": "Nombre de produits",
+        "status": "Statut"
     },
-    "paymentStatus" : {
+    "paymentStatus": {
         "DONE": "Effectué",
         "TODO": "A effectuer",
         "FAILED": "Non effectué",
@@ -141,9 +142,9 @@
         "DEBIT": "Remboursement"
     },
     "paymentMode": {
-        "CB" : "Carte Bancaire",
-        "CHEQUE" : "Chèque",
-        "TRANSFER" : "Virement",
-        "CASH" : "Espèces"
+        "CB": "Carte Bancaire",
+        "CHEQUE": "Chèque",
+        "TRANSFER": "Virement",
+        "CASH": "Espèces"
     }
 }

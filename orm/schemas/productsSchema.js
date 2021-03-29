@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const fs                  = require('fs');
 const mongoose            = require('mongoose');
+const fs                  = require('../../utils/fsp');
 const aquilaEvents        = require('../../utils/aquilaEvents');
 const NSErrors            = require('../../utils/errors/NSErrors');
 const utils               = require('../../utils/utils');
@@ -48,17 +48,9 @@ const ProductsSchema = new Schema({
         }
     },
     presentInLastImport : {type: Boolean},    // True if product is still present in last import, set visible to false
-    specific            : {
-        custom_text1            : String,
-        custom_text2            : String,
-        custom_text3            : String,
-        custom_supplier_code    : String,
-        custom_traitement       : String,
-        custom_code_fabrication : String
-    },
-    associated_prds : [{type: ObjectId, ref: 'products'}],
-    set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
-    attributes      : [
+    associated_prds     : [{type: ObjectId, ref: 'products'}],
+    set_attributes      : {type: ObjectId, ref: 'setAttributes', index: true},
+    attributes          : [
         {
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
@@ -70,7 +62,7 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
-    images      : [
+    images : [
         {
             url              : String,
             name             : String,
@@ -130,47 +122,11 @@ const ProductsSchema = new Schema({
     usePushEach      : true
 });
 ProductsSchema.index({_visible: 1, active: 1});
-ProductsSchema.index({
-    code                               : 'text',
-    trademark                          : 'text',
-    type                               : 'text',
-    universe                           : 'text',
-    family                             : 'text',
-    subfamily                          : 'text',
-    code_ean                           : 'text',
-    'specific.custom_text1'            : 'text',
-    'specific.custom_text2'            : 'text',
-    'specific.custom_text3'            : 'text',
-    'specific.custom_supplier_code'    : 'text',
-    'specific.custom_traitement'       : 'text',
-    'specific.custom_code_fabrication' : 'text',
-    // "cmsBlocks.title"                  : "text",
-    // "cmsBlocks.text"                   : "text",
-    'images.url'                       : 'text',
-    'images.name'                      : 'text',
-    'images.alt'                       : 'text',
-    'pictos.code'                      : 'text',
-    'pictos.url'                       : 'text',
-    'pictos.title'                     : 'text',
-    'pictos.location'                  : 'text',
-    'attributes.code'                  : 'text'
-}, {name: 'textSearchIndex', default_language: 'french'});
-
-/* translation:
- slug: requis, unique entre les produits, pas entre ses langues
- name
- title
- metaDesc
- canonical
- description1: {
-    title
-    text
-  }
- description2: {
-    title
-    text
-  }
- */
+// ProductsSchema.index({
+//     code        : 'text',
+//     trademark   : 'text',
+//     code_ean    : 'text',
+// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
@@ -253,7 +209,13 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('products', that._id, that.code);
+    await utilsDatabase.checkSlugExist(that, 'products');
+}
+
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
@@ -261,7 +223,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
                     try {
-                        await fs.unlinkSync(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
+                        await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
                     } catch (error) {
                         console.log(error);
                     }
@@ -278,10 +240,12 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('save', async function (next) {
+    await preUpdates(this);
     this.price.priceSort = {
         et  : this.price.et.special || this.price.et.normal,
         ati : this.price.ati.special || this.price.ati.normal
@@ -299,53 +263,30 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     let prd            = [item];
     if (item.type !== 'bundle') {
         prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
-    }
-    if (prd && prd[0] && prd[0].price) {
-        if (prd[0].price.et && prd[0].price.et.special !== undefined) {
-            this.price.et.special = prd[0].price.et.special;
-        }
-        if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
-            this.price.ati.special = prd[0].price.ati.special;
-        }
-    }
-    await new Promise((resolve, reject) => {
-        fs.access('modules/priceRules.js', async (err) =>  {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    item.price = {
-                        vat  : {rate: this.price.tax},
-                        unit : {
-                            et  : this.price.et.normal,
-                            ati : this.price.ati.normal
-                        }
-                    };
-
-                    if (this.price.et.special !== undefined && this.price.et.special !== null) {
-                        item.price.special = {
-                            et  : this.price.et.special,
-                            ati : this.price.ati.special
-                        };
-                    }
-                    resolve();
-                } else {
-                    reject(err);
-                }
-            } else {
-                // eslint-disable-next-line import/no-unresolved
-                const priceRules = require('../modules/priceRules');
-                priceRules(item, this, function (err, calculatedPrice) {
-                    if (err) return reject(err);
-                    item.price = {
-                        vat  : {rate: this.price.tax},
-                        unit : {ati: calculatedPrice}
-                    };
-                    resolve();
-                });
+        if (prd && prd[0] && prd[0].type !== 'bundle' && prd[0].price) {
+            if (prd[0].price.et && prd[0].price.et.special !== undefined) {
+                this.price.et.special = prd[0].price.et.special;
             }
-        });
-    });
+            if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
+                this.price.ati.special = prd[0].price.ati.special;
+            }
+        }
+        item.price = {
+            vat  : {rate: this.price.tax},
+            unit : {
+                et  : this.price.et.normal,
+                ati : this.price.ati.normal
+            }
+        };
+
+        if (this.price.et.special !== undefined && this.price.et.special !== null) {
+            item.price.special = {
+                et  : this.price.et.special,
+                ati : this.price.ati.special
+            };
+        }
+    }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
-    // cb(null, resp);
     return resp;
 };
 

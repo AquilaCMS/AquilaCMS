@@ -33,18 +33,14 @@ ProductSimpleSchema.virtual('stock.qty_real').get(function () {
     return this.stock.qty - this.stock.qty_booked;
 });
 
-ProductSimpleSchema.methods.updateData = async function (data, cb) {
+ProductSimpleSchema.methods.updateData = async function (data) {
     data.price.priceSort = {
         et  : data.price.et.special || data.price.et.normal,
         ati : data.price.ati.special || data.price.ati.normal
     };
     reviewService.computeAverageRateAndCountReviews(data);
-    try {
-        const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
-        return cb(null, updPrd);
-    } catch (err) {
-        return cb(err);
-    }
+    const updPrd = await this.model('SimpleProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
+    return updPrd;
 };
 
 ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) {

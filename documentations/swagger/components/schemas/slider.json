@@ -26,49 +26,49 @@
                 }
             },
             "accessibility" : {
-                "type": "Boolean", "default": true
+                "type": "boolean", "default": true
             },
             "arrows" : {
-                "type": "Boolean", "default": true
+                "type": "boolean", "default": true
             },
             "autoplay" : {
-                "type": "Boolean", "default": false,
+                "type": "boolean", "default": false,
                 "description": "si true, active le defilement automatique du slider"
             },
             "autoplaySpeed" : {
-                "type": "Number", "default": 5000,
+                "type": "number", "default": 5000,
                 "description": "temps entre chaque transition quand autoplay = true"
             },
             "infinite" : {
-                "type": "Boolean", "default": true,
+                "type": "boolean", "default": true,
                 "description": "Défilement infini (passe de la dernière à la 1ere image)"
             },
             "fade" : {
-                "type": "Boolean", "default": false,
+                "type": "boolean", "default": false,
                 "description": "De base les images slideront d'une à l'autre, si true il y aura un effet de fondu"
             },
             "lazyLoad" : {
-                "type": "Boolean", "default": true,
+                "type": "boolean", "default": true,
                 "description": "Charge les images à la demande"
             },
             "pauseOnHover" : {
-                "type": "Boolean", "default": false,
+                "type": "boolean", "default": false,
                 "description": "Si le pointeur est sur l'image et que pauseOnHover = true alors l'image ne défile plus"
             },
             "slidesToShow" : {
-                "type": "Number", "default": 1,
+                "type": "number", "default": 1,
                 "description": "Affiche 1 image à la fois"
             },
             "slidesToScroll" : {
-                "type": "Number", "default": 1,
+                "type": "number", "default": 1,
                 "description": "Défilement des images 1 par 1"
             },
             "speed" : {
-                "type": "Number", "default": 500,
+                "type": "number", "default": 500,
                 "description": "Temps de défilement (transition) entre deux images"
             },
             "swipe" : {
-                "type": "Boolean", "default": true,
+                "type": "boolean", "default": true,
                 "description": "Permet de changer d'image avec les doigts"
             }
         }

@@ -186,7 +186,6 @@ ClientControllers.controller("ClientDetailCtrl", [
             });
         }
 
-        getAttributesClient();
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item.type;
@@ -267,6 +266,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                     }
                 }
 
+                // recup les attributs (tous les attr users en gros)
                 genAttributes();
 
                 $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
@@ -278,6 +278,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 $scope.client.oldEmail = response.email;
                 $scope.isEditMode = true;
 
+                // on recup ceux lié a cet user
                 getAttributesClient();
 
                 $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
@@ -369,7 +370,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                         toastService.toast('danger', 'Email already exists');
                     }
                 }else{
-                    toastService.toast('danger', 'Error during creation');
+                    toastService.toast('danger', err.data.message);
                 }
             })
         };

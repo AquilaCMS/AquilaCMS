@@ -4,6 +4,7 @@ import Head from 'next/head';
 import {
     NSContext, NSToast, getOrderById, getLangPrefix, imgDefaultBase64
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import CartStructure from 'components/CartStructure';
 import { withI18next } from 'lib/withI18n';
 import { Router } from 'routes';
@@ -14,9 +15,9 @@ import { Router } from 'routes';
  */
 
 class CartSuccess extends React.Component {
-    static getInitialProps = async function (ctx) {
+    static getInitialProps = async function () {
         return {
-            userRequired : { url: '/cart/login', route: 'cartLogin' }
+            userRequired: { url: '/cart/login', route: 'cartLogin' }
         };
     };
 
@@ -24,8 +25,8 @@ class CartSuccess extends React.Component {
         super(props);
         this.state = {
             ...props,
-            order      : {},
-            taxDisplay : 'ati'
+            order: {},
+            taxDisplay: 'ati'
         };
     }
 
@@ -50,7 +51,7 @@ class CartSuccess extends React.Component {
             const order = await getOrderById(orderTemp._id, lang, PostBody);
 
             this.setState({ order, taxDisplay: order.priceTotal.paidTax ? 'ati' : 'et' });
-            window.onpopstate = (event) => {
+            window.onpopstate = () => {
                 Router.pushRoute('orders', { lang: routerLang });
             };
         } catch (err) {
@@ -157,34 +158,43 @@ class CartSuccess extends React.Component {
                                         </div>
                                         <div className="section__body" style={{ marginTop: '20px' }}>
                                             <div className="section__container">
-                                                <div style={{ textAlign: 'center' }}>
-                                                    <h5>
-                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawal') : t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
-                                                    </h5>
-                                                    {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
-                                                    <br />
-                                                    {order.addresses.delivery.line1}
-                                                    {order.addresses.delivery.line2 && <br />}
-                                                    {order.addresses.delivery.line2}
-                                                    <br />
-                                                    {`${order.addresses.delivery.zipcode} ${order.addresses.delivery.city}`}
-                                                    <br />
-                                                    {order.addresses.delivery.isoCountryCode}
-                                                    <br />
-                                                    {
-                                                        order.addresses.delivery.phone
-                                                            ? `T. ${order.addresses.delivery.phone}`
-                                                            : ''
-                                                    }
-                                                    <br />
-                                                    <h5>
-                                                        {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawalDate') : t('success:page.deliveryDate')} :
-                                                    </h5>
-                                                    <h6>
-                                                        {order.orderReceipt && order.orderReceipt.date && <strong>{moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>} {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
-                                                        {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
-                                                    </h6>
-                                                </div>
+                                                {
+                                                    ((order.orderReceipt && order.orderReceipt.date) || (order.delivery && order.delivery.date)) && (
+                                                        <div style={{ textAlign: 'center' }}>
+                                                            <h5>
+                                                                {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawal') : t('success:page.delivery')} {order.delivery && order.delivery.name ? order.delivery.name : ''}
+                                                            </h5>
+                                                            {`${order.addresses.billing.lastname} ${order.addresses.billing.firstname}`}
+                                                            <br />
+                                                            {order.addresses.delivery.line1}
+                                                            {order.addresses.delivery.line2 && <br />}
+                                                            {order.addresses.delivery.line2}
+                                                            <br />
+                                                            {`${order.addresses.delivery.zipcode} ${order.addresses.delivery.city}`}
+                                                            <br />
+                                                            {order.addresses.delivery.isoCountryCode}
+                                                            <br />
+                                                            {
+                                                                order.addresses.delivery.phone
+                                                                    ? `T. ${order.addresses.delivery.phone}`
+                                                                    : ''
+                                                            }
+                                                            <br />
+                                                            <h5>
+                                                                {order.orderReceipt && order.orderReceipt.method === 'withdrawal' ? t('success:page.withdrawalDate') : t('success:page.deliveryDate')} :
+                                                            </h5>
+                                                            <h6>
+                                                                {
+                                                                    order.orderReceipt
+                                                                    && order.orderReceipt.date
+                                                                    && <strong>
+                                                                        {moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>}
+                                                                {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
+                                                                {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
+                                                            </h6>
+                                                        </div>
+                                                    )
+                                                }
                                             </div>
                                         </div>
                                         <div className="section__body" style={{ marginTop: '30px' }}>
@@ -215,7 +225,7 @@ class CartSuccess extends React.Component {
                                                                                 let descPromo = '';
                                                                                 let descPromoT = '';
                                                                                 if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
-                                                                                // On check si le produit courant a recu une promo
+                                                                                    // On check si le produit courant a recu une promo
                                                                                     const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
                                                                                     if (prdPromoFound) {
                                                                                         basePrice = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
@@ -250,24 +260,23 @@ class CartSuccess extends React.Component {
                                                                                                 <h5 className="cart__title">
                                                                                                     {item.id.name}
                                                                                                     {
-                                                                                                        item.selections && <ul style={{fontSize: '13px'}}>
-                                                                                                        {
-                                                                                                            item.selections.map((section) => (
-                                                                                                                section.products.map((productSection, indexSel) => (
-                                                                                                                <li style={{listStyle: 'none'}} key={indexSel}>{productSection.name} {`${
-                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                                        (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
-                                                                                                                        '+' :
-                                                                                                                        '') +
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
-                                                                                                                    ''
-                                                                                                                }`}</li>
+                                                                                                        item.selections && <ul style={{ fontSize: '13px' }}>
+                                                                                                            {
+                                                                                                                item.selections.map((section) => (
+                                                                                                                    section.products.map((productSection, indexSel) => (
+                                                                                                                        <li style={{ listStyle: 'none' }} key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
+                                                                                                                                '+' :
+                                                                                                                                '') +
+                                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
+                                                                                                                            ''
+                                                                                                                            }`}</li>
+                                                                                                                    ))
                                                                                                                 ))
-                                                                                                            ))
-                                                                                                        }
+                                                                                                            }
                                                                                                         </ul>
                                                                                                     }
                                                                                                     <span
@@ -357,7 +366,7 @@ class CartSuccess extends React.Component {
                                                                                 order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]
                                                                                     ? (
                                                                                         <div style={{
-                                                                                            fontSize : '14px', marginBottom : '10px', height : '16px', textAlign : 'center'
+                                                                                            fontSize: '14px', marginBottom: '10px', height: '16px', textAlign: 'center'
                                                                                         }}
                                                                                         >
                                                                                             <span>{t('success:page.cart_discount')} -{order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]}€</span>
@@ -380,7 +389,7 @@ class CartSuccess extends React.Component {
                                                                                     const count = order.promos.length - (index + 1);
                                                                                     return (
                                                                                         <h6 key={promo.code} className="table__total-value">
-                                                                                            {t(`page.sous_total_order.${taxDisplay}`)}: {priceBefore[count]}€
+                                                                                            {t(`success:page.sous_total_order.${taxDisplay}`)}: {priceBefore[count]}€
                                                                                             <br />
                                                                                             <span>
                                                                                                 <small style={{ color: '#dc5d45' }}>
@@ -393,14 +402,33 @@ class CartSuccess extends React.Component {
                                                                                 }) : ''
                                                                             }
                                                                             <h6 className="table__total-value">
-                                                                                {t(`page.total_order.${taxDisplay}`)}: {order.priceTotal[taxDisplay].toFixed(2)}€
+                                                                                {t(`success:page.total_order.${taxDisplay}`)}: {order.priceTotal[taxDisplay].toFixed(2)}€
                                                                                 <br />
-                                                                                {taxDisplay === 'ati' && <small style={{ color: '#dc5d45' }}>{t('success:page.taxes_includes')} : {(order.priceTotal.ati - order.priceTotal.et).toFixed(2)} €</small>}
                                                                                 {
-                                                                                    order.delivery.price[taxDisplay] > 0 ? <><br /><small style={{ color: '#dc5d45' }}> {t(`page.fee_shipping.${taxDisplay}`)}: {(order.delivery.price[taxDisplay]).toFixed(2)} €</small></> : ''
+                                                                                    taxDisplay === 'ati'
+                                                                                    && <small style={{ color: '#dc5d45' }}>
+                                                                                        {t('success:page.taxes_includes')} : {(order.priceTotal.ati - order.priceTotal.et).toFixed(2)} €
+                                                                                    </small>
                                                                                 }
                                                                                 {
-                                                                                    order.additionnalFees[taxDisplay] > 0 ? <><br /><small style={{ color: '#dc5d45' }}> {t('page.additionnal_fees')}: {order.additionnalFees[taxDisplay].toFixed(2)} €</small></> : ''
+                                                                                    order.delivery.price[taxDisplay] > 0
+                                                                                        ? <>
+                                                                                            <br />
+                                                                                            <small style={{ color: '#dc5d45' }}>
+                                                                                                {t(`success:page.fee_shipping.${taxDisplay}`)}: {(order.delivery.price[taxDisplay]).toFixed(2)} €
+                                                                                            </small>
+                                                                                        </>
+                                                                                        : ''
+                                                                                }
+                                                                                {
+                                                                                    order.additionnalFees[taxDisplay] > 0
+                                                                                        ? <>
+                                                                                            <br />
+                                                                                            <small style={{ color: '#dc5d45' }}>
+                                                                                                {t('success:page.additionnal_fees')}: {order.additionnalFees[taxDisplay].toFixed(2)} €
+                                                                                            </small>
+                                                                                        </>
+                                                                                        : ''
                                                                                 }
                                                                             </h6>
                                                                         </div>
@@ -431,6 +459,15 @@ class CartSuccess extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+CartSuccess.propTypes = {
+    lang: PropTypes.string,
+    routerLang: PropTypes.string,
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func,
 }
 
 export default withI18next(['success', 'common'])(CartSuccess);

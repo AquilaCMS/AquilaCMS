@@ -1,66 +1,40 @@
 {
-  "extends": [
-    "airbnb"
-  ],
-  "env": {
-    "es6": true
-  },
-  "rules": {
-    "jsx": 0,
-    "indent": ["warn", 4],
-    "max-len": ["error", 999],
-    "key-spacing": [2, {
-      "singleLine": {
-        "beforeColon": false,
-        "afterColon": true
-      },
-      "multiLine": {
-        "beforeColon": true,
-        "afterColon": true,
-        "align": "colon"
-      }
-    }],
-    "no-multi-spaces": ["off"],
-    "import/extensions": [0, ".js", ".jsx"],
-    "react/jsx-filename-extension": ["warn", {
-      "extensions": [".jsx", ".js", ".css"]
-    }],
-    "react/jsx-indent": ["error", 4],
-    "react/jsx-indent-props": ["error", 4],
-    "class-methods-use-this": "off",
-    "jsx-a11y/click-events-have-key-events": "off",
-    "react/jsx-closing-tag-location": "off",
-    "prefer-destructuring": "off",
-    "react/jsx-boolean-value": ["error", "never"],
-    "func-names": "off",
-    "no-nested-ternary": ["off"],
-    "func-style": ["error", "declaration", {
-      "allowArrowFunctions": true
-    }],
-    "react/no-multi-comp": "off",
-    "react/no-danger": "off",
-    "react/self-closing-comp": "warn",
-    "valid-jsdoc": "error",
-    "react/jsx-max-props-per-line": [1, { "maximum": 99}],
-    "react/jsx-one-expression-per-line": ["off"],
-    "import/no-extraneous-dependencies": ["off"],
-    "no-undef": ["off"],
-    "jsx-a11y/no-static-element-interactions": ["off"],
-    "no-underscore-dangle": ["off"],
-    "jsx-a11y/no-noninteractive-element-interactions": ["off"],
-    "import/first": ["off"],
-    "no-unused-expressions": ["off"],
-    "jsx-a11y/label-has-for": ["off"],
-    "react/no-unknown-property": [2, {"ignore": ["class", "for", "itemtype", "itemscope", "itemprop"]}],
-    "import/prefer-default-export": ["off"],
-    "linebreak-style":"off",
-    "no-plusplus":"off",
-    "react/sort-comp":"off",
-    "react/no-did-mount-set-state":"off",
-    "consistent-return":"off",
-    "comma-dangle":"off",
-    "react/prop-types":"off",
-    "no-return-assign" : "off",
-    "camelcase":  "off"
-  }
+    "root": true,
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
+    "parser": "@babel/eslint-parser",
+    "env": {
+        "es6": true,
+        "node": true,
+        "cypress/globals": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2020
+    },
+    "plugins": [
+        "react",
+        "react-hooks",
+        "jsx-a11y",
+        "cypress"
+    ],
+    "settings": {
+        "import/resolver": {
+            "alias": {
+                "paths": [
+                    "."
+                ]
+            }
+        },
+        "react": {
+            "version": "16"
+        }
+    },
+    "rules": {
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ]
+    }
 }

@@ -41,7 +41,7 @@ const createModelData = async () => {
         throw new Error(`"${photoPath}" is not writable`);
     }
 
-    await fs.copyRecursiveSync(
+    await fs.copyRecursive(
         photoPath,
         path.join(themeFolder, '/demoDatas/files'),
         false,

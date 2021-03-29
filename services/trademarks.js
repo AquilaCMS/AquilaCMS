@@ -26,12 +26,18 @@ exports.getTrademarkById = async function (id, PostBody = null) {
 
 exports.saveTrademark = async function (req) {
     if (req.body._id) {
+        // update
         const result = await Trademarks.findOneAndUpdate({_id: req.body._id}, req.body, {upsert: true, new: true});
-        if (!result) return {status: false};
+        if (!result) {
+            return {status: false};
+        }
         return result;
     }
-    const result = await new Trademarks({name: req.body.name}).save();
-    if (!result) return {status: false};
+    // creation
+    const result = await Trademarks.create({name: req.body.name});
+    if (!result) {
+        return {status: false};
+    }
     return result;
 };
 

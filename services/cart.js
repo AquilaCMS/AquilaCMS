@@ -52,10 +52,10 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((i) => i.id), user, lang, false);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(cart, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -387,18 +387,8 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             comment        : cartObj.comment,
             historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
             customer       : {
-                id           : _user._id,
-                email        : _user.email,
-                code         : _user.code,
-                fullname     : _user.fullname,
-                phone        : _user.phone,
-                civility     : _user.civility,
-                phone_mobile : _user.phone_mobile,
-                company      : _user.company,
-                status       : _user.status,
-                birthDate    : _user.birthDate,
-                details      : _user.details,
-                type         : _user.type
+                ..._user,
+                id : _user._id
             },
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
@@ -586,47 +576,7 @@ const validateForCheckout = (cart) => {
     return {code: 'VALID'};
 };
 
-/**
- * @Deprecated
- */
-const _expireCarts = async () => {
-    require('../utils/utils').tmp_use_route('cart_service', '_expireCarts');
-    // Actually expire each cart
-    const expiredCarts = await Cart.find({status: 'EXPIRING'});
-    if (!expiredCarts) {
-        throw NSErrors.NotFound;
-    }
-    expiredCarts.forEach(function (currCart) {
-        let nbItem = 0;
-        currCart.items.forEach(async (item) => {
-            let where  = {id: item.id, 'carted.id_cart': currCart._id, 'carted.qty': item.qty};
-            let action = {$pull: {carted: {id_cart: currCart._id}}};
-            if (item.variation_id) {
-                where['carted.id_variation']     = item.variation_id;
-                action.$pull.carted.id_variation = item.variation_id;
-            }
-
-            await Products.findOneAndUpdate(where, action);
-            where = {id: item.product_id, qty: {$ne: null}};
-            if (item.variation_id) {
-                where['variation_event._id'] = item.variation_id;
-                action                       = {$inc: {'variation_event.$.qty': item.qty}};
-            } else {
-                action = {$inc: {qty: item.qty}};
-            }
-
-            await Products.findOneAndUpdate(where, action);
-            nbItem++;
-            if (nbItem === currCart.items.length) {
-                currCart.status = 'expired';
-                currCart.save();
-            }
-        });
-    });
-};
-
 module.exports = {
-    _expireCarts,
     getCarts,
     getCartforClient,
     getCartById,

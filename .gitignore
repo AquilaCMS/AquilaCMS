@@ -20,6 +20,10 @@ yarn-error.log
 # NEXT.JS
 .next/
 
+# nyc
+.nyc_output
+coverage
+
 # AquilaCMS
 sitemap.xml
 robots.txt

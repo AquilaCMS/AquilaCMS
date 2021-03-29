@@ -6,8 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+const mongoose      = require('mongoose');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
 
 const boolDefault   = (bool) => ({type: Boolean, default: bool});
 const numberDefault = (num) => ({type: Number, default: num});
@@ -78,6 +79,23 @@ const SliderSchema = new Schema({
     swipe : {
         ...boolDefault(true)
     }
+});
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('slider', that._id, that.code);
+}
+
+SliderSchema.pre('updateOne', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+SliderSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+SliderSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
 });
 
 module.exports = SliderSchema;

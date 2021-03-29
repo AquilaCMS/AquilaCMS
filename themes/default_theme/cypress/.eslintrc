@@ -1,0 +1,8 @@
+{
+    "extends": "../.eslintrc",
+    "rules": {
+        "no-unused-vars": "off",
+        "no-redeclare": "off",
+        "object-curly-spacing": "off"
+    }
+}

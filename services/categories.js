@@ -147,11 +147,7 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const getCategoryById = async (id, PostBody = null) => {
-    require('../utils/utils').tmp_use_route('categories_service', 'getCategoryById');
-    return queryBuilder.findById(id, PostBody);
-};
-const setCategory     = async (req) => {
+const setCategory = async (req) => {
     return Categories.updateOne({_id: req.body._id}, {$set: req.body});
 };
 
@@ -169,15 +165,8 @@ const createCategory = async (req) => {
         }
         _menu.save();
     }
-    let saved;
-    try {
-        saved = await newMenu.save();
-        return saved;
-    } catch (error) {
-        if (error && error.code === 11000) {
-            throw NSErrors.Conflict;
-        }
-    }
+    const saved = await newMenu.save();
+    return saved;
 };
 
 const deleteCategory = async (id) => {
@@ -250,47 +239,6 @@ const getCategoryChild = async (code, childConds, user = null) => {
         });
 };
 
-/**
- * Permet de mettre à jour un filtre dont l'id est passé en parametre
- * @param {*} _id id de la categorie
- */
-const setFilter = async (_id, filter) => {
-    require('../utils/utils').tmp_use_route('categories_service', 'setFilter');
-    // On check si l'_id de la categorie existe
-    if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidIdObjectIdError;
-    // le filtre existe déjà, alors on le modifie
-    let result;
-    if (filter._id) {
-        if (!mongoose.Types.ObjectId.isValid(filter._id)) throw NSErrors.InvalidIdObjectIdError;
-        filter._id = filter.id_attribut;
-        result     = await Categories.findOneAndUpdate(
-            {_id, 'filters._id': filter._id},
-            {$set: {'filters.$': filter}},
-            {new: true, runValidators: true}
-        );
-        if (!result) throw NSErrors.CategoryNotFound;
-    } else {
-        // Le filtre n'existe pas, alors on l'ajoute
-        filter._id = filter.id_attribut;
-        result     = await Categories.findByIdAndUpdate({_id}, {$push: {filters: filter}}, {new: true, runValidators: true});
-        if (!result) throw NSErrors.CategoryNotFound;
-    }
-    return result;
-};
-
-/**
- * Permet de mettre à jour les filtres des categories
- * @param {*} _id id de la categorie
- * @param {*} tFilters liste des filtres
- */
-const setFilters = async (_id, tFilters) => {
-    require('../utils/utils').tmp_use_route('categories_service', 'setFilters');
-    if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidIdObjectIdError;
-    const result = await Categories.findByIdAndUpdate(_id, {$set: {filters: tFilters}}, {new: true, runValidators: true});
-    if (!result) throw NSErrors.AgendaUpdateError;
-    return result;
-};
-
 const execRules = async () => {
     return ServiceRules.execRules('category');
 };
@@ -301,7 +249,7 @@ const execRules = async () => {
 const execCanonical = async () => {
     try {
         // Toutes les catégorie actives
-        const categories             = await Categories.find({active: true}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);
@@ -448,12 +396,9 @@ module.exports = {
     getCategories,
     generateFilters,
     getCategory,
-    getCategoryById,
     setCategory,
     createCategory,
     getCategoryChild,
-    setFilter,
-    setFilters,
     execRules,
     execCanonical,
     getCompleteSlugs,

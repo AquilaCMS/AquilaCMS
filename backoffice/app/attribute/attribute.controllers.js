@@ -271,6 +271,16 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                         toastService.toast("danger", "Une erreur est survenue");
                         console.error(res);
                     }
+                }, function(error){
+                    if(error.data){
+                        if(error.data.message && error.data.message != ""){
+                            toastService.toast("danger",  error.data.message);
+                        }
+                    }else if(error && error.code != ""){
+                        toastService.toast("danger", error.code);
+                    }else{
+                        toastService.toast("danger", 'Error');
+                    }
                 });
             }
         };

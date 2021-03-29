@@ -637,52 +637,6 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
 };
 
 /**
- * @description Permet d'envoyer un mail pour informer le client que ca commande a bien été envoyée
- * @param {guid} user_id - _id de l'utilisateur destinataire
- * @param {string} [lang] - langue du mail (Optionnel)
- */
-const sendMailOrderSent = async (order_id, lang = '') => {
-    require('../utils/utils').tmp_use_route('mails_service', 'sendMailOrderSent');
-    const _config = global.envConfig;
-    if (!_config) {
-        throw NSErrors.ConfigurationNotFound;
-    }
-    const _order = await Orders.findOne({_id: order_id}).populate(['customer.id']);
-    if (!_order) {
-        throw NSErrors.OrderNotFound;
-    }
-    lang                                                     = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('orderSent', lang);
-    // On format la date pour l'envoyer dans le mail ex: 1/5/2015 deviendra 01/05/2018
-    const d                                      = new Date();
-    let month                                    = (d.getMonth() + 1).toString();
-    let day                                      = d.getDate().toString();
-    month                                        = month.length > 1 ? month : `0${month}`;
-    day                                          = day.length > 1 ? day : `0${day}`;
-    const date                                   = `${day}/${month}/${d.getFullYear()}`;
-    const {line1, line2, zipcode, city, country} = _order.addresses.delivery;
-    let dateReceipt                              = '';
-    let hourReceipt                              = '';
-    if (_order.orderReceipt && _order.orderReceipt.date) {
-        const d       = _order.orderReceipt.date;
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
-        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
-    }
-    const htmlBody = generateHTML(content, {
-        '{{date}}'        : date,
-        '{{number}}'      : _order.number,
-        '{{dateReceipt}}' : dateReceipt,
-        '{{hourReceipt}}' : hourReceipt,
-        '{{address}}'     : `${line1}${line2 ? ` ${line2}` : ''}, ${zipcode}, ${city}, ${country}`
-    });
-    return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
-};
-
-/**
  * @description Envoi d'un email
  * @param {Object} mailinformation - information about the mail
  * @param {string} mailinformation.subject - Sujet du mail
@@ -986,7 +940,6 @@ module.exports = {
     sendMailOrderToCompany,
     sendMailOrderToClient,
     sendMailOrderStatusEdit,
-    sendMailOrderSent,
     sendMail,
     sendGeneric,
     sendContact,

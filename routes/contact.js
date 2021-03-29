@@ -65,8 +65,8 @@ async function setContact(req, res, next) {
                     target_path_full = path.resolve(pathUpload, target_path_full);
 
                     try {
-                        await fsp.copyRecursiveSync(tmp_path, target_path_full);
-                        await fsp.deleteRecursiveSync(tmp_path);
+                        await fsp.copyRecursive(tmp_path, target_path_full);
+                        await fsp.deleteRecursive(tmp_path);
                     } catch (err) {
                         return next(err);
                     }

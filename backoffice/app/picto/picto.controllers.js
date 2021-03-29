@@ -136,6 +136,16 @@ PictoControllers.controller('PictoDetailsCtrl', [
                         $location.url('/picto');
                     }
                 }
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
+                }
             });
             if ($scope.rule.operand !== undefined) {
                 RulesV2.save(
@@ -197,6 +207,16 @@ PictoControllers.controller('PictoNewCtrl', [
                     $location.url('/picto');
                 } else {
                     $location.url(`/picto/${response._id}`);
+                }
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", 'Error');
                 }
             });
         };
