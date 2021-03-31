@@ -10,4 +10,11 @@ const createMedias = (params = {name: null}) => {
     return medias.save();
 };
 
-module.exports = createMedias;
+const deleteAllMedias = async () => {
+    await Medias.deleteMany({});
+};
+
+module.exports = {
+    createMedias,
+    deleteAllMedias
+};
