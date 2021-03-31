@@ -296,6 +296,7 @@ table.ns-table-grey td
 
     .fsboxM
     {
+        margin-top: -30px;
         width: calc(100% - 55px);
     }
 

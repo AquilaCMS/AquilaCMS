@@ -3026,6 +3026,7 @@ input:-webkit-autofill {
 
 .box .box-header-actions {
     float: right;
+    margin-top: 10px;
 }
 
 .box .section-title,
