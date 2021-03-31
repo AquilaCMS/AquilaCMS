@@ -47,7 +47,6 @@ const ProductsSchema = new Schema({
             ati : {type: Number, default: 0}
         }
     },
-    presentInLastImport : {type: Boolean},    // True if product is still present in last import, set visible to false
     associated_prds : [{type: ObjectId, ref: 'products'}],
     set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
