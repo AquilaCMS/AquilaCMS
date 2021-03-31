@@ -25,6 +25,13 @@ StaticPageRoutes.config(['$routeProvider',
                 loggedin: checkLoggedin,
 				checkAccess: checkAccess('staticPage'),
             }
+        }).when('/staticPage/:code/preview', {
+            templateUrl: 'app/staticPage/views/staticPage-preview.html',
+            controller: 'StaticPagePreview',
+            resolve: {
+                loggedin: checkLoggedin,
+				checkAccess: checkAccess('staticPage'),
+            }
         })
 
     }]);

@@ -126,8 +126,8 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                     }
                 }
             }
-        } 
-   
+        }
+
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
         };
@@ -182,7 +182,16 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                 },
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
-        ]
+        ];
+
+        function getLink(){
+            $scope.iframeURL = "";
+            StaticV2.preview($scope.static, function (response) {
+                if (response && response.url) {
+                    $scope.iframeURL = window.location.href + '/preview' + '?lang=' + $scope.lang + '&code=' + $scope.static.code;
+                }
+            });
+        }
 
         StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
             $scope.static = staticPage;
@@ -191,6 +200,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             if($scope.static && !$scope.static.translation[$scope.lang].html) {
                 $scope.static.translation[$scope.lang].html = $scope.static.translation[$scope.lang].content
             }
+            getLink();
         });
 
         $scope.selectTab = function(tab){
@@ -237,6 +247,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                     }
                 }
             }
+            getLink();
         }       
 
         $scope.itemObjectSelected = function (item) {
@@ -320,5 +331,59 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
             return tagText;
         };
+    }
+]);
+
+
+StaticPageControllers.controller("StaticPagePreview", [
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", "designFactory",
+    function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, designFactory) {
+        document.head.innerHTML = "";
+        document.body.innerHTML = "";
+        const url = window.location.href;
+        debugger
+        let [lang] = url.match(/\?lang=[^&]*&/);
+        lang = lang.substring(6, lang.length-1)
+        let [code] = url.match(/&code=.*/);
+        code = code.substring(6)
+        debugger
+
+        let codePage = url[1]
+        codePage = codePage.split("/")
+        codePage = codePage[2];
+
+        function getHTML(){
+            StaticV2.query({
+                    PostBody: {
+                        filter:{
+                            code: code
+                },
+                structure: '*',
+                limit: 1
+            }}, function (response){
+                document.body.innerHTML = response.translation[lang].content;
+            }, function (error){
+                console.error("Can't get HTML");
+            });
+        }
+        $http.get('/v2/themes/css').then((response) => {
+            for(let oneCss of response.data){
+                document.head.innerHTML += '<link rel="stylesheet" href="/static/css/' + oneCss + '.css">\n';
+            }
+            getHTML();
+        });
+        
+        fetch(window.location.origin)
+            .then(function(response){
+                response.text().then(function(text){
+                    const regex = /href="[^"]*\.css"/gs
+                    let res = text.match(regex);
+                    for(let oneCss of res){
+                        oneCss = oneCss.substring(6, oneCss.length-1);
+                        document.head.innerHTML += '<link rel="stylesheet" href="' + oneCss + '">\n';
+                    }
+                })
+            });
+
     }
 ]);
