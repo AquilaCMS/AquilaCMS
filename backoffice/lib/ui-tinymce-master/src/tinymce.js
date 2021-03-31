@@ -138,9 +138,6 @@ angular.module('ui.tinymce', [])
           if (options.baseURL){
             tinymce.baseURL = options.baseURL;
           }
-          options.toolbar+= ", codeeditor";
-          options.plugins+= ", codeeditor";
-          options.codeeditor_font_size = 14;
           var maybeInitPromise = tinymce.init(options);
           if(maybeInitPromise && typeof maybeInitPromise.then === 'function') {
             maybeInitPromise.then(function() {
@@ -220,10 +217,10 @@ angular.module('ui.tinymce', [])
     function() {
       var UITinymceService = function() {
    	    var ID_ATTR = 'ui-tinymce';
-    	// uniqueId keeps track of the latest assigned ID
-    	var uniqueId = 0;
+    	  // uniqueId keeps track of the latest assigned ID
+    	  var uniqueId = 0;
         // getUniqueId returns a unique ID
-    	var getUniqueId = function() {
+    	  var getUniqueId = function() {
           uniqueId ++;
           return ID_ATTR + '-' + uniqueId;
         };
