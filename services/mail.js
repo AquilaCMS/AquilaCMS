@@ -738,8 +738,7 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
 
             try {
                 transporter = nodemailer.createTransport(options);
-                const res   = await transporter.sendMail(mailOptions);
-                return res;
+                return transporter.sendMail(mailOptions);
             } catch (err) {
                 console.error('Send mail error', err);
                 throw err;
