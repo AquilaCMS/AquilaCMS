@@ -186,11 +186,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
 
         function getLink(){
             $scope.iframeURL = "";
-            StaticV2.preview($scope.static, function (response) {
-                if (response && response.url) {
-                    $scope.iframeURL = window.location.href + '/preview' + '?lang=' + $scope.lang + '&code=' + $scope.static.code;
-                }
-            });
+            $scope.iframeURL = window.location.href + '/preview' + '?lang=' + $scope.lang + '&code=' + $scope.static.code;
         }
 
         StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
@@ -341,12 +337,10 @@ StaticPageControllers.controller("StaticPagePreview", [
         document.head.innerHTML = "";
         document.body.innerHTML = "";
         const url = window.location.href;
-        debugger
         let [lang] = url.match(/\?lang=[^&]*&/);
         lang = lang.substring(6, lang.length-1)
         let [code] = url.match(/&code=.*/);
         code = code.substring(6)
-        debugger
 
         let codePage = url[1]
         codePage = codePage.split("/")

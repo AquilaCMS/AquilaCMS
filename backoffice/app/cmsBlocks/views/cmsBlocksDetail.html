@@ -73,7 +73,8 @@
                 <div id="result" class="tab-pane fade in active">
                     <div class="form-group">
                         <div class="col-sm-12">
-                            <div style="background-color: white; padding: 20px; border-radius: 10px;min-height:200px;height:auto;" ng-bind-html="cmsBlock.translation[lang].content" class="form-control"></div>
+                            <iframe src="{{iframeURL}}" ng-if="iframeURL" style="border:2px solid black;width: 100%;height: 800px;"></iframe>
+                            <div style="background-color: white; padding: 20px; border-radius: 10px;min-height:200px;height:auto;display:none;" ng-bind-html="cmsBlock.translation[lang].content" class="form-control"></div>
                         </div>
                     </div>
                 </div>

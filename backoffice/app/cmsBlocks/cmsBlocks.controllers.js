@@ -44,13 +44,14 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "StaticV2",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, StaticV2) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
         $scope.groups = [];
         $scope.selectedTab = { active: "result" };
+        $scope.iframeURL = "";
 
         $scope.selectTab = function (tab) {
             $scope.selectedTab.active = tab;
@@ -80,7 +81,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 if($scope.cmsBlock && !$scope.cmsBlock.translation[$scope.lang].html) {
                     $scope.cmsBlock.translation[$scope.lang].html = $scope.cmsBlock.translation[$scope.lang].content
                 }
-
+                getLink()
                 $scope.getGroups()
             });
         } else {
@@ -88,6 +89,10 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             $scope.selectedDropdownItem = "";
 
             $scope.getGroups()
+        }
+        function getLink(){
+            $scope.iframeURL = "";
+            $scope.iframeURL = window.location.href + '/preview' + '?lang=' + $scope.lang + '&code=' + $scope.cmsBlock.code;
         }
 
         $scope.generateVariables = function () {
@@ -105,7 +110,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     }
                 }
             }
-            
+            getLink()
         }
 
         $scope.generateContent = function () {
@@ -131,17 +136,6 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     }
                 }
             }
-            resizeContent();
-        } 
-        
-        resizeContent();
-
-        function resizeContent(){
-            $timeout(() => {
-                let height = document.getElementById('previewCMSBlock').offsetHeight;
-                height = height + 150;
-                document.getElementsByClassName('box-content')[0].style.paddingBottom = `${height}px`;
-            },1000);
         }
 
         $scope.save = async function (quit) {
@@ -210,5 +204,56 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             }
             return tagText;
         };
+    }
+]);
+
+CmsBlocksControllers.controller("CmsBlocksPreview", [
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "CmsBlocksApi", "$location", "toastService", "$rootScope", "designFactory",
+    function ($scope, $http, $q, $routeParams, $rootScope, CmsBlocksApi, $location, toastService, $rootScope, designFactory) {
+        document.head.innerHTML = "";
+        document.body.innerHTML = "";
+        const url = window.location.href;
+        let [lang] = url.match(/\?lang=[^&]*&/);
+        lang = lang.substring(6, lang.length-1)
+        let [code] = url.match(/&code=.*/);
+        code = code.substring(6)
+
+        let codePage = url[1]
+        codePage = codePage.split("/")
+        codePage = codePage[2];
+
+        function getHTML(){
+            CmsBlocksApi.query({
+                    PostBody: {
+                        filter:{
+                            code: code
+                },
+                structure: '*',
+                limit: 1
+            }}, function (response){
+                document.body.innerHTML = response.translation[lang].content;
+            }, function (error){
+                console.error("Can't get HTML");
+            });
+        }
+        $http.get('/v2/themes/css').then((response) => {
+            for(let oneCss of response.data){
+                document.head.innerHTML += '<link rel="stylesheet" href="/static/css/' + oneCss + '.css">\n';
+            }
+            getHTML();
+        });
+        
+        fetch(window.location.origin)
+            .then(function(response){
+                response.text().then(function(text){
+                    const regex = /href="[^"]*\.css"/gs
+                    let res = text.match(regex);
+                    for(let oneCss of res){
+                        oneCss = oneCss.substring(6, oneCss.length-1);
+                        document.head.innerHTML += '<link rel="stylesheet" href="' + oneCss + '">\n';
+                    }
+                })
+            });
+
     }
 ]);
