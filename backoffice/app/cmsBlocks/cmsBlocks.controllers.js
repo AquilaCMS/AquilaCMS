@@ -44,8 +44,8 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
@@ -116,7 +116,10 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     $scope.cmsBlock.translation[value[0]].content = $scope.cmsBlock.translation[value[0]].html;
                     var missingVariables = [];
                     for (var i = 0; i < founds.length; i++) {
-                        var variable = $scope.cmsBlock.translation[value[0]].variables.find(_var => _var.label === founds[i][1])
+                        var variable;
+                        if($scope.cmsBlock.translation[value[0]].variables){
+                            variable = $scope.cmsBlock.translation[value[0]].variables.find(_var => _var.label === founds[i][1])
+                        }
                         if(variable) {
                             $scope.cmsBlock.translation[value[0]].content = $scope.cmsBlock.translation[value[0]].content.replace(founds[i][0], variable ? variable.value : '')
                         } else {
@@ -128,7 +131,18 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     }
                 }
             }
+            resizeContent();
         } 
+        
+        resizeContent();
+
+        function resizeContent(){
+            $timeout(() => {
+                let height = document.getElementById('previewCMSBlock').offsetHeight;
+                height = height + 150;
+                document.getElementsByClassName('box-content')[0].style.paddingBottom = `${height}px`;
+            },1000);
+        }
 
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;

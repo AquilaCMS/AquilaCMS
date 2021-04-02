@@ -31,7 +31,7 @@ const init = async (pp) => {
     }, async (payload, done) => {
         try {
             const {Users} = require('../orm/models');
-            const user    = await Users.findById(payload.userId, '-password');
+            const user    = await Users.findById(payload.userId, '-password').lean();
             if (!user) {
                 throw NSErrors.BadLogin;
             }

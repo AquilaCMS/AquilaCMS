@@ -6,9 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {Statics}    = require('../orm/models');
-const QueryBuilder = require('../utils/QueryBuilder');
-const NSErrors     = require('../utils/errors/NSErrors');
+const {Statics}         = require('../orm/models');
+const QueryBuilder      = require('../utils/QueryBuilder');
+const NSErrors          = require('../utils/errors/NSErrors');
+const ServiceCategories = require('./categories');
 
 const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];
@@ -27,7 +28,31 @@ const getStaticById = async (id, PostBody = null) => {
 };
 
 const setStatic = async (req) => {
-    return Statics.updateOne({_id: req.body._id}, {$set: req.body});
+    const oldStatic = await getStatic({filter: {code: req.body.code}, structure: '*', limit: 1});
+    // we first get the old slug
+    const newStatic = await Statics.updateOne({_id: req.body._id}, {$set: req.body});
+    // we check for each languages if the slug is different
+    for (const oneLang in oldStatic.translation) {
+        if (oneLang.hasOwnProperty('slug')) {
+            const slug    = oldStatic.translation[oneLang].slug;
+            const newSlug = req.body.translation[oneLang].slug;
+            if (slug !== newSlug) {
+                // if it is different we change the slug for each gallery
+                const postbody = {
+                    filter : {
+                        [`translation.${oneLang}.pageSlug`] : slug
+                    },
+                    limit : 99
+                };
+                const cats     = await ServiceCategories.getCategories(postbody);
+                for (const oneCat of cats.datas) {
+                    oneCat.translation[oneLang].pageSlug = newSlug;
+                    await ServiceCategories.setCategory({body: oneCat});
+                }
+            }
+        }
+    }
+    return newStatic;
 };
 
 const createStatic = async (req) => {

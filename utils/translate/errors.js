@@ -434,9 +434,18 @@ module.exports = {
         fr : 'Impossible de mettre à jour le moyen d\'expedition',
         en : 'Cannot update this shipment'
     },
+    ShipmentNotFound : {
+
+        fr : 'Le Shipment est introuvable',
+        en : 'Shipment not found'
+    },
     SliderUpdateError : {
         fr : 'Impossible de mettre à jour le carousel',
         en : 'Cannot update this slider'
+    },
+    SliderNotFound : {
+        fr : 'Slider introuvable',
+        en : 'Slider not found'
     },
     StaticNotFound : {
         fr : 'Static non trouvé',

@@ -22,7 +22,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         });
 
         $scope.exist = function(item){
-            if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug){
+            if (item.translation && item.translation[$scope.lang] && ( item.translation[$scope.lang].title || item.translation[$scope.lang].title == "") && item.translation[$scope.lang].slug){
                 return true;
             }
             return false;
