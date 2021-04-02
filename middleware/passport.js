@@ -29,11 +29,9 @@ const init = async (pp) => {
         secretOrKey    : global.envFile.jwt.secret,
         jwtFromRequest : ExtractJwt.fromAuthHeaderWithScheme('jwt')
     }, async (payload, done) => {
-        console.log(payload);
         try {
             const {Users} = require('../orm/models');
             const user    = (await Users.findById(payload.userId, '-password')).toObject();
-            console.log(user);
             if (!user) {
                 throw NSErrors.BadLogin;
             }
