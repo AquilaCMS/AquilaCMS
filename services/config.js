@@ -35,6 +35,8 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
             'environment.overrideSendTo',
             'licence'
         ];
+    } else {
+        queryBuilder.restrictedFields = [];
     }
     const config = await queryBuilder.findOne(PostBody, true);
     if (config.environment) {
