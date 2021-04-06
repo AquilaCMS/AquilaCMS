@@ -33,7 +33,7 @@ const setStatic = async (req) => {
     const newStatic = await Statics.updateOne({_id: req.body._id}, {$set: req.body});
     // we check for each languages if the slug is different
     for (const oneLang in oldStatic.translation) {
-        if (oneLang.hasOwnProperty('slug')) {
+        if (oldStatic.translation[oneLang].hasOwnProperty('slug')) {
             const slug    = oldStatic.translation[oneLang].slug;
             const newSlug = req.body.translation[oneLang].slug;
             if (slug !== newSlug) {

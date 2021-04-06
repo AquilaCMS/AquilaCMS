@@ -22,7 +22,8 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         });
 
         $scope.exist = function(item){
-            if (item.translation && item.translation[$scope.lang] && ( item.translation[$scope.lang].title || item.translation[$scope.lang].title == "") && item.translation[$scope.lang].slug){
+            if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].slug){
+                // the title is optionnal (when a staticPage is created, there is not title)
                 return true;
             }
             return false;
