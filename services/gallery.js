@@ -117,11 +117,13 @@ const setItemGallery = async (_id, datas) => {
 const deleteGallery = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
     const doc = await Gallery.findOneAndRemove({_id});
+    if (!doc) {
+        throw NSErrors.GalleryNotFound;
+    }
     for (let i = 0; i < doc.items.length; i++) {
         await mediasUtils.deleteFile(doc.items[i].src);
         cacheService.deleteCacheImage('gallery', {filename: path.basename(doc.items[i].src).split('.')[0]});
     }
-    if (!doc) throw NSErrors.GalleryNotFound;
     return doc;
 };
 

@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const fs       = require('fs');
 const path     = require('path');
+const fs       = require('../utils/fsp');
 const NSErrors = require('../utils/errors/NSErrors');
 
 const InitRoutes = (express, server) => {

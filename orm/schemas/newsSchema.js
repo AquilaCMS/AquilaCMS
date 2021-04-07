@@ -79,15 +79,22 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     return errors;
 };
 
+async function preUpdates(that) {
+    await utilsDatabase.checkSlugExist(that, 'news');
+}
+
 NewsSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
 NewsSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update);
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
 NewsSchema.pre('save', async function (next) {
+    await preUpdates(this);
     const errors = await NewsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

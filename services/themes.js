@@ -96,7 +96,7 @@ const uploadTheme = async (originalname, filepath) => {
             return themeName;
         }
         console.log(`Remove theme : ${target_path_full}...`);
-        await fs.deleteRecursiveSync(target_path_full.replace('.zip', '/'));
+        await fs.deleteRecursive(target_path_full.replace('.zip', '/'));
         console.log('Theme removed !');
         return themeName;
     }
@@ -145,7 +145,7 @@ async function removeConfigTheme(theme) {
 const installDependencies = async (theme) => {
     console.log('Installing new theme\'s dependencies...');
     const cmdTheme = `./themes/${theme}`;
-    await packageManager.execCmd(`yarn install${isProd() ? ' --prod' : ''}`, cmdTheme);
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, cmdTheme);
 };
 
 /**
@@ -162,7 +162,7 @@ const deleteTheme = async (themePath) => {
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
     if (await fs.hasAccess(path.join(global.appRoot, complete_Path))) {
-        await fs.deleteRecursiveSync(path.join(global.appRoot, complete_Path));
+        await fs.deleteRecursive(path.join(global.appRoot, complete_Path));
     }
     console.log('Theme removed !');
 };
@@ -261,7 +261,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
         throw new Error(`"${photoPath}" is not writable`);
     }
-    await fs.copyRecursiveSync(path.join(themeDemoData, 'files'), photoPath, override);
+    await fs.copyRecursive(path.join(themeDemoData, 'files'), photoPath, override);
     return data;
 };
 
@@ -275,7 +275,7 @@ const getCustomCss = async (cssName) => {
         const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
-                return fs.readFile(fullPath);
+                return (await fs.readFile(fullPath)).toString();
             }
         } catch (err) {
             console.error(err);

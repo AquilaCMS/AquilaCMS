@@ -2960,21 +2960,61 @@ input:-webkit-autofill {
         Section Table
 \* ------------------------------------------------------------ */
 
+.buttonIconStyle{
+    color:white;
+    padding: 0px;
+}
+
+.caseOfIcon{
+    float: right;
+    padding: 19px;
+    background-color: #576fa1;
+    /* change here the color */
+}
+
 .box {
     background: #dfe6ee;
     border: 1px solid #bec4ca;
     border-radius: 3px;
-    padding: 11px 0px 25px;
+    padding: 0px;
 }
 
 .box+.box {
     margin-top: 43px;
 }
 
+.box-header-table{
+    margin-bottom: 0px !important;
+}
+
 .box .box-header {
     background: #576fa1;
-    padding: 10px 0;
+    padding: 0px 0;
     margin-bottom: 23px;
+}
+
+
+.box .box-header h2{
+    padding: 10px;
+    margin: 10px 0px 10px;
+}
+
+.box .textInBox{
+    padding: 10px 10px 20px;
+    word-break: break-word;
+}
+
+.multipleBoxInLine{
+    margin-bottom: 20px;
+}
+
+.box table {
+    overflow: auto;
+}
+
+.fsbox h2{
+    padding-left: 66px !important;
+    padding-top: 6px !important;
 }
 
 .box .box-header:after {
@@ -2986,6 +3026,7 @@ input:-webkit-autofill {
 
 .box .box-header-actions {
     float: right;
+    margin-top: 10px;
 }
 
 .box .section-title,

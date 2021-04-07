@@ -50,31 +50,32 @@ const initAgendaDB = async () => {
                 if (!tJobsName.includes(tJobsSystem[i])) {
                     try {
                         if (tJobsSystem[i] === 'Sitemap') {
-                            await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
+                            // await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', 'Génération du sitemap', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[0], '0 4 * * 6 *', '/services/seo/genSitemap', {en: 'Sitemap generations', fr: 'Génération du sitemap'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Segmentation cat') {
-                            await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', 'Catégorisation automatique', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[1], '0 2 * * * *', '/services/categories/execRules', {fr: 'Catégorisation automatique', en: 'Automatic categorization'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Segmentation picto') {
-                            await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', 'Pictorisation automatique', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[2], '0 3 * * * *', '/services/pictos/execRules', {fr: 'Segmentation automatique des pictogrammes', en: 'Automatic pictogram segmentation'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Canonicalisation') {
-                            await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', 'Genère les canonicals de chaque produit', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[3], '0 4 * * * *', '/services/categories/execCanonical', {fr: 'Génère les canonicals de chaque produit', en: 'Generates the canonicals of each product'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Remove old carts') {
-                            await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', 'Suppression ancien panier', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[4], '0 */4 * * *', '/services/cart/removeOldCarts', {fr: 'Suppression des anciens panier', en: 'Deleting old carts'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Remove pending payment orders') {
-                            await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', 'Annulation des commandes en attente de paiement', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', {fr: 'Annulation des commandes en attente de paiement', en: 'Cancellation of orders awaiting payment'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Cohérence produits') {
-                            await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', 'Script de cohérence des produits', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', {fr: 'Script de cohérence des produits', en: 'Product consistency script'}, 'service', 'system', '', true);
                         /* } else if (tJobsSystem[i] === 'Cohérence données') {
                         await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', "service", 'system', '', true);
                     */ } else if (tJobsSystem[i] === 'Build stats') {
-                            await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', 'Construction des stats de la veille', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', {fr: 'Construction des statistiques de la veille', en: 'Construction of the statistics of the previous day'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Cache requests clean') {
-                            await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', 'Vide le cache des requêtes', 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Clean cache') {
-                            await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', 'Vide le cache des images', 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove temp file') {
-                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', 'Remove temporary files', 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove previews') {
-                            await setJob(undefined, tJobsSystem[12], '0 0 0 0 0', '/services/preview/removePreviews', 'Remove previews', 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[12], '0 0 0 0 0', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
                         }
                     } catch (error) {
                         console.error(error);
@@ -372,7 +373,7 @@ async function execDefine(job, option) {
             if (api.startsWith('/')) api = api.substr(1);
             api = global.envConfig.environment.appUrl + api;
         }
-        if (!utils.IsJsonString(params)) {
+        if (!utils.isJsonString(params)) {
             throw new Error(`Invalid JSON params for job ${job.attrs.name}`);
         }
         result = await axios[httpMethod](api, JSON.parse(params));

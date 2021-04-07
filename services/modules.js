@@ -6,19 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const AdmZip         = require('adm-zip');
-const path           = require('path');
-const mongoose       = require('mongoose');
-const rimraf         = require('rimraf');
-const semver         = require('semver');
-const packageManager = require('../utils/packageManager');
-const QueryBuilder   = require('../utils/QueryBuilder');
-const modulesUtils   = require('../utils/modules');
-const serverUtils    = require('../utils/server');
-const fs             = require('../utils/fsp');
-const NSErrors       = require('../utils/errors/NSErrors');
-const {Modules}      = require('../orm/models');
-const themesService  = require('./themes');
+const AdmZip           = require('adm-zip');
+const path             = require('path');
+const mongoose         = require('mongoose');
+const rimraf           = require('rimraf');
+const semver           = require('semver');
+const {isEqual}        = require('../utils/utils');
+const packageManager   = require('../utils/packageManager');
+const QueryBuilder     = require('../utils/QueryBuilder');
+const modulesUtils     = require('../utils/modules');
+const {isProd, getEnv} = require('../utils/server');
+const fs               = require('../utils/fsp');
+const NSErrors         = require('../utils/errors/NSErrors');
+const {Modules}        = require('../orm/models');
+const themesService    = require('./themes');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -53,20 +54,6 @@ const setModuleConfigById = async (_id, config) => {
 };
 
 /**
- * Permet modifier une partie de la configuration (champ conf) d'un module
- * @param name {string} nom/code du module
- * @param field {string} le champ à modifier
- * @param value {*} la valeur définir dans le champ
- * @returns {Promise<*>} Retourne la nouvelle configuration du module
- */
-const setPartialConfig = async (name, field, value) => {
-    require('../utils/utils').tmp_use_route('modules_service', 'setPartialConfig');
-    const upd              = {};
-    upd[`config.${field}`] = value;
-    return Modules.updateOne({name}, {$set: upd}, {new: true});
-};
-
-/**
  * unzip module in `modules` folder
  * and save module added in database
  * @param {Object} zipFile file information from express
@@ -79,8 +66,9 @@ const setPartialConfig = async (name, field, value) => {
  * @param {string} file.path
  * @param {string} file.size
  */
-const initModule = async (zipFile) => {
-    const {originalname, path: filepath} = zipFile;
+const initModule = async (files) => {
+    if (!files || files.length === 0) throw NSErrors.MissingParameters;
+    const {originalname, path: filepath} = files[0];
     if (path.extname(originalname) !== '.zip') {
         throw NSErrors.InvalidFile;
     }
@@ -199,7 +187,7 @@ const initModule = async (zipFile) => {
         }
         try {
             console.log('removing file in module folder...');
-            await fs.deleteRecursiveSync(extractZipFilePath);
+            await fs.deleteRecursive(extractZipFilePath);
         } catch (err) {
             console.error(err);
         }
@@ -376,7 +364,7 @@ const activateModule = async (idModule, toBeChanged) => {
         const copyTab = [];
         if (await fs.hasAccess(copyF)) {
             try {
-                await fs.copyRecursiveSync(
+                await fs.copyRecursive(
                     path.resolve(global.appRoot, copyF),
                     path.resolve(global.appRoot, copy),
                     true
@@ -393,7 +381,7 @@ const activateModule = async (idModule, toBeChanged) => {
             const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
-                    await fs.copyRecursiveSync(
+                    await fs.copyRecursive(
                         path.resolve(global.appRoot, src),
                         path.resolve(global.appRoot, dest),
                         true
@@ -414,7 +402,7 @@ const activateModule = async (idModule, toBeChanged) => {
                 const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
                 if (await fs.hasAccess(src)) {
                     try {
-                        await fs.copyRecursiveSync(src, dest, true);
+                        await fs.copyRecursive(src, dest, true);
                     } catch (err) {
                         console.error(err);
                     }
@@ -436,18 +424,24 @@ const activateModule = async (idModule, toBeChanged) => {
                     packagePath = path.resolve(installPath, 'package.json');
                 }
                 if (myModule.packageDependencies[apiOrTheme]) {
-                    const packageJSON        = JSON.parse(await fs.readFile(packagePath));
-                    packageJSON.dependencies = {
+                    const packageJSON  = JSON.parse(await fs.readFile(packagePath));
+                    const dependencies = {
                         ...packageJSON.dependencies,
                         ...myModule.packageDependencies[apiOrTheme],
                         ...toBeChanged[apiOrTheme]
                     };
-
-                    packageJSON.dependencies = orderPackages(packageJSON.dependencies);
-                    await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
-                    console.log(`Installing dependencies of the module in ${position}...`);
-                    await packageManager.execCmd('yarn install', installPath);
-                    await packageManager.execCmd('yarn upgrade', installPath);
+                    if (!isEqual(packageJSON.dependencies, dependencies)) {
+                        packageJSON.dependencies = {
+                            ...packageJSON.dependencies,
+                            ...myModule.packageDependencies[apiOrTheme],
+                            ...toBeChanged[apiOrTheme]
+                        };
+                        packageJSON.dependencies = orderPackages(packageJSON.dependencies);
+                        await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+                        console.log(`Installing dependencies of the module in ${position}...`);
+                        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, installPath);
+                        await packageManager.execCmd('yarn upgrade', installPath);
+                    }
                 }
             }
         }
@@ -460,10 +454,10 @@ const activateModule = async (idModule, toBeChanged) => {
         );
         await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
-        return Modules.find({});
+        return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({});
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
 };
@@ -559,11 +553,11 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
         }
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
-        console.log('Module desactivated');
-        return Modules.find({});
+        console.log('Module deactivated');
+        return Modules.find({}).sort({active: -1, name: 1});
     } catch (err) {
         if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({});
+        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
         throw err;
     }
 };
@@ -703,24 +697,9 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
         }
     }
     // Rebuild du theme
-    if (serverUtils.getEnv('NODE_ENV') === 'production') {
+    if (getEnv('NODE_ENV') === 'production') {
         await themesService.buildTheme(currentTheme);
     }
-};
-
-/**
- * Permet d'ajouter dans le fichier montheme/modules/list_modules.js le ou les import(s) permettant d'utiliser le front du module sur le theme
- * @param {*} pathModule : chemin du module coté back
- * @param {*} bRemove : si true alors on supprime le ou les import(s) du fichier montheme/modules/list_modules.js, si false alors on ajout le ou les import(s)
- */
-const activeFrontModule = async (pathModule, bRemove) => {
-    require('../utils/utils').tmp_use_route('modules_service', 'activeFrontModule');
-
-    // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
-    if (!await fs.hasAccess(pathModule)) return;
-    await modulesUtils.createListModuleFile(global.envConfig.environment.currentTheme);
-    await setFrontModuleInTheme(pathModule, bRemove);
-    await themesService.buildTheme(global.envConfig.environment.currentTheme);
 };
 
 /**
@@ -898,7 +877,6 @@ module.exports = {
     getModules,
     getModule,
     setModuleConfigById,
-    setPartialConfig,
     initModule,
     checkDependenciesAtInstallation,
     checkDependenciesAtUninstallation,
@@ -908,7 +886,6 @@ module.exports = {
     setFrontModules,
     setFrontModuleInTheme,
     addOrRemoveThemeFiles,
-    activeFrontModule,
     removeImport,
     removeFromListModule,
     removeModuleAddon,

@@ -10,7 +10,7 @@ const {ThemeConfig, Configuration} = require('../orm/models');
 const QueryBuilder                 = require('../utils/QueryBuilder');
 const NSErrors                     = require('../utils/errors/NSErrors');
 
-const restrictedFields = [];
+const restrictedFields = ['group', 'description', 'name'];
 const defaultFields    = ['_id', 'name', 'config'];
 const queryBuilder     = new QueryBuilder(ThemeConfig, restrictedFields, defaultFields);
 

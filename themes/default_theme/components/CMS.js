@@ -31,11 +31,11 @@ class CMS extends React.Component {
                 nsComponents[name],
                 {
                     ...attribs,
-                    children : domToReact(children, { replace: (obj) => this.replace(obj) }),
-                    url      : this.props.router,
-                    i18n     : this.props.i18n,
-                    t        : this.props.t,
-                    gNext    : {
+                    children: domToReact(children, { replace: (obj) => this.replace(obj) }),
+                    url: this.props.router,
+                    i18n: this.props.i18n,
+                    t: this.props.t,
+                    gNext: {
                         routes,
                         Head,
                         Link,
@@ -53,7 +53,7 @@ class CMS extends React.Component {
                 <NsModule />,
                 {
                     ...attribs,
-                    url : this.props.router
+                    url: this.props.router
                 }
             );
             return component;
@@ -68,10 +68,10 @@ class CMS extends React.Component {
                 <CMS />,
                 {
                     ...attribs,
-                    url   : this.props.router,
-                    i18n  : this.props.i18n,
-                    t     : this.props.t,
-                    gNext : {
+                    url: this.props.router,
+                    i18n: this.props.i18n,
+                    t: this.props.t,
+                    gNext: {
                         routes,
                         Head,
                         Link,
@@ -104,8 +104,8 @@ class CMS extends React.Component {
                             }
                         </Link>,
                         {
-                            href : route.urls.href,
-                            as   : route.urls.as
+                            href: route.urls.href,
+                            as: route.urls.as
                         }
                     );
                 }
@@ -131,8 +131,8 @@ class CMS extends React.Component {
                         <a className={attribs.class ? attribs.class : null}>{domToReact(children, { replace: (obj) => this.replace(obj) })}</a>
                     </Link>,
                     {
-                        href : route.urls.href,
-                        as   : route.urls.as
+                        href: route.urls.href,
+                        as: route.urls.as
                     }
                 );
             }
@@ -142,24 +142,28 @@ class CMS extends React.Component {
     render() {
         const content = this.props.content !== '' ? this.props.content : (this.context.props && this.context.props[`nsCms_${this.props['ns-code']}`] ? this.context.props[`nsCms_${this.props['ns-code']}`].content : '');
         return content ? (
-            <>{ parse(content, { replace: (obj) => this.replace(obj) }) }</> // Customisation du parse HTML via la fonction "replace"
+            <>{parse(content, { replace: (obj) => this.replace(obj) })}</> // Customisation du parse HTML via la fonction "replace"
         ) : (
-            this.props.hide_error ? null : <div>Bloc CMS{this.props['ns-code'] ? ` [${this.props['ns-code']}]` : null} introuvable !</div>
-        );
+                this.props.hide_error ? null : <div>Bloc CMS{this.props['ns-code'] ? ` [${this.props['ns-code']}]` : null} introuvable !</div>
+            );
     }
 
-    static contextType = NSContext;
-
-    static defaultProps = {
-        'ns-code'  : '',
-        content    : '',
-        hide_error : null
-    };
-
-    static propTypes = {
-        'ns-code' : PropTypes.string,
-        content   : PropTypes.string
-    };
 }
+CMS.contextType = NSContext;
+
+CMS.defaultProps = {
+    'ns-code': '',
+    content: '',
+    hide_error: null
+};
+
+CMS.propTypes = {
+    'ns-code': PropTypes.string,
+    content: PropTypes.string,
+    router: PropTypes.func,
+    i18n: PropTypes.func,
+    t: PropTypes.func,
+    hide_error: PropTypes.bool
+};
 
 export default withRouter(withI18next([])(CMS));

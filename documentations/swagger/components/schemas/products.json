@@ -20,7 +20,10 @@
             "subfamily"          : {"type": "string"},
             "component_template" : {"type": "string"},
             "weight"             : {"type": "number", "default": 0, "description": "Le poids du produit"},
-            "createdAt"          : {"type": "date"},
+            "createdAt"          : {
+                "type": "string",
+                "format": "date"
+            },
             "price"              : {
                 "type": "object",
                 "properties": {
@@ -48,10 +51,6 @@
                         }
                     }
                 }
-            },
-            "presentInLastImport" : {
-                "type": "boolean",
-                "description": "true if product is still present in last import, set visible to false"
             },
             "specific"            : {
                 "type": "object",
@@ -144,7 +143,7 @@
                                 "name"        : {"type": "string"},
                                 "id_client"   : {"type": "string", "format": "ObjectId", "description": "Si on peut l’avoir avec avisverifies c’est cool"},
                                 "ip_client"   : {"type": "string"},
-                                "review_date" : {"type": "string", "format": "Date", "default": "Date.now"},
+                                "review_date" : {"type": "string", "format": "date", "default": "Date.now"},
                                 "review"      : {"type": "string"},
                                 "lang"        : {"type": "string"},
                                 "rate"        : {"type": "number"},

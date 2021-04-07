@@ -668,7 +668,7 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools","type",
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type",
     function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type)
     {
         $scope.order = angular.copy(item);

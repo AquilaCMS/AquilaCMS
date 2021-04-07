@@ -23,7 +23,8 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction pour récupérer des shipments en fonction du PostBody
+ * POST /api/v2/shipments
+ * @summary Get shipments
  */
 async function getShipments(req, res, next) {
     try {
@@ -36,7 +37,8 @@ async function getShipments(req, res, next) {
 }
 
 /**
- * Fonction pour récupérer un shipment en fonction du PostBody
+ * POST /api/v2/shipment
+ * @summary Get shipment
  */
 async function getShipment(req, res, next) {
     try {
@@ -62,7 +64,8 @@ async function getShipmentsFilter(req, res, next) {
 }
 
 /**
- * Fonction pour ajouter ou mettre à jour un shipment
+ * PUT /api/v2/shipment
+ * @summary Set shipment
  */
 async function setShipment(req, res, next) {
     try {
@@ -72,8 +75,10 @@ async function setShipment(req, res, next) {
         return next(error);
     }
 }
+
 /**
- * Fonction supprimant un shipment
+ * DELETE /api/v2/shipment/{id}
+ * @summary Delete shipment
  */
 async function deleteShipment(req, res, next) {
     try {

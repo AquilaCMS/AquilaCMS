@@ -87,7 +87,8 @@ async function getProduct(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /v2/product/promos
+ * @summary Return product
  */
 async function getPromosByProduct(req, res, next) {
     try {
@@ -144,7 +145,8 @@ async function getProductsByCategoryId(req, res, next) {
 }
 
 /**
- * Fonction pour ajouter ou mettre à jour un produit
+ * PUT /api/v2/product
+ * @summary Set product
  */
 async function setProduct(req, res, next) {
     // On ajoute le produit
@@ -163,7 +165,8 @@ async function setProduct(req, res, next) {
 }
 
 /**
- * Fonction supprimant un produit
+ * DELETE /api/v2/product/{id}
+ * @summary Delete product
  */
 async function deleteProduct(req, res, next) {
     try {

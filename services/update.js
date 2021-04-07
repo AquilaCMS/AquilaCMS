@@ -72,13 +72,13 @@ const update = async () => {
     try {
         console.log('Extracting archive...');
         const zip = new AdmZip(filePath);
-        zip.extractAllTo(aquilaPath);
+        zip.extractAllTo(aquilaPath, true);
     } catch (exc) {
         console.error(`Unzip ${filePath} failed`);
     }
 
     // yarn install du aquila
-    await packageManager.execCmd(`yarn install${isProd() ? ' --prod' : ''}`, './');
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, './');
     const modules = await Modules.find({active: true});
 
     for (const module of modules) {

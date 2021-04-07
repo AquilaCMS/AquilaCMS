@@ -6,12 +6,7 @@
             "email" : {
                 "type"     : "string"
             },
-            "password" : {
-                "type"     : "string",
-                "default"  : "generateUserPassword"
-            },
             "code"     : {"type": "string"},
-            "active"   : {"type": "boolean"},
             "civility" : {
                 "type" : "number",
                 "enum" : [0, 1],
@@ -43,7 +38,10 @@
                 }
             },
             "status"           : {"type": "string"},
-            "createdAt"     : {"type": "date"},
+            "createdAt"     : {
+                "type": "string",
+                "format": "date"
+            },
             "delivery_address" : {"type": "number", "default": -1, "description": "index définissant l'addresse de livraison dans users.addresses"},
             "billing_address"  : {"type": "number", "default": -1, "description": "index définissant l'addresse de facturation dans users.addresses"},
             "addresses"        : {
@@ -55,13 +53,10 @@
             "isAdmin"          : {"type": "boolean", "default": false},
             "price"                : {"type": "string"},
             "taxDisplay"           : {"type": "boolean", "default": true},
-            "payementChoice"       : {"type": "string"},
             "isActiveAccount"      : {"type": "boolean", "default": false},
             "activateAccountToken" : {"type": "string"},
             "resetPassToken"       : {"type": "string"},
-            "migrated"             : {"type": "boolean", "default": false},
             "birthDate"            : {"type": "string", "format": "date"},
-            "presentInLastImport"  : {"type": "boolean"},
             "accessList"           : {"type": "array", "items": {"type": "string"}},
             "details"              : {},
             "type"                 : {"type": "string"},

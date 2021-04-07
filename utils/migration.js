@@ -107,6 +107,48 @@ const migration_6_contentSecurityPolicy = async () => {
     // Not use anymore
 };
 
+const migration_7_Job_Translations = async () => {
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Clean cache'}, {$set : {'data.comment' : {
+        fr : 'Vide le cache des images', en : 'Clears the images cache'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Remove temp file'}, {$set : {'data.comment' : {
+        fr : 'Suppression des fichiers temporaires', en : 'Remove temporary files'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Remove previews'}, {$set : {'data.comment' : {
+        fr : 'Suppression des aperçus', en : 'Remove previews'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Sitemap'}, {$set : {'data.comment' : {
+        fr : 'Génération Sitemap', en : 'Sitemap Generation'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Segmentation picto'}, {$set : {'data.comment' : {
+        fr : 'Segmentation automatique des pictogrammes', en : 'Automatic pictogram segmentation'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Canonicalisation'}, {$set : {'data.comment' : {
+        fr : 'Génère les canonicals de chaque produit', en : 'Generates the canonicals of each product'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Remove old carts'}, {$set : {'data.comment' : {
+        fr : 'Suppression des anciens panier', en : 'Deleting old carts'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Remove pending payment orders'}, {$set : {'data.comment' : {
+        fr : 'Annulation des commandes en attente de paiement', en : 'Cancellation of orders awaiting payment'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Cohérence produits'}, {$set : {'data.comment' : {
+        fr : 'Script de cohérence des produits', en : 'Product consistency script'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Build stats'}, {$set : {'data.comment' : {
+        fr : 'Construction des statistiques de la veille', en : 'Construction of the statistics of the previous day'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Cache requests clean'}, {$set : {'data.comment' : {
+        fr : 'Vide le cache des requêtes', en : 'Clears the requests cache'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Segmentation cat'}, {$set : {'data.comment' : {
+        fr : 'Catégorisation automatique', en : 'Automatic categorization'
+    }}});
+    await mongoose.connection.db.collection('agendaJobs').findOneAndUpdate({name: 'Send metrics'}, {$set : {'data.comment' : {
+        fr : 'Envoie les statistiques de ce site vers Aquila', en : 'Send statistics from this site to Aquila'
+    }}});
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -114,7 +156,8 @@ const migrationScripts = [
     migration_3_CreatedAt,
     migration_4_Themes,
     migration_5_isActive,
-    migration_6_contentSecurityPolicy
+    migration_6_contentSecurityPolicy,
+    migration_7_Job_Translations
     // sample
 ];
 

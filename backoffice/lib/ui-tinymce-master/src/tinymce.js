@@ -62,8 +62,8 @@ angular.module('ui.tinymce', [])
         var debouncedUpdate = (function(debouncedUpdateDelay) {
           var debouncedUpdateTimer;
           return function(ed) {
-	        $timeout.cancel(debouncedUpdateTimer);
-	         debouncedUpdateTimer = $timeout(function() {
+            $timeout.cancel(debouncedUpdateTimer);
+            debouncedUpdateTimer = $timeout(function() {
               return (function(ed) {
                 if (ed.isDirty()) {
                   ed.save();
@@ -217,10 +217,10 @@ angular.module('ui.tinymce', [])
     function() {
       var UITinymceService = function() {
    	    var ID_ATTR = 'ui-tinymce';
-    	// uniqueId keeps track of the latest assigned ID
-    	var uniqueId = 0;
+    	  // uniqueId keeps track of the latest assigned ID
+    	  var uniqueId = 0;
         // getUniqueId returns a unique ID
-    	var getUniqueId = function() {
+    	  var getUniqueId = function() {
           uniqueId ++;
           return ID_ATTR + '-' + uniqueId;
         };

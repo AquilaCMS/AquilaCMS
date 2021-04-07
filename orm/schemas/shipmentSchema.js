@@ -6,9 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const Schema       = mongoose.Schema;
+const mongoose      = require('mongoose');
+const aquilaEvents  = require('../../utils/aquilaEvents');
+const Schema        = mongoose.Schema;
+const utilsDatabase = require('../../utils/database');
 
 const ShipmentSchema = new Schema({
     code        : {type: String, unique: true, sparse: true},
@@ -47,6 +48,23 @@ const ShipmentSchema = new Schema({
     component_template       : String,
     component_template_front : String
 }, {discriminatorKey: 'type'});
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('shipments', that._id, that.code);
+}
+
+ShipmentSchema.pre('updateOne', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+ShipmentSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+ShipmentSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
+});
 
 aquilaEvents.emit('shipmentSchemaInit', ShipmentSchema);
 

@@ -53,6 +53,19 @@ Warning : there is not MongoDB in AquilaCMS image. To connect your AquilaCMS web
 - use an external link to, for example, an Atlas database
 - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your mongod.conf and change your bindIp by your network ip instead of 127.0.0.1)
 
+### Have the installation page again
+
+If you want to have the installation page again, you can remove the "env.json" file in the "config" folder.
+
+### Manually build the theme
+
+If you want, for any reason, to manually build a theme, you can execute this command at the root of AquilaCMS :
+```bash
+npm run build:win --theme=default_theme
+```
+Instead of "build:win" you can use "build:linux".
+At the variable "theme" you put the name of the theme folder you want to build.
+
 ## Documentations
 Find some documentation on [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/). For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (/api-docs).
 

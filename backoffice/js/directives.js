@@ -157,14 +157,15 @@ adminCatagenDirectives.directive("nsSwitch", [
             {
                 scope.switchName = attrs.name;
                 scope.disableSwitch = (attrs.disableSwitch === "true") || false;
-                $translate("ns.switch.yes").then(function (yes)
-                {
-                    scope.yes_value = attrs.yesValue || yes;
-                });
-                $translate("ns.switch.no").then(function (no)
-                {
-                    scope.no_value = attrs.noValue || no;
-                });
+
+                setTimeout(function(){
+                    $translate("ns.switch.yes").then(function (yes) {
+                        scope.yes_value = attrs.yesValue || yes;
+                    });
+                    $translate("ns.switch.no").then(function (no) {
+                        scope.no_value = attrs.noValue || no;
+                    });
+                }, 10);
 
                 ngModel.$render = function ()
                 {
@@ -221,11 +222,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         forced_root_block: false,
                         relative_urls: false,
                         selector: '#editor',
-                        plugins: 'code, fullscreen, preview, link, autosave',
+                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
-                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | code',
+                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | codeeditor',
                         fontsize_formats: '8px 10px 12px 14px 16px, 20px',
+                        codeeditor_font_size: 14,
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
@@ -379,103 +381,184 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     });
                 };
 
-                    $scope.addImage = function () {
-                        const modalInstance = $modal.open({
-                            backdrop: 'static',
-                            keyboard: false,
-                            templateUrl: 'views/modals/add-image-tinymce.html',
-                            controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
-                                function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
-                                $scope.link = "-";
-                                $scope.nbItemsPerPage = 20;
-                                $scope.maxSize = 5;
-                                $scope.totalMedias = 0;
-                                $scope.groups = [];
-                                $scope.local = {
-                                    insertDBMediaUpload: true,
-                                    search: ""
-                                };
+                $scope.addImage = function () {
+                    const modalInstance = $modal.open({
+                        backdrop: 'static',
+                        keyboard: false,
+                        templateUrl: 'views/modals/add-image-tinymce.html',
+                        controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
+                            function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
+                            $scope.link = "-";
+                            $scope.nbItemsPerPage = 20;
+                            $scope.maxSize = 5;
+                            $scope.totalMedias = 0;
+                            $scope.groups = [];
+                            $scope.local = {
+                                insertDBMediaUpload: true,
+                                search: ""
+                            };
 
-                                    $scope.generateFilter = function () {
-                                        const filter = {};
-                                        if ($scope.currentTab === 'general') {
-                                            filter.$or = [{ group: null }, { group: "" }, { group: "general" }]
-                                        } else {
-                                            filter.group = $scope.currentTab
-                                        }
-                                        if ($scope.local.search !== "") {
-                                            filter.name = { $regex: $scope.local.search, $options: 'gim' }
-                                            delete filter.$or;
-                                            delete filter.group;
-                                        } else {
-                                            delete filter.name
-                                        }
-                                        return filter;
+                                $scope.generateFilter = function () {
+                                    const filter = {};
+                                    if ($scope.currentTab === 'general') {
+                                        filter.$or = [{ group: null }, { group: "" }, { group: "general" }]
+                                    } else {
+                                        filter.group = $scope.currentTab
                                     }
+                                    if ($scope.local.search !== "") {
+                                        filter.name = { $regex: $scope.local.search, $options: 'gim' }
+                                        delete filter.$or;
+                                        delete filter.group;
+                                    } else {
+                                        delete filter.name
+                                    }
+                                    return filter;
+                                }
 
-                                    $scope.init = function () {
-                                        MediaApiV2.getGroupsImg({}, function (groups) {
-                                            $scope.groups = groups;
-                                            $scope.currentTab = $scope.groups[0];
+                                $scope.init = function () {
+                                    MediaApiV2.getGroupsImg({}, function (groups) {
+                                        $scope.groups = groups;
+                                        $scope.currentTab = $scope.groups[0];
 
-                                            MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page: 1 } }, function ({ datas, count }) {
-                                                $scope.list = datas;
-                                                $scope.totalMedias = count;
-                                            });
-                                        });
-                                    };
-
-                                    $scope.init();
-
-                                    $scope.onPageChange = function (page) {
-                                        $scope.page = page;
-                                        MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page } }, function ({ datas, count }) {
+                                        MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page: 1 } }, function ({ datas, count }) {
                                             $scope.list = datas;
                                             $scope.totalMedias = count;
                                         });
-                                    }
-
-                                    $scope.changeTab = function (group) {
-                                        $scope.currentTab = group;
-                                        $scope.onPageChange(1);
-                                        $scope.imageSelected = null;
-                                        $scope.imageId = null;
-                                    }
-
-                                    $scope.mediaDetails = (media) => {
-                                        $location.path('/medias/' + media._id)
-                                    }
-                                    $scope.isPicture = function (media) {
-                                        if (media.link.match(new RegExp("jpg|jpeg|png|gif|svg", 'i'))) {
-                                            return true
-                                        }
-                                        return false
-                                    }
-
-                                $scope.size = {};
-                                $scope.size.max = true;
-
-                                $scope.changeSwitch = function(){
-                                    if ($scope.size.max === true){
-                                        $scope.size.max = false;
-                                    }else{
-                                        $scope.size.max = true;
-                                    }
-                                }
-
-                                $scope.selectImage = function(image){
-                                    $scope.imageId = image._id;
-                                    $scope.imageSelected = image.link;
+                                    });
                                 };
 
-                                $scope.generate = function () {
-                                    let url = $scope.imageSelected.split('medias/')[1];
-                                    if($scope.size.max){
-                                        url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
-                                    }else{
-                                        url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
+                                $scope.init();
+
+                                $scope.onPageChange = function (page) {
+                                    $scope.page = page;
+                                    MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page } }, function ({ datas, count }) {
+                                        $scope.list = datas;
+                                        $scope.totalMedias = count;
+                                    });
+                                }
+
+                                $scope.changeTab = function (group) {
+                                    $scope.currentTab = group;
+                                    $scope.onPageChange(1);
+                                    $scope.imageSelected = null;
+                                    $scope.imageId = null;
+                                }
+
+                                $scope.mediaDetails = (media) => {
+                                    $location.path('/medias/' + media._id)
+                                }
+                                $scope.isPicture = function (media) {
+                                    if (media.link.match(new RegExp("jpg|jpeg|png|gif|svg", 'i'))) {
+                                        return true
                                     }
-                                    $modalInstance.close(url);
+                                    return false
+                                }
+
+                            $scope.size = {};
+                            $scope.size.max = true;
+
+                            $scope.changeSwitch = function(){
+                                if ($scope.size.max === true){
+                                    $scope.size.max = false;
+                                }else{
+                                    $scope.size.max = true;
+                                }
+                            }
+
+                            $scope.selectImage = function(image){
+                                $scope.imageId = image._id;
+                                $scope.imageSelected = image.link;
+                            };
+
+                            $scope.generate = function () {
+                                let url = $scope.imageSelected.split('medias/')[1];
+                                if($scope.size.max){
+                                    url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
+                                }else{
+                                    url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
+                                }
+                                $modalInstance.close(url);
+                            };
+
+                            $scope.cancel = function () {
+                                $modalInstance.dismiss('cancel');
+                            };
+
+                        }],
+                        resolve: {
+                        }
+                    });
+                    modalInstance.result.then(function (url) {
+                        if ($scope.tinymceId) {
+                        tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                    } else {
+                        tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
+                    }
+                    });
+                };
+
+                $scope.addLink = function (textSelected, lang) {
+                    const modalInstance = $modal.open({
+                        backdrop: 'static',
+                        keyboard: false,
+                        templateUrl: 'views/modals/add-link-tinymce.html',
+                        controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
+                            function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
+                                $scope.lang = lang;
+                                $scope.selected = {};
+
+                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+                                    $scope.pages = {};
+                                    $scope.pages = staticsList.datas;
+                                    if ($scope.pages[0]) {
+                                        $scope.selected.pageSelelected = $scope.pages[0].translation[lang].slug;
+                                    }
+                                    if (!$scope.group) {
+                                        $scope.group = staticsList.datas.getAndSortGroups()[0];
+                                    }
+                                });
+                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
+                                    $scope.categories = {};
+                                    $scope.categories = response.datas;
+                                    if ($scope.categories[0]) {
+                                        $scope.selected.categorySelelected = $scope.categories[0].translation[$scope.lang].slug;
+                                    }
+                                });
+
+                                $scope.types = [
+                                    {id:'page', name:'Page'},
+                                    {id:'cat', name:'Catégorie'}
+                                ];
+                                $scope.name = textSelected;
+                                $scope.typeSelected = 'page';
+
+                                $scope.getOptGroup = function (group) {
+                                    if (!group) {
+                                        group = $scope.group;
+                                    }
+                                    return group;
+                                }
+
+                                $scope.exist = function (item) {
+                                    if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug) {
+                                        return true;
+                                    }
+                                    return false;
+                                }
+
+                                $scope.ok = function (slug, name, cat) {
+                                    if(!name){
+                                        name = slug;
+                                    }
+                                    if(cat){
+                                        $scope.categories.forEach(element => {
+                                            if (element.translation[lang].slug === slug && element.action === "catalog") {
+                                                slug = 'c/' + slug;
+                                            }
+                                        });
+                                    }
+                                    $modalInstance.close({slug,name});
                                 };
 
                                 $scope.cancel = function () {
@@ -483,103 +566,22 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 };
 
                             }],
-                            resolve: {
+                        resolve: {
+                            textSelected: function () {
+                                return textSelected;
                             }
-                        });
-                        modalInstance.result.then(function (url) {
-                            if ($scope.tinymceId) {
-                            tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
-                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                        } else {
-                            tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
                         }
-                        });
-                    };
+                    });
 
-                    $scope.addLink = function (textSelected, lang) {
-                        const modalInstance = $modal.open({
-                            backdrop: 'static',
-                            keyboard: false,
-                            templateUrl: 'views/modals/add-link-tinymce.html',
-                            controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
-                                function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
-                                    $scope.lang = lang;
-                                    $scope.selected = {};
-
-                                    StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
-                                        $scope.pages = {};
-                                        $scope.pages = staticsList.datas;
-                                        if ($scope.pages[0]) {
-                                            $scope.selected.pageSelelected = $scope.pages[0].translation[lang].slug;
-                                        }
-                                        if (!$scope.group) {
-                                            $scope.group = staticsList.datas.getAndSortGroups()[0];
-                                        }
-                                    });
-                                    CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
-                                        $scope.categories = {};
-                                        $scope.categories = response.datas;
-                                        if ($scope.categories[0]) {
-                                            $scope.selected.categorySelelected = $scope.categories[0].translation[$scope.lang].slug;
-                                        }
-                                    });
-
-                                    $scope.types = [
-                                        {id:'page', name:'Page'},
-                                        {id:'cat', name:'Catégorie'}
-                                    ];
-                                    $scope.name = textSelected;
-                                    $scope.typeSelected = 'page';
-
-                                    $scope.getOptGroup = function (group) {
-                                        if (!group) {
-                                            group = $scope.group;
-                                        }
-                                        return group;
-                                    }
-
-                                    $scope.exist = function (item) {
-                                        if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug) {
-                                            return true;
-                                        }
-                                        return false;
-                                    }
-
-                                    $scope.ok = function (slug, name, cat) {
-                                        if(!name){
-                                            name = slug;
-                                        }
-                                        if(cat){
-                                            $scope.categories.forEach(element => {
-                                                if (element.translation[lang].slug === slug && element.action === "catalog") {
-                                                    slug = 'c/' + slug;
-                                                }
-                                            });
-                                        }
-                                        $modalInstance.close({slug,name});
-                                    };
-
-                                    $scope.cancel = function () {
-                                        $modalInstance.dismiss('cancel');
-                                    };
-
-                                }],
-                            resolve: {
-                                textSelected: function () {
-                                    return textSelected;
-                                }
-                            }
-                        });
-
-                        modalInstance.result.then(function (response) {
-                            if ($scope.tinymceId) {
-                                tinyMCE.get($scope.tinymceId).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                            } else {
-                                tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                            }
-                        });
-                    };
+                    modalInstance.result.then(function (response) {
+                        if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                        } else {
+                            tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                        }
+                    });
+                };
             }
         ]
     };

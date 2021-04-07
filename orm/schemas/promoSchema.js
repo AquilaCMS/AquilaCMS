@@ -9,6 +9,7 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
+const NSErrors = require('../../utils/errors/NSErrors');
 
 const PromoSchema = new Schema(
     {
@@ -39,5 +40,31 @@ const PromoSchema = new Schema(
 );
 PromoSchema.index({dateStart: 1, dateEnd: 1, actif: 1, type: 1});
 PromoSchema.index({isQuantityBreak: 1, actif: 1, type: 1});
+
+async function preUpdates(that) {
+    if (!that.name) {
+        return;
+    }
+    const query = {name: that.name};
+    if (that._id) {
+        query._id = {$ne: that._id};
+    }
+    if (await mongoose.model('promo').exists(query)) {
+        throw NSErrors.CodeExisting;
+    }
+}
+
+PromoSchema.pre('updateOne', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+PromoSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+PromoSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
+});
 
 module.exports = PromoSchema;

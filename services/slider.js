@@ -46,13 +46,17 @@ const createSlider = async (req) => {
 };
 
 const deleteSlider = async (req) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) throw NSErrors.UnprocessableEntity;
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        throw NSErrors.UnprocessableEntity;
+    }
     const doc = await Slider.findOneAndRemove({_id: req.params.id});
+    if (!doc) {
+        throw NSErrors.SliderNotFound;
+    }
     for (let i = 0; i < doc.items.length; i++) {
         await mediasUtils.deleteFile(doc.items[i].src);
         require('./cache').deleteCacheImage('slider', {filename: path.basename(doc.items[i].src).split('.')[0]});
     }
-    if (!doc) throw NSErrors.NotFound;
     return doc;
 };
 

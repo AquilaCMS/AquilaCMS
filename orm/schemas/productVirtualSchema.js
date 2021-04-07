@@ -20,7 +20,7 @@ const ProductVirtualSchema = new Schema({
     toJSON           : {virtuals: true}
 });
 
-ProductVirtualSchema.methods.updateData = async function (data, cb) {
+ProductVirtualSchema.methods.updateData = async function (data) {
     data.price.priceSort = {
         et  : data.price.et.special || data.price.et.normal,
         ati : data.price.ati.special || data.price.ati.normal
@@ -28,9 +28,9 @@ ProductVirtualSchema.methods.updateData = async function (data, cb) {
     reviewService.computeAverageRateAndCountReviews(data);
     try {
         const updPrd = await this.model('VirtualProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
-        return cb(null, updPrd);
-    } catch (err) {
-        return cb(err);
+        return updPrd;
+    } catch (error) {
+        return error;
     }
 };
 

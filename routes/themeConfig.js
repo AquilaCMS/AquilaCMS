@@ -33,6 +33,10 @@ async function getThemeConfig(req, res, next) {
     }
 }
 
+/**
+ * GET /api/v2/themeConfig/:key
+ * @summary Get ThemeConfig by Key
+ */
 async function getThemeConfigByKey(req, res, next) {
     try {
         res.json(await serviceThemeConfig.getThemeConfigByKey(req.params.key));
@@ -41,6 +45,10 @@ async function getThemeConfigByKey(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/themeConfig
+ * @summary Set ThemeConfig
+ */
 async function setThemeConfig(req, res, next) {
     try {
         res.json(await serviceThemeConfig.setThemeConfig(req.body));

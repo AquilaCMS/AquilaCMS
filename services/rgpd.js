@@ -6,8 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const MongoClient  = require('mongodb').MongoClient;
-const ObjectID     = require('mongodb').ObjectID;
+const {
+    Types: {ObjectId: ObjectID},
+    mongo: {MongoClient}
+} = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 const MongoURI     = require('mongo-uri');
 const bcrypt       = require('bcrypt');
@@ -225,7 +227,7 @@ async function mongorestore(uri) {
 const anonymizeDatabase = async (cb) => {
     // Connexion à la nouvelle database
     const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1];
-    const client       = await MongoClient.connect(
+    const client       = new MongoClient(
         global.envFile.db.replace(
             databaseName,
             `${databaseName}_anonymized`
@@ -235,7 +237,9 @@ const anonymizeDatabase = async (cb) => {
             useUnifiedTopology : true
         }
     );
-    const database     = client.db(`${databaseName}_anonymized`);
+    await client.connect();
+
+    const database = client.db(`${databaseName}_anonymized`);
 
     // Génération d'un mot de passe commun
     const hash  = await bcrypt.hash('password', 10);
@@ -338,15 +342,10 @@ const anonymizeDatabase = async (cb) => {
                 resolve();
             });
         }
-        await client.close();
-        if (cb !== undefined) {
-            cb();
-        }
-    } else {
-        await client.close();
-        if (cb !== undefined) {
-            cb();
-        }
+    }
+    await client.close();
+    if (cb !== undefined) {
+        cb();
     }
 };
 
@@ -354,7 +353,7 @@ const anonymizeDatabase = async (cb) => {
 * Supprime la base de données de copie
  */
 const dropDatabase = async () => {
-    const client = await MongoClient.connect(
+    const client = new MongoClient(
         global.envFile.db.replace(
             global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1],
             `${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`
@@ -364,7 +363,8 @@ const dropDatabase = async () => {
             useUnifiedTopology : true
         }
     );
-    const db     = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
+    await client.connect();
+    const db = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
     await db.dropDatabase();
 };
 

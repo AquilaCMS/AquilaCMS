@@ -6,7 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const fs           = require('fs');
+const fs           = require('../utils/fsp');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -64,13 +64,12 @@ const getDefaultLang = (language) => {
  */
 const translateSet = async (translateName, translateValue, lang) => {
     const translatePath = await getTranslatePath(lang);
-    if (!fs.existsSync(translatePath)) {
-        fs.mkdirSync(translatePath);
+    await fs.mkdir(translatePath, {recursive: true});
+    try {
+        await fs.writeFile(`${translatePath}/${translateName}.json`, translateValue);
+    } catch (err) {
+        throw NSErrors.TranslationError;
     }
-
-    fs.writeFile(`${translatePath}/${translateName}.json`, translateValue, (err) => {
-        if (err) {throw NSErrors.TranslationError;}
-    });
 };
 
 /**
@@ -79,7 +78,7 @@ const translateSet = async (translateName, translateValue, lang) => {
 const translateGet = async (filePath, lang) => {
     try {
         const themePath = await getTranslatePath(lang);
-        return await fs.readFileSync(`${themePath}/${filePath}.json`, 'UTF-8');
+        return fs.readFile(`${themePath}/${filePath}.json`, 'utf8');
     } catch (error) {
         throw NSErrors.TranslationError;
     }
@@ -94,11 +93,11 @@ const translateList = async () => {
         const translateList = [];
         const translatePath = await getTranslatePath(lang);
 
-        fs.readdirSync(translatePath).forEach((file) => {
+        for (const file of await fs.readdir(translatePath)) {
             if (file.endsWith('.json')) {
                 translateList.push(file.substring(0, file.lastIndexOf('.json')));
             }
-        });
+        }
 
         return translateList;
     } catch (error) {
@@ -121,7 +120,11 @@ const createDynamicLangFile = async () => {
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
-    fs.writeFileSync('./config/dynamic_langs.js', contentFile);
+    await fs.writeFile('./config/dynamic_langs.js', contentFile, (err) => {
+        if (err) {
+            throw "Error writing file 'dynamic_langs.js'";
+        }
+    });
 };
 
 module.exports = {

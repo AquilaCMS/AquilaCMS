@@ -16,7 +16,7 @@
                 <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>cmsBlocks.list.search</a></li>
             </ul>
         </div>
-        <div ng-show="search === '' && currentTab === group" ng-repeat="group in groups | filterListGeneral:group" class="tab-content">
+        <div ng-show="search === '' && currentTab === group" ng-repeat="group in groups | filterListGeneral:group">
             <table class="shortTable table table-bordered table-hover">
                 <thead>
                     <tr>

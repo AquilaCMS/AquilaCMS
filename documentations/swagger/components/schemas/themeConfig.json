@@ -3,7 +3,24 @@
         "description": "",
         "properties": {
             "name"   : {"type": "string"},
-            "config" : {"type": "object"}
+            "config" : {
+                "type": "object",
+                "properties": {
+                    "values" : {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "key"         : {"type": "string"},
+                                "value"       : {"type": "string"},
+                                "name"        : {"type": "string"},
+                                "description" : {"type": "string"},
+                                "group"       : {"type": "string"}
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

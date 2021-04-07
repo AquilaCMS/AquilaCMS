@@ -15,7 +15,7 @@ module.exports = {
         fr : 'Non autorisé',
         en : 'Unauthorized'
     },
-    DesactivateAccount : {
+    DeactivateAccount : {
         fr : 'Compte désactivé',
         en : 'Desactivate account'
     },
@@ -115,6 +115,10 @@ module.exports = {
         fr : 'Catégorie déjà existante',
         en : 'Category already exist'
     },
+    SlugAlreadyExist : {
+        fr : 'Le slug existe déjà',
+        en : 'Slug already exist'
+    },
     CmsBlockNotFound : {
         fr : 'Bloc CMS non trouvé',
         en : 'CMS Block not found'
@@ -146,6 +150,10 @@ module.exports = {
     FamilyCodeExisting : {
         fr : 'Code famille déjà existant',
         en : 'Family code already exists'
+    },
+    CodeExisting : {
+        fr : 'Code déjà existant',
+        en : 'Code already exists'
     },
     ProductNotFound : {
         fr : 'Produit non trouvé',
@@ -426,9 +434,18 @@ module.exports = {
         fr : 'Impossible de mettre à jour le moyen d\'expedition',
         en : 'Cannot update this shipment'
     },
+    ShipmentNotFound : {
+
+        fr : 'Le Shipment est introuvable',
+        en : 'Shipment not found'
+    },
     SliderUpdateError : {
         fr : 'Impossible de mettre à jour le carousel',
         en : 'Cannot update this slider'
+    },
+    SliderNotFound : {
+        fr : 'Slider introuvable',
+        en : 'Slider not found'
     },
     StaticNotFound : {
         fr : 'Static non trouvé',
