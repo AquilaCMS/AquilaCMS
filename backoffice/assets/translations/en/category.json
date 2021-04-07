@@ -12,9 +12,10 @@
         "save": "Save"
     },
     "detail": {
+        "title": "Category",
         "t1": "minimum 3 characters",
         "ph1": "Name",
-        "action":"Action",
+        "action": "Action",
         "delete": "Delete",
         "save2": "Save",
         "general": "General",
@@ -65,7 +66,6 @@
         "supprSelect": " Delete selection",
         "supprAll": " Delete all"
     },
-
     "list": {
         "t1": "Categories",
         "noCatCreated": "No category has been created.",
