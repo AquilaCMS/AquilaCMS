@@ -46,8 +46,8 @@ async function preUpdates(that) {
         return;
     }
     const query = {name: that.name};
-    if (that.id) {
-        query._id = {$ne: that.id};
+    if (that._id) {
+        query._id = {$ne: that._id};
     }
     if (await mongoose.model('promo').exists(query)) {
         throw NSErrors.CodeExisting;
