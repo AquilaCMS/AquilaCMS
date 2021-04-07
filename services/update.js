@@ -72,7 +72,7 @@ const update = async () => {
     try {
         console.log('Extracting archive...');
         const zip = new AdmZip(filePath);
-        zip.extractAllTo(aquilaPath);
+        zip.extractAllTo(aquilaPath, true);
     } catch (exc) {
         console.error(`Unzip ${filePath} failed`);
     }
