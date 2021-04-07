@@ -1,11 +1,11 @@
 {
   "name": "aquila-cms",
-  "version": "1.011.04",
+  "version": "1.104.07",
   "description": "CMS e-commerce",
   "main": "server.js",
   "license": "OSL-3.0",
   "engines": {
-    "node": "12.19.0"
+    "node": "12.22.0"
   },
   "repository": {
     "type": "git",
@@ -20,15 +20,15 @@
     "reload": "pm2 reload ecosystem.config.js --update-env && pm2 restart server && pm2 log server",
     "build:win": "next build .\\themes\\%npm_config_theme%",
     "build:linux": "next build ./themes/${npm_config_theme}",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
-    "test": "exit 0"
+    "lint:check": "eslint --ext js,jsx .",
+    "lint:fix": "eslint --fix --ext js,jsx .",
+    "test": "mocha --exit",
+    "coverage": "nyc npm run test"
   },
   "dependencies": {
-    "@haegemonia/express-jsdoc-swagger": "^1.0.2",
     "adm-zip": "0.4.16",
     "agenda": "3.1.0",
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "bcrypt": "5.0.0",
     "cookie-parser": "1.4.5",
     "cors": "2.8.5",
@@ -38,10 +38,11 @@
     "express-ejs-extend": "0.0.1",
     "faker": "4.1.0",
     "glob": "7.1.6",
+    "helmet": "4.4.1",
     "i18next": "11.3.3",
     "i18next-fs-backend": "1.0.6",
-    "i18next-http-backend": "1.0.15",
     "i18next-http-middleware": "3.0.0",
+    "i18next-xhr-backend": "1.5.1",
     "imagemin": "7.0.1",
     "imagemin-gifsicle": "7.0.0",
     "imagemin-jpegtran": "7.0.0",
@@ -51,11 +52,11 @@
     "js2xmlparser": "4.0.1",
     "json2csv": "5.0.1",
     "jsonwebtoken": "8.5.1",
+    "lodash": "4.17.20",
     "moment": "2.27.0",
     "moment-business-days": "1.2.0",
     "moment-timezone": "0.5.31",
     "mongo-uri": "0.1.2",
-    "mongodb": "3.5.9",
     "mongoose": "5.9.12",
     "mongoose-lean-virtuals": "0.6.7",
     "mongoose-plugin-autoinc-fix": "1.2.1",
@@ -66,10 +67,8 @@
     "next-routes": "1.4.2",
     "node-cache": "5.1.1",
     "nodemailer": "6.4.10",
-    "npm": "6.14.6",
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
-    "passport-local": "1.0.0",
     "password-validator": "5.0.3",
     "pm2": "4.4.0",
     "react": "16.13.1",
@@ -80,21 +79,28 @@
     "showdown": "^1.9.1",
     "slug": "3.3.0",
     "spdy": "4.0.2",
+    "swagger-ui-express-updated": "^4.1.8",
     "uuid": "8.2.0",
     "validator": "13.1.1",
-    "webpack": "4.43.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0",
     "wkhtmltopdf": "0.3.4"
   },
   "devDependencies": {
+    "chai": "^4.3.0",
+    "chai-http": "^4.3.0",
+    "chai-like": "^1.1.1",
+    "chai-things": "^0.2.0",
     "eslint": "^7.10.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-angular": "^4.0.1",
+    "eslint-plugin-chai-friendly": "^0.6.0",
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.0",
-    "lint-staged": "^10.4.0"
+    "lint-staged": "^10.4.0",
+    "mocha": "^8.3.0",
+    "nyc": "^15.1.0"
   },
   "husky": {
     "hooks": {
@@ -102,6 +108,6 @@
     }
   },
   "lint-staged": {
-    "*.{ts,js}": "eslint --fix"
+    "*.{ts,js,jsx,tsx}": "eslint --fix"
   }
 }

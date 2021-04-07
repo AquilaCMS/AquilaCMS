@@ -1,11 +1,11 @@
 {
   "name": "aquila-cms",
-  "version": "1.010.14",
+  "version": "1.104.07",
   "description": "CMS e-commerce",
   "main": "server.js",
   "license": "OSL-3.0",
   "engines": {
-    "node": "12.18.1"
+    "node": "12.21.0"
   },
   "repository": {
     "type": "git",
