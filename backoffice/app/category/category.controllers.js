@@ -58,18 +58,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
         };
 
-        $scope.setEditCat = function(form) {
-            if ($scope.nsUploadFiles.isSelected === true) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
-                if (!response) { return }
-            }
-            if (form.$dirty) {
-                if (confirm("Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?")){
-                    debugger
-                }
-            }
-        }
-
         var selectedLang = "";
 
         $scope.nsUploadFiles = {
@@ -744,7 +732,6 @@ CategoryControllers.controller("CategoryListCtrl", [
                             return element
                         }
                     });
-                    debugger
                     if (childrenIndex > -1) {
                         categorySource.children.splice(childrenIndex, 1);
                     }
