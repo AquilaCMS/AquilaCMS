@@ -31,7 +31,16 @@ import Error from './_error';
 class PageProduct extends NSPageProduct {
     render = () => {
         const {
-            appurl, cmsProductContentBottom, lang, notFound, oCmsHeader, oCmsFooter, routerLang, sitename, t, themeConfig
+            appurl,
+            cmsProductContentBottom,
+            lang,
+            notFound,
+            oCmsHeader,
+            oCmsFooter,
+            routerLang,
+            sitename,
+            t,
+            themeConfig
         } = this.props;
         if (notFound) {
             return (
@@ -41,7 +50,16 @@ class PageProduct extends NSPageProduct {
             );
         }
         const {
-            openModal, openComment, photoIndex, isOpen, modalComment, openReviews, product, allCommentsDisplayed, hideReviewsLanguage, taxDisplay
+            openModal,
+            openComment,
+            photoIndex,
+            isOpen,
+            modalComment,
+            openReviews,
+            product,
+            allCommentsDisplayed,
+            hideReviewsLanguage,
+            taxDisplay
         } = this.state;
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
@@ -116,7 +134,13 @@ class PageProduct extends NSPageProduct {
 
                                     <h2 className="section__subtitle">{product.description1 && product.description1.title ? product.description1.title : null}</h2>
 
-                                    <div className="row-flex" style={themeConfig && themeConfig.find(t => t.key === 'reviews') !== undefined && themeConfig.find(t => t.key === 'reviews').value === false ? { display: 'none' } : {}}>
+                                    <div className="row-flex" style={
+                                        themeConfig
+                                            && themeConfig.find(t => t.key === 'reviews') !== undefined
+                                            && themeConfig.find(t => t.key === 'reviews').value === false
+                                            ? { display: 'none' }
+                                            : {}
+                                    }>
                                         <div className="rating">
                                             <div className="rating-split align-star">
                                                 <NSDrawStars
@@ -133,8 +157,8 @@ class PageProduct extends NSPageProduct {
                                                 <a onClick={() => this.goTo('reviews_mobile')}>
                                                     {
                                                         product.reviews.reviews_nb > 1
-                                                            ? `(${product.reviews.reviews_nb} ${t('avis')})`
-                                                            : `(${product.reviews.reviews_nb} ${t('un_avis')})`
+                                                            ? `(${product.reviews.reviews_nb} ${t('product:avis', {})})`
+                                                            : `(${product.reviews.reviews_nb} ${t('product:un_avis')})`
                                                     }
                                                 </a>
                                             </span>
@@ -246,8 +270,8 @@ class PageProduct extends NSPageProduct {
                                                         <a onClick={() => this.goTo('reviews')}>
                                                             {
                                                                 product.reviews.reviews_nb > 1
-                                                                    ? `(${product.reviews.reviews_nb} ${t('avis')})`
-                                                                    : `(${product.reviews.reviews_nb} ${t('un_avis')})`
+                                                                    ? `(${product.reviews.reviews_nb} ${t('product:avis')})`
+                                                                    : `(${product.reviews.reviews_nb} ${t('product:un_avis')})`
                                                             }
                                                         </a>
                                                     </span>
@@ -267,31 +291,31 @@ class PageProduct extends NSPageProduct {
                                         <div className="row-flex hidden-xs">
                                             {
                                                 product.stock && product.stock.status !== 'epu'
-                                            && (
-                                                <div className="product-qty">
-                                                    <div className="form__row form__row--flex">
-                                                        <label htmlFor="field-qty" className="form__label">{t('quantite')}</label>
+                                                && (
+                                                    <div className="product-qty">
+                                                        <div className="form__row form__row--flex">
+                                                            <label htmlFor="field-qty" className="form__label">{t('quantite')}</label>
 
-                                                        <div className="form__controls qty-controls">
-                                                            <button type="button" className="btn-qty-change btn-decrement" onClick={this.decrementQty}>-</button>
-                                                            <input readOnly type="text" className="field" name="field-qty" id="field-qty" value={this.state.selectedQty} placeholder="" />
-                                                            <button type="button" className="btn-qty-change btn-increment" onClick={this.incrementQty}>+</button>
-                                                        </div>{/* <!-- /.form__controls --> */}
-                                                    </div>{/* <!-- /.form__row --> */}
-                                                </div>
-                                            )
+                                                            <div className="form__controls qty-controls">
+                                                                <button type="button" className="btn-qty-change btn-decrement" onClick={this.decrementQty}>-</button>
+                                                                <input readOnly type="text" className="field" name="field-qty" id="field-qty" value={this.state.selectedQty} placeholder="" />
+                                                                <button type="button" className="btn-qty-change btn-increment" onClick={this.incrementQty}>+</button>
+                                                            </div>{/* <!-- /.form__controls --> */}
+                                                        </div>{/* <!-- /.form__row --> */}
+                                                    </div>
+                                                )
                                             }
                                         </div>
 
                                         <footer className="section__foot">
                                             {
                                                 (!product.stock || (product.stock && product.stock.status !== 'epu'))
-                                            && (
-                                                <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
-                                                    <i className="ico-shopping-cart-white" />
-                                                    <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
-                                                </button>
-                                            )
+                                                && (
+                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                                        <i className="ico-shopping-cart-white" />
+                                                        <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
+                                                    </button>
+                                                )
                                             }
                                         </footer>{/* <!-- /.section__foot --> */}
                                     </div>{/* <!-- /.product-actions --> */}
@@ -313,7 +337,7 @@ class PageProduct extends NSPageProduct {
                                 product.attributes && product.attributes.length > 0 && (
                                     <section className="section-product-characteristics">
                                         <header className="section__head">
-                                            <h4>{t('caracteristiques')}</h4>
+                                            <h4>{t('product:caracteristiques')}</h4>
                                         </header>{/* <!-- /.section__head --> */}
                                         <div className="table-specs">
                                             <table>
@@ -322,7 +346,7 @@ class PageProduct extends NSPageProduct {
                                                         product.attributes
                                                             .filter((attrib) => attrib.name && attrib.name.indexOf('Picto') === -1) // Retire les éléments qui sont en liens avec les pictogrammes
                                                             .sort((a, b) => a.position - b.position) // Trie les attributs en fonction de la position
-                                                            .map((attrib) =>  {
+                                                            .map((attrib) => {
                                                                 if (attrib.value === undefined || attrib.value === '') return;
                                                                 if (typeof attrib.value === 'boolean') {
                                                                     return (
@@ -356,10 +380,10 @@ class PageProduct extends NSPageProduct {
                                                                             </td>
                                                                             <td style={{ fontWeight: 'bold', width: '70%' }}>
                                                                                 <div style={{
-                                                                                    width           : '30px',
-                                                                                    height          : '20px',
-                                                                                    backgroundColor : attrib.value.toString(),
-                                                                                    borderRadius    : '5px'
+                                                                                    width: '30px',
+                                                                                    height: '20px',
+                                                                                    backgroundColor: attrib.value.toString(),
+                                                                                    borderRadius: '5px'
                                                                                 }}
                                                                                 />
                                                                             </td>
@@ -402,7 +426,7 @@ class PageProduct extends NSPageProduct {
                                 product.associated_prds && product.associated_prds.length > 0 && (
                                     <section className="section-ratings associated_product">
                                         <header className="section__head">
-                                            <h4>{t('crossSelling')}</h4>
+                                            <h4>{t('product:crossSelling')}</h4>
                                         </header>{/* <!-- /.section__head --> */}
                                         <div className="hidden-xs">
                                             <NSProductCardList ProductCard={NSProductCard} type="data" value={product.associated_prds} itemsperslides={5} t={t} gNext={{ Head, Link, Router }} />
@@ -421,12 +445,12 @@ class PageProduct extends NSPageProduct {
                                 <div className="section__body">
                                     <div className="rating-box rating-box--featured rating-head-box">
                                         <aside className="rating__aside rating__head">
-                                            <h3>{t('moyenne')}</h3>
+                                            <h3>{t('product:moyenne')}</h3>
                                             <div className="rating-value">
                                                 {
                                                     product.reviews && product.reviews.average
                                                         ? <strong>{product.reviews.average.toFixed(1)}/5</strong>
-                                                        : t('noReview')
+                                                        : t('product:noReview')
                                                 }
                                             </div>{/* <!-- /.rating-value --> */}
                                             {/* <ul className="list-rate list-rate--medium"> */}
@@ -436,7 +460,7 @@ class PageProduct extends NSPageProduct {
                                             {/* </ul><!-- /.list-rate --> */}
                                             <button type="button" className="link-more nbb">
                                                 <i className="ico-profile" />
-                                                <span>{product.reviews.reviews_nb} {t('total')}</span>
+                                                <span>{product.reviews.reviews_nb} {t('product:total')}</span>
                                             </button>
                                         </aside>{/* <!-- /.rating__aside --> */}
 
@@ -444,7 +468,7 @@ class PageProduct extends NSPageProduct {
                                             <div className="rating__inner">
                                                 <div className="rating-split">
                                                     {
-                                                        product.reviews.questions.length > 0 && product.reviews.questions.map((question, index) => {
+                                                        product.reviews.questions.length > 0 && product.reviews.questions.map((question) => {
                                                             const labelQuestion = question.question;
                                                             return (
                                                                 <div key={question._id} className="commentQuestionLabelStar">
@@ -462,20 +486,20 @@ class PageProduct extends NSPageProduct {
                                             </div>{/* <!-- /.rating__inner --> */}
                                             <div className="addCommentButton">
                                                 <button type="button" className="btn btn--red" onClick={this.onOpenModalComment}>
-                                                    <span>{t('add_comment')}</span>
+                                                    <span>{t('product:add_comment')}</span>
                                                 </button>
                                             </div>
                                             <div className="rating__actions">
                                                 <button type="button" className="btn btn--grey nbb" onClick={this.toggleAllComment}>
-                                                    {t('voirAvisClients', { x: product.reviews.reviews_nb })}
+                                                    {t('product:voirAvisClients', { x: product.reviews.reviews_nb })}
                                                 </button>
                                             </div>{/* <!-- /.rating__actions --> */}
                                         </div>{/* <!-- /.rating__content --> */}
                                     </div>{/* <!-- /.rating-box --> */}
                                     {
                                         !hideReviewsLanguage ? product.reviews && product.reviews.datas && product.reviews.datas.length > 0
-                                            ? <p>{t('reviews_of_your_languages')} :</p>
-                                            : <p>{t('no_reviews_for_your_language')}</p> : ''
+                                            ? <p>{t('product:reviews_of_your_languages')} :</p>
+                                            : <p>{t('product:no_reviews_for_your_language')}</p> : ''
                                     }
                                     <div className="rating-boxes">
                                         {
@@ -532,8 +556,8 @@ class PageProduct extends NSPageProduct {
                                                                 <button type="button" className="read-more hidden-xs nbb" onClick={() => this.toggleOpenReview(index)}>
                                                                     {
                                                                         extendClass
-                                                                            ? <span>&lt;&lt; {t('cacherSuite')}</span>
-                                                                            : <span>{t('lireSuite')} &gt;&gt;</span>
+                                                                            ? <span>&lt;&lt; {t('product:cacherSuite')}</span>
+                                                                            : <span>{t('product:lireSuite')} &gt;&gt;</span>
                                                                     }
                                                                 </button>
                                                             </div>
@@ -584,31 +608,31 @@ class PageProduct extends NSPageProduct {
                                     </form>
                                 </div>
                             ) : (
-                                <>
-                                    <h3 className="popup__title">{t('product:productAdded')} :</h3>
-                                    <div className="popup__body">
-                                        <div className="product-simple">
-                                            <figure className="product__image">
-                                                <img src={imgDefault} alt={imgAlt} width="256" height="197" />
-                                            </figure>
+                                    <>
+                                        <h3 className="popup__title">{t('product:productAdded')} :</h3>
+                                        <div className="popup__body">
+                                            <div className="product-simple">
+                                                <figure className="product__image">
+                                                    <img src={imgDefault} alt={imgAlt} width="256" height="197" />
+                                                </figure>
 
-                                            <h4 className="product__title">{this.state.selectedQty} x {product.name}</h4>
+                                                <h4 className="product__title">{this.state.selectedQty} x {product.name}</h4>
 
-                                            <div className="product__actions">
-                                                <button type="button" className="btn btn--with-icon btn--red" onClick={this.onCloseModal}>
-                                                    {t('product:continueShopping')}
-                                                </button>
+                                                <div className="product__actions">
+                                                    <button type="button" className="btn btn--with-icon btn--red" onClick={this.onCloseModal}>
+                                                        {t('product:continueShopping')}
+                                                    </button>
 
-                                                <Link route="cart" params={{ lang: routerLang }}>
-                                                    <a className="btn btn--with-icon btn--red">
-                                                        {t('product:viewCart')}
-                                                    </a>
-                                                </Link>
+                                                    <Link route="cart" params={{ lang: routerLang }}>
+                                                        <a className="btn btn--with-icon btn--red">
+                                                            {t('product:viewCart')}
+                                                        </a>
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </>
-                            )
+                                    </>
+                                )
                         }
                     </ModalR>
                     <ModalR open={openComment} onClose={this.onCloseModalComment} delay={0} center>
@@ -627,7 +651,7 @@ class PageProduct extends NSPageProduct {
                                     </div>
                                     <br />
                                     <div className="rating-boxes" style={{ justifyContent: 'space-between', padding: '0 36px 0 36px' }}>
-                                        <span style={{ fontSize: '22px', fontWeight: '700' }}>{t('overall_rating')}</span>
+                                        <span style={{ fontSize: '22px', fontWeight: '700' }}>{t('product:overall_rating')}</span>
                                         {
                                             // Si des questions existent alors on ne pourra pas cliquer sur les etoiles de la note globale,
                                             // ce sont le cumule des notes des questions qui définirons la note globale
@@ -673,20 +697,20 @@ class PageProduct extends NSPageProduct {
                                             }
                                         </div>
                                         <div className="subscribe__body" style={{ paddingTop: '10px', paddingBottom: '0px' }}>
-                                            <label htmlFor="title">{t('reviewTitle')}</label>
+                                            <label htmlFor="title">{t('product:reviewTitle')}</label>
                                             <input type="text" id="title" name="title" ref={this.title} className="subscribe__field" style={{ height: '40px' }} maxLength="140" required />
                                         </div>
                                         <div className="subscribe__body" style={{ paddingTop: '10px', paddingBottom: '0px' }}>
-                                            <label htmlFor="review">{t('feedback')}</label>
+                                            <label htmlFor="review">{t('product:feedback')}</label>
                                             <textarea type="text" id="review" name="review" ref={this.review} className="subscribe__field" style={{ height: '70px', lineHeight: '27px' }} required />
                                         </div>
                                         <div className="subscribe__body" style={{ paddingTop: '10px', paddingBottom: '0px' }}>
-                                            <label htmlFor="surname">{t('reviewNickname')}</label>
+                                            <label htmlFor="surname">{t('product:reviewNickname')}</label>
                                             <input type="text" id="surname" name="surname" className="subscribe__field" required style={{ height: '40px' }} />
                                         </div>
                                         <br />
                                         <div className="subscribe__actions">
-                                            <button type="submit" className="subscribe__btn btn btn--grey btn--medium">{t('send')}</button>
+                                            <button type="submit" className="subscribe__btn btn btn--grey btn--medium">{t('product:send')}</button>
                                         </div>
                                         <br />
                                         <div>

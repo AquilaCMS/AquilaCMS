@@ -45,7 +45,8 @@ ProductDirectives.directive("nsProductsList", function () {
     return {
         restrict : "E",
         scope    : {
-            onSelect    : "=", queryFilter : "="
+            onSelect: "=",
+            queryFilter : "="
         },
         templateUrl : "app/product/views/templates/nsProductsList.html",
         controller  : [
@@ -447,11 +448,14 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                                 return {
                                     type : $scope.product.type
                                 };
+                            },
+                            productSelected(){
+                                return $scope.associatedPrds;
                             }
                         }
                     });
                     modalInstance.result.then(function (products) {
-                        $scope.associatedPrds = $scope.associatedPrds.concat(products);
+                        $scope.associatedPrds = products;
                         $scope.product.associated_prds = $scope.associatedPrds.map(function (item) {
                             return item._id;
                         });
@@ -469,5 +473,20 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                 };
             }
         ]
+    };
+});
+
+ProductDirectives.directive("nsProductCategories", function () {
+    return {
+        restrict : "E",
+        scope    : {
+            product     : "=",
+            lang        : "=",
+            isEditMode  : "=",
+            productType : "=?",
+            form        : "="
+        },
+        templateUrl : "app/product/views/templates/nsProductCategories.html",
+        controller  : 'nsProductCategories'
     };
 });

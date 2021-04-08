@@ -31,7 +31,7 @@ const init = async (pp) => {
     }, async (payload, done) => {
         try {
             const {Users} = require('../orm/models');
-            const user    = await Users.findById(payload.userId, '-password');
+            const user    = (await Users.findById(payload.userId, '-password')).toObject();
             if (!user) {
                 throw NSErrors.BadLogin;
             }
@@ -89,9 +89,10 @@ const init = async (pp) => {
  * Authenticate
  */
 const authenticate = (req, res) => new Promise((resolve, reject) => {
+    const _res = res;
     passport.authenticate('jwt', {session: false}, (err, user) => {
         if (err) reject(err);
-        else if (!user) reject(NSErrors.Unauthorized);
+        else if (!user) _res.clearCookie('jwt'); // reject(NSErrors.Unauthorized);
         resolve(user);
     })(req, res);
 });

@@ -93,8 +93,13 @@ TranslationControllers.controller('LanguageEditCtrl',
                         window.dispatchEvent(event);
                         $modalInstance.close();
                     }, function(err){
-                        if(err.code === "Conflict" || err.data.code === "Conflict") toastService.toast("danger", "Already exist");
-                        else toastService.toast("danger", err.data);
+                        if(err.data.message){
+                            toastService.toast("danger", err.data.message);
+                        }else if(err.code === "Conflict" || err.data.code === "Conflict"){
+                            toastService.toast("danger", "Already exist");
+                        }else{
+                            toastService.toast("danger", err.data);
+                        }
                     });
                     getLanguages();
                 };

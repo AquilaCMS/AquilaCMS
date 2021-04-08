@@ -1,7 +1,8 @@
 {
     "environment": {
-        "t1": "Environment",
+        "t1": "Server Settings",
         "t2": "Warning!",
+        "prefixURL": "Warning ! Modify this field restart the application, the old URL will no longer be accessible !",
         "test": "Test",
         "restart": "Restart",
         "sendMail": "Send",

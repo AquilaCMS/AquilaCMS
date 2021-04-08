@@ -206,7 +206,8 @@
             "title": "Tubular cut",
             "text": "Unisex"
           },
-          "canonical": "/my-products/first-product"
+          "canonical": "/my-products/first-product",
+          "metaDesc":"White basic t-shirt"
         },
         "fr": {
           "name": "T-shirt basique blanc",
@@ -219,7 +220,8 @@
             "title": "Coupe tubulaire",
             "text": "Unisexe"
           },
-          "canonical": "/mes-produits/t-shirt/premier-produit"
+          "canonical": "/mes-produits/t-shirt/premier-produit",
+          "metaDesc":"T-shirt basique blanc"
         }
       },
       "createdAt": "2020-05-13T09:07:33.753Z",
@@ -408,7 +410,8 @@
             "title": "Tubular cut",
             "text": "Unisex"
           },
-          "canonical": "/my-products/t-shirt/product-two"
+          "canonical": "/my-products/t-shirt/product-two",
+          "metaDesc":"T-shirt white / green"
         },
         "fr": {
           "description1": {
@@ -421,7 +424,8 @@
           },
           "name": "T-shirt blanc/vert",
           "slug": "produit-deux",
-          "canonical": "/mes-produits/t-shirt/produit-deux"
+          "canonical": "/mes-produits/t-shirt/produit-deux",
+          "metaDesc":"T-shirt blanc/vert"
         }
       },
       "createdAt": "2020-05-13T09:07:33.753Z",
@@ -591,7 +595,8 @@
             "title": "Coupe droite",
             "text": "Unisexe"
           },
-          "canonical": "/mes-produits/t-shirt/t-shirt-mariniere-rouge"
+          "canonical": "/mes-produits/t-shirt/t-shirt-mariniere-rouge",
+          "metaDesc":"T-shirt marinière rouge"
         },
         "en": {
           "name": "Red sailor t-shirt",
@@ -604,7 +609,8 @@
             "title": "Straight cut",
             "text": "Unisex"
           },
-          "canonical": "/my-products/t-shirt/red-sailor-t-shirt"
+          "canonical": "/my-products/t-shirt/red-sailor-t-shirt",
+          "metaDesc":"Red sailor t-shirt"
         }
       },
       "createdAt": "2020-05-09T14:25:46.095Z",
@@ -770,7 +776,8 @@
             "title": "Coupe droite",
             "text": "T-shirt homme"
           },
-          "canonical": "/mes-produits/t-shirt/t-shirt-basique-noir"
+          "canonical": "/mes-produits/t-shirt/t-shirt-basique-noir",
+          "metaDesc":"T-shirt basique noir"
         },
         "en": {
           "name": "Basic black t-shirt",
@@ -783,7 +790,8 @@
             "title": "Straight cut",
             "text": "Men's T-shirt"
           },
-          "canonical": "/my-products/t-shirt/basic-black-t-shirt"
+          "canonical": "/my-products/t-shirt/basic-black-t-shirt",
+          "metaDesc":"Basic black t-shirt"
         }
       },
       "createdAt": "2020-05-09T14:27:06.739Z",
@@ -945,7 +953,8 @@
             "title": "Coupe droite",
             "text": "T-shirt femme"
           },
-          "canonical": "/mes-produits/t-shirt/t-shirt-basique-bleu"
+          "canonical": "/mes-produits/t-shirt/t-shirt-basique-bleu",
+          "metaDesc":"T-shirt basique bleu"
         },
         "en": {
           "name": "Basic blue t-shirt",
@@ -958,7 +967,8 @@
             "title": "Straight cut",
             "text": "Women's T-shirt"
           },
-          "canonical": "/my-products/t-shirt/basic-blue-t-shirt"
+          "canonical": "/my-products/t-shirt/basic-blue-t-shirt",
+          "metaDesc":"Basic blue t-shirt"
         }
       },
       "createdAt": "2020-05-09T14:28:20.192Z",
@@ -1138,7 +1148,8 @@
             "text": "Disponible en noir, blanc et bleu",
             "title": "Chaussettes de tennis"
           },
-          "canonical": "/mes-produits/chaussettes/chaussettes-noires"
+          "canonical": "/mes-produits/chaussettes/chaussettes-noires",
+          "metaDesc":"Chaussettes noires"
         },
         "en": {
           "name": "Black socks",
@@ -1151,7 +1162,8 @@
             "text": "Available in black, white and blue",
             "title": "Tennis socks"
           },
-          "canonical": "/my-products/socks/black-socks"
+          "canonical": "/my-products/socks/black-socks",
+          "metaDesc":"Black socks"
         }
       },
       "createdAt": "2020-05-18T13:32:04.714Z",
@@ -1313,7 +1325,8 @@
             "title": "Chaussettes de sport",
             "text": "Disponible en noir, blanc et bleu"
           },
-          "canonical": "/mes-produits/chaussettes/chaussettes-blanches"
+          "canonical": "/mes-produits/chaussettes/chaussettes-blanches",
+          "metaDesc":"Chaussettes bleues"
         },
         "en": {
           "name": "Blue socks",
@@ -1326,7 +1339,8 @@
             "text": "Available in black, white and blue",
             "title": "Tennis socks"
           },
-          "canonical": "/my-products/socks/blue-socks"
+          "canonical": "/my-products/socks/blue-socks",
+          "metaDesc":"Blue socks"
         }
       },
       "universe": "chaussettes-chaussettes",
@@ -1477,7 +1491,8 @@
             "title": "Streatwear",
             "text": "Urban streetwear"
           },
-          "canonical": "/mes-produits/sweat/sweat-noir"
+          "canonical": "/mes-produits/sweat/sweat-noir",
+          "metaDesc":"Sweat noir"
         },
         "en": {
           "name": "Black sweat",
@@ -1490,7 +1505,8 @@
             "text": "Streatwear",
             "title": "Urban streetwear"
           },
-          "canonical": "/my-products/sweat/black-sweat"
+          "canonical": "/my-products/sweat/black-sweat",
+          "metaDesc":"Black sweat"
         }
       },
       "universe": "sweats-sweats",
@@ -1670,7 +1686,8 @@
             "title": "Streetwear",
             "text": "Urban streetwear"
           },
-          "canonical": "/mes-produits/sweat-jaune"
+          "canonical": "/mes-produits/sweat-jaune",
+          "metaDesc":"Sweat jaune"
         },
         "en": {
           "name": "Yellow sweat",
@@ -1683,7 +1700,8 @@
             "text": "Streatwear",
             "title": "Urban streetwear"
           },
-          "canonical": "/my-products/sweat/yellow-sweat"
+          "canonical": "/my-products/sweat/yellow-sweat",
+          "metaDesc":"Yellow sweat"
         }
       },
       "universe": "sweats-sweats",
@@ -1890,7 +1908,8 @@
             "title": "Votre tenue sur mesure",
             "text": "Choisissez parmis une selection de thirts, sweats et chausettes"
           },
-          "canonical": "/mes-produits/tenue-complete"
+          "canonical": "/mes-produits/tenue-complete",
+          "metaDesc":"Tenue complète"
         },
         "en": {
           "name": "Full outfit",
@@ -1903,7 +1922,8 @@
             "title": "Your custom outfit",
             "text": "Choose from a selection of thirts, sweatshirts and socks"
           },
-          "canonical": "/en/my-products/full-outfit"
+          "canonical": "/en/my-products/full-outfit",
+          "metaDesc":"Full outfit"
         }
       },
       "pictos": [],

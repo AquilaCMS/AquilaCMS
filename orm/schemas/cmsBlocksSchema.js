@@ -9,6 +9,7 @@
 const mongoose         = require('mongoose');
 const translationUtils = require('../../utils/translation');
 const Schema           = mongoose.Schema;
+const utilsDatabase    = require('../../utils/database');
 
 const CmsBlocksSchema = new Schema({
     code        : {type: String, required: true, unique: true},
@@ -42,9 +43,22 @@ async function translationValidation(self) {
     return errors;
 }
 
-CmsBlocksSchema.pre('save', async function (next) {
-    const errors = await translationValidation(this);
+async function preUpdates(next, that) {
+    await utilsDatabase.checkCode('cmsBlocks', that._id, that.code);
+    const errors = await translationValidation(that);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+}
+
+CmsBlocksSchema.pre('save', async function (next) {
+    await preUpdates(next, this);
+});
+
+CmsBlocksSchema.pre('updateOne', async function (next) {
+    await preUpdates(next, this._update.$set ? this._update.$set : this._update);
+});
+
+CmsBlocksSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(next, this._update.$set ? this._update.$set : this._update);
 });
 
 module.exports = CmsBlocksSchema;

@@ -31,13 +31,6 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
             });
         };
         
-        $scope.getCategoriesLink = function () {
-            if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink) {
-                    $scope.categoriesLink = categoriesLink.datas;
-                });  
-            }
-        };
 
         $scope.additionnalButtons = [
             {

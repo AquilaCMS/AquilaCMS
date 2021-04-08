@@ -29,6 +29,45 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all categories",
+                                "description": "Get 10 categories with default fields for current language'",
+                                "value": {
+                                    "PostBody": {
+                                        "limit": 10
+                                    }
+                                }
+                            },
+                            "example2": {
+                                "summary": "Get all catalog type categories",
+                                "description": "Get all categories which are catalog type with the default fields",
+                                "value": {
+                                    "PostBody": {
+                                        "limit": 10,
+                                        "filter": {
+                                            "action": "catalog"
+                                        }
+                                    }
+                                }
+                            },
+                            "example3": {
+                                "summary": "Get a specific french category",
+                                "description": "Get the french category for slug 'myslug' with the default fields except one field 'img'",
+                                "value": {
+                                    "lang": "fr",
+                                    "PostBody": {
+                                        "limit": 1,
+                                        "filter": {
+                                            "translation.fr.slug": "myslug"
+                                        },
+                                        "structure": {
+                                            "img": 0
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -36,42 +75,6 @@
         }
     },
     "/api/v2/category/{id}": {
-        "post": {
-            "responses": {
-                "200": {
-                    "description": "success",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/categoriesSchema"
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": ["Category"],
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "Category id",
-                    "required": true,
-                    "schema":{
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "description": "",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#components/schemas/PostBody"
-                        }
-                    }
-                }
-            }
-        },
         "delete": {
             "deprecated": false,
             "security": [{"admin_authorization": []}],
@@ -113,6 +116,19 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get specific category",
+                                "description": "Get the category for code 'mycode' with default fields for the default language",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "code": "mycode"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -128,82 +144,16 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "/v2/category/{id}/filter": {
-        "put": {
-            "responses": {
-                "200": {
-                    "description": "success",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/categoriesSchema"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Update a category",
+                                "description": "Update the french name of category for the matched _id",
+                                "value": {
+                                    "_id":"myId",
+                                    "translation.fr.name":"New name FR"
+                                }
                             }
-                        }
-                    }
-                }
-            },
-            "tags": ["Category"],
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "Category id",
-                    "required": true,
-                    "schema":{
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "description": "",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#components/schemas/PostBody"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "/v2/category/{id}/filters": {
-        "put": {
-            "responses": {
-                "200": {
-                    "description": "success",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/categoriesSchema"
-                            }
-                        }
-                    }
-                }
-            },
-            "tags": ["Category"],
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "Category id",
-                    "required": true,
-                    "schema":{
-                        "type": "string"
-                    }
-                }
-            ],
-            "requestBody": {
-                "description": "",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#components/schemas/PostBody"
                         }
                     }
                 }

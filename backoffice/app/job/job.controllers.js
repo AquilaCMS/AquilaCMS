@@ -3,8 +3,9 @@ var JobControllers = angular.module('aq.job.controllers', []);
 /**
  * Controller de la page contenant la liste des Jobs
  */
-JobControllers.controller('JobListCtrl', ['$scope', '$location', 'JobGetAll',
-    function ($scope, $location, JobGetAll) {
+JobControllers.controller('JobListCtrl', ['$scope', '$rootScope', '$location', 'JobGetAll',
+    function ($scope,$rootScope, $location, JobGetAll) {
+        $scope.lang = $rootScope.adminLang;
         $scope.isEditMode = true;
         $scope.detail = function (job) {
             $location.url(`/jobs/${job._id}`);
@@ -22,8 +23,10 @@ JobControllers.controller('JobListCtrl', ['$scope', '$location', 'JobGetAll',
 /**
  * Controller de la page contenant le detail d'un Job
  */
-JobControllers.controller('JobDetailCtrl', ['$scope', '$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById',
-    function ($scope, $sce, $q, $routeParams, $location, JobPlay, JobPlayImmediate, JobPause, toastService, JobSave, JobUpdate, JobRemove, JobGetById) {
+JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q', '$routeParams', '$location', 'JobPlay', 'JobPlayImmediate', 'JobPause', 'toastService', 'JobSave', 'JobUpdate', 'JobRemove', 'JobGetById',
+    function ($scope, $rootScope, $sce, $q, $routeParams, $location, JobPlay, JobPlayImmediate, JobPause, toastService, JobSave, JobUpdate, JobRemove, JobGetById) {
+        $scope.lang = $rootScope.adminLang;
+        $scope.test = 1;
         $scope.runImmediate = true;
         if ($routeParams.jobId != 'new') {
             $scope.isEditMode = true;

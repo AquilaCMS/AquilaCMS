@@ -1,5 +1,11 @@
 import React from 'react';
-import { NSSidebarAccount, NSContext, NSToast, logoutUser } from 'aqlrc';
+import {
+    NSSidebarAccount,
+    NSContext,
+    NSToast,
+    logoutUser
+} from 'aqlrc';
+import withI18next from 'lib/withI18n'
 import { Link } from 'routes';
 
 class SidebarAccount extends NSSidebarAccount {
@@ -17,7 +23,7 @@ class SidebarAccount extends NSSidebarAccount {
         try {
             await logoutUser();
             // HOOK => onLogout
-            if(this.context.props.hooksFunctions && this.context.props.hooksFunctions.onLogout) this.context.props.hooksFunctions.onLogout.map(func => func())
+            if (this.context.props.hooksFunctions && this.context.props.hooksFunctions.onLogout) this.context.props.hooksFunctions.onLogout.map(func => func())
             Router.pushRoute('home', { lang: routerLang });
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {

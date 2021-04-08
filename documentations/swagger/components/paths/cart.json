@@ -14,6 +14,18 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all carts",
+                                "description": "Get all carts",
+                                "value": {"PostBody":{"structure":"*","limit":9999}}
+                            },
+                            "example2": {
+                                "summary": "Get all carts filtered",
+                                "description": "Get all carts sorted, and populated",
+                                "value": {"PostBody":{"filter":{},"structure":{"updatedAt":1},"limit":9999,"populate":["customer.id"],"sort":{"updatedAt":1}}}
+                            }
                         }
                     }
                 }
@@ -208,7 +220,24 @@
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#components/schemas/PostBody"
+                            "description": "",
+                            "properties": {
+                                "cartId" : {"type": "string"},
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id" : {"type": "string"},
+                                        "quantity" : {"type": "number"}
+                                    }
+                                }
+                            }
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Add product to new cart",
+                                "description": "Add product to new cart",
+                                "value": {"cartId":null,"item":{"id":"5f2aae034168fe0b983ca913","quantity":1}}
+                            }
                         }
                     }
                 }

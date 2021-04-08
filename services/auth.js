@@ -51,7 +51,7 @@ const login = async (req, res, next) => {
         if (!isMatch) throw NSErrors.BadLogin;
 
         if (!user.isActive) {
-            throw NSErrors.DesactivateAccount;
+            throw NSErrors.DeactivateAccount;
         }
 
         const loginPassport = promisify(req.logIn);

@@ -505,11 +505,20 @@ PromoControllers.controller("PromoDetailCtrl", [
                     toastService.toast("success", "Promotion sauvegardée !");
                     $location.path(`/promos/${  response._id}`);
                 }
-            }, function (err) {
-                if (err.data && err.data.translations) {
-                    return toastService.toast('danger', err.data.translations.fr);
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    } else if (error.data.translations) {
+                        return toastService.toast('danger', err.data.translations.fr);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    console.log(error);
+                    toastService.toast("danger", 'Error');
                 }
-                return console.log(err);
+                console.log(error); //to see it
             });
         };
 

@@ -6,9 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const mongoose      = require('mongoose');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
+const ObjectId      = Schema.ObjectId;
 
 const SetAttributesSchema = new Schema({
     code       : {type: String, required: true, unique: true},
@@ -21,6 +22,23 @@ const SetAttributesSchema = new Schema({
     questions : [{
         translation : {}
     }]
+});
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('setAttributes', that._id, that.code);
+}
+
+SetAttributesSchema.pre('updateOne', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+SetAttributesSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+SetAttributesSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
 });
 
 module.exports = SetAttributesSchema;

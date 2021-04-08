@@ -5,14 +5,17 @@
         "properties": {
             "_id"     : {"type": "string", "format": "ObjectId"},
             "email"   : {"type": "string"},
-            "createdAt" : {"type": "date"},
+            "createdAt" : {
+                "type": "string",
+                "format": "date"
+            },
             "segment" : {
                 "type": "array",
                 "items": {
                     "name"             : {"type": "string"},
-                    "optin"            : {"type": "Boolean"},
-                    "date_subscribe"   : {"type": "string", "format": "Date", "default": "Date.now"},
-                    "date_unsubscribe" : {"type": "string", "format": "Date"}
+                    "optin"            : {"type": "boolean"},
+                    "date_subscribe"   : {"type": "string", "format": "date", "default": "Date.now"},
+                    "date_unsubscribe" : {"type": "string", "format": "date"}
                 }
             }
         }

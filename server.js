@@ -208,3 +208,5 @@ const startServer = async () => {
         setTimeout(() => process.exit(1), 2000);
     }
 })();
+
+module.exports = server;

@@ -4,8 +4,10 @@
     <div class="row">
         <div class="col-md-4">
             <div class="box subbox">
-                <div class="box-header"><h2 translate>order.detail.compteCli</h2></div>
-                <div class="box-content">
+                <div class="box-header">
+                    <h2 translate>order.detail.compteCli</h2>
+                </div>
+                <div class="box-content textInBox">
                     <div ng-if="!cart.customer">Anonyme</div>
                     <a target="_blank" ng-href="#/clients/{{cart.customer.id._id}}">{{cart.customer.id.firstname}}&nbsp;{{cart.customer.id.lastname}}</a><br>
                     {{cart.customer.phone}}<br />
@@ -20,7 +22,9 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box subbox">
-                <div class="box-header"><h2 translate>order.detail.orderDet</h2></div>
+                <div class="box-header box-header-table">
+                    <h2 translate>order.detail.orderDet</h2>
+                </div>
                 <div class="box-content">
                     <table class="shortTable table order-cart">
                         <thead>

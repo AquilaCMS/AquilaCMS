@@ -23,7 +23,16 @@ import Error from './_error';
 class PageCategory extends NSPageCategory {
     render() {
         const {
-            lang, notFound, nsCms_extraText, nsCms_extraText2, nsCms_extraText3, oCmsHeader, oCmsFooter, sitename, t, themeConfig
+            lang,
+            notFound,
+            nsCms_extraText,
+            nsCms_extraText2,
+            nsCms_extraText3,
+            oCmsHeader,
+            oCmsFooter,
+            sitename,
+            t,
+            themeConfig
         } = this.props;
         if (notFound) {
             return (
@@ -55,7 +64,7 @@ class PageCategory extends NSPageCategory {
                     </Head>
 
                     <div className="page-content">
-                        { nsCms_extraText && nsCms_extraText.content !== '' && <CMS content={nsCms_extraText.content} hide_error="1" /> }
+                        {nsCms_extraText && nsCms_extraText.content !== '' && <CMS content={nsCms_extraText.content} hide_error="1" />}
 
                         <div className="main">
                             <div className="shell">
@@ -64,10 +73,10 @@ class PageCategory extends NSPageCategory {
                                 }
                                 <NSBreadcrumb gNext={{ routes, Link }} />
 
-                                { nsCms_extraText2 && nsCms_extraText2.content !== '' && <div style={{ marginBottom: '20px' }}><CMS content={nsCms_extraText2.content} hide_error="1" /></div> }
-                                <div class="category-top-modules">
+                                {nsCms_extraText2 && nsCms_extraText2.content !== '' && <div style={{ marginBottom: '20px' }}><CMS content={nsCms_extraText2.content} hide_error="1" /></div>}
+                                <div className="category-top-modules">
                                     {
-                                        listModulePage('category-top', {onPageChange: this.onPageChange, category: category})
+                                        listModulePage('category-top', { onPageChange: this.onPageChange, category: category })
                                     }
                                 </div>
 
@@ -78,30 +87,35 @@ class PageCategory extends NSPageCategory {
                                 <nav className="nav-filters visible-xs-block">
                                     <ul>
                                         <li>
-                                            <a role="button" onClick={() => this.changeTab('filter1')}>{t('trier')}</a>
+                                            <a role="button" onClick={() => this.changeTab('filter1')}>{t('category:trier')}</a>
                                         </li>
 
                                         <li>
-                                            <a role="button" onClick={() => this.changeTab('filter2')}>{t('filtrer')}</a>
+                                            <a role="button" onClick={() => this.changeTab('filter2')}>{t('category:filtrer')}</a>
                                         </li>
                                     </ul>
                                 </nav>{/* <!-- /.nav-filters --> */}
 
                                 <div className={`tab-filter${this.state.tab === 'filter1' ? ' current' : ''}`} id="filter1">
                                     <div className="bar-filters">
-                                        <h4 itemProp="numberOfItems">{count} {t('results')}</h4>
+                                        <h4 itemProp="numberOfItems">{count} {t('category:results')}</h4>
 
                                         <div className="form__row form__row--flex">
-                                            <label htmlFor="field-sort-by" className="form__label">{t('trierPar')}</label>
+                                            <label htmlFor="field-sort-by" className="form__label">{t('category:trierPar')}</label>
 
                                             <div className="form__controls">
                                                 <div className="select select--normal">
-                                                    <select name="field-sort-by" id="field-sort-by" value={this.state.selectedSort} onChange={(e) => this.handleSort(JSON.parse(e.target.value), e.target.value, filters)}>
-                                                        <option value={JSON.stringify({ field: 'sortWeight', sortValue: '-1' })}>{t('pertinence')}</option>
+                                                    <select
+                                                        name="field-sort-by"
+                                                        id="field-sort-by"
+                                                        value={this.state.selectedSort}
+                                                        onChange={(e) => this.handleSort(JSON.parse(e.target.value), e.target.value, filters)}
+                                                    >
+                                                        <option value={JSON.stringify({ field: 'sortWeight', sortValue: '-1' })}>{t('category:pertinence')}</option>
                                                         <option value={JSON.stringify({ field: `translation.${lang}.name`, sortValue: '1' })}>A-Z</option>
                                                         <option value={JSON.stringify({ field: `translation.${lang}.name`, sortValue: '-1' })}>Z-A</option>
-                                                        <option value={JSON.stringify({ field: `price.${taxDisplay}.normal`, sortValue: '1' })}>{t('prix')} -</option> {/* TODO: trier par prix normal & discount */}
-                                                        <option value={JSON.stringify({ field: `price.${taxDisplay}.normal`, sortValue: '-1' })}>{t('prix')} +</option>
+                                                        <option value={JSON.stringify({ field: `price.${taxDisplay}.normal`, sortValue: '1' })}>{t('category:prix')} -</option> {/* TODO: trier par prix normal & discount */}
+                                                        <option value={JSON.stringify({ field: `price.${taxDisplay}.normal`, sortValue: '-1' })}>{t('category:prix')} +</option>
                                                         <option value={JSON.stringify({ field: 'is_new', sortValue: '-1' })}>{t('category:new')}</option>
                                                         <option value={JSON.stringify({ field: 'reviews.average', sortValue: '-1' })}>{t('category:grade')}</option>
                                                         <option value={JSON.stringify({ field: 'stats.views', sortValue: '-1' })}>{t('category:mostViewed')}</option>
@@ -111,11 +125,20 @@ class PageCategory extends NSPageCategory {
                                         </div>{/* <!-- /.form__row --> */}
 
                                         <div className="form__row form__row--flex">
-                                            <label htmlFor="field-items-per-page" className="form__label">{t('produitsParPage')}</label>
+                                            <label htmlFor="field-items-per-page" className="form__label">{t('category:produitsParPage')}</label>
 
                                             <div className="form__controls">
                                                 <div className="select select--small">
-                                                    <select name="field-items-per-page" id="field-items-per-page" defaultValue="15" onChange={(e) => this.setState({ itemsPerPages: Number(e.target.value) }, (e) => this.onPageChange(1, itemsPerPages, e, filters))}>
+                                                    <select
+                                                        name="field-items-per-page"
+                                                        id="field-items-per-page"
+                                                        defaultValue="15"
+                                                        onChange={
+                                                            (e) => this.setState(
+                                                                { itemsPerPages: Number(e.target.value) },
+                                                                (e) => this.onPageChange(1, itemsPerPages, e, filters)
+                                                            )}
+                                                    >
                                                         <option value="15">15</option>
                                                         <option value="30">30</option>
                                                         <option value="45">45</option>
@@ -142,13 +165,27 @@ class PageCategory extends NSPageCategory {
                                         <div className="grid-toggle hidden-xs">
                                             <ul>
                                                 <li>
-                                                    <button type="button" className="btn" onClick={() => this.setState({ gridDisplay: true }, () => { window.localStorage.setItem('gridDisplay', 'true'); })} aria-label={t('category:grid')}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn"
+                                                        onClick={() => this.setState({ gridDisplay: true }, () => {
+                                                            window.localStorage.setItem('gridDisplay', 'true');
+                                                        })}
+                                                        aria-label={t('category:grid')}
+                                                    >
                                                         <i className={`ico-grid${gridDisplay ? ' active' : ''}`} />
                                                     </button>
                                                 </li>
 
                                                 <li>
-                                                    <button type="button" className="btn" onClick={() => this.setState({ gridDisplay: false }, () => { window.localStorage.setItem('gridDisplay', 'false'); })} aria-label={t('category:list')}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn"
+                                                        onClick={() => this.setState({ gridDisplay: false }, () => {
+                                                            window.localStorage.setItem('gridDisplay', 'false');
+                                                        })}
+                                                        aria-label={t('category:list')}
+                                                    >
                                                         <i className={`ico-list${!gridDisplay ? '-active' : ''}`} />
                                                     </button>
                                                 </li>
@@ -157,9 +194,26 @@ class PageCategory extends NSPageCategory {
                                     </div>{/* <!-- /.bar-filters --> */}
                                 </div>{/* <!-- /.tab-filter --> */}
 
-                                <div className="container container--flex align-top" style={themeConfig && themeConfig.find(t => t.key === 'filters') && themeConfig.find(t => t.key === 'filters').value === 'right' ? { flexDirection: "row-reverse" } : {}}>
+                                <div
+                                    className="container container--flex align-top"
+                                    style={
+                                        themeConfig
+                                            && themeConfig.find(t => t.key === 'filters')
+                                            && themeConfig.find(t => t.key === 'filters').value === 'right'
+                                            ? { flexDirection: "row-reverse" }
+                                            : {}
+                                    }>
 
-                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2" style={themeConfig && themeConfig.find(t => t.key === 'filters') && themeConfig.find(t => t.key === 'filters').value === 'none' ? { display: "none" } : {}}>
+                                    <div
+                                        className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`}
+                                        id="filter2"
+                                        style={
+                                            themeConfig
+                                                && themeConfig.find(t => t.key === 'filters')
+                                                && themeConfig.find(t => t.key === 'filters').value === 'none'
+                                                ? { display: "none" }
+                                                : {}
+                                        }>
                                         {
                                             <NSFilters
                                                 category={category}
@@ -181,10 +235,18 @@ class PageCategory extends NSPageCategory {
                                     <div className="content">
                                         <div className="products-grid" itemScope itemType="http://schema.org/ItemList">
                                             {
-                                                productsList.map((product, index) => <NSProductCard from="category" gridDisplay={gridDisplay} includeCss={index === 0} key={product._id} type="data" value={product} t={t} gNext={{ Head, Link, Router }} />)
+                                                productsList.map((product, index) => <NSProductCard
+                                                    from="category"
+                                                    gridDisplay={gridDisplay}
+                                                    includeCss={index === 0}
+                                                    key={product._id}
+                                                    type="data"
+                                                    value={product}
+                                                    t={t}
+                                                    gNext={{ Head, Link, Router }} />)
                                             }
                                             {
-                                                productsList.length === 0 && <p style={{ textAlign: 'center', width: '100%' }}>{t('aucunResultat')}</p>
+                                                productsList.length === 0 && <p style={{ textAlign: 'center', width: '100%' }}>{t('category:aucunResultat')}</p>
                                             }
 
                                         </div>{/* <!-- /.products-grid --> */}
@@ -210,11 +272,11 @@ class PageCategory extends NSPageCategory {
                                 </div>{/* <!-- /.container container--flex --> */}
                                 <div>
                                     {
-                                        listModulePage('category-bottom', {onPageChange: this.onPageChange, category: category})
+                                        listModulePage('category-bottom', { onPageChange: this.onPageChange, category: category })
                                     }
                                 </div>
 
-                                { nsCms_extraText3 && nsCms_extraText3.content !== '' && <CMS content={nsCms_extraText3.content} hide_error="1" /> }
+                                {nsCms_extraText3 && nsCms_extraText3.content !== '' && <CMS content={nsCms_extraText3.content} hide_error="1" />}
                             </div>{/* <!-- /.shell --> */}
                         </div>{/* <!-- /.main --> */}
                     </div>
@@ -224,25 +286,26 @@ class PageCategory extends NSPageCategory {
         );
     }
 
-    static defaultProps = {
-        contentHtml : {
-            content : '',
-        },
-        category : {
-            productsList : [],
-            filters      : [],
-        },
-        oCmsHeader : {
-            content : '',
-        },
-        productsList : [],
-        min          : 0,
-        max          : 0,
-        count        : 0,
-        oCmsFooter   : {
-            content : '',
-        }
-    };
 }
+
+PageCategory.defaultProps = {
+    contentHtml: {
+        content: '',
+    },
+    category: {
+        productsList: [],
+        filters: [],
+    },
+    oCmsHeader: {
+        content: '',
+    },
+    productsList: [],
+    min: 0,
+    max: 0,
+    count: 0,
+    oCmsFooter: {
+        content: '',
+    }
+};
 
 export default withI18next(['category', 'product-card'])(PageCategory);

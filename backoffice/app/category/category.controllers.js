@@ -22,7 +22,8 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         });
 
         $scope.exist = function(item){
-            if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug){
+            if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].slug){
+                // the title is optionnal (when a staticPage is created, there is not title)
                 return true;
             }
             return false;
@@ -415,74 +416,30 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                 {
                     $scope.formMenu.$setPristine();
                 }
+            }, function (err) {
+                toastService.toast("danger", err.data.message);
             });
         }
 
         $scope.save = function (isQuit)
-        {
-            var deferred = $q.defer();
-            var promises = [];
-
+        {   
             if(this.formMenu.ruleForm.$invalid)
             {
                 toastService.toast("danger", "Formulaire des regles incomplet");
                 return;
             }
-
-            // for(var key in $scope.infoImage)
-            // {
-            //     if($scope.infoImage[key].ImageUrl && $scope.infoImage[key].ImageUrl != "" && $scope.infoImage[key].ImageUrl != $scope.infoImage[key].originalImage)
-            //     {
-            //         promises.push(deferred.promise);
-            //         $scope.infoImage[key].showProgressValue = true;
-            //         $scope.infoImage[key].defaultUp = false;
-            //         $scope.upload = Upload.upload({
-            //             url: "categories/media", data: {type: key}, file: $scope.infoImage[key].file
-            //         }).success(function (data)
-            //         {
-            //             $scope.category[data.imgSrc.split("/")[2] + "Url"] = data.imgSrc;
-            //             $scope.infoImage[data.imgSrc.split("/")[2]].ImageUrl = data.imgSrc;
-            //             $scope.infoImage[data.imgSrc.split("/")[2]].originalImage = data.imgSrc;
-            //             $scope.infoImage[data.imgSrc.split("/")[2]].showProgressValue = false;
-            //             $scope.infoImage[data.imgSrc.split("/")[2]].checkUp = true;
-            //             deferred.resolve();
-            //         }).error(function ()
-            //         {
-            //             deferred.reject();
-            //         });
-            //     }
-            // }
-
-            $q.all(promises).then(function ()
-            {
-                if($scope.rule.operand !== undefined)
-                {
-                    RulesV2.save(
-                        $scope.rule,
-                        function (response)
-                        {
-                            toastService.toast(
-                                "success",
-                                "Règle(s) sauvegardée(s)"
-                            );
-                            saveCategory();
-                        },
-                        function (err)
-                        {
-                            toastService.toast(
-                                "danger",
-                                "Pas de règles créées"
-                            );
-                            saveCategory();
-                        }
-                    );
-                }
-                else
-                {
-                    saveCategory();
-                }
-            });
-
+            if ($scope.rule.operand !== undefined) {
+                RulesV2.save($scope.rule, function (response){
+                        toastService.toast("success","Règle(s) sauvegardée(s)");
+                        saveCategory();
+                    }, function (err) {
+                        toastService.toast("danger","Pas de règles créées");
+                        saveCategory();
+                    }
+                );
+            } else {
+                saveCategory();
+            }
             // for(var key in $scope.infoImage)
             // {
             //     if(($scope.infoImage[key].originalImage && $scope.infoImage[key].ImageUrl == "") || ($scope.infoImage[key].originalImage != $scope.infoImage[key].ImageUrl))

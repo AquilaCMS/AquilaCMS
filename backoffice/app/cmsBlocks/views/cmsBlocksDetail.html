@@ -63,9 +63,9 @@
             <div class="col-sm-2"></div>
             <div class="col-sm-10 scrollmenu">
                 <ul class="nav nav-tabs" >
-                    <li class="active" ng-click="generateContent()"><a data-toggle="tab" href="#result" target="_self" translate>cmsBlocks.detail.result</a></li>
-                    <li ng-click="generateVariables()"><a data-toggle="tab" href="#variables" target="_self" translate>cmsBlocks.detail.variables</a></li>
-                    <li><a data-toggle="tab" href="#html" target="_self" translate>cmsBlocks.detail.html</a></li>
+                    <li class="active" ng-click="generateContent();selectTab('result')"><a data-toggle="tab" href="#result" target="_self" translate>cmsBlocks.detail.result</a></li>
+                    <li ng-click="generateVariables();selectTab('variables')"><a data-toggle="tab" href="#variables" target="_self" translate>cmsBlocks.detail.variables</a></li>
+                    <li><a ng-click="selectTab('html')" data-toggle="tab" href="#html" target="_self" translate>cmsBlocks.detail.html</a></li>
                 </ul>
             </div>
             <div class="col-sm-2"></div>
@@ -73,7 +73,7 @@
                 <div id="result" class="tab-pane fade in active">
                     <div class="form-group">
                         <div class="col-sm-12">
-                            <div style="background-color: white; padding: 20px; border-radius: 10px;" ng-bind-html="cmsBlock.translation[lang].content" class="form-control"></div>
+                            <div style="background-color: white; padding: 20px; border-radius: 10px;min-height:200px;height:auto;" ng-bind-html="cmsBlock.translation[lang].content" class="form-control"></div>
                         </div>
                     </div>
                 </div>
@@ -81,10 +81,8 @@
                     <div ng-repeat="var in cmsBlock.translation[lang].variables">
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <label style="max-width: 150px;" class="col-sm-1 control-label">{{var.label}}</label>
-                                <div class="col-sm-11">
-                                    <textarea rows="1" class="form-control" ng-model="var.value"></textarea>
-                                </div>
+                                <label class="control-label" style="max-width: 150px;padding-left:10px;text-align: left;">{{var.label}}</label>
+                                <textarea rows="1" class="form-control" ng-model="var.value"></textarea>
                             </div>
                         </div>
                     </div>
@@ -99,7 +97,7 @@
                 <div id="html" class="tab-pane">
                     <div class="form-group">
                         <div class="col-sm-12">
-                            <ns-tinymce lang="lang" text="cmsBlock.translation[lang].html"></ns-tinymce>
+                            <ns-tinymce ng-if="selectedTab.active == 'html'" lang="lang" text="cmsBlock.translation[lang].html"></ns-tinymce>
                         </div>
                     </div>
                 </div>

@@ -11,9 +11,9 @@
             "user" : {
                 "type": "object",
                 "properties": {
-                    "email"          : {"type": "String"},
-                    "lastname"       : {"type": "String"},
-                    "firstname"      : {"type": "String"},
+                    "email"          : {"type": "string"},
+                    "lastname"       : {"type": "string"},
+                    "firstname"      : {"type": "string"},
                     "civility"       : {"type": "number"},
                     "details"        : {"type": "object"},
                     "set_attributes" : {"type": "string", "format": "ObjectId", "description": "ref setAttributes"},
@@ -23,10 +23,10 @@
                             "type": "object",
                             "properties": {
                                 "id"          : {"type": "string", "format": "ObjectId", "description": "ref attributes"},
-                                "code"        : {"type": "String"},
-                                "values"      : {"type": "String"},
-                                "param"       : {"type": "String"},
-                                "type"        : {"type": "String", "default": "unset"},
+                                "code"        : {"type": "string"},
+                                "values"      : {"type": "string"},
+                                "param"       : {"type": "string"},
+                                "type"        : {"type": "string", "default": "unset"},
                                 "translation" : {"type": "object"},
                                 "position"    : {"type": "number", "default": 1}
                             }
@@ -41,7 +41,7 @@
                     "type"
                 ],
                 "properties": {
-                    "code"           : {"type": "String"},
+                    "code"           : {"type": "string"},
                     "set_attributes" : {"type": "string", "format": "ObjectId", "description": "ref setAttributes"},
                     "attributes"     : {
                         "type": "array",
@@ -52,13 +52,13 @@
                                 "code"        : {"type": "string"},
                                 "values"      : {"type": "string"},
                                 "param"       : {"type": "string"},
-                                "type"        : {"type": "String", "default": "unset"},
+                                "type"        : {"type": "string", "default": "unset"},
                                 "translation" : {"type": "object"},
                                 "position"    : {"type": "number", "default": 1}
                             }
                         }
                     },
-                    "type"  : {"type": "String"},
+                    "type"  : {"type": "string"},
                     "price" : {
                         "type": "object",
                         "properties": {

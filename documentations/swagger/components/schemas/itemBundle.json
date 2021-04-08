@@ -8,7 +8,7 @@
                     "type": "object",
                     "required": ["bundle_section_ref"],
                     "properties": {
-                        "bundle_section_ref" : {"type": "String"},
+                        "bundle_section_ref" : {"type": "string"},
                         "products"           : {
                             "type": "array",
                             "items": {

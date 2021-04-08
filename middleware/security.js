@@ -34,7 +34,7 @@ const securityForceActif = (arrayFieldsToActivate) => {
  */
 const securityForceFilter = (arrayFieldsToActivate) => {
     return (req, res, next) => {
-        if (req.info && !req.info.isAdmin) {
+        if (!req.info || !req.info.isAdmin) {
             if (!req.body.PostBody) req.body.PostBody = {};
             const {PostBody} = req.body;
             if (!PostBody.filter) {

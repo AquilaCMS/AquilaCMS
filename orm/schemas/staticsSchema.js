@@ -89,15 +89,23 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
     return errors;
 };
 
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('statics', that._id, that.code);
+    await utilsDatabase.checkSlugExist(that, 'statics');
+}
+
 StaticsSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 StaticsSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 StaticsSchema.pre('save', async function (next) {
+    await preUpdates(this);
     const errors = await StaticsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

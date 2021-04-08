@@ -34,6 +34,23 @@
                     "application/json": {
                         "schema": {
                             "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get 12 products",
+                                "description": "Get 12 products with a default structure, sorted by english name",
+                                "value": {"lang":"en", "PostBody":{"filter":{},"sort":{"translation.en.name":1}, "limit":12}}
+                            },
+                            "example2": {
+                                "summary": "Get product filtered by english slug",
+                                "description": "Get products filtered by slug",
+                                "value": {"PostBody":{"filter":{"translation.en.slug":"english_slug"}}}
+                            },
+                            "example3": {
+                                "summary": "Get 12 products between two price",
+                                "description": "Get 12 products between two price, '$gte' (here 10) is the minimum price and '$lte' (here 20) is the maximum price",
+                                "value": {"PostBody":{"filter":{"price.ati.normal": {"$gte": 10, "$lte": 21}}},"limit":12,"sort":{"code":1}}
+                            }
                         }
                     }
                 },
@@ -53,6 +70,13 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/productsSchema"
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Get one product",
+                                    "description": "Get one product with the correct code. In this example, we populate the result to have more data",
+                                    "value": {"PostBody":{"filter":{"code":"THE_CODE"},"structure":"*","populate":["set_attributes","associated_prds"],"withPromos":false}}
+                                }
                             }
                         }
                     }

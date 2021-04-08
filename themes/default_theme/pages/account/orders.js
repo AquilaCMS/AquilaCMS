@@ -2,7 +2,11 @@ import React from 'react';
 import Head from 'next/head';
 import moment from 'moment';
 import {
-    NSPageAccountOrders, NSContext, NSSidebarAccount, imgDefaultBase64, statusColor
+    NSPageAccountOrders,
+    NSContext,
+    NSSidebarAccount,
+    imgDefaultBase64,
+    statusColor
 } from 'aqlrc';
 import ModalR from 'react-responsive-modal';
 import Layout from 'components/Layout';
@@ -77,11 +81,11 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                 <tbody>
                                                                                                     {
                                                                                                         order.items.map((item) => {
-                                                                                                            let basePrice  = null;
-                                                                                                            let descPromo  = '';
+                                                                                                            let basePrice = null;
+                                                                                                            let descPromo = '';
                                                                                                             let descPromoT = '';
                                                                                                             if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
-                                                                                                            // On check si le produit courant a recu une promo
+                                                                                                                // On check si le produit courant a recu une promo
                                                                                                                 const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
                                                                                                                 if (prdPromoFound) {
                                                                                                                     basePrice = prdPromoFound[`basePrice${taxDisplay[index].toUpperCase()}`];
@@ -94,15 +98,15 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                 }
                                                                                                             }
                                                                                                             let imgDefault = imgDefaultBase64;
-                                                                                                            let imgAlt     = 'illustration produit';
+                                                                                                            let imgAlt = 'illustration produit';
                                                                                                             if (item.id && item.id.images && item.id.images.length) {
                                                                                                                 const foundImg = item.id.images.find((img) => img.default);
                                                                                                                 if (foundImg) {
                                                                                                                     imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt     = foundImg.alt || imgAlt;
+                                                                                                                    imgAlt = foundImg.alt || imgAlt;
                                                                                                                 } else {
                                                                                                                     imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt     = item.id.images[0].alt || imgAlt;
+                                                                                                                    imgAlt = item.id.images[0].alt || imgAlt;
                                                                                                                 }
                                                                                                             }
                                                                                                             return (
@@ -121,21 +125,20 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                             : ''
                                                                                                                                     }
                                                                                                                                 </p>
-                                                                                                                                {item.type === 'bundle' && <ul style={{listStyle: 'none'}}>
+                                                                                                                                {item.type === 'bundle' && <ul style={{ listStyle: 'none' }}>
                                                                                                                                     {
                                                                                                                                         item.selections.map((section) => (
                                                                                                                                             section.products.map((productSection, indexSel) => (
-                                                                                                                                            <li key={indexSel}>{productSection.name} {`${
-                                                                                                                                                (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
+                                                                                                                                                <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
                                                                                                                                                     (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] > 0 ?
-                                                                                                                                                    '+' :
-                                                                                                                                                    '') +
-                                                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' : 
-                                                                                                                                                ''
-                                                                                                                                            }`}</li>
+                                                                                                                                                        '+' :
+                                                                                                                                                        '') +
+                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' :
+                                                                                                                                                    ''
+                                                                                                                                                    }`}</li>
                                                                                                                                             ))
                                                                                                                                         ))
                                                                                                                                     }
@@ -228,7 +231,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                             <ul>
                                                                                                 {
                                                                                                     order.delivery && order.delivery.url
-                                                                                                        ? <li><a href={order.delivery.url} target="_blank">{t('account:orders.page.label.follow_my_order')}</a></li>
+                                                                                                        ? <li><a href={order.delivery.url} target="_blank" rel="noreferrer">{t('account:orders.page.label.follow_my_order')}</a></li>
                                                                                                         : ''
                                                                                                 }
                                                                                                 {

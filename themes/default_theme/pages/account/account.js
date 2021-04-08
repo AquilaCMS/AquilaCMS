@@ -1,12 +1,20 @@
 import React from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import Head from 'next/head';
 import {
-    NSPageAccount, NSContext, NSSidebarAccount, NSToast, getLangPrefix, createOrUpdateUser, getNewsletterUser, sendMailResetPasswordUser, updateNewsletterUser
+    NSPageAccount,
+    NSContext,
+    NSSidebarAccount,
+    NSToast,
+    getLangPrefix,
+    createOrUpdateUser,
+    getNewsletterUser,
+    sendMailResetPasswordUser,
+    updateNewsletterUser
 } from 'aqlrc';
 import Layout from 'components/Layout';
 import { Link, Router } from 'routes';
-import getAPIUrl from 'lib/getAPIUrl';
+// import getAPIUrl from 'lib/getAPIUrl';
 import { withI18next } from 'lib/withI18n';
 
 /**
@@ -19,13 +27,13 @@ class PageAccount extends NSPageAccount {
         super(props);
         this.state = {
             ...props,
-            password : {
-                oldPassword     : '',
-                newPassword     : '',
-                confirmPassword : ''
+            password: {
+                oldPassword: '',
+                newPassword: '',
+                confirmPassword: ''
             },
-            optinNewsletter : false,
-            open            : false
+            optinNewsletter: false,
+            open: false
         };
     }
 
@@ -124,7 +132,7 @@ class PageAccount extends NSPageAccount {
 
     render() {
         const {
-            langs, oCmsHeader, oCmsFooter, sitename, t, hooksFunctions
+            langs, oCmsHeader, oCmsFooter, sitename, t
         } = this.props;
         const { user, optinNewsletter } = this.state;
         return (
@@ -152,13 +160,13 @@ class PageAccount extends NSPageAccount {
                                                                 <div className="form__controls" style={{ textAlign: 'end' }}>
                                                                     <input type="text" className="field" name="email" id="field-email" value={user.email} disabled />
                                                                     {
-                                                                    /* user && !user.isActiveAccount
-                                                                            ? (
-                                                                                <div>
-                                                                                    <a onClick={this.handleActiveAccountMail} style={{ fontSize: '12px' }}>{t('account:account.page.label.send_mail_verif')}</a>
-                                                                                </div>
-                                                                            )
-                                                                            : '' */
+                                                                        /* user && !user.isActiveAccount
+                                                                                ? (
+                                                                                    <div>
+                                                                                        <a onClick={this.handleActiveAccountMail} style={{ fontSize: '12px' }}>{t('account:account.page.label.send_mail_verif')}</a>
+                                                                                    </div>
+                                                                                )
+                                                                                : '' */
                                                                     }
                                                                 </div>{/* <!-- /.form__controls --> */}
                                                             </div>{/* <!-- /.form__row --> */}

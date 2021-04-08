@@ -186,7 +186,6 @@ ClientControllers.controller("ClientDetailCtrl", [
             });
         }
 
-        getAttributesClient();
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item.type;
@@ -253,18 +252,21 @@ ClientControllers.controller("ClientDetailCtrl", [
                     for(let i = 0; i < $scope.client.addresses.length; i++)
                     {
                         var isoCountryCode = $scope.client.addresses[i].isoCountryCode;
-                        ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
-                        {
-                            // On récupére le nom du pays
-                            $scope.client.addresses[i].country = response.name;
-                        }, function (error) {
-                            console.error("Impossible de récupérer le pays des clients", error);
-                            // si une erreur se produit on met le code iso du pays dans country
-                            $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
-                        });
+                        if(isoCountryCode){
+                            ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
+                            {
+                                // On récupére le nom du pays
+                                $scope.client.addresses[i].country = response.name;
+                            }, function (error) {
+                                console.error("Impossible de récupérer le pays des clients", error);
+                                // si une erreur se produit on met le code iso du pays dans country
+                                $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
+                            });
+                        }
                     }
                 }
 
+                // recup les attributs (tous les attr users en gros)
                 genAttributes();
 
                 $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
@@ -276,6 +278,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 $scope.client.oldEmail = response.email;
                 $scope.isEditMode = true;
 
+                // on recup ceux lié a cet user
                 getAttributesClient();
 
                 $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
@@ -367,7 +370,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                         toastService.toast('danger', 'Email already exists');
                     }
                 }else{
-                    toastService.toast('danger', 'Error during creation');
+                    toastService.toast('danger', err.data.message);
                 }
             })
         };
