@@ -145,7 +145,6 @@ const initModule = async (files) => {
             loadApp                  : info.loadApp,
             loadTranslationBack      : info.loadTranslationBack,
             loadTranslationFront     : info.loadTranslationFront,
-            packageDependencies      : info.packageDependencies || {},
             moduleDependencies       : info.moduleDependencies,
             component_template_front : info.component_template_front || null,
             files                    : info.files || [],
