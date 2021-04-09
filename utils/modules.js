@@ -72,44 +72,6 @@ const errorModule = async (target_path_full) => {
     }
 };
 
-const compareDependencies = (myModule, modulesActivated, install = true) => {
-    const sameDependencies = {
-        api   : {},
-        theme : {}
-    };
-    for (const apiOrTheme of Object.keys(myModule.packageDependencies)) {
-        for (const [name, version] of Object.entries(myModule.packageDependencies[apiOrTheme])) {
-            if (!sameDependencies[apiOrTheme][name]) {
-                sameDependencies[apiOrTheme][name] = install ? new Set() : [];
-            }
-            if (install) {
-                sameDependencies[apiOrTheme][name].add(version);
-            } else {
-                sameDependencies[apiOrTheme][name].push(version);
-            }
-            if (modulesActivated.length > 0) {
-                for (const elem of modulesActivated) {
-                    if (
-                        elem.packageDependencies
-                        && elem.packageDependencies[apiOrTheme]
-                    ) {
-                        for (const [name1, version1] of Object.entries(elem.packageDependencies[apiOrTheme])) {
-                            if (name1 === name) {
-                                if (install) {
-                                    sameDependencies[apiOrTheme][name1].add(version1);
-                                } else {
-                                    sameDependencies[apiOrTheme][name1].push(version1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return sameDependencies;
-};
-
 const checkModuleDepencendiesAtInstallation = async (module) => {
     if (module.moduleDependencies) {
         const missingDependencies = [];
@@ -249,7 +211,6 @@ module.exports = {
     createListModuleFile,
     displayListModule,
     errorModule,
-    compareDependencies,
     checkModuleDepencendiesAtInstallation,
     checkModuleDepencendiesAtUninstallation,
     modulesLoadInit,
