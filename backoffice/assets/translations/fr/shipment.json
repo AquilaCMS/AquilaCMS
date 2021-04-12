@@ -49,7 +49,8 @@
         "dispoPts": "Disponible pour tous les points de vente",
         "pts": "Points de vente",
         "addPays": "Ajouter un pays",
-        "paysPds": "Pays / Poids"
+        "paysPds": "Pays / Poids",
+        "del": "Periode"
     },
     "detailOld": {
         "t1": "Détail livraison",
@@ -83,8 +84,8 @@
         "nom": "Nom",
         "url": "Logo",
         "minAchat": "Minimum d'achat",
-        "indiff" :"Indifferent",
-        "actif":"Actif",
+        "indiff": "Indifferent",
+        "actif": "Actif",
         "noActif": "Non actif"
     }
 }

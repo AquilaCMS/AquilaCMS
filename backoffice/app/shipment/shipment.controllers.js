@@ -167,7 +167,11 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                         translation: {},
                         prices: tabPrice
                     });
+                }else{
+                    toastService.toast("warning", "Country is already selected");
                 }
+            }else{
+                toastService.toast("warning", "You need to select a country");
             }
         };
 
