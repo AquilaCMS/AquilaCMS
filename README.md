@@ -21,16 +21,16 @@ The package manager `yarn 1.22.4+` is required.
 
 ### System packages
 
-You must verify that you have these packages installed on your OS :
+- You must verify that you have these packages installed on your OS :
 
 ```bash
 g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nasm wkhtmltopdf vips vips-dev libjpeg-turbo libjpeg-turbo-dev
 ```
 
-On Windows you must download :
+- On Windows you must download :
 
-- wkhtmltopdf : [https://wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html)
-- libvips : [https://github.com/libvips/libvips/releases](https://github.com/libvips/libvips/releases) (beware of 32 or 64 bits versions)
+  - `wkhtmltopdf` : [https://wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html)
+  - `libvips` : [https://github.com/libvips/libvips/releases](https://github.com/libvips/libvips/releases) (beware of 32 or 64 bits versions)
 
 ## Installation
 
@@ -59,9 +59,11 @@ docker run -p 127.0.0.1:3010:3010/tcp aquilacms/aquilacms
 ```
 
 At the first launch, there is an installation page. It allows you to create an `env.json` file in the config folder.
-You can edit this file manually, an example of the different possible properties is in the `config/env.example.json` file.
 
-> Warning : there is not MongoDB in AquilaCMS image
+You can edit this file manually, an example of the different possible properties is in the `config/env.example.json` file.
+You can also found all the properties in the [documentation](https://doc.aquila-cms.com/#/Get_started/Configuration)
+
+> ⚠️Warning : there is not MongoDB in AquilaCMS image
 >
 > To connect your AquilaCMS website to a Mongo database, you can :
 >
@@ -86,9 +88,9 @@ npm run build:win --theme=default_theme
 
 ## Documentations
 
-Find some documentation on [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/).
+Find some documentation on [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/)
 
-For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (/api-docs).
+For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (/api-docs)
 
 Also check-out some tutorials on :
 
