@@ -6,25 +6,25 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const axios                    = require('axios');
-const AdmZip                   = require('adm-zip');
-const path                     = require('path');
-const fsp                      = require('../utils/fsp');
-const packageManager           = require('../utils/packageManager');
-const {isProd}                 = require('../utils/server');
-const {Modules, Configuration} = require('../orm/models');
-const tmpPath                  = path.resolve('./uploads/temp');
+const axios           = require('axios');
+const AdmZip          = require('adm-zip');
+const path            = require('path');
+const fs              = require('../utils/fsp');
+const packageManager  = require('../utils/packageManager');
+const {isProd}        = require('../utils/server');
+const {Configuration} = require('../orm/models');
+
+const tmpPath         = path.resolve('./uploads/temp');
+const packageJSONPath = path.resolve(global.appRoot, 'package.json');
 
 /**
  * Compare local version with distant version
  */
 const verifyingUpdate = async () => {
-    const actualVersion = JSON.parse(fsp.readFileSync(path.resolve(global.appRoot, './package.json'))).version;
+    const actualVersion = JSON.parse(await fs.readFile(packageJSONPath)).version;
 
     // Créer le dossier /uploads/temp s'il n'existe pas
-    if (!fsp.existsSync(tmpPath)) {
-        fsp.mkdirSync(tmpPath, {recursive: true});
-    }
+    fs.mkdirSync(tmpPath, {recursive: true});
 
     // Get online version
     const fileURL  = 'https://last-aquila.s3-eu-west-1.amazonaws.com/version.txt';
@@ -32,7 +32,7 @@ const verifyingUpdate = async () => {
     let onlineVersion;
     try {
         await downloadURL(fileURL, filePath);
-        onlineVersion = fsp.readFileSync(filePath).toString().replace('\n', '').trim();
+        onlineVersion = await fs.readFile(filePath).toString().replace('\n', '').trim();
     } catch (exc) {
         console.error(`Get ${fileURL} failed`);
     }
@@ -49,49 +49,39 @@ const update = async () => {
     await setMaintenance(true);
 
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
-    const version   = fsp.readFileSync(filePathV).toString().replace('\n', '').trim();
+    const version   = await fs.readFile(filePathV).toString().replace('\n', '').trim();
 
     const fileURL  = `https://last-aquila.s3-eu-west-1.amazonaws.com/Aquila-${version}.zip`;
     const filePath = `${tmpPath}//Aquila-${version}.zip`;
-    let aquilaPath = './';
 
-    const devMode = global.envFile.devMode;
-    if (typeof devMode !== 'undefined') {
-        aquilaPath = tmpPath;
-    }
-
-    // Télécharger le fichier
     try {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
-    } catch (exc) {
+    } catch (err) {
         console.error(`Get ${fileURL} failed`);
     }
 
-    // Décompresser dossier temporaire
+    const oldPackageJSON = JSON.parse(await fs.readFile(packageJSONPath));
+    const workspaces     = oldPackageJSON.workspaces;
+
     try {
         console.log('Extracting archive...');
-        const zip = new AdmZip(filePath);
+        const zip        = new AdmZip(filePath);
+        const aquilaPath = global.envFile.devMode ? tmpPath : './';
         zip.extractAllTo(aquilaPath, true);
-    } catch (exc) {
+    } catch (err) {
         console.error(`Unzip ${filePath} failed`);
     }
+    const packageJSON      = JSON.parse(await fs.readFile(packageJSONPath));
+    packageJSON.workspaces = workspaces;
+    await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
 
-    // yarn install du aquila
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, './');
-    const modules = await Modules.find({active: true});
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
 
-    for (const module of modules) {
-        if (module.packageDependencies && module.packageDependencies.api && module.packageDependencies.api.length > 0) {
-            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`, './');
-        }
-    }
-
-    await fsp.unlink(filePath);
+    await fs.unlink(filePath);
     await setMaintenance(false);
 
     console.log('Aquila is updated !');
-    // Reboot
     return packageManager.restart();
 };
 
@@ -106,7 +96,7 @@ async function downloadURL(url, dest) {
         method       : 'GET',
         responseType : 'stream'
     });
-    const file    = fsp.createWriteStream(dest);
+    const file    = fs.createWriteStream(dest);
     request.data.pipe(file);
     return new Promise((resolve, reject) => {
         file.on('finish', () => {
@@ -114,7 +104,7 @@ async function downloadURL(url, dest) {
             resolve();
         });
         request.data.on('error', async (err) => {
-            await fsp.unlink(dest);
+            await fs.unlink(dest);
             return reject(err);
         });
     });
