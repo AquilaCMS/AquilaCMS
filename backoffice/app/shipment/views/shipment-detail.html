@@ -202,36 +202,38 @@
                         </div>
                     </div>
                 </div>
-                <div id="price" class="tab-pane fade in active" ng-show="tabActive === 'price'">
-                    <table id="tablePrice" class="table table-striped">
+                <div id="price" style="overflow: auto;" class="tab-pane fade in active" ng-show="tabActive === 'price'">
+                    <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th style="border: 1px #ddd solid; vertical-align: middle;">
+                                    <button class="btn-add" type="button" ng-click="addColumn()">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                    <p style="font-weight: bold;color: #5c6b7b;margin-left:10px;" translate>shipment.add.add</p>
+                                </th>
+                            </tr>
+                            <tr>
                                 <th style="width: 250px; border: 1px #ddd solid; vertical-align: middle;" translate>
-                                shipment.detail.paysPds
-                            </th>
-                            <th style="width: 200px; border: 1px #ddd solid; text-transform: none;" ng-repeat="weight in weights">
-                                {{weight.min}} - {{weight.max}} g
-                                <button class="btn-remove" type="button" ng-click="removeColumn($index)">
-                                    <span class="fa fa-trash"></span>
-                                </button>
-                            </th>
-                            <th style="border: none;">
-                                <button class="btn-add" type="button" ng-click="addColumn()">
-                                    <span class="fa fa-plus"></span>
-                                </button>
-                            </th>
-                        </tr>
+                                    shipment.detail.paysPds
+                                </th>
+                                <th style="width: 200px; border: 1px #ddd solid; text-transform: none;" ng-repeat="weight in weights">
+                                    {{weight.min}} - {{weight.max}} g
+                                    <button class="btn-remove" type="button" ng-click="removeColumn($index)">
+                                        <span class="fa fa-trash"></span>
+                                    </button>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="country in shipment.countries">
-                            <td>
-                                <strong>{{getCountryByCode(country.country)}}</strong>
-                            </td>
-                            <td ng-repeat="weight in weights">
-                                <input name="price" type="number" step='Any' class="form-control" ng-model="country.prices[$index].price" min="0" style="width: 70px; float: left;" />&nbsp;&nbsp;<span style="vertical-align: sub;">&euro;</span>
-                            </td>
-                            <td></td>
-                        </tr>
+                            <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="country in shipment.countries">
+                                <td style="width: 250px;">
+                                    <strong>{{getCountryByCode(country.country)}}</strong>
+                                </td>
+                                <td ng-repeat="weight in weights">
+                                    <input name="price" type="number" step='Any' class="form-control" ng-model="country.prices[$index].price" min="0" style="width: 70px; float: left;" />&nbsp;&nbsp;<span style="vertical-align: sub;">&euro;</span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -250,10 +252,6 @@
                     padding: 5px 8px;
                     color: white;
                     border-radius: 5px;
-                }
-                #tablePrice tr td:last-child {
-                    border: none;
-                    background-color: transparent!important;
                 }
             </style>
 
