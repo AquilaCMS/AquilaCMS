@@ -635,7 +635,25 @@ CategoryControllers.controller("CategoryListCtrl", [
 
         function getMenus()
         {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
+            CategoryV2.list({
+                PostBody: {
+                    filter: {
+                        ['ancestors.0']: {$exists: false}
+                    },
+                    populate: ["children"],
+                    sort: {displayOrder: 1},
+                    structure: {
+                        _id: 1,
+                        children: 1,
+                        ancestor: 1,
+                        active: 1,
+                        code: 1,
+                        nodes: 1,
+                        translation: 1
+                    },
+                    limit: 99
+                }
+            }, function (response)
             {
                 $scope.categories = response.datas;
                 //we expand all the categories
