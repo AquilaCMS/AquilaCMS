@@ -324,7 +324,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="pkg in order.delivery.package">
-                                    <td><a ng-href="{{pkg.tracking}}" target="_blank" translate>order.detail.suivrePack</a></td>
+                                    <td><a ng-href="{{pkg.tracking}}" style="color:blue;text-decoration: underline;" target="_blank" translate>order.detail.suivrePack</a></td>
                                     <td>{{pkg.date | date:"dd/MM/yyyy"}}</td>
                                     <td>{{getProductsDatas(pkg.products, "qty_shipped")}}</td>
                                     <td>{{getPkgTotal(pkg)}}</td>

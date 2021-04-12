@@ -91,7 +91,7 @@
                         <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.inter.component_template"></th>
                     </tr>
                 </thead>
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
                     <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToOrderDetails(order._id)" ng-repeat="order in orders">
                         <td class="text-right" data-label="Code :">{{order.number}}</td>
                         <td data-label="Date :">{{order.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
@@ -105,6 +105,9 @@
                     </tr>
                 </tbody>
             </table>
+            <div ng-show="showLoader" style="text-align: center;">
+                <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+            </div>
             <pagination total-items="totalItems" page="currentPage" on-select-page="getOrders(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                         rotate="false"></pagination>
         </div>

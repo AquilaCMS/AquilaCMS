@@ -55,7 +55,7 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                <tbody  ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
                     <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="cart in carts | filter: filterOnLength" class="pointer" ng-click="goToCartDetails(cart._id)">
                         <td data-label="ID :">{{cart._id}}</td>
                         <td data-label="Date :">{{cart.updatedAt | date:'dd/MM/yyyy HH:mm'}}</td>
@@ -65,6 +65,9 @@
                     </tr>
                 </tbody>
             </table>
+            <div ng-show="showLoader" style="text-align: center;">
+                <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+            </div>
             <pagination total-items="totalItems" page="currentPage" on-select-page="getCarts(page)"
                 items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true" rotate="false"></pagination>
         </div>

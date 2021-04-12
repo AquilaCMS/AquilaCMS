@@ -87,7 +87,7 @@
                     </th>
                 </tr>
             </thead>
-            <tbody role="alert" aria-live="polite" aria-relevant="all">
+            <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
                 <tr  ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="order in listPayment">
                     <td data-label="Code :">{{order.number}}</td>
                     <td data-label="Client :">{{order.customer.email}}</td>
@@ -102,6 +102,9 @@
                 </tr>
             </tbody>
         </table>
+        <div ng-show="showLoader" style="text-align: center;">
+            <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+        </div>
         <pagination total-items="totalItems" page="currentPage" on-select-page="getPayments(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true" rotate="false"></pagination>
     </div>
 </ns-box>

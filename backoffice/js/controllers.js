@@ -747,6 +747,7 @@ adminCatagenControllers.controller("InvoicesController", [
         $scope.filter = {};
         $scope.sort = {type: "createdAt", reverse: true};
         $scope.disabledButton = false;
+        $scope.showLoader = true;
 
         function init()
         {
@@ -905,14 +906,17 @@ adminCatagenControllers.controller("InvoicesController", [
             }
 
 
-            Invoice.query({ PostBody: {filter,limit: $scope.nbItemsPerPage, page, populate: ['order_id']}}, function (invoicesList)
-            {
+            Invoice.query({ PostBody: {filter,limit: $scope.nbItemsPerPage, page, populate: ['order_id']}}, function (invoicesList) {
+                $scope.showLoader = false;
                 $scope.invoices = invoicesList.datas.map(function (invoice) {
 
                     invoice.type = (invoice.avoir ? "invoices-list.avoir" : "invoices-list.facture")
                     return invoice
                 });
                 $scope.totalItems = invoicesList.count;
+            }, function (error) {
+                console.error("Can't get data");
+                console.error(error);
             });
         };
 
