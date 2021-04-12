@@ -702,7 +702,8 @@ OrderControllers.controller("PackagesNewCtrl", [
             type: type,
             genericTools: genericTools
         }
-        
+        $scope.loadingAdd = false;
+
         $scope.order = angular.copy(item);
         
         $scope.loadImgShipment = function(name, code){
@@ -795,6 +796,7 @@ OrderControllers.controller("PackagesNewCtrl", [
 
             if(pkg.products.length > 0)
             {
+                $scope.loadingAdd = true;
                 Orders.addPkg({order: $scope.order._id, package: pkg}, function ()
                 {
                     toastService.toast("success", "Colis correctement ajouté");
