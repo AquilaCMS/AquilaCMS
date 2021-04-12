@@ -6,107 +6,108 @@
                     <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('orders')" style="cursor: pointer" ></i>
                 </div>
             </div>
-
-            <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" aria-describedby="DataTables_Table_0_info">
-                <thead>
-                    <tr role="row">
-                        <th class="col-sm-1" style="text-align: center">
-                            <a ng-click="sort.type = 'number'; sort.reverse = !sort.reverse; getOrders(1);">
-                                <span translate>order.list.nb</span>
-                                <span ng-show="sort.type == 'number' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'number' && sort.reverse" class="ico-chevron-up"></span>
-                            </a>
-                        </th>
-                        <th class="col-sm-2" style="text-align: center">
-                            <a ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse; getOrders(1);">
-                                <span translate>order.list.date</span>
-                                <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
-                            </a>
-                        </th>
-                        <th style="width: 180px; text-align: center;">
-                            <a ng-click="sort.type = 'priceTotal.ati'; sort.reverse = !sort.reverse; getOrders(1);">
-                                <span translate>order.list.prixTTC</span>
-                                <span ng-show="sort.type == 'priceTotal.ati' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'priceTotal.ati' && sort.reverse" class="ico-chevron-up"></span>
-                            </a>
-                        </th>
-                        <th style="text-align: center">
-                            <a ng-click="sort.type = 'customer.nom'; sort.reverse = !sort.reverse; getOrders(1);">
-                                <span translate>order.list.nom</span>
-                                <span ng-show="sort.type == 'customer.nom' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'customer.nom' && sort.reverse" class="ico-chevron-up"></span>
-                            </a>
-                        </th>
-                        <th style="text-align: center">
-                            <a ng-click="sort.type = 'customer.email'; sort.reverse = !sort.reverse; getOrders(1);">
-                                <span translate>order.list.mail</span>
-                                <span ng-show="sort.type == 'customer.email' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'customer.email' && sort.reverse" class="ico-chevron-up"></span>
-                            </a>
-                        </th>
-                        <th style="text-align: center">
-                            <a ng-click="sort.type = 'status'; sort.reverse = !sort.reverse; getOrders(1);">
-                                <span translate>order.list.status</span>
-                                <span ng-show="sort.type == 'status' && !sort.reverse" class="ico-chevron-down"></span>
-                                <span ng-show="sort.type == 'status' && sort.reverse" class="ico-chevron-up"></span>
-                            </a>
-                        </th>
-                        <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
-                    </tr>
-                    <tr role="row">
-                        <th style="text-align: center">
-                            <input ng-change="getOrders(1)" ng-model="filter.number" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='order.list.nb'
-                                   class="form-control" />
-                        </th>
-                        <th style="text-align: center">
-                            <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.min_createdAt"
-                                           ng-change="getOrders(1)"></ns-datepicker>
-                            <ns-datepicker name="max_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.max_createdAt"
-                                           ng-change="getOrders(1)"></ns-datepicker>
-                        </th>
-                        <th style="text-align: center">
-                            <div style="display: inline-block; width: 45%; vertical-align: middle;">
-                                <input type="number" ng-model="filter['min_priceTotal.ati']" class="form-control" ng-change="getOrders(1)" translate
-                                       translate-attr-placeholder='order.list2.priceTotal.min' />
-                            </div>
-                            <div style="display: inline-block; width: 45%; vertical-align: middle;">
-                                <input type="number" ng-model="filter['max_priceTotal.ati']" class="form-control" ng-change="getOrders(1)" translate
-                                       translate-attr-placeholder='order.list2.priceTotal.max' />
-                            </div>
-                        </th>
-                        <th>
-                            <input class="form-control" ng-model="filter['customer.fullname']" ng-model-options="{debounce: 500}" ng-change="getOrders(1)" translate
-                                   translate-attr-placeholder='order.list.nom' />
-                        </th>
-                        <th style="text-align: center">
-                            <input class="form-control" ng-model="filter['customer.email']" ng-model-options="{debounce: 500}" ng-change="getOrders(1)" translate
-                                   translate-attr-placeholder='order.list.mail' />
-                        </th>
-                        <th style="text-align: center">
-                            <select ng-model="filter.status" ng-change="getOrders(1)" class="form-control" ng-options="status.code as status.name for status in orderStatus">
-                                <option value="" translate>order.list2.status</option>
-                            </select>
-                        </th>
-                        <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.inter.component_template"></th>
-                    </tr>
-                </thead>
-                <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
-                    <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToOrderDetails(order._id)" ng-repeat="order in orders">
-                        <td class="text-right" data-label="Code :">{{order.number}}</td>
-                        <td data-label="Date :">{{order.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
-                        <td data-label="Prix TTC:" class="text-right">{{order.priceTotal.ati | number:2}} €</td>
-                        <td data-label="Nom :">{{order.customer.fullname}}</td>
-                        <td data-label="Mail :">{{order.customer.email}}</td>
-                        <td data-label="Etat :">
-                            <ns-status-label type="order" status="order.status"></ns-status-label>
-                        </td>
-                        <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div ng-show="showLoader" style="text-align: center;">
-                <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+            <div style="overflow: auto;">            
+                <table style="margin-bottom:0px" class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                        <tr role="row">
+                            <th class="col-sm-1" style="text-align: center">
+                                <a ng-click="sort.type = 'number'; sort.reverse = !sort.reverse; getOrders(1);">
+                                    <span translate>order.list.nb</span>
+                                    <span ng-show="sort.type == 'number' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'number' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th class="col-sm-2" style="text-align: center">
+                                <a ng-click="sort.type = 'createdAt'; sort.reverse = !sort.reverse; getOrders(1);">
+                                    <span translate>order.list.date</span>
+                                    <span ng-show="sort.type == 'createdAt' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'createdAt' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th style="width: 180px; text-align: center;">
+                                <a ng-click="sort.type = 'priceTotal.ati'; sort.reverse = !sort.reverse; getOrders(1);">
+                                    <span translate>order.list.prixTTC</span>
+                                    <span ng-show="sort.type == 'priceTotal.ati' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'priceTotal.ati' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a ng-click="sort.type = 'customer.nom'; sort.reverse = !sort.reverse; getOrders(1);">
+                                    <span translate>order.list.nom</span>
+                                    <span ng-show="sort.type == 'customer.nom' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'customer.nom' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a ng-click="sort.type = 'customer.email'; sort.reverse = !sort.reverse; getOrders(1);">
+                                    <span translate>order.list.mail</span>
+                                    <span ng-show="sort.type == 'customer.email' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'customer.email' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th style="text-align: center">
+                                <a ng-click="sort.type = 'status'; sort.reverse = !sort.reverse; getOrders(1);">
+                                    <span translate>order.list.status</span>
+                                    <span ng-show="sort.type == 'status' && !sort.reverse" class="ico-chevron-down"></span>
+                                    <span ng-show="sort.type == 'status' && sort.reverse" class="ico-chevron-up"></span>
+                                </a>
+                            </th>
+                            <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.header.component_template"></th>
+                        </tr>
+                        <tr role="row">
+                            <th style="text-align: center">
+                                <input ng-change="getOrders(1)" ng-model="filter.number" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='order.list.nb'
+                                    class="form-control" />
+                            </th>
+                            <th style="text-align: center">
+                                <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.min_createdAt"
+                                            ng-change="getOrders(1)"></ns-datepicker>
+                                <ns-datepicker name="max_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter.max_createdAt"
+                                            ng-change="getOrders(1)"></ns-datepicker>
+                            </th>
+                            <th style="text-align: center">
+                                <div style="display: inline-block; width: 45%; vertical-align: middle;">
+                                    <input type="number" ng-model="filter['min_priceTotal.ati']" class="form-control" ng-change="getOrders(1)" translate
+                                        translate-attr-placeholder='order.list2.priceTotal.min' />
+                                </div>
+                                <div style="display: inline-block; width: 45%; vertical-align: middle;">
+                                    <input type="number" ng-model="filter['max_priceTotal.ati']" class="form-control" ng-change="getOrders(1)" translate
+                                        translate-attr-placeholder='order.list2.priceTotal.max' />
+                                </div>
+                            </th>
+                            <th>
+                                <input class="form-control" ng-model="filter['customer.fullname']" ng-model-options="{debounce: 500}" ng-change="getOrders(1)" translate
+                                    translate-attr-placeholder='order.list.nom' />
+                            </th>
+                            <th style="text-align: center">
+                                <input class="form-control" ng-model="filter['customer.email']" ng-model-options="{debounce: 500}" ng-change="getOrders(1)" translate
+                                    translate-attr-placeholder='order.list.mail' />
+                            </th>
+                            <th style="text-align: center">
+                                <select ng-model="filter.status" ng-change="getOrders(1)" class="form-control" ng-options="status.code as status.name for status in orderStatus">
+                                    <option value="" translate>order.list2.status</option>
+                                </select>
+                            </th>
+                            <th style="text-align: center" ng-repeat="column in columns" bind-html-compile="column.inter.component_template"></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
+                        <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="goToOrderDetails(order._id)" ng-repeat="order in orders">
+                            <td class="text-right" data-label="Code :">{{order.number}}</td>
+                            <td data-label="Date :">{{order.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+                            <td data-label="Prix TTC:" class="text-right">{{order.priceTotal.ati | number:2}} €</td>
+                            <td data-label="Nom :">{{order.customer.fullname}}</td>
+                            <td data-label="Mail :">{{order.customer.email}}</td>
+                            <td data-label="Etat :">
+                                <ns-status-label type="order" status="order.status"></ns-status-label>
+                            </td>
+                            <td ng-repeat="column in columns" bind-html-compile="column.cell.component_template"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-show="showLoader" style="text-align: center;">
+                    <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                </div>
             </div>
             <pagination total-items="totalItems" page="currentPage" on-select-page="getOrders(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                         rotate="false"></pagination>
