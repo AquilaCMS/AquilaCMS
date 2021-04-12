@@ -18,8 +18,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.searchObj = {
             productInCategory: ""
         };
-        
-
 
         $scope.getCategory = function(id){
             CategoryV2.get({PostBody: {filter: {_id: id}, structure: '*'}}, function (response) {
@@ -28,7 +26,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         }
 
         $scope.getCategory($scope.category._id);
-        
+
         $scope.getImage = function (category) {
             if(category && category.img) {
                 const nameImg = category.img.replace('medias/category/', '');
@@ -36,8 +34,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             return ;
         }
-
-
 
         $scope.return = function () {
             if ($scope.isSelected === true) {
@@ -147,19 +143,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         {
             $scope.category.conditions.splice(index, 1);
         };
-
-        /***** Multi-langues ********/
-        $scope.changeLanguage = function (newLanguage)
-        {
-
-            angular.forEach(listOfJqueryElements, function (value)
-            {
-                value.css(
-                    "display",
-                    !newLanguage.defaultLanguage ? "none" : ""
-                );
-            });
-        };
         /***** Fin multi-langues ********/
 
         $scope.pagination = {productInCategory: "true"};
@@ -184,7 +167,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     let newFilter = {};
                     for (var i = 0; i < filterLength; i++) {
                         if(filterKeys[i] == "translation"){
-                            newFilter[`translation.${$scope.lang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };                          
+                            newFilter[`translation.${$scope.lang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
                         } else if (filterKeys[i] == "active" || filterKeys[i] == "_visible"){
                             if($scope.searchObj[filterKeys[i]]){
                                 newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
@@ -323,18 +306,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     $scope.formMenu.$setPristine();
                 }
             });
-
-            // CategoryProducts.move({id: $scope.category._id, productId: id, pos: pos}, function (result)
-            // {
-            //     if(result.message == "success")
-            //     {
-            //         $scope.getProducts();
-            //     }
-            //     else
-            //     {
-            //         assignProductsPos($scope.category._id);
-            //     }
-            // });
         };
 
         $scope.pageChanged = function (newPage)
@@ -408,36 +379,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
         };
 
-        // $scope.deleteImage = function (type)
-        // {
-        //     $scope.infoImage[type].ImageUrl = "";
-        //     $scope.category[type + "Url"] = "";
-        //     $scope.infoImage[type].checkUp = false;
-        // };
-
-        // $scope.onFileSelect = function ($files, type)
-        // {
-        //     if($files.length >= 1)
-        //     {
-        //         var reader = new FileReader();
-        //         reader.readAsDataURL($files[0]);
-        //         $scope.file = $files[0];
-        //         $scope.defaultUp = false;
-        //         $scope.showProgressValue = true;
-        //         reader.onload = function (e)
-        //         {
-        //             $scope.$apply(function ()
-        //             {
-        //                 $scope.category[type + "Url"] = e.target.result;
-        //                 $scope.infoImage[type].ImageUrl = e.target.result;
-        //                 $scope.infoImage[type].file = $scope.file;
-        //                 $scope.infoImage[type].showProgressValue = false;
-        //                 $scope.infoImage[type].checkUp = true;
-        //             });
-        //         };
-        //     }
-        // };
-
         function saveCategory()
         {
             CategoryV2.save($scope.category, function (res)
@@ -460,7 +401,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             });
         }
 
-        $scope.save = function (isQuit) {   
+        $scope.save = function (isQuit) {
             if(this.formMenu.ruleForm.$invalid) {
                 toastService.toast("danger", "Formulaire des regles incomplet");
                 return;
@@ -531,30 +472,10 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 tab.push({id: $scope.products[$index]._id, checked: true});
             }
 
-            CategoryV2.save({_id: $scope.category._id, productsList: tab}, function ()
-            {
-                //assignProductsPos($scope.category._id);
+            CategoryV2.save({_id: $scope.category._id, productsList: tab}, function () {
+
             });
         };
-
-        // function assignProductsPos(categoryId)
-        // {
-        //     CategoryProducts.getPos({action: "pp", id: categoryId}, function (_products)
-        //     {
-        //         for(var i = 0; i < $scope.products.length; i++)
-        //         {
-        //             $scope.products[i].pos = undefined;
-
-        //             for(var j = 0; j < _products.length; j++)
-        //             {
-        //                 if($scope.products[i]._id == _products[j]._id)
-        //                 {
-        //                     $scope.products[i].pos = _products[j].pos;
-        //                 }
-        //             }
-        //         }
-        //     });
-        // }
 
         /**
          *
@@ -612,9 +533,9 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 CategoryControllers.controller("CategoryListCtrl", [
     "$scope", "$modal", "$q", "toastService","$translate","$modal", "CategoryV2", "$location",
     function ($scope, $modal, $q, toastService, $translate, $modal, CategoryV2, $location) {
-        
+
         var selectedLang = "";
-        
+
 
         $scope.expandAll = function(){
             for(let oneCat of $scope.categories){
@@ -674,19 +595,6 @@ CategoryControllers.controller("CategoryListCtrl", [
             toastService.toast("success", $translate.instant('gallery.item.updated'));
             $scope.getCategory(cat);
         };
-
-
-        /*$scope.removeCategory = function(scope, cat) {
-         Category.remove({id: cat._id}, function(){
-         scope.remove();
-         });
-         };*/
-
-
-
-
-
-
 
         $scope.listChildren = function (cat, scope)
         {
@@ -785,8 +693,8 @@ CategoryControllers.controller("CategoryListCtrl", [
                 }
                 //we save
                 promiseArray.push(CategoryV2.save(categoryToMove).$promise);
-                
-                
+
+
                 Promise.all(promiseArray).then(function () {
                     deferred.resolve();
                     $scope.$broadcast('angular-ui-tree:expand-all');
