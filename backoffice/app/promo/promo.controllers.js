@@ -210,10 +210,17 @@ PromoControllers.controller("PromoDetailCtrl", [
 
         // check the discount value and alert if it is negative
         $scope.checkDiscount = function (){
-            if($scope.promo.discountValue < 0 ){
-                $scope.promo.discountValueMessage = true;
-            }else{
+            if($scope.promo.discountType == "FVet" || $scope.promo.discountType == "FVati"){
                 $scope.promo.discountValueMessage = false;
+                if($scope.promo.discountValue < 0 ){
+                    $scope.promo.discountValue = 0;
+                }
+            }else{
+                if($scope.promo.discountValue < 0 ){
+                    $scope.promo.discountValueMessage = true;
+                }else{
+                    $scope.promo.discountValueMessage = false;
+                }
             }
         }
 
