@@ -75,7 +75,7 @@
     <div class="modal-footer">
         <div ng-show="error" class="col-sm-12 col-md-5 text-left ns-error-message">{{error}}</div>
         <button ng-hide="partial" class="btn btn-default" ng-click="partial = true">Partiel</button>
-        <button class="btn btn-default"  style="background: #576fa1;color:#ffffff;" id="buttonAdd" ng-click="sendPackage()" ng-disabled="form.$invalid" translate>order-packages.add</button>
-        <button class="btn btn-default"  style="background: #e34925;color:#ffffff;" ng-click="cancel()" translate>order-packages.cancel</button>
+        <button class="btn btn-success" id="buttonAdd" ng-click="sendPackage()" ng-disabled="form.$invalid" translate>order-packages.add</button>
+        <button class="btn btn-danger" ng-click="cancel()" translate>order-packages.cancel</button>
     </div>
 </div>
