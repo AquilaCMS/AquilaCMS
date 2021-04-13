@@ -207,6 +207,13 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
+        // check the discount value and alert if it is negative
+        $scope.checkDiscount = function (){
+            if($scope.promo.discountValue < 0 ){
+                toastService.toast("warning", "The discount is negative ! The price will increase !")
+            }
+        }
+
         // Permet de recupérer une promo en fonction de son id
         $scope.PromoGetById = function () {
             PromosV2.query({PostBody: {filter: {_id: $routeParams.promoId}, structure: '*'}}, function (promo) {
@@ -471,6 +478,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
                 i++;
             }
+            $scope.checkDiscount();
             if (actionFormChecked === -1) {
                 return toastService.toast("danger", `Le formulaire de l'action ${  i  } est incomplet.`);
             }
