@@ -3,7 +3,7 @@
         <li style="font-weight: bold;" translate>order-packages.addPack</li>
         <li ng-show="shipmentName" style="font-weight: bold;">{{shipmentName}}</li>
     </ol>
-    <img ng-show="url_logo" src="{{url_logo}}" style="height: 50px;margin-left:10px;"/>
+    <img ng-show="url_logo == '' ? false : true" ng-src="{{url_logo}}" style="height: 50px;margin-left:10px;"/>
 </div>
 <div ng-show="templateHook" bind-html-compile="templateHook">
 </div>
