@@ -250,11 +250,14 @@
                                 <div class="col-sm-11">
                                     <label class="col-sm-2 control-label" for="discountValue" translate>promo.detail.valRem</label>
                                     <div class="col-sm-2">
-                                        <input ng-if="promo.discountType === 'P'" id="discountValue" ng-blur="checkDiscount()" type="number" step="any" class="form-control" name="discountValue" ng-model="promo.discountValue" required replace-comma max="100">
-                                        <input ng-if="promo.discountType !== 'P'" id="discountValue" ng-blur="checkDiscount()" type="number" step="any" class="form-control" name="discountValue" ng-model="promo.discountValue" required replace-comma>
+                                        <input ng-if="promo.discountType === 'P'" id="discountValue" ng-change="checkDiscount()" type="number" step="any" class="form-control" name="discountValue" ng-model="promo.discountValue" required replace-comma max="100">
+                                        <input ng-if="promo.discountType !== 'P'" id="discountValue" ng-change="checkDiscount()" type="number" step="any" class="form-control" name="discountValue" ng-model="promo.discountValue" required replace-comma>
                                         <div class="ns-error-message" ng-show="form.discountValue.$touched || form.nsSubmitted">
                                             <div ng-show="form.discountValue.$error.required" translate>promo.detail.fieldReq</div>
                                         </div>
+                                    </div>
+                                    <div ng-show="promo.discountValueMessage">
+                                        <div style="color:red" translate>promo.detail.msgDiscount</div>
                                     </div>
                                 </div>
                             </div>
