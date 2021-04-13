@@ -14,6 +14,7 @@ OrderControllers.controller("OrderListCtrl", [
         $scope.filter = {};
         $scope.sort = {type: "createdAt", reverse: true};
         $scope.export = ExportCollectionCSV;
+        $scope.showLoader = true;
 
         $scope.getOrders = function (page)
         {
@@ -67,10 +68,13 @@ OrderControllers.controller("OrderListCtrl", [
                     filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]].toString(), $options: "i"};
                 }
             }
-            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort}}, function (response)
-            {
+            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort}}, function (response) {
+                $scope.showLoader = false;
                 $scope.orders = response.datas;
                 $scope.totalItems = response.count;
+            }, function(error) {
+                console.error("Can't get data");
+                console.error(error);
             });
         };
 
@@ -106,12 +110,13 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup', "OrderPackageInPopup",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, OrderPackageInPopup)
     {
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
+        $scope.OrderPackageInPopup = OrderPackageInPopup;
         $scope.editableMode = false;
         $scope.order = {};
         $scope.status = "";
@@ -501,11 +506,27 @@ OrderControllers.controller("OrderDetailCtrl", [
             });
         }
 
-        $scope.addPackage = function (type)
-        {
+        $scope.addPackage = function (type) {
+            var component_template = "";
+            var templateUrl = "views/modals/order-packages.html";
+            var controller = "PackagesNewCtrl";
+            //default modal parameters;
+            const shipmentCode = $scope.order.delivery.code;
+            if($scope.OrderPackageInPopup){
+                if(OrderPackageInPopup.length > 0){
+                    for(let oneShipment of $scope.OrderPackageInPopup){
+                        if(oneShipment.codeOfCarrier == shipmentCode){
+                            //templateUrl        = oneShipment.templateUrl;
+                            //controller         = oneShipment.controller;
+                            component_template = oneShipment.component_template;
+                            break;
+                        }
+                    }
+                }
+            }
             $modal.open({
-                templateUrl: "views/modals/order-packages.html",
-                controller: "PackagesNewCtrl",
+                templateUrl: templateUrl,
+                controller: controller,
                 windowClass: "modal-large",
                 resolve: {
                     genericTools: function () {
@@ -519,6 +540,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     },
                     type : function () {
                         return type;
+                    },
+                    templateHook : function () {
+                        return component_template;
                     }
                 }
             }).result.then(function () {
@@ -668,10 +692,40 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type)
-    {
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "templateHook", "Shipment",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, templateHook, Shipment) {
+        //if it's a order with a shipment by a module
+        $scope.templateHook = templateHook == "" ? null : templateHook;
+        //utils function acces them with $scope.$parent.$parent.utils;
+        $scope.utils = {
+            order: item,
+            type: type,
+            genericTools: genericTools
+        }
+        $scope.loadingAdd = false;
+
         $scope.order = angular.copy(item);
+        
+        $scope.loadImgShipment = function(name, code){
+            $scope.shipmentName = name;
+            Shipment.detail({
+                PostBody: {
+                    filter : {
+                        code: code
+                    },
+                    structure: '*',
+                }
+            },function(response){
+                if(response.url_logo){
+                    $scope.url_logo = response.url_logo;
+                }
+            },function(error){
+                //not found ?
+            });
+        }
+
+        $scope.loadImgShipment($scope.order.delivery.name, $scope.order.delivery.code);
+
         $scope.pkg = {tracking: "", products: []};
         if (type != undefined && type === "DELIVERY_PARTIAL_PROGRESS"){
             $scope.partial = true;
@@ -710,14 +764,12 @@ OrderControllers.controller("PackagesNewCtrl", [
 
         $scope.pkg.products.reverse();
 
-        $scope.setQty = function (index)
-        {
+        $scope.setQty = function (index) {
             $scope.pkg.products[index].qty_delivered = $scope.order.items[index].quantity < $scope.pkg.products[index].qty_shipped ? 0 :
                 $scope.order.items[index].quantity - $scope.pkg.products[index].qty_shipped;
         };
 
-        $scope.sendPackage = function ()
-        {
+        $scope.sendPackage = function () {
             var buttonAdd = angular.element(document.getElementById('buttonAdd'));
             buttonAdd.attr('disabled',"true");
 
@@ -744,6 +796,7 @@ OrderControllers.controller("PackagesNewCtrl", [
 
             if(pkg.products.length > 0)
             {
+                $scope.loadingAdd = true;
                 Orders.addPkg({order: $scope.order._id, package: pkg}, function ()
                 {
                     toastService.toast("success", "Colis correctement ajouté");
@@ -766,10 +819,13 @@ OrderControllers.controller("PackagesNewCtrl", [
             }
         };
 
-        $scope.cancel = function ()
-        {
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+
+        $scope.close = function(){
+            $modalInstance.close();
+        }
     }
 ]);
 

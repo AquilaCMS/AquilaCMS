@@ -78,7 +78,7 @@
                     </th>
                 </tr>
             </thead>
-            <tbody role="alert" aria-live="polite" aria-relevant="all">
+            <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
                 <tr ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-repeat="invoice in invoices">
                     <td data-label="Facture :">{{invoice.facture}}</td>
@@ -92,6 +92,9 @@
                 </tr>
             </tbody>
         </table>
+        <div ng-show="showLoader" style="text-align: center;">
+            <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+        </div>
         <pagination total-items="totalItems" page="currentPage" on-select-page="getInvoices(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true"
                         rotate="false"></pagination>
     </div>
