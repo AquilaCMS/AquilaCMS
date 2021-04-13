@@ -526,8 +526,10 @@ OrderControllers.controller("OrderDetailCtrl", [
             }
             $modal.open({
                 templateUrl: templateUrl,
-                controller: controller,
+                controller : controller,
                 windowClass: "modal-large",
+                backdrop    : 'static',
+                keyboard    : false,
                 resolve: {
                     genericTools: function () {
                         return {
