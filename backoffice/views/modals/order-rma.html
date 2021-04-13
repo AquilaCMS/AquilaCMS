@@ -8,8 +8,9 @@
         <div class="col-lg-12">
             <div class="box-content">
                 <form name="form" novalidate class="form-horizontal" role="form">
-                    <table class="table">
-                        <thead>
+                    <div  style="overflow-x:auto;">
+                        <table class="table">
+                            <thead>
                             <tr>
                                 <th translate>order-rma.art</th>
                                 <th class="aligntop" translate>order-rma.puTTC</th>
@@ -27,7 +28,6 @@
                                     <span translate>order-rma.qt</span><br />
                                     <small><span translate>order-rma.aret</span></small>
                                 </th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,8 +48,8 @@
                                 </td>
                                 <td class="text-right">{{item.price.total.ati}} €</td>
                                 <td class="text-right">{{item.quantity}}</td>
-                                <td class="text-right">{{return.products[$index].qty_shipped}}</td>
-                                <td class="text-right">{{return.products[$index].qty_returned}}</td>
+                                <td class="text-right">{{return.products[$index].qty_shipped ? return.products[$index].qty_shipped : "0"}}</td>
+                                <td class="text-right">{{return.products[$index].qty_returned ? return.products[$index].qty_returned : "0"}}</td>
                                 <td class="text-right">
                                     <input type="number" name="input[{{item._id}}]" min="0" ng-model="return.products[$index].qty_returning" ng-change="setQty()"
                                            style="width: 40px; border: 1px solid gray; text-align: right; padding: 0px 2px;" />
@@ -82,7 +82,8 @@
                             </tr>
                         </tfoot>
                     </table>
-
+                </div>
+                <br />
                     <div class="row">
                         <div ng-if="return.refund > 0" class="form-group">
                             <div class="col-sm-12">

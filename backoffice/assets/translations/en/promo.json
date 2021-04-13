@@ -70,7 +70,8 @@
         "dispo": "Available",
         "lim": "Limit / Person",
         "priority": "Priority",
-        "applyNextRules": "Apply lower priority discount"
+        "applyNextRules": "Apply lower priority discount",
+        "msgDiscount": "The discount is negative ! The price will increase !"
     },
     "list": {
         "t1": "Discounts",

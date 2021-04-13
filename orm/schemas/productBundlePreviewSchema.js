@@ -7,7 +7,7 @@
  */
 
 const mongoose              = require('mongoose');
-const {ProductBundleSchema} = require('.');
+const {ProductBundleSchema} = require('./productBundleSchema');
 const Schema                = mongoose.Schema;
 
 const ProductBundlePreviewSchema = new Schema(ProductBundleSchema);

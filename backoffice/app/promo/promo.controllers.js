@@ -110,15 +110,16 @@ PromoControllers.controller("PromoDetailCtrl", [
     "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2",
     function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2) {
         $scope.promo = {
-            discountType     : null,
-            actif            : false,
-            gifts            : [],
-            codes            : [],
-            dateStart        : null,
-            dateEnd          : null,
-            priority         : 0,
-            applyNextRules   : false,
-            discountValue    : 0
+            discountType         : null,
+            actif                : false,
+            gifts                : [],
+            codes                : [],
+            dateStart            : null,
+            dateEnd              : null,
+            priority             : 0,
+            applyNextRules       : false,
+            discountValue        : 0,
+            discountValueMessage : false
         };
         $scope.rule = {
             conditions : []
@@ -207,10 +208,20 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
+        // check the discount value and alert if it is negative
+        $scope.checkDiscount = function (){
+            if($scope.promo.discountValue < 0 ){
+                $scope.promo.discountValueMessage = true;
+            }else{
+                $scope.promo.discountValueMessage = false;
+            }
+        }
+
         // Permet de recupérer une promo en fonction de son id
         $scope.PromoGetById = function () {
             PromosV2.query({PostBody: {filter: {_id: $routeParams.promoId}, structure: '*'}}, function (promo) {
                 $scope.promo = promo;
+                $scope.checkDiscount();
                 let dateStart = $scope.promo.dateStart;
                 let dateEnd = $scope.promo.dateEnd;
                 // on ajoute les heures et minutes au objet timeStart et timeEnd
@@ -471,6 +482,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
                 i++;
             }
+            $scope.checkDiscount();
             if (actionFormChecked === -1) {
                 return toastService.toast("danger", `Le formulaire de l'action ${  i  } est incomplet.`);
             }
