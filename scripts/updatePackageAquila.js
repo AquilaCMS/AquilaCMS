@@ -86,7 +86,10 @@ const packageAquilaPath = path.resolve(`${aquilaRootPath}/${packageName}`);
      */
     try {
         const oldPackageContent = await fs.readFile(packageAquilaPath, 'utf8');
-        if (!isEqual(oldPackageContent, newPackageContent)) {
+        if (isEqual(JSON.parse(oldPackageContent), JSON.parse(newPackageContent))) {
+            console.log(`No change in ${packageName}`);
+            process.exit(0);
+        } else {
             await fs.unlink(packageAquilaPath);
             await fs.writeFile(packageAquilaPath, newPackageContent);
             console.log('File is replaced successfully');
@@ -95,6 +98,4 @@ const packageAquilaPath = path.resolve(`${aquilaRootPath}/${packageName}`);
         await fs.writeFile(packageAquilaPath, newPackageContent);
         console.log('File is replaced successfully');
     }
-    console.log(`No change in ${packageName}`);
-    process.exit(0);
 })();
