@@ -521,7 +521,8 @@ OrderControllers.controller("OrderDetailCtrl", [
         $scope.addPackage = function (type) {
             var component_template = "";
             var templateUrl = "views/modals/order-packages.html";
-            var controller = "PackagesNewCtrl";
+            var controller  = "PackagesNewCtrl";
+            var modalType   = "modal-large";
             //default modal parameters;
             const shipmentCode = $scope.order.delivery.code;
             if($scope.OrderPackageInPopup){
@@ -530,6 +531,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                         if(oneShipment.codeOfCarrier == shipmentCode){
                             //templateUrl        = oneShipment.templateUrl;
                             //controller         = oneShipment.controller;
+                            if(oneShipment.modalType){
+                                modalType = oneShipment.modalType;
+                            }
                             component_template = oneShipment.component_template;
                             break;
                         }
@@ -539,7 +543,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             $modal.open({
                 templateUrl: templateUrl,
                 controller : controller,
-                windowClass: "modal-large",
+                windowClass: modalType,
                 backdrop    : 'static',
                 keyboard    : false,
                 resolve: {
