@@ -131,23 +131,35 @@ OrderControllers.controller("OrderDetailCtrl", [
             var displayHtml = '';
             for (var i = 0; i < item.selections.length; i++) {
                 var section = item.selections[i];
+                if(!section.products.length){
+                    //because sometimes it's a object (with api/v2/order/delpkg, and maybe others)
+                    section.products = [section.products];
+                }
                 for (var j = 0; j < section.products.length; j++) {
                     var productSection = section.products[j];
-                    const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
-                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
-                        (bundleSection &&
-                        bundleSection.products.find((product) => product.id === productSection.id) &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
-                        // HT
-                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ? '(ET: +' : '(') +
-                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
-                            // prix TTC
-                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ? '+' : '') +
-                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)'
-                        : ''
-                    }`}</li>`
+                    // we choose the correct bundle
+                    const correctBundle = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                    // we choose the correct product in the correct bundle
+                    const productOfBundle = correctBundle.products.find((product) => product.id === productSection.id);
+                    var text = "";
+                    if(productOfBundle && productOfBundle.modifier_price && productOfBundle.modifier_price['et'] && productOfBundle.modifier_price['ati']){
+                        //put the HT text
+                        if(productOfBundle.modifier_price['et'] > 0){
+                            text += '(ET: +';
+                        }else{
+                            text += '(';
+                        }
+                        text += `${productOfBundle.modifier_price['et'].toFixed(2)} €)`;
+                        //put the TTC text
+                        text+= '/ATI: '
+                        if(productOfBundle.modifier_price['ati'] > 0){
+                            text += '+';
+                        }else{
+                            text += '';
+                        }
+                        text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
+                    }
+                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${text}</li>`;
                 }
             }
             return displayHtml;
