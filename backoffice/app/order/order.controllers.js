@@ -881,18 +881,29 @@ OrderControllers.controller("RMANewCtrl", [
         {
             $scope.return.refund = 0;
 
-            if(index !== undefined)
-            {
-                $scope.return.products[index].qty_returning = $scope.order.items[index].quantity < $scope.return.products[index].qty_returned ? 0 :
-                    $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+            if(typeof index !== "undefined") {                
+                if($scope.order.items[index].quantity <= $scope.return.products[index].qty_returned) {
+                    if($scope.return.products[index].qty_shipped > $scope.return.products[index].qty_returned){
+                        $scope.return.products[index].qty_returning = $scope.return.products[index].qty_shipped - $scope.return.products[index].qty_returned;
+                    }else{
+                        $scope.return.products[index].qty_returning = 0;
+                    }
+                }else{
+                    $scope.return.products[index].qty_returning = $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+                }
             }
-
-            for(var i = 0; i < $scope.return.products.length; i++)
-            {
-                if($scope.return.products[i].qty_returning > 0)
-                {
-                    $scope.return.refund += ($scope.order.items[i].price.special !== undefined && $scope.order.items[i].price.special.ati !== undefined ?
-                        $scope.order.items[i].price.special.ati : $scope.order.items[i].price.unit.ati) * $scope.return.products[i].qty_returning;
+            const lengthProducts = $scope.return.products.length;
+            for(var i = 0; i < lengthProducts; i++) {
+                if(!$scope.return.products[i].qty_returned) {
+                    // we put a start value of 0 or the API will be unhappy :( 
+                    $scope.return.products[i].qty_returned = 0;
+                }
+                if($scope.return.products[i].qty_returning > 0) {
+                    if((typeof $scope.order.items[i].price.special !== "undefined") && (typeof $scope.order.items[i].price.special.ati !== "undefined")) {
+                        $scope.return.refund += $scope.order.items[i].price.special.ati * $scope.return.products[i].qty_returning;
+                    }else{
+                        $scope.return.refund += $scope.order.items[i].price.unit.ati * $scope.return.products[i].qty_returning;
+                    }
                 }
             }
         };
@@ -921,20 +932,21 @@ OrderControllers.controller("RMANewCtrl", [
                 }
             }
 
-            if(returnData.products.length > 0)
-            {
+            if(returnData.products.length > 0) {
                 Orders.rma({order: $scope.order._id, return: returnData}, function ()
                 {
                     toastService.toast("success", "Retour correctement ajouté");
                     $modalInstance.close();
-                }, function (err)
-                {
+                }, function (err) {
                     toastService.toast("danger", "Une erreur est survenue !");
-                    if(err.data && err.data.translations)
-                    {
-                        toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                    if(err.data){
+                        if(err.data.translations) {
+                            toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                        }else if(err.data.message) {
+                            toastService.toast("danger", err.data.message);
+                        }
                     }
-                    $modalInstance.close();
+                    $scope.close();
                 });
             }
             else
@@ -943,10 +955,12 @@ OrderControllers.controller("RMANewCtrl", [
             }
         };
 
-        $scope.cancel = function ()
-        {
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+        $scope.close = function() {
+            $modalInstance.close();
+        }
     }
 ]);
 
