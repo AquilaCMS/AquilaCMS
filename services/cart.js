@@ -64,7 +64,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
             cart = await linkCustomerToCart(cart, req);
         }
     }
-    return cart
+    return cart;
 };
 
 /**
@@ -388,7 +388,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
             customer       : {
                 ..._user,
-                id           : _user._id,
+                id : _user._id
             },
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
