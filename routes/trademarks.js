@@ -10,10 +10,10 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const trademarkServices           = require('../services/trademarks');
 
 module.exports = function (app) {
-    app.post('/v2/trademarks',      authentication, adminAuth, getTrademarks);
-    app.post('/v2/trademark',       authentication, adminAuth, getTrademark);
-    app.post('/v2/trademark/:id',   authentication, adminAuth, getTrademarkById);
-    app.put('/v2/trademark',        authentication, adminAuth, setTrademark);
+    app.post('/v2/trademarks', getTrademarks);
+    app.post('/v2/trademark', getTrademark);
+    app.post('/v2/trademark/:id', getTrademarkById);
+    app.put('/v2/trademark', authentication, adminAuth, setTrademark);
     app.delete('/v2/trademark/:id', authentication, adminAuth, deleteTrademark);
 };
 

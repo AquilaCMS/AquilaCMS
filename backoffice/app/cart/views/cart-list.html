@@ -1,70 +1,73 @@
 <ns-box data-title="order.list.t2" title-icon="fa fa-opencart fa-lg">
     <div class="box-content">
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
-
-
-            <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
-                aria-describedby="DataTables_Table_0_info">
-                <thead>
-                    <tr role="row">
-                        <th>
-                            ID
-                        </th>
-                        <th translate>
-                            order.list.date
-                        </th>
-                        <th translate>
-                            order.list.prixTTC
-                        </th>
-                        <th translate>
-                            order.list.nom
-                        </th>
-                        <th translate>
-                            order.list.mail
-                        </th>
-                    </tr>
-                    <tr role="row">
-                        <th style="text-align: center">
-                            <!-- <input ng-change="getCarts(1)" ng-model="filter._id" ng-model-options="{debounce: 500}" translate
-                                translate-attr-placeholder='payment.list.nb' class="form-control" /> -->
-                        </th>
-                        <th style="text-align: center">
-                            <ns-datepicker name="min_updatedAt" class="fullDatepicker form-datepicker"
-                                style="display: inline-block; width: 45%;" ng-model="filter['min_updatedAt']"
-                                ng-change="getCarts(1)"></ns-datepicker>
-                            <ns-datepicker name="max_updatedAt" class="fullDatepicker form-datepicker"
-                                style="display: inline-block; width: 45%;" ng-model="filter['max_updatedAt']"
-                                ng-change="getCarts(1)"></ns-datepicker>
-                        </th>
-                        <th style="text-align: center">
-                            <!-- <div style="display: inline-block; width: 45%; vertical-align: middle;">
-                                <input type="number" ng-model="filter['min_priceTotal']" class="form-control" ng-change="getCarts(1)" translate
-                                    translate-attr-placeholder='payment.list2.priceTotal.min' />
-                            </div>
-                            <div style="display: inline-block; width: 45%; vertical-align: middle;">
-                                <input type="number" ng-model="filter['max_priceTotal']" class="form-control" ng-change="getCarts(1)" translate
-                                    translate-attr-placeholder='payment.list2.priceTotal.max' />
-                            </div> -->
-                        </th>
-                        <th style="text-align: center">
-                            
-                        </th>
-                        <th style="text-align: center">
-                            <input ng-change="getCarts(1)" ng-model="filter.email" ng-model-options="{debounce: 500}" translate
-                                translate-attr-placeholder='payment.list.nb' class="form-control" />
-                        </th>
-                    </tr>
-                </thead>
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
-                    <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="cart in carts | filter: filterOnLength" class="pointer" ng-click="goToCartDetails(cart._id)">
-                        <td data-label="ID :">{{cart._id}}</td>
-                        <td data-label="Date :">{{cart.updatedAt | date:'dd/MM/yyyy HH:mm'}}</td>
-                        <td data-label="Prix TTC :" class="text-right">{{cart.priceTotal.ati | number:2}} €</td>
-                        <td data-label="Nom :">{{cart.customer.id ? cart.customer.id.fullname : 'Anonyme'}}</td>
-                        <td data-label="Email :">{{cart.customer.id.email}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;overflow-y: hidden;">
+                <table style="margin-bottom:0px" class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
+                    aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                        <tr role="row">
+                            <th>
+                                ID
+                            </th>
+                            <th translate>
+                                order.list.date
+                            </th>
+                            <th translate>
+                                order.list.prixTTC
+                            </th>
+                            <th translate>
+                                order.list.nom
+                            </th>
+                            <th translate>
+                                order.list.mail
+                            </th>
+                        </tr>
+                        <tr role="row">
+                            <th style="text-align: center">
+                                <!-- <input ng-change="getCarts(1)" ng-model="filter._id" ng-model-options="{debounce: 500}" translate
+                                    translate-attr-placeholder='payment.list.nb' class="form-control" /> -->
+                            </th>
+                            <th style="text-align: center">
+                                <ns-datepicker name="min_updatedAt" class="fullDatepicker form-datepicker"
+                                    style="display: inline-block; width: 45%;" ng-model="filter['min_updatedAt']"
+                                    ng-change="getCarts(1)"></ns-datepicker>
+                                <ns-datepicker name="max_updatedAt" class="fullDatepicker form-datepicker"
+                                    style="display: inline-block; width: 45%;" ng-model="filter['max_updatedAt']"
+                                    ng-change="getCarts(1)"></ns-datepicker>
+                            </th>
+                            <th style="text-align: center">
+                                <!-- <div style="display: inline-block; width: 45%; vertical-align: middle;">
+                                    <input type="number" ng-model="filter['min_priceTotal']" class="form-control" ng-change="getCarts(1)" translate
+                                        translate-attr-placeholder='payment.list2.priceTotal.min' />
+                                </div>
+                                <div style="display: inline-block; width: 45%; vertical-align: middle;">
+                                    <input type="number" ng-model="filter['max_priceTotal']" class="form-control" ng-change="getCarts(1)" translate
+                                        translate-attr-placeholder='payment.list2.priceTotal.max' />
+                                </div> -->
+                            </th>
+                            <th style="text-align: center">
+                                
+                            </th>
+                            <th style="text-align: center">
+                                <input ng-change="getCarts(1)" ng-model="filter.email" ng-model-options="{debounce: 500}" translate
+                                    translate-attr-placeholder='payment.list.nb' class="form-control" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody  ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
+                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="cart in carts | filter: filterOnLength" class="pointer" ng-click="goToCartDetails(cart._id)">
+                            <td data-label="ID :">{{cart._id}}</td>
+                            <td data-label="Date :">{{cart.updatedAt | date:'dd/MM/yyyy HH:mm'}}</td>
+                            <td data-label="Prix TTC :" class="text-right">{{cart.priceTotal.ati | number:2}} €</td>
+                            <td data-label="Nom :">{{cart.customer.id ? cart.customer.id.fullname : 'Anonyme'}}</td>
+                            <td data-label="Email :">{{cart.customer.id.email}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-show="showLoader" style="text-align: center;">
+                    <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                </div>
+            </div>
             <pagination total-items="totalItems" page="currentPage" on-select-page="getCarts(page)"
                 items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true" rotate="false"></pagination>
         </div>
