@@ -30,7 +30,7 @@
         "moment": "2.27.0",
         "moment-business-days": "1.2.0",
         "moment-timezone": "0.5.31",
-        "mongo-uri": "0.1.2",
+        "mongodb-uri": "0.9.7",
         "mongoose": "5.9.12",
         "mongoose-lean-virtuals": "0.6.7",
         "mongoose-plugin-autoinc-fix": "1.2.1",
