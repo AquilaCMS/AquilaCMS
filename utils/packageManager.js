@@ -33,7 +33,7 @@ exports.execCmd = async function (cde, path = global.appRoot) {
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
  */
-exports.execSh = async function (cde, param = [], path) {
+exports.execSh = async function (cde, param = [], path = global.appRoot) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         let cmd;
