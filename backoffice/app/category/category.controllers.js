@@ -402,7 +402,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         }
 
         $scope.save = function (isQuit) {
-            if(this.formMenu.ruleForm.$invalid) {
+            if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
                 toastService.toast("danger", "Formulaire des regles incomplet");
                 return;
             }
