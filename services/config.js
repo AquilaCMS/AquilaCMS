@@ -25,16 +25,17 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
     if (!user || !user.isAdmin) {
         isAdmin                       = false;
         queryBuilder.defaultFields    = [];
-        queryBuilder.restrictedFields = [
-            'environment.adminPrefix',
-            'environment.authorizedIPs',
-            'environment.mailHost',
-            'environment.mailPass',
-            'environment.mailPort',
-            'environment.mailUser',
-            'environment.overrideSendTo',
-            'licence'
-        ];
+        queryBuilder.restrictedFields = [];
+        // two choice :
+        // - add many field in "restrictedFields" (need change if we change the config file)
+        // - change the Postbody to just have only one parameters
+        PostBody = {
+            structure:{
+                "environment.siteName": 1,
+                "environment.demoMode": 1
+            },
+            filter: {},
+        }
     } else {
         queryBuilder.restrictedFields = [];
     }
