@@ -554,8 +554,7 @@ CategoryControllers.controller("CategoryListCtrl", [
         }
         getMenus();
 
-        function getMenus()
-        {
+        function getMenus() {
             CategoryV2.list({
                 PostBody: {
                     filter: {
@@ -570,21 +569,48 @@ CategoryControllers.controller("CategoryListCtrl", [
                         active: 1,
                         code: 1,
                         nodes: 1,
-                        translation: 1
+                        translation: 1,
+                        displayOrder: 1
                     },
                     limit: 99
                 }
-            }, function (response)
-            {
-                $scope.categories = response.datas;
+            }, function (response) {
+                $scope.categories = verifyOrder(response.datas);
                 //we expand all the categories
                 $scope.expandAll();
+            },function(error) {
+                console.error(error);
             });
         }
 
+        function verifyOrder(arayOfCat){
+            if(arayOfCat && arayOfCat.length > 0){
+                var deferred = $q.defer();
+                var promiseArray = [];
+
+                const longCat = arayOfCat.length;
+                for(let count=0; count < longCat ; count++) {
+                    let oneCat = arayOfCat[count];
+                    if(oneCat.displayOrder != count){
+                        oneCat.displayOrder = count;
+                        promiseArray.push(CategoryV2.save(oneCat).$promise);
+                    }
+                }
+                if(promiseArray.length > 0){
+                    Promise.all(promiseArray).then(function () {
+                        deferred.resolve();
+                    }, function (err) {
+                        toastService.toast("danger", "Une erreur est survenue lors d'une requete API");
+                        deferred.reject();
+                    });
+                }
+            }
+            return arayOfCat;
+        }
+
         $scope.deleteImg = function() {
-             $scope.category.img = null;
-             $scope.category.alt = null;
+            $scope.category.img = null;
+            $scope.category.alt = null;
             CategoryV2.save($scope.category, function (res) {
                 toastService.toast("success", "Image supprimée ");
             });
@@ -634,12 +660,6 @@ CategoryControllers.controller("CategoryListCtrl", [
         };
 
         $scope.treeOptions = {
-            accept : function (sourceNodeScope, destNodesScope, destIndex) {
-                if(typeof destNodesScope.node == 'undefined') {
-                    return false;
-                }
-                return true;
-            },
             dropped: function (event) {
 
                 var deferred = $q.defer();
@@ -661,6 +681,16 @@ CategoryControllers.controller("CategoryListCtrl", [
                     if (childrenIndex > -1) {
                         categorySource.children.splice(childrenIndex, 1);
                     }
+                    const longChild = categorySource.children.length;
+                    for(let count=0;count<longChild;count++){
+                        debugger
+                        let oneChild = categorySource.children[count];
+                        if(oneChild.displayOrder > indexPlace){
+                            oneChild.displayOrder = count;
+                            oneChild.displayOrder--;
+                            promiseArray.push(CategoryV2.save(oneChild).$promise);
+                        }
+                    }
                     //we save
                     promiseArray.push(CategoryV2.save(categorySource).$promise);
                 }
@@ -668,10 +698,59 @@ CategoryControllers.controller("CategoryListCtrl", [
                 if(categoryDest != false){
                     if(!categoryDest.children){
                         categoryDest.children = [];
+                    }else{
+                        //the catDestination have children, we need to change the order and make a little place at "indexPlace"
+                        const longChild = categoryDest.children.length;
+                        for(let count=0;count<longChild;count++){
+                            debugger
+                            let oneChild = categoryDest.children[count];
+                            if(oneChild.displayOrder < indexPlace){
+                                // if there is a weird displayOrder number
+                                if(oneChild.displayOrder != count){
+                                    oneChild.displayOrder = count;
+                                    promiseArray.push(CategoryV2.save(oneChild).$promise);
+                                }
+                            }else if(oneChild.displayOrder >= indexPlace){
+                                oneChild.displayOrder = count;
+                                oneChild.displayOrder++;
+                                promiseArray.push(CategoryV2.save(oneChild).$promise);
+                            }
+                        }
                     }
                     categoryDest.children.splice(indexPlace, 0, categoryToMove);
                     //we save
                     promiseArray.push(CategoryV2.save(categoryDest).$promise);
+                }
+                if(categoryDest == false && categorySource == false){
+                    // we change the order of root Cats
+                    //first we remove the actual categories from $scope.categories
+                    let index = 0;
+                    for(let oneCat of $scope.categories){
+                        if(oneCat._id == categoryToMove._id){
+                            break;
+                        }
+                        index++;
+                    }
+                    if (index > -1) {
+                        $scope.categories.splice(index, 1);
+                    }
+                    //we have removed
+                    //we re-setup Indexes
+                    const longChild = $scope.categories.length;
+                    for(let count=0;count<longChild;count++){
+                        let oneChild = $scope.categories[count];
+                        if(oneChild.displayOrder > indexPlace){
+                            oneChild.displayOrder = count;
+                            promiseArray.push(CategoryV2.save(oneChild).$promise);
+                        }else if(oneChild.displayOrder >= indexPlace){
+                            oneChild.displayOrder = count;
+                            oneChild.displayOrder++;
+                            promiseArray.push(CategoryV2.save(oneChild).$promise);
+                        }
+                    }
+                    debugger
+                    // we add the cat to the good index
+                    $scope.categories.splice(indexPlace, 0, categoryToMove);
                 }
                 if(!categoryToMove.ancestors){
                     categoryToMove.ancestors = []
@@ -690,6 +769,9 @@ CategoryControllers.controller("CategoryListCtrl", [
                 // we add the new ancestors
                 if(categoryDest != false){
                     categoryToMove.ancestors.push(categoryDest._id);
+                }
+                if(typeof indexPlace !== "undefined"){
+                    categoryToMove.displayOrder = indexPlace;
                 }
                 //we save
                 promiseArray.push(CategoryV2.save(categoryToMove).$promise);
