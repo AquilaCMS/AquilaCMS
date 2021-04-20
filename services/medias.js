@@ -82,7 +82,10 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     zip.extractAllTo(path_unzip);
     // Parcourir l'ensemble des fichiers pour les ajouter à la table medias
     const filenames = fsp.readdirSync(path_unzip);
-    filenames.forEach(async (filename) => {
+
+    // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
+    for (let index = 0; index < filenames.length; index++) {
+        const filename    = filenames[index];
         const init_file   = path.resolve(path_unzip, filename);
         const target_file = path.resolve(target_path, filename);
         const name_file   = filename.split('.')
@@ -108,7 +111,7 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
                 group
             });
         }
-    });
+    }
 
     console.log('Upload medias done !');
 };
