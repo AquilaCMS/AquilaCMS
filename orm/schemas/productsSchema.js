@@ -14,38 +14,15 @@ const utils               = require('../../utils/utils');
 const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const translation         = require('../../utils/translation');
-// const {
-//     ProductAttributeTranslationSchema,
-//     ProductTranslationSchema
-// } = require('./translationsSchema');
+const {
+    ProductAttributeTranslationSchema,
+    ProductTranslationSchema
+} = require('./translationsSchema');
 
-const Schema                 = mongoose.Schema;
-const {Map, ObjectId, Mixed} = Schema.Types;
+const Schema          = mongoose.Schema;
+const {Map, ObjectId} = Schema.Types;
 
-const ProductAttributeTranslationSchema = new Schema({
-    name  : {type: String},
-    value : {type: Mixed}
-}, {
-    _id : false
-});
-
-const ProductTranslationSchema = new Schema({
-    name         : {type: String},
-    slug         : {type: String},
-    description1 : {
-        title : {type: String},
-        text  : {type: String}
-    },
-    description2 : {
-        title : {type: String},
-        text  : {type: String}
-    },
-    canonical : {type: String},
-    metaDesc  : {type: String}
-}, {
-    _id : false
-});
-const ProductsSchema           = new Schema({
+const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
     trademark          : {code: String, name: String},
     supplier_ref       : {type: ObjectId, ref: 'suppliers'},
