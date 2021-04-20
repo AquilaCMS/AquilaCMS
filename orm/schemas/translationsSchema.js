@@ -1,5 +1,8 @@
-const {Schema, Types: {Mixed}} = require('mongoose');
-const {aquilaEvents}           = require('../../utils');
+const mongoose       = require('mongoose');
+const {aquilaEvents} = require('../../utils');
+
+const Schema  = mongoose.Schema;
+const {Mixed} = Schema.Types;
 
 const ProductAttributeTranslationSchema = new Schema({
     name  : {type: String},
