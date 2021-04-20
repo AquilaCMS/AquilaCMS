@@ -30,12 +30,12 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
         // - add many field in "restrictedFields" (need change if we change the config file)
         // - change the Postbody to just have only one parameters
         PostBody = {
-            structure:{
-                "environment.siteName": 1,
-                "environment.demoMode": 1
+            structure : {
+                'environment.siteName' : 1,
+                'environment.demoMode' : 1
             },
-            filter: {},
-        }
+            filter : {}
+        };
     } else {
         queryBuilder.restrictedFields = [];
     }
