@@ -683,7 +683,6 @@ CategoryControllers.controller("CategoryListCtrl", [
                     }
                     const longChild = categorySource.children.length;
                     for(let count=0;count<longChild;count++){
-                        debugger
                         let oneChild = categorySource.children[count];
                         if(oneChild.displayOrder > indexPlace){
                             oneChild.displayOrder = count;
@@ -702,7 +701,6 @@ CategoryControllers.controller("CategoryListCtrl", [
                         //the catDestination have children, we need to change the order and make a little place at "indexPlace"
                         const longChild = categoryDest.children.length;
                         for(let count=0;count<longChild;count++){
-                            debugger
                             let oneChild = categoryDest.children[count];
                             if(oneChild.displayOrder < indexPlace){
                                 // if there is a weird displayOrder number
@@ -720,26 +718,27 @@ CategoryControllers.controller("CategoryListCtrl", [
                     categoryDest.children.splice(indexPlace, 0, categoryToMove);
                     //we save
                     promiseArray.push(CategoryV2.save(categoryDest).$promise);
-                }
-                if(categoryDest == false && categorySource == false){
-                    // we change the order of root Cats
-                    //first we remove the actual categories from $scope.categories
-                    let index = 0;
-                    for(let oneCat of $scope.categories){
-                        if(oneCat._id == categoryToMove._id){
-                            break;
+                }else{
+                    if(categorySource == false){
+                        // context : we change the order of root Cats
+                        // the cat is already in $scope.categories so we remove the actual categories from $scope.categories
+                        let index = 0;
+                        for(let oneCat of $scope.categories){
+                            if(oneCat._id == categoryToMove._id){
+                                break;
+                            }
+                            index++;
                         }
-                        index++;
+                        if (index > -1) {
+                            $scope.categories.splice(index, 1);
+                        }
                     }
-                    if (index > -1) {
-                        $scope.categories.splice(index, 1);
-                    }
-                    //we have removed
-                    //we re-setup Indexes
+                    // we create a root cat
+                    // we need to change displayOrder of all
                     const longChild = $scope.categories.length;
                     for(let count=0;count<longChild;count++){
                         let oneChild = $scope.categories[count];
-                        if(oneChild.displayOrder > indexPlace){
+                        if(oneChild.displayOrder < indexPlace){
                             oneChild.displayOrder = count;
                             promiseArray.push(CategoryV2.save(oneChild).$promise);
                         }else if(oneChild.displayOrder >= indexPlace){
@@ -748,7 +747,6 @@ CategoryControllers.controller("CategoryListCtrl", [
                             promiseArray.push(CategoryV2.save(oneChild).$promise);
                         }
                     }
-                    debugger
                     // we add the cat to the good index
                     $scope.categories.splice(indexPlace, 0, categoryToMove);
                 }
