@@ -71,6 +71,13 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 > - use an external link to, for example, an Atlas database
 > - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of 127.0.0.1)
 
+### Contribute
+
+If you want to contribute, you will need to install husky or else you won't be able to commit new feature
+```
+yarn husky:install
+```
+
 ### Have the installation page again
 
 If you want to have the installation page again, you can remove the `env.json` file in the **`config/`** folder.
