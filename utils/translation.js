@@ -52,20 +52,21 @@ const deepTranslation = (doc, lang) => {
     const docKeys = Object.keys(doc);
     for (let i = 0; i < docKeys.length; i++) {
         if (!(['__v', '_bsontype']).includes(docKeys[i])) {
+            if (Object.prototype.toString.call(docKeys[i]) === '[object Map]') {
+                doc[docKeys[i]] = Object.fromEntries(doc[docKeys[i]]);
+            }
             // si le champs est translation
             if (docKeys[i] === 'translation') {
                 doc = assignTranslation(doc, lang);
-            } else
-            // si le champs est un object
-            if (doc[docKeys[i]] && (typeof doc[docKeys[i]] !== 'string') && doc[docKeys[i]].length) {
+            // si on trouve un tableaux, on parcours les elements du tableau
+            } else if (doc[docKeys[i]] && typeof doc[docKeys[i]] !== 'string' && doc[docKeys[i]].length) {
                 for (let j = 0; j < doc[docKeys[i]].length; j++) {
                     if (typeof doc[docKeys[i]][j] === 'object') {
                         doc[docKeys[i]][j] = deepTranslation(doc[docKeys[i]][j], lang);
                     }
                 }
-            } else
-            // si on trouve un tableaux, on parcours les elements du tableau
-            if (doc[docKeys[i]] && typeof doc[docKeys[i]] === 'object') {
+            // si le champs est un object
+            } else if (doc[docKeys[i]] && typeof doc[docKeys[i]] === 'object') {
                 doc[docKeys[i]] = deepTranslation(doc[docKeys[i]], lang);
             }
         }
