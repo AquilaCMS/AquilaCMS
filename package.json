@@ -23,7 +23,8 @@
     "lint:check": "eslint --ext js,jsx .",
     "lint:fix": "eslint --fix --ext js,jsx .",
     "test": "mocha --exit",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "husky:install": "husky install"
   },
   "dependencies": {
     "adm-zip": "0.5.5",
@@ -97,7 +98,7 @@
     "eslint-plugin-angular": "^4.0.1",
     "eslint-plugin-chai-friendly": "^0.6.0",
     "eslint-plugin-import": "^2.22.1",
-    "husky": "^5.2.0",
+    "husky": "^6.0.0",
     "lint-staged": "^10.5.4",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0"
