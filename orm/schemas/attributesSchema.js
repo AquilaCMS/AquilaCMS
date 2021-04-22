@@ -63,6 +63,11 @@ AttributesSchema.statics.translationValidation = async function (self) {
     return errors;
 };
 
+AttributesSchema.statics.checkCode = async function () {
+    const that = this.getUpdate().$set ? this.getUpdate().$set : this.getUpdate();
+    await utilsDatabase.checkCode('attributes', that._id, that.code);
+};
+
 /**
  * Si un attribut est supprimé alors il faut reporter ces modifications dans les categories.filters.attributes et supprimer du tableau categories.filters.attributes
  * l'objet correspondant a l'attribut supprimé
@@ -78,17 +83,11 @@ AttributesSchema.post('remove', async function (doc, next) {
     }
 });
 
-async function preUpdates(that) {
-    await utilsDatabase.checkCode('attributes', that._id, that.code);
-}
-
 AttributesSchema.pre('updateOne', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 AttributesSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
@@ -113,9 +112,7 @@ AttributesSchema.post('updateOne', async function ({next}) {
 });
 
 AttributesSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    const errors = await AttributesSchema.statics.translationValidation(this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 aquilaEvents.emit('attributesSchemaInit', AttributesSchema);

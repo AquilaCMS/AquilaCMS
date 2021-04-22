@@ -1421,9 +1421,19 @@ const populateItems = async (items) => {
  * @return {mongoose.HookNextFunction} HookNextFunction
  */
 const preUpdates = async (that, next, model) => {
-    if (that.getUpdate() && (that.getUpdate()._id || (that.getUpdate().$set && that.getUpdate().$set._id))) {
-        const errors = await model.statics.translationValidation(that.getUpdate().$set || that.getUpdate(), that);
-        return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    const update = that.getUpdate();
+    if (update) {
+        if (model.checkCode && typeof model.checkCode === 'function') {
+            await model.checkCode(update.$set || update);
+        }
+        if (
+            model.translationValidation
+            && typeof model.translationValidation === 'function'
+            && (update._id || (update.$set && update.$set._id))
+        ) {
+            const errors = await model.translationValidation(update.$set || update, that);
+            return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+        }
     }
     return next();
 };
