@@ -6,12 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {extendTimeOut}             = require('../middleware/server');
 const serviceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const fs                          = require('../utils/fsp');
+const {getUploadDirectory}        = require('../utils/server');
 
 module.exports = function (app) {
     app.put('/v2/config', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
@@ -96,8 +98,9 @@ const restart = async (req, res, next) => {
  */
 async function getRobot(req, res, next) {
     try {
-        if (await fs.hasAccess('robots.txt')) {
-            const file = await fs.readFile('robots.txt', {encoding: 'utf-8'});
+        const robotPath = path.resolve(getUploadDirectory(), 'robots.txt');
+        if (await fs.hasAccess(robotPath)) {
+            const file = await fs.readFile(robotPath, {encoding: 'utf-8'});
             return res.json({robot: file.toString()});
         }
         return res.json({robot: ''});
@@ -113,7 +116,8 @@ async function setRobot(req, res, next) {
     try {
         const {PostBody} = req.body;
         if (!PostBody) throw NSErrors.PostBodyUndefined;
-        await fs.writeFile('robots.txt', PostBody.text, 'utf8');
+        const robotPath = path.resolve(getUploadDirectory(), 'robots.txt');
+        await fs.writeFile(robotPath, PostBody.text, 'utf8');
         return res.json({message: 'success'});
     } catch (error) {
         next(error);
