@@ -869,14 +869,14 @@ const controlAllProducts = async (option) => {
             }
 
             // Control du stock
-            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type !== 'bundle') { // On gère le stock
+            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type === 'simple') { // On gère le stock
                 if (typeof oneProduct.stock === 'undefined' || oneProduct.stock.length === 0 || (oneProduct.stock.qty <= 0 && oneProduct.stock.status === 'liv')) {
                     returnWarning += `<b>${oneProduct.code}</b> : Stock issues<br/>`;
                 }
             }
 
             // Control du poids
-            if (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0) {
+            if (oneProduct.type !== 'virtual' && (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0)) {
                 returnWarning += `<b>${oneProduct.code}</b> : No weight<br/>`;
             }
 
