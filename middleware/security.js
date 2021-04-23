@@ -12,7 +12,7 @@
 const securityForceActif = (arrayFieldsToActivate) => {
     return (req, res, next) => {
         // TODO : appeler securityForceFilter() pour factoriser
-        if (req.info && !req.info.isAdmin) {
+        if (!req.info || (req.info && !req.info.isAdmin)) {
             if (!req.body.PostBody) req.body.PostBody = {};
             const {PostBody} = req.body;
             if (!PostBody.filter) {
@@ -25,7 +25,6 @@ const securityForceActif = (arrayFieldsToActivate) => {
         }
 
         next();
-        // return PostBody;
     };
 };
 

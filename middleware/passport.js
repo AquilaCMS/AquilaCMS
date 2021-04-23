@@ -31,10 +31,11 @@ const init = async (pp) => {
     }, async (payload, done) => {
         try {
             const {Users} = require('../orm/models');
-            const user    = (await Users.findById(payload.userId, '-password')).toObject();
+            let user      = await Users.findById(payload.userId, '-password');
             if (!user) {
                 throw NSErrors.BadLogin;
             }
+            user = user.toObject();
             return done(null, {
                 type   : 'USER',
                 info   : user,

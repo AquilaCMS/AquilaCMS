@@ -147,11 +147,11 @@ ClientControllers.controller("ClientDetailCtrl", [
         $scope.civilities = [
             {
                 code : 0,
-                name : "Monsieur"
+                name : "client.detail.address.civility.0"
             },
             {
                 code: 1,
-                name: "Madame"
+                name: "client.detail.address.civility.1"
             }
         ];
 

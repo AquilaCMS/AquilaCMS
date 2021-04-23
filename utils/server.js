@@ -35,19 +35,7 @@ const isProd = getEnv('NODE_ENV') === 'production';
 const updateEnv = async () => {
     let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
     envPath       = path.resolve(global.appRoot, envPath);
-    const envFile = JSON.parse(await fs.readFile(envPath));
-    for (const env of Object.keys(envFile)) {
-        if (envFile[env].jwt && envFile[env].jwt.session !== undefined) {
-            envFile[env].jwt.options = envFile[env].jwt.session;
-            delete envFile[env].jwt.session;
-        }
-        if (envFile[env].useJwt) {
-            delete envFile[env].useJwt;
-        }
-        if (envFile[env].front) {
-            delete envFile[env].front;
-        }
-    }
+    const envFile = JSON.parse(await fs.readFile(envPath, {encoding: 'utf8'}));
     await fs.writeFile(envPath, JSON.stringify(envFile, null, 2));
     global.envFile = envFile[getEnv('AQUILA_ENV')];
 };
@@ -65,10 +53,13 @@ const getOrCreateEnvFile = async () => {
 
     try {
         let envFile;
-        const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
+        const envExample = JSON.parse(await fs.readFile(
+            path.join(global.appRoot, 'config/env.template.json'),
+            {encoding: 'utf8'}
+        ));
         if (fs.existsSync(path.resolve(global.envPath))) {
-            envFile = await fs.readFile(global.envPath);
-            if (envFile.toString() === '') {
+            envFile = await fs.readFile(global.envPath, {encoding: 'utf8'});
+            if (envFile === '') {
                 envFile = {};
             } else {
                 try {
@@ -83,7 +74,11 @@ const getOrCreateEnvFile = async () => {
                 const newEnv                  = generateNewEnv(envExample);
                 envFile[getEnv('AQUILA_ENV')] = newEnv[getEnv('AQUILA_ENV')];
             }
-            const merged                  = deepObjectVerification(envFile[getEnv('AQUILA_ENV')], JSON.parse(envExample)['{{environnement}}']);
+            const merged = deepObjectVerification(
+                envFile[getEnv('AQUILA_ENV')],
+                envExample['{{environnement}}']
+            );
+
             envFile[getEnv('AQUILA_ENV')] = merged;
         } else {
             envFile = generateNewEnv(envExample);
@@ -136,7 +131,7 @@ const showAquilaLogo = () => {
 
 const controlNodeVersion = async () => {
     try {
-        const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json')));
+        const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json'), {encoding: 'utf8'}));
         const check       = (hilo) => {
             return outside(process.version, packageJSON.engines.node, hilo);
         };
@@ -187,9 +182,8 @@ const startListening = async (server) => {
                 key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
                 cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
                 spdy : {
-                    protocols : ['h2', 'http1.1'],
-                    plain     : false,
-                    ssl       : true
+                    protocols : ['h2', 'http/1.1'],
+                    plain     : false
                 }
             }, server).listen(global.port, (err) => {
                 if (err) throw err;
@@ -213,7 +207,7 @@ const startListening = async (server) => {
 /**
  * Renvoie l'url de base de l'application terminée par un '/', ou '/' tout court si non rempli
  * @param {object} req request parameter from express
- * @returns {Object} an object containing the hostname, adminPrefix, analytics
+ * @returns {Promise<{appUrl: string, adminPrefix: string}>} an object containing the hostname, adminPrefix, analytics
  */
 const getAppUrl = async (req) => {
     if (!req) {
@@ -227,8 +221,7 @@ const getAppUrl = async (req) => {
 
     return {
         appUrl      : `${req.protocol}://${req.get('host')}/`,
-        adminPrefix : config.adminPrefix,
-        analytics   : config.analytics
+        adminPrefix : config.adminPrefix
     };
 };
 

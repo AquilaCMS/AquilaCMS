@@ -63,7 +63,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
+    // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
+    if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
@@ -126,8 +127,14 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
     }
 
-    result.specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    result.specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+    result.specialPriceMin = {
+        et  : Math.min(...arraySpecialPrice.et),
+        ati : Math.min(...arraySpecialPrice.ati)
+    };
+    result.specialPriceMax = {
+        et  : Math.max(...arraySpecialPrice.et),
+        ati : Math.max(...arraySpecialPrice.ati)
+    };
 
     return result;
 };
@@ -838,7 +845,12 @@ const controlAllProducts = async (option) => {
             }
 
             // Control du prix
-            if (typeof oneProduct.price.et.normal === 'undefined' || oneProduct.price.et.normal <= 0 || typeof oneProduct.price.ati.normal === 'undefined' || oneProduct.price.ati.normal <= 0) {
+            if (
+                typeof oneProduct.price.et.normal === 'undefined'
+                || oneProduct.price.et.normal <= 0
+                || typeof oneProduct.price.ati.normal === 'undefined'
+                || oneProduct.price.ati.normal <= 0
+            ) {
                 returnWarning += `<b>${oneProduct.code}</b> : Price is undefined or zero<br/>`;
             }
 

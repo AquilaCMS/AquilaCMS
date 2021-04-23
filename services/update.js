@@ -88,7 +88,7 @@ const update = async () => {
 /**
  * Download file from url to destination folder
  * @param {String | Buffer | URL} url
- * @param {String Buffer | | URL} dest
+ * @param {String | Buffer | URL} dest
  */
 async function downloadURL(url, dest) {
     const request = await axios({

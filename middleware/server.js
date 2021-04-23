@@ -55,7 +55,7 @@ const serverUseRequest = async (req, res, next) => {
             json = translation.translateDocument(json, lang, keepOriginalAttribs);
             json = restrictProductFields(json, req.originalUrl);
             // remove hidden attributes from document
-            if (json.attributes) {
+            if (json._id && json.attributes) {
                 for (let i = 0; i < json.attributes.length; i++) {
                     if (!json.attributes[i].visible) {
                         json.attributes.splice(i, 1);
