@@ -227,39 +227,23 @@ const resetPassword = async (token, password) => {
     }
 
     if (user) {
-        if (validatePassword(password)) {
-            try {
-                user.password = password;
-                await user.hashPassword();
-                await user.save();
-                await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-                // await Users.updateOne({_id: user._id}, {$set: {password}, $unset: {resetPassToken: 1}}, {
-                //     runValidators : true
-                // });
-                return {message: 'Mot de passe réinitialisé.'};
-            } catch (err) {
-                if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
-                    throw NSErrors.LoginSubscribePasswordInvalid;
-                }
-                if (err.errors && err.errors.email && err.errors.email.message === 'BAD_EMAIL_FORMAT') {
-                    throw NSErrors.LoginSubscribeEmailInvalid;
-                }
-                throw err;
+        try {
+            user.password = password;
+            await user.save();
+            await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
+            return {message: 'Mot de passe réinitialisé.'};
+        } catch (err) {
+            if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
+                throw NSErrors.LoginSubscribePasswordInvalid;
             }
-        } else {
-            throw NSErrors.LoginSubscribePasswordInvalid;
+            if (err.errors && err.errors.email && err.errors.email.message === 'BAD_EMAIL_FORMAT') {
+                throw NSErrors.LoginSubscribeEmailInvalid;
+            }
+            throw err;
         }
     }
     return {message: 'Utilisateur introuvable, impossible de réinitialiser le mot de passe.', status: 500};
 };
-
-function validatePassword(password) {
-    const passwordValidator = new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$');
-    if (passwordValidator.test(password)) {
-        return true;
-    }
-    return false;
-}
 
 module.exports = {
     getUsers,
