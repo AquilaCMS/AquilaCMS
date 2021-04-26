@@ -11,6 +11,7 @@ const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
 const packageManager               = require('../utils/packageManager');
+const PackageJSON                  = require('../utils/packageJSON');
 const NSErrors                     = require('../utils/errors/NSErrors');
 const modulesUtils                 = require('../utils/modules');
 const {isProd}                     = require('../utils/server');
@@ -30,18 +31,21 @@ const CSS_FOLDERS = [
  * @param {string} selectedTheme Name of the selected theme
  */
 const changeTheme = async (selectedTheme) => {
-    const oldConfig = await Configuration.findOne({});
-
     // Si le theme a changé
-    if (oldConfig.environment.currentTheme !== selectedTheme) {
+    if (global.envConfig.environment.currentTheme !== selectedTheme) {
         console.log('Setup selected theme...');
         try {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
-
+            const packageJSON = new PackageJSON();
+            await packageJSON.read();
+            const currentThemeIndex = packageJSON.workspaces.findIndex(`themes/${global.envConfig.environment.currentTheme}`);
+            if (currentThemeIndex !== -1) packageJSON.workspaces.splice(currentThemeIndex, 1);
+            packageJSON.workspaces.push(`themes/${selectedTheme}`);
+            await packageJSON.save();
             await require('./modules').setFrontModules(selectedTheme);
             await setConfigTheme(selectedTheme);
-            await installDependencies(selectedTheme);
+            await installDependencies();
             await buildTheme(selectedTheme);
 
             await updateService.setMaintenance(false);
@@ -142,10 +146,9 @@ async function removeConfigTheme(theme) {
  * @description Install dependencies
  * @param theme : String Theme selectionné
  */
-const installDependencies = async (theme) => {
+const installDependencies = async () => {
     console.log('Installing new theme\'s dependencies...');
-    const cmdTheme = `./themes/${theme}`;
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, cmdTheme);
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
 };
 
 /**

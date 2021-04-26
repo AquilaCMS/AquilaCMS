@@ -19,6 +19,7 @@ const fs               = require('../utils/fsp');
 const NSErrors         = require('../utils/errors/NSErrors');
 const {Modules}        = require('../orm/models');
 const themesService    = require('./themes');
+const {PackageJSON}    = require('../utils');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -255,10 +256,11 @@ const activateModule = async (idModule) => {
             }
         }
 
-        const packagePath = path.resolve(global.appRoot, 'package.json');
-        const packageJSON = JSON.parse(await fs.readFile(packagePath));
+        const packageJSON = new PackageJSON();
+        await packageJSON.read();
         packageJSON.workspaces.push(`modules/${myModule.name}`);
-        await fs.writeFile(packagePath, JSON.stringify(packageJSON, null, 2));
+        await packageJSON.save();
+
         await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
 
         // Si le module doit importer des composants dans le front
@@ -319,11 +321,11 @@ const deactivateModule = async (idModule) => {
         }
 
         console.log('Removing dependencies of the module...');
-        const packageJSONPath = path.resolve(global.appRoot, 'package.json');
-        const packageJSON     = JSON.parse(await fs.readFile(packageJSONPath));
-        const workspaceIndex  = packageJSON.workspaces.indexOf(`/modules/${_module.name}`);
+        const packageJSON = new PackageJSON();
+        await packageJSON.read();
+        const workspaceIndex = packageJSON.workspaces.indexOf(`/modules/${_module.name}`);
         packageJSON.workspaces.splice(workspaceIndex, 1);
-        await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
+        await packageJSON.save();
         await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
 
         await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
