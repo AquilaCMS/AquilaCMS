@@ -185,7 +185,11 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     return {message: email};
 };
 
+/**
+ * @deprecated
+ */
 const changePassword = async (email, password) => {
+    console.error('changePassword is deprecated !');
     const user = await Users.findOne({email});
     if (!user) {
         return {message: 'Utilisateur introuvable, impossible de réinitialiser le mot de passe.', status: 500};
