@@ -57,7 +57,11 @@
             "pCountry": "Pays",
             "pPhone_mobile": "Tel mobile",
             "billing_address": "Adresse de facturation",
-            "shipping_address": "Adresse de livraison"
+            "shipping_address": "Adresse de livraison",
+            "civility":{
+                "0":"Monsieur",
+                "1":"Madame"
+            }
         },
         "downloadHistory": "Téléchargement",
         "productName": "Nom du produit",

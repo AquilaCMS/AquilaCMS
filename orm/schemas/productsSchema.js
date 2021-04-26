@@ -15,8 +15,8 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const translation         = require('../../utils/translation');
 
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},

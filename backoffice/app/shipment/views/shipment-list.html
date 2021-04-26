@@ -2,70 +2,72 @@
 
     <div id="deliveryList" class="tab-pane fade in active">
         <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
-            <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-                <thead>
-                <tr role="row">
-                    <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 150px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
-                        shipment.list.url
-                    </th>
-                    <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Type: activate to sort column descending">
-                        <a ng-click="sort.type = 'type'; sort.reverse = !sort.reverse" translate>
-                            shipment.list.type
-                            <span ng-show="sort.type == 'type' && !sort.reverse" class="ico-chevron-up"></span>
-                            <span ng-show="sort.type == 'type' && sort.reverse" class="ico-chevron-down"></span>
-                        </a>
-                    </th>
-                    <th class="sorting_asc" role="columnheader" tabindex="1" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
-                        shipment.list.code
-                    </th>
-                    <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
-                        shipment.list.nom
-                    </th>
-                    <th class="sorting_asc" role="columnheader" tabindex="3" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
-                        shipment.list.minAchat
-                    </th>
-                    <th class="sorting_asc" role="columnheader" tabindex="4" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
-                        shipment.list.actif
-                    </th>
-                </tr>
-                <tr>
-                    <th>
-                        
-                    </th>
-                    <th>
+            <div class="tableWrapperOverflow">
+                <table class="mediumTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row">
+                        <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 150px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
+                            shipment.list.url
+                        </th>
+                        <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Type: activate to sort column descending">
+                            <a ng-click="sort.type = 'type'; sort.reverse = !sort.reverse" translate>
+                                shipment.list.type
+                                <span ng-show="sort.type == 'type' && !sort.reverse" class="ico-chevron-up"></span>
+                                <span ng-show="sort.type == 'type' && sort.reverse" class="ico-chevron-down"></span>
+                            </a>
+                        </th>
+                        <th class="sorting_asc" role="columnheader" tabindex="1" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
+                            shipment.list.code
+                        </th>
+                        <th class="sorting_asc" role="columnheader" tabindex="2" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="Name: activate to sort column descending" translate>
+                            shipment.list.nom
+                        </th>
+                        <th class="sorting_asc" role="columnheader" tabindex="3" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
+                            shipment.list.minAchat
+                        </th>
+                        <th class="sorting_asc" role="columnheader" tabindex="4" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending" aria-label="URL: activate to sort column descending" translate>
+                            shipment.list.actif
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            
+                        </th>
+                        <th>
 
-                    </th>
-                    <th>
-                        <input type="text" ng-change="getShipments()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='shipment.list.code' class="form-control">
-                    </th>
-                    <th>
-                        <input type="text" ng-change="getShipments()" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='shipment.list.nom' class="form-control">
-                    </th>
-                    <th>
-                        
-                    </th>
-                    <th>
-                        <select ng-model="filter.active" ng-change="getShipments()" class="form-control" type="boolean">
-                            <option value="" translate>shipment.list.indiff</option>
-                            <option value="true" translate>shipment.list.actif</option>
-                            <option value="false" translate>shipment.list.noActif</option>
-                        </select>
-                    </th>
-                </tr>
-                </thead>
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
-                <tr class="pointer"
-                    ng-class-odd="'odd'" ng-class-even="'even'"
-                    ng-repeat="shipment in shipments | orderBy:sort.type:sort.reverse">
-                    <td data-label="Logo :" ng-click="goToShipmentDetails(shipment._id)"><img ng-src="{{shipment.url_logo}}" alt="{{shipment.translation[lang].name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
-                    <td data-label="Type :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.type | shipmentTypeName}}</td>
-                    <td data-label="Code :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
-                    <td data-label="Nom :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation[lang].name}}</td>
-                    <td data-label="Minimum d'achat :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
-                    <td data-label="Actif :" style="vertical-align: middle"><span ng-bind-html='shipment.active | checked'></span></td>
-                </tr>
-                </tbody>
-            </table>
+                        </th>
+                        <th>
+                            <input type="text" ng-change="getShipments()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='shipment.list.code' class="form-control">
+                        </th>
+                        <th>
+                            <input type="text" ng-change="getShipments()" ng-model="filter.name" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='shipment.list.nom' class="form-control">
+                        </th>
+                        <th>
+                            
+                        </th>
+                        <th>
+                            <select ng-model="filter.active" ng-change="getShipments()" class="form-control" type="boolean">
+                                <option value="" translate>shipment.list.indiff</option>
+                                <option value="true" translate>shipment.list.actif</option>
+                                <option value="false" translate>shipment.list.noActif</option>
+                            </select>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                    <tr class="pointer"
+                        ng-class-odd="'odd'" ng-class-even="'even'"
+                        ng-repeat="shipment in shipments | orderBy:sort.type:sort.reverse">
+                        <td data-label="Logo :" ng-click="goToShipmentDetails(shipment._id)"><img ng-src="{{shipment.url_logo}}" alt="{{shipment.translation[lang].name}}" style="max-width: 100px;max-height:50px" ng-if="shipment.url_logo !== ''"/></td>
+                        <td data-label="Type :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.type | shipmentTypeName}}</td>
+                        <td data-label="Code :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.code}}</td>
+                        <td data-label="Nom :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.translation[lang].name}}</td>
+                        <td data-label="Minimum d'achat :" ng-click="goToShipmentDetails(shipment._id)" style="vertical-align: middle">{{shipment.freePriceLimit}} &euro;</td>
+                        <td data-label="Actif :" style="vertical-align: middle"><span ng-bind-html='shipment.active | checked'></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </ns-box>

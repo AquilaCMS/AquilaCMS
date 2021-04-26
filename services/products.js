@@ -63,7 +63,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
+    // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
+    if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
@@ -126,8 +127,14 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
     }
 
-    result.specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    result.specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+    result.specialPriceMin = {
+        et  : Math.min(...arraySpecialPrice.et),
+        ati : Math.min(...arraySpecialPrice.ati)
+    };
+    result.specialPriceMax = {
+        et  : Math.max(...arraySpecialPrice.et),
+        ati : Math.max(...arraySpecialPrice.ati)
+    };
 
     return result;
 };
@@ -838,7 +845,12 @@ const controlAllProducts = async (option) => {
             }
 
             // Control du prix
-            if (typeof oneProduct.price.et.normal === 'undefined' || oneProduct.price.et.normal <= 0 || typeof oneProduct.price.ati.normal === 'undefined' || oneProduct.price.ati.normal <= 0) {
+            if (
+                typeof oneProduct.price.et.normal === 'undefined'
+                || oneProduct.price.et.normal <= 0
+                || typeof oneProduct.price.ati.normal === 'undefined'
+                || oneProduct.price.ati.normal <= 0
+            ) {
                 returnWarning += `<b>${oneProduct.code}</b> : Price is undefined or zero<br/>`;
             }
 
@@ -857,14 +869,14 @@ const controlAllProducts = async (option) => {
             }
 
             // Control du stock
-            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type !== 'bundle') { // On gère le stock
+            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type === 'simple') { // On gère le stock
                 if (typeof oneProduct.stock === 'undefined' || oneProduct.stock.length === 0 || (oneProduct.stock.qty <= 0 && oneProduct.stock.status === 'liv')) {
                     returnWarning += `<b>${oneProduct.code}</b> : Stock issues<br/>`;
                 }
             }
 
             // Control du poids
-            if (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0) {
+            if (oneProduct.type !== 'virtual' && (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0)) {
                 returnWarning += `<b>${oneProduct.code}</b> : No weight<br/>`;
             }
 

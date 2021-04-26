@@ -7,7 +7,7 @@ CartControllers.controller("CartListCtrl", [
         $scope.page = 1;
         $scope.currentPage = 1;
         $scope.totalItems = 0;
-        $scope.nbItemsPerPage = 9999;
+        $scope.nbItemsPerPage = 15;
         $scope.filter = {};
         $scope.showLoader = true;
 

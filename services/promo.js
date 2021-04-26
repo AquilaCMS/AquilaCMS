@@ -818,7 +818,7 @@ function calculateCartItemDiscount(prices, discountValueET, discountValueATI) {
 }
 
 async function resetCartProductPrice(cart, j) {
-    if (cart.items[j].noRecalculatePrice ||cart.items[j].type === 'bundle') {
+    if (cart.items[j].noRecalculatePrice || cart.items[j].type === 'bundle') {
         return cart;
     }
     // on recupere le produit en base et on y réapplique ses valeur (prix)

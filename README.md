@@ -36,24 +36,24 @@ g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nas
 
 You can download the source code from GitHub and run the following command-line (not 'Windows cmd') to launch the installer.
 
-With npm :
+- With npm :
 
-```bash
+```sh
 yarn install
 npm start
 ```
 
-With pm2 :
+- With pm2 :
 
-```bash
+```sh
 yarn install
 cp ecosystem.config.example.js ecosystem.config.js
 npm run start:pm2
 ```
 
-With docker :
+- With docker :
 
-```bash
+```sh
 docker pull aquilacms/aquilacms
 docker run -p 127.0.0.1:3010:3010/tcp aquilacms/aquilacms
 ```
@@ -71,15 +71,22 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 > - use an external link to, for example, an Atlas database
 > - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of 127.0.0.1)
 
+### Contribute
+
+If you want to contribute, you will need to install husky or else you won't be able to commit new feature
+```
+yarn husky:install
+```
+
 ### Have the installation page again
 
-If you want to have the installation page again, you can remove the `env.json` file in the **config/** folder.
+If you want to have the installation page again, you can remove the `env.json` file in the **`config/`** folder.
 
 ### Manually build the theme
 
 If you want, for any reason, to manually build a theme, you can execute this command at the root of AquilaCMS :
 
-```bash
+```sh
 npm run build:win --theme=default_theme
 ```
 
@@ -90,7 +97,7 @@ npm run build:win --theme=default_theme
 
 Find some documentation on [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/)
 
-For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (/api-docs)
+For the API, the swagger documentation is online at [aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs) or local (**`/api-docs`**)
 
 Also check-out some tutorials on :
 
@@ -99,4 +106,4 @@ Also check-out some tutorials on :
 
 ## License
 
-AquilaCMS is licensed under OSL3.
+AquilaCMS is licensed under [OSL3](https://github.com/AquilaCMS/AquilaCMS/blob/master/LICENSE.md)
