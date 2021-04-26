@@ -215,31 +215,47 @@ const changePassword = async (email, password) => {
  */
 const resetPassword = async (token, password) => {
     const user = await Users.findOne({resetPassToken: token});
-    if (password === undefined && user) return {message: 'Token valide'};
-    if (password === undefined && !user) return {message: 'Token invalide'};
+    if (password === undefined) {
+        if (user) {
+            return {message: 'Token valide'};
+        }
+        return {message: 'Token invalide'};
+    }
 
     if (user) {
-        try {
-            user.password = password;
-            await user.hashPassword();
-            await user.save();
-            await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-            // await Users.updateOne({_id: user._id}, {$set: {password}, $unset: {resetPassToken: 1}}, {
-            //     runValidators : true
-            // });
-            return {message: 'Mot de passe réinitialisé.'};
-        } catch (err) {
-            if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
-                throw NSErrors.LoginSubscribePasswordInvalid;
+        if (validatePassword(password)) {
+            try {
+                user.password = password;
+                await user.hashPassword();
+                await user.save();
+                await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
+                // await Users.updateOne({_id: user._id}, {$set: {password}, $unset: {resetPassToken: 1}}, {
+                //     runValidators : true
+                // });
+                return {message: 'Mot de passe réinitialisé.'};
+            } catch (err) {
+                if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
+                    throw NSErrors.LoginSubscribePasswordInvalid;
+                }
+                if (err.errors && err.errors.email && err.errors.email.message === 'BAD_EMAIL_FORMAT') {
+                    throw NSErrors.LoginSubscribeEmailInvalid;
+                }
+                throw err;
             }
-            if (err.errors && err.errors.email && err.errors.email.message === 'BAD_EMAIL_FORMAT') {
-                throw NSErrors.LoginSubscribeEmailInvalid;
-            }
-            throw err;
+        } else {
+            throw NSErrors.LoginSubscribePasswordInvalid;
         }
     }
     return {message: 'Utilisateur introuvable, impossible de réinitialiser le mot de passe.', status: 500};
 };
+
+function validatePassword(password) {
+    const passwordValidator = new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$');
+    if (passwordValidator.test(password)) {
+        return true;
+    }
+    return false;
+}
 
 module.exports = {
     getUsers,
