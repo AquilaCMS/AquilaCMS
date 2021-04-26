@@ -248,6 +248,13 @@ const isJsonString = (str) => {
     return true;
 };
 
+/**
+ * Check if user is admin
+ * @param {object | undefined} info
+ * @returns {boolean}
+ */
+const isAdmin = (info) => info && info.isAdmin;
+
 module.exports = {
     downloadFile,
     json2csv,
@@ -258,5 +265,6 @@ module.exports = {
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,
-    isJsonString
+    isJsonString,
+    isAdmin
 };

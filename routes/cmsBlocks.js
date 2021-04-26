@@ -8,11 +8,13 @@
 
 const ServiceCmsBlock             = require('../services/cmsBlocks');
 const {authentication, adminAuth} = require('../middleware/authentication');
+const {setupTranslationIfMissing} = require('../middleware/server');
+const {isAdmin}                   = require('../utils/utils');
 
 module.exports = function (app) {
-    app.post('/v2/cmsBlocks', getCMSBlocks);
-    app.post('/v2/cmsBlock', getCMSBlock);
-    app.post('/v2/cmsBlock/:id', getCMSBlockById);
+    app.post('/v2/cmsBlocks', setupTranslationIfMissing, getCMSBlocks);
+    app.post('/v2/cmsBlock', setupTranslationIfMissing, getCMSBlock);
+    app.post('/v2/cmsBlock/:id', setupTranslationIfMissing, getCMSBlockById);
     app.put('/v2/cmsBlock', authentication, adminAuth, setCMSBlock);
     app.delete('/v2/cmsBlock/:code', authentication, adminAuth, deleteCMSBlock);
 };
@@ -26,8 +28,9 @@ module.exports = function (app) {
  */
 async function getCMSBlocks(req, res, next) {
     try {
-        const result = await ServiceCmsBlock.getCMSBlocks(req.body.PostBody);
-        if (req.info && !req.info.isAdmin) {
+        const {PostBody} = req.body;
+        const result     = await ServiceCmsBlock.getCMSBlocks(PostBody);
+        if (!isAdmin(req.info)) {
             // on boucle sur les resultats
             for (let i = 0; i < result.datas.length; i++) {
                 const block = result.datas[i];
@@ -54,7 +57,7 @@ async function getCMSBlocks(req, res, next) {
 async function getCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlock(req.body.PostBody);
-        if (req.info && !req.info.isAdmin && result.translation) {
+        if (!isAdmin(req.info) && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
@@ -75,7 +78,7 @@ async function getCMSBlock(req, res, next) {
 async function getCMSBlockById(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlockById(req.params.id, req.body.PostBody);
-        if (req.info && !req.info.isAdmin && result.translation) {
+        if (!isAdmin(req.info) && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
