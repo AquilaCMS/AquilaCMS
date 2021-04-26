@@ -536,15 +536,27 @@ CategoryControllers.controller("CategoryListCtrl", [
 
         var selectedLang = "";
 
+        const structure = {
+            _id: 1,
+            children: 1,
+            ancestor: 1,
+            active: 1,
+            code: 1,
+            nodes: 1,
+            translation: 1,
+            displayOrder: 1
+        };
 
         $scope.expandAll = function(){
             for(let oneCat of $scope.categories){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
-                    oneCat.nodes = response.datas;
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure : structure, limit: 99}}, function (response) {
+                    oneCat.children = verifyOrder(response.datas);
+                    oneCat.nodes = oneCat.children;
                     $scope.$broadcast('angular-ui-tree:expand-all');
                     for(let oneNode of oneCat.nodes){
-                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
-                            oneNode.nodes = response.datas;
+                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure : structure, limit: 99}}, function (response) {
+                            oneNode.children = verifyOrder(response.datas);
+                            oneCat.nodes = oneCat.children;
                             $scope.$broadcast('angular-ui-tree:expand-all');
                         });
                     }
@@ -562,16 +574,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     },
                     populate: ["children"],
                     sort: {displayOrder: 1},
-                    structure: {
-                        _id: 1,
-                        children: 1,
-                        ancestor: 1,
-                        active: 1,
-                        code: 1,
-                        nodes: 1,
-                        translation: 1,
-                        displayOrder: 1
-                    },
+                    structure : structure,
                     limit: 99
                 }
             }, function (response) {
@@ -646,6 +649,9 @@ CategoryControllers.controller("CategoryListCtrl", [
                     },
                     lang: function () {
                         return selectedLang;
+                    },
+                    allCats: function () {
+                        return $scope.categories;
                     }
                 }
             });
@@ -697,41 +703,49 @@ CategoryControllers.controller("CategoryListCtrl", [
                 if(categoryDest != false){
                     if(!categoryDest.children){
                         categoryDest.children = [];
-                    }else{
-                        //the catDestination have children, we need to change the order and make a little place at "indexPlace"
-                        const longChild = categoryDest.children.length;
-                        for(let count=0;count<longChild;count++){
-                            let oneChild = categoryDest.children[count];
-                            if(oneChild.displayOrder < indexPlace){
-                                // if there is a weird displayOrder number
-                                if(oneChild.displayOrder != count){
-                                    oneChild.displayOrder = count;
-                                    promiseArray.push(CategoryV2.save(oneChild).$promise);
-                                }
-                            }else if(oneChild.displayOrder >= indexPlace){
+                    }
+                    const childrenIndex = categoryDest.children.findIndex((element) => {
+                        if(element._id == categoryToMove._id){
+                            return element
+                        }
+                    });
+                    if (childrenIndex > -1) {
+                        categoryDest.children.splice(childrenIndex, 1);
+                    }
+                    //the catDestination have children, we need to change the order and make a little place at "indexPlace"
+                    const longChild = categoryDest.children.length;
+                    for(let count=0;count<longChild;count++){
+                        let oneChild = categoryDest.children[count];
+                        if(oneChild.displayOrder < indexPlace){
+                            // if there is a weird displayOrder number
+                            if(oneChild.displayOrder != count){
                                 oneChild.displayOrder = count;
-                                oneChild.displayOrder++;
                                 promiseArray.push(CategoryV2.save(oneChild).$promise);
                             }
+                        }else if(oneChild.displayOrder >= indexPlace){
+                            oneChild.displayOrder = count;
+                            oneChild.displayOrder++;
+                            promiseArray.push(CategoryV2.save(oneChild).$promise);
                         }
                     }
                     categoryDest.children.splice(indexPlace, 0, categoryToMove);
                     //we save
                     promiseArray.push(CategoryV2.save(categoryDest).$promise);
                 }else{
-                    if(categorySource == false){
-                        // context : we change the order of root Cats
-                        // the cat is already in $scope.categories so we remove the actual categories from $scope.categories
-                        let index = 0;
-                        for(let oneCat of $scope.categories){
-                            if(oneCat._id == categoryToMove._id){
-                                break;
-                            }
-                            index++;
+                    // possible context :
+                    // 1. we change the order of root Cats
+                    // 2. we change a child cat to a root cat
+
+                    // the cat is already in $scope.categories so we remove the actual categories from $scope.categories
+                    let index = 0;
+                    for(let oneCat of $scope.categories){
+                        if(oneCat._id == categoryToMove._id){
+                            break;
                         }
-                        if (index > -1) {
-                            $scope.categories.splice(index, 1);
-                        }
+                        index++;
+                    }
+                    if (index > -1) {
+                        $scope.categories.splice(index, 1);
                     }
                     // we create a root cat
                     // we need to change displayOrder of all
@@ -798,15 +812,24 @@ CategoryControllers.controller("CategoryListCtrl", [
 ]);
 
 CategoryControllers.controller("CategoryNewCtrl", [
-    "$scope", "$modalInstance", "CategoryV2", "parent", "lang", "toastService",
-    function ($scope, $modalInstance, CategoryV2, parent, lang, toastService) {
-        const id_parent = parent ? [parent._id] : [];
+    "$scope", "$modalInstance", "CategoryV2", "parent", "lang", "toastService", "allCats",
+    function ($scope, $modalInstance, CategoryV2, parent, lang, toastService, allCats) {
+        let displayOrder;
+        let id_parent;
+        if(parent){
+            id_parent = [parent._id]
+            displayOrder = parent.children.length;
+        }else{
+            id_parent = [];
+            displayOrder = allCats.length;
+        }
         $scope.lang = lang;
         $scope.category = {
             ancestors: id_parent,
             translation: {
                 [lang]: {}
-            }
+            },
+            displayOrder: displayOrder
         };
 
         $scope.save = function (category) {
