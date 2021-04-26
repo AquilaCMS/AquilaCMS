@@ -36,7 +36,10 @@
                 <br>
                 <br>
                 <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('products')" style="cursor: pointer" ></i>
-                <p>Nombre de produits : <span>{{totalItems}}</span></p>
+                <p>
+                    <span translate>product.list2.productNumber</span>
+                    <span> : {{totalItems}}</span>
+                </p>
             </div>
             <br>
         </div>
@@ -84,11 +87,11 @@
                     </tr>
                     <tr role="row">
                         <th>
-                            <input type="text" ng-change="getProducts()" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='product.list2.ph1' class="form-control">
+                            <input type="text" ng-change="getProducts(1)" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='product.list2.ph1' class="form-control">
                         </th>
                         <th ng-repeat="column in columns" bind-html-compile="column.inter.component_template"></th>
                         <th>
-                            <select ng-model="filter.type" class="form-control" ng-change="getProducts()" ng-options="type.code as type.name for type in productTypes">
+                            <select ng-model="filter.type" class="form-control" ng-change="getProducts(1)" ng-options="type.code as type.name for type in productTypes">
                                 <option value="" translate>product.list2.indiff</option>
                             </select>
                         </th>
@@ -96,7 +99,7 @@
                             <ns-datepicker  ng-change="getProducts()" name="date_selling" ng-model="filter.creationDate"></ns-datepicker>
                         </th> -->
                         <th>
-                            <select ng-model="searchObj.active" ng-change="getProducts()"
+                            <select ng-model="searchObj.active" ng-change="getProducts(1)"
                                     class="form-control" type="boolean">
                                 <option value="" translate>product.list2.indiff</option>
                                 <option value="true" translate>product.list2.actif</option>
@@ -104,7 +107,7 @@
                             </select>
                         </th>
                         <th>
-                            <select ng-model="searchObj._visible" ng-change="getProducts()" class="form-control" type="boolean">
+                            <select ng-model="searchObj._visible" ng-change="getProducts(1)" class="form-control" type="boolean">
                                 <option value="" translate>product.list2.indiff</option>
                                 <option value="true" translate>product.list2.visible</option>
                                 <option value="false" translate>product.list2.noVisible</option>
