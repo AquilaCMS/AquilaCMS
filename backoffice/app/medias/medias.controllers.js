@@ -96,17 +96,42 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
         $scope.media = {
             link : "",
             name : "",
-            group: ""
+            group: "",
+            groups: []
         };
 
         $scope.nsUploadFiles = {
             isSelected : false
         };
-
-        $scope.routeId = $routeParams.id;
-
         $scope.selectedDropdownItem = "";
+        
+        $scope.isEditMode = false;
 
+        function setEditMode(mode){
+            $scope.isEditMode = mode;
+            if(mode == true){
+                $scope.id = $routeParams.id;
+                // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
+                MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 99}}, function (response) {
+                    $scope.media = response;
+                    $scope.filterDropdown();
+                    if($scope.media.group){
+                        // to bind the input "group"
+                        $scope.selectedDropdownItem = $scope.media.group;
+                    }
+                });
+            }else{
+                $scope.filterDropdown();
+                $scope.additionnalButtons = [
+                    {
+                        text: 'medias.medias.uploadButton',
+                        onClick: function(){
+                            $scope.addMulti();
+                        }
+                    }
+                ];
+            }
+        }
 
         $scope.copyLink = function (media) {
             $modal.open({
@@ -120,8 +145,6 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             });
         };
 
-        $scope.isEditMode = false;
-
         $scope.success = function () {
             toastService.toast("success", "Lien copié");
         };
@@ -133,12 +156,14 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
         $scope.save = function () {
             if ($scope.nsUploadFiles.isSelected){
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
-                if (!response){return}
+                if (!response){
+                    return
+                }
             }
             $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
                 toastService.toast("success", "Media sauvegardé !");
-                $location.path("/medias");
+                $location.path("/medias/"+response._id);
             }, function (error) {
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
@@ -153,52 +178,32 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             });
         };
 
-        $scope.init = function () {
-            MediaApiV2.query({PostBody: {filter: {_id: $routeParams.id}, limit: 99}}, function (response) {
-                $scope.media = response;
-                $scope.selectedDropdownItem = $scope.media.group ? $scope.media.group : '';
 
-                $scope.getGroups()
+        $scope.filterDropdown = function (userInput) {
+            if (userInput !== undefined) {
+                $scope.selectedDropdownItem = userInput;
+            }
+            let params = {};
+            if($scope.selectedDropdownItem){
+                params = {query: $scope.selectedDropdownItem};
+            }
+            MediaApiV2.getGroups(params, function (groups) {
+                $scope.groups = [];
+                $scope.groups = groups;
+            }, function (error){
+                console.log(error);
             });
         };
+        
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+        };
 
-        $scope.getGroups = function () {
-            $scope.itemObjectSelected = function (item) {
-                $scope.selectedDropdownItem = item;
-            };
-
-            $scope.filterDropdown = function (userInput) {
-                if (userInput !== undefined) {
-                    $scope.selectedDropdownItem = userInput;
-                }
-
-                return MediaApiV2.getGroups({query: $scope.selectedDropdownItem}).$promise.then(function (groups) {
-                    $scope.groups = groups
-                    return groups;
-                });
-            };
-
-            $scope.filterDropdown();
-        }
         $scope.isPicture = function(media) {
             if(media.link.match(new RegExp("jpg|jpeg|png|gif|svg", "i"))) {
                 return true
             }
             return false
-        }
-
-        if($routeParams.id !== 'new') {
-            $scope.init();
-        } else {
-            $scope.getGroups();
-            $scope.additionnalButtons = [
-                {
-                    text: 'medias.medias.uploadButton',
-                    onClick: function(){
-                        $scope.addMulti();
-                    }
-                }
-            ];
         }
 
         $scope.addMulti = function (nodeParent) {
@@ -215,6 +220,8 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
                 }
             });
         };
+        
+        setEditMode($routeParams.id !== "new");
     }
 ]);
 
