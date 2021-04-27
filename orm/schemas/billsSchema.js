@@ -15,7 +15,7 @@ const ItemSimpleSchema = require('./itemSimpleSchema');
 const AddressSchema    = require('./addressSchema');
 const aquilaEvents     = require('../../utils/aquilaEvents');
 const Schema           = mongoose.Schema;
-const ObjectId         = Schema.ObjectId;
+const {ObjectId}       = Schema.Types;
 
 const BillsSchema = new Schema({
     order_id    : {type: ObjectId, ref: 'orders', required: true},
