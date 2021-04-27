@@ -105,11 +105,11 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
 
         // L'inserer dans la base de données
         if (insertDB) {
-            await Medias.create({
+            await Medias.updateOne({name : name_file}, {
                 link : `medias/${filename}`,
                 name : name_file,
                 group
-            });
+            }, {upsert: true});
         }
     }
 
