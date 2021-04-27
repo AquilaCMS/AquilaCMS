@@ -15,6 +15,7 @@ const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
 const {authentication, adminAuth}    = require('../middleware/authentication');
 const NSErrors                       = require('../utils/errors/NSErrors');
+const {isAdmin}                      = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
@@ -46,7 +47,7 @@ module.exports = function (app) {
 async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
-        if (req.info && !req.info.isAdmin) {
+        if (!isAdmin(req.info)) {
             PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
