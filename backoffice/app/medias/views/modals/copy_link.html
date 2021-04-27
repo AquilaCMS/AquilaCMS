@@ -6,13 +6,13 @@
         <div class="form-group">
             <label class="control-label col-sm-5" translate>medias.modal.width</label>
             <div class="col-sm-7">
-                <input type="text" class="form-control" name="code" ng-model="info.largeur" ng-required="true">
+                <input type="number" min="1" class="form-control" name="code" ng-model="info.largeur" ng-required="true">
             </div>
         </div>
             <div class="form-group">
                 <label class="control-label col-sm-5" translate>medias.modal.height</label>
             <div class="col-sm-7">
-                <input type="text" class="form-control" name="format" ng-model="info.longueur" ng-required="true">
+                <input type="number" min="1" class="form-control" name="format" ng-model="info.longueur" ng-required="true">
             </div>
         </div>
         <div class="form-group">
@@ -35,7 +35,7 @@
         <div class="form-group">
             <label class="control-label col-sm-5" translate>medias.modal.quality</label>
             <div class="col-sm-7">
-                <input type="text" class="form-control" name="code" ng-model="info.quality" ng-required="true">
+                <input type="number" min="0" max="100" class="form-control" name="code" ng-model="info.quality" ng-required="true">
             </div>
         </div>
         <div class="form-group">
