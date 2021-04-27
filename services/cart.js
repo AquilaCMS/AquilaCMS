@@ -254,14 +254,12 @@ const updateQty = async (req) => {
 
     // On gère le stock
     // await servicesProducts.handleStock(item, _product, req.body.item.quantity);
-    cart = await Cart.findOneAndUpdate(
-        {_id: req.body.cartId, status: 'IN_PROGRESS', 'items._id': req.body.item._id},
-        {'items.$.quantity': req.body.item.quantity},
-        {new: true}
-    );
-    if (!cart) {
-        throw NSErrors.InactiveCart;
-    }
+    await cart.updateOne({
+        $set : {'items.$[item].quantity': req.body.item.quantity}
+    }, {
+        arrayFilters : [{'item._id': req.body.item._id}],
+        new          : true
+    });
     await linkCustomerToCart(cart, req);
     cart = await ServicePromo.checkForApplyPromo(req.info, cart);
     await cart.save();
@@ -427,10 +425,20 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         if (createdOrder.promos && createdOrder.promos.length && createdOrder.promos[0].promoCodeId) {
             try {
             // alors on incrémente le nombre d'utilisation de cette promo
-                await Promo.updateOne({'codes._id': createdOrder.promos[0].promoCodeId}, {$inc: {'codes.$.used': 1}});
+                await Promo.updateOne({}, {
+                    $inc : {'codes.$[code].used': 1}
+                }, {
+                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
+                });
                 // alors nous devons aussi actualiser le nombre de client unique ayant utilisé ce code promo
-                const result = await Orders.distinct('customer.id', {'promos.promoCodeId': createdOrder.promos[0].promoCodeId});
-                await Promo.updateOne({'codes._id': createdOrder.promos[0].promoCodeId}, {$set: {'codes.$.client_used': result.length}});
+                const result = await Orders.distinct('customer.id', {
+                    'promos.promoCodeId' : createdOrder.promos[0].promoCodeId
+                });
+                await Promo.updateOne({}, {
+                    $set : {'codes.$[code].client_used': result.length}
+                }, {
+                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
+                });
             // TODO P6 : Décrémenter le stock du produit offert
             // if (_cart.promos[0].gifts.length)
             } catch (err) {

@@ -434,13 +434,15 @@ const uploadFiles = async (body, files) => {
             item.src      = target_path_full;
             item.alt      = body.alt && body.alt !== '' ? body.alt : item.alt;
             item.srcset   = [target_path_full];
-            await Gallery.updateOne({'items._id': body.entity._id}, {
+            await Gallery.updateOne({}, {
                 $set : {
-                    'items.$.src'       : target_path_full,
-                    'items.$.alt'       : body.alt && body.alt !== '' ? body.alt : item.alt,
-                    'items.$.srcset'    : [target_path_full],
-                    'items.$.extension' : path.extname(target_path_full)
+                    'items.$[item].src'       : target_path_full,
+                    'items.$[item].alt'       : body.alt && body.alt !== '' ? body.alt : item.alt,
+                    'items.$[item].srcset'    : [target_path_full],
+                    'items.$[item].extension' : path.extname(target_path_full)
                 }
+            }, {
+                arrayFilters : [{'item._id': body.entity._id}]
             });
             await deleteFileAndCacheFile(oldPath, 'gallery');
             return item;
@@ -450,6 +452,7 @@ const uploadFiles = async (body, files) => {
         if (galleryNumber.items.length !== 0) {
             maxOrder = Math.max.apply(null, galleryNumber.items.map((i) => i.order));
         }
+
         const item = {
             src       : target_path_full,
             srcset    : [target_path_full],
@@ -473,13 +476,15 @@ const uploadFiles = async (body, files) => {
             item.src      = target_path_full;
             item.name     = body.alt && body.alt !== '' ? body.alt : item.name;
             item.text     = body.alt && body.alt !== '' ? body.alt : item.text;
-            await Slider.updateOne({'items._id': body.entity._id}, {
+            await Slider.updateOne({}, {
                 $set : {
-                    'items.$.src'  : target_path_full,
-                    'items.$.name' : item.name,
-                    'items.$.text' : item.text,
-                    extension      : path.extname(target_path_full)
+                    'items.$[item].src'  : target_path_full,
+                    'items.$[item].name' : item.name,
+                    'items.$[item].text' : item.text,
+                    extension            : path.extname(target_path_full)
                 }
+            }, {
+                arrayFilters : [{'items._id': body.entity._id}]
             });
             await deleteFileAndCacheFile(oldPath, 'slider');
             return item;
