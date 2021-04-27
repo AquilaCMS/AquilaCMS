@@ -1070,7 +1070,6 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "CREDIT";
                     $scope.statusObj.isDanger =
                         $scope.status === "DEBIT";
-                    $scope.statusObj.name = $scope.status;
                     $scope.statusObj.name = $filter("paymentType")($scope.status);
                 }
                 else if($scope.type === "picto")
