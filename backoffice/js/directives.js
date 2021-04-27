@@ -1087,7 +1087,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "glboal.visible"
+                        ? "global.visible"
                         : "global.nonVisible";
                 }
             }
