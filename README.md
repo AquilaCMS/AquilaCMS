@@ -74,7 +74,8 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 ### Contribute
 
 If you want to contribute, you will need to install husky or else you won't be able to commit new feature
-```
+
+```sh
 yarn husky:install
 ```
 
