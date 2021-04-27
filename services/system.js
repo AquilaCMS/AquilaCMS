@@ -39,13 +39,13 @@ const getLogsContent = async (fileName) => {
 const getNextVersion = async () => {
     const datas = {};
     if (fs.existsSync(path.join(global.appRoot, 'yarn.lock'))) {
-        const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json'], global.appRoot);
+        const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json']);
         let data     = result.stdout.split('}\n{');
         data         = data[data.length - 1];
         if (!data.startsWith('{')) {
             data = `{${data}`;
         }
-        let currentVersion = await packageManager.execSh('yarn', ['list', '--pattern', 'next', '--json'], global.appRoot);
+        let currentVersion = await packageManager.execSh('yarn', ['list', '--pattern', 'next', '--json']);
         currentVersion     = JSON.parse(currentVersion.stdout).data.trees;
         for (const elem of currentVersion) {
             if (elem.name.startsWith('next@')) {
@@ -57,8 +57,8 @@ const getNextVersion = async () => {
         datas.actual   = currentVersion.slice(5);
         datas.versions = JSON.parse(data).data;
     } else {
-        const nextInstalledVersion = await packageManager.execSh('npm', ['ls', 'next', '--json'], global.appRoot);
-        const listNextVersion      = await packageManager.execSh('npm', ['view', 'next', '--json'], global.appRoot);
+        const nextInstalledVersion = await packageManager.execSh('npm', ['ls', 'next', '--json']);
+        const listNextVersion      = await packageManager.execSh('npm', ['view', 'next', '--json']);
         datas.actual               = JSON.parse(nextInstalledVersion.stdout).dependencies.next.version;
         datas.versions             = JSON.parse(listNextVersion.stdout).versions;
     }
@@ -70,9 +70,9 @@ const changeNextVersion = async (body) => {
     if (!nextVersion) throw NSErrors.UnprocessableEntity;
     let result;
     if (fs.existsSync(path.join(global.appRoot, 'yarn.lock'))) {
-        result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`], global.appRoot);
+        result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`]);
     } else {
-        result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`], global.appRoot);
+        result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`]);
     }
     if (result.code !== 0) throw NSErrors.InvalidRequest;
 };

@@ -24,6 +24,8 @@ const AddressSchema = new Schema({
     country           : {type: String, require: true},
     complementaryInfo : {type: String},
     civility          : {type: Number, enum: [0, 1]} // 0 pour homme, 1 pour femme
+}, {
+    _id : false
 });
 
 aquilaEvents.emit('addressSchemaInit', AddressSchema);

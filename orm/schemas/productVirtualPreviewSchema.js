@@ -7,7 +7,7 @@
  */
 
 const mongoose               = require('mongoose');
-const {ProductVirtualSchema} = require('.');
+const {ProductVirtualSchema} = require('./productVirtualSchema');
 const Schema                 = mongoose.Schema;
 
 const ProductVirtualPreviewSchema = new Schema(ProductVirtualSchema);

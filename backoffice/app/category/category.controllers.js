@@ -1,9 +1,15 @@
 var CategoryControllers = angular.module("aq.category.controllers", []);
 
-CategoryControllers.controller("CategoryIncludeCtrl", [
-    "$scope", "$rootScope", "$http", "$q", "Category", "$route", "$location", "StaticV2", "ProductsV2", "ProductTri", "ProductSearch", "ProductPagination", "CategoryProducts", "toastService", "RulesV2", "CategoryGetAttributesUsedInFilters", "CategoryV2", "$modal","$translate",
-    function ($scope, $rootScope, $http, $q, Category, $route, $location, StaticV2, ProductsV2, ProductTri, ProductSearch, ProductPagination, CategoryProducts, toastService, RulesV2, CategoryGetAttributesUsedInFilters, CategoryV2, $modal, $translate)
+CategoryControllers.controller("CategoryDetailCtrl", [
+    "$scope", "$rootScope", "$http", "$q", "Category", "$route", "$location", "StaticV2", "ProductsV2", "ProductTri", "ProductSearch", "ProductPagination", "CategoryProducts", "toastService", "RulesV2", "CategoryGetAttributesUsedInFilters", "CategoryV2", "$modal","$translate", "$routeParams", "$location",
+    function ($scope, $rootScope, $http, $q, Category, $route, $location, StaticV2, ProductsV2, ProductTri, ProductSearch, ProductPagination, CategoryProducts, toastService, RulesV2, CategoryGetAttributesUsedInFilters, CategoryV2, $modal, $translate, $routeParams, $location)
     {
+        $scope.lang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+        }).code;
+        $scope.isEditMode = true;
+        $scope.category = {};
+        $scope.category._id = $routeParams.id;
         $scope.currentPage = 1;
         $scope.rule = {};
         $scope.usedInFilters = [];
@@ -12,7 +18,52 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         $scope.searchObj = {
             productInCategory: ""
         };
-        
+
+        $scope.getCategory = function(id){
+            CategoryV2.get({PostBody: {filter: {_id: id}, structure: '*'}}, function (response) {
+                $scope.category = response;
+            });
+        }
+
+        $scope.getCategory($scope.category._id);
+
+        $scope.getImage = function (category) {
+            if(category && category.img) {
+                const nameImg = category.img.replace('medias/category/', '');
+                return window.location.origin + "/images/category/max-80/" + category._id + "/" + nameImg;
+            }
+            return ;
+        }
+
+        $scope.return = function () {
+            if ($scope.isSelected === true) {
+                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                if (!response) { return }
+            }
+            if ($scope.form.$dirty) {
+                if (
+                    confirm(
+                        "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
+                    )
+                ) {
+                    $location.path($scope.returnPath);
+                }
+            }
+            else {
+                $location.path($scope.returnPath);
+            }
+        };
+
+        var selectedLang = "";
+
+        $scope.nsUploadFiles = {
+            isSelected: false
+        };
+
+        $scope.langChange = function (lang) {
+            selectedLang = lang;
+        };
+
         StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
             $scope.pages = staticsList.datas;
             if ($scope.pages[0]) {
@@ -92,41 +143,6 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
         {
             $scope.category.conditions.splice(index, 1);
         };
-
-        /***** Multi-langues ********/
-        $scope.changeLanguage = function (newLanguage)
-        {
-            var listOfJqueryElements = [
-                $("#type"),
-                $("#vignette"),
-                $("#switch"),
-                $("#createDate"),
-                $("#slug"),
-                $("#seperatebar"),
-                $("#openDate"),
-                $("#closeDate"),
-                //$("#headerImage"),
-                $("a[href='#listProduct']"),
-                $("a[href='#rules']"),
-                $("a[href='#general']")
-            ];
-
-            angular.forEach(listOfJqueryElements, function (value)
-            {
-                value.css(
-                    "display",
-                    !newLanguage.defaultLanguage ? "none" : ""
-                );
-            });
-            $("div").removeClass("in active");
-            $("a[target='_self']")
-                .parent()
-                .removeClass("active");
-            $("#general").addClass("in active");
-            $("a[href='#general']")
-                .parent()
-                .addClass("active");
-        };
         /***** Fin multi-langues ********/
 
         $scope.pagination = {productInCategory: "true"};
@@ -151,7 +167,7 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                     let newFilter = {};
                     for (var i = 0; i < filterLength; i++) {
                         if(filterKeys[i] == "translation"){
-                            newFilter[`translation.${$scope.lang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };                          
+                            newFilter[`translation.${$scope.lang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
                         } else if (filterKeys[i] == "active" || filterKeys[i] == "_visible"){
                             if($scope.searchObj[filterKeys[i]]){
                                 newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
@@ -290,18 +306,6 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                     $scope.formMenu.$setPristine();
                 }
             });
-
-            // CategoryProducts.move({id: $scope.category._id, productId: id, pos: pos}, function (result)
-            // {
-            //     if(result.message == "success")
-            //     {
-            //         $scope.getProducts();
-            //     }
-            //     else
-            //     {
-            //         assignProductsPos($scope.category._id);
-            //     }
-            // });
         };
 
         $scope.pageChanged = function (newPage)
@@ -375,36 +379,6 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             }
         };
 
-        // $scope.deleteImage = function (type)
-        // {
-        //     $scope.infoImage[type].ImageUrl = "";
-        //     $scope.category[type + "Url"] = "";
-        //     $scope.infoImage[type].checkUp = false;
-        // };
-
-        // $scope.onFileSelect = function ($files, type)
-        // {
-        //     if($files.length >= 1)
-        //     {
-        //         var reader = new FileReader();
-        //         reader.readAsDataURL($files[0]);
-        //         $scope.file = $files[0];
-        //         $scope.defaultUp = false;
-        //         $scope.showProgressValue = true;
-        //         reader.onload = function (e)
-        //         {
-        //             $scope.$apply(function ()
-        //             {
-        //                 $scope.category[type + "Url"] = e.target.result;
-        //                 $scope.infoImage[type].ImageUrl = e.target.result;
-        //                 $scope.infoImage[type].file = $scope.file;
-        //                 $scope.infoImage[type].showProgressValue = false;
-        //                 $scope.infoImage[type].checkUp = true;
-        //             });
-        //         };
-        //     }
-        // };
-
         function saveCategory()
         {
             CategoryV2.save($scope.category, function (res)
@@ -417,14 +391,18 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                     $scope.formMenu.$setPristine();
                 }
             }, function (err) {
-                toastService.toast("danger", err.data.message);
+                if(err){
+                    if(err.data){
+                        toastService.toast("danger", err.data.message);
+                    }else if(err.message){
+                        toastService.toast("danger", err.message);
+                    }
+                }
             });
         }
 
-        $scope.save = function (isQuit)
-        {   
-            if(this.formMenu.ruleForm.$invalid)
-            {
+        $scope.save = function (isQuit) {
+            if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
                 toastService.toast("danger", "Formulaire des regles incomplet");
                 return;
             }
@@ -440,15 +418,6 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             } else {
                 saveCategory();
             }
-            // for(var key in $scope.infoImage)
-            // {
-            //     if(($scope.infoImage[key].originalImage && $scope.infoImage[key].ImageUrl == "") || ($scope.infoImage[key].originalImage != $scope.infoImage[key].ImageUrl))
-            //     {
-            //         $http.delete("/categories/media/" + encodeURIComponent($scope.infoImage[key].originalImage)).success(function (res)
-            //         {
-            //         });
-            //     }
-            // }
             if(typeof isQuit !== "undefined" && isQuit){
                 $scope.editCat = false;
                 if (!$scope.$$phase) {
@@ -458,18 +427,22 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
             }
         };
 
-        $scope.removeMenu = function ()
-        {
+        $scope.removeMenu = function () {
             if(confirm("Etes-vous sûr de vouloir supprimer cette catégorie et tous ses enfants ?"))
             {
                 CategoryV2.delete({ id: $scope.category._id }).$promise.then(
                     function ()
                     {
-                        location.reload();
+                        $location.path('/categories');
                     },
-                    function (err)
-                    {
-                        toastService.toast("danger", err.data);
+                    function (err) {
+                        if(err){
+                            if(err.data){
+                                toastService.toast("danger", err.data.message);
+                            }else if(err.message){
+                                toastService.toast("danger", err.message);
+                            }
+                        }
                     }
                 );
             }
@@ -499,30 +472,10 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
                 tab.push({id: $scope.products[$index]._id, checked: true});
             }
 
-            CategoryV2.save({_id: $scope.category._id, productsList: tab}, function ()
-            {
-                //assignProductsPos($scope.category._id);
+            CategoryV2.save({_id: $scope.category._id, productsList: tab}, function () {
+
             });
         };
-
-        // function assignProductsPos(categoryId)
-        // {
-        //     CategoryProducts.getPos({action: "pp", id: categoryId}, function (_products)
-        //     {
-        //         for(var i = 0; i < $scope.products.length; i++)
-        //         {
-        //             $scope.products[i].pos = undefined;
-
-        //             for(var j = 0; j < _products.length; j++)
-        //             {
-        //                 if($scope.products[i]._id == _products[j]._id)
-        //                 {
-        //                     $scope.products[i].pos = _products[j].pos;
-        //                 }
-        //             }
-        //         }
-        //     });
-        // }
 
         /**
          *
@@ -578,15 +531,12 @@ CategoryControllers.controller("CategoryIncludeCtrl", [
 ]);
 
 CategoryControllers.controller("CategoryListCtrl", [
-    "$scope", "$modal", "$q", "toastService","$translate","$modal", "CategoryV2",
-    function ($scope, $modal, $q, toastService, $translate, $modal, CategoryV2)
-    {
+    "$scope", "$modal", "$q", "toastService","$translate","$modal", "CategoryV2", "$location",
+    function ($scope, $modal, $q, toastService, $translate, $modal, CategoryV2, $location) {
+
         var selectedLang = "";
 
-        $scope.nsUploadFiles = {
-            isSelected: false
-        };
-        
+
         $scope.expandAll = function(){
             for(let oneCat of $scope.categories){
                 CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
@@ -604,17 +554,27 @@ CategoryControllers.controller("CategoryListCtrl", [
         }
         getMenus();
 
-        $scope.getImage = function (category) {
-            if(category && category.img) {
-                const nameImg = category.img.replace('medias/category/', '');
-                return window.location.origin + "/images/category/max-80/" + category._id + "/" + nameImg;
-            }
-            return ;
-        }
-
         function getMenus()
         {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
+            CategoryV2.list({
+                PostBody: {
+                    filter: {
+                        ['ancestors.0']: {$exists: false}
+                    },
+                    populate: ["children"],
+                    sort: {displayOrder: 1},
+                    structure: {
+                        _id: 1,
+                        children: 1,
+                        ancestor: 1,
+                        active: 1,
+                        code: 1,
+                        nodes: 1,
+                        translation: 1
+                    },
+                    limit: 99
+                }
+            }, function (response)
             {
                 $scope.categories = response.datas;
                 //we expand all the categories
@@ -636,55 +596,6 @@ CategoryControllers.controller("CategoryListCtrl", [
             $scope.getCategory(cat);
         };
 
-
-        /*$scope.removeCategory = function(scope, cat) {
-         Category.remove({id: cat._id}, function(){
-         scope.remove();
-         });
-         };*/
-
-        $scope.getCategory = function(cat){
-            CategoryV2.get({PostBody: {filter: {_id: cat._id}, structure: '*'}}, function (response) {
-                $scope.category = response;
-                $scope.editCat = true;
-            });
-        }
-
-        $scope.setEditCat = function(form) {
-            if ($scope.nsUploadFiles.isSelected === true) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
-                if (!response) { return }
-            }
-            if (form.$dirty) {
-                if (confirm("Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?")){
-                    $scope.editCat = false;
-                }else{
-                    $scope.editCat = true;
-                }
-            }else{
-                $scope.editCat = false;
-            }
-        }
-
-        $scope.return = function () {
-            if ($scope.isSelected === true) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
-                if (!response) { return }
-            }
-            if ($scope.form.$dirty) {
-                if (
-                    confirm(
-                        "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
-                    )
-                ) {
-                    $location.path($scope.returnPath);
-                }
-            }
-            else {
-                $location.path($scope.returnPath);
-            }
-        };
-
         $scope.listChildren = function (cat, scope)
         {
             CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response)
@@ -699,69 +610,27 @@ CategoryControllers.controller("CategoryListCtrl", [
             selectedLang = lang;
         };
 
-        $scope.addCategory = function (nodeParent)
-        {
+        $scope.addCategory = function (nodeParent) {
             var modalInstance = $modal.open({
                 templateUrl: "app/category/views/modals/category-new.html",
                 controller: "CategoryNewCtrl",
                 resolve: {
-                    id_parent: function ()
-                    {
-                        if(!nodeParent)
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            return nodeParent._id;
-                        }
+                    parent: function () {
+                            return nodeParent || null;
                     },
-                    lang: function ()
-                    {
+                    lang: function () {
                         return selectedLang;
                     }
                 }
             });
 
             modalInstance.result.then(function (returnedValue) {
-                // delete returnedValue.$resolved;
-                // delete returnedValue.$promise;
-                // let longeur1 = $scope.categories.length;
-                // for(let count1 = 0; count1 < longeur1; count1++){
-                //     if($scope.categories[count1].children){
-                //         let longeur2 = $scope.categories[count1].children.length;
-                //         for(let count2 = 0; count2 < longeur2; count2++){
-                //             if($scope.categories[count1].children[count2]["_id"] == nodeParent._id){
-                //                 $scope.categories[count1].children[count2].children.push(returnedValue._id);
-                //                 if (!$scope.$$phase) {
-                //                     $scope.$apply();
-                //                 }
-                //                 break;
-                //             }
-                //             //don't work
-                //             getMenus();
-                //         }
-                //     }
-                //     if($scope.categories[count1]["_id"] == nodeParent._id){
-                //         let newArray = angular.copy($scope.categories[count1].children);
-                //         newArray.push(returnedValue);
-                //         delete $scope.categories[count1].children;
-                //         $scope.categories[count1].children = newArray;
-                //         $scope.categories[count1].nodes = newArray;
-                //         if (!$scope.$$phase) {
-                //             $scope.$apply();
-                //         }
-                //         break;
-                //     }
-                // }
                 getMenus();
             });
         };
 
-        $scope.editCategory = function (cat)
-        {
-            $scope.editCat = false;
-            $scope.getCategory(cat);
+        $scope.editCategory = function (cat) {
+            $location.path(`/categories/${cat._id}`);
         };
 
         $scope.treeOptions = {
@@ -771,50 +640,65 @@ CategoryControllers.controller("CategoryListCtrl", [
                 }
                 return true;
             },
-            dropped: function (event)
-            {
+            dropped: function (event) {
+
                 var deferred = $q.defer();
                 var promiseArray = [];
 
-                const catSource = event.source.nodesScope.$nodeScope !== null ? event.source.nodesScope.$nodeScope.$modelValue : {},
-                catDest = event.dest.nodesScope.$nodeScope !== null ? event.dest.nodesScope.$nodeScope.$modelValue : {},
-                catToMove = event.source.nodeScope.$modelValue;if(catSource.code !== catDest.code) {
-                    const indexCatChildToMove = catSource.children.findIndex((child) => getId(child) === catToMove._id)
-                    const indexCatParentToMove = catToMove.ancestors.findIndex((parent) => getId(parent) === catToMove._id)
-                    // on retire la categorie de son ancien parent
-                    promiseArray.push(CategoryV2.save({_id: catSource._id, $unset: {[`children.${indexCatChildToMove}`]: 1}}).$promise)
-                    promiseArray.push(CategoryV2.save({_id: catSource._id, $pull: {children: null}}).$promise)
-                    catSource.children.slice(indexCatChildToMove, 1)
-                    // on retire l'ancien parent de la categorie
-                    promiseArray.push(CategoryV2.save({_id: catToMove._id, $unset: {[`ancestors.${indexCatParentToMove}`]: 1}}).$promise)
-                    promiseArray.push(CategoryV2.save({_id: catToMove._id, $pull: {ancestors: null}}).$promise)
-                    catToMove.ancestors.slice(indexCatParentToMove, 1)
-                    // on retire l'ancien parent de la categorie
-                    promiseArray.push(CategoryV2.save({_id: catToMove._id, $push: {ancestors: catDest._id}}).$promise)
-                    catToMove.ancestors.push(catDest._id,)
-                    // on l'ajoute au nouveau parent
-                    promiseArray.push(CategoryV2.save({_id: catDest._id, $push: {children: catToMove._id}}).$promise)
-                    catDest.children.push(catToMove._id)
-                    // on set l'ordre correctement
-                    for(var i = 0; i < event.dest.nodesScope.$modelValue.length; i++)
-                    {
-                        var category = event.dest.nodesScope.$modelValue[i];
-                        promiseArray.push(CategoryV2.save({_id: category._id, displayOrder: i + 1}).$promise);
-                        category.displayOrder = i + 1;
+                const indexPlace = event.dest.index;
+                let categoryToMove = event.source.nodeScope.$modelValue;
+                let categorySource = event.source.nodesScope.$nodeScope !== null ? event.source.nodesScope.$nodeScope.$modelValue : false;
+                let categoryDest = event.dest.nodesScope.$nodeScope !== null ? event.dest.nodesScope.$nodeScope.$modelValue : false;
+
+                if(categorySource != false){
+                    //we change children of parent
+                    //we check if already
+                    const childrenIndex = categorySource.children.findIndex((element) => {
+                        if(element._id == categoryToMove._id){
+                            return element
+                        }
+                    });
+                    if (childrenIndex > -1) {
+                        categorySource.children.splice(childrenIndex, 1);
                     }
-                } else if(catSource.code === catDest.code) {
-                    for(var i = 0; i < event.dest.nodesScope.$modelValue.length; i++)
-                    {
-                        var category = event.dest.nodesScope.$modelValue[i];
-                        promiseArray.push(CategoryV2.save({_id: category._id, displayOrder: i + 1}).$promise);
+                    //we save
+                    promiseArray.push(CategoryV2.save(categorySource).$promise);
+                }
+                //we add the element
+                if(categoryDest != false){
+                    if(!categoryDest.children){
+                        categoryDest.children = [];
+                    }
+                    categoryDest.children.splice(indexPlace, 0, categoryToMove);
+                    //we save
+                    promiseArray.push(CategoryV2.save(categoryDest).$promise);
+                }
+                if(!categoryToMove.ancestors){
+                    categoryToMove.ancestors = []
+                }
+                if(categoryToMove.ancestors.length > 0){
+                    // we remove the ancestors
+                    const ancestorIndex = categoryToMove.ancestors.findIndex((element) => {
+                            if(element._id == categorySource._id){
+                                return element
+                            }
+                        });
+                    if (ancestorIndex > -1) {
+                        categoryToMove.ancestors.splice(ancestorIndex, 1);
                     }
                 }
+                // we add the new ancestors
+                if(categoryDest != false){
+                    categoryToMove.ancestors.push(categoryDest._id);
+                }
+                //we save
+                promiseArray.push(CategoryV2.save(categoryToMove).$promise);
 
-                Promise.all(promiseArray).then(function ()
-                {
+
+                Promise.all(promiseArray).then(function () {
                     deferred.resolve();
-                }, function (err)
-                {
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                }, function (err) {
                     toastService.toast("danger", "Une erreur est survenue lors du déplacement de la catégorie.");
                     deferred.reject();
                 });
@@ -834,18 +718,35 @@ CategoryControllers.controller("CategoryListCtrl", [
 ]);
 
 CategoryControllers.controller("CategoryNewCtrl", [
-    "$scope", "$modalInstance", "CategoryV2", "id_parent", "lang", "toastService",
-    function ($scope, $modalInstance, CategoryV2, id_parent, lang, toastService)
-    {
+    "$scope", "$modalInstance", "CategoryV2", "parent", "lang", "toastService",
+    function ($scope, $modalInstance, CategoryV2, parent, lang, toastService) {
+        const id_parent = parent ? [parent._id] : [];
         $scope.lang = lang;
-        $scope.category = {id_parent: id_parent, translation: {}};
-        $scope.category.translation[lang] = {};
+        $scope.category = {
+            ancestors: id_parent,
+            translation: {
+                [lang]: {}
+            }
+        };
 
-        $scope.save = function (category)
-        {
-            CategoryV2.save(category, function (rep)
-            {
-                $modalInstance.close(rep);
+        $scope.save = function (category) {
+            CategoryV2.save(category, function (rep) {
+                if(id_parent.length > 0){
+                    parent.children.push(rep);
+                    parent.nodes.push(rep);
+                    CategoryV2.save(parent, function (rep) {
+                        //we added a children to the parents
+                        $modalInstance.close(rep);
+                    }, function(err) {
+                        if(err.data.code === "Conflict"){
+                            toastService.toast("danger", err.data.message + " : code already exists");
+                        }else{
+                            toastService.toast("danger", err.data.message);
+                        }
+                    });
+                }else{
+                    $modalInstance.close(rep);
+                }
             }, function(err) {
                 if(err.data.code === "Conflict"){
                     toastService.toast("danger", err.data.message + " : code already exists");
@@ -855,8 +756,7 @@ CategoryControllers.controller("CategoryNewCtrl", [
             });
         };
 
-        $scope.cancel = function ()
-        {
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
     }

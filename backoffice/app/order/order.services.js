@@ -49,6 +49,21 @@ OrderServices.service("OrderColumns", function ()
     return [];
 });
 
+/*
+    Use if you want to replace the button and the function "addPackage()"
+*/
 OrderServices.service("OrderPackagePopup", function () {
+    return [];
+});
+
+/*
+    Used for Shipement in the modal
+    Array of object like :
+    {
+        component_template: DIRECTIVE_TAG,
+        codeOfCarrier: SHIPMENT_NAME,
+    }
+*/
+OrderServices.service("OrderPackageInPopup", function () {
     return [];
 });

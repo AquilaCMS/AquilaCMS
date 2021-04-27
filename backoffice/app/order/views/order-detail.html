@@ -208,13 +208,15 @@
                                 </td>
                                 <td data-label="Description :">
                                     <div class="details-box">
-                                        <div style="font-size: 20px" class="name">{{item.name}}<span ng-show="item.parent"> - {{getParentItem(item.parent)}}</span></div>
+                                        <div style="font-size: 20px" class="name">{{item.name}}
+                                            <span ng-show="item.parent"> - {{getParentItem(item.parent)}}</span>
+                                        </div>
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->
-                                        <div ng-if="item.opts.length > 0" translate>order.detail.opt <p ng-repeat="opt in item.opts">{{opt[0]}}</p></div>
+                                        <div ng-if="item.opts.length > 0" translate>order.detail.opt
+                                            <p ng-repeat="opt in item.opts">{{opt[0]}}</p>
+                                        </div>
                                         <div ng-show="item.id.trademark" class="trademark" translate>order.detail.marque</div>
-                                        <ul ng-if="item.type === 'bundle'" style="list-style: none;" bind-html-compile="displayProducts(item)">
-                                            
-                                        </ul>
+                                        <ul ng-if="item.type === 'bundle'" style="list-style: none;" ng-bind-html="displayProducts(item)"></ul>
                                         <!--<a ng-href="#/products/{{(item.item_details.itemType ? item.item_details.itemType : 'simple')}}/{{item.item_details._slug}}" target="_blank" class="btn btn-default">Voir</a>-->
                                     </div>
                                 </td>
@@ -324,7 +326,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="pkg in order.delivery.package">
-                                    <td><a ng-href="{{pkg.tracking}}" target="_blank" translate>order.detail.suivrePack</a></td>
+                                    <td><a ng-href="{{pkg.tracking}}" style="color:blue;text-decoration: underline;" target="_blank" translate>order.detail.suivrePack</a></td>
                                     <td>{{pkg.date | date:"dd/MM/yyyy"}}</td>
                                     <td>{{getProductsDatas(pkg.products, "qty_shipped")}}</td>
                                     <td>{{getPkgTotal(pkg)}}</td>
@@ -443,7 +445,7 @@
                         <i class="fa fa-2x fa-plus buttonIconStyle"></i>
                     </a>
                 </div>
-                <div class="box-content">
+                <div class="box-content" style="overflow:auto;">
                     <div ng-show="order.rma.length > 0">
                         <table class="table">
                             <thead>

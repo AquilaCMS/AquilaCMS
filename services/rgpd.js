@@ -11,7 +11,7 @@ const {
     mongo: {MongoClient}
 } = require('mongoose');
 const {v4: uuidv4} = require('uuid');
-const MongoURI     = require('mongo-uri');
+const mongoURI     = require('mongodb-uri');
 const bcrypt       = require('bcrypt');
 const rimraf       = require('rimraf');
 const path         = require('path');
@@ -191,7 +191,7 @@ const copyDatabase = async (cb) => {
 };
 
 async function mongodump(uri) {
-    const data = MongoURI.parse(uri);
+    const data = mongoURI.parse(uri);
     let cmd    = await createConnectionStringMongoose(data);
     if (data.database) {
         cmd += ` --db ${data.database}`;
@@ -208,7 +208,7 @@ async function mongodump(uri) {
 }
 
 async function mongorestore(uri) {
-    const data = MongoURI.parse(uri);
+    const data = mongoURI.parse(uri);
     const cmd  = await createConnectionStringMongoose(data);
     return new Promise((resolve, reject) => {
         exec(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`, (error, stdout) => {
@@ -226,12 +226,10 @@ async function mongorestore(uri) {
  */
 const anonymizeDatabase = async (cb) => {
     // Connexion à la nouvelle database
-    const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1];
-    const client       = new MongoClient(
-        global.envFile.db.replace(
-            databaseName,
-            `${databaseName}_anonymized`
-        ),
+    const data     = mongoURI.parse(global.envFile.db);
+    data.database += '_anonymized';
+    const client   = new MongoClient(
+        mongoURI.format(data),
         {
             useNewUrlParser    : true,
             useUnifiedTopology : true
@@ -239,7 +237,7 @@ const anonymizeDatabase = async (cb) => {
     );
     await client.connect();
 
-    const database = client.db(`${databaseName}_anonymized`);
+    const database = client.db(data.database);
 
     // Génération d'un mot de passe commun
     const hash  = await bcrypt.hash('password', 10);
@@ -353,18 +351,17 @@ const anonymizeDatabase = async (cb) => {
 * Supprime la base de données de copie
  */
 const dropDatabase = async () => {
-    const client = new MongoClient(
-        global.envFile.db.replace(
-            global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1],
-            `${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`
-        ),
+    const mongodbUri     = mongoURI.parse(global.envFile.db);
+    mongodbUri.database += '_anonymized';
+    const client         = new MongoClient(
+        mongoURI.format(mongodbUri),
         {
             useNewUrlParser    : true,
             useUnifiedTopology : true
         }
     );
     await client.connect();
-    const db = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
+    const db = client.db(mongodbUri.database);
     await db.dropDatabase();
 };
 
@@ -451,8 +448,9 @@ const generateFakeAddresses = async (options) => {
         complementaryInfo : ''
     };
     if (options) {
-        for (let i = 0; i < Object.keys(options).length; i++) {
-            addr[Object.keys(options)[i]] = Object.values[i];
+        const opts = Object.keys(options);
+        for (let i = 0; i < opts.length; i++) {
+            addr[opts[i]] = Object.values[i];
         }
     }
     return addr;
