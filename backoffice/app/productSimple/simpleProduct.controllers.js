@@ -176,6 +176,32 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $scope.lang = lang;
         };
 
+        function checkForm(fieldsToCheck){
+            let text = "";
+            for(let oneField of fieldsToCheck){
+                const elt = document.querySelector(`label[for="${oneField}"]`);
+                const translationToCheck = ["name"];  // TODO : you may need to add string here (also in bundleProduct)
+                if(translationToCheck.includes(oneField)){
+                    for(let oneLang of $scope.languages){
+                        if($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != ""){
+                        //good
+                        }else{
+                            text += `name (${oneLang.name}), `;
+                        }
+                    }
+                }else{
+                    if (elt) {
+                        if(elt.control && elt.control.value == ""){
+                            if(elt.innerText){
+                                text += `${elt.innerText}, `;
+                            }
+                        }
+                    }
+                }
+            }
+            return text;
+        }
+
         $scope.saveProduct = function (product, isQuit) {
             if ($scope.nsUploadFiles.isSelected) {
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
@@ -185,24 +211,22 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             // Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;
 
+            let strInvalidFields = "";
             if ($scope.form.$invalid) {
-                let strInvalidFields = "";
                 if ($scope.form.$error && $scope.form.$error.required) {
                     $scope.form.$error.required.forEach((requiredField, index) => {
-                        const elt = document.querySelector(`label[for="${requiredField.$name}"]`);
-                        if (index === 0) {
-                            strInvalidFields = ": ";
-                        }
-                        if (elt && elt.innerText) {
-                            if ($scope.form.$error.required.length - 1 === index) {
-                                strInvalidFields += `${elt.innerText}`;
-                            } else {
-                                strInvalidFields += `${elt.innerText}, `;
-                            }
-                        }
+                        strInvalidFields += checkForm([requiredField.$name]);
                     });
                 }
-                toastService.toast("danger", `Les informations saisies ne sont pas valides${strInvalidFields}`);
+            }else{
+                strInvalidFields = checkForm(["code", "name"]);
+            }
+            //we remove ", "
+            if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
+            }
+            if(strInvalidFields != ""){
+                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
                 return;
             }
 
