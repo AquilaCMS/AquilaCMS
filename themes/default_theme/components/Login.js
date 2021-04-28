@@ -87,7 +87,7 @@ class Login extends NSLogin {
                                             </div>{/* <!-- /.form__entry --> */}
                                             <div className="form__entry">
                                                 {
-                                                    cmsLogin && <CMS ns-code="login" content={cmsLogin.content || ''} hide_error />
+                                                    cmsLogin && <CMS ns-code="login" content={cmsLogin.content || ''} hide_error="1" />
                                                 }
                                             </div>{/* <!-- /.form__entry --> */}
                                         </form>

@@ -193,8 +193,9 @@
                 </table>
             </div>
             <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'">
-                <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
-                       aria-describedby="DataTables_Table_0_info">
+                <div class="tableWrapperOverflow">
+                    <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
+                    aria-describedby="DataTables_Table_0_info">
                     <thead>
                         <tr role="row">
                             <th role="columnheader" style="width: 7%;"></th>
@@ -349,10 +350,10 @@
                             </td>
                         </tr>
                     </tbody>
-                </table>
-
+                    </table>
+                </div>
                 <pagination total-items="totalItems" page="currentPage" on-select-page="pageChanged(page)"
-                            items-per-page="itemPerPage" max-size="10" boundary-links="true" rotate="false"></pagination>
+                    items-per-page="itemPerPage" max-size="10" boundary-links="true" rotate="false"></pagination>
             </div>
             <div id="filters" class="tab-pane fade">
                 <div class="row col-sm-12">

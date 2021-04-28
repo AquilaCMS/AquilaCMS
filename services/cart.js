@@ -13,7 +13,8 @@ const {
     Orders,
     Products,
     Promo,
-    Languages
+    Languages,
+    Configuration
 }                       = require('../orm/models');
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
@@ -23,6 +24,7 @@ const ServicePromo      = require('./promo');
 const ServiceShipment   = require('./shipment');
 const ServicesProducts  = require('./products');
 const servicesTerritory = require('./territory');
+const servicesMail      = require('./mail');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
@@ -64,7 +66,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
             cart = await linkCustomerToCart(cart, req);
         }
     }
-    return cart
+    return cart;
 };
 
 /**
@@ -388,7 +390,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
             customer       : {
                 ..._user,
-                id           : _user._id,
+                id : _user._id
             },
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
@@ -576,6 +578,42 @@ const validateForCheckout = (cart) => {
     return {code: 'VALID'};
 };
 
+const mailPendingCarts = async () => {
+    try {
+        const config = await Configuration.findOne();
+        const now    = moment(new Date());
+        if (config.stockOrder.requestMailPendingCarts) {
+            // const job   = await ServiceJob.getModuleJobByName('Mail to pending carts');
+            const limit = moment(new Date());
+            limit.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+            let filter = {};
+            // if (job.attrs.lastFinishedAt) {
+            //     const lastRun = moment(job.attrs.lastFinishedAt);
+            //     lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+            //     filter = {updatedAt: {$lte: limit, $gte: lastRun}, customer: {$exists: true, $ne: null}};
+            // } else {
+            filter = {updatedAt: {$lte: limit}, customer: {$exists: true, $ne: null}};
+            // }
+            const carts = await Cart.find(filter);
+            let nbMails = 0;
+            for (const cart of carts) {
+                try {
+                    await servicesMail.sendMailPendingCarts(cart);
+                    nbMails++;
+                } catch (error) {
+                    console.error(error);
+                    throw error;
+                }
+            }
+            return `Success, ${nbMails} mail(s) sent : ${now.toString()}`;
+        }
+        return `Success : ${now.toString()}`;
+    } catch (error) {
+        console.error('mailPendingCarts', error);
+        throw error;
+    }
+};
+
 module.exports = {
     getCarts,
     getCartforClient,
@@ -592,5 +630,6 @@ module.exports = {
     updateDelivery,
     removeDiscount,
     validateForCheckout,
-    removeDelivery
+    removeDelivery,
+    mailPendingCarts
 };

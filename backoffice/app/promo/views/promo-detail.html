@@ -234,7 +234,7 @@
                                 <div class="col-sm-11">
                                     <label class="col-sm-2 control-label" for="discountType" translate>promo.detail.typeRem</label>
                                     <div class="col-sm-2">
-                                        <select id="discountType" class="form-control" ng-model="promo.discountType">
+                                        <select id="discountType" class="form-control" ng-change="checkDiscount()" ng-model="promo.discountType">
                                             <option value="Aet" translate>promo.detail.amount.et</option>
                                             <option value="Aati" translate>promo.detail.amount.ati</option>
                                             <option value="P" translate>promo.detail.percent</option>

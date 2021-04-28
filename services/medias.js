@@ -82,7 +82,10 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
     zip.extractAllTo(path_unzip);
     // Parcourir l'ensemble des fichiers pour les ajouter à la table medias
     const filenames = fsp.readdirSync(path_unzip);
-    filenames.forEach(async (filename) => {
+
+    // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
+    for (let index = 0; index < filenames.length; index++) {
+        const filename    = filenames[index];
         const init_file   = path.resolve(path_unzip, filename);
         const target_file = path.resolve(target_path, filename);
         const name_file   = filename.split('.')
@@ -102,13 +105,13 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
 
         // L'inserer dans la base de données
         if (insertDB) {
-            await Medias.create({
+            await Medias.updateOne({name : name_file}, {
                 link : `medias/${filename}`,
                 name : name_file,
                 group
-            });
+            }, {upsert: true});
         }
-    });
+    }
 
     console.log('Upload medias done !');
 };
@@ -546,10 +549,16 @@ const getMedia = async (PostBody) => {
 };
 
 const saveMedia = async (media) => {
-    if (media.link && media.link !== '') {
-        const result = await Medias.findOneAndUpdate({link: media.link}, media);
+    if (media._id) {
+        // we need to update the media
+        if (media.link && media.link !== '') {
+            const result = await Medias.findOneAndUpdate({link: media.link}, media);
+            return result;
+        }
+        const result = await Medias.findOneAndUpdate({_id: media._id}, media);
         return result;
     }
+    // we need to create the media
     media.name   = utils.slugify(media.name);
     const result = Medias.create(media);
     return result;

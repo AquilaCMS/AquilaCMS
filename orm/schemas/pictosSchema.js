@@ -9,9 +9,10 @@
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
+const {ObjectId}    = Schema.Types;
 
 const PictosSchema = new Schema({
-    _id           : {type: Schema.ObjectId, auto: true},
+    _id           : {type: ObjectId, auto: true},
     code          : {type: String, required: true, unique: true},
     filename      : {type: String},
     title         : {type: String},

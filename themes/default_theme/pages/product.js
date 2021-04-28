@@ -577,7 +577,7 @@ class PageProduct extends NSPageProduct {
                             {
                                 cmsProductContentBottom && (
                                     <section>
-                                        <CMS ns-code="product-content-bottom" content={cmsProductContentBottom.content || ''} hide_error />
+                                        <CMS ns-code="product-content-bottom" content={cmsProductContentBottom.content || ''} hide_error="1" />
                                     </section>
                                 )
                             }

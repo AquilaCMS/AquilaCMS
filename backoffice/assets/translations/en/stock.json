@@ -5,6 +5,8 @@
     "delExp": "Time before cart expiration (hours)",
     "fieldReq": "This field is required.",
     "delAnn": "Time before orders waiting for payment cancelation (hours)",
+    "requestMailPendingCarts": "Time before reminder by mail to the customer of his pending cart (hours)",
+    "requestMailPendingCartsHelp": "Cannot be higher than time before cart expiration",
     "gestion": "Stock management",
     "res": "Stock booking",
     "cart": "Cart",

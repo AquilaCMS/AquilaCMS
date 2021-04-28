@@ -8,7 +8,7 @@
 
 const mongoose      = require('mongoose');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 const utilsDatabase = require('../../utils/database');
 
 const TerritorySchema = new Schema({

@@ -6,8 +6,8 @@
         "miniature": "Miniature",
         "cpLien": "Copier lien",
         "delete": "Supprimer",
-        "uploadInsert" : "Inserer en base",
-        "uploadButton" : "Ajout en masse"
+        "uploadInsert": "Inserer en base",
+        "uploadButton": "Ajout en masse"
     },
     "new": {
         "t1": "Nouveau Média",
@@ -17,7 +17,8 @@
         "cpLien": "Copier lien",
         "media": "Média",
         "add": "Ajouter",
-        "group": "Groupe"
+        "group": "Groupe",
+        "uploadText": "Enregistrer le media pour uploader"
     },
     "uploadMedias": {
         "queue": "File d'attente :",
@@ -33,30 +34,30 @@
         "picture": "Image :"
     },
     "modal": {
-        "title":"Copier le lien",
-        "width":"Largeur en pixel :",
-        "height":"Hauteur en pixel :",
-        "quality":"Qualité (0 à 100) :",
-        "name":"Nom :",
-        "copy":"Copier le lien",
-        "background":"Couleur de fond :",
-        "link":"Lien",
-        "crop":"Rogner :",
-        "position":"Position :",
-        "generate":"Générer",
-        "center":"Centre",
-        "top":"Haut",
-        "bottom":"Bas",
-        "left":"Gauche",
-        "right":"Droite",
-        "topLeft":"Haut gauche",
-        "topRight":"Haut droite",
-        "bottomLeft":"Bas gauche",
-        "bottomRight":"Bas droite"
+        "title": "Copier le lien",
+        "width": "Largeur en pixel :",
+        "height": "Hauteur en pixel :",
+        "quality": "Qualité (0 à 100) :",
+        "name": "Nom :",
+        "copy": "Copier le lien",
+        "background": "Couleur de fond :",
+        "link": "Lien",
+        "crop": "Rogner :",
+        "position": "Position :",
+        "generate": "Générer",
+        "center": "Centre",
+        "top": "Haut",
+        "bottom": "Bas",
+        "left": "Gauche",
+        "right": "Droite",
+        "topLeft": "Haut gauche",
+        "topRight": "Haut droite",
+        "bottomLeft": "Bas gauche",
+        "bottomRight": "Bas droite"
     },
-    "multi":{
+    "multi": {
         "title": "Ajout en masse",
-        "cancel":"Annuler",
-        "uploadInfo" : "Seul les .zip sont accepté. Les fichiers doivent être à la racine du .zip."
+        "cancel": "Annuler",
+        "uploadInfo": "Seul les .zip sont accepté. Les fichiers doivent être à la racine du .zip."
     }
 }
