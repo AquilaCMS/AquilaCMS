@@ -105,11 +105,11 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
 
         // L'inserer dans la base de données
         if (insertDB) {
-            await Medias.create({
+            await Medias.updateOne({name : name_file}, {
                 link : `medias/${filename}`,
                 name : name_file,
                 group
-            });
+            }, {upsert: true});
         }
     }
 
@@ -549,10 +549,16 @@ const getMedia = async (PostBody) => {
 };
 
 const saveMedia = async (media) => {
-    if (media.link && media.link !== '') {
-        const result = await Medias.findOneAndUpdate({link: media.link}, media);
+    if (media._id) {
+        // we need to update the media
+        if (media.link && media.link !== '') {
+            const result = await Medias.findOneAndUpdate({link: media.link}, media);
+            return result;
+        }
+        const result = await Medias.findOneAndUpdate({_id: media._id}, media);
         return result;
     }
+    // we need to create the media
     media.name   = utils.slugify(media.name);
     const result = Medias.create(media);
     return result;

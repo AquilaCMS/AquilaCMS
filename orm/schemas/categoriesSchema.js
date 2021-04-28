@@ -11,7 +11,7 @@ const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
-const ObjectId         = Schema.ObjectId;
+const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
     code         : {type: String, required: true, unique: true},

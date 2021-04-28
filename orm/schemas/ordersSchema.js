@@ -16,8 +16,8 @@ const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
 const AddressSchema     = require('./addressSchema');
 
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const DeliveryPackageSchema = new Schema({
     date     : {type: Date, default: Date.now},

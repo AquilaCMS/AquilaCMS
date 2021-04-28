@@ -160,10 +160,10 @@ CMS.defaultProps = {
 CMS.propTypes = {
     'ns-code': PropTypes.string,
     content: PropTypes.string,
-    router: PropTypes.func,
-    i18n: PropTypes.func,
+    router: PropTypes.object,
+    i18n: PropTypes.object,
     t: PropTypes.func,
-    hide_error: PropTypes.bool
+    hide_error: PropTypes.string
 };
 
 export default withRouter(withI18next([])(CMS));
