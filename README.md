@@ -71,17 +71,17 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 > - use an external link to, for example, an Atlas database
 > - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of 127.0.0.1)
 
-### Contribute
-
-If you want to contribute, you will need to install husky or else you won't be able to commit new feature
-
-```sh
-yarn husky:install
-```
 
 ### Have the installation page again
 
 If you want to have the installation page again, you can remove the `env.json` file in the **`config/`** folder.
+
+### Environment variables
+
+You can define two environment variables inside AquilaCMS.
+- NODE_ENV : you should only limit values to 'production', 'development' or 'test' ([See 'Non standard node env'](https://github.com/vercel/next.js/blob/canary/errors/non-standard-node-env.md))
+- AQUILA_ENV : define the environment values in config/env.json to be loaded
+
 
 ### Manually build the theme
 
@@ -104,6 +104,14 @@ Also check-out some tutorials on :
 
 - [Our dedicated page](https://www.aquila-cms.com/resources-documentation)
 - [Our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ)
+
+### Contribute
+
+If you want to contribute, you will need to install husky or else you won't be able to commit new feature
+
+```sh
+yarn husky:install
+```
 
 ## License
 
