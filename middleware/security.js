@@ -6,13 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const {isAdmin} = require('../utils/utils');
+
 /**
  * Add the fields to true to the filter
  */
 const securityForceActif = (arrayFieldsToActivate) => {
     return (req, res, next) => {
         // TODO : appeler securityForceFilter() pour factoriser
-        if (req.info && !req.info.isAdmin) {
+        if (!isAdmin(req.info)) {
             if (!req.body.PostBody) req.body.PostBody = {};
             const {PostBody} = req.body;
             if (!PostBody.filter) {
@@ -25,7 +27,6 @@ const securityForceActif = (arrayFieldsToActivate) => {
         }
 
         next();
-        // return PostBody;
     };
 };
 

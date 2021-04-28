@@ -43,7 +43,8 @@ const initAgendaDB = async () => {
                 'Cache requests clean',
                 'Clean cache',
                 'Remove temp file',
-                'Remove previews'
+                'Remove previews',
+                'Mail to pending carts'
             ];
             for (let i = 0; i < tJobsSystem.length; i++) {
             // Si un job "system" n'existe pas en base de données alors on le crée
@@ -76,6 +77,8 @@ const initAgendaDB = async () => {
                             await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove previews') {
                             await setJob(undefined, tJobsSystem[12], '0 0 0 0 0', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
+                        } else if (tJobsSystem[i] === 'Mail to pending carts') {
+                            await setJob(undefined, tJobsSystem[13], '0 0 0 0 0', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
                         }
                     } catch (error) {
                         console.error(error);

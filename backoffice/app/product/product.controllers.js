@@ -130,7 +130,12 @@ ProductControllers.controller("ProductListCtrl", [
             const filter = $scope.filter;
             let pageAdmin = {location: "products", page: 1};
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
-                pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+                try{
+                    pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+                }catch(e){
+                    // if JSON.parse() fail => the page doesn't load
+                    pageAdmin = {location: "products", page: 1};
+                }
             }
             if (page === undefined && pageAdmin.location === "products") {
                 const pageSaved = pageAdmin.page;
@@ -278,6 +283,8 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.resetFilters = function (date) {
             $scope.filter = {};
             $scope.filtersAttribs = {};
+            window.localStorage.setItem("pageAdmin", `{"location":"products","page":1,"search":{},"filter":{}}`);
+            $scope.searchObj = {};
             $scope.getProducts(1);
         };
 

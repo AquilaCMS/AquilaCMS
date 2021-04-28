@@ -602,7 +602,8 @@ const addPackage = async (orderId, pkgData) => {
 
 const delPackage = async (orderId, pkgId) => {
     await utils.modules.modulesLoadFunctions('deleteParcel', {orderId, pkgId});
-    return Orders.findOneAndUpdate({_id: orderId}, {$pull: {'delivery.package': {_id: pkgId}}}, {new: true}).populate('items.id');
+    // we populate with item.selections.products (useful in the front for bundle)
+    return Orders.findOneAndUpdate({_id: orderId}, {$pull: {'delivery.package': {_id: pkgId}}}, {new: true}).populate('items.id').populate('items.selections.products');
 };
 
 const updatePayment = async (body) => {

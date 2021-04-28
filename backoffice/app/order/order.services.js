@@ -49,6 +49,9 @@ OrderServices.service("OrderColumns", function ()
     return [];
 });
 
+/*
+    Use if you want to replace the button and the function "addPackage()"
+*/
 OrderServices.service("OrderPackagePopup", function () {
     return [];
 });

@@ -68,34 +68,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: 'preprod'
-
-    - name: Prepare AquilaCMS for AWS S3
-      run: |
-        export folderName="Aquila-${newAquilaVersion}"
-        rm -rf .git
-        zip -r $folderName.zip .
-        mkdir tmp
-        mv $folderName.zip tmp/
-    - name: Send Aquila on AWS S3
-      uses: shallwefootball/s3-upload-action@master
-      with:
-        aws_key_id: ${{ secrets.AWS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-        aws_bucket: ${{ secrets.AWS_AQL_BUCKET }}
-        destination_dir: ''
-        source_dir: 'tmp'
-
-    - name: Prepare version.txt
-      run: |
-        rm -rf tmp
-        echo "${newAquilaVersion}" > version.txt
-        mkdir tmp
-        mv version.txt tmp/
-    - name: Send version.txt on AWS S3
-      uses: shallwefootball/s3-upload-action@master
-      with:
-        aws_key_id: ${{ secrets.AWS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-        aws_bucket: ${{ secrets.AWS_AQL_BUCKET }}
-        destination_dir: ''
-        source_dir: 'tmp'

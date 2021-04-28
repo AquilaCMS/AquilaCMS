@@ -30,7 +30,7 @@ const IsAuthenticate = async (req, res) => {
  * @returns utilisateur
  */
 const getDecodedToken = (token) => {
-    return jwt.decode(token.substr(token.indexOf(' ') + 1));
+    return jwt.verify(token.substr(token.indexOf(' ') + 1), global.envFile.jwt.secret);
 };
 
 /**

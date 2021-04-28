@@ -131,23 +131,35 @@ OrderControllers.controller("OrderDetailCtrl", [
             var displayHtml = '';
             for (var i = 0; i < item.selections.length; i++) {
                 var section = item.selections[i];
+                if(!section.products.length){
+                    //because sometimes it's a object (with api/v2/order/delpkg, and maybe others)
+                    section.products = [section.products];
+                }
                 for (var j = 0; j < section.products.length; j++) {
                     var productSection = section.products[j];
-                    const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
-                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
-                        (bundleSection &&
-                        bundleSection.products.find((product) => product.id === productSection.id) &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
-                        // HT
-                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ? '(ET: +' : '(') +
-                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
-                            // prix TTC
-                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ? '+' : '') +
-                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)'
-                        : ''
-                    }`}</li>`
+                    // we choose the correct bundle
+                    const correctBundle = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                    // we choose the correct product in the correct bundle
+                    const productOfBundle = correctBundle.products.find((product) => product.id === productSection.id);
+                    var text = "";
+                    if(productOfBundle && productOfBundle.modifier_price && productOfBundle.modifier_price['et'] && productOfBundle.modifier_price['ati']){
+                        //put the HT text
+                        if(productOfBundle.modifier_price['et'] > 0){
+                            text += '(ET: +';
+                        }else{
+                            text += '(';
+                        }
+                        text += `${productOfBundle.modifier_price['et'].toFixed(2)} €)`;
+                        //put the TTC text
+                        text+= '/ATI: '
+                        if(productOfBundle.modifier_price['ati'] > 0){
+                            text += '+';
+                        }else{
+                            text += '';
+                        }
+                        text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
+                    }
+                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${text}</li>`;
                 }
             }
             return displayHtml;
@@ -509,7 +521,8 @@ OrderControllers.controller("OrderDetailCtrl", [
         $scope.addPackage = function (type) {
             var component_template = "";
             var templateUrl = "views/modals/order-packages.html";
-            var controller = "PackagesNewCtrl";
+            var controller  = "PackagesNewCtrl";
+            var modalType   = "modal-large";
             //default modal parameters;
             const shipmentCode = $scope.order.delivery.code;
             if($scope.OrderPackageInPopup){
@@ -518,6 +531,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                         if(oneShipment.codeOfCarrier == shipmentCode){
                             //templateUrl        = oneShipment.templateUrl;
                             //controller         = oneShipment.controller;
+                            if(oneShipment.modalType){
+                                modalType = oneShipment.modalType;
+                            }
                             component_template = oneShipment.component_template;
                             break;
                         }
@@ -526,8 +542,10 @@ OrderControllers.controller("OrderDetailCtrl", [
             }
             $modal.open({
                 templateUrl: templateUrl,
-                controller: controller,
-                windowClass: "modal-large",
+                controller : controller,
+                windowClass: modalType,
+                backdrop    : 'static',
+                keyboard    : false,
                 resolve: {
                     genericTools: function () {
                         return {
@@ -879,18 +897,29 @@ OrderControllers.controller("RMANewCtrl", [
         {
             $scope.return.refund = 0;
 
-            if(index !== undefined)
-            {
-                $scope.return.products[index].qty_returning = $scope.order.items[index].quantity < $scope.return.products[index].qty_returned ? 0 :
-                    $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+            if(typeof index !== "undefined") {                
+                if($scope.order.items[index].quantity <= $scope.return.products[index].qty_returned) {
+                    if($scope.return.products[index].qty_shipped > $scope.return.products[index].qty_returned){
+                        $scope.return.products[index].qty_returning = $scope.return.products[index].qty_shipped - $scope.return.products[index].qty_returned;
+                    }else{
+                        $scope.return.products[index].qty_returning = 0;
+                    }
+                }else{
+                    $scope.return.products[index].qty_returning = $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+                }
             }
-
-            for(var i = 0; i < $scope.return.products.length; i++)
-            {
-                if($scope.return.products[i].qty_returning > 0)
-                {
-                    $scope.return.refund += ($scope.order.items[i].price.special !== undefined && $scope.order.items[i].price.special.ati !== undefined ?
-                        $scope.order.items[i].price.special.ati : $scope.order.items[i].price.unit.ati) * $scope.return.products[i].qty_returning;
+            const lengthProducts = $scope.return.products.length;
+            for(var i = 0; i < lengthProducts; i++) {
+                if(!$scope.return.products[i].qty_returned) {
+                    // we put a start value of 0 or the API will be unhappy :( 
+                    $scope.return.products[i].qty_returned = 0;
+                }
+                if($scope.return.products[i].qty_returning > 0) {
+                    if((typeof $scope.order.items[i].price.special !== "undefined") && (typeof $scope.order.items[i].price.special.ati !== "undefined")) {
+                        $scope.return.refund += $scope.order.items[i].price.special.ati * $scope.return.products[i].qty_returning;
+                    }else{
+                        $scope.return.refund += $scope.order.items[i].price.unit.ati * $scope.return.products[i].qty_returning;
+                    }
                 }
             }
         };
@@ -919,20 +948,21 @@ OrderControllers.controller("RMANewCtrl", [
                 }
             }
 
-            if(returnData.products.length > 0)
-            {
+            if(returnData.products.length > 0) {
                 Orders.rma({order: $scope.order._id, return: returnData}, function ()
                 {
                     toastService.toast("success", "Retour correctement ajouté");
                     $modalInstance.close();
-                }, function (err)
-                {
+                }, function (err) {
                     toastService.toast("danger", "Une erreur est survenue !");
-                    if(err.data && err.data.translations)
-                    {
-                        toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                    if(err.data){
+                        if(err.data.translations) {
+                            toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                        }else if(err.data.message) {
+                            toastService.toast("danger", err.data.message);
+                        }
                     }
-                    $modalInstance.close();
+                    $scope.close();
                 });
             }
             else
@@ -941,10 +971,12 @@ OrderControllers.controller("RMANewCtrl", [
             }
         };
 
-        $scope.cancel = function ()
-        {
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+        $scope.close = function() {
+            $modalInstance.close();
+        }
     }
 ]);
 

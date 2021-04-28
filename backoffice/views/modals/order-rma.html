@@ -35,6 +35,7 @@
                                 <td>
                                     <div class="details-box">
                                         <span class="name">{{item.id.translation[defaultLang].name}}</span>
+                                        <span class="name">({{item.id.code}})</span>
                                         <br />
                                         <span class="trademark">{{item.id.trademark.name}}</span>
                                     </div>
@@ -46,7 +47,7 @@
                                 <td ng-show="item.price.special.ati === undefined" class="text-right">
                                     {{item.price.unit.ati | number:2}} €
                                 </td>
-                                <td class="text-right">{{item.price.total.ati}} €</td>
+                                <td class="text-right">{{item.price.total.ati.toFixed(2)}} €</td>
                                 <td class="text-right">{{item.quantity}}</td>
                                 <td class="text-right">{{return.products[$index].qty_shipped ? return.products[$index].qty_shipped : "0"}}</td>
                                 <td class="text-right">{{return.products[$index].qty_returned ? return.products[$index].qty_returned : "0"}}</td>

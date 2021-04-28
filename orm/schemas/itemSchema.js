@@ -9,7 +9,7 @@
 const mongoose     = require('mongoose');
 const aquilaEvents = require('../../utils/aquilaEvents');
 const Schema       = mongoose.Schema;
-const ObjectId     = Schema.ObjectId;
+const {ObjectId}   = Schema.Types;
 
 const itemsSchema = new Schema({
     id     : {type: ObjectId, ref: 'products', required: true},

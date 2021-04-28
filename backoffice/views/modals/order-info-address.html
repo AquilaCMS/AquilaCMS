@@ -7,10 +7,18 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="box-content">
-                <form name="form" novalidate class="form-horizontal" role="form" ng-if="type === 'billing'">
+                <form name="form" novalidate class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.firstname</label> 
+                            <label class="col-sm-3 control-label" translate>order.detail.civility</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].civility">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12" style="margin:10px 0">
+                            <label class="col-sm-3 control-label" translate>order.detail.firstname</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].firstname">
                             </div>
@@ -81,102 +89,16 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col-sm-12" style="margin:10px 0"></div>
+                        <div class="col-sm-12" style="margin:10px 0">
                             <label class="col-sm-3 control-label" translate>order.detail.country</label>
-                        <div class="col-sm-9">
-                            <select ng-model="order.addresses[type].isoCountryCode" class="form-control">
-                                <option ng-repeat="country in countries.datas" value="{{country.code}}">{{country.translation[adminLang].name}}
-                                </option>
-                            </select>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <form name="form" novalidate class="form-horizontal" role="form" ng-if="type === 'delivery'">
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.firstname</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].firstname">
+                                <select ng-model="order.addresses[type].isoCountryCode" class="form-control">
+                                    <option ng-repeat="country in countries.datas" value="{{country.code}}">
+                                        {{country.translation[adminLang].name}}
+                                    </option>
+                                </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.lastname</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].lastname">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.companyName</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].companyName">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.line1</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].line1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.line2</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].line2">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.phone</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].phone">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.phone_mobile</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched"
-                                    ng-model="order.addresses[type].phone_mobile">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.zipcode</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].zipcode">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12" style="margin:10px 0">
-                            <label class="col-sm-3 control-label" translate>order.detail.city</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].city">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-sm-12" style="margin:10px 0"></div>
-                        <label class="col-sm-3 control-label" translate>order.detail.country</label>
-                        <div class="col-sm-9">
-                            <select ng-model="order.addresses[type].isoCountryCode" class="form-control">
-                                <option ng-repeat="country in countries.datas" value="{{country.code}}">
-                                    {{country.translation[adminLang].name}}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
                     </div>
                 </form>
             </div>

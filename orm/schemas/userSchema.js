@@ -11,9 +11,9 @@ const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
 const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
-const Schema            = mongoose.Schema;
-const ObjectId          = Schema.ObjectId;
 const NSErrors          = require('../../utils/errors/NSErrors');
+const Schema            = mongoose.Schema;
+const {ObjectId}        = Schema.Types;
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
