@@ -71,7 +71,6 @@ You can also found all the properties in the [documentation](https://doc.aquila-
 > - use an external link to, for example, an Atlas database
 > - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of 127.0.0.1)
 
-
 ### Have the installation page again
 
 If you want to have the installation page again, you can remove the `env.json` file in the **`config/`** folder.
@@ -79,9 +78,9 @@ If you want to have the installation page again, you can remove the `env.json` f
 ### Environment variables
 
 You can define two environment variables inside AquilaCMS.
-- NODE_ENV : you should only limit values to 'production', 'development' or 'test' ([See 'Non standard node env'](https://github.com/vercel/next.js/blob/canary/errors/non-standard-node-env.md))
-- AQUILA_ENV : define the environment values in config/env.json to be loaded
 
+- `NODE_ENV` : you should only limit values to `production`, `development` or `test` ([See 'Non standard node env'](https://github.com/vercel/next.js/blob/canary/errors/non-standard-node-env.md))
+- `AQUILA_ENV` : define the environment values in `/config/env.json` to be loaded
 
 ### Manually build the theme
 
