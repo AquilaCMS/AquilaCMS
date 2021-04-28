@@ -5,77 +5,77 @@
     </ol>
     <img ng-show="url_logo == '' ? false : true" ng-src="{{url_logo}}" style="height: 50px;margin-left:10px;"/>
 </div>
-<div ng-show="templateHook" bind-html-compile="templateHook">
-</div>
-<div ng-hide="templateHook">
-    <div class="modal-body">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="box-content">
-                    <form name="form" novalidate class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <label for="tracking" class="col-sm-4 control-label" translate>order-packages.nbPack</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="tracking" ng-model="pkg.tracking" required>
-                            </div>
+<style>
+    .textBold{
+        font-weight:bold;
+    }
+</style>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box-content">
+                <form name="form" novalidate class="form-horizontal" role="form">
+                    <div class="form-group" ng-hide="packagePluginHook.length > 0" >
+                        <label for="tracking" class="col-sm-4 control-label" translate>order-packages.nbPack</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="tracking" ng-model="pkg.tracking" required>
                         </div>
-                        <style>
-                            .textBold{
-                                font-weight:bold;
-                            }
-                        </style>
-                        <div ng-show="partial">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th class="aligntop" translate>order-packages.refArt</th>
-                                        <th class="aligntop" translate>order-packages.nomArt</th>
-                                        <th style="text-align:center;">
-                                            <label class="textBold" translate>order-packages.qt</label><br/>
-                                            <label class="textBold" translate>order-packages.ord</label>
-                                        </th>
-                                        <th style="text-align:center;">
-                                            <label class="textBold" translate>order-packages.qt</label><br/>
-                                            <label class="textBold" translate>order-packages.ret</label>
-                                        </th>
-                                        <th style="text-align:center;">
-                                            <label class="textBold" translate>order-packages.qt</label><br/>
-                                            <label class="textBold" translate>order-packages.exp</label>
-                                        </th>
-                                        <th style="text-align:center;">
-                                            <label class="textBold" translate>order-packages.qt</label><br/>
-                                            <label class="textBold" translate>order-packages.liv</label>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="item in order.items">
-                                        <td>{{item.code}}</td>
-                                        <td class="text-right">{{item.name}}</td>
-                                        <td class="text-right">{{item.quantity}}</td>
-                                        <td class="text-right">{{pkg.products[$index].qty_returned}}</td>
-                                        <td class="text-right">{{pkg.products[$index].qty_shipped}}</td>
-                                        <td class="text-right">
-                                            <input type="number" min="0" ng-model="pkg.products[$index].qty_delivered" ng-change="error = ''"
-                                                style="width: 40px; border: 1px solid gray; text-align: right; padding: 0px 2px;" />
-                                            <span class="pointer" ng-click="setQty($index)" style="margin-left: 5px; font-size: 12px;" translate>order-packages.all</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </form>
-                    <div ng-show="loadingAdd" style="text-align: center;">
-                        <div class="fa fa-spinner fa-spin" style="font-size: 50px;"></div>
                     </div>
+                    <div class="tableWrapperOverflow" style="margin-bottom: 30px;" ng-show="partial || packagePluginHook.length > 0">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="aligntop" translate>order-packages.refArt</th>
+                                    <th class="aligntop" translate>order-packages.nomArt</th>
+                                    <th style="text-align:center;">
+                                        <label class="textBold" translate>order-packages.qt</label><br/>
+                                        <label class="textBold" translate>order-packages.ord</label>
+                                    </th>
+                                    <th style="text-align:center;">
+                                        <label class="textBold" translate>order-packages.qt</label><br/>
+                                        <label class="textBold" translate>order-packages.ret</label>
+                                    </th>
+                                    <th style="text-align:center;">
+                                        <label class="textBold" translate>order-packages.qt</label><br/>
+                                        <label class="textBold" translate>order-packages.exp</label>
+                                    </th>
+                                    <th style="text-align:center;">
+                                        <label class="textBold" translate>order-packages.qt</label><br/>
+                                        <label class="textBold" translate>order-packages.liv</label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in order.items">
+                                    <td>{{item.code}}</td>
+                                    <td class="text-right">{{item.name}}</td>
+                                    <td class="text-right">{{item.quantity}}</td>
+                                    <td class="text-right">{{pkg.products[$index].qty_returned}}</td>
+                                    <td class="text-right">{{pkg.products[$index].qty_shipped}}</td>
+                                    <td class="text-right">
+                                        <input type="number" min="0" ng-model="pkg.products[$index].qty_delivered" ng-change="error = ''"
+                                            style="width: 40px; border: 1px solid gray; text-align: right; padding: 0px 2px;" />
+                                        <span class="pointer" ng-click="setQty($index)" style="margin-left: 5px; font-size: 12px;" translate>order-packages.all</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row" ng-show="packagePluginHook.length > 0" ng-repeat="onePackagePlugin in packagePluginHook">
+                        <hr style="border: 1px solid gray;margin: 15px 10px;"/>
+                        <div bind-html-compile="onePackagePlugin.component_template"></div>
+                    </div>
+                </form>
+                <div ng-show="loadingAdd" style="text-align: center;">
+                    <div class="fa fa-spinner fa-spin" style="font-size: 50px;"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal-footer">
-        <div ng-show="error" class="col-sm-12 col-md-5 text-left ns-error-message">{{error}}</div>
-        <button ng-hide="partial" class="btn btn-default" ng-click="partial = true">Partiel</button>
-        <button class="btn btn-success" id="buttonAdd" ng-click="sendPackage()" ng-disabled="form.$invalid" translate>order-packages.add</button>
-        <button class="btn btn-danger" ng-click="cancel()" translate>order-packages.cancel</button>
-    </div>
+</div>
+<div class="modal-footer">
+    <div ng-show="error" class="col-sm-12 col-md-5 text-left ns-error-message">{{error}}</div>
+    <button ng-hide="partial || packagePluginHook.length > 0" class="btn btn-default" ng-click="partial = true">Partiel</button>
+    <button class="btn btn-success" id="buttonAdd" ng-click="sendPackage()" ng-disabled="disabledAddButton" translate>order-packages.add</button>
+    <button class="btn btn-danger" ng-click="cancel()" translate>order-packages.cancel</button>
 </div>

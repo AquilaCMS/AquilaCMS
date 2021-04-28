@@ -110,13 +110,12 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup', "OrderPackageInPopup",
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, OrderPackageInPopup)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup',
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup)
     {
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
-        $scope.OrderPackageInPopup = OrderPackageInPopup;
         $scope.editableMode = false;
         $scope.order = {};
         $scope.status = "";
@@ -519,31 +518,10 @@ OrderControllers.controller("OrderDetailCtrl", [
         }
 
         $scope.addPackage = function (type) {
-            var component_template = "";
-            var templateUrl = "views/modals/order-packages.html";
-            var controller  = "PackagesNewCtrl";
-            var modalType   = "modal-large";
-            //default modal parameters;
-            const shipmentCode = $scope.order.delivery.code;
-            if($scope.OrderPackageInPopup){
-                if(OrderPackageInPopup.length > 0){
-                    for(let oneShipment of $scope.OrderPackageInPopup){
-                        if(oneShipment.codeOfCarrier == shipmentCode){
-                            //templateUrl        = oneShipment.templateUrl;
-                            //controller         = oneShipment.controller;
-                            if(oneShipment.modalType){
-                                modalType = oneShipment.modalType;
-                            }
-                            component_template = oneShipment.component_template;
-                            break;
-                        }
-                    }
-                }
-            }
             $modal.open({
-                templateUrl: templateUrl,
-                controller : controller,
-                windowClass: modalType,
+                templateUrl : "views/modals/order-packages.html",
+                controller  : "PackagesNewCtrl",
+                windowClass : "modal-large",
                 backdrop    : 'static',
                 keyboard    : false,
                 resolve: {
@@ -558,9 +536,6 @@ OrderControllers.controller("OrderDetailCtrl", [
                     },
                     type : function () {
                         return type;
-                    },
-                    templateHook : function () {
-                        return component_template;
                     }
                 }
             }).result.then(function () {
@@ -571,9 +546,11 @@ OrderControllers.controller("OrderDetailCtrl", [
         $scope.returnItem = function ()
         {
             $modal.open({
-                templateUrl: "views/modals/order-rma.html",
-                controller: "RMANewCtrl",
-                windowClass: "modal-large",
+                templateUrl : "views/modals/order-rma.html",
+                controller  : "RMANewCtrl",
+                windowClass : "modal-large",
+                backdrop    : 'static',
+                keyboard    : false,
                 resolve: {
                     genericTools: function ()
                     {
@@ -710,10 +687,27 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "templateHook", "Shipment",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, templateHook, Shipment) {
-        //if it's a order with a shipment by a module
-        $scope.templateHook = templateHook == "" ? null : templateHook;
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment) {
+        $scope.order = angular.copy(item);
+        // the Hook for package module
+        // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
+        const codeShipment = $scope.order.delivery.code;
+        $scope.packagePluginHook = [];
+        let onePlugin = [];
+        if(OrderPackageInPopupHook.length > 0){
+            onePlugin = OrderPackageInPopupHook.filter((element) => {
+                if(element.default && element.default == true){
+                    return true;
+                }
+                if(element.code_shipment && element.code_shipment == codeShipment){
+                    return true;
+                }
+            });
+        }
+        if(typeof onePlugin !== "undefined"){
+            $scope.packagePluginHook = onePlugin;
+        }
         //utils function acces them with $scope.$parent.$parent.utils;
         $scope.utils = {
             order: item,
@@ -722,8 +716,8 @@ OrderControllers.controller("PackagesNewCtrl", [
         }
         $scope.loadingAdd = false;
 
-        $scope.order = angular.copy(item);
-        
+        $scope.disabledAddButton = false;
+
         $scope.loadImgShipment = function(name, code){
             $scope.shipmentName = name;
             Shipment.detail({
@@ -749,8 +743,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             $scope.partial = true;
         }
 
-        $scope.defaultLang = $rootScope.languages.find(function (lang)
-        {
+        $scope.defaultLang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
 
@@ -788,52 +781,47 @@ OrderControllers.controller("PackagesNewCtrl", [
         };
 
         $scope.sendPackage = function () {
-            var buttonAdd = angular.element(document.getElementById('buttonAdd'));
-            buttonAdd.attr('disabled',"true");
+            $scope.disabledAddButton = true;
 
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
             $scope.error = "";
 
-            for(var i = pkg.products.length - 1; i >= 0; i--)
-            {
-                if($scope.order.items[i].quantity !== pkg.products[i].qty_delivered)
-                {
+            for(var i = pkg.products.length - 1; i >= 0; i--) {
+                if($scope.order.items[i].quantity !== pkg.products[i].qty_delivered) {
                     pkg.status = "partial";
                 }
 
-                if(pkg.products[i].qty_delivered === 0)
-                {
+                if(pkg.products[i].qty_delivered === 0) {
                     pkg.products.splice(i, 1);
-                }
-                else
-                {
+                } else {
                     pkg.products[i].qty_shipped = pkg.products[i].qty_delivered;
                 }
             }
 
-            if(pkg.products.length > 0)
-            {
-                $scope.loadingAdd = true;
-                Orders.addPkg({order: $scope.order._id, package: pkg}, function ()
-                {
-                    toastService.toast("success", "Colis correctement ajouté");
-                    $modalInstance.close();
-                }, function (err)
-                {
-                    toastService.toast("danger", "Une erreur est survenue !");
-                    if(err.data && err.data.translations)
-                    {
-                        toastService.toast("danger", err.data.translations[$scope.defaultLang]);
-                    }
-                    $modalInstance.close();
-                });
-            }
-            else
-            {
-                buttonAdd.removeAttr('disabled');
+            if(pkg.products.length > 0) {
+                if(pkg.tracking != ""){
+                    $scope.loadingAdd = true;
+                    Orders.addPkg({order: $scope.order._id, package: pkg}, function () {
+                        toastService.toast("success", "Colis correctement ajouté");
+                        $scope.close();
+                    }, function (err) {
+                        $scope.disabledAddButton = false;
+                        toastService.toast("danger", "Une erreur est survenue !");
+                        if(err.data && err.data.translations) {
+                            toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                        }else if (err.data.message) {
+                            toastService.toast('danger', err.data.message);
+                        }
+                        $scope.close();
+                    });
+                }else{
+                    $scope.disabledAddButton = false;
+                    $scope.error = 'No tracking number';
+                }
+            } else {
+                $scope.disabledAddButton = false;
                 $scope.error = "Colis vide";
-                $scope.partial = true;
             }
         };
 
@@ -848,9 +836,35 @@ OrderControllers.controller("PackagesNewCtrl", [
 ]);
 
 OrderControllers.controller("RMANewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2)
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2", "orderReturnHook",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2, orderReturnHook)
     {
+        /* 
+            Hook for the return (rma) PopUp
+            note if you want your module by default in the popUp, you can add the parameters 
+            {
+                "default:": true
+            }
+            in the hook
+        */
+        $scope.order = angular.copy(item);
+        const codeShipment = $scope.order.delivery.code;
+        $scope.packagePluginHook = [];
+        let onePlugin = [];
+        if(orderReturnHook.length > 0){
+            onePlugin = orderReturnHook.filter((element) => {
+                if(element.default && element.default == true){
+                    return true;
+                }
+                if(element.code_shipment && element.code_shipment == codeShipment){
+                    return true;
+                }
+            });
+        }
+        if(typeof onePlugin !== "undefined"){
+            $scope.packagePluginHook = onePlugin;
+        }
+        $scope.disabledButton = false;
         $scope.order = angular.copy(item);
         $scope.return = {mode: "", comment: "", in_stock: true, sendMail: true, refund: 0, tax: 0, products: []};
         $scope.taxerate = [];
@@ -928,6 +942,7 @@ OrderControllers.controller("RMANewCtrl", [
 
         $scope.cancelItem = function ()
         {
+            $scope.disabledButton = true;
             var returnData = angular.copy($scope.return);
             $scope.error = "";
 
@@ -952,8 +967,10 @@ OrderControllers.controller("RMANewCtrl", [
                 Orders.rma({order: $scope.order._id, return: returnData}, function ()
                 {
                     toastService.toast("success", "Retour correctement ajouté");
-                    $modalInstance.close();
+                    $scope.disabledButton = false;
+                    $scope.close();
                 }, function (err) {
+                    $scope.disabledButton = false;
                     toastService.toast("danger", "Une erreur est survenue !");
                     if(err.data){
                         if(err.data.translations) {
@@ -964,9 +981,8 @@ OrderControllers.controller("RMANewCtrl", [
                     }
                     $scope.close();
                 });
-            }
-            else
-            {
+            } else {
+                $scope.disabledButton = false;
                 $scope.error = "Aucun retour définit";
             }
         };
