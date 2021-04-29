@@ -229,6 +229,7 @@ const resetPassword = async (token, password) => {
     if (user) {
         try {
             user.password = password;
+            user.needHash = true;
             await user.save();
             await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
             return {message: 'Mot de passe réinitialisé.'};
