@@ -69,13 +69,16 @@
                         <div class="fa fa-spinner fa-spin" style="font-size: 50px;"></div>
                     </div>
                 </div>
+                <div ng-show="error" style="text-align: center" class="col-sm-12 text-left ns-error-message">
+                    <hr style="border: 1px solid gray;margin: 15px 10px;"/>
+                    <span style="font-weight: bold;font-size: 16px;" translate>{{error}}</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="modal-footer">
-        <div ng-show="error" class="col-sm-12 col-md-5 text-left ns-error-message">{{error}}</div>
-        <button ng-hide="partial" class="btn btn-default" ng-click="partial = true">Partiel</button>
-        <button class="btn btn-success" id="buttonAdd" ng-click="sendPackage()" ng-disabled="form.$invalid" translate>order-packages.add</button>
-        <button class="btn btn-danger" ng-click="cancel()" translate>order-packages.cancel</button>
-    </div>
+</div>
+<div class="modal-footer">
+    <button ng-hide="partial" class="btn btn-default" ng-click="partial = true" translate>order.detail.partial</button>
+    <button class="btn btn-success" id="buttonAdd" ng-click="sendPackage()" ng-disabled="disabledAddButton" translate>order-packages.add</button>
+    <button class="btn btn-danger" ng-click="cancel()" translate>order-packages.cancel</button>
 </div>

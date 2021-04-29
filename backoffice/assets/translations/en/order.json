@@ -50,6 +50,7 @@
         "paidTax": "Paid with tax",
         "taxFree": "Paid without tax",
         "colis": "Package",
+        "partial": "Partial",
         "nbPack": "Package number",
         "datePack": "Package date",
         "arts": "Items",
@@ -149,6 +150,8 @@
     },
     "error": {
         "noReturnDef": "Select a product to return",
-        "refundMode": "Choose the refund method"
+        "refundMode": "Choose the refund method",
+        "noTrackNum": "No tracking number",
+        "emptyPkg": "Empty package"
     }
 }

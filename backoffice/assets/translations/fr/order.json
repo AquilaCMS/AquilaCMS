@@ -50,6 +50,7 @@
         "paidTax": "Payé en TTC",
         "taxFree": "Payé en HT",
         "colis": "Colis",
+        "partial": "Partiel",
         "nbPack": "Numéro de colis",
         "datePack": "Date du colis",
         "arts": "Articles",
@@ -149,6 +150,8 @@
     },
     "error": {
         "noReturnDef": "Aucun retour définit",
-        "refundMode": "Choisissez le mode de remboursement"
+        "refundMode": "Choisissez le mode de remboursement",
+        "noTrackNum": "Pas de numéro de colis",
+        "emptyPkg": "Colis vide"
     }
 }
