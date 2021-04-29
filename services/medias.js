@@ -484,7 +484,7 @@ const uploadFiles = async (body, files) => {
                     extension            : path.extname(target_path_full)
                 }
             }, {
-                arrayFilters : [{'items._id': body.entity._id}]
+                arrayFilters : [{'item._id': body.entity._id}]
             });
             await deleteFileAndCacheFile(oldPath, 'slider');
             return item;
