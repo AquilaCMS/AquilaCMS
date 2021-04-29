@@ -475,7 +475,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if($scope.order.delivery.package[j].products[k].product_id === ($scope.order.items[i].id._id || $scope.order.items[i].id))
                         {
-                            qty += $scope.order.delivery.package[j].products[k].qty_shipped;
+                            if($scope.order.delivery.package[j].products[k].qty_shipped){
+                                qty += $scope.order.delivery.package[j].products[k].qty_shipped;
+                            }
                         }
                     }
                 }
@@ -494,7 +496,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if($scope.order.rma[j].products[k].product_id === $scope.order.items[i].id._id)
                         {
-                            qty += $scope.order.rma[j].products[k].qty_returned;
+                            if($scope.order.rma[j].products[k].qty_returned){
+                                qty += $scope.order.rma[j].products[k].qty_returned;
+                            }
                         }
                     }
                 }
@@ -720,7 +724,13 @@ OrderControllers.controller("PackagesNewCtrl", [
             type: type,
             genericTools: genericTools
         }
+        $scope.disabledAddButton = false;
         $scope.loadingAdd = false;
+        $scope.partial = false;
+        
+        $scope.changeToPartial = function(){
+            $scope.partial = true
+        }
 
         $scope.order = angular.copy(item);
         
@@ -788,51 +798,57 @@ OrderControllers.controller("PackagesNewCtrl", [
         };
 
         $scope.sendPackage = function () {
-            var buttonAdd = angular.element(document.getElementById('buttonAdd'));
-            buttonAdd.attr('disabled',"true");
+            $scope.disabledAddButton = true;
+            $scope.loadingAdd = true; // we separate disabledButton and loadingAdd, ike this, a module can use it :)
 
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
             $scope.error = "";
 
-            for(var i = pkg.products.length - 1; i >= 0; i--)
-            {
-                if($scope.order.items[i].quantity !== pkg.products[i].qty_delivered)
-                {
+            let nbProducts = pkg.products.length;
+            for(var count = 0; count < nbProducts; count++) {
+                if(!pkg.products[count].qty_delivered){
+                    pkg.products[count].qty_delivered = 0;
+                }
+                if($scope.order.items[count].quantity !== pkg.products[count].qty_delivered) {
                     pkg.status = "partial";
                 }
-
-                if(pkg.products[i].qty_delivered === 0)
-                {
-                    pkg.products.splice(i, 1);
-                }
-                else
-                {
-                    pkg.products[i].qty_shipped = pkg.products[i].qty_delivered;
+                if(pkg.products[count].qty_delivered === 0) {
+                    pkg.products.splice(count, 1);
+                    nbProducts = pkg.products.length;
+                } else {
+                    pkg.products[count].qty_shipped = pkg.products[count].qty_delivered;
                 }
             }
 
-            if(pkg.products.length > 0)
-            {
-                $scope.loadingAdd = true;
-                Orders.addPkg({order: $scope.order._id, package: pkg}, function ()
-                {
-                    toastService.toast("success", "Colis correctement ajouté");
-                    $modalInstance.close();
-                }, function (err)
-                {
-                    toastService.toast("danger", "Une erreur est survenue !");
-                    if(err.data && err.data.translations)
-                    {
-                        toastService.toast("danger", err.data.translations[$scope.defaultLang]);
-                    }
-                    $modalInstance.close();
-                });
-            }
-            else
-            {
-                buttonAdd.removeAttr('disabled');
-                $scope.error = "Colis vide";
+            if(pkg.products.length > 0) {
+                if(pkg.tracking != ""){
+                    Orders.addPkg({order: $scope.order._id, package: pkg}, function () {
+                        toastService.toast("success", "Colis correctement ajouté");
+                        $scope.disabledAddButton = false;
+                        $scope.loadingAdd = false;
+                        $scope.close();
+                    }, function (err) {
+                        $scope.disabledAddButton = false;
+                        $scope.loadingAdd = false;
+                        if(err.data && err.data.translations) {
+                            toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                        }else if (err.data.message) {
+                            toastService.toast('danger', err.data.message);
+                        }else{
+                            toastService.toast("danger", "Une erreur est survenue !");
+                        }
+                        $scope.close();
+                    });
+                }else{
+                    $scope.disabledAddButton = false;
+                    $scope.loadingAdd = false;
+                    $scope.error = "order.error.noTrackNum";
+                }
+            } else {
+                $scope.disabledAddButton = false;
+                $scope.loadingAdd = false;
+                $scope.error = "order.error.emptyPkg";
                 $scope.partial = true;
             }
         };
@@ -851,9 +867,38 @@ OrderControllers.controller("RMANewCtrl", [
     "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2",
     function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2)
     {
+        // variable
         $scope.order = angular.copy(item);
         $scope.return = {mode: "", comment: "", in_stock: true, sendMail: true, refund: 0, tax: 0, products: []};
         $scope.taxerate = [];
+        
+        /* 
+            Hook for the return (rma) PopUp
+            note if you want your module by default in the popUp, you can add the parameters 
+            {
+                "default:": true
+            }
+            in the hook
+        */
+        const codeShipment = $scope.order.delivery.code;
+        $scope.packagePluginHook = [];
+        let onePlugin = [];
+        if(orderReturnHook.length > 0){
+            onePlugin = orderReturnHook.filter((element) => {
+                if(element.default && element.default == true){
+                    return true;
+                }
+                if(element.code_shipment && element.code_shipment == codeShipment){
+                    return true;
+                }
+            });
+        }
+        if(typeof onePlugin !== "undefined"){
+            $scope.packagePluginHook = onePlugin;
+        }
+
+        $scope.disabledButton = false;
+        $scope.loadingAdd = false; // we separate disabledButton and loadingAdd, ike this, a module can use it :)
 
         $scope.defaultLang = $rootScope.languages.find(function (lang)
         {
@@ -926,34 +971,46 @@ OrderControllers.controller("RMANewCtrl", [
 
         $scope.setQty();
 
-        $scope.cancelItem = function ()
-        {
+        $scope.cancelItem = function () {
+            $scope.disabledButton = true; // no spam click
+            $scope.loadingAdd = true;
             var returnData = angular.copy($scope.return);
             $scope.error = "";
-
-            if(returnData.refund === 0)
-            {
+            
+            if(returnData.refund === 0) {
                 returnData.mode = "";
+            }else{
+                // it need a refund mode
+                if(!returnData.mode || returnData.mode == ""){
+                    $scope.error = "order.error.refundMode";
+                    $scope.disabledButton = false;
+                    $scope.loadingAdd = false;
+                    return
+                }
             }
 
-            for(var i = returnData.products.length - 1; i >= 0; i--)
-            {
-                if(returnData.products[i].qty_returning === 0)
-                {
-                    returnData.products.splice(i, 1);
+            let nbProducts = returnData.products.length;
+            for(let count = 0; count < nbProducts; count++) {
+                if(!returnData.products[count].qty_returning){
+                    returnData.products[count].qty_returning = 0;
                 }
-                else
-                {
-                    returnData.products[i].qty_returned = returnData.products[i].qty_returning;
+                if(returnData.products[count].qty_returning === 0){
+                    returnData.products.splice(count, 1);
+                    nbProducts = returnData.products.length;
+                } else {
+                    returnData.products[count].qty_returned = returnData.products[count].qty_returning;
                 }
             }
 
             if(returnData.products.length > 0) {
-                Orders.rma({order: $scope.order._id, return: returnData}, function ()
-                {
+                Orders.rma({order: $scope.order._id, return: returnData}, function () {
                     toastService.toast("success", "Retour correctement ajouté");
-                    $modalInstance.close();
+                    $scope.disabledButton = false;
+                    $scope.loadingAdd = false;
+                    $scope.close();
                 }, function (err) {
+                    $scope.disabledButton = false;
+                    $scope.loadingAdd = false;
                     toastService.toast("danger", "Une erreur est survenue !");
                     if(err.data){
                         if(err.data.translations) {
@@ -964,10 +1021,10 @@ OrderControllers.controller("RMANewCtrl", [
                     }
                     $scope.close();
                 });
-            }
-            else
-            {
-                $scope.error = "Aucun retour définit";
+            } else {
+                $scope.disabledButton = false;
+                $scope.loadingAdd = false;
+                $scope.error = "order.error.noReturnDef";
             }
         };
 

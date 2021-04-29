@@ -6,11 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const js2xmlparser = require('js2xmlparser');
-const moment       = require('moment');
-const fs           = require('../utils/fsp');
-const NSErrors     = require('../utils/errors/NSErrors');
-
+const path                 = require('path');
+const js2xmlparser         = require('js2xmlparser');
+const moment               = require('moment');
+const fs                   = require('../utils/fsp');
+const NSErrors             = require('../utils/errors/NSErrors');
+const {getUploadDirectory} = require('../utils/server');
 const {
     Languages,
     Statics,
@@ -196,8 +197,8 @@ const genSitemap = async () => {
             } else {
                 sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
             }
-
-            await fs.writeFile('./sitemap.xml', sitemapString);
+            const sitemapPath = path.resolve(getUploadDirectory(), 'sitemap.xml');
+            await fs.writeFile(sitemapPath, sitemapString);
             inCrawl = false;
             console.log(`\x1b[5m\x1b[32m ${new Date()} Fin de la génération du sitemap\x1b[0m`);
         } catch (err) {

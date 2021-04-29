@@ -185,7 +185,11 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     return {message: email};
 };
 
+/**
+ * @deprecated
+ */
 const changePassword = async (email, password) => {
+    console.error('changePassword is deprecated !');
     const user = await Users.findOne({email});
     if (!user) {
         return {message: 'Utilisateur introuvable, impossible de réinitialiser le mot de passe.', status: 500};
@@ -215,18 +219,18 @@ const changePassword = async (email, password) => {
  */
 const resetPassword = async (token, password) => {
     const user = await Users.findOne({resetPassToken: token});
-    if (password === undefined && user) return {message: 'Token valide'};
-    if (password === undefined && !user) return {message: 'Token invalide'};
+    if (password === undefined) {
+        if (user) {
+            return {message: 'Token valide'};
+        }
+        return {message: 'Token invalide'};
+    }
 
     if (user) {
         try {
             user.password = password;
-            await user.hashPassword();
             await user.save();
             await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-            // await Users.updateOne({_id: user._id}, {$set: {password}, $unset: {resetPassToken: 1}}, {
-            //     runValidators : true
-            // });
             return {message: 'Mot de passe réinitialisé.'};
         } catch (err) {
             if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {
