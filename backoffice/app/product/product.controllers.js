@@ -85,6 +85,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.filterLang = "";
         $scope.showLoader = false;
 
+        // deprecated/useless
         function getProductImg(prdIndex, products) {
             if (products && products.length > 0) {
                 if (products[prdIndex].imageUrl == "./img/empty.jpg") {
@@ -96,6 +97,7 @@ ProductControllers.controller("ProductListCtrl", [
                         }
                     });
                 } else {
+                    // console.log("No imageUrl")
                     if (prdIndex < products.length - 1) {
                         getProductImg(prdIndex + 1, products);
                     }
@@ -113,9 +115,11 @@ ProductControllers.controller("ProductListCtrl", [
             }
         };
         $scope.collapse = function () {
-          if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
-            document.getElementById('collapseIcon').className =  "ico-arrow-up"
-          }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
+            if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+                document.getElementById('collapseIcon').className = "ico-arrow-up";
+            }else {
+                document.getElementById('collapseIcon').className = "ico-arrow-down";
+            }
         };
 
         $scope.getAttributesClassed = function () {
@@ -256,10 +260,17 @@ ProductControllers.controller("ProductListCtrl", [
                 }
             };
             ProductsV2.list(paramsV2, function (res) {
-                getProductImg(0, res.datas); // what the hell is that ?!
-                $scope.products = res.datas;
-                $scope.totalItems = res.count;
-                $scope.showLoader = false;
+                if(res.count > 0 && res.datas.length == 0){
+                    //weird so we reload with page 1
+                    $scope.getProducts(1);
+                }else{                    
+                    getProductImg(0, res.datas); // what the hell is that ?! we don't use imageUrl, weird
+                    $scope.products = res.datas;
+                    $scope.totalItems = res.count;
+                    $scope.showLoader = false;
+                }
+            }, function(error){
+                console.error(error);
             });
         };
 
@@ -273,7 +284,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.langs = $rootScope.languages;
         $scope.filterLang = $rootScope.languages[0].code;
 
-        $scope.getProducts(1);
+        $scope.getProducts();
         $scope.getAttributesClassed();
 
         $scope.momentDate = function (date) {
