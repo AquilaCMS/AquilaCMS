@@ -547,22 +547,23 @@ CategoryControllers.controller("CategoryListCtrl", [
             displayOrder: 1
         };
 
-        $scope.expandAll = function(){
-            for(let oneCat of $scope.categories){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure : structure, limit: 99}}, function (response) {
-                    oneCat.children = verifyOrder(response.datas);
-                    oneCat.nodes = oneCat.children;
-                    $scope.$broadcast('angular-ui-tree:expand-all');
+        $scope.expandOneCat = function(oneCat){
+            if(oneCat.children){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                    oneCat.nodes = response.datas;
                     for(let oneNode of oneCat.nodes){
-                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure : structure, limit: 99}}, function (response) {
-                            oneNode.children = verifyOrder(response.datas);
-                            oneCat.nodes = oneCat.children;
-                            $scope.$broadcast('angular-ui-tree:expand-all');
-                        });
+                        $scope.expandOneCat(oneNode);
                     }
+                    $scope.$broadcast('angular-ui-tree:expand-all');
                 });
             }
-            //or use the $scope.listChildren()
+        }
+
+
+        $scope.expandAll = function(){
+            for(let oneCat of $scope.categories){
+                $scope.expandOneCat(oneCat)
+            }
         }
         getMenus();
 
@@ -625,12 +626,17 @@ CategoryControllers.controller("CategoryListCtrl", [
             $scope.getCategory(cat);
         };
 
-        $scope.listChildren = function (cat, scope)
-        {
-            CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response)
-            {
+        $scope.listChildren = function (cat) {
+            CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
                 cat.nodes = response.datas;
-                scope.toggle();
+                if(cat.collapsed){
+                    cat.collapsed = false;
+                }else{
+                    cat.collapsed = !cat.collapsed;
+                }
+                for(let oneNode of cat.nodes){
+                    oneNode.collapsed = true;
+                }
             });
         };
 
@@ -755,10 +761,18 @@ CategoryControllers.controller("CategoryListCtrl", [
                         if(oneChild.displayOrder < indexPlace){
                             oneChild.displayOrder = count;
                             promiseArray.push(CategoryV2.save(oneChild).$promise);
-                        }else if(oneChild.displayOrder >= indexPlace){
+                        }else if(oneChild.displayOrder > indexPlace){
                             oneChild.displayOrder = count;
                             oneChild.displayOrder++;
                             promiseArray.push(CategoryV2.save(oneChild).$promise);
+                        }else if(oneChild.displayOrder == indexPlace){
+                            if(oneChild.displayOrder == count){
+                                oneChild.displayOrder = count;
+                                oneChild.displayOrder++;
+                            }else{
+                                oneChild.displayOrder = count;
+                            }
+                        promiseArray.push(CategoryV2.save(oneChild).$promise);
                         }
                     }
                     // we add the cat to the good index
