@@ -951,6 +951,9 @@ OrderControllers.controller("RMANewCtrl", [
 
             if(returnData.refund === 0) {
                 returnData.mode = "";
+            }else{
+                $scope.error = "order.error.refundMode";
+                return
             }
 
             let nbProducts = returnData.products.length;
@@ -985,7 +988,7 @@ OrderControllers.controller("RMANewCtrl", [
                 });
             } else {
                 $scope.disabledButton = false;
-                $scope.error = "Aucun retour définit";
+                $scope.error = "order.error.noReturnDef";
             }
         };
 
