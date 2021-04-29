@@ -426,10 +426,10 @@ const uploadFiles = async (body, files) => {
         return {name: name + extension, path: target_path_full, id: media._id};
     }
     case 'gallery': {
-        if (body.entity._id) {
+        if (body.entity._id) { // When you change the image of an item
             const gallery = await Gallery.findOne({_id: body._id});
             // == necessary
-            const item    = gallery.items.find((i) => i._id === body.entity._id);
+            const item    = gallery.items.find((i) => i._id.toString() === body.entity._id);
             const oldPath = item.src;
             item.src      = target_path_full;
             item.alt      = body.alt && body.alt !== '' ? body.alt : item.alt;
@@ -468,10 +468,10 @@ const uploadFiles = async (body, files) => {
         return item;
     }
     case 'slider': {
-        if (body.entity._id) {
+        if (body.entity._id) { // When you change the image of an item
             const slider = await Slider.findOne({_id: body._id});
             // == necessary
-            const item    = slider.items.find((i) => i.id === body.entity._id);
+            const item    = slider.items.find((i) => i.id.toString() === body.entity._id);
             const oldPath = item.src;
             item.src      = target_path_full;
             item.name     = body.alt && body.alt !== '' ? body.alt : item.name;
