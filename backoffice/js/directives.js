@@ -1051,7 +1051,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PROGRESS";
                     $scope.statusObj.isYellow =
                         $scope.status === "PAYMENT_RECEIPT_PENDING";
-                    $scope.statusObj.name = $filter("orderStatus")($scope.status, $rootScope.adminLang);
+                    $scope.statusObj.name = $filter("orderStatus")($scope.status);
                 }
                 else if($scope.type === "paymentStatus")
                 {
@@ -1070,7 +1070,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "CREDIT";
                     $scope.statusObj.isDanger =
                         $scope.status === "DEBIT";
-                    $scope.statusObj.name = $scope.status;
+                    $scope.statusObj.name = $filter("paymentType")($scope.status);
                 }
                 else if($scope.type === "picto")
                 {
@@ -1078,16 +1078,16 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
                 }
                 else if ($scope.type === "category") {
                     $scope.statusObj.isSuccess = $scope.status === true;
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
                 }
             }
         ]
