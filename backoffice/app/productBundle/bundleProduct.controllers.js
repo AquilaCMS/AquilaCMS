@@ -251,6 +251,32 @@ BundleProductControllers.controller("BundleProductCtrl", [
             }
         };
 
+        function checkForm(fieldsToCheck){
+            let text = "";
+            for(let oneField of fieldsToCheck){
+                const elt = document.querySelector(`label[for="${oneField}"]`);
+                const translationToCheck = ["name"]; // TODO : you may need to add string here (also in simpleProduct)
+                if(translationToCheck.includes(oneField)){
+                    for(let oneLang of $scope.languages){
+                        if($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != ""){
+                        //good
+                        }else{
+                            text += `name (${oneLang.name}), `;
+                        }
+                    }
+                }else{
+                    if (elt) {
+                        if(elt.control && elt.control.value == ""){
+                            if(elt.innerText){
+                                text += `${elt.innerText}, `;
+                            }
+                        }
+                    }
+                }
+            }
+            return text;
+        }
+
         $scope.saveProduct = function (product, isQuit)
         {
             if ($scope.nsUploadFiles.isSelected) {
@@ -280,9 +306,22 @@ BundleProductControllers.controller("BundleProductCtrl", [
                 });
             });
 
-            if($scope.form.$invalid)
-            {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides");
+            let strInvalidFields = "";
+            if ($scope.form.$invalid) {
+                if ($scope.form.$error && $scope.form.$error.required) {
+                    $scope.form.$error.required.forEach((requiredField, index) => {
+                        strInvalidFields += checkForm([requiredField.$name]);
+                    });
+                }
+            }else{
+                strInvalidFields = checkForm(["code", "name"]);
+            }
+            //we remove ", "
+            if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
+            }
+            if(strInvalidFields != ""){
+                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
                 return;
             }
 
@@ -314,7 +353,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                 }
             }
-
+            
             if(attrsErrors === false)
             {
                 $scope.disableSave = !$scope.isEditMode;

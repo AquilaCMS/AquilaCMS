@@ -103,10 +103,36 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
         unit : {et: this.price.et.normal + modifiers.price.et, ati: this.price.ati.normal + modifiers.price.ati}
     };
     item.type       = 'bundle';
-    item.weight    += modifiers.weight;
-    const _cart     = await this.basicAddToCart(cart, item, user, lang);
+    // the weight of the bundle is 0 -> we need to calculate the total weight with each products
+    // the weight of the bundle isn't 0 -> the admin put the weight so we use it
+    if (item.weight === 0) {
+        item.weight = await calculateWeight(item);
+    }
+    // we change the weight with modifiers
+    item.weight += modifiers.weight;
+    const _cart  = await this.basicAddToCart(cart, item, user, lang);
     return _cart;
 };
+
+async function calculateWeight(item) {
+    if (item) {
+        let weight = 0;
+        if (item.selections) {
+            for (const oneProductOfSelections of item.selections) {
+                if (oneProductOfSelections.products) {
+                    for (const oneProductID of oneProductOfSelections.products) {
+                        const product = await mongoose.model('products').findOne({_id: oneProductID});
+                        if (product.weight) {
+                            weight += product.weight;
+                        }
+                    }
+                }
+            }
+        }
+        return weight;
+    }
+    return 0;
+}
 
 ProductBundleSchema.methods.getBundlePrdsModifiers = async function (selections) {
     const modifiers     = {price: {ati: 0, et: 0}, weight: 0};
