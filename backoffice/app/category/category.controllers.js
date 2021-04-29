@@ -627,17 +627,21 @@ CategoryControllers.controller("CategoryListCtrl", [
         };
 
         $scope.listChildren = function (cat) {
-            CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
-                cat.nodes = response.datas;
-                if(cat.collapsed){
+            if(typeof cat.collapsed === "undefined"){
+                cat.collapsed = false;
+            }
+            if(cat.collapsed){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
+                    cat.nodes = response.datas;
                     cat.collapsed = false;
-                }else{
-                    cat.collapsed = !cat.collapsed;
-                }
-                for(let oneNode of cat.nodes){
-                    oneNode.collapsed = true;
-                }
-            });
+                    for(let oneNode of cat.nodes){
+                        oneNode.collapsed = true;
+                        oneNode.nodes = [];
+                    }
+                });
+            }else{
+                cat.collapsed = !cat.collapsed;
+            }
         };
 
         $scope.langChange = function (lang)
