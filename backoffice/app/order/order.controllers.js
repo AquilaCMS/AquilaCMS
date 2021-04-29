@@ -718,7 +718,9 @@ OrderControllers.controller("PackagesNewCtrl", [
             type: type,
             genericTools: genericTools
         }
+        $scope.disabledAddButton = false;
         $scope.loadingAdd = false;
+        $scope.partial = false;
 
         $scope.disabledAddButton = false;
 
