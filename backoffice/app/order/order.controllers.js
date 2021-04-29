@@ -475,7 +475,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if($scope.order.delivery.package[j].products[k].product_id === ($scope.order.items[i].id._id || $scope.order.items[i].id))
                         {
-                            qty += $scope.order.delivery.package[j].products[k].qty_shipped;
+                            if($scope.order.delivery.package[j].products[k].qty_shipped){
+                                qty += $scope.order.delivery.package[j].products[k].qty_shipped;
+                            }
                         }
                     }
                 }
@@ -494,7 +496,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if($scope.order.rma[j].products[k].product_id === $scope.order.items[i].id._id)
                         {
-                            qty += $scope.order.rma[j].products[k].qty_returned;
+                            if($scope.order.rma[j].products[k].qty_returned){
+                                qty += $scope.order.rma[j].products[k].qty_returned;
+                            }
                         }
                     }
                 }
@@ -926,34 +930,35 @@ OrderControllers.controller("RMANewCtrl", [
 
         $scope.setQty();
 
-        $scope.cancelItem = function ()
-        {
+        $scope.cancelItem = function () {
+            $scope.disabledButton = true; // no spam click
             var returnData = angular.copy($scope.return);
             $scope.error = "";
 
-            if(returnData.refund === 0)
-            {
+            if(returnData.refund === 0) {
                 returnData.mode = "";
             }
 
-            for(var i = returnData.products.length - 1; i >= 0; i--)
-            {
-                if(returnData.products[i].qty_returning === 0)
-                {
-                    returnData.products.splice(i, 1);
+            let nbProducts = returnData.products.length;
+            for(let count = 0; count < nbProducts; count++) {
+                if(!returnData.products[count].qty_returning){
+                    returnData.products[count].qty_returning = 0;
                 }
-                else
-                {
-                    returnData.products[i].qty_returned = returnData.products[i].qty_returning;
+                if(returnData.products[count].qty_returning === 0){
+                    returnData.products.splice(i, 1);
+                    nbProducts = returnData.products.length;
+                } else {
+                    returnData.products[count].qty_returned = returnData.products[count].qty_returning;
                 }
             }
 
             if(returnData.products.length > 0) {
-                Orders.rma({order: $scope.order._id, return: returnData}, function ()
-                {
+                Orders.rma({order: $scope.order._id, return: returnData}, function () {
                     toastService.toast("success", "Retour correctement ajouté");
-                    $modalInstance.close();
+                    $scope.disabledButton = false;
+                    $scope.close();
                 }, function (err) {
+                    $scope.disabledButton = false;
                     toastService.toast("danger", "Une erreur est survenue !");
                     if(err.data){
                         if(err.data.translations) {
@@ -964,9 +969,8 @@ OrderControllers.controller("RMANewCtrl", [
                     }
                     $scope.close();
                 });
-            }
-            else
-            {
+            } else {
+                $scope.disabledButton = false;
                 $scope.error = "Aucun retour définit";
             }
         };
