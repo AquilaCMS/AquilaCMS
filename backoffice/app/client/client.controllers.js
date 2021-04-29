@@ -3,18 +3,15 @@ const ClientControllers = angular.module("aq.client.controllers", []);
 ClientControllers.controller("ClientCtrl", [
     "$scope", "$location", "ClientSearch", "Client", "toastService", "ClientColumns", "User", "$http", "ExportCollectionCSV", "ClientV2",
     function ($scope, $location, ClientSearch, Client, toastService, ClientColumns, User, $http, ExportCollectionCSV, ClientV2) {
+        $scope.columns = ClientColumns;
         $scope.query = {search: ""};
         $scope.page = 1;
-
-        $scope.columns = ClientColumns;
-
-        function init() {
-            $scope.sort = {
-                type    : "createdAt",
-                reverse : true
-            };
-        }
-
+        $scope.nbItemsPerPage = 10;
+        $scope.maxSize = 5;
+        $scope.filter = {};
+        $scope.valeurTri = -1;
+        $scope.tri = {createdAt : -1}
+        
         function getFilter(){
             let filter = {};
             const filterKeys = Object.keys($scope.filter);
@@ -47,36 +44,34 @@ ClientControllers.controller("ClientCtrl", [
             filter["isAdmin"] = false;
             return filter;
         }
-        $scope.filter = {};
-        init();
-        $scope.valeurTri = -1;
-        $scope.tri = {createdAt : -1}
-        $scope.sortSearch = function(){
-            $scope.valeurTri;
+        $scope.sortSearch = function(name, pageNumber){
             if($scope.valeurTri == 1){
                 $scope.valeurTri = -1;
-                //$scope.sort.reverse = false;
             }else{
                 $scope.valeurTri = 1;
-                //$scope.sort.reverse = true;
             }
-            valeurPage = $scope.page;
-
+            if(name){
+                $scope.tri = { [name]: $scope.valeurTri};
+            }
+            if(pageNumber){
+                $scope.page = pageNumber;
+            }
             let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
                 filter,
                 structure : {createdAt: 1, company : 1},
-                valeurPage,
+                page      : $scope.page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
             }}, function (response) {
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
+            }, function(error){
+                console.error(error);
+                //deal with error here
             });
         }
 
-        $scope.nbItemsPerPage = 10;
-        $scope.maxSize = 5;
 
         $scope.onClientsPageChange = function (page) {
 

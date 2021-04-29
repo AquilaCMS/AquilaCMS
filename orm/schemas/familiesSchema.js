@@ -10,7 +10,7 @@ const mongoose      = require('mongoose');
 const helper        = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 
 const FamiliesSchema = new Schema({
     code      : {type: String, required: true, unique: true},

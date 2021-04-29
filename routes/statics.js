@@ -12,6 +12,7 @@ const {securityForceActif}        = require('../middleware/security');
 const {StaticsPreview}            = require('../orm/models');
 const ServiceStatic               = require('../services/statics');
 const ServiceStaticPreview        = require('../services/preview');
+const {isAdmin}                   = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
@@ -39,7 +40,7 @@ async function getStatics(req, res, next) {
     try {
         const {PostBody} = req.body;
         const result     = await ServiceStatic.getStatics(PostBody);
-        if (req.info && !req.info.isAdmin) {
+        if (!isAdmin(req.info)) {
             // on boucle sur les resultats
             for (let i = 0; i < result.datas.length; i++) {
                 const page = result.datas[i];
@@ -82,7 +83,7 @@ async function getStatic(req, res, next) {
         } else {
             result = await ServiceStatic.getStatic(postBody);
         }
-        if ((req.info && !req.info.isAdmin) && result && result.translation) {
+        if (!isAdmin(req.info) && result && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
@@ -104,7 +105,7 @@ async function getStaticById(req, res, next) {
 
     try {
         const result = await ServiceStatic.getStaticById(req.params.id, req.body.PostBody);
-        if ((req.info && !req.info.isAdmin) && result.translation) {
+        if (!isAdmin(req.info) && result.translation) {
             // on boucle sur les langues contenue
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
