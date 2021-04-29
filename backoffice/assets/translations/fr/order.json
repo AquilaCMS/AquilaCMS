@@ -146,5 +146,9 @@
         "CHEQUE": "Chèque",
         "TRANSFER": "Virement",
         "CASH": "Espèces"
+    },
+    "error": {
+        "noReturnDef": "Aucun retour définit",
+        "refundMode": "Choisissez le mode de remboursement"
     }
 }
