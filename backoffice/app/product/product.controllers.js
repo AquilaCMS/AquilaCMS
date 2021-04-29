@@ -273,7 +273,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.langs = $rootScope.languages;
         $scope.filterLang = $rootScope.languages[0].code;
 
-        $scope.getProducts();
+        $scope.getProducts(1);
         $scope.getAttributesClassed();
 
         $scope.momentDate = function (date) {
