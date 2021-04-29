@@ -137,12 +137,18 @@
                         <div bind-html-compile="onePackagePlugin.component_template"></div>
                     </div>
                 </form>
+                <div ng-show="loadingAdd" style="text-align: center;">
+                    <div class="fa fa-spinner fa-spin" style="font-size: 50px;"></div>
+                </div>
+                <div ng-show="error" style="text-align: center" class="col-sm-12 text-left ns-error-message">
+                    <hr style="border: 1px solid gray;margin: 15px 10px;"/>
+                    <span style="font-weight: bold;font-size: 16px;" translate>{{error}}</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <div class="modal-footer">
-    <div ng-show="error" class="col-sm-12 col-md-7 text-left ns-error-message" translate>{{error}}</div>
     <button class="btn btn-success" ng-click="cancelItem()" ng-disabled="disabledButton" translate>order-rma.remb</button>
     <button class="btn btn-danger" ng-click="cancel()" translate>order-rma.cancel</button>
 </div>
