@@ -548,14 +548,19 @@ CategoryControllers.controller("CategoryListCtrl", [
         };
 
         $scope.expandOneCat = function(oneCat){
-            if(oneCat.children){
+            if(typeof oneCat.children === "undefined"){
+                oneCat.children = [];
+            }
+            if(oneCat.children.length > 0){
                 CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
-                    oneCat.nodes = response.datas;
+                    oneCat.nodes = response.datas || [];
                     for(let oneNode of oneCat.nodes){
                         $scope.expandOneCat(oneNode);
                     }
                     $scope.$broadcast('angular-ui-tree:expand-all');
                 });
+            }else{
+                oneCat.nodes = [];
             }
         }
 
