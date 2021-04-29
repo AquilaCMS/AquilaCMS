@@ -243,8 +243,9 @@ const rma = async (orderId, returnData) => {
             if (returnPrds[rmaProduct.product_id] === undefined) {
                 returnPrds[rmaProduct.product_id] = 0;
             }
-
-            returnPrds[rmaProduct.product_id] += rmaProduct.qty_returned;
+            if (rmaProduct.qty_returned) {
+                returnPrds[rmaProduct.product_id] += rmaProduct.qty_returned;
+            }
 
             // on check si on gere le stock
             if (global.envConfig.stockOrder.bookingStock !== 'none' && returnData.in_stock) {
