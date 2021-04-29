@@ -85,26 +85,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.filterLang = "";
         $scope.showLoader = false;
 
-        // deprecated/useless
-        function getProductImg(prdIndex, products) {
-            if (products && products.length > 0) {
-                if (products[prdIndex].imageUrl == "./img/empty.jpg") {
-                    ProductImage.query({type: "aquila", id: products[prdIndex].id}, function (data) {
-                        products[prdIndex].imageUrl = `data:image/jpg;base64,${data.img}`;
-
-                        if (prdIndex < products.length - 1) {
-                            getProductImg(prdIndex + 1, products);
-                        }
-                    });
-                } else {
-                    // console.log("No imageUrl")
-                    if (prdIndex < products.length - 1) {
-                        getProductImg(prdIndex + 1, products);
-                    }
-                }
-            }
-        }
-
         $scope.getImage = function (images) {
             try {
                 const image = images.find(img => img.default) ? images.find(img => img.default) : images[0];
@@ -263,8 +243,7 @@ ProductControllers.controller("ProductListCtrl", [
                 if(res.count > 0 && res.datas.length == 0){
                     //weird so we reload with page 1
                     $scope.getProducts(1);
-                }else{                    
-                    getProductImg(0, res.datas); // what the hell is that ?! we don't use imageUrl, weird
+                }else{
                     $scope.products = res.datas;
                     $scope.totalItems = res.count;
                     $scope.showLoader = false;
