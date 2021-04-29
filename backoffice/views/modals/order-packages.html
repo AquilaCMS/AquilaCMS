@@ -78,7 +78,7 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button ng-hide="partial" class="btn btn-default" ng-click="partial = true" translate>order.detail.partial</button>
+    <button ng-hide="partial" class="btn btn-default" ng-click="changeToPartial()" translate>order.detail.partial</button>
     <button class="btn btn-success" id="buttonAdd" ng-click="sendPackage()" ng-disabled="disabledAddButton" translate>order-packages.add</button>
     <button class="btn btn-danger" ng-click="cancel()" translate>order-packages.cancel</button>
 </div>

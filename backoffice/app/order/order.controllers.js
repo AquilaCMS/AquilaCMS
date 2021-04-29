@@ -727,6 +727,10 @@ OrderControllers.controller("PackagesNewCtrl", [
         $scope.disabledAddButton = false;
         $scope.loadingAdd = false;
         $scope.partial = false;
+        
+        $scope.changeToPartial = function(){
+            $scope.partial = true
+        }
 
         $scope.order = angular.copy(item);
         
