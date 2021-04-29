@@ -608,16 +608,19 @@ const delPackage = async (orderId, pkgId) => {
 };
 
 const updatePayment = async (body) => {
-    const findCondition = {
-        _id           : body._id,
-        'payment._id' : body.paymentId
-    };
-    let msg             = {status: true};
+    let msg = {status: true};
     if (body.field !== '') {
-        const updateValue                      = {};
-        updateValue[`payment.$.${body.field}`] = body.value;
         try {
-            const updOrder = await Orders.findOneAndUpdate(findCondition, {$set: updateValue}, {new: true});
+            const updOrder = await Orders.findOneAndUpdate({
+                _id : body._id
+            }, {
+                $set : {
+                    [`payment.$[item].${body.field}`] : body.value
+                }
+            }, {
+                new          : true,
+                arrayFilters : [{'item._id': body.paymentId}]
+            });
             if (!updOrder) msg = {status: false};
             return msg;
         } catch (error) {

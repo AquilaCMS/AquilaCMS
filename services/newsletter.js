@@ -57,10 +57,17 @@ exports.setStatusNewsletterByEmail = async function (email, params) {
         const update = {name: params.name, optin: true, date_subscribe: new Date()};
         return Newsletters.findOneAndUpdate({email}, {$push: {segment: update}}, {new: true, upsert: true});
     }
-    const update = {
-        'segment.$.name'             : params.name,
-        'segment.$.optin'            : params.optin,
-        'segment.$.date_unsubscribe' : params.optin ? null : new Date() // En cas de optin false alors l'utilisateur se désinscrit
-    };
-    return Newsletters.findOneAndUpdate({email, 'segment.name': params.name}, {$set: update}, {new: true});
+    return Newsletters.findOneAndUpdate({
+        email
+    }, {
+        $set : {
+            'segment.$[seg].name'             : params.name,
+            'segment.$[seg].optin'            : params.optin,
+            // En cas de optin false alors l'utilisateur se désinscrit
+            'segment.$[seg].date_unsubscribe' : params.optin ? null : new Date()
+        }
+    }, {
+        arrayFilters : [{'seg.name': params.name}],
+        new          : true
+    });
 };

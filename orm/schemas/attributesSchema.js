@@ -94,18 +94,25 @@ AttributesSchema.pre('findOneAndUpdate', async function (next) {
 
 /**
  * Lorsqu'un attribut est modifié alors on reporte la modification dans categorie.filters.attributes qui est un tableau d'attribut
+ * @deprecated seem like it's not used, because the service setAttribute handle all modifications
  */
 AttributesSchema.post('updateOne', async function ({next}) {
+    console.warn("If you see that, AttributesSchema.post('updateOne') is not deprecated. Please remove this message");
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {
-            const filters      = {
-                'filters.attributes.$.position'    : attribute.position,
-                'filters.attributes.$.type'        : attribute.type,
-                'filters.attributes.$.translation' : attribute.translation
-            };
             const {Categories} = require('../models');
-            await Categories.updateMany({'filters.attributes._id': attribute._id}, {$set: filters}, {new: true, runValidators: true});
+            await Categories.updateMany({}, {
+                $set : {
+                    'filters.attributes.$[attribute].position'    : attribute.position,
+                    'filters.attributes.$[attribute].type'        : attribute.type,
+                    'filters.attributes.$[attribute].translation' : attribute.translation
+                }
+            }, {
+                arrayFilters  : [{'attribute._id': attribute._id}],
+                new           : true,
+                runValidators : true
+            });
         }
     } catch (err) {
         return next(err);

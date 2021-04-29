@@ -132,11 +132,13 @@ const anonymizeBillsByUser = async (id) => {
 };
 
 const anonymizeReviewsByUser = async (id) => {
-    return Products.updateMany({'reviews.datas.id_client': id}, {
+    return Products.updateMany({}, {
         $set : {
-            'reviews.datas.$.ip_client' : faker.internet.ip(),
-            'reviews.datas.$.name'      : faker.name.firstName()
+            'reviews.datas.$[data].ip_client' : faker.internet.ip(),
+            'reviews.datas.$[data].name'      : faker.name.firstName()
         }
+    }, {
+        arrayFilters : [{'data.id_client': id}]
     });
 };
 
