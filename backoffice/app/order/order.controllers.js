@@ -721,6 +721,10 @@ OrderControllers.controller("PackagesNewCtrl", [
         $scope.disabledAddButton = false;
         $scope.loadingAdd = false;
         $scope.partial = false;
+        
+        $scope.changeToPartial = function(){
+            $scope.partial = true
+        }
 
         $scope.loadImgShipment = function(name, code){
             $scope.shipmentName = name;
