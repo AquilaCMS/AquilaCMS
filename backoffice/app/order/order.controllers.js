@@ -784,8 +784,11 @@ OrderControllers.controller("PackagesNewCtrl", [
         $scope.pkg.products.reverse();
 
         $scope.setQty = function (index) {
-            $scope.pkg.products[index].qty_delivered = $scope.order.items[index].quantity < $scope.pkg.products[index].qty_shipped ? 0 :
-                $scope.order.items[index].quantity - $scope.pkg.products[index].qty_shipped;
+            if($scope.order.items[index].quantity < $scope.pkg.products[index].qty_shipped){
+                $scope.pkg.products[index].qty_delivered = 0;
+            }else{
+                $scope.pkg.products[index].qty_delivered = $scope.order.items[index].quantity - $scope.pkg.products[index].qty_shipped;
+            }
         };
 
         $scope.sendPackage = function () {
@@ -912,6 +915,7 @@ OrderControllers.controller("RMANewCtrl", [
                     product_code: $scope.order.items[i].code,
                     qty_returned: qty_returned,
                     qty_shipped: qty_shipped,
+                    qty_returning: 0, //default value
                     qty_delivered: $scope.order.items[i].quantity < qty_shipped ? 0 : $scope.order.items[i].quantity - qty_shipped
                 }
 
@@ -929,10 +933,9 @@ OrderControllers.controller("RMANewCtrl", [
 
         $scope.return.products.reverse();
 
-        $scope.setQty = function (index)
-        {
+        $scope.setQty = function (index) {
             $scope.return.refund = 0;
-
+            // if index, the function calculate the returning qty
             if(typeof index !== "undefined") {                
                 if($scope.order.items[index].quantity <= $scope.return.products[index].qty_returned) {
                     if($scope.return.products[index].qty_shipped > $scope.return.products[index].qty_returned){
@@ -944,6 +947,7 @@ OrderControllers.controller("RMANewCtrl", [
                     $scope.return.products[index].qty_returning = $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
                 }
             }
+            // we calculate the refund value
             const lengthProducts = $scope.return.products.length;
             for(var i = 0; i < lengthProducts; i++) {
                 if(!$scope.return.products[i].qty_returned) {
@@ -1078,22 +1082,27 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
 
         $scope.return.products.reverse();
 
-        $scope.setQty = function (index)
-        {
+        $scope.setQty = function (index) {
             $scope.return.refund = 0;
 
-            if(index !== undefined)
-            {
-                $scope.return.products[index].qty_returning = $scope.order.items[index].quantity < $scope.return.products[index].qty_returned ? 0 :
-                    $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+            if(typeof index !== "undefined") {
+                if($scope.order.items[index].quantity < $scope.return.products[index].qty_returned){
+                    $scope.return.products[index].qty_returning = 0;
+                }else{
+                    $scope.return.products[index].qty_returning = $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+                }
             }
 
-            for(var i = 0; i < $scope.return.products.length; i++)
-            {
-                if($scope.return.products[i].qty_returning > 0)
-                {
-                    $scope.return.refund += ($scope.order.items[i].price.special !== undefined && $scope.order.items[i].price.special.ati !== undefined ?
-                        $scope.order.items[i].price.special.ati : $scope.order.items[i].price.unit.ati) * $scope.return.products[i].qty_returning;
+            for(var i = 0; i < $scope.return.products.length; i++) {
+                if(typeof $scope.return.products[i].qty_returning === "undefined"){
+                    $scope.return.products[i].qty_returning = 0;
+                }
+                if($scope.return.products[i].qty_returning > 0) {
+                    if((typeof $scope.order.items[i].price.special !== "undefined") && (typeof $scope.order.items[i].price.special.ati !== "undefined") ){
+                        $scope.return.refund = $scope.order.items[i].price.special.ati * $scope.return.products[i].qty_returning;
+                    }else{
+                        $scope.return.refund = $scope.order.items[i].price.unit.ati * $scope.return.products[i].qty_returning;
+                    }
                 }
             }
         };
