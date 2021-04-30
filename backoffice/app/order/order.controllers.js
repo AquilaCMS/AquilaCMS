@@ -718,6 +718,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             type: type,
             genericTools: genericTools
         }
+        $scope.error = "";
         $scope.disabledAddButton = false;
         $scope.loadingAdd = false;
         $scope.partial = false;
@@ -891,6 +892,7 @@ OrderControllers.controller("RMANewCtrl", [
             $scope.packagePluginHook = onePlugin;
         }
 
+        $scope.error = "";
         $scope.disabledButton = false;
         $scope.loadingAdd = false; // we separate disabledButton and loadingAdd, ike this, a module can use it :)
 
@@ -1036,7 +1038,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
     "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService",
     function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService) {
         $scope.order = angular.copy(item);
-
+        $scope.error = "";
         $scope.return = {
             comment: "",
             mode: "",
