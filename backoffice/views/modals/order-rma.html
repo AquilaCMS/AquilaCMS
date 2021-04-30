@@ -132,6 +132,10 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12" ng-show="packagePluginHook.length > 0" ng-repeat="onePackagePlugin in packagePluginHook">
+                        <hr style="border: 1px solid gray;margin: 15px 10px;"/>
+                        <div bind-html-compile="onePackagePlugin.component_template"></div>
+                    </div>
                 </form>
                 <div ng-show="loadingAdd" style="text-align: center;">
                     <div class="fa fa-spinner fa-spin" style="font-size: 50px;"></div>
