@@ -234,8 +234,7 @@ const getUploadDirectory = () => {
 };
 
 const generateNewEnv = (envExample) => {
-    let env = envExample;
-    env     = env.toString();
+    let env = JSON.stringify(envExample);
     env     = env.replace('{{environnement}}', getEnv('AQUILA_ENV'));
     env     = env.replace('{{secretKey}}', uuidv4());
     return JSON.parse(env);

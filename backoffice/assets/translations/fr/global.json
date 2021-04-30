@@ -1,3 +1,7 @@
 {
-    "saveMessage": "Paramètres sauvegardés"
+    "saveMessage": "Paramètres sauvegardés",
+    "visible": "Visible",
+    "nonVisible": "Non visible",
+    "yes": "Oui",
+    "no": "Non"
 }

@@ -37,13 +37,13 @@ const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'tra
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
-// si dans le config, on demande de ne pas retourner les champs de stock, on les ajoute au restrictedFields
+// if in the config, we ask not to return the stock fields, we add them to the restrictedFields
 if (global.envConfig.stockOrder.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
 /**
- * Lors de la recupération d'un produit on y ajout aussi le prix min et max des produits trouvés par le queryBuilder
+ * When a product is retrieved, the minimum and maximum price of the products found by the queryBuilder is also added
  * @param {PostBody} PostBody
  * @param {Express.Request} reqRes
  * @param {string} lang
@@ -53,7 +53,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
     let properties = [];
     let structure;
     if (PostBody && PostBody.structure) {
-        // obligé d'avoir tous les champs pour les règles de promo
+        // required to have all fields for promo rules
         structure  = PostBody.structure;
         properties = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
@@ -63,7 +63,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
+    // The fulltext search does not allow to cut words (search "TO" in "TOTO")
     if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
@@ -80,7 +80,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
     let result                 = await queryBuilder.find(PostBody);
     queryBuilder.defaultFields = defaultFields;
 
-    // On supprime les reviews qui ne sont pas visible et verify
+    // We delete the reviews that are not visible and verify
     if (PostBody && structure && structure.reviews === 1) {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
@@ -140,7 +140,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
 };
 
 /**
- * On récupére le produit correspondant au filtre du PostBody
+ * Get the product corresponding to the PostBody filter
  * @param {*} PostBody
  * @param reqRes
  * @param keepReviews
@@ -157,7 +157,7 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
         return product;
     }
 
-    // On supprime les reviews qui ne sont pas visible et verify
+    // We delete the reviews that are not visible and verify
     if (
         product.reviews
         && product.reviews.datas
@@ -181,7 +181,7 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
 };
 
 /**
- * On récupére les promos correspondant au produit demandé
+ * Get the discount corresponding to the requested product
  * @param {*} PostBody
  * @param reqRes
  * @param keepReviews
@@ -203,7 +203,7 @@ const getPromosByProduct = async (PostBody, reqRes = undefined) => {
 };
 
 /**
- * Duplication de produit dans le back-office
+ * Product duplication in the back office
  */
 const duplicateProduct = async (idProduct, newCode) => {
     const doc       = await Products.findById(idProduct);
@@ -252,8 +252,8 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
 };
 
 /**
- * On récupére les produits contenus dans une categorie
- * @param {*} id de la categorie
+ * We get the products contained in a category
+ * @param {*} id category id
  * @param {*} PostBody
  * @param {*} lang
  * @param isAdmin
@@ -263,7 +263,7 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
     lang = servicesLanguages.getDefaultLang(lang);
-    // Si admin alors on populate tout les documents sans restriction de visibilité ou d'actif
+    // If admin then we populate all documents without visibility or asset restriction
     if (!PostBody.filter) PostBody.filter = {};
     if (!isAdmin) {
         PostBody.filter = {
@@ -290,7 +290,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         throw NSErrors.CategoryNotFound;
     }
     if (isAdmin && PostBody && PostBody.filter && PostBody.filter.inProducts !== undefined) {
-        // On supprime les produits de productsList en fonction de inProducts (true ou false)
+        // We delete products from productsList depending on inProducts (true or false)
         for (let i = menu.productsList.length - 1; i >= 0; i--) {
             const prd = menu.productsList[i];
             if (prd.checked !== PostBody.filter.inProducts) {
@@ -300,28 +300,28 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
-    // Si un productsList.id ne répond pas au match alors productsList.id === null
-    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
+    // If a productsList.id does not respond to the match then productsList.id === null
+    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
         PostBody.structure.stock = 1;
     }
 
-    // On verifie que les infos de PostBody sont correctes
+    // We check that the PostBody information is correct
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
-    // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit)
+    // We get the products sorted by sortWeight, and we slice(filter.skip, filter.limit)
 
     PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
-    // On récupére les produits de productList
+    // Get products from productList
     const result = await queryBuilder.find(PostBody, true);
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-        // On ajoute le sortWeight correspondant au produit dans le doc produit
+        // We add the sortWeight corresponding to the product in the product doc
         menu.productsList.forEach((product) => {
             const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id.toString());
-            // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
+            // add sortWeight to result.datas[i] (modification of an object by reference)
             if (ProdFound) {
                 ProdFound.sortWeight = product.sortWeight;
             }
         });
-        // On trie les produits par poids
+        // Products are sorted by weight
         result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
     if (global.envConfig.stockOrder.bookingStock !== 'none') {
@@ -329,7 +329,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
             if (product.type === 'simple') {
-                // TODO P2 "shipping : business day" : ne marche plus, on met le jour même en dur
+                // TODO P2 "shipping : business day" : doesn't work anymore, we put the same day in hard
                 // const dateShipped = moment().businessAdd(shipment.delay.unit === "DAY" ? shipment.delay.value : 1).format('DD/MM/YYYY');
                 result.datas[i].stock.label       = stockData.label;
                 result.datas[i].stock.dateShipped = stockData.dateShipped;
@@ -350,15 +350,15 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         }
     }
 
-    // On récupére tous les produits appartenant a cette categorie afin d'avoir le min et max
+    // We collect all the products belonging to this category in order to have the min and max
     let priceFilter;
     if (PostBody.filter.$and) {
         priceFilter = PostBody.filter.$and[0];
         PostBody.filter.$and.shift();
         if (PostBody.filter.$and.length === 0) delete PostBody.filter.$and;
     }
-    // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
-    // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
+    // we use lean to greatly improve the performance of the query (x3 faster)
+    // {virtuals: true} allows to get virtual fields (stock.qty_real)
     let prds       = await Products
         .find(PostBody.filter, PostBody.structure)
         .populate(PostBody.populate)
@@ -454,7 +454,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
     const specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
-    // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
+    // Get only the image having for default = true if no image found we take the first image of the product
     for (let i = 0; i < result.datas.length; i++) {
         if (result.datas[i].images) {
             if (!result.datas[i].images.length) continue;
@@ -467,7 +467,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         prds.forEach((product, index) => {
             const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
-            // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
+            // add sortWeight to result.datas[i] (modification of an object by reference)
             if (idx > -1) {
                 prds[index].sortWeight = menu.productsList[idx].sortWeight;
             } else {
@@ -475,14 +475,14 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
             }
         });
 
-        // On trie les produits par poids, le trie par pertinence se fait toujours du plus pertinent au moins pertienent
+        // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
 
     let products = prds.slice(skip, limit + skip);
 
-    // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
-    // ce code ne marche pas car _doc n'exsite pas dans produits et removeFromStructure en a besoin
+    // TODO P5 (hot) the code below allows to return the structure that we send in the PostBody because currently it returns all the fields
+    // this code does not work because _doc does not exist in products and removeFromStructure needs it
     // if (Object.keys(PostBody.structure).length > 0) {
     //     queryBuilder.removeFromStructure(PostBody.structure, tProducts);
     // }
@@ -492,8 +492,8 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         reqRes.req.body.PostBody = PostBody;
         const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
         products                 = productsDiscount.datas;
-        // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
-        // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
+        // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
+        // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
     }
     if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
         products = products.filter((prd) =>  {
@@ -551,7 +551,7 @@ const getProductById = async (id, PostBody = null) => {
 };
 
 const calculateFilters = async (req, result) => {
-    // On récupère les attributs, le dernier attribut sélectionné et si la valeur a été check ou non
+    // We recover the attributes, the last selected attribute and if the value has been checked or not
     const attributes            = req.body.attributes;
     const attributeLastSelected = req.body.attributeSelected ? req.body.attributeSelected.id_attribut : '';
     const checked               = req.body.checked;
@@ -561,15 +561,15 @@ const calculateFilters = async (req, result) => {
     const returnArrayAttributes = {};
     const returnArrayToRemove   = {};
 
-    // Pour chaque attribut
+    // For each attribute
     for (let i = 0; i < attributes.length; i++) {
         const attrId = attributes[i]._id || attributes[i].id_attribut;
-        // On recalcule uniquement si l'attribut bouclé est différent de celui sélectionné dans le front sauf si la valeur vient d'être uncheck dans le front
+        // We recalculate only if the looped attribute is different from the one selected in the front except if the value has just been unchecked in the front
         if (attrId.toString() !== attributeLastSelected.toString() || (attrId.toString() === attributeLastSelected.toString() && checked)) {
             returnArray[attrId]           = [];
             returnArrayAttributes[attrId] = [];
             returnArrayToRemove[attrId]   = [];
-            // ON parcourt tout les produits et on va distinct les différentes valeurs des attributs
+            // We go through all the products and we will distinguish the different values of the attributes
             const unique = [...new Set(products.map((item) => {
                 const index = item && item.attributes ? item.attributes.findIndex((att) => att.id.toString() === attrId) : -1;
                 if (index > -1) {
@@ -577,7 +577,7 @@ const calculateFilters = async (req, result) => {
                 }
                 return null;
             }))];
-            // Cas d'un attribut à sélection multiple
+            // Case of an attribute with multiple selection
             if (Array.isArray(unique[0])) {
                 const toPush = [];
                 for (let j = 0; j < unique.length; j++) {
@@ -589,11 +589,11 @@ const calculateFilters = async (req, result) => {
                 }
                 returnArray[attrId] = toPush;
             } else {
-                // Cas d'une liste déroulante
+                // Case of a drop-down list
                 returnArray[attrId] = unique;
             }
             const attr = await Attributes.findOne({_id: attrId});
-            // On récupère toutes les valeurs possibles pour un attribut
+            // We get all possible values for an attribute
             if (attributes[i].type === 'bool') {
                 returnArrayAttributes[attrId] = [false, true];
             } else if (attributes[i].type === 'textfield' || attributes[i].type === 'color') {
@@ -615,7 +615,7 @@ const calculateFilters = async (req, result) => {
         }
     }
     for (let i = 0; i < Object.keys(returnArray).length; i++) {
-        // On connaît les attributs à garder mais il faut donc calculer les attributs à supprimer
+        // We know the attributes to keep but we must calculate the attributes to delete
         if (returnArrayAttributes[Object.keys(returnArray)[i]]) {
             returnArrayToRemove[Object.keys(returnArray)[i]] = returnArrayAttributes[Object.keys(returnArray)[i]].filter((x) => !returnArray[Object.keys(returnArray)[i]].includes(x));
         }
@@ -629,10 +629,10 @@ const calculateFilters = async (req, result) => {
 };
 
 const setProduct = async (req) => {
-    // On update le produit
+    // We update the product
     const product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
-    // On met à jour le slug du produit
+    // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
     await ProductsPreview.deleteOne({code: req.body.code});
@@ -640,7 +640,7 @@ const setProduct = async (req) => {
 };
 
 const createProduct = async (req) => {
-    // On vérifie que l'id n'est pas déjà pris
+    // We check that the id is not already taken
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
     switch (req.body.type) {
@@ -710,36 +710,36 @@ const deleteProduct = async (_id) => {
 };
 
 /**
- * Controle la commandabilité d'un produit par rapport à ses stocks
- * @param   {object}  objstock Objet stock du produit²
- * @param   {number?} qtecdé   Quantité a commander
- * @returns {object}  Informations de retour
+ * Controls the orderability of a product in relation to its inventory
+ * @param   {object}  objstock Product stock item
+ * @param   {number?} qtecdé   Quantity to order
+ * @returns {object}  Return Information
  */
 const checkProductOrderable = async (objstock, qtecdé = 0) => {
     let prdStock = {};
-    // si objstock est un id, on recupere le produit
+    // if objstock is an id, we get the product
     if (typeof objstock === 'string') {
         prdStock = (await Products.findById(objstock)).stock;
     } else {
         prdStock = objstock;
     }
     const datas = {
-        selling : {// Affichage
-            sellable : false,   // Produit vendable (affichage du bouton d'achat en gros)
-            message  : ''       // Libelé à afficher
+        selling : {// Display
+            sellable : false,   // Saleable product (display of bulk purchase button)
+            message  : ''       // Label to display
         },
-        delivery : {// Livraison
-            dates : []          // Eventuelles dates de livraison (donne indication sur le nombre de ligne à créer). Si y'en a deux, il faut aussi passer le status à "dif"
+        delivery : {// Delivery
+            dates : []          // Possible delivery dates (gives indication on the number of lines to create). If there are two, you must also change the status to "dif".
         }
     };
     if (qtecdé > 0) {
-        datas.ordering = {// Produit commandable
-            orderable : false,  // Ajoutable au panier / commandable (par rapport à la demande)
-            message   : ''      // Message de retour à afficher dans un toast (succes ou erreur)
+        datas.ordering = {// Orderable product
+            orderable : false,  // Add to cart / orderable (on demand)
+            message   : ''      // Return message to display in a toast (success or error)
         };
     }
 
-    // si qtecdé est null, c'est que l'on teste si un produit bundle est orderable ou non
+    // if qtecdé is null, it means that we are testing if a bundle product is orderable or not
     if (qtecdé === null) {
         if (prdStock.status === 'epu') {
             datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
@@ -747,7 +747,7 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
         }
     }
 
-    const change_lib_stock = 5; // a récup en bdd
+    const change_lib_stock = 5; // to recover in db
 
     if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
         datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
@@ -764,7 +764,7 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
         datas.selling.sellable  = true;
     }
 
-    // Commandable ?
+    // Orderable ?
     if (qtecdé > 0 && datas.selling.sellable) {
         if (qtecdé > prdStock.qty_real) {
             datas.ordering.message = {code: 'NotEnoughPdts', translation: {fr: 'Pas assez de produits disponibles pour votre commande.', en: 'There not enough products in our stock for your order.'}};
@@ -777,8 +777,8 @@ const checkProductOrderable = async (objstock, qtecdé = 0) => {
 };
 
 /**
- * Controle la cohérence de chaque produit
- * @returns {object}  Informations sur les produits incohérent
+ * Checks the consistency of each product
+ * @returns {object}  Inconsistent product information
  */
 const controlAllProducts = async (option) => {
     try {
@@ -795,41 +795,41 @@ const controlAllProducts = async (option) => {
             productsList = await Products.find({});
         }
         for (const oneProduct of productsList) {
-            // Control du code
+            // Code control
             if (typeof oneProduct.code === 'undefined' || oneProduct.code === '') {
                 returnErrors += `<b>${oneProduct._id}</b> : Code undefined<br/>`;
                 continue;
             }
 
-            // Control par langue
+            // Control by language
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
                 const currentLang = tabLang[iLang];
 
-                // Control de translation
+                // Translation control
                 if (typeof oneProduct.translation === 'undefined' || typeof oneProduct.translation[currentLang] === 'undefined') {
                     returnErrors += `<b>${oneProduct.code}</b> : Language (${currentLang}) undefined<br/>`;
                     continue;
                 }
 
-                // Control du nom
+                // Name control
                 if (typeof oneProduct.translation[currentLang].name === 'undefined' || oneProduct.translation[currentLang].name === '') {
                     returnErrors += `<b>${oneProduct.code}</b> : Name undefined (${currentLang})<br/>`;
                 }
 
-                // Control du slug
+                // Slug control
                 if (typeof oneProduct.translation[currentLang].slug === 'undefined' || oneProduct.translation[currentLang].slug === '') {
                     returnErrors += `<b>${oneProduct.code}</b> : Slug undefined (${currentLang})<br/>`;
                 }
 
-                // Control des attributs 1 : vérifie la localisation
+                // Attribute control 1: checks the location
                 for (let iAttri = 0; iAttri < oneProduct.attributes.length; iAttri++) {
                     if (!oneProduct.attributes[iAttri].translation || !oneProduct.attributes[iAttri].translation[currentLang]) {
                         returnErrors += `<b>${oneProduct.code}</b> : attributes '<i>${oneProduct.attributes[iAttri].code}</i>' lake of translate (${currentLang})<br/>`;
                     }
                 }
-            } // End Control par langue
+            } // End Control by language
 
-            // Control des images
+            // Image control
             if (typeof oneProduct.images === 'undefined' || oneProduct.images.length === 0) {
                 returnWarning += `<b>${oneProduct.code}</b> : No image<br/>`;
             }
@@ -844,7 +844,7 @@ const controlAllProducts = async (option) => {
                 }
             }
 
-            // Control du prix
+            // Price control
             if (
                 typeof oneProduct.price.et.normal === 'undefined'
                 || oneProduct.price.et.normal <= 0
@@ -854,7 +854,7 @@ const controlAllProducts = async (option) => {
                 returnWarning += `<b>${oneProduct.code}</b> : Price is undefined or zero<br/>`;
             }
 
-            // Control du prix spécial
+            // Control of the special price
             if (
                 (
                     !(typeof oneProduct.price.et.special === 'undefined' || oneProduct.price.et.special == null)
@@ -868,19 +868,19 @@ const controlAllProducts = async (option) => {
                 returnWarning += `<b>${oneProduct.code}</b> : Special price is maybe wrong<br/>`;
             }
 
-            // Control du stock
+            // Stock control
             if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type === 'simple') { // On gère le stock
                 if (typeof oneProduct.stock === 'undefined' || oneProduct.stock.length === 0 || (oneProduct.stock.qty <= 0 && oneProduct.stock.status === 'liv')) {
                     returnWarning += `<b>${oneProduct.code}</b> : Stock issues<br/>`;
                 }
             }
 
-            // Control du poids
+            // Weight control
             if (oneProduct.type !== 'virtual' && (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0)) {
                 returnWarning += `<b>${oneProduct.code}</b> : No weight<br/>`;
             }
 
-            // Control des attributs 2 : vérifie le bon nombre d'attributs par rapport au SetAttributs
+            // Attribute control 2: check the right number of attributes against the SetAttributes
             if (!oneProduct.set_attributes) {
                 returnErrors += `<b>${oneProduct.code}</b> : set_attributes is undefined<br/>`;
             } else {
@@ -889,13 +889,13 @@ const controlAllProducts = async (option) => {
                     returnErrors += `<b>${oneProduct.code}</b> : ${usedSetAttribut.attributes.length - oneProduct.attributes.length} attribute(s) missing<br/>`;
                 }
             }
-            // Control des attributs 3 : vérifie l'ordre des attributs
+            // Attribute control 3: checks the order of the attributes
             if (!checkAttribsValidity(oneProduct.attributes)) {
                 returnWarning += `<b>${oneProduct.code}</b> : Unsorted attributes<br/>`;
                 fixAttributs   = true;
             }
 
-            // Control de la catégorisation
+            // Control of the categorization
             await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
                 if (typeof categories === 'undefined' || categories.length === 0) {
                     returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
@@ -903,7 +903,7 @@ const controlAllProducts = async (option) => {
             });
         }
 
-        // Affichage du résumé
+        // Displaying the summary
         if (returnErrors.length !== 0) returnErrors = `<br/>Errors :<br/>${returnErrors}`;
         if (returnWarning.length !== 0) returnWarning = `<br/>Warning :<br/>${returnWarning}`;
         if (returnErrors.length === 0 && returnWarning.length === 0) returnErrors = 'All products are fine';
@@ -957,9 +957,9 @@ const downloadProduct = async (req, res) => {
     let prd    = {};
     const user = req.info;
 
-    // si produit payant et que l'on passe par une commande
+    // if the product is paid for and the order is placed
     if (req.query.op_id) {
-        // on check que la commande et le produit existe
+        // we check that the order and the product exist
 
         // require('./orders') : need to use require there because circular reference is detected
         const order = await require('./orders').getOrder({
@@ -974,14 +974,14 @@ const downloadProduct = async (req, res) => {
             throw NSErrors.OrderNotPaid;
         }
         prd = order.items.find((item) => item._id.toString() === req.query.op_id.toString()).id;
-        // on check que le produit est bien dans le commande
+        // we check that the product is in the order
         if (!prd) {
             throw NSErrors.ProductNotFoundInOrder;
         }
-        // si produit (p_id)
+        // if product (p_id)
     } else if (req.query.p_id) {
         prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res}, undefined);
-        // on check qu'il soit bien virtuel, et que sont prix est egal a 0
+        // we check that it is virtual, and that its price is equal to 0
         if (!prd || prd.kind !== 'VirtualProduct') {
             throw NSErrors.ProductNotFound;
         } else if (prd.price.ati.special !== undefined) {
@@ -997,7 +997,7 @@ const downloadProduct = async (req, res) => {
         throw NSErrors.AccesUnauthorized;
     }
     if (!prd.downloadLink) throw NSErrors.ProductDownloadLinkInvalid;
-    // on genere le path du fichier temp en local
+    // we generate the path of the local temp file
     let tmpFileLocalPath;
     let unlink = true;
     if (/^https?:\/\//.test(prd.downloadLink)) {
@@ -1006,7 +1006,7 @@ const downloadProduct = async (req, res) => {
                 utilsServer.getUploadDirectory(),
                 `/modules/${(new Date()).getTime()}${path.basename(prd.downloadLink)}`
             );
-            // on DL le fichier
+            // we DL the file
             await utils.downloadFile(prd.downloadLink, tmpFileLocalPath);
         } catch (err) {
             console.error(err);
@@ -1020,17 +1020,17 @@ const downloadProduct = async (req, res) => {
             prd.downloadLink
         );
     }
-    // on recupere le binaire du fichier
+    // we get the binary of the file
     const fileBinary = await fs.readFile(tmpFileLocalPath, 'binary');
-    // on delete le fichier tmp
+    // delete the tmp file
     if (unlink) await fs.unlinkSync(tmpFileLocalPath);
-    // on enregistre que le client télécharge un produit
+    // we register that the customer downloads a product
     await ServicesDownloadHistory.addToHistory(user, prd);
     return fileBinary;
 };
 
 const getProductsListing = async (req, res) => {
-    // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
+    // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
     const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
     if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
@@ -1054,8 +1054,8 @@ const getProductsListing = async (req, res) => {
         res.locals.datas = result.datas;
         /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
         result.datas = productsDiscount.datas; */
-        // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
-        // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
+        // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
+        // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
         if (
             req.body.PostBody.filter.$and
             && req.body.PostBody.filter.$and[0]
@@ -1079,11 +1079,11 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
     if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
         throw NSErrors.ProductNotSalable;
     }
-    // si qty2 existe, c'est soit un retour produit ou d'un envoi de colis
+    // if qty2 exists, it is either a product return or a shipment
     if (qty2 !== undefined) {
-        // si qty2 === 0, il s'agit d'un retour produit, sino, c'est un envoi
+        // if qty2 === 0, it is a product return, sino, it is a shipment
         if (qty2 === 0) {
-            // qty1 = la quantité à retourné
+            // qty1 = the quantity to return
             const qtyToReturn = qty1;
             prd.stock.qty    += qtyToReturn;
         } else if (qty1 === 0) {
@@ -1092,7 +1092,7 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
             prd.stock.qty_booked += qtyToSend;
         }
     } else {
-        // dans le cas d'un ajout au panier, qty change ou d'une suppression d'item dans un panier
+        // in the case of an addition to the cart, qty change or deletion of an item in a cart
         const qtyToAddOrRemove = qty1;
         prd.stock.qty_booked  -= qtyToAddOrRemove;
     }
@@ -1107,7 +1107,7 @@ const handleStock = async (item, _product, inStockQty) => {
             const product_no_salable = {code: 'product_no_salable'};
             throw product_no_salable;
         }
-        // Commandable et on gère la reservation du stock
+        // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
         if (await ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
@@ -1120,7 +1120,7 @@ const handleStock = async (item, _product, inStockQty) => {
 };
 
 /**
- * Fonction permettant de calculer les informations de stock pour un produit
+ * Function to calculate stock information for a product
  */
 const calculStock = async (params, product = undefined) => {
     moment.locale('fr', {
@@ -1147,7 +1147,7 @@ const calculStock = async (params, product = undefined) => {
             ? stockLabelExists.translation[params.lang].value.replace('{date}', moment(date).format('DD/MM/YYYY'))
             : stockLabelExists.translation[params.lang].value;
     }
-    // TODO P2 "shipping : business day" : ne marche plus, on met le jour même en dur
+    // TODO P2 "shipping : business day" : doesn't work anymore, we put the same day in hard
     // const dateShipped = moment().businessAdd(shipment.delay.unit === "DAY" ? shipment.delay.value : 1).format('DD/MM/YYYY');
     const dateShipped = moment().format('DD/MM/YYYY');
     return {

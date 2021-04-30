@@ -61,9 +61,27 @@ OrderServices.service("OrderPackagePopup", function () {
     Array of object like :
     {
         component_template: DIRECTIVE_TAG,
-        codeOfCarrier: SHIPMENT_NAME,
+        code_shipment: SHIPMENT_NAME,
+        default: true
     }
+    note that the default true is optional
+    it can be useful in you want to use a "multi-shipment" module :)
 */
-OrderServices.service("OrderPackageInPopup", function () {
+OrderServices.service("OrderPackageInPopupHook", function () {
+    return [];
+});
+
+/*
+    Used to add things in the return modal also named RAM or 'views/modals/order-rma.html'
+    Array of object like :
+    {
+        component_template: DIRECTIVE_TAG,
+        code_shipment: SHIPMENT_NAME,
+        default: true
+    }
+    note that the default true is optional
+    it can be useful in you want to use a "multi-shipment" module :)
+*/
+OrderServices.service("orderReturnHook", function () {
     return [];
 });

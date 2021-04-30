@@ -142,7 +142,7 @@ UserSchema.methods.hashPassword = async function () {
 };
 
 UserSchema.post('validate', async function () {
-    if (this.isNew) {
+    if (this.isNew || this.needHash) {
         await this.hashPassword();
     }
 });

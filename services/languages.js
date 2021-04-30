@@ -48,19 +48,19 @@ const removeLang = async (_id) => {
 };
 
 /**
- * @description Renvoi le code lang par défaut
- * @param {string} language - Langue demandée (df par défaut)
+ * @description Return the default lang code
+ * @param {string} language - Requested language
  */
 const getDefaultLang = (language) => {
-    // Si la langue demandé est celle par défault, on va récupérer la "vrai" langue par défaut
+    // If the language requested is the default one, we will recover the "real" default language
     if (language === undefined || language === null || language === '') return global.defaultLang;
     return language;
 };
 
 /**
- * @description Enregistre le contenu dans le fichier des traductions
- * @param translateName : Nom du fichier de translate a editer
- * @param translateValue : Contenu à écrire dans le fichier
+ * @description Save the content in the translations file
+ * @param translateName : Name of the translate file to edit
+ * @param translateValue : Content to write to file
  */
 const translateSet = async (translateName, translateValue, lang) => {
     const translatePath = await getTranslatePath(lang);
@@ -73,7 +73,7 @@ const translateSet = async (translateName, translateValue, lang) => {
 };
 
 /**
- * @description Récupère le contenue du fichier de traduction
+ * @description Get the contents of the translation file
  */
 const translateGet = async (filePath, lang) => {
     try {
@@ -85,7 +85,7 @@ const translateGet = async (filePath, lang) => {
 };
 
 /**
- * @description Récupère la liste des fichier de translate
+ * @description Get the list of translate files
  */
 const translateList = async () => {
     try {
