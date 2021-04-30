@@ -66,12 +66,15 @@
                         </div>
                     </div>
                 </form>
+                <div ng-show="error.text != ''" style="text-align: center" class="col-sm-12 ns-error-message">
+                    <hr style="border: 1px solid gray;margin: 15px 10px;"/>
+                    <span style="font-weight: bold;font-size: 16px;" translate>{{error.text}}</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <div class="modal-footer">
-    <div ng-show="error" class="col-sm-12 col-md-7 text-left ns-error-message">{{error}}</div>
     <button class="btn btn-default" ng-click="cancel()" translate>order-info-payment.cancel</button>
     <button class="btn btn-default" ng-click="validateInfoPayment()" ng-disabled="form.$invalid" translate>order-info-payment.valider</button>
 </div>

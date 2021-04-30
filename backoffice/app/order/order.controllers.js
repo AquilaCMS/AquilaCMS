@@ -717,8 +717,10 @@ OrderControllers.controller("PackagesNewCtrl", [
             order: item,
             type: type,
             genericTools: genericTools
-        }
-        $scope.error = "";
+        };
+        $scope.error = {
+            text: ""
+        };
         $scope.disabledAddButton = false;
         $scope.loadingAdd = false;
         $scope.partial = false;
@@ -798,7 +800,7 @@ OrderControllers.controller("PackagesNewCtrl", [
 
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
-            $scope.error = "";
+            $scope.error.text = "";
 
             let nbProducts = pkg.products.length;
             for(var count = 0; count < nbProducts; count++) {
@@ -838,12 +840,12 @@ OrderControllers.controller("PackagesNewCtrl", [
                 }else{
                     $scope.disabledAddButton = false;
                     $scope.loadingAdd = false;
-                    $scope.error = "order.error.noTrackNum";
+                    $scope.error.text = "order.error.noTrackNum";
                 }
             } else {
                 $scope.disabledAddButton = false;
                 $scope.loadingAdd = false;
-                $scope.error = "order.error.emptyPkg";
+                $scope.error.text = "order.error.emptyPkg";
                 $scope.partial = true;
             }
         };
@@ -892,7 +894,9 @@ OrderControllers.controller("RMANewCtrl", [
             $scope.packagePluginHook = onePlugin;
         }
 
-        $scope.error = "";
+        $scope.error = {
+            text: ""
+        };
         $scope.disabledButton = false;
         $scope.loadingAdd = false; // we separate disabledButton and loadingAdd, ike this, a module can use it :)
 
@@ -972,14 +976,14 @@ OrderControllers.controller("RMANewCtrl", [
             $scope.disabledButton = true; // no spam click
             $scope.loadingAdd = true;
             var returnData = angular.copy($scope.return);
-            $scope.error = "";
+            $scope.error.text = "";
             
             if(returnData.refund === 0) {
                 returnData.mode = "";
             }else{
                 // it need a refund mode
                 if(!returnData.mode || returnData.mode == ""){
-                    $scope.error = "order.error.refundMode";
+                    $scope.error.text = "order.error.refundMode";
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
                     return
@@ -1021,7 +1025,7 @@ OrderControllers.controller("RMANewCtrl", [
             } else {
                 $scope.disabledButton = false;
                 $scope.loadingAdd = false;
-                $scope.error = "order.error.noReturnDef";
+                $scope.error.text = "order.error.noReturnDef";
             }
         };
 
@@ -1038,7 +1042,9 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
     "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService",
     function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService) {
         $scope.order = angular.copy(item);
-        $scope.error = "";
+        $scope.error = {
+            text: ""
+        };
         $scope.return = {
             comment: "",
             mode: "",
@@ -1112,13 +1118,13 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
         $scope.validateInfoPayment = function ()
         {
             var returnData = angular.copy($scope.return);
-            $scope.error = "";
+            $scope.error.text = "";
 
             delete returnData.sendMail;
             Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
             {
                 toastService.toast("success", "Information de paiement correctement ajoutée");
-                $modalInstance.close();
+                $scope.close();
             }, function (err)
             {
                 toastService.toast("danger", "Une erreur est survenue !");
@@ -1126,11 +1132,16 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
                 {
                     toastService.toast("danger", err.data.translations[$scope.defaultLang]);
                 }
-                $modalInstance.close();
+                $scope.close();
             });
         };
 
         $scope.cancel = function ()
+        {
+            $modalInstance.dismiss("cancel");
+        };
+
+        $scope.close = function ()
         {
             $modalInstance.dismiss("cancel");
         };
