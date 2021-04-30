@@ -9,7 +9,7 @@
 const NSErrors = require('../utils/errors/NSErrors');
 
 /**
- * On récupére les mails
+ * Get the emails
  */
 const getMailTypes = async () => {
     const {MailType} = require('../orm/models');
@@ -17,7 +17,7 @@ const getMailTypes = async () => {
 };
 
 /**
-* Permet de récupérer un mailType en fonction de son _id
+* Get a mailType by _id
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -32,7 +32,7 @@ const deleteMailType = async (code) => {
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
     const doc = await MailType.findOneAndRemove({code});
     if (!doc) throw NSErrors.MailTypeNotFound;
-    // Si le type de mail a été supprimé alors on met les mails contenant cet ancien type à 'noType'
+    // If the type of mail has been deleted then we put the mails containing this old type to 'noType'
     const mail = await Mail.findOne({type: code});
     if (!mail) return doc;
     mail.type = '';

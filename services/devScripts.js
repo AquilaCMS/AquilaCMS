@@ -50,11 +50,11 @@ const createModelData = async () => {
 };
 
 /**
- * @description Fix les incohérences des attributs pour les trier par ordre alphabetique
+ * @description Fix attribute inconsistencies to sort them in alphabetical order
  */
 const sortAttribs = async () => {
     try {
-        console.log('==><== Début du tri des attributs par order alphabetique ==><==');
+        console.log('Start of sorting of attributes by alphabetical order');
 
         const _products = await Products.find({});
 
@@ -76,10 +76,10 @@ const sortAttribs = async () => {
             // await Products.updateOne({_id: _products[i]._id}, {attributes: attribs});
         }
 
-        console.log('==><== Fin du tri ==><==');
+        console.log('End of sorting');
         return {message: 'ok'};
     } catch (err) {
-        console.log('==><== Erreur lors du tri ==><==');
+        console.error('Error of sorting');
         throw err;
     }
 };

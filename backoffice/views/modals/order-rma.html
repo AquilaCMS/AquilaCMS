@@ -132,13 +132,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12" ng-show="packagePluginHook.length > 0" style="display:flow-root" ng-repeat="onePackagePlugin in packagePluginHook">
+                        <hr style="border: 1px solid gray;margin: 15px 10px;"/>
+                        <div bind-html-compile="onePackagePlugin.component_template"></div>
+                    </div>
                 </form>
                 <div ng-show="loadingAdd" style="text-align: center;">
                     <div class="fa fa-spinner fa-spin" style="font-size: 50px;"></div>
                 </div>
-                <div ng-show="error" style="text-align: center" class="col-sm-12 text-left ns-error-message">
+                <div ng-show="error.text != ''" style="text-align: center" class="col-sm-12 text-left ns-error-message">
                     <hr style="border: 1px solid gray;margin: 15px 10px;"/>
-                    <span style="font-weight: bold;font-size: 16px;" translate>{{error}}</span>
+                    <span style="font-weight: bold;font-size: 16px;" translate>{{error.text}}</span>
                 </div>
             </div>
         </div>
