@@ -804,17 +804,21 @@ OrderControllers.controller("PackagesNewCtrl", [
 
             let nbProducts = pkg.products.length;
             for(var count = 0; count < nbProducts; count++) {
-                if(!pkg.products[count].qty_delivered){
-                    pkg.products[count].qty_delivered = 0;
-                }
-                if($scope.order.items[count].quantity !== pkg.products[count].qty_delivered) {
-                    pkg.status = "partial";
-                }
-                if(pkg.products[count].qty_delivered === 0) {
-                    pkg.products.splice(count, 1);
-                    nbProducts = pkg.products.length;
-                } else {
-                    pkg.products[count].qty_shipped = pkg.products[count].qty_delivered;
+                if(pkg.products[count]){
+                    if(typeof pkg.products[count].qty_delivered === "undefined"){
+                        pkg.products[count].qty_delivered = 0;
+                    }
+                    if($scope.order.items[count].quantity !== pkg.products[count].qty_delivered) {
+                        pkg.status = "partial";
+                    }
+                    if(pkg.products[count].qty_delivered === 0) {
+                        pkg.products.splice(count, 1);
+                        count = count - 1;
+                    } else {
+                        pkg.products[count].qty_shipped = pkg.products[count].qty_delivered;
+                    }
+                }else{
+                    break;
                 }
             }
 
@@ -992,14 +996,18 @@ OrderControllers.controller("RMANewCtrl", [
 
             let nbProducts = returnData.products.length;
             for(let count = 0; count < nbProducts; count++) {
-                if(!returnData.products[count].qty_returning){
-                    returnData.products[count].qty_returning = 0;
-                }
-                if(returnData.products[count].qty_returning === 0){
-                    returnData.products.splice(count, 1);
-                    nbProducts = returnData.products.length;
-                } else {
-                    returnData.products[count].qty_returned = returnData.products[count].qty_returning;
+                if(returnData.products[count]){
+                    if(typeof returnData.products[count].qty_returning === "undefined"){
+                        returnData.products[count].qty_returning = 0;
+                    }
+                    if(returnData.products[count].qty_returning === 0){
+                        returnData.products.splice(count, 1);
+                        count = count - 1;
+                    } else {
+                        returnData.products[count].qty_returned = returnData.products[count].qty_returning;
+                    }
+                }else{
+                    break;
                 }
             }
 
