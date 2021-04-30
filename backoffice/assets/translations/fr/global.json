@@ -1,5 +1,7 @@
 {
     "saveMessage": "Paramètres sauvegardés",
     "visible": "Visible",
-    "nonVisible": "Non visible"
+    "nonVisible": "Non visible",
+    "yes": "Oui",
+    "no": "Non"
 }
