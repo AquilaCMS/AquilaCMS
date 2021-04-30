@@ -1,4 +1,4 @@
-name: Update Aquila Version
+name: Push AquilaCMS to S3
 
 on:
   push:

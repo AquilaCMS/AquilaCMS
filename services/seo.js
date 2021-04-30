@@ -30,7 +30,7 @@ const sitemapConf = {
 };
 
 const genSitemap = async () => {
-    // Vérifier qu'on est pas en mode "demoMode"
+    // Check that we are not in "demoMode"
     if (await isDemoMode()) {
         throw NSErrors.DemoMode;
     }
@@ -38,7 +38,7 @@ const genSitemap = async () => {
     await manageRobotsTxt(true);
 
     if (inCrawl === false) {
-        console.log(`\x1b[5m\x1b[33m ${new Date()} Début de la génération du sitemap\x1b[0m`);
+        console.log(`\x1b[5m\x1b[33m ${new Date()} Start of the sitemap generation\x1b[0m`);
         inCrawl = true;
 
         try {
@@ -56,14 +56,14 @@ const genSitemap = async () => {
 
             const statics = await Statics.find({active: true});
 
-            // Parcours des pages statiques
+            // Loop static page
             for (let i = 0, leni = statics.length; i < leni; i++) {
                 let page = 'other';
                 if (statics[i].code === 'home') {
                     page = 'home';
                 }
 
-                // Parcours des langues
+                // Loop languages
                 // const _langs = Object.keys(statics[i].translation);
                 for (let j = 0, lenj = languages.length; j < lenj; j++) {
                     const _static = statics[i].translation[languages[j].code];
@@ -200,7 +200,7 @@ const genSitemap = async () => {
             const sitemapPath = path.resolve(getUploadDirectory(), 'sitemap.xml');
             await fs.writeFile(sitemapPath, sitemapString);
             inCrawl = false;
-            console.log(`\x1b[5m\x1b[32m ${new Date()} Fin de la génération du sitemap\x1b[0m`);
+            console.log(`\x1b[5m\x1b[32m ${new Date()} End of the sitemap generation\x1b[0m`);
         } catch (err) {
             inCrawl = false;
             throw err;
