@@ -62,21 +62,21 @@ const getOrdersPayments = async (postBody) => {
 };
 
 /**
- * @description retourne les methodes de payment
+ * @description return payment methods
  */
 const getPaymentMethods = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
 /**
- * @description retourne les methodes de payment
+ * @description return payment methods
  */
 const getPaymentMethod = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
 /**
- * @description sauvegarde la methode de payment
+ * @description save payment method
  */
 
 const savePaymentMethod = async (pm) => {

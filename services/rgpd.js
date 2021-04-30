@@ -31,7 +31,7 @@ const aquilaEvents = require('../utils/aquilaEvents');
 const appdirname   = path.dirname(require.main.filename);
 faker.locale       = 'fr';
 /*
-RGPD : Exemple de fonction à implémenter dans un module utilisant les données users
+RGPD : Example of a function to implement in a module using users data
 */
 
 // const aquilaEvents = require('../../../utils/aquilaEvents');
@@ -108,7 +108,7 @@ const anonymizeModulesByUser = async (user) => {
     if (_modules.length >= 0) {
         for (const module of _modules) {
             await new Promise(async (resolve, reject) => {
-                // Récupère les fichiers rgpd.js des modules
+                // Retrieves rgpd.js files from modules
                 if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
                     await rgpd.anonymize(user, resolve, reject);
@@ -166,12 +166,12 @@ const anonymizeUser = async (id) => {
     });
 };
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!! Mettre à jour les champs si besoin !!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!! Update fields as needed !!!!!!!!!!!!!!!!!!!!!!!!!!
 /*
-* Clone la base de données passée en paramètre puis remplace les données utilisateurs par des données fake
+* Clone the database passed in parameter then replace the user data by fake data
  */
 const copyDatabase = async (cb) => {
-    // Connexion à la database
+    // Connection to the database
     try {
         await new Promise((resolve, reject) => rimraf('dump', (err) => {
             if (err) return reject(err);
@@ -184,7 +184,7 @@ const copyDatabase = async (cb) => {
             resolve();
         }));
 
-        // Anonymisation de la base de données copiée
+        // Anonymization of the copied database
         await anonymizeDatabase(cb);
     } catch (err) {
         console.error(err);
@@ -224,10 +224,10 @@ async function mongorestore(uri) {
 }
 
 /*
-* Remplace les données utilisateurs par des données fake
+* Replaces user data with fake data
  */
 const anonymizeDatabase = async (cb) => {
-    // Connexion à la nouvelle database
+    // Connection to the new database
     const data     = mongoURI.parse(global.envFile.db);
     data.database += '_anonymized';
     const client   = new MongoClient(
@@ -241,7 +241,7 @@ const anonymizeDatabase = async (cb) => {
 
     const database = client.db(data.database);
 
-    // Génération d'un mot de passe commun
+    // Generation of a common password
     const hash  = await bcrypt.hash('password', 10);
     const users = await database.collection('users').find({}).toArray();
     for (let i = 0; i < users.length; i++) {
@@ -350,8 +350,8 @@ const anonymizeDatabase = async (cb) => {
 };
 
 /*
-* Supprime la base de données de copie
- */
+* Deletes the copy database
+*/
 const dropDatabase = async () => {
     const mongodbUri     = mongoURI.parse(global.envFile.db);
     mongodbUri.database += '_anonymized';
@@ -386,7 +386,7 @@ const deleteUserDatas = async (id) => {
     await anonymizeReviewsByUser(id);
     await anonymizeModulesByUser(thisUser);
 
-    // Leve un evenement, qui peut etre catché par n'importe quel module (d'export de datas)
+    // Raises an event, which can be cached by any (data export) module
     aquilaEvents.emit('aqUserRemoved', id);
 };
 
@@ -409,7 +409,7 @@ const anonymizeUserDatas = async (id) => {
     await anonymizeModulesByUser(thisUser);
     await anonymizeUser(id);
 
-    // Leve un evenement, qui peut etre catché par n'importe quel module (d'export de datas)
+    // Raises an event, which can be cached by any (data export) module
     aquilaEvents.emit('aqUserAnonymized', id);
 };
 

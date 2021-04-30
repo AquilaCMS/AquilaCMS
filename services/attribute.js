@@ -67,9 +67,9 @@ const setAttribute = async (body) => {
         const attribute = await Attributes.findOne({code: body.code});
         if (attribute) {
             if (updateF) {
-            // Si le usedInFilters est changé et passe de true a false
+            // If the usedInFilters is changed from true to false
                 if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
-                // Alors on supprime les categories.filtres dont l'_id est l'_id de l'attribut modifié
+                // Then we delete the categories.filters whose _id is the _id of the modified attribute
                     await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
                 }
                 const code = body.code;
@@ -87,13 +87,13 @@ const setAttribute = async (body) => {
                     await Products.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
                     await Users.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
                     if (body._type === 'products') {
-                        // update du nom et des valeurs pour les produits ayant deja cet attribut
+                        // update of the name and values for the products already having this attribute
                         const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
                         updateObjectAttribute(prdList, product_attributes, 'attributes');
                         const cats = await Categories.find({'filters.attributes.id_attribut': id});
                         updateObjectAttribute(cats, product_attributes, 'filters.attributes');
                     } else {
-                        // update du nom et des valeurs pour les users ayant deja cet attribut
+                        // update name and values for users who already have this attribute
                         const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
                         updateObjectAttribute(usrList, product_attributes, 'attributes');
                     }
@@ -175,11 +175,11 @@ const getAttribsFromPath = (obj, path) => {
 const editValues = async (attribute) => {
     if (attribute._type === 'products') {
         const products = await Products.find({'attributes.code': attribute.code});
-        // on boucle sur tous les produits
+        // we loop on all the products
         await applyAttribChanges(products, attribute, 'products');
     } else {
         const users = await Users.find({'attributes.code': attribute.code});
-        // on boucle sur tous les users
+        // we loop on all users
         await applyAttribChanges(users, attribute, 'users');
     }
 };
@@ -187,12 +187,12 @@ const editValues = async (attribute) => {
 async function applyAttribChanges(tab, attribute, model) {
     for (let i = 0; i < tab.length; i++) {
         let isEdit = false;
-        // on recupere l'attribut altéré du produit via son code
+        // we retrieve the altered attribute of the product via its code
         const attrIndex = tab[i].attributes.findIndex((attr) => attr.code === attribute.code);
         const langs     = Object.keys(tab[i].attributes[attrIndex].translation);
-        // on boucle sur chacune des langues de l'attribut
+        // we loop on each of the languages of the attribute
         for (let ii = 0; ii < langs.length; ii++) {
-        // on check que les valeurs du produit existe toujours les valeurs
+        // we check that the values of the product still exist the values
             const valueLength = tab[i].attributes[attrIndex].translation[langs[ii]].value ? tab[i].attributes[attrIndex].translation[langs[ii]].value.length : 0;
             for (let iii = 0; iii < valueLength; iii++) {
                 if (!attribute.translation[langs[ii]].values.includes(tab[i].attributes[attrIndex].translation[langs[ii]].value[iii])) {
