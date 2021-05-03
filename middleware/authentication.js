@@ -25,10 +25,10 @@ const retrieveUser = async (req, res, next) => {
                 }
             }
         }
-        return next();
     } catch (err) {
-        next(err);
+        delete req.info; // If getDecodedToken generate error, don't set req.info
     }
+    return next();
 };
 
 /**

@@ -57,6 +57,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                         $modalInstance.close();
                     };
                 },
+                windowClass: "modal-large",
                 resolve: {
                     reponse: function() {
                         return responseFromAPI;

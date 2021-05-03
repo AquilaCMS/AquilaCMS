@@ -21,7 +21,7 @@ const tmpPath                  = path.resolve('./uploads/temp');
 const verifyingUpdate = async () => {
     const actualVersion = JSON.parse(fsp.readFileSync(path.resolve(global.appRoot, './package.json'))).version;
 
-    // Créer le dossier /uploads/temp s'il n'existe pas
+    // Create the /uploads/temp folder if it doesn't exist
     if (!fsp.existsSync(tmpPath)) {
         fsp.mkdirSync(tmpPath, {recursive: true});
     }
@@ -60,7 +60,7 @@ const update = async () => {
         aquilaPath = tmpPath;
     }
 
-    // Télécharger le fichier
+    // Download the file
     try {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
@@ -68,7 +68,7 @@ const update = async () => {
         console.error(`Get ${fileURL} failed`);
     }
 
-    // Décompresser dossier temporaire
+    // Unzip temporary folder
     try {
         console.log('Extracting archive...');
         const zip = new AdmZip(filePath);
@@ -78,12 +78,12 @@ const update = async () => {
     }
 
     // yarn install du aquila
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, './');
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
     const modules = await Modules.find({active: true});
 
     for (const module of modules) {
         if (module.packageDependencies && module.packageDependencies.api && module.packageDependencies.api.length > 0) {
-            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`, './');
+            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`);
         }
     }
 

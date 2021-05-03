@@ -56,7 +56,7 @@ const serverUseRequest = async (req, res, next) => {
             json = translation.translateDocument(json, lang, keepOriginalAttribs);
             json = restrictProductFields(json, req.originalUrl);
             // remove hidden attributes from document
-            if (json.attributes) {
+            if (json._id && json.attributes) {
                 for (let i = 0; i < json.attributes.length; i++) {
                     if (!json.attributes[i].visible) {
                         json.attributes.splice(i, 1);
@@ -85,7 +85,7 @@ const serverUseRequest = async (req, res, next) => {
 const useHelmet = async (server) => {
     let envContentSecurityPolicy = {values: [], active: false};
     if (global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy) {
-        envContentSecurityPolicy =  global.envConfig.environment.contentSecurityPolicy;
+        envContentSecurityPolicy = global.envConfig.environment.contentSecurityPolicy;
     }
 
     if (envContentSecurityPolicy.active) {
@@ -215,12 +215,38 @@ const extendTimeOut = (req, res, next) => {
     next();
 };
 
+/**
+ * if a child of translation is requested don't request entire translation\
+ * if not request all translation
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ * @returns {void}
+ */
+const setupTranslationIfMissing = (req, res, next) => {
+    const {PostBody} = req.body;
+    if (PostBody && PostBody.structure) {
+        let hasTranslation      = false;
+        let hasTranslationChild = false;
+        for (const elem of Object.keys(PostBody.structure)) {
+            if (elem.startsWith('translation.')) hasTranslationChild = true;
+            if (elem === 'translation') hasTranslation = true;
+        }
+        if (!hasTranslation && !hasTranslationChild) {
+            PostBody.structure.translation = 1;
+        }
+    }
+    next();
+};
+
 module.exports = {
     getUserFromRequest,
     initExpress,
     maintenance,
     deprecatedRoute,
-    extendTimeOut
+    extendTimeOut,
+    setupTranslationIfMissing
 };
 
 const restrictProductFields = (element, url) => {

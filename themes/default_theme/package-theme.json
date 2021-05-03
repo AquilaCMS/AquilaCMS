@@ -5,6 +5,7 @@
         "aqlrc": "*",
         "html-react-parser": "0.13.0",
         "lightbox-react": "0.3.7",
+        "prop-types": "^15.7.2",
         "react-i18next": "7.13.0",
         "react-js-pagination": "3.0.3",
         "react-responsive-modal": "3.6.0",

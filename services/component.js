@@ -16,9 +16,9 @@ const NSErrors = require('../utils/errors/NSErrors');
  */
 const getComponent = async (componentName, code, user = null) => {
     if (code === null) throw NSErrors.ComponentCodeNotFound;
-    // Le component doit commencer par ns- sinon ce composant n'est pas valide
+    // The component must start with ns- otherwise this component is not valid
     if (!componentName.startsWith('ns-')) throw NSErrors.ComponentNotAllowed;
-    // On passe de ns-slider a slider on pourra ainsi facilement recupérer son modéle et son service
+    // Transform ns-xxxxx to xxxxx : we can easily recover its model and its service
     componentName = componentName.replace('ns-', '');
 
     let models;
@@ -36,7 +36,7 @@ const getComponent = async (componentName, code, user = null) => {
         PostBody               = {filter: {code}, structure: {content: 1, translation: 1}};
         const result           = await cmsBlockServices.getCMSBlock(PostBody);
         if ((user && !user.isAdmin) && result && result.translation) {
-            // on boucle sur les langues contenue
+            // Loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
                 delete result.translation[langKey].variables;
@@ -54,16 +54,16 @@ const getComponent = async (componentName, code, user = null) => {
         return ServiceAgenda.getAgendaByCode(code);
     default:
         /**
-         * On cherchera le composant en fonction du "code"
-         * on crée donc une requete queryBuilder ici afin de ne pas avoir a la recréer coté client a chaque fois
+         * We will look for the component by the "code"
+         * Create a queryBuilder : Don't need to be recreate it on the client side each time
          */
         PostBody = {filter: {code}};
-        // On récupére le models en fonction du componentName
+        // Get the models according to the componentName
         models = require(`../orm/models/${componentName}`);
         if (!models) throw NSErrors.ComponentInvalidModel;
-        // On recupére le service en fonction du componentName
+        // Get the service according to the componentName
         const genericServices = require(`./${componentName}`);
-        // Exemple : slider deviendra Slider afin d'appeler la fonction getSlider
+        // Example: slider will become Slider in order to call the getSlider function
         const funcName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
         return genericServices[`get${funcName}`](PostBody);
     }

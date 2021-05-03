@@ -7,13 +7,13 @@ CartControllers.controller("CartListCtrl", [
         $scope.page = 1;
         $scope.currentPage = 1;
         $scope.totalItems = 0;
-        $scope.nbItemsPerPage = 9999;
+        $scope.nbItemsPerPage = 15;
         $scope.filter = {};
+        $scope.showLoader = true;
 
         $scope.getCarts = function (page) {
 
             $scope.currentPage = page;
-
 
             const search = $scope.filter;
             let pageAdmin = { location: "carts", page: 1 };
@@ -89,11 +89,14 @@ CartControllers.controller("CartListCtrl", [
                         updatedAt: 1
                     }
                 }
-            },
-                function (response) {
-                    $scope.carts = response.datas;
-                    $scope.totalItems = response.count;
-                });
+            },function (response) {
+                $scope.showLoader = false;
+                $scope.carts = response.datas;
+                $scope.totalItems = response.count;
+            }, function(error) {
+                console.error("Can't get data");
+                console.error(error);
+            });
         };
 
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html

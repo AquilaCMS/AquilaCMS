@@ -57,7 +57,7 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
                 $scope.runImmediate = true;
             }, function(err){
                 $scope.JobGetById();
-                if(err.data && err.data.code) return toastService.toast("danger", err.data.translations.fr);
+                if(err.data && err.data.code) return toastService.toast("danger", err.data.message);
                 $scope.runImmediate = true;
                 return toastService.toast("danger", "Une erreur inconnue s'est produite");
             });

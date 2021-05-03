@@ -15,8 +15,8 @@ const {checkCustomFields} = require('../../utils/translation');
 const utilsDatabase       = require('../../utils/database');
 const translation         = require('../../utils/translation');
 
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -184,11 +184,11 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
             if (self.translation[lang.code].slug.length <= 2) {
-                errors.push('slug trop court');
+                errors.push(`slug '${lang.code}' trop court`);
                 return errors;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
+                errors.push(`slug '${lang.code}' déjà existant`);
             }
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
