@@ -19,7 +19,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing de picto
+ * Function returning a picto listing
  */
 async function getPictos(req, res, next) {
     try {
@@ -30,7 +30,7 @@ async function getPictos(req, res, next) {
     }
 }
 /**
- * Fonction retournant un picto en fonction de son id
+ * Function returning a pictogram according to its id
  */
 async function getPictoById(req, res, next) {
     try {
@@ -44,7 +44,7 @@ async function getPictoById(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour un picto
+ * Function to add or update a pictogram
  */
 async function savePicto(req, res, next) {
     try {
@@ -60,7 +60,7 @@ async function savePicto(req, res, next) {
     }
 }
 /**
- * Fonction supprimant un picto
+ * Function removing a pictogram
  */
 async function deletePicto(req, res, next) {
     try {

@@ -240,7 +240,7 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
 };
 
 /**
- * @description Permet d'envoyer un mail contenant les informations d'inscription d'un client
+ * @description Allows you to send an email containing the registration information of a customer
  * @param {guid} user_id - _id de l'utilisateur destinataire
  * @param {string} [lang] - langue du mail (Optionnel)
  */
@@ -865,7 +865,7 @@ function determineLanguage(lang, preferredLanguage) {
 }
 
 /**
- * Permet de récupérer le prix unitaire du produit avec promo appliqué si necessaire
+ * Allows you to recover the unit price of the product with promo applied if necessary
  * @param {*} item item pour lequel on calcul le prix unitaire
  * @returns {number} prix unitaire
  */

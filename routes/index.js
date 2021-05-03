@@ -21,17 +21,17 @@ const InitRoutes = (express, server) => {
 };
 
 /**
- * Charge dynamiquement toutes les routes du dossier routes
+ * Dynamically load all routes from the routes folder
  */
 const loadDynamicRoutes = (app, adminFront) => {
     console.log('Loading routes');
     fs.readdirSync('./routes').forEach((file) => {
-        // Ne pas charger le fichier index ou les routes de l'installeur
+        // Do not load the index file or the installer routes
         if (file === path.basename(__filename) || path.extname(file) !== '.js' || file === 'install.js') {
             return;
         }
 
-        // Charge les fichiers des routes
+        // Load route files
         if (file === 'admin.js') {
             require(`./${file}`)(app, adminFront);
         } else {
@@ -131,7 +131,7 @@ const manageExceptionsRoutes = async (req, res, next) => {
     } else {
         require('../services/stats').addUserVisitReq(req);
 
-        // On ajoute le port a req afin qu'il soit dispo dans le req du getInitialProps de next
+        // We add the port to req so that it is available in the req of the getInitialProps of next
         req.port = global.port;
         next();
     }

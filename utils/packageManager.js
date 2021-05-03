@@ -9,7 +9,7 @@
 const {spawn, exec} = require('child_process');
 
 /**
- * @description Lance une commande sur le path défini
+ * @description Launch a command on the defined path
  * @param {string} cde Command to execute.
  * @param {string} path Path of the command.
  */
@@ -28,7 +28,7 @@ exports.execCmd = async function (cde, path = global.appRoot) {
 };
 
 /**
- * @description Lance une commande shell sur le path défini
+ * @description Launch a shell command on the defined path
  * @param {string} cde Command to execute.
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
@@ -78,7 +78,7 @@ exports.restart = function () {
             // Start a script on the current folder
             pm2.restart('server.js', function (err) {
                 if (err) {
-                    // Il n'y a pas PM2 d'installé, on ne leve pas d'erreur explicite (reject)
+                    // There is no PM2 installed, we do not raise an explicit error (reject)
                     if (err.message === 'process or namespace not found') {
                         console.error('Please restart manually');
                         return resolve('ManualRestart');

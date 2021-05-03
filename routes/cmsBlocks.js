@@ -31,11 +31,11 @@ async function getCMSBlocks(req, res, next) {
         const {PostBody} = req.body;
         const result     = await ServiceCmsBlock.getCMSBlocks(PostBody);
         if (!isAdmin(req.info)) {
-            // on boucle sur les resultats
+            // loop on result
             for (let i = 0; i < result.datas.length; i++) {
                 const block = result.datas[i];
                 if (block.translation) {
-                    // on boucle sur les langues contenue
+                    // loop on the languages contained
                     for (let k = 0; k < Object.keys(block.translation).length; k++) {
                         const langKey = Object.keys(block.translation)[k];
                         delete block.translation[langKey].variables;
@@ -58,7 +58,7 @@ async function getCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlock(req.body.PostBody);
         if (!isAdmin(req.info) && result.translation) {
-            // on boucle sur les langues contenue
+            // loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
                 delete result.translation[langKey].variables;
@@ -79,7 +79,7 @@ async function getCMSBlockById(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlockById(req.params.id, req.body.PostBody);
         if (!isAdmin(req.info) && result.translation) {
-            // on boucle sur les langues contenue
+            // loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
                 delete result.translation[langKey].variables;

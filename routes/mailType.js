@@ -15,7 +15,7 @@ module.exports = function (app) {
 };
 
 /**
- * Permet de recupérer les configurations des mails dans la collection mail
+ * Allows you to retrieve the configurations of the mails in the mail collection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -30,7 +30,7 @@ async function getMailTypes(req, res, next) {
 }
 
 /**
- * Permet de recupérer les configurations des mails dans la collection mail
+ * Allows you to retrieve the configurations of the mails in the mail collection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next

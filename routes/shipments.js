@@ -94,7 +94,7 @@ async function deleteShipment(req, res, next) {
 //= ====================================================================
 
 /**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * Function to recover shipments according to the country and the weight of an order
  * @deprecated
  */
 async function getEstimatedFee(req, res, next) {
