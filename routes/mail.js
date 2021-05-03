@@ -45,7 +45,7 @@ async function removePdf(req, res, next) {
 }
 
 /**
- * Permet de recupérer les mails dans la collection mail
+ * Allows you to retrieve mails in the mail collection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -59,7 +59,7 @@ async function getMails(req, res, next) {
     }
 }
 /**
- * Permet de récupérer un mail en fonction de son _id
+ * Allows you to retrieve an email according to its _id
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -83,7 +83,7 @@ async function sendMailActivationAccount(req, res, next) {
 }
 
 /**
- * Permet de modifier un mail dans la collection mail
+ * Allows you to modify an email in the mail collection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -97,7 +97,7 @@ async function setMail(req, res, next) {
     }
 }
 /**
- * Supprime le mail dont l'_id est passé en parametre
+ * Delete the email whose _id is passed in parameter
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -112,7 +112,7 @@ async function deleteMail(req, res, next) {
 }
 
 /**
- * Envoyer les informations d'un formulaire de contact par mail
+ * Send the information of a contact form by email
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next

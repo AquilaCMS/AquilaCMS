@@ -27,7 +27,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     }
 
     try {
-        // On supprime l'extension, on laisse imagemin check si l'extension correspond bien
+        // We remove the extension, we let imagemin check if the extension matches well
         const files = await imagemin([`${filePathIn}.{jpg,JPG,jpeg,JPEG,png,PNG,svg,SVG,gif,GIF}`], {
             destination : pathOut,
             plugins     : [
@@ -57,11 +57,11 @@ const getProductImageUrl = (product) => {
     return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
 };
 
-// Fonction générique de suppression de fichier
+// Generic file deletion function
 const deleteFile = async (filePath) => {
     if (filePath) {
         await utilsModules.modulesLoadFunctions('removeFile', {key: filePath}, async () => {
-            const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
+            const pathUpload   = require('./server').getUploadDirectory();// Cannot find server defined above
             const pathToRemove = path.resolve(pathUpload, filePath);
             if (pathToRemove && fsp.existsSync(pathToRemove)) {
                 try {
@@ -75,11 +75,11 @@ const deleteFile = async (filePath) => {
     }
 };
 
-// Fonction générique de suppression de dossier
+// Generic folder deletion function
 const deleteFolder = async (folderPath) => {
     if (folderPath) {
         await utilsModules.modulesLoadFunctions('removeFolder', {folder: folderPath}, async () => {
-            const pathUpload   = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
+            const pathUpload   = require('./server').getUploadDirectory();// Cannot find server defined above
             const pathToRemove = path.resolve(pathUpload, folderPath);
             if (fsp.existsSync(pathToRemove)) {
                 await fsp.deleteRecursive(pathToRemove);
@@ -88,14 +88,14 @@ const deleteFolder = async (folderPath) => {
     }
 };
 
-// Fonction générique de renommage de fichier
+// Generic file renaming function
 const renameFile = async (pathIn, filePathOut) => {
     if (pathIn && filePathOut) {
         await utilsModules.modulesLoadFunctions('renameFile', {
             inPath  : pathIn,
             outPath : filePathOut
         }, async () => {
-            const pathUpload = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
+            const pathUpload = require('./server').getUploadDirectory();// Cannot find server defined above
             const oldPath    = path.resolve(pathUpload, pathIn);
             const newPath    = path.resolve(pathUpload, filePathOut);
             if (oldPath && fsp.existsSync(oldPath)) {
@@ -110,11 +110,11 @@ const renameFile = async (pathIn, filePathOut) => {
     }
 };
 
-// Fonction générique de test de présence de fichier
+// Generic file presence test function
 const existsFile = async (key) => {
     if (key) {
         return utilsModules.modulesLoadFunctions('existsFile', {key}, async () => {
-            const pathUpload  = require('./server').getUploadDirectory();// Ne trouve pas server defini plus haut
+            const pathUpload  = require('./server').getUploadDirectory();// Cannot find server defined above
             const pathToCheck = path.resolve(pathUpload, key);
             if (pathToCheck && await fsp.existsSync(pathToCheck)) {
                 return true;

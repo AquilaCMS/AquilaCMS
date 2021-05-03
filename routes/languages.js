@@ -61,7 +61,7 @@ async function removeLang(req, res, next) {
 }
 
 /**
- * @description Récupère des fichiers de traduction
+ * @description Retrieves translation files
  */
 async function translateList(req, res, next) {
     try {
@@ -73,7 +73,7 @@ async function translateList(req, res, next) {
 }
 
 /**
- * @description Récupère le fichier de traduction particulier
+ * @description Retrieve the particular translation file
  */
 async function translateGet(req, res, next) {
     try {

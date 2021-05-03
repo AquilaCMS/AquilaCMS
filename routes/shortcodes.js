@@ -14,7 +14,7 @@ module.exports = function (app) {
 };
 
 /**
- * Retourne les shortcodes
+ * Return shortcodes
  */
 async function getShortcodes(req, res, next) {
     try {

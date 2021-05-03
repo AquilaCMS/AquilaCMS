@@ -21,7 +21,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing de galleries
+ * Function returning a gallery listing
  */
 async function getGalleries(req, res, next) {
     try {
@@ -32,7 +32,7 @@ async function getGalleries(req, res, next) {
     }
 }
 /**
- * Fonction retournant une gallerie par son id
+ * Function returning a gallery by its id
  */
 async function getGallery(req, res, next) {
     try {
@@ -43,7 +43,7 @@ async function getGallery(req, res, next) {
     }
 }
 /**
- * Fonction retournant les items d'une gallerie en fonction de son code
+ * Function returning the items of a gallery according to its code
  */
 async function getItemsGallery(req, res, next) {
     try {
@@ -54,10 +54,10 @@ async function getItemsGallery(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour une gallerie
+ * Function to add or update a gallery
  */
 async function setGallery(req, res, next) {
-    // On ajoute le produit
+    // we add product
     try {
         const result = await ServiceGallery.setGallery(req.body.code, req.body.initItemNumber, req.body.maxColumnNumber, req.body._id);
         return res.json(result);
@@ -66,7 +66,7 @@ async function setGallery(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour un item d'une gallerie
+ * Function to add or update an item from a gallery
  */
 async function setItemGallery(req, res, next) {
     try {
@@ -87,7 +87,7 @@ async function setItemsGallery(req, res, next) {
 }
 
 /**
- * Fonction supprimant une gallerie
+ * Function deleting a gallery
  */
 async function deleteGallery(req, res, next) {
     try {

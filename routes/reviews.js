@@ -16,7 +16,7 @@ module.exports = function (app) {
 };
 
 /**
- * Permet de recupérer les reviews dans des documents séparées
+ * Allows you to retrieve reviews in separate documents
  */
 async function getAggregateReviews(req, res, next) {
     try {
@@ -28,10 +28,10 @@ async function getAggregateReviews(req, res, next) {
 }
 
 /**
- * Fonction pour d'ajouter une review dans product.reviews.datas
+ * Function to add a review in product.reviews.datas
  */
 const setProductReview = async (req, res, next) => {
-    // On ajoute le produit
+    // We add the product
     try {
         const {review, title, rate, lang, questions} = req.body;
 

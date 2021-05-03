@@ -26,7 +26,7 @@ module.exports = function (app) {
 };
 
 /**
- * Récupèration de toutes les contact (ou filtrer via le PostBody)
+ * Retrieve all contact (or filter via the PostBody)
  */
 async function getContacts(req, res, next) {
     try {
@@ -37,7 +37,7 @@ async function getContacts(req, res, next) {
 }
 
 /**
- * Création/edition d'un contact
+ * Creation / edition of a contact
  */
 async function setContact(req, res, next) {
     try {

@@ -175,7 +175,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         }
     }
 
-    // --- Fréquentation ---
+    // --- frequenting ---
     let attendance = 0;
     let newClients;
     if (dateStart && dateEnd) {

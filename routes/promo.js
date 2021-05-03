@@ -34,7 +34,7 @@ async function checkCodePromoByCode(req, res, next) {
 }
 
 /**
- * Fonction retournant des promos
+ * Function returning promos
  */
 async function getPromos(req, res, next) {
     try {
@@ -46,7 +46,7 @@ async function getPromos(req, res, next) {
 }
 
 /**
- * Fonction retournant une promo en fonction de son PostBody
+ * Function returning a promo based on its PostBody
  */
 async function getPromo(req, res, next) {
     try {
@@ -58,7 +58,7 @@ async function getPromo(req, res, next) {
 }
 
 /**
- * Fonction retournant une promo en fonction de son _id
+ * Function returning a promo based on its _id
  */
 async function getPromoById(req, res, next) {
     try {
@@ -70,7 +70,7 @@ async function getPromoById(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer une promo
+ * Function allowing to delete a promo
  */
 async function setPromo(req, res, next) {
     try {
@@ -82,7 +82,7 @@ async function setPromo(req, res, next) {
 }
 
 /**
- * Fonction permettant de cloner une promo
+ * Function to clone a promotion
  */
 async function clonePromo(req, res, next) {
     try {
@@ -94,7 +94,7 @@ async function clonePromo(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer une promo
+ * Function allowing to delete a promo
  */
 async function deletePromo(req, res, next) {
     try {
@@ -106,7 +106,7 @@ async function deletePromo(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer un code d'une promo
+ * Function used to delete a code from a promo
  */
 async function deletePromoCode(req, res, next) {
     try {

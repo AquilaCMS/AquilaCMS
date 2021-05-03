@@ -130,12 +130,12 @@ function conditionOperator(operator, obj, target, value) {
 }
 
 // /**
-//  * Fonction récursive qui va construire un tableau dans une forme normalisé pour le produit dont l'index est passé en tant que indexPrd.
-//  * si un panier contient 2 produits et qu'une rule a 3 conditions panier
-//  * alors nous auront 3 tableaux (pour les 3 conditions)
-//  * contenant chacun 2 boolean (correspondant aux deux produits) ex : norm_conditions= ["ET", [true, false], [true, true], [true, false]]
-//  * Les premiers champs des tableaux correspondront au produit 1, les seconds correspondront au produit 2
-//  * Nous allons donc pour chaque produit normaliser norm_conditions afin qu'il soit utilisé par promoUtils.createIfStatement
+//  * Recursive function which will build an array in a normalized form for the product whose index is passed as indexPrd.
+//  * if a basket contains 2 products and a rule has 3 cart conditions
+//  * then we will have 3 arrays (for the 3 conditions)
+//  * each containing 2 boolean (corresponding to the two products) eg: norm_conditions = ["AND", [true, false], [true, true], [true, false]]
+//  * The first fields of the tables will correspond to product 1, the second will correspond to product 2
+//  * We will therefore for each product normalize norm_conditions so that it is used by promoUtils.createIfStatement
 //  * @param {*} norm_conditions
 //  * @param {*} indexPrd index du produit
 //  * @param {*} res
