@@ -73,6 +73,7 @@ class NSErrors {
     static get ComponentInvalidModel() { return this.makeErrorAlias(NSErrors.NotFound, 'ComponentInvalidModel'); }
     static get ConfigurationMailNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ConfigurationMailNotFound'); }
     static get ConfigurationNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ConfigurationNotFound'); }
+    static get ContactNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ContactNotFound'); }
     static get DesignThemeCssGetAll() { return this.makeErrorAlias(NSErrors.NotFound, 'DesignThemeCssGetAll'); }
     static get DesignThemeCssSave() { return this.makeErrorAlias(NSErrors.NotFound, 'DesignThemeCssSave'); }
     static get GalleryAddItemEmptyNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'GalleryAddItemEmptyNotFound'); }

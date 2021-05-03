@@ -51,6 +51,10 @@ module.exports = {
         fr : 'Utilisateur non trouvé',
         en : 'User not found'
     },
+    ContactNotFound : {
+        fr : 'Contact non trouvé',
+        en : 'Contact not found'
+    },
     Conflict : {
         fr : 'Conflit',
         en : 'Conflict'
