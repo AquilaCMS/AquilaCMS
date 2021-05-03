@@ -185,6 +185,12 @@ const toET = (ATIPrice, VAT) => {
     return undefined;
 };
 
+/**
+ *
+ * @param {any} obj
+ * @param {string} str
+ * @returns {any}
+ */
 const getObjFromDotStr = (obj, str) => {
     return str.split('.').reduce((o, i) => {
         if (!o[i]) return '';

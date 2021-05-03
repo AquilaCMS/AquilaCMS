@@ -1110,7 +1110,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (await ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {

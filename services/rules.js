@@ -129,67 +129,13 @@ function conditionOperator(operator, obj, target, value) {
     }
 }
 
-// /**
-//  * Fonction récursive qui va construire un tableau dans une forme normalisé pour le produit dont l'index est passé en tant que indexPrd.
-//  * si un panier contient 2 produits et qu'une rule a 3 conditions panier
-//  * alors nous auront 3 tableaux (pour les 3 conditions)
-//  * contenant chacun 2 boolean (correspondant aux deux produits) ex : norm_conditions= ["ET", [true, false], [true, true], [true, false]]
-//  * Les premiers champs des tableaux correspondront au produit 1, les seconds correspondront au produit 2
-//  * Nous allons donc pour chaque produit normaliser norm_conditions afin qu'il soit utilisé par promoUtils.createIfStatement
-//  * @param {*} norm_conditions
-//  * @param {*} indexPrd index du produit
-//  * @param {*} res
-//  */
-// function normalizeConditions(norm_conditions, indexPrd, res = []) {
-//     for (let i = 0; i < norm_conditions.length; i++) {
-//         if (norm_conditions[i] instanceof Array && typeof norm_conditions[i][0] !== "string") {
-//             // On ajoute les booleans a booleanToMerge
-//             const boolNormCond = norm_conditions[i].find((cdt, idx) => idx === indexPrd);
-//             res.push(boolNormCond);
-//         } else if (typeof norm_conditions[i] === "string") {
-//             res.push(norm_conditions[i]);
-//         } else {
-//             // on a un tableau qui commence par 'ET' ou 'OU', on reboucle dessus
-//             const subRes = normalizeConditions(norm_conditions[i], indexPrd);
-//             res.push(subRes);
-//         }
-//     }
-//     return res;
-// }
-
-// function getCartBoolean(subCondition, itemsOk, nbRuleCartValid, validCartProduct) {
-//     let isTrue = false;
-//     for (let k = 0; k < itemsOk.length; k++) {
-//         const product = itemsOk[k];
-//         const tCartCondition = normalizeConditions(subCondition, k);
-//         const ifStatement = promoUtils.createIfStatement(tCartCondition);
-//         try {
-//             // On test si l'eval peut renvoyer une erreur
-//             eval(ifStatement);
-//         } catch (error) {
-//             throw global.errors_list.promo_code_if_statement_bad_format;
-//         }
-//         // Si la panier contient le
-//         if (eval(ifStatement)) {
-//             validCartProduct.push(product);
-//         }
-//     }
-//     if (validCartProduct.length > 0) {
-//         nbRuleCartValid++;
-//         isTrue = true;
-//     }
-//     return {isTrue, nbRuleCartValid};
-// }
-
 /**
  * Allows you to know the validity of a basket type promotion
  * @param {ModelRules} rule the rule to be processed
  * @param {ModelUsers} user user who initiated the request
  * @param {ModelCart} cart the user's cart
- * @param {Boolean} isCart if true then we are in a "basket.qte_min" condition
- * @param {Boolean} isRoot Allows to know if we are at the root rule
  */
-async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, isRoot = false */) {
+async function applyRecursiveRulesDiscount(rule, user, cart) {
     try {
         // fix in relation to the limitation of the fields of the user ...
         if (user) {

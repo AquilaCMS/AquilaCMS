@@ -226,7 +226,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
+                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
@@ -241,7 +241,7 @@ const updateQty = async (req) => {
                     if (selectionProduct.type === 'simple') {
                         if (
                             quantityToAdd > 0
-                            && !(await ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd)).ordering.orderable
+                            && !ServicesProducts.checkProductOrderable(selectionProduct.stock, quantityToAdd).ordering.orderable
                         ) {
                             throw NSErrors.ProductNotInStock;
                         }
@@ -492,12 +492,15 @@ const removeOldCarts = async () => {
  * @param {Object} stock
  * @param {number} qty
  */
-const checkProductOrderable = async (stock, qty) => {
+const checkProductOrderable = (stock, qty) => {
     return stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
 };
 
 /**
  * Function to associate a user with a cart
+ * @param {any} cart
+ * @param {Express.Request} req
+ * @returns {Promise<any>}
  */
 const linkCustomerToCart = async (cart, req) => {
     if (cart && (!cart.customer || !cart.customer.id)) {
