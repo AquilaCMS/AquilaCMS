@@ -269,7 +269,15 @@ const execCanonical = async () => {
                 let bForceForOtherLang = false;
                 for (let iLang = 0; iLang < tabLang.length; iLang++) {
                     const currentLang = tabLang[iLang];
-                    if (product && (bForceForOtherLang || products_canonicalised.indexOf(product._id.toString()) === -1) && typeof product.translation[currentLang] !== 'undefined' && typeof product.translation[currentLang].slug !== 'undefined') { // Le produit existe et on l'a pas déjà traité pour cette langue
+                    if (
+                        product
+                        && (
+                            bForceForOtherLang
+                            || products_canonicalised.indexOf(product._id.toString()) === -1
+                        )
+                        && typeof product.translation[currentLang] !== 'undefined'
+                        && typeof product.translation[currentLang].slug !== 'undefined'
+                    ) { // Le produit existe et on l'a pas déjà traité pour cette langue
                         await Products.updateOne(
                             {_id: product._id},
                             {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`}}
