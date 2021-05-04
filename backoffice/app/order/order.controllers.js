@@ -691,8 +691,8 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment) {
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate) {
         $scope.order = angular.copy(item);
         // the Hook for package module
         // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
@@ -837,7 +837,7 @@ OrderControllers.controller("PackagesNewCtrl", [
                         }else if (err.data.message) {
                             toastService.toast('danger', err.data.message);
                         }else{
-                            toastService.toast("danger", "Une erreur est survenue !");
+                            toastService.toast("danger", $translate.instant("global.standardError"));
                         }
                         $scope.close();
                     });
@@ -865,8 +865,8 @@ OrderControllers.controller("PackagesNewCtrl", [
 ]);
 
 OrderControllers.controller("RMANewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2", "orderReturnHook",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2, orderReturnHook)
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2", "orderReturnHook", "$translate", 
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2, orderReturnHook, $translate)
     {
         // variable
         $scope.order = angular.copy(item);
@@ -1020,7 +1020,7 @@ OrderControllers.controller("RMANewCtrl", [
                 }, function (err) {
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
-                    toastService.toast("danger", "Une erreur est survenue !");
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                     if(err.data){
                         if(err.data.translations) {
                             toastService.toast("danger", err.data.translations[$scope.defaultLang]);
@@ -1047,8 +1047,8 @@ OrderControllers.controller("RMANewCtrl", [
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService",
-    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService) {
+    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService", "$translate",
+    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService, $translate) {
         $scope.order = angular.copy(item);
         $scope.error = {
             text: ""
@@ -1135,7 +1135,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
                 $scope.close();
             }, function (err)
             {
-                toastService.toast("danger", "Une erreur est survenue !");
+                toastService.toast("danger", $translate.instant("global.standardError"));
                 if(err.data && err.data.translations)
                 {
                     toastService.toast("danger", err.data.translations[$scope.defaultLang]);

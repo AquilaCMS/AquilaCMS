@@ -3,5 +3,7 @@
     "visible": "Visible",
     "nonVisible": "Non visible",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "standardError": "An error has occurred",
+    "success": "Success"
 }

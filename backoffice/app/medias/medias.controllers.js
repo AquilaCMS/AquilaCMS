@@ -104,8 +104,9 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
     }]
 );
 
-MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams",
-    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams) {
+MediasControllers.controller("MediasDetailsCtrl",
+    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate",
+    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate) {
         $scope.media = {
             link : "",
             name : "",
@@ -200,7 +201,7 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
                     toastService.toast("danger", error.code);
                 }else{
                     console.log(error);
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };

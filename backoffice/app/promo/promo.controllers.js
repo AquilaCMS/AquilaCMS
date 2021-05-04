@@ -107,8 +107,8 @@ PromoControllers.controller("PromoListCtrl", [
  * Controller de la page contenant le detail d'un Promo
  */
 PromoControllers.controller("PromoDetailCtrl", [
-    "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2",
-    function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2) {
+    "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2", "$translate",
+    function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2, $translate) {
         $scope.promo = {
             discountType         : null,
             actif                : false,
@@ -535,7 +535,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                     toastService.toast("danger", error.code);
                 }else{
                     console.log(error);
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
                 console.log(error); //to see it
             });
