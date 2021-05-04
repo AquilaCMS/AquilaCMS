@@ -78,8 +78,8 @@ ShipmentControllers.controller('ShipmentBeforeCreateCtrl', ['$scope', '$location
         };
     }]);
 
-ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$location', '$routeParams', 'toastService', 'TerritoryCountries', 'Shipment', 'ShipmentOld', '$rootScope', '$modal','ConfigV2',
-    function ($scope, $http, $location, $routeParams, toastService, TerritoryCountries, Shipment, ShipmentOld, $rootScope, $modal, ConfigV2) {
+ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$location', '$routeParams', 'toastService', 'TerritoryCountries', 'Shipment', 'ShipmentOld', '$rootScope', '$modal','ConfigV2', "$translate",
+    function ($scope, $http, $location, $routeParams, toastService, TerritoryCountries, Shipment, ShipmentOld, $rootScope, $modal, ConfigV2, $translate) {
 
         $scope.changeTab = function (tabActive) {
             if (!$scope.isEditMode && tabActive === "country") return;
@@ -278,7 +278,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };

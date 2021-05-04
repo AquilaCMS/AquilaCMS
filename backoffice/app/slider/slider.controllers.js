@@ -14,8 +14,8 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         });
     }
 ]).controller("SliderDetailCtrl", [
-    "$rootScope", "$scope", "$routeParams", "$location", "SliderService", "SliderItemService", "toastService", "$modal",
-    function ($rootScope, $scope, $routeParams, $location, SliderService, SliderItemService, toastService, $modal)
+    "$rootScope", "$scope", "$routeParams", "$location", "SliderService", "SliderItemService", "toastService", "$modal", "$translate",
+    function ($rootScope, $scope, $routeParams, $location, SliderService, SliderItemService, toastService, $modal, $translate)
     {
         $scope.isEditMode = false;
         $scope.disableSave = true;
@@ -147,7 +147,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };
