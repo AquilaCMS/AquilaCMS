@@ -6,6 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const mongoose     = require('mongoose');
 const {
     Rules,
     Users,
@@ -95,9 +96,10 @@ const deleteRule = async (_id) => {
 
 function conditionOperator(operator, obj, target, value) {
     let isTrue = false;
+    if (typeof obj !== 'object') return;
     try {
         // If value is an array (ex: multiple select attribute)
-        if (Object.prototype.toString.call(value) !== '[object String]' && value.length > -1) {
+        if (value && Object.prototype.toString.call(value) !== '[object String]' && value.length > -1) {
             for (let i = 0; i < value.length; i++) {
                 if (operator === 'contains') isTrue = isTrue || utils.getObjFromDotStr(obj, target).includes(value[i]);
                 else if (operator === 'ncontains') isTrue = isTrue || !utils.getObjFromDotStr(obj, target).includes(value[i]);
@@ -195,7 +197,14 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
                     }
                 } else {
                     let tItems = [];
-                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product, target, value));
+                    tItems     = cart.items.filter((product) => {
+                        if (product.id) {
+                            if (mongoose.Types.ObjectId.isValid(product.id)) {
+                                return conditionOperator(condition.operator, product.id, target, value);
+                            }
+                        }
+                        return conditionOperator(condition.operator, product, target, value);
+                    });
                     if (tItems.length) isTrue = true;
                 }
             }
@@ -400,6 +409,13 @@ async function applyRecursiveRules(_rules, query) {
     return query;
 }
 
+/**
+ *
+ * @param {string} owner_type
+ * @param {any[]} products
+ * @param {string|undefined} optionPictoId
+ * @returns
+ */
 // eslint-disable-next-line no-unused-vars
 const execRules = async (owner_type, products = [], optionPictoId = undefined) => {
     const result = [];
@@ -554,7 +570,7 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
 
 function getValueFromCondition(condition) {
     if (condition.type === 'number')  return Number(condition.value);
-    if (condition.type === 'bool')  return condition.value === 'true';
+    if (condition.type === 'bool')  return condition.value === true;
     return condition.value;
 }
 

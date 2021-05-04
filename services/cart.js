@@ -36,6 +36,7 @@ const getCarts = async (PostBody) => {
 
 /**
  * Get cart(s) for this client
+ * @returns {Promise<mongoose.Document>}
  */
 const getCartforClient = async (idclient) => {
     return Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
@@ -54,7 +55,8 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart, user, lang, false);
+        const products        = cart.items.map((product) => product.id);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
                 if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
