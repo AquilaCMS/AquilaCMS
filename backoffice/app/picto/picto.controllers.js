@@ -38,7 +38,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
     'RulesV2',
     '$modal',
     '$location',
-    '$transalte',
+    '$translate',
     function (
         $scope,
         PictoApi,
