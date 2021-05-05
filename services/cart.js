@@ -25,6 +25,7 @@ const ServiceShipment   = require('./shipment');
 const ServicesProducts  = require('./products');
 const servicesTerritory = require('./territory');
 const servicesMail      = require('./mail');
+const ServiceJob        = require('./job');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
@@ -594,17 +595,18 @@ const mailPendingCarts = async () => {
         const config = await Configuration.findOne();
         const now    = moment(new Date());
         if (config.stockOrder.requestMailPendingCarts) {
-            // const job   = await ServiceJob.getModuleJobByName('Mail to pending carts');
+            const job   = await ServiceJob.getModuleJobByName('Mail to pending carts');
             const limit = moment(new Date());
             limit.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
             let filter = {};
-            // if (job.attrs.lastFinishedAt) {
-            //     const lastRun = moment(job.attrs.lastFinishedAt);
-            //     lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
-            //     filter = {updatedAt: {$lte: limit, $gte: lastRun}, customer: {$exists: true, $ne: null}};
-            // } else {
-            filter = {updatedAt: {$lte: limit}, customer: {$exists: true, $ne: null}};
-            // }
+            if (job.attrs.lastRunAt) {
+                const lastRunAt = moment(job.attrs.lastRunAt);
+                // lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                filter = {updatedAt: {$gte: lastRunAt.toISOString(), $lte: limit.toISOString()}, customer: {$exists: true, $ne: null}};
+            } else {
+                // the 'lastRunAt' value is not set, so we take all carts (the first time)
+                filter = {updatedAt: {$lte: limit.toISOString()}, customer: {$exists: true, $ne: null}};
+            }
             const carts = await Cart.find(filter);
             let nbMails = 0;
             for (const cart of carts) {
