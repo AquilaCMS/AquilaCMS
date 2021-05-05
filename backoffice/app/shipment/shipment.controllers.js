@@ -168,10 +168,10 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                         prices: tabPrice
                     });
                 }else{
-                    toastService.toast("warning", "Country is already selected");
+                    toastService.toast("warning", $translate.instant("global.contryAlreadySelected"));
                 }
             }else{
-                toastService.toast("warning", "You need to select a country");
+                toastService.toast("warning", $translate.instant("global.selectContry"));
             }
         };
 
@@ -269,7 +269,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 else {
                     $location.path("/shipments/delivery/" + savedShipment._id);
                 }
-                toastService.toast("success", 'Sauvegarde effectuée')
+                toastService.toast("success", $translate.instant("global.savedDone"))
             }, function(error){
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
@@ -292,7 +292,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 Shipment.delete({id: shipment._id}, function () {
                     $scope.shipments.splice($scope.shipments.indexOf(shipment), 1);
                 });
-                toastService.toast("success", 'Suppression effectuée');
+                toastService.toast("success", $translate.instant("global.deleteDone"));
                 $location.path("/shipments");
             }
         };

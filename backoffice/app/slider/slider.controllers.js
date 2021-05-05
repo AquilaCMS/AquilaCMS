@@ -115,7 +115,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         };
 
         $scope.close = function() {
-            toastService.toast("success", "Ajout réussi");
+            toastService.toast("success", $translate.instant("global.addDone"));
         };
 
         $scope.save = function (quit)
@@ -128,7 +128,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
             {
                 if($scope.isEditMode)
                 {
-                    toastService.toast("success", "Sauvegarde effectuée");
+                    toastService.toast("success", $translate.instant("global.savedDone"));
                 }
                 else
                 {
@@ -157,12 +157,12 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
             if(confirm("Êtes-vous sûr de vouloir supprimer ce carousel ?")){
                 SliderService.delete({id: $scope.slider._id}, function ()
                 {
-                    toastService.toast("success", "Suppression effectuée");
+                    toastService.toast("success", $translate.instant("global.deleteDone"));
                     $location.path("/component/slider");
                 }, function (err)
                 {
                     console.error(err);
-                    toastService.toast("danger", "Echec de la suppression");
+                    toastService.toast("danger", $translate.instant("global.errorDelete"));
                 });
             }
         };

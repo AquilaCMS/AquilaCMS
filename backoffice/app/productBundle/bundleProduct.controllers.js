@@ -2,8 +2,8 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs)
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs", "$translate",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs, $translate)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -366,7 +366,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                     else
                     {
-                        toastService.toast("success", "Produit sauvegardé !");
+                        toastService.toast("success", $translate.instant("global.productSaved"));
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
@@ -412,7 +412,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     $location.path("/products");
                 }, function ()
                 {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
                 });
             }
         };
@@ -468,7 +468,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                         else
                         {
-                            toastService.toast("success", "Produit sauvegardé !");
+                            toastService.toast("success", $translate.instant("global.productSaved"));
                             if($scope.isEditMode)
                             {
                                 $scope.disableSave = false;
@@ -481,7 +481,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                     }, function (err)
                     {
-                        toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                        toastService.toast("danger", $translate.instant("global.errorSaving"));
                         $scope.disableSave = false;
                     });
                 },

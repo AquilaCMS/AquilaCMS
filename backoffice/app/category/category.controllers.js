@@ -299,7 +299,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             $scope.category.productsList[index].sortWeight = pos;
             CategoryV2.save($scope.category, function (res)
             {
-                toastService.toast("success", "Position sauvegardée");
+                toastService.toast("success", $translate.instant("global.positionSaved"));
 
                 if($scope.formMenu)
                 {
@@ -384,7 +384,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             CategoryV2.save($scope.category, function (res)
             {
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
-                toastService.toast("success", "Catégorie sauvegardée");
+                toastService.toast("success", $translate.instant("global.categorySaved"));
 
                 if($scope.formMenu)
                 {
@@ -403,15 +403,15 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.save = function (isQuit) {
             if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
-                toastService.toast("danger", "Formulaire des regles incomplet");
+                toastService.toast("danger", $translate.instant("global.incompleteRules"));
                 return;
             }
             if ($scope.rule.operand !== undefined) {
                 RulesV2.save($scope.rule, function (response){
-                        toastService.toast("success","Règle(s) sauvegardée(s)");
+                        toastService.toast("success",$translate.instant("global.ruleSaved"));
                         saveCategory();
                     }, function (err) {
-                        toastService.toast("danger","Pas de règles créées");
+                        toastService.toast("danger", $translate.instant("global.noNewRule"));
                         saveCategory();
                     }
                 );
@@ -609,7 +609,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     Promise.all(promiseArray).then(function () {
                         deferred.resolve();
                     }, function (err) {
-                        toastService.toast("danger", "Une erreur est survenue lors d'une requete API");
+                        toastService.toast("danger", $translate.instant("global.occurErrorAPI"));
                         deferred.reject();
                     });
                 }
@@ -621,7 +621,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             $scope.category.img = null;
             $scope.category.alt = null;
             CategoryV2.save($scope.category, function (res) {
-                toastService.toast("success", "Image supprimée ");
+                toastService.toast("success", $translate.instant("global.pictureDelete"));
             });
         }
 
@@ -816,7 +816,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     deferred.resolve();
                     $scope.$broadcast('angular-ui-tree:expand-all');
                 }, function (err) {
-                    toastService.toast("danger", "Une erreur est survenue lors du déplacement de la catégorie.");
+                    toastService.toast("danger", $translate.instant("global.errorCategoryMove"));
                     deferred.reject();
                 });
 

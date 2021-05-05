@@ -110,8 +110,8 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate',
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate)
     {
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
@@ -323,7 +323,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         {
             let query = Invoice.orderToBill({idOrder: $scope.order._id});
             query.$promise.then(function (response) {
-                toastService.toast('success', 'Facture créée')
+                toastService.toast('success', $translate.instant("global.invoiceCreated"))
                 $scope.init()
             }).catch(function (err) {
                 toastService.toast('danger', err.data.message);
@@ -366,7 +366,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             if(field === "status")
             {
                 if(data === $scope.order.status){
-                    toastService.toast("danger", "La commande est déjà dans cet état !");
+                    toastService.toast("danger", $translate.instant("global.orderAlreadyState"));
                 }else if(data == "PAID"){
                     $scope.editStatus = false;
                     $scope.addInfoPayment("PAID");
@@ -398,7 +398,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if(err.data.message)
                         {
-                            toastService.toast("danger", "Ce changement d'état n'est pas possible");
+                            toastService.toast("danger", $translate.instant("global.changeStateImpossible"));
                             d.reject(err.data.message);
                         }
                         else
@@ -459,7 +459,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             }, function (err)
             {
                 console.error(err.data);
-                toastService.toast("danger", "Impossible de supprimer le colis");
+                toastService.toast("danger", $translate.instant("global.removePackage"));
             });
         };
 
@@ -627,8 +627,8 @@ OrderControllers.controller("OrderDetailCtrl", [
 ]);
 
 OrderControllers.controller("InfoAddressCtrl", [
-    "$scope", "$modalInstance", "item", "Order", "Orders", "$rootScope", "toastService","TerritoryCountries",
-    function ($scope, $modalInstance, item, Order, Orders, $rootScope, toastService, TerritoryCountries) {
+    "$scope", "$modalInstance", "item", "Order", "Orders", "$rootScope", "toastService","TerritoryCountries", "$translate",
+    function ($scope, $modalInstance, item, Order, Orders, $rootScope, toastService, TerritoryCountries, $translate) {
         $scope.type = angular.copy(item.type);
         $scope.order = angular.copy(item.order);
 
@@ -661,11 +661,11 @@ OrderControllers.controller("InfoAddressCtrl", [
             $scope.order.addresses[$scope.type].country = countryName.translation[$scope.defaultLang].name;
             Orders.save({order:$scope.order}, function(response){
                 if(response.nModified === 1){
-                    toastService.toast("success", "Adresse changée");
+                    toastService.toast("success", $translate.instant("global.addressChanged"));
                     $modalInstance.close(3);
                     // $scope.order = Order.get({ orderId: $scope.order._id });
                 }else{
-                    toastService.toast("danger", "Erreur lors du changement d'adresse");
+                    toastService.toast("danger", $translate.instant("global.errorChangingAddress"));
                 }
             });
         };
@@ -825,7 +825,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             if(pkg.products.length > 0) {
                 if(pkg.tracking != ""){
                     Orders.addPkg({order: $scope.order._id, package: pkg}, function () {
-                        toastService.toast("success", "Colis correctement ajouté");
+                        toastService.toast("success", $translate.instant("global.addedParcel"));
                         $scope.disabledAddButton = false;
                         $scope.loadingAdd = false;
                         $scope.close();
@@ -1013,7 +1013,7 @@ OrderControllers.controller("RMANewCtrl", [
 
             if(returnData.products.length > 0) {
                 Orders.rma({order: $scope.order._id, return: returnData}, function () {
-                    toastService.toast("success", "Retour correctement ajouté");
+                    toastService.toast("success", $translate.instant("global.returnAdded"));
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
                     $scope.close();
@@ -1131,7 +1131,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             delete returnData.sendMail;
             Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
             {
-                toastService.toast("success", "Information de paiement correctement ajoutée");
+                toastService.toast("success", $translate.instant("global.paymentInfoAdded"));
                 $scope.close();
             }, function (err)
             {

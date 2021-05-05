@@ -313,9 +313,8 @@ ModulesControllers.controller('ModulesCheckVersionCtrl', [
 
 
 ModulesControllers.controller("PluginsNewCtrl", [
-    "$scope", "$modalInstance", "toastService", "$http", "toggleActive", "ModuleServiceV2",
-    function ($scope, $modalInstance, toastService, $http, toggleActive, ModuleServiceV2) {
-
+    "$scope", "$modalInstance", "toastService", "$http", "toggleActive", "ModuleServiceV2", "$translate",
+    function ($scope, $modalInstance, toastService, $http, toggleActive, ModuleServiceV2, $translate) {
         $scope.before = function () {
             $scope.showModuleLoading = true;
         };
@@ -333,11 +332,11 @@ ModulesControllers.controller("PluginsNewCtrl", [
                 }
             }, function (response) {
                 if (module.active) {
-                    toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
+                    toastService.toast('success', $translate.instant("global.addModule"));
                     toggleActive(module._id, module.name, true);
                 } else {
                     $scope.showModuleLoading = false;
-                    toastService.toast('success', "Module ajouté ! Pour l 'utiliser, il suffit de l 'activer");
+                    toastService.toast('success', $translate.instant("global.activateModule"));
                 }
                 $scope.modules = response.datas;
                 $scope.close("save");
@@ -350,7 +349,7 @@ ModulesControllers.controller("PluginsNewCtrl", [
         $scope.uploadError = function () {
             $scope.getDatas();
             $scope.showModuleLoading = false;
-            toastService.toast('danger', 'Problème à l\'ajout du module');
+            toastService.toast('danger', $translate.instant("global.errorActiveModule"));
             $scope.close();
         };
 

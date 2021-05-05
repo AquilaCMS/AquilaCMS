@@ -71,8 +71,8 @@ MailControllers.controller("MailListCtrl", [
  * Controller de la page contenant le detail d'un Mail
  */
 MailControllers.controller("MailDetailCtrl", [
-    "$scope", "$q", "$routeParams", "$location", "toastService", "MailRemovePdf", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypesGet", "MailVariables","$modal",
-    function ($scope, $q, $routeParams, $location, toastService, MailRemovePdf, MailSave, MailUpdate, MailRemove, MailGetById, MailTypesGet, MailVariables, $modal) {
+    "$scope", "$q", "$routeParams", "$location", "toastService", "MailRemovePdf", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypesGet", "MailVariables","$modal","$translate",
+    function ($scope, $q, $routeParams, $location, toastService, MailRemovePdf, MailSave, MailUpdate, MailRemove, MailGetById, MailTypesGet, MailVariables, $modal, $translate) {
         $scope.mail = {};
         $scope.mailTypes = [];
         $scope.nsUploadFiles = {
@@ -127,11 +127,11 @@ MailControllers.controller("MailDetailCtrl", [
 
         $scope.after = function(){
             $scope.MailGetById();
-            toastService.toast("success", "Fichier sauvegardé !");
+            toastService.toast("success", $translate.instant("global.fileSaved"));
         }
 
         $scope.uploadError = function(){
-                toastService.toast("danger", "Le fichier n'a pas été sauvegardé");
+                toastService.toast("danger", $translate.instant("global.fileUnsaved"));
         }
 
         $scope.deletePdf = function(position, lang){
@@ -139,11 +139,11 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.mail.translation[lang].attachments.splice(position, 1);
             MailRemovePdf.removePdf({mail:$scope.mail, path}, function (response) {
                 if (response.msg) {
-                    toastService.toast("danger", "Le fichier n'a pas été supprimé");
+                    toastService.toast("danger", $translate.instant("global.fileUnsaved"));
                     $scope.MailGetById();
                 }
                 else {
-                    toastService.toast("success", "Fichier supprimé !");
+                    toastService.toast("success", $translate.instant("global.fileDelete"));
                     $scope.MailGetById();
                 }
             }, function (err) {
@@ -165,7 +165,7 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.form.nsSubmitted = true;
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", "Mail non sauvegardé !");
+                toastService.toast("danger", $translate.instant("global.mailUnsaved"));
                 return;
             }
             var deferred = $q.defer();
@@ -207,7 +207,7 @@ MailControllers.controller("MailDetailCtrl", [
                 }
                 else
                 {
-                    toastService.toast("success", "Mail sauvegardé !");
+                    toastService.toast("success", $translate.instant("global.mailSaved"));
                     $location.path("/mails/" + response._id);
                 }
 
@@ -228,7 +228,7 @@ MailControllers.controller("MailDetailCtrl", [
             if(confirm("Êtes-vous sûr de vouloir supprimer ce mail ?"))
             {
                 MailRemove.remove({_id: _id}, function () {
-                    toastService.toast("success", "Mail supprimé");
+                    toastService.toast("success", $translate.instant("global.mailDelete"));
                     $location.path("/mails");
                 });
             }
@@ -256,8 +256,8 @@ MailControllers.controller("MailDetailCtrl", [
 ]);
 
 MailControllers.controller("MailDetailTestCtrl", [
-    "$scope", "$rootScope","$q", "$routeParams", "$location", "toastService", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypeGet", "MailVariables", "TestMail", "mail", "$modalInstance","lang",
-    function ($scope,$rootScope,$q, $routeParams, $location, toastService, MailSave, MailUpdate, MailRemove, MailGetById, MailTypeGet, MailVariables, TestMail, mail,$modalInstance, lang) {
+    "$scope", "$rootScope","$q", "$routeParams", "$location", "toastService", "MailSave", "MailUpdate", "MailRemove", "MailGetById", "MailTypeGet", "MailVariables", "TestMail", "mail", "$modalInstance","lang", "$translate",
+    function ($scope,$rootScope,$q, $routeParams, $location, toastService, MailSave, MailUpdate, MailRemove, MailGetById, MailTypeGet, MailVariables, TestMail, mail,$modalInstance, lang, $translate) {
         $scope.path = $routeParams.mailId; 
         $scope.mail = mail;
         $scope.lang = lang;
@@ -281,7 +281,7 @@ MailControllers.controller("MailDetailTestCtrl", [
                     };
                 }
                 TestMail.query({ mail: $scope.mail, values: variables, lang: $scope.lang }, function (res) {
-                    toastService.toast("success", "Mail Test envoyé.");
+                    toastService.toast("success", $translate.instant("global.testMailSend"));
                     $scope.loading = false;
                     $modalInstance.close();
                 }, function (r) {
@@ -290,7 +290,7 @@ MailControllers.controller("MailDetailTestCtrl", [
                 })
             }else{
                 $scope.loading = false;
-                toastService.toast("warning", "Veuillez saisir le destinataire.");
+                toastService.toast("warning", $translate.instant("global.enterRecipient"));
             }
         }
     }
