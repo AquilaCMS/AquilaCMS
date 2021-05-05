@@ -63,9 +63,8 @@ AttributesSchema.statics.translationValidation = async function (self) {
     return errors;
 };
 
-AttributesSchema.statics.checkCode = async function () {
-    const that = this.getUpdate().$set ? this.getUpdate().$set : this.getUpdate();
-    await utilsDatabase.checkCode('attributes', that._id, that.code);
+AttributesSchema.statics.checkCode = async function (data) {
+    await utilsDatabase.checkCode('attributes', data._id, data.code);
 };
 
 /**

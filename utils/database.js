@@ -1405,7 +1405,7 @@ const applyMigrationIfNeeded = async () => {
 
 /**
  * Allows you to populate specific fields of each item
- * @param {array} items
+ * @param {any[]} items
  */
 const populateItems = async (items) => {
     for (const item of items) {
@@ -1415,23 +1415,31 @@ const populateItems = async (items) => {
 
 /**
  * called during pre hooks for `findOneAndUpdate` and/or `updateOne`
- * @param {mongoose.Query<any>} that query to check
+ * @param {mongoose.Query|mongoose.Model} that query to check
  * @param {mongoose.HookNextFunction} next hooks function
- * @param {mongoose.Schema<any>} model schema needed to be check for translation validation
+ * @param {mongoose.Schema} schema schema needed to be check for translation validation
  * @return {mongoose.HookNextFunction} HookNextFunction
  */
-const preUpdates = async (that, next, model) => {
-    const update = that.getUpdate();
-    if (update) {
-        if (model.checkCode && typeof model.checkCode === 'function') {
-            await model.checkCode(update.$set || update);
+const preUpdates = async (that, next, schema) => {
+    let data = that;
+    if (that instanceof mongoose.Query) {
+        data = that.getUpdate();
+    }
+    if (data) {
+        const elem = (typeof data.$set !== 'function' && data.$set) || data;
+        const {
+            checkCode,
+            checkSlugExist,
+            translationValidation
+        } = schema.statics;
+        if (typeof checkCode === 'function') {
+            await checkCode(elem);
         }
-        if (
-            model.translationValidation
-            && typeof model.translationValidation === 'function'
-            && (update._id || (update.$set && update.$set._id))
-        ) {
-            const errors = await model.translationValidation(update.$set || update, that);
+        if (typeof checkSlugExist === 'function') {
+            await checkSlugExist(elem);
+        }
+        if (typeof translationValidation === 'function' && elem._id) {
+            const errors = await translationValidation(elem, that);
             return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
         }
     }
