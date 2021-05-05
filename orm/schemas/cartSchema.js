@@ -212,11 +212,16 @@ CartSchema.pre('save', function (next) {
     next();
 });
 
+/**
+ * @this mongoose.Query
+ * @param {mongoose.Document} doc
+ * @param {mongoose.HookNextFunction} next
+ */
 CartSchema.post('save', async function (doc, next) {
     if (doc.wasNew) {
         aquilaEvents.emit('aqNewCart', doc, next);
     } else {
-        await updateCarts(this._update, doc._id, next);
+        await updateCarts(this.getUpdate(), doc._id, next);
     }
     next();
 });

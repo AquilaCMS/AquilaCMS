@@ -20,20 +20,20 @@ const LanguagesSchema = new Schema({
     status          : {type: String, enum: ['visible', 'invisible', 'removing'], default: 'invisible'}
 });
 
-async function preUpdates(that) {
+LanguagesSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('languages', that._id, that.code);
-}
+};
 
-LanguagesSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+LanguagesSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, LanguagesSchema);
 });
 
-LanguagesSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+LanguagesSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, LanguagesSchema);
 });
 
 LanguagesSchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, LanguagesSchema);
     this.code = helper.slugify(this.code);
     next();
 });

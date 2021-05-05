@@ -24,21 +24,20 @@ const SetAttributesSchema = new Schema({
     }]
 });
 
-async function preUpdates(that) {
+SetAttributesSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('setAttributes', that._id, that.code);
-}
+};
 
-SetAttributesSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+SetAttributesSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
 });
 
-SetAttributesSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+SetAttributesSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
 });
 
 SetAttributesSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    next();
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
 });
 
 module.exports = SetAttributesSchema;

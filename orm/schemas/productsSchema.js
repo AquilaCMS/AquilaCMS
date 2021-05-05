@@ -127,6 +127,56 @@ ProductsSchema.index({_visible: 1, active: 1});
 //     code_ean    : 'text',
 // }, {name: 'textSearchIndex', default_language: 'french'});
 
+ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
+    /** Quantity <= 0 not allowed on creation * */
+    if (item.quantity <= 0) {
+        throw NSErrors.CartQuantityError;
+    }
+    const ServicePromo = require('../../services/promo');
+    let prd            = [item];
+    if (item.type !== 'bundle') {
+        prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
+        if (prd && prd[0] && prd[0].type !== 'bundle' && prd[0].price) {
+            if (prd[0].price.et && prd[0].price.et.special !== undefined) {
+                this.price.et.special = prd[0].price.et.special;
+            }
+            if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
+                this.price.ati.special = prd[0].price.ati.special;
+            }
+        }
+        item.price = {
+            vat  : {rate: this.price.tax},
+            unit : {
+                et  : this.price.et.normal,
+                ati : this.price.ati.normal
+            }
+        };
+
+        if (this.price.et.special !== undefined && this.price.et.special !== null) {
+            item.price.special = {
+                et  : this.price.et.special,
+                ati : this.price.ati.special
+            };
+        }
+    }
+    const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
+    return resp;
+};
+
+ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {
+    this.find({supplier_ref}, cb);
+};
+
+ProductsSchema.statics.updateSupplier = async function (supplierId, supplierName) {
+    const query = {id_supplier: supplierId};
+    await this.updateMany(query, {_supplier: supplierName});
+};
+
+ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkName) {
+    const query = {id_trademark: trademarkId};
+    await this.updateMany(query, {_trademark: trademarkName});
+};
+
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
 
@@ -219,13 +269,15 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
-async function preUpdates(that) {
+ProductsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('products', that._id, that.code);
+};
+
+ProductsSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'products');
-}
+};
 
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
@@ -250,12 +302,13 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 ProductsSchema.pre('save', async function (next) {
-    await preUpdates(this);
+    const update = this.getUpdate();
+    await ProductsSchema.statics.checkCode(update.$set || update);
+    await ProductsSchema.statics.checkSlugExist(update.$set || update);
     this.price.priceSort = {
         et  : this.price.et.special || this.price.et.normal,
         ati : this.price.ati.special || this.price.ati.normal
@@ -263,56 +316,6 @@ ProductsSchema.pre('save', async function (next) {
     const errors         = await ProductsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
-
-ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) {
-    /** Quantity <= 0 not allowed on creation * */
-    if (item.quantity <= 0) {
-        throw NSErrors.CartQuantityError;
-    }
-    const ServicePromo = require('../../services/promo');
-    let prd            = [item];
-    if (item.type !== 'bundle') {
-        prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
-        if (prd && prd[0] && prd[0].type !== 'bundle' && prd[0].price) {
-            if (prd[0].price.et && prd[0].price.et.special !== undefined) {
-                this.price.et.special = prd[0].price.et.special;
-            }
-            if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
-                this.price.ati.special = prd[0].price.ati.special;
-            }
-        }
-        item.price = {
-            vat  : {rate: this.price.tax},
-            unit : {
-                et  : this.price.et.normal,
-                ati : this.price.ati.normal
-            }
-        };
-
-        if (this.price.et.special !== undefined && this.price.et.special !== null) {
-            item.price.special = {
-                et  : this.price.et.special,
-                ati : this.price.ati.special
-            };
-        }
-    }
-    const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
-    return resp;
-};
-
-ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {
-    this.find({supplier_ref}, cb);
-};
-
-ProductsSchema.statics.updateSupplier = async function (supplierId, supplierName) {
-    const query = {id_supplier: supplierId};
-    await this.updateMany(query, {_supplier: supplierName});
-};
-
-ProductsSchema.statics.updateTrademark = async function (trademarkId, trademarkName) {
-    const query = {id_trademark: trademarkId};
-    await this.updateMany(query, {_trademark: trademarkName});
-};
 
 aquilaEvents.emit('productSchemaInit', ProductsSchema);
 

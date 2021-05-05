@@ -105,23 +105,24 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
     return errors;
 };
 
-async function preUpdates(that) {
+CategoriesSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('categories', that._id, that.code);
+};
+
+CategoriesSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'categories');
-}
+};
 
 CategoriesSchema.pre('updateOne', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, CategoriesSchema);
+    await utilsDatabase.preUpdates(this, next, CategoriesSchema);
 });
 
 CategoriesSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, CategoriesSchema);
+    await utilsDatabase.preUpdates(this, next, CategoriesSchema);
 });
 
 CategoriesSchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, CategoriesSchema);
     const errors = await CategoriesSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

@@ -21,21 +21,20 @@ const PictosSchema = new Schema({
     usedInFilters : {type: Boolean, default: false}
 });
 
-async function preUpdates(that) {
+PictosSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('pictos', that._id, that.code);
-}
+};
 
-PictosSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+PictosSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
-PictosSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+PictosSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
 PictosSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
 module.exports = PictosSchema;

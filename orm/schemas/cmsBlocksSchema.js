@@ -18,7 +18,7 @@ const CmsBlocksSchema = new Schema({
     translation : {}
 });
 
-async function translationValidation(self) {
+CmsBlocksSchema.statics.translationValidation = async function (self) {
     let errors = [];
 
     while (self.translation === undefined) {
@@ -41,24 +41,22 @@ async function translationValidation(self) {
     }
 
     return errors;
-}
+};
 
-async function preUpdates(next, that) {
+CmsBlocksSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('cmsBlocks', that._id, that.code);
-    const errors = await translationValidation(that);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
-}
+};
 
 CmsBlocksSchema.pre('save', async function (next) {
-    await preUpdates(next, this);
+    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 CmsBlocksSchema.pre('updateOne', async function (next) {
-    await preUpdates(next, this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 CmsBlocksSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(next, this._update.$set ? this._update.$set : this._update);
+    utilsDatabase.preUpdates(this, next, CmsBlocksSchema);
 });
 
 module.exports = CmsBlocksSchema;
