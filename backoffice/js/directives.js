@@ -1021,7 +1021,8 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
         templateUrl: "views/templates/nsStatusLabel.html",
         scope: {
             type: "@",
-            status: "="
+            status: "=",
+            name: "@"
         },
         controller: [
             "$scope",
@@ -1088,6 +1089,27 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                     $scope.statusObj.name = $scope.status
                         ? "global.visible"
                         : "global.nonVisible";
+                }else if($scope.type === "custom"){
+                    // the name is the translation
+                    if($scope.name){
+                        $scope.statusObj.name = $scope.name;
+                    }
+                    $scope.statusObj.isSuccess = true; // default
+                    $scope.statusObj.isWarning = false;
+                    $scope.statusObj.isDanger = false;
+                    switch($scope.status){
+                        case "success":
+                            /*its is the default*/
+                            break;
+                        case "warning":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isWarning = true;
+                            break;
+                        case "danger":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isDanger = true;
+                            break;
+                    }
                 }
             }
         ]

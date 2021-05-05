@@ -47,6 +47,10 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
         $scope.JobGetById = function () {
             JobGetById.query({ _id: $routeParams.jobId }, function (job) {
                 $scope.job = job;
+                checkFailReason();
+            }, function(error){
+                console.log(error);
+                toastService.toast("danger", $translate.instant("global.standardError"));
             });
         };
         $scope.playImmediate = function (_id) {
@@ -89,13 +93,15 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
             var deferred = $q.defer();
             if ($scope.isEditMode) {
                 JobUpdate.update($scope.job, function (response) {
-                    if (response.msg) deferred.reject({ message: 'Impossible de mettre à jour la tache planifiée' });
-                    else deferred.resolve(response);
+                    if (response.msg) {
+                        deferred.reject({ message: 'Impossible de mettre à jour la tache planifiée' });
+                    } else {
+                        deferred.resolve(response);
+                    }
                 }, function (err) {
                     deferred.reject(err);
                 });
-            }
-            else {
+            } else {
                 JobSave.save($scope.job, function (response) {
                     deferred.resolve(response);
                 }, function (err) {
@@ -103,19 +109,25 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
                 });
             }
             deferred.promise.then(function (response) {
-                if (isQuit) $location.path("/jobs");
-                else {
+                if (isQuit) {
+                    $location.path("/jobs");
+                } else {
                     $scope.job = response;
+                    checkFailReason();
                     toastService.toast("success", $translate.instant("global.cronSaved"));
                     $location.path("/jobs/" + response._id);
                 }
-
             }, function (err) {
                 if (err) toastService.toast("danger", err);
                 else toastService.toast("danger", err);
             });
         };
 
+        function checkFailReason() {
+            if(typeof $scope.job.failReason !== "undefined" && $scope.job.failReason != ""){
+                toastService.toast("warning", `${$translate.instant("job.detail.errFailReason")} "${$scope.job.failReason}"`);
+            }
+        }
 
         //Suppression d'un job
         $scope.remove = function (_id) {

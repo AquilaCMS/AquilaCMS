@@ -61,7 +61,8 @@ const getProductImageUrl = (product) => {
 const deleteFile = async (filePath) => {
     if (filePath) {
         await utilsModules.modulesLoadFunctions('removeFile', {key: filePath}, async () => {
-            const pathUpload   = require('./server').getUploadDirectory();// Cannot find server defined above
+            // Since the execution context is different, we can't use the imports at the top
+            const pathUpload   = require('./server').getUploadDirectory();
             const pathToRemove = path.resolve(pathUpload, filePath);
             if (pathToRemove && fsp.existsSync(pathToRemove)) {
                 try {
@@ -79,7 +80,8 @@ const deleteFile = async (filePath) => {
 const deleteFolder = async (folderPath) => {
     if (folderPath) {
         await utilsModules.modulesLoadFunctions('removeFolder', {folder: folderPath}, async () => {
-            const pathUpload   = require('./server').getUploadDirectory();// Cannot find server defined above
+            // Since the execution context is different, we can't use the imports at the top
+            const pathUpload   = require('./server').getUploadDirectory();
             const pathToRemove = path.resolve(pathUpload, folderPath);
             if (fsp.existsSync(pathToRemove)) {
                 await fsp.deleteRecursive(pathToRemove);
@@ -95,7 +97,8 @@ const renameFile = async (pathIn, filePathOut) => {
             inPath  : pathIn,
             outPath : filePathOut
         }, async () => {
-            const pathUpload = require('./server').getUploadDirectory();// Cannot find server defined above
+            // Since the execution context is different, we can't use the imports at the top
+            const pathUpload = require('./server').getUploadDirectory();
             const oldPath    = path.resolve(pathUpload, pathIn);
             const newPath    = path.resolve(pathUpload, filePathOut);
             if (oldPath && fsp.existsSync(oldPath)) {
@@ -114,7 +117,8 @@ const renameFile = async (pathIn, filePathOut) => {
 const existsFile = async (key) => {
     if (key) {
         return utilsModules.modulesLoadFunctions('existsFile', {key}, async () => {
-            const pathUpload  = require('./server').getUploadDirectory();// Cannot find server defined above
+            // Since the execution context is different, we can't use the imports at the top
+            const pathUpload  = require('./server').getUploadDirectory();
             const pathToCheck = path.resolve(pathUpload, key);
             if (pathToCheck && await fsp.existsSync(pathToCheck)) {
                 return true;

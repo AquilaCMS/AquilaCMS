@@ -38,6 +38,9 @@ async function getCoherence(req, res, next) {
 /**
  * POST /api/v2/products
  * @summary Listing of products
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
  */
 async function getProductsListing(req, res, next) {
     try {

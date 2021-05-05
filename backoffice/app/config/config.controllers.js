@@ -84,7 +84,7 @@ ConfigControllers.controller("ImportConfigCtrl", [
 ]);
 
 ConfigControllers.controller("EnvironmentConfigCtrl", [
-    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$transalte",
+    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$translate",
     function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload, $translate) {
         $scope.disabledButton = false;
         $scope.countries = [];
