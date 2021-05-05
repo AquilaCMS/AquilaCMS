@@ -558,9 +558,11 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
         const leni = cart.items.length;
 
         while (isTrue === false && i < leni) {
-            const prd = _cat.productsList.find((_prd) => _prd.id.toString() === cart.items[i].id._id.toString());
-            if (prd) {
-                isTrue = true;
+            if (cart.items[i].id) {
+                const prd = _cat.productsList.find((_prd) => _prd.id.toString() === cart.items[i].id._id.toString());
+                if (prd) {
+                    isTrue = true;
+                }
             }
             i++;
         }
