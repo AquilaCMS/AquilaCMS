@@ -54,7 +54,8 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             }
             $modal.open({
                 templateUrl: 'app/modules/views/modal/popUpReadMe.html',
-                controller: function ($scope, $modalInstance, reponse) {
+                controller: function ($scope, $modalInstance, reponse, nameModule) {
+                    $scope.moduleName = nameModule; //display name in popUp
                     $scope.modalReadMe = {}
                     $scope.modalReadMe.dispReadMe = reponse;
                     $scope.modalReadMe.close = function () {
@@ -65,6 +66,9 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                 resolve: {
                     reponse: function() {
                         return responseFromAPI;
+                    },
+                    nameModule: function(){
+                        return nameModule;
                     }
                 }
             });
