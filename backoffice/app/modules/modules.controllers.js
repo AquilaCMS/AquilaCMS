@@ -1,6 +1,6 @@
 var ModulesControllers = angular.module('aq.modules.controllers', ['ui.toggle', 'ui.bootstrap']);
 
-ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal) {
+ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal','$translate', function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $translate) {
     $scope.showModuleLoading = false;
     $scope.nsUploadFiles     = {
         isSelected : false
@@ -117,7 +117,7 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                             toastService.toast('danger', err.data.message);
                         } else {
                             console.error(err);
-                            toastService.toast('danger', 'Unknown error');
+                            toastService.toast('danger', $translate.instant("global.errorUnknown"));
                         }
                     });
                 }), function (err) {
@@ -260,8 +260,8 @@ ModulesControllers.controller('ModulesCheckVersionCtrl', [
 
 
 ModulesControllers.controller("PluginsNewCtrl", [
-    "$scope", "$modalInstance", "toastService", "$http", "toggleActive",
-    function ($scope, $modalInstance, toastService, $http, toggleActive) {
+    "$scope", "$modalInstance", "toastService", "$http", "toggleActive", "$translate",
+    function ($scope, $modalInstance, toastService, $http, toggleActive, $translate) {
 
         $scope.before = function () {
             $scope.showModuleLoading = true;
@@ -280,11 +280,11 @@ ModulesControllers.controller("PluginsNewCtrl", [
                 }
             }).then(function (response) {
                 if (module.active) {
-                    toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
+                    toastService.toast('success', $translate.instant("global.addModule"));
                     toggleActive(module._id, module.name, true);
                 } else {
                     $scope.showModuleLoading = false;
-                    toastService.toast('success', 'Module ajouté ! Pour l\'utiliser, il suffit de l\'activer');
+                    toastService.toast('success', $translate.instant("global.activateModule"));
                 }
                 $scope.modules = response.data.datas;
                 $modalInstance.close("save");
@@ -294,7 +294,7 @@ ModulesControllers.controller("PluginsNewCtrl", [
         $scope.uploadError = function () {
             $scope.getDatas();
             $scope.showModuleLoading = false;
-            toastService.toast('danger', 'Problème à l\'ajout du module');
+            toastService.toast('danger', $translate.instant("global.errorActiveModule"));
             $modalInstance.close();
         };
 

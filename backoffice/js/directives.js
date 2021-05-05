@@ -205,8 +205,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
-            "$scope","$rootScope", "$filter", "$modal","$http","toastService",
-            function ($scope, $rootScope, $filter, $modal, $http, toastService) {
+            "$scope","$rootScope", "$filter", "$modal","$http","toastService","$translate",
+            function ($scope, $rootScope, $filter, $modal, $http, toastService, $translate) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
@@ -265,7 +265,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                 $scope.addMailVar = function (code) {
                     if (code === 'none') {
-                        toastService.toast('danger', "Veuillez sélectionner un type de mail");
+                        toastService.toast('danger', $translate.instant("global.emailType"));
                     }else{
                         const modalInstance = $modal.open({
                             backdrop: 'static',

@@ -125,7 +125,7 @@ PromoControllers.controller('ProductReviewDetailCtrl', [
             deferred.promise.then(function (response) {
                 if (isQuit) $location.path("/reviews");
                 else {
-                    toastService.toast("success", 'Avis sauvegardée !');
+                    toastService.toast("success", $translate.instant("global.noticeSaved"));
                     $location.path("/reviews/" + $scope.local.review._id);
                 }
             }, function (err) {
@@ -138,7 +138,7 @@ PromoControllers.controller('ProductReviewDetailCtrl', [
             if(confirm("Êtes-vous sûr de vouloir supprimer cet avis produit ?"))
             {
                 ProductReviewService.delete({id:$scope.local.product._id, option:_id}, function (response) {
-                    toastService.toast("success", "Promo supprimée");
+                    toastService.toast("success", promoDelete);
                     $location.path("/reviews");
                 }, function (err) {
                     toastService.toast("danger", err.data.translations.fr);

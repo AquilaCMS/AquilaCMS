@@ -51,8 +51,8 @@ PaymentMethodControllers.controller("PaymentMethodListCtrl", [
 ]);
 
 PaymentMethodControllers.controller("PaymentMethodDetailCtrl", [
-    "$scope", "$routeParams", "PaymentMethodV2", "$location", "toastService", "$rootScope",
-    function ($scope, $routeParams, PaymentMethodV2, $location, toastService, $rootScope)
+    "$scope", "$routeParams", "PaymentMethodV2", "$location", "toastService", "$rootScope", "$translate",
+    function ($scope, $routeParams, PaymentMethodV2, $location, toastService, $rootScope, $translate)
     {
 
         $scope.defaultLang = $rootScope.languages.find(function (lang)
@@ -69,7 +69,7 @@ PaymentMethodControllers.controller("PaymentMethodDetailCtrl", [
         {
             PaymentMethodV2.save($scope.method, function ()
             {
-                toastService.toast("success", "Sauvegarde effectuée");
+                toastService.toast("success", $translate.instant("global.saveDone"));
                 if(isQuit)
                 {
                     $location.path("/paymentMethods");

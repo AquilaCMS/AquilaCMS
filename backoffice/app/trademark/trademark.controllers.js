@@ -30,7 +30,7 @@ TrademarkControllers.controller('TrademarkListCtrl', ['$scope', '$location', 'Tr
 
 }]);
 
-TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2)
+TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '$http', '$q', '$routeParams', 'toastService', 'TrademarksV2','$translate', function ($scope, $location, $http, $q, $routeParams, toastService, TrademarksV2, $translate)
 {
     $scope.trademark = {}
 
@@ -47,7 +47,7 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     $scope.removeTrademark = function(trademark){
         if(confirm("Voulez-vous supprimer cette marque ?")){
             $location.path("/trademarks");
-            toastService.toast("success", 'Suppression effectuée');
+            toastService.toast("success", $translate.instant("global.deleteDone"));
             return TrademarksV2.delete({id: trademark._id}).$promise;
         }
     };
@@ -57,13 +57,13 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
 
             if (msg._id) {
                 console.log("Trademark Saved!");
-                toastService.toast("success", 'Marque sauvegardée');
+                toastService.toast("success", $translate.instant("global.markSaved"));
                 if (isQuit) {
                     $location.path("/trademarks");
                 }
             }
             else {
-                toastService.toast("warning", 'Entrez une valeur pour le nom');
+                toastService.toast("warning", $translate.instant("global.nameValue"));
                 console.error("Error!");
             }
         }, function(error){
@@ -74,14 +74,14 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
             }else if(error && error.code != ""){
                 toastService.toast("danger", error.code);
             }else{
-                toastService.toast("danger", 'Error');
+                toastService.toast("danger", $translate.instant("global.error"));
             }
         });
     };
 
 }]);
 
-TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toastService', 'TrademarksV2', function ($scope, $location, toastService, TrademarksV2)
+TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toastService', 'TrademarksV2', '$translate', function ($scope, $location, toastService, TrademarksV2, $translate)
 {
 
     $scope.master = {
@@ -99,10 +99,10 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
             TrademarksV2.save(data, function (msg) {
                 if(msg._id) {
                     console.log("Trademark Saved!");
-                    toastService.toast("success", 'Marque sauvegardée');
+                    toastService.toast("success", $translate.instant("global.markSaved"));
                     $location.path("/trademarks");
                 } else {
-                    toastService.toast("warning", 'Entrez une valeur pour le nom');
+                    toastService.toast("warning", $translate.instant("global.nameValue"));
                     console.error("Error!");
                 }
             }, function(error){
@@ -113,11 +113,11 @@ TrademarkControllers.controller('TrademarkNewCtrl', ['$scope', '$location', 'toa
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.error"));
                 }
             });
         }else{
-            toastService.toast("warning", 'Enter a value');
+            toastService.toast("warning", $translate.instant("global.enterValue"));
         }
     };
 

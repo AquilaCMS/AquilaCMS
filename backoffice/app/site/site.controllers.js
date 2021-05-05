@@ -69,7 +69,7 @@ SiteControllers.controller("ArticlesSiteCtrl", [
         $scope.remove = function (articles) {
             if(confirm("Etes-vous sûr de vouloir supprimer cet article ?")) {
                 ArticlesV2.delete({id: articles._id, type: 'new'}, function () {
-                    toastService.toast("success", "Article supprimé");
+                    toastService.toast("success", $translate.instant("global.itemDelete"));
                     $route.reload();
                 });
             }
@@ -84,8 +84,8 @@ SiteControllers.controller("ArticlesSiteCtrl", [
 
 // Création d'article
 SiteControllers.controller("ArticlesNewSiteCtrl", [
-    "$scope", "$location", "ArticlesV2", "toastService",
-    function ($scope, $location, ArticlesV2, toastService)
+    "$scope", "$location", "ArticlesV2", "toastService", "$translate",
+    function ($scope, $location, ArticlesV2, toastService, $translate)
     {
         var selectedLang = "";
 
@@ -114,7 +114,7 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
 
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides.");
+                toastService.toast("danger", $translate.instant("global.invalidEntry"));
                 return;
             }
 
@@ -122,11 +122,11 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
             {
                 if(response.msg)
                 {
-                    toastService.toast("danger", "Ce slug est déjà utilisée, merci d'en choisir une autre");
+                    toastService.toast("danger", $translate.instant("global.slugEverUsed"));
                 }
                 else
                 {
-                    toastService.toast("success", "Article sauvegardé !");
+                    toastService.toast("success", $translate.instant("global.itemSaved"));
                     if(isQuit)
                     {
                         $location.path("/site/articles");
@@ -141,7 +141,7 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
                 if(err){
                     toastService.toast("danger", err.data.message);
                 }else{
-                    toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                    toastService.toast("danger", $translate.instant("global.errorSaved"));
                 }
             });
         };
@@ -150,8 +150,8 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
 
 // Edition d'article
 SiteControllers.controller("ArticlesDetailSiteCtrl", [
-    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope",
-    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope)
+    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope", "$translate",
+    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope, $translate)
     {
         var selectedLang = "";
         $scope.isEditMode = false;
@@ -182,7 +182,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 {
                     if(response._id === undefined)
                     {
-                        toastService.toast("danger", "Cet article n'existe pas");
+                        toastService.toast("danger", $translate.instant("global.articleNotExist"));
                         $location.path("/site/articles");
                     }
 
@@ -212,7 +212,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 $scope.articles.img = "";
                 SiteDeleteImage.deleteImage({_id: articles._id}, function (response)
                 {
-                    toastService.toast("success", "Image supprimée");
+                    toastService.toast("success", $translate.instant("global.imgDelete"));
                 });
             }
         };
@@ -247,13 +247,13 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
 
             if($scope.articles.translation[selectedLang].slug === "" || $scope.articles.translation[selectedLang].slug === undefined)
             {
-                toastService.toast("danger", "Le slug ne doit pas être vide");
+                toastService.toast("danger", $translate.instant("global.slugEmpty"));
                 return;
             }
 
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides.");
+                toastService.toast("danger", $translate.instant("global.invalidEntry"));
                 return;
             }
 
@@ -262,11 +262,11 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             {
                 if(response.msg)
                 {
-                    toastService.toast("danger", "Ce slug est déjà utilisée, merci d'en choisir une autre");
+                    toastService.toast("danger", $translate.instant("global.slugEverUsed"));
                 }
                 else
                 {
-                    toastService.toast("success", "Informations sauvegardées !");
+                    toastService.toast("success", $translate.instant("global.infoSaved"));
                     if(isQuit)
                     {
                         $location.path("/site/articles");
@@ -284,7 +284,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error during save');
+                    toastService.toast("danger", $translate.instant("global.errorSaved"));
                 }
                 $scope.disableSave = false;
             });
@@ -296,7 +296,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             {
                 ArticlesV2.delete({id: $scope.articles._id, type: 'new'}, function ()
                 {
-                    toastService.toast("success", "Article supprimé");
+                    toastService.toast("success", $translate.instant("global.imgDelete"));
                     $location.path("/site/articles");
                 });
             }
