@@ -1826,10 +1826,11 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             );
                         }
-
-                        for(var i = 0; i < $scope.rule.conditions.length; i++)
-                        {
-                            $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                        if($scope.rule.conditions){
+                            const conditionsLength = $scope.rule.conditions.length;
+                            for(var i = 0; i < conditionsLength; i++) {
+                                $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                            }
                         }
                     });
                 };
