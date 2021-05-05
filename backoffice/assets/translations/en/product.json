@@ -4,7 +4,7 @@
         "cancel": "Cancel",
         "valider": "Submit"
     },
-    "button":{
+    "button": {
         "dup": "Duplicate"
     },
     "cross-selling": {
@@ -34,21 +34,21 @@
         "titleDescLg": "Long description title",
         "descLg": "Long description",
         "titleDescCt": "Short description title",
-        "metaDesc":"Meta description",
+        "metaDesc": "Meta description",
         "descCt": "Short description",
         "canon": "Canonical",
         "noAttribs": "No attributes",
         "preview": "Preview",
-        "coherenceTitle":"Coherence of the product"
+        "coherenceTitle": "Coherence of the product"
     },
-    "modal":{
+    "modal": {
         "activeProduct": "Activate a product",
         "close": "Close",
         "help": "This product isn't activable because he has no 'canonical' (unique URL).</br>You can : </br></br><span ng-if='!cat'>- <a target='_blank' href='{{admin}}#/categories'>Link this product to a category</a> or <a target='_blank' href='{{admin}}#/jobs'>generate categorisation</a></br></br></span><span>- <a target='_blank' href='{{admin}}#/jobs'>Generate 'canonicalisation'</a></span>",
         "runCanonicalisation": "- Launch  \"Catégorization\" then \"Canonicalization\"",
-        "coherenceTitle":"Problems with the product :"
+        "coherenceTitle": "Problems with the product :"
     },
-       "marketing": {
+    "marketing": {
         "fournisseur": "Supplier",
         "refFourn": "Réf. Supplier",
         "nomFourn": "Supplier name",
@@ -125,7 +125,8 @@
         "creation_date": "Creation date",
         "reset_filters": "Reinit filters",
         "edit": "Edit",
-        "action": "Action"
+        "action": "Action",
+        "productNumber": "Number of products"
     },
     "virtual": {
         "clientEmail": "Email client",

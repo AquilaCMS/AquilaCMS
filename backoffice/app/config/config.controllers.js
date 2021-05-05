@@ -1,7 +1,8 @@
 const ConfigControllers = angular.module("aq.config.controllers", ["ui.bootstrap"]);
 
 ConfigControllers.controller("ImportConfigCtrl", [
-    "$scope", "ProductObj", "NSConstants", "Config", "$http", "SetAttributesV2", "toastService", function ($scope, ProductObj, NSConstants, Config, $http, SetAttributesV2, toastService) {
+    "$scope", "ProductObj", "NSConstants", "Config", "$http", "SetAttributesV2", "toastService", "$translate",
+    function ($scope, ProductObj, NSConstants, Config, $http, SetAttributesV2, toastService, $translate) {
         console.info(">>> ImportConfigCtrl loaded ! <<<");
 
         $scope.productObj = ProductObj;
@@ -59,7 +60,7 @@ ConfigControllers.controller("ImportConfigCtrl", [
             if (category == "arbo") {
                 $http.post("/config/imports/importArbo").then(function () {
                     $scope.isLoading = false;
-                    toastService.toast("success", "Succès");
+                    toastService.toast("success", $translate.instant("global.success"));
                 }, function (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data);
@@ -72,7 +73,7 @@ ConfigControllers.controller("ImportConfigCtrl", [
                     attributes
                 }).$promise.then(function () {
                     $scope.isLoading = false;
-                    toastService.toast("success", "Succès");
+                    toastService.toast("success", $translate.instant("global.success"));
                 }, function (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data);
@@ -83,8 +84,8 @@ ConfigControllers.controller("ImportConfigCtrl", [
 ]);
 
 ConfigControllers.controller("EnvironmentConfigCtrl", [
-    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload",
-    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload) {
+    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$translate",
+    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload, $translate) {
         $scope.disabledButton = false;
         $scope.countries = [];
         $scope.config = {};
@@ -208,7 +209,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     }
                 }, (err) => {
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", "Une erreur est survenue !");
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                     console.error(err);
                 });
             });

@@ -6,9 +6,9 @@
         "miniature": "Thumbnail",
         "cpLien": "Copy link",
         "delete": "Delete",
-        "uploadInsert" : "Insert in database",
-        "uploadButton" : "Massive adding"
-   },
+        "uploadInsert": "Insert in database",
+        "uploadButton": "Massive adding"
+    },
     "new": {
         "t1": "New Media",
         "ph1": "File name",
@@ -17,7 +17,8 @@
         "cpLien": "Copy link",
         "media": "Media",
         "add": "Add",
-        "group": "Group"
+        "group": "Group",
+        "uploadText": "Save the media to upload"
     },
     "uploadMedias": {
         "queue": "Queue :",
@@ -54,9 +55,9 @@
         "bottomLeft": "Bottom left",
         "bottomRight": "Bottom right"
     },
-    "multi":{
+    "multi": {
         "title": "Massive adding",
-        "cancel":"Cancel",
-        "uploadInfo" : "Only .zip are accepted. Files must be at the root of .zip."
+        "cancel": "Cancel",
+        "uploadInfo": "Only .zip are accepted. Files must be at the root of .zip."
     }
 }

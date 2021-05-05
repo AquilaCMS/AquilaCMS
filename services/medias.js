@@ -35,7 +35,7 @@ const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Medias, restrictedFields, defaultFields);
 
 /**
- * Permet de télécharger un zip contenant tous le dossier "upload"
+ * Allows you to download a zip containing all the "upload" folder
  */
 const downloadAllDocuments = async () => {
     console.log('Preparing downloadAllDocuments...');
@@ -80,7 +80,7 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
 
     const zip = new AdmZip(path_init);
     zip.extractAllTo(path_unzip);
-    // Parcourir l'ensemble des fichiers pour les ajouter à la table medias
+    // Browse all the files to add them to the medias table
     const filenames = fsp.readdirSync(path_unzip);
 
     // filenames.forEach(async (filename) => { // Don't use forEach because of async (when it's call by a module in initAfter)
@@ -98,18 +98,18 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
             return;
         }
 
-        // Déplacer le fichier dans /medias
+        // Move file to / medias
         require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
             if (err) console.error(err);
         });
 
-        // L'inserer dans la base de données
+        // Insert it in the database
         if (insertDB) {
-            await Medias.create({
+            await Medias.updateOne({name: name_file}, {
                 link : `medias/${filename}`,
                 name : name_file,
                 group
-            });
+            }, {upsert: true});
         }
     }
 
@@ -136,10 +136,10 @@ const uploadAllDocuments = async (reqFile) => {
  *
  * http://localhost/images/:type/:size/:id.:extension
  *
- * @param {string} type - type de données (ex: 'products', 'medias', 'slider', 'gallery')
- * @param {string} _id  - /!\ GUID de l'IMAGE /!\
+ * @param {string} type - data type(ie: 'products', 'medias', 'slider', 'gallery')
+ * @param {string} _id  - /!\ IMAGE's GUID /!\
  * @param {string} size  - `${width}x${height}` (ex: '300x200')
- * @param {string} extension - extension du fichier (ex: 'png', 'jpeg', 'jpg')
+ * @param {string} extension - file extension (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
 // const downloadImage = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
@@ -186,11 +186,11 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         fileNameOption = '';
     }
     switch (type) {
-    // si une image produit est requêtée
+    // if a product image is requested
     case 'products':
         const product = await Products.findOne({'images._id': _id});
         imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
-        // on recupere le nom du fichier
+        // we get the name of the file
         fileName      = path.basename(imageObj.url);
         relativePath  = imageObj.url;
         filePath      = path.join(_path, imageObj.url);
@@ -198,7 +198,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
         await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
         break;
-        // si un media est requêté
+        // if a media is requested
     case 'medias':
         imageObj      = await Medias.findOne({_id});
         fileName      = path.basename(imageObj.link, `.${extension}`);
@@ -252,10 +252,10 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
 
     // global aux sections
     // ./global aux sections
-    // si le dossier de cache n'existe pas, on le créé
+    // if the cache folder does not exist, we create it
     await fsp.mkdir(cacheFolder, {recursive: true});
 
-    // si l'image demandée est deja en cache, on la renvoie direct
+    // if the requested image is already cached, it is returned direct
     if (fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
@@ -268,7 +268,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
                 fsp.copyFileSync(filePath, filePathCache);
             });
         } else {
-        // sinon, on recupere l'image original, on la resize, on la compresse et on la retourne
+        // otherwise, we recover the original image, we resize it, we compress it and we return it
         // resize
             filePath = await utilsModules.modulesLoadFunctions('getFile', {
                 key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
@@ -292,7 +292,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
                 });
             }
         }
-        // compressage
+        // compress
         filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
         return filePathCache;
     }
@@ -426,21 +426,23 @@ const uploadFiles = async (body, files) => {
         return {name: name + extension, path: target_path_full, id: media._id};
     }
     case 'gallery': {
-        if (body.entity._id) {
+        if (body.entity._id) { // When you change the image of an item
             const gallery = await Gallery.findOne({_id: body._id});
             // == necessary
-            const item    = gallery.items.find((i) => i._id === body.entity._id);
+            const item    = gallery.items.find((i) => i._id.toString() === body.entity._id);
             const oldPath = item.src;
             item.src      = target_path_full;
             item.alt      = body.alt && body.alt !== '' ? body.alt : item.alt;
             item.srcset   = [target_path_full];
-            await Gallery.updateOne({'items._id': body.entity._id}, {
+            await Gallery.updateOne({}, {
                 $set : {
-                    'items.$.src'       : target_path_full,
-                    'items.$.alt'       : body.alt && body.alt !== '' ? body.alt : item.alt,
-                    'items.$.srcset'    : [target_path_full],
-                    'items.$.extension' : path.extname(target_path_full)
+                    'items.$[item].src'       : target_path_full,
+                    'items.$[item].alt'       : body.alt && body.alt !== '' ? body.alt : item.alt,
+                    'items.$[item].srcset'    : [target_path_full],
+                    'items.$[item].extension' : path.extname(target_path_full)
                 }
+            }, {
+                arrayFilters : [{'item._id': body.entity._id}]
             });
             await deleteFileAndCacheFile(oldPath, 'gallery');
             return item;
@@ -450,6 +452,7 @@ const uploadFiles = async (body, files) => {
         if (galleryNumber.items.length !== 0) {
             maxOrder = Math.max.apply(null, galleryNumber.items.map((i) => i.order));
         }
+
         const item = {
             src       : target_path_full,
             srcset    : [target_path_full],
@@ -465,21 +468,23 @@ const uploadFiles = async (body, files) => {
         return item;
     }
     case 'slider': {
-        if (body.entity._id) {
+        if (body.entity._id) { // When you change the image of an item
             const slider = await Slider.findOne({_id: body._id});
             // == necessary
-            const item    = slider.items.find((i) => i.id === body.entity._id);
+            const item    = slider.items.find((i) => i.id.toString() === body.entity._id);
             const oldPath = item.src;
             item.src      = target_path_full;
             item.name     = body.alt && body.alt !== '' ? body.alt : item.name;
             item.text     = body.alt && body.alt !== '' ? body.alt : item.text;
-            await Slider.updateOne({'items._id': body.entity._id}, {
+            await Slider.updateOne({}, {
                 $set : {
-                    'items.$.src'  : target_path_full,
-                    'items.$.name' : item.name,
-                    'items.$.text' : item.text,
-                    extension      : path.extname(target_path_full)
+                    'items.$[item].src'  : target_path_full,
+                    'items.$[item].name' : item.name,
+                    'items.$[item].text' : item.text,
+                    extension            : path.extname(target_path_full)
                 }
+            }, {
+                arrayFilters : [{'item._id': body.entity._id}]
             });
             await deleteFileAndCacheFile(oldPath, 'slider');
             return item;
@@ -549,10 +554,16 @@ const getMedia = async (PostBody) => {
 };
 
 const saveMedia = async (media) => {
-    if (media.link && media.link !== '') {
-        const result = await Medias.findOneAndUpdate({link: media.link}, media);
+    if (media._id) {
+        // we need to update the media
+        if (media.link && media.link !== '') {
+            const result = await Medias.findOneAndUpdate({link: media.link}, media);
+            return result;
+        }
+        const result = await Medias.findOneAndUpdate({_id: media._id}, media);
         return result;
     }
+    // we need to create the media
     media.name   = utils.slugify(media.name);
     const result = Medias.create(media);
     return result;
@@ -572,7 +583,7 @@ const removeMedia = async (_id) => {
 const getMediasGroups = async (query, filter = {}) => {
     const medias       = await Medias.find(filter);
     const sortedGroups = ([...new Set(medias.map((media) => (media.group === '' ? 'general' : media.group)))]).sort((a, b) => a - b);
-    // s'il est la, on place "general" en premier index
+    // if it is there, we put "general" in the first index
     if (sortedGroups.includes('general')) {
         sortedGroups.splice(sortedGroups.indexOf('general'), 1);
         sortedGroups.unshift('general');

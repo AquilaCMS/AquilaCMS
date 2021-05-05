@@ -140,7 +140,18 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                updateQuery.translation[lang.code] = {slug: utils.slugify(updateQuery.code)};
+                let correctCode;
+                // when we want the preview of a product
+                // the updateQuery object don't have the code (only updatedAt)
+                // so we need to get the code to update and get the preview !
+                if (typeof updateQuery.code === 'undefined') {
+                    if (self && self._update && self._update.code) {
+                        correctCode = self._update.code;
+                    }
+                } else {
+                    correctCode = updateQuery.code;
+                }
+                updateQuery.translation[lang.code] = {slug: utils.slugify(correctCode)};
             }
             if (!updateQuery.translation[lang.code].slug) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
@@ -184,11 +195,11 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
             if (self.translation[lang.code].slug.length <= 2) {
-                errors.push('slug trop court');
+                errors.push(`slug '${lang.code}' trop court`);
                 return errors;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
+                errors.push(`slug '${lang.code}' déjà existant`);
             }
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}

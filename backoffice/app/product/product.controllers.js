@@ -85,24 +85,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.filterLang = "";
         $scope.showLoader = false;
 
-        function getProductImg(prdIndex, products) {
-            if (products && products.length > 0) {
-                if (products[prdIndex].imageUrl == "./img/empty.jpg") {
-                    ProductImage.query({type: "aquila", id: products[prdIndex].id}, function (data) {
-                        products[prdIndex].imageUrl = `data:image/jpg;base64,${data.img}`;
-
-                        if (prdIndex < products.length - 1) {
-                            getProductImg(prdIndex + 1, products);
-                        }
-                    });
-                } else {
-                    if (prdIndex < products.length - 1) {
-                        getProductImg(prdIndex + 1, products);
-                    }
-                }
-            }
-        }
-
         $scope.getImage = function (images) {
             try {
                 const image = images.find(img => img.default) ? images.find(img => img.default) : images[0];
@@ -113,9 +95,11 @@ ProductControllers.controller("ProductListCtrl", [
             }
         };
         $scope.collapse = function () {
-          if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
-            document.getElementById('collapseIcon').className =  "ico-arrow-up"
-          }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
+            if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+                document.getElementById('collapseIcon').className = "ico-arrow-up";
+            }else {
+                document.getElementById('collapseIcon').className = "ico-arrow-down";
+            }
         };
 
         $scope.getAttributesClassed = function () {
@@ -130,7 +114,12 @@ ProductControllers.controller("ProductListCtrl", [
             const filter = $scope.filter;
             let pageAdmin = {location: "products", page: 1};
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
-                pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+                try{
+                    pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+                }catch(e){
+                    // if JSON.parse() fail => the page doesn't load
+                    pageAdmin = {location: "products", page: 1};
+                }
             }
             if (page === undefined && pageAdmin.location === "products") {
                 const pageSaved = pageAdmin.page;
@@ -251,10 +240,16 @@ ProductControllers.controller("ProductListCtrl", [
                 }
             };
             ProductsV2.list(paramsV2, function (res) {
-                getProductImg(0, res.datas); // what the hell is that ?!
-                $scope.products = res.datas;
-                $scope.totalItems = res.count;
-                $scope.showLoader = false;
+                if(res.count > 0 && res.datas.length == 0){
+                    //weird so we reload with page 1
+                    $scope.getProducts(1);
+                }else{
+                    $scope.products = res.datas;
+                    $scope.totalItems = res.count;
+                    $scope.showLoader = false;
+                }
+            }, function(error){
+                console.error(error);
             });
         };
 
@@ -278,6 +273,8 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.resetFilters = function (date) {
             $scope.filter = {};
             $scope.filtersAttribs = {};
+            window.localStorage.setItem("pageAdmin", `{"location":"products","page":1,"search":{},"filter":{}}`);
+            $scope.searchObj = {};
             $scope.getProducts(1);
         };
 

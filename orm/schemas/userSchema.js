@@ -11,12 +11,13 @@ const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
 const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
-const Schema            = mongoose.Schema;
-const ObjectId          = Schema.ObjectId;
 const NSErrors          = require('../../utils/errors/NSErrors');
+const Schema            = mongoose.Schema;
+const {ObjectId}        = Schema.Types;
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
+ * @returns {string}
  */
 const generateUserPassword = () => {
     const CHARACTER_SETS = [
@@ -38,7 +39,11 @@ const generateUserPassword = () => {
     return result;
 };
 
-// Returns a random integer in the range [0, n) using a variety of methods.
+/**
+ * Returns a random integer in the range [0, n) using a variety of methods.
+ * @param {number} n
+ * @returns {number}
+ */
 const randomInt = (n) => {
     const x = Math.floor(Math.random() * n);
     if (x < 0 || x >= n) throw new Error('Arithmetic exception');
@@ -142,7 +147,7 @@ UserSchema.methods.hashPassword = async function () {
 };
 
 UserSchema.post('validate', async function () {
-    if (this.isNew) {
+    if (this.isNew || this.needHash) {
         await this.hashPassword();
     }
 });

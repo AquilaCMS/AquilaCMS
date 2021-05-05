@@ -15,6 +15,11 @@ const {v4: uuidv4}   = require('uuid');
 const mongoose       = require('mongoose');
 const fs             = require('./fsp');
 
+/**
+ *
+ * @param {string} moduleName
+ * @returns {boolean}
+ */
 const checkModuleRegistryKey = async (moduleName) => {
     try {
         let registryFile    = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
@@ -109,8 +114,8 @@ const json2csv = async (data, fields, folderPath, filename) => {
 
 /**
  * Detect if array contain duplicated values
- * @param {Array} a array to check duplicate
- * @returns {Boolean} Contains duplicated
+ * @param {array} a array to check duplicate
+ * @returns {boolean} Contains duplicated
  */
 const detectDuplicateInArray = (a) => {
     for (let i = 0; i <= a.length; i++) {
@@ -123,8 +128,14 @@ const detectDuplicateInArray = (a) => {
     return false;
 };
 
+/**
+ * download a file
+ * @param {string} url url of the file to download
+ * @param {string} dest destination where the file will be downloaded
+ * @returns {Promise<string|null>}
+ */
 const downloadFile = async (url, dest) => {
-    // on creer les dossier
+    // we create the files
     fs.mkdirSync(dest.replace(path.basename(dest), ''), {recursive: true});
     const file        = fs.createWriteStream(dest);
     const downloadDep = url.includes('https://') ? require('https') : require('http');
@@ -156,8 +167,12 @@ const slugify = (text) => {
     return require('slug')(text, {lower: true});
 };
 
-// Returns ET price
-// VAT is 20 if if is 20%
+/**
+ * transform a price in ATI to ET
+ * @param {number|undefined} ATIPrice
+ * @param {number|undefined} VAT ex: VAT is 20 if it is 20%
+ * @returns {number|undefined}
+ */
 const toET = (ATIPrice, VAT) => {
     if ((ATIPrice !== undefined) && (VAT !== undefined)) {
         if (VAT === 0) {
@@ -170,6 +185,12 @@ const toET = (ATIPrice, VAT) => {
     return undefined;
 };
 
+/**
+ *
+ * @param {any} obj
+ * @param {string} str
+ * @returns {any}
+ */
 const getObjFromDotStr = (obj, str) => {
     return str.split('.').reduce((o, i) => {
         if (!o[i]) return '';
@@ -218,7 +239,12 @@ const isEqual = (value, other) => {
     return true;
 };
 
-// Compare two items
+/**
+ * Compare two items
+ * @param {any} item1
+ * @param {any} item2
+ * @returns {boolean}
+ */
 let compare = (item1, item2) => {
 // Get the object type
     const itemType = Object.prototype.toString.call(item1);
@@ -239,6 +265,11 @@ let compare = (item1, item2) => {
     }
 };
 
+/**
+ * check if a string is parseable as a JSON
+ * @param {string} str
+ * @returns {boolean}
+ */
 const isJsonString = (str) => {
     try {
         JSON.parse(str);
@@ -247,6 +278,13 @@ const isJsonString = (str) => {
     }
     return true;
 };
+
+/**
+ * Check if user is admin
+ * @param {object | undefined} info
+ * @returns {boolean}
+ */
+const isAdmin = (info) => info && info.isAdmin;
 
 module.exports = {
     downloadFile,
@@ -258,5 +296,6 @@ module.exports = {
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,
-    isJsonString
+    isJsonString,
+    isAdmin
 };

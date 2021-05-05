@@ -53,19 +53,19 @@
                         </tr>
                         <tr role="row">
                             <th>
-                                <input type="text" ng-change="sortSearch()" ng-model="filter.email" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.email' class="form-control">
+                                <input type="text" ng-change="sortSearch(null, 1)" ng-model="filter.email" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.email' class="form-control">
                             </th>
                             <th>
-                                <input type="text" ng-change="sortSearch()" ng-model="filter.lastname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.nom' class="form-control">
+                                <input type="text" ng-change="sortSearch(null, 1)" ng-model="filter.lastname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.nom' class="form-control">
                             </th>
                             <th>
-                                <input type="text" ng-change="sortSearch()" ng-model="filter.firstname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.prenom2' class="form-control">
+                                <input type="text" ng-change="sortSearch(null, 1)" ng-model="filter.firstname" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.prenom2' class="form-control">
                             </th>
                             <th>
-                                <input type="text" ng-change="sortSearch()" ng-model="filter.company" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.companyName' class="form-control">
+                                <input type="text" ng-change="sortSearch(null, 1)" ng-model="filter.company" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='client.list.companyName' class="form-control">
                             </th>
                             <th>
-                                <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="sortSearch()">
+                                <ns-datepicker name="min_createdAt" class="fullDatepicker form-datepicker" style="display: inline-block; width: 45%" ng-model="filter.min_createdAt" ng-change="sortSearch(null, 1)">
                                 </ns-datepicker>
                             </th>
                         </tr>
@@ -96,7 +96,7 @@
                         </tbody>
                     </table>
                 </div>
-                <pagination total-items="totalClients" page="currentClientsPage" on-select-page="onClientsPageChange(page+1)" items-per-page="nbItemsPerPage"
+                <pagination total-items="totalClients" page="currentClientsPage" on-select-page="onClientsPageChange(page)" items-per-page="nbItemsPerPage"
                 max-size="maxSize" boundary-links="true" rotate="false"></pagination>
             </div>
         </div>

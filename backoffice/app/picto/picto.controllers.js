@@ -38,6 +38,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
     'RulesV2',
     '$modal',
     '$location',
+    '$translate',
     function (
         $scope,
         PictoApi,
@@ -45,7 +46,8 @@ PictoControllers.controller('PictoDetailsCtrl', [
         toastService,
         RulesV2,
         $modal,
-        $location
+        $location,
+        $translate
     ) {
         $scope.picto = {};
         $scope.isEditMode = true;
@@ -144,7 +146,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
             if ($scope.rule.operand !== undefined) {
@@ -178,7 +180,8 @@ PictoControllers.controller('PictoNewCtrl', [
     'toastService',
     'RuleApi',
     '$location',
-    function ($scope, PictoApi, $routeParams, toastService, RuleApi, $location) {
+    '$translate',
+    function ($scope, PictoApi, $routeParams, toastService, RuleApi, $location, $translate) {
         $scope.picto = {
             location : 'TOP_LEFT',
             enabled  : false,
@@ -216,7 +219,7 @@ PictoControllers.controller('PictoNewCtrl', [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };

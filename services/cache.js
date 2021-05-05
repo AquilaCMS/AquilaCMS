@@ -17,7 +17,7 @@ const flush = () => {
 };
 
 /**
- * @param subfolder : ex: "/medias"
+ * @param subfolder : ie: "/medias"
  */
 const cleanCache = async (subfolder = undefined) => {
     let cacheFolder = 'cache';
@@ -36,13 +36,13 @@ const deleteCacheImage = (type, datas) => {
     let filePathCache = '';
 
     switch (type) {
-    // si une image produit est supprimée
+    // if a product image is deleted
     case 'products':
         fileName      = `${datas.code}_${datas._id}`;
         filePathCache = `${cacheFolder}products/${getChar(datas.code, 0)}/${getChar(datas.code, 1)}/${fileName}*`;
         deleteFileCache(filePathCache);
         break;
-        // si un media est requêté
+        // if a media is requested
     case 'medias':
         fileName      = datas.filename;
         filePathCache = `${cacheFolder}medias/${fileName}*`;
@@ -89,12 +89,12 @@ const cacheSetting = () => {
  *  getChar('hello', 1)
  *  // returns e
  * ```
- * @param {string} string input string to get char
+ * @param {any} string input string to get char
  * @param {number} index index of char to find in string
  */
 const getChar = (string, index) => {
     if (string[index]) {
-        // NE PAS REMPLACER LE == par un === !!!!!
+        // WARNING : DON'T REPLACE THE == by a ===
         // eslint-disable-next-line
         if (Number(string[index]).toString() === "NaN" || Number(string[index]) == string[index]) {
             return string[index];

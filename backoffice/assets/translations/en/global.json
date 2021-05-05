@@ -1,3 +1,9 @@
 {
-    "saveMessage": "Saved settings"
+    "saveMessage": "Saved settings",
+    "visible": "Visible",
+    "nonVisible": "Non visible",
+    "yes": "Yes",
+    "no": "No",
+    "standardError": "An error has occurred",
+    "success": "Success"
 }

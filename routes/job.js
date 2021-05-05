@@ -20,7 +20,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant des jobs
+ * Function returning jobs
  */
 async function getJobs(req, res, next) {
     try {
@@ -32,7 +32,7 @@ async function getJobs(req, res, next) {
 }
 
 /**
- * Fonction retournant un job en fonction de son _id
+ * Function returning a job according to its _id
  */
 async function getJobById(req, res, next) {
     try {
@@ -44,7 +44,7 @@ async function getJobById(req, res, next) {
 }
 
 /**
- * Fonction permettant de passer un job en mode actif = true dans la collection agendaJob
+ * Function allowing to pass a job in active mode = true in the collection agendaJob
  */
 async function getPlayJob(req, res, next) {
     try {
@@ -56,7 +56,7 @@ async function getPlayJob(req, res, next) {
 }
 
 /**
- * Fonction permettant de passer un job en mode actif = true dans la collection agendaJob
+ * Function allowing to pass a job in active mode = true in the collection agendaJob
  * @param {Express.Request} req request
  * @param {Object} req.params params of request
  * @param {string} req.params._id job id in database
@@ -76,7 +76,7 @@ async function getPlayImmediateJob(req, res, next) {
 }
 
 /**
- * Fonction permettant de passer un job en mode actif = false dans la collection agendaJob
+ * Function allowing to pass a job in active mode = false in the collection agendaJob
  * @param {Express.Request} req request
  * @param {Object} req.params params of request
  * @param {string} req.params._id job id in database
@@ -95,7 +95,7 @@ async function getPauseJob(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer un job dans la table jobs et agendaJobs
+ * Function used to set a job in the jobs and agendaJobs table
  */
 async function setJob(req, res, next) {
     try {
@@ -108,7 +108,7 @@ async function setJob(req, res, next) {
     }
 }
 /**
- * Fonction permettant de supprimer un job dans la table jobs et agendaJobs
+ * Function used to delete a job in the jobs and agendaJobs table
  */
 async function deleteJob(req, res, next) {
     try {
