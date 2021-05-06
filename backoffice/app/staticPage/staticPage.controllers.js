@@ -161,7 +161,8 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 ]);
 
 StaticPageControllers.controller("StaticPageDetailCtrl", [
-    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo) {
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', "$translate",
+    function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo, $translate) {
         $scope.local = {url: ""};
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
