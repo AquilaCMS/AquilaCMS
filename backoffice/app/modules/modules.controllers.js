@@ -103,54 +103,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                     }
                 }).result.then((function (result) {
                     $scope.showModuleLoading = true;
-                    ModuleServiceV2.toggle({
-                        idModule    : id,
-                        active      : state,
-                        toBeChanged : result.toBeChanged,
-                        toBeRemoved : response.toBeRemoved
-                    }, function (response) {
-                        $scope.showModuleLoading = false;
-                        $scope.restart(name, state, false);
-                    }, function (err) {
-                        $scope.showModuleLoading = false;
-                        if(err) {
-                            if (err.datas && err.datas.missingDependencies && err.datas.needActivation) {
-                                $scope.modules.find((elem) => elem._id === id).active = false;
-                                let messageToast = "";
-                                if(err.message){
-                                    messageToast += `${err.message}<br/>`;
-                                }
-                                if(err.datas.missingDependencies.length > 0){
-                                    const missingDependencies = err.datas.missingDependencies.map((elem) => elem = ` - ${elem}`).join('<br>');
-                                    messageToast += `missing dependencies :<br/><b>${missingDependencies}</b><br/>`;
-                                }
-                                if(err.datas.needActivation.length > 0){
-                                    const needActivation = err.datas.needActivation.map((elem) => elem = ` - ${elem}`).join('<br/>');
-                                    messageToast += `need activation :<br/><b>${needActivation}</b><br/>`;
-                                }
-                                toastService.toast('danger', messageToast);
-                            } else if (err.datas && err.needDeactivation) {
-                                $scope.modules.find((elem) => elem._id === id).active = true;
-                                let messageToast = "";
-                                if(err.message){
-                                    messageToast += `${err.message}<br/>`;
-                                }
-                                if(err.datas.needDeactivation.length > 0 ){
-                                    const needDeactivation = err.datas.needDeactivation.map((elem) => elem = ` - ${elem}`).join('<br/>')
-                                    messageToast += `need deactivation :<br/><b>${needDeactivation}</b><br/>`;
-                                }
-                                toastService.toast('danger', messageToast);
-                            } else if (err.message) {
-                                toastService.toast('danger', err.message);
-                            } else {
-                                console.error(err);
-                                toastService.toast('danger', 'Unknown error');
-                            }
-                        }else{
-                            console.error(err);
-                            // no toast because maybe it's the timeout
-                        }
-                    });
+                    toggleModule(id, state, result.toBeChanged, response.toBeRemoved);
                 }));
             } else {
                 for (const apiOrTheme of Object.keys(response.toBeChanged)) {
@@ -158,52 +111,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                         response.toBeChanged[apiOrTheme][key] = Array.isArray(index) ? index[0] : index;
                     }
                 }
-                ModuleServiceV2.toggle({
-                    idModule    : id,
-                    active      : state,
-                    toBeChanged : response.toBeChanged,
-                    toBeRemoved : response.toBeRemoved
-                }, function (response) {
-                    $scope.showModuleLoading = false;
-                    $scope.restart(name, state, false);
-                }, function (err) {
-                    $scope.showModuleLoading = false;
-                    if(err) {
-                        if (err.datas && err.datas.missingDependencies && err.datas.needActivation) {
-                            let messageToast = "";
-                            if(err.message){
-                                messageToast += `${err.message}<br/>`;
-                            }
-                            if(err.datas.missingDependencies.length > 0){
-                                const missingDependencies = err.datas.missingDependencies.map((elem) => elem = ` - ${elem}`).join('<br>');
-                                messageToast += `missing dependencies :<br/><b>${missingDependencies}</b><br/>`;
-                            }
-                            if(err.datas.needActivation.length > 0){
-                                const needActivation = err.datas.needActivation.map((elem) => elem = ` - ${elem}`).join('<br/>');
-                                messageToast += `need activation : <br/><b>${needActivation}</b><br/>`;
-                            }
-                            toastService.toast('danger', messageToast);
-                        } else if (err.datas && err.datas.needDeactivation) {
-                            let messageToast = "";
-                            if(err.message){
-                                messageToast += `${err.message}<br/>`;
-                            }
-                            if(err.datas.needDeactivation.length > 0){
-                                const needDeactivation = err.datas.needDeactivation.map((elem) => elem = ` - ${elem}`).join('<br>');
-                                messageToast += `need deactivation :<br><b>${needDeactivation}</b><br>`;
-                            }
-                            toastService.toast('danger', messageToast);
-                        } else if(err.message) {
-                            toastService.toast('danger', err.message);
-                        }
-                        if (err.datas && err.datas.modules) {
-                            $scope.modules = err.datas.modules;
-                        }
-                    }else{
-                        console.error(err);
-                        // no toast because maybe it's the timeout
-                    }
-                });
+                toggleModule(id, state, response.toBeChanged, response.toBeRemoved);
             }
         }, function(err) {
             $scope.showModuleLoading = false;
@@ -212,6 +120,62 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             $scope.modules.find((elem) => elem._id === id).active = false;
         });
     };
+
+    function toggleModule(id, state, toBeChanged, toBeRemoved){
+        ModuleServiceV2.toggle({
+            idModule    : id,
+            active      : state,
+            toBeChanged : toBeChanged,
+            toBeRemoved : toBeRemoved
+        }, function (response) {
+            $scope.showModuleLoading = false;
+            $scope.restart(name, state, false);
+        }, function (err) {
+            $scope.showModuleLoading = false;
+            console.error(err);
+            if(err) {
+                if(err.data && err.data != null){
+                    if(err.data.datas && err.data.datas != null){
+                        if (err.data.datas.missingDependencies && err.data.datas.needActivation) {
+                            $scope.modules.find((elem) => elem._id === id).active = false;
+                            let messageToast = "";
+                            if(err.data.message){
+                                messageToast += `${err.message}<br/>`;
+                            }
+                            if(err.data.datas.missingDependencies.length > 0){
+                                const missingDependencies = err.data.datas.missingDependencies.map((elem) => elem = ` - ${elem}`).join('<br>');
+                                messageToast += `missing dependencies :<br/><b>${missingDependencies}</b><br/>`;
+                                if(err.data.datas.needActivation.length > 0){
+                                    const needActivation = err.data.datas.needActivation.map((elem) => elem = ` - ${elem}`).join('<br/>');
+                                    messageToast += `need activation : <br/><b>${needActivation}</b><br/>`;
+                                    toastService.toast('danger', messageToast);
+                                }
+                            }
+                        } else if (err.data.datas.needDeactivation) {
+                            $scope.modules.find((elem) => elem._id === id).active = false;
+                            let messageToast = "";
+                            if(err.message){
+                                messageToast += `${err.message}<br/>`;
+                            }
+                            if(err.data.datas.needDeactivation.length > 0){
+                                const needDeactivation = err.data.datas.needDeactivation.map((elem) => elem = ` - ${elem}`).join('<br>');
+                                messageToast += `need deactivation :<br><b>${needDeactivation}</b><br/>`;
+                            }
+                            toastService.toast('danger', messageToast);
+                        }
+                        if (err.data.datas.modules) {
+                            $scope.modules = err.data.datas.modules;
+                        }
+                    }else{
+                        if(err.data.message) {
+                            toastService.toast('danger', err.message);
+                        }
+                    }
+                    $scope.modules.find((elem) => elem._id === id).active = false;
+                }
+            }
+        });
+    }
 
     $scope.remove = function (idModule, nameModule, state) {
         var check = window.confirm('Êtes-vous sur de vouloir supprimer ce module ?');
