@@ -64,7 +64,8 @@
         "addSelect": "Add selection ",
         "addAll": "Add all ",
         "supprSelect": " Delete selection",
-        "supprAll": " Delete all"
+        "supprAll": " Delete all",
+        "inORout": "In the category"
     },
     "list": {
         "t1": "Categories",
