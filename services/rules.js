@@ -593,6 +593,9 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
             const prd = _cat.productsList.find((_prd) => {
                 // if items[i].id exist it's a Cart else items is an array of products
                 if (cart.items[i].id) {
+                    if (mongoose.Types.ObjectId.isValid(cart.items[i].id)) {
+                        return _prd.id.toString() === cart.items[i].id.toString();
+                    }
                     return _prd.id.toString() === cart.items[i].id._id.toString();
                 }
                 return _prd.id.toString() === cart.items[i]._id.toString();
