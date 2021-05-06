@@ -151,10 +151,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                             // no toast because maybe it's the timeout
                         }
                     });
-                }), function (err) {
-                    console.error(error);
-                    toastService.toast("danger", $translate.instant("global.standardError"));
-                });
+                }));
             } else {
                 for (const apiOrTheme of Object.keys(response.toBeChanged)) {
                     for (const [key, index] of Object.entries(response.toBeChanged[apiOrTheme])) {
@@ -250,7 +247,10 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
         ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
             $scope.config = config;
             $scope.showLoading = true;
-            $http.get('/restart').catch((err) => {});
+            $http.get('/restart').catch(function(error) {
+                console.error(error);
+                toastService.toast("danger", $translate.instant("global.restartFail"));
+            });
             if (active && !deleteBool) {
                 $scope.message = `Activation du module ${nomModule} en cours, merci de patienter ...`;
             } else if (!active && !deleteBool) {
