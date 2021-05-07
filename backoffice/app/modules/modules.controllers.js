@@ -172,6 +172,8 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
                         }
                     }
                     $scope.modules.find((elem) => elem._id === id).active = false;
+                }else{
+                    $scope.restart(name, state, false);
                 }
             }
         });
