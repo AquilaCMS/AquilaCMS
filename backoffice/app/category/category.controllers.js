@@ -260,7 +260,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                             });
                             if(prd) {
                                 $scope.products[i].sortWeight = prd.sortWeight;
-                                $scope.products[i].check = true;
+                                $scope.products[i].checked = true;
                             }
                         }
                         $scope.products = filterProducts($scope.products); // filter product by "sortWeight" and "checked" 
@@ -288,8 +288,8 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 // two non checked or two checked, we use the sort
                 let aSort = (typeof a.sortWeight === "undefined" || a.sortWeight === null) ? -1 : a.sortWeight;
                 let bSort = (typeof b.sortWeight === "undefined" || b.sortWeight === null) ? -1 : b.sortWeight;
-                let aChecked = (typeof a.check === "undefined" || a.check === null) ? -1 : 1;
-                let bChecked = (typeof b.check === "undefined" || b.check === null) ? -1 : 1;
+                let aChecked = (typeof a.checked === "undefined" || a.checked === null) ? -1 : 1;
+                let bChecked = (typeof b.checked === "undefined" || b.checked === null) ? -1 : 1;
                 if(aChecked === bChecked){
                     if(aSort == bSort){
                         return 0;
@@ -313,7 +313,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     if($scope.category.productsList.length > 0){
                         $scope.products = $scope.category.productsList.map((element) => {
                             return {
-                                check: true,
+                                checked: true,
                                 sortWeight: element.sortWeight || 0,
                                 ...element.id
                             }
@@ -352,23 +352,31 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             console.error(error);
         });
 
-        $scope.changePosition = function (id, pos)
-        {
-            // $scope.products = $scope.products.sort(function (a, b)
-            // {
-            //     return a.sortWeight - b.sortWeight;
-            // }).reverse();
-            var index = $scope.category.productsList.findIndex(function (prd)
-            {
-                return prd.id == id;
+        $scope.changePosition = function (id, pos) {
+            const index = $scope.category.productsList.findIndex(function (prd) {
+                return prd.id._id == id;
             });
-            $scope.category.productsList[index].sortWeight = pos;
-            CategoryV2.save($scope.category, function (res)
-            {
+            if(index == -1){
+                // the prodcuts isn't in productsList, so we need to add it to
+                if(typeof $scope.category.productsList === "undefined" || $scope.category.productsList == null){
+                    $scope.category.productsList = [];
+                }
+                $scope.category.productsList.push({
+                    checked: false,
+                    id: {_id: id},
+                    sortWeight: pos
+                });
+            }else{
+                $scope.category.productsList[index].sortWeight = pos;
+            }
+            // we re-build the correct array
+            const newCat = angular.copy($scope.category);
+            for(let oneProduct of newCat.productsList){
+                oneProduct.id = oneProduct.id._id;
+            }
+            CategoryV2.save(newCat, function (res) {
                 toastService.toast("success", $translate.instant("global.positionSaved"));
-
-                if($scope.formMenu)
-                {
+                if($scope.formMenu) {
                     $scope.formMenu.$setPristine();
                 }
             });
@@ -444,10 +452,13 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
         };
 
-        function saveCategory()
-        {
-            CategoryV2.save($scope.category, function (res)
-            {
+        function saveCategory() {
+            // we re-build the correct array
+            const newCat = angular.copy($scope.category);
+            for(let oneProduct of newCat.productsList){
+                oneProduct.id = oneProduct.id._id;
+            }
+            CategoryV2.save(newCat, function (res) {
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
                 toastService.toast("success", $translate.instant("global.categorySaved"));
 
@@ -517,27 +528,35 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             $location.path("/products/" + productType + "/" + productSlug);
         };
 
-        $scope.checkProduct = function ($index)
-        {
-            var tab = $scope.category.productsList;
-
-            if(!$scope.products[$index].check)
-            {
-                var index = tab.findIndex(function (item)
-                {
-                    return item.id === $scope.products[$index]._id;
-                });
-                if(index > -1)
-                {
-                    tab.splice(index, 1);
+        $scope.checkProduct = function (id, checked) {
+            var index = $scope.category.productsList.findIndex(function (item) {
+                return item.id._id === id;
+            });
+            if(index == -1) {
+                if(checked == true || typeof checked === "undefined"){
+                    // not in the list
+                    $scope.category.productsList.push({
+                        id: {_id: id},
+                        sortWeight: 0,
+                        checked: true
+                    });
+                }
+            }else{
+                if(checked == true || typeof checked === "undefined"){
+                    $scope.category.productsList[index].checked = true;
+                }else{
+                    $scope.category.productsList.splice(index, 1);
                 }
             }
-            else
-            {
-                tab.push({id: $scope.products[$index]._id, checked: true});
+            // we re-build the correct array
+            const newCat = angular.copy($scope.category);
+            for(let oneProduct of newCat.productsList){
+                oneProduct.id = oneProduct.id._id;
             }
-
-            CategoryV2.save({_id: $scope.category._id, productsList: tab}, function () {
+            CategoryV2.save({
+                _id: newCat._id,
+                productsList: newCat.productsList
+            }, function (response) {
 
             });
         };

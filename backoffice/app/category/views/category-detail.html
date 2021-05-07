@@ -68,7 +68,7 @@
                                 <div class="btn-group" style="z-index: 1;">
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                            translate>category.detail.catalogue</label>
-                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'page'"
+                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
                                            translate>category.detail.page</label>
                                 </div>
                             </td>
@@ -321,7 +321,7 @@
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                         <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" style="height: 80px;">
                             <td>
-                                <input type="checkbox" ng-model="product.check" ng-change="checkProduct($index);" ng-click="$event.stopPropagation()">
+                                <input type="checkbox" ng-model="product.checked" ng-change="checkProduct(product._id, product.checked)" ng-click="$event.stopPropagation()">
                             </td>
                             <td>
                                 <input type="number" ng-model="product.sortWeight" ng-change="changePosition(product._id, product.sortWeight)"
