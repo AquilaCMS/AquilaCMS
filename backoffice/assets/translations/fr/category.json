@@ -65,7 +65,8 @@
         "addSelect": "Ajouter la sélection ",
         "addAll": "Tout ajouter ",
         "supprSelect": " Supprimer la sélection",
-        "supprAll": " Tout supprimer"
+        "supprAll": " Tout supprimer",
+        "inORout": "Dans la catégorie"
     },
     "list": {
         "t1": "Catégories",
