@@ -22,6 +22,7 @@ const {
 
 module.exports = function (app) {
     app.post('/v2/contacts', authentication, adminAuth, getContacts);
+    app.delete('/v2/contact/:id', authentication, adminAuth, deleteContact);
     app.post('/v2/contact/:mode', captchaValidation, setContact);
 };
 
@@ -31,6 +32,17 @@ module.exports = function (app) {
 async function getContacts(req, res, next) {
     try {
         return res.json(await ServiceContacts.getContacts(req.body));
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * Delete a contact
+ */
+async function deleteContact(req, res, next) {
+    try {
+        return res.json(await ServiceContacts.deleteContact(req.params.id));
     } catch (error) {
         return next(error);
     }
