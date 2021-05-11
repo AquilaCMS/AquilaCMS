@@ -97,16 +97,26 @@
                 </div>
                 <div >
                     <table>
-                        <tr style = "height: 50px;" ng-repeat="file in listThemeFiles">
-                            <td style="text-align: right;">
-                                <label ng-if='file != "noDefaultData"'>{{file.name.substr(0, file.name.length-5)}} : </label>
-                                <label ng-if='file == "noDefaultData"' translate>themes.noDefaultData</label>
-                            </td>
-                            <td style = "margin-left: 10px;" ng-if = "file.value != undefined" >
-                                <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
-                                <label style = "margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
-                            </td>
-                        </tr>
+                        <tbody>
+                            <tr style="height: 50px;" ng-repeat="file in listThemeFiles">
+                                <td style="text-align: right;">
+                                    <label ng-if='file != "noDefaultData"'>{{file.name.substr(0, file.name.length-5)}} : </label>
+                                    <label ng-if='file == "noDefaultData"' translate>themes.noDefaultData</label>
+                                </td>
+                                <td style = "margin-left: 10px;" ng-if = "file.value != undefined" >
+                                    <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
+                                    <label style = "margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
+                                </td>
+                            </tr>
+                            <tr style="height: 50px;" ng-repeat="file in otherParams">
+                                <td style="text-align: right;">
+                                    <label>{{file.name}} : </label>
+                                </td>
+                                <td style="margin-left: 10px;">
+                                    <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-model='file.value' ></ns-switch>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                     <br>
                     <br>
