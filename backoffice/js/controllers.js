@@ -21,15 +21,20 @@ adminCatagenControllers.controller("wrapperCtrl", [
                 var lang = languages.datas.find(_lang => _lang.defaultLanguage).code
 
                 moment.locale(lang);
-                $rootScope.adminLang = lang;
-                $translate.use(lang);
-                $translate.preferredLanguage(lang);
-                $translate.fallbackLanguage(lang);
+                if(localStorage.getItem('adminLang')) {
+                    $rootScope.adminLang = localStorage.getItem('adminLang');
+                } else {
+                    $rootScope.adminLang = lang;
+                }
+                $translate.use($rootScope.adminLang);
+                $translate.preferredLanguage($rootScope.adminLang);
+                $translate.fallbackLanguage($rootScope.adminLang);
             });
         }
 
         $scope.adminLangChange = function (lang)
         {
+            localStorage.setItem('adminLang', lang);
             $rootScope.adminLang = lang;
             moment.locale(lang);
             $translate.use(lang);
