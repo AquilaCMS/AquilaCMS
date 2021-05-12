@@ -110,7 +110,11 @@
                             </tr>
                             <tr style="height: 50px;" ng-repeat="file in otherParams">
                                 <td style="text-align: right;">
-                                    <label>{{file.name}} : </label>
+                                    <label>
+                                        <span>{{file.name}}</span> 
+                                        <i ng-if="file.name == 'files'" style="margin-left:10px" class="fa fa-question-circle" popover="{{'themes.filesHelper' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
+                                        <span>:</span>
+                                    </label>
                                 </td>
                                 <td style="margin-left: 10px;">
                                     <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-model='file.value' ></ns-switch>
