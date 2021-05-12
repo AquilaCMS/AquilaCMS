@@ -15,7 +15,7 @@ const adminServices  = require('../services/admin');
 
 const execScript = async (scriptPath) => {
     try {
-        await Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             const res = fork(scriptPath);
             res.on('message', (message) => {
                 resolve(message);
@@ -36,8 +36,8 @@ const execScript = async (scriptPath) => {
 module.exports = (installRouter) => {
     installRouter.get('/', async (req, res, next) => {
         try {
-            const wkhtmlInstalled = await execScript(path.resolve(global.appRoot, 'scripts/wkhtmltopdf.js'));
-            const sharpInstalled  = await execScript(path.resolve(global.appRoot, 'scripts/sharp.js'));
+            const wkhtmlInstalled = await execScript(path.resolve(global.appRoot, 'installer/scripts/wkhtmltopdf.js'));
+            const sharpInstalled  = await execScript(path.resolve(global.appRoot, 'installer/scripts/sharp.js'));
             const html            = (await fs.readFile(path.join(global.appRoot, '/installer/install.html'))).toString()
                 .replace('{{adminPrefix}}', `admin_${Math.random().toString(36).substr(2, 4)}`)
                 .replace('{{aquilaCMSVersion}}', JSON.parse(await fs.readFile(path.resolve(global.appRoot, './package.json'))).version)
