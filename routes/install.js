@@ -15,7 +15,7 @@ const adminServices  = require('../services/admin');
 
 const execScript = async (scriptPath) => {
     try {
-        await new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             const res = fork(scriptPath);
             res.on('message', (message) => {
                 resolve(message);
@@ -30,7 +30,6 @@ const execScript = async (scriptPath) => {
     } catch (err) {
         return false;
     }
-    return true;
 };
 
 module.exports = (installRouter) => {
