@@ -601,7 +601,9 @@ const mailPendingCarts = async () => {
             let filter = {};
             if (job.attrs.lastRunAt) {
                 const lastRunAt = moment(job.attrs.lastRunAt);
-                // lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                lastRunAt.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                // $gte <-> min <-> lastRun - requestMailPendingCarts
+                // $lte <-> max <-> timeNow - requestMailPendingCarts
                 filter = {updatedAt: {$gte: lastRunAt.toISOString(), $lte: limit.toISOString()}, customer: {$exists: true, $ne: null}};
             } else {
                 // the 'lastRunAt' value is not set, so we take all carts (the first time)
