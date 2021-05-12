@@ -85,7 +85,7 @@ const checkModuleDepencendiesAtInstallation = async (module) => {
         const missingDependencies = [];
         const needActivation      = [];
         const {Modules}           = require('../orm/models');
-        const allmodule           = await Modules.find({}, {name: 1, active: 1});
+        const allmodule           = await Modules.find({}, {name: 1, active: 1}).lean();
 
         for (const elem of module.moduleDependencies) {
             const found = allmodule.find((mod) => mod.name === elem);

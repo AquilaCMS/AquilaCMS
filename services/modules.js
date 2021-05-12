@@ -200,83 +200,77 @@ const initModule = async (files) => {
  * @param {String} idModule mongoose id of the module
  */
 const activateModule = async (idModule) => {
-    try {
-        const myModule = await Modules.findOne({_id: idModule});
-        await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
+    const myModule = await Modules.findOne({_id: idModule});
+    await modulesUtils.checkModuleDepencendiesAtInstallation(myModule);
 
-        const copy    = path.resolve(`backoffice/app/${myModule.name}`);
-        const copyF   = path.resolve(`modules/${myModule.name}/app/`);
-        const copyTab = [];
-        if (await fs.hasAccess(copyF)) {
+    const copy    = path.resolve(`backoffice/app/${myModule.name}`);
+    const copyF   = path.resolve(`modules/${myModule.name}/app/`);
+    const copyTab = [];
+    if (await fs.hasAccess(copyF)) {
+        try {
+            await fs.copyRecursive(
+                path.resolve(global.appRoot, copyF),
+                path.resolve(global.appRoot, copy),
+                true
+            );
+        } catch (err) {
+            console.error(err);
+        }
+        copyTab.push(copy);
+    }
+
+    if (myModule.loadTranslationBack) {
+        console.log('Loading back translation for module...');
+        const src  = path.resolve('modules', myModule.name, 'translations/back');
+        const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
+        if (await fs.hasAccess(src)) {
             try {
                 await fs.copyRecursive(
-                    path.resolve(global.appRoot, copyF),
-                    path.resolve(global.appRoot, copy),
+                    path.resolve(global.appRoot, src),
+                    path.resolve(global.appRoot, dest),
                     true
                 );
             } catch (err) {
                 console.error(err);
             }
-            copyTab.push(copy);
+            copyTab.push(dest);
         }
+    }
 
-        if (myModule.loadTranslationBack) {
-            console.log('Loading back translation for module...');
-            const src  = path.resolve('modules', myModule.name, 'translations/back');
-            const dest = path.resolve('backoffice/assets/translations/modules', myModule.name);
+    if (myModule.loadTranslationFront) {
+        console.log('Loading front translation for module...');
+        const {currentTheme} = global.envConfig.environment;
+        const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`, 'utf-8');
+        for (let i = 0; i < files.length; i++) {
+            const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
+            const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
             if (await fs.hasAccess(src)) {
                 try {
-                    await fs.copyRecursive(
-                        path.resolve(global.appRoot, src),
-                        path.resolve(global.appRoot, dest),
-                        true
-                    );
+                    await fs.copyRecursive(src, dest, true);
                 } catch (err) {
                     console.error(err);
                 }
                 copyTab.push(dest);
             }
         }
-
-        if (myModule.loadTranslationFront) {
-            console.log('Loading front translation for module...');
-            const {currentTheme} = global.envConfig.environment;
-            const files          = await fs.readdir(`themes/${currentTheme}/assets/i18n/`, 'utf-8');
-            for (let i = 0; i < files.length; i++) {
-                const src  = path.resolve('modules', myModule.name, 'translations/front', files[i]);
-                const dest = path.resolve('themes', currentTheme, 'assets/i18n', files[i], 'modules', myModule.name);
-                if (await fs.hasAccess(src)) {
-                    try {
-                        await fs.copyRecursive(src, dest, true);
-                    } catch (err) {
-                        console.error(err);
-                    }
-                    copyTab.push(dest);
-                }
-            }
-        }
-
-        const packageJSON = new PackageJSON();
-        await packageJSON.read();
-        packageJSON.workspaces.push(`modules/${myModule.name}`);
-        await packageJSON.save();
-
-        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
-
-        // If the module must import components into the front
-        await addOrRemoveThemeFiles(
-            path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
-            false,
-            myModule.type ? `type: '${myModule.type}'` : ''
-        );
-        await myModule.updateOne({$push: {files: copyTab}, active: true});
-        console.log('Module activated');
-        return Modules.find({}).sort({active: -1, name: 1});
-    } catch (err) {
-        if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
-        throw err;
     }
+
+    const packageJSON = new PackageJSON();
+    await packageJSON.read();
+    packageJSON.workspaces.push(`modules/${myModule.name}`);
+    await packageJSON.save();
+
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+
+    // If the module must import components into the front
+    await addOrRemoveThemeFiles(
+        path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
+        false,
+        myModule.type ? `type: '${myModule.type}'` : ''
+    );
+    await myModule.updateOne({$push: {files: copyTab}, active: true});
+    console.log('Module activated');
+    return Modules.find({}).sort({active: -1, name: 1});
 };
 
 /**
@@ -285,57 +279,51 @@ const activateModule = async (idModule) => {
  * @param {String} idModule
  */
 const deactivateModule = async (idModule) => {
+    const _module = (await Modules.findById(idModule)).toObject();
+    if (!_module) {
+        throw NSErrors.ModuleNotFound;
+    }
+    await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
+    await removeModuleAddon(_module);
     try {
-        const _module = (await Modules.findById(idModule)).toObject();
-        if (!_module) {
-            throw NSErrors.ModuleNotFound;
-        }
-        await modulesUtils.checkModuleDepencendiesAtUninstallation(_module);
-        await removeModuleAddon(_module);
-        try {
-            await addOrRemoveThemeFiles(
-                path.resolve(global.appRoot, _module.path, 'theme_components'),
-                true,
-                _module.type ? `type: '${_module.type}'` : ''
-            );
-        } catch (error) {
-            console.error(error);
-        }
+        await addOrRemoveThemeFiles(
+            path.resolve(global.appRoot, _module.path, 'theme_components'),
+            true,
+            _module.type ? `type: '${_module.type}'` : ''
+        );
+    } catch (error) {
+        console.error(error);
+    }
 
-        // Deleting copied files
-        for (let i = 0; i < _module.files.length; i++) {
-            if (await fs.hasAccess(_module.files[i])) {
-                if ((await fs.lstat(_module.files[i])).isDirectory()) {
-                    await new Promise((resolve) => rimraf(_module.files[i], (err) => {
-                        if (err) console.error(err);
-                        resolve();
-                    }));
-                } else {
-                    try {
-                        await fs.unlink(_module.files[i]);
-                    } catch (err) {
-                        console.error('Error: ', err);
-                    }
+    // Deleting copied files
+    for (let i = 0; i < _module.files.length; i++) {
+        if (await fs.hasAccess(_module.files[i])) {
+            if ((await fs.lstat(_module.files[i])).isDirectory()) {
+                await new Promise((resolve) => rimraf(_module.files[i], (err) => {
+                    if (err) console.error(err);
+                    resolve();
+                }));
+            } else {
+                try {
+                    await fs.unlink(_module.files[i]);
+                } catch (err) {
+                    console.error('Error: ', err);
                 }
             }
         }
-
-        console.log('Removing dependencies of the module...');
-        const packageJSON = new PackageJSON();
-        await packageJSON.read();
-        const workspaceIndex = packageJSON.workspaces.indexOf(`/modules/${_module.name}`);
-        packageJSON.workspaces.splice(workspaceIndex, 1);
-        await packageJSON.save();
-        await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
-
-        await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
-        console.log('Module deactivated');
-        return Modules.find({}).sort({active: -1, name: 1});
-    } catch (err) {
-        if (!err.datas) err.datas = {};
-        err.datas.modules = await Modules.find({}).sort({active: -1, name: 1});
-        throw err;
     }
+
+    console.log('Removing dependencies of the module...');
+    const packageJSON = new PackageJSON();
+    await packageJSON.read();
+    const workspaceIndex = packageJSON.workspaces.indexOf(`/modules/${_module.name}`);
+    packageJSON.workspaces.splice(workspaceIndex, 1);
+    await packageJSON.save();
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
+
+    await Modules.updateOne({_id: idModule}, {$set: {files: [], active: false}});
+    console.log('Module deactivated');
+    return Modules.find({}).sort({active: -1, name: 1});
 };
 
 /**
