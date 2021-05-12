@@ -8,7 +8,7 @@
 
 const NodeCache = require('node-cache');
 
-// COMMENT DECLARER UN NOUVEAU CACHE DEPUIS UN MODULE (dans le init.js) :
+// HOW TO DECLARE A NEW CACHE FROM A MODULE (in the init.js) :
 // const { info } = require('./info');
 // const CacheService = require('./services/cache');
 // global.moduleExtend.useCacheModule = {

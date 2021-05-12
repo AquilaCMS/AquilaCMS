@@ -26,6 +26,7 @@
         "startNow": "Lancer Immédiatement",
         "lastRes": "Dernier résultat de la tâche planifiée",
         "fqDoc": "Documentation fréquence",
-        "params": "Paramètres"
+        "params": "Paramètres",
+        "errFailReason": "La tâche planifiée à une erreur :"
     }
 }

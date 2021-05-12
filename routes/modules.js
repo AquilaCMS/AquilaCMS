@@ -21,7 +21,7 @@ module.exports = function (app) {
 };
 
 /**
- * Permet de recupérer les modules en fonction du PostBody
+ * Allows you to retrieve the modules according to the PostBody
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -35,7 +35,7 @@ async function getAllModules(req, res, next) {
     }
 }
 /**
- * Permet de recupérer un module en fonction du PostBody
+ * Allows you to retrieve a module according to the PostBody
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -95,7 +95,7 @@ const getModuleMd = async (req, res, next) => {
 };
 
 /**
- * Permet de mettre a jour la configuration du module dont l'id est passé en parametre
+ * Used to update the configuration of the module whose id is passed in parameter
  */
 async function setModuleConfigById(req, res, next) {
     try {

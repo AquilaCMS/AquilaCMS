@@ -44,8 +44,8 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "$translate",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, $translate) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
@@ -150,7 +150,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             $scope.generateContent();
 
             await CmsBlocksApi.save($scope.cmsBlock, function (res) {
-                toastService.toast("success", "Bloc CMS sauvegardé !");
+                toastService.toast("success", $translate.instant("global.blocSaved"));
                 if (quit) {
                     $location.path("/cmsBlocks");
                 }else{
@@ -166,11 +166,11 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.delete = function () {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce bloc CMS ?")) {
                 CmsBlocksApi.delete({code: $scope.cmsBlock.code}, function (response) {
-                    toastService.toast("success", "Bloc supprimé");
+                    toastService.toast("success", $translate.instant("global.blocDeleted"));
                     $location.path("/cmsBlocks");
                 }, function (err) {
                     console.error(err);
-                    toastService.toast("danger", "Echec de la suppresion");
+                    toastService.toast("danger", $translate.instant("global.failDelete"));
                 });
             }
             // CmsBlocksApi.delete({id: block.id}, function(){

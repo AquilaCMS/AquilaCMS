@@ -7,5 +7,5 @@
     "authorizedIPs": "Authorized IPs (separated by ';')",
     "maintenance": "Maintenance",
     "maj":"Upgrade",
-    "automatic":"Activate maintenance automatically after an update"
+    "automatic":"Activate maintenance automatically during an update"
 }

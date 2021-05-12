@@ -1,8 +1,8 @@
 
 const TranslateControllers = angular.module('aq.translate.controllers', []);
 
-TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastService', 'translateFactory', /*'LanguagesApi',*/
-    function ($scope, $http, toastService, translateFactory/*, LanguagesApi*/) {
+TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastService', 'translateFactory','$translate', /*'LanguagesApi',*/
+    function ($scope, $http, toastService, translateFactory, $translate/*, LanguagesApi*/) {
         $scope.local = {
             customTranslate   : '',
             allTranslateNames : [],
@@ -54,7 +54,7 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
                     translateFactory.saveTranslate(
                         { currentTranslate: $scope.local.currentTranslate, lang : $scope.local.lang }, { datas: $scope.local.customTranslate },
                         (response) => {
-                            toastService.toast('success', 'Translate sauvegardés !');
+                            toastService.toast('success', $translate.instant("global.translateSaved"));
                         },
                         (err) => {
                             toastService.toast('danger', err.data.translations.fr);
@@ -69,13 +69,13 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
         $scope.local.compileFront = function() {
             $scope.showLoader = true;
             $http.post('/v2/themes/package/build/', {"themeName":""}).then((response) => {
-                toastService.toast('success', "Build succeed, restarting the server");
+                toastService.toast('success', $translate.instant("global.buildSucceed"));
                 $scope.showLoader = false;
                 $http.get('/restart').then((response) => {
 
                 });
             }).catch(function(error){
-                toastService.toast('danger', "Build failed");
+                toastService.toast('danger', $translate.instant("global.buildFailed"));
             });
         }
 

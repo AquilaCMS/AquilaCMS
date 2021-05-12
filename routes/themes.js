@@ -28,7 +28,7 @@ module.exports = function (app) {
 };
 
 /**
- * @description Sauvegarde le thème sélectionné et met à jour.
+ * @description Save the selected theme and update.
  */
 async function save(req, res, next) {
     req.setTimeout(300000);
@@ -41,7 +41,7 @@ async function save(req, res, next) {
 }
 
 /**
- * @description Liste l'ensemble des dossiers/themes
+ * @description List all folders / themes
  */
 async function listTheme(req, res, next) {
     try {
@@ -53,7 +53,7 @@ async function listTheme(req, res, next) {
 }
 
 /**
- * @description Récupère le contenu du fichier custom.css
+ * @description Get the contents of the custom.css file
  */
 async function getCustomCss(req, res, next) {
     try {
@@ -65,7 +65,7 @@ async function getCustomCss(req, res, next) {
 }
 
 /**
- * @description Récupère la liste des css du dossier
+ * @description Get the list of css in the folder
  */
 async function getAllCssComponentName(req, res, next) {
     try {
@@ -77,7 +77,7 @@ async function getAllCssComponentName(req, res, next) {
 }
 
 /**
-* Enregistre le contenu dans le fichier custom.css
+* Save the content to the custom.css file
 * @route POST /v2/themes/css/:cssName
 * @group Themes - Operations about themes
 * @param {string} datas.body - content to write in file
@@ -131,7 +131,7 @@ const copyDatas = async (req, res, next) => {
 };
 
 /**
- * @description Lance une commande 'yarn install' sur le theme défini
+ * @description Run a 'yarn install' command on the defined theme
  */
 async function packageInstall(req, res, next) {
     try {
@@ -143,7 +143,7 @@ async function packageInstall(req, res, next) {
 }
 
 /**
- * @description Lance une commande 'npm run build' sur le theme défini
+ * @description Run an 'npm run build' command on the defined theme
  */
 async function buildTheme(req, res, next) {
     req.setTimeout(300000);

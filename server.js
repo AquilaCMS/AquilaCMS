@@ -34,9 +34,9 @@ const {
 const dev    = !serverUtils.isProd;
 const server = express();
 
-// ATTENTION, ne pas require des services directement en haut de ce fichier
-// car cela cause des problèmes dans l'ordre d'appel des fichiers
-// Exemple : modification du schéma des modèles mongo appelés dans les dits services
+// ATTENTION, do not require services directly on top of this file
+// because it causes problems in the order of calling the files
+// Example : modification of the mongo models schema called in the said services
 
 // If an error occurred we exit the process because there is no point on continuing
 // if for any reason you want to handle error later, don't do that just fix your code
@@ -72,11 +72,11 @@ const initDatabase = async () => {
 
 const setEnvConfig = async () => {
     const {Configuration} = require('./orm/models');
-    global.envConfig      = await Configuration.findOne();
-    if (!global.envConfig) {
+    const configuration   = await Configuration.findOne();
+    if (!configuration) {
         throw new Error('Configuration collection is missing');
     }
-    global.envConfig = global.envConfig.toObject();
+    global.envConfig = configuration.toObject();
 };
 
 const initFrontFramework = async (themeFolder) => {

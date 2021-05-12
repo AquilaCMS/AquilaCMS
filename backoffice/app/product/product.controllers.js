@@ -85,24 +85,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.filterLang = "";
         $scope.showLoader = false;
 
-        function getProductImg(prdIndex, products) {
-            if (products && products.length > 0) {
-                if (products[prdIndex].imageUrl == "./img/empty.jpg") {
-                    ProductImage.query({type: "aquila", id: products[prdIndex].id}, function (data) {
-                        products[prdIndex].imageUrl = `data:image/jpg;base64,${data.img}`;
-
-                        if (prdIndex < products.length - 1) {
-                            getProductImg(prdIndex + 1, products);
-                        }
-                    });
-                } else {
-                    if (prdIndex < products.length - 1) {
-                        getProductImg(prdIndex + 1, products);
-                    }
-                }
-            }
-        }
-
         $scope.getImage = function (images) {
             try {
                 const image = images.find(img => img.default) ? images.find(img => img.default) : images[0];
@@ -113,9 +95,11 @@ ProductControllers.controller("ProductListCtrl", [
             }
         };
         $scope.collapse = function () {
-          if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
-            document.getElementById('collapseIcon').className =  "ico-arrow-up"
-          }else {document.getElementById('collapseIcon').className = "ico-arrow-down"}
+            if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+                document.getElementById('collapseIcon').className = "ico-arrow-up";
+            }else {
+                document.getElementById('collapseIcon').className = "ico-arrow-down";
+            }
         };
 
         $scope.getAttributesClassed = function () {
@@ -256,10 +240,16 @@ ProductControllers.controller("ProductListCtrl", [
                 }
             };
             ProductsV2.list(paramsV2, function (res) {
-                getProductImg(0, res.datas); // what the hell is that ?!
-                $scope.products = res.datas;
-                $scope.totalItems = res.count;
-                $scope.showLoader = false;
+                if(res.count > 0 && res.datas.length == 0){
+                    //weird so we reload with page 1
+                    $scope.getProducts(1);
+                }else{
+                    $scope.products = res.datas;
+                    $scope.totalItems = res.count;
+                    $scope.showLoader = false;
+                }
+            }, function(error){
+                console.error(error);
             });
         };
 
@@ -337,7 +327,7 @@ ProductControllers.controller("nsProductGeneral", [
                     $scope.runCanonicalisation = async function () {
                         ExecRules.exec({type: "category"}, function (result) {
                             CategoryV2.canonical({}, {}, function () {
-                                toastService.toast('success', "Terminé")
+                                toastService.toast('success', $translate.instant("global.finished"))
                                 ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
                                     $scope.product = response;
                                     $scope.product.active = true;
@@ -348,7 +338,7 @@ ProductControllers.controller("nsProductGeneral", [
                             })
                         }, function (error) {
                             console.log(error)
-                            toastService.toast('danger', "Erreur lors de la categorisation")
+                            toastService.toast('danger', $translate.instant("global.errorCategorization"))
                         })
                     }
                 },

@@ -1,10 +1,8 @@
-# AquilaCMS
+# AquilaCMS ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e711424ea4744515a340c517a8329df9)](https://www.codacy.com/gh/AquilaCMS/AquilaCMS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
+
+The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce solution.
 
 [![AquilaCMS](https://www.aquila-cms.com/images/medias/1024x200-90/5eb883a6e88bcc4391038570/AquilaCMS.png)](https://www.aquila-cms.com)
-
-![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3ac2a8b4b7ac4b6880b49d544fdabfcd)](https://app.codacy.com/manual/AquilaCMS/AquilaCMS?utm_source=github.com&utm_medium=referral&utm_content=AquilaCMS/AquilaCMS&utm_campaign=Badge_Grade_Dashboard)
-[![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 
 [AquilaCMS](https://www.aquila-cms.com) is :
 
@@ -20,7 +18,7 @@
 
 To install the latest AquilaCMS, you need a web server running :
 
-- `node.js 12.19.0+`
+- `node.js 12.19.0+` (tested in v12.22.1)
 - `mongoDB 4.2.5+`
 
 The package manager `yarn 1.22.4+` is required.

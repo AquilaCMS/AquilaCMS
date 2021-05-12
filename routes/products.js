@@ -38,6 +38,9 @@ async function getCoherence(req, res, next) {
 /**
  * POST /api/v2/products
  * @summary Listing of products
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
  */
 async function getProductsListing(req, res, next) {
     try {
@@ -57,7 +60,7 @@ async function getProductsListing(req, res, next) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
             return res.json(resultat, req.body.keepOriginalAttribs);
         }
-        // Si c'est une visualisation de produit, on modifie ces stats de vue
+        // If it is a product visualization, we modify these view stats
         if (req.body.countviews && result.datas.length > 0) {
             require('../services/statistics').setProductViews(result.datas[0]._id);
         }
@@ -100,7 +103,7 @@ async function getPromosByProduct(req, res, next) {
 }
 
 /**
- * Fonction de duplicaiton de produit
+ * Product duplicating function
  */
 async function duplicateProduct(req, res, next) {
     try {
@@ -149,10 +152,10 @@ async function getProductsByCategoryId(req, res, next) {
  * @summary Set product
  */
 async function setProduct(req, res, next) {
-    // On ajoute le produit
+    // We add the product
     try {
         if (req.body._id) {
-            // On update le produit
+            // We update the product
             const result = await ServiceProduct.setProduct(req);
             return res.json(result);
         }
@@ -201,7 +204,7 @@ async function downloadProduct(req, res, next) {
 }
 
 /**
- * Fonction permettant de calculer les informations de stock pour un produit
+ * Function for calculating stock information for a product
  */
 async function calculStock(req, res, next) {
     try {

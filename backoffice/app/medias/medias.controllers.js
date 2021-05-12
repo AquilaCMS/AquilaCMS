@@ -1,7 +1,7 @@
 const MediasControllers = angular.module("aq.medias.controllers", []);
 
-MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "MediaApiV2", "toastService", "ConfigV2", "$location",
-    function ($scope, $route, $modal, MediaApiV2, toastService, ConfigV2, $location) {
+MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "MediaApiV2", "toastService", "ConfigV2", "$location", "$translate",
+    function ($scope, $route, $modal, MediaApiV2, toastService, ConfigV2, $location, $translate) {
         $scope.link = "-";
         $scope.nbItemsPerPage = 20;
         $scope.maxSize = 5;
@@ -68,7 +68,7 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
             event.stopPropagation();
             if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
                 MediaApiV2.delete({id: media._id}, function (response) {
-                    toastService.toast("success", "Media supprimé");
+                    toastService.toast("success", $translate.instant("global.deleteMedia"));
                     $route.reload();
                 });
             }
@@ -104,8 +104,9 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
     }]
 );
 
-MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams",
-    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams) {
+MediasControllers.controller("MediasDetailsCtrl",
+    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate",
+    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate) {
         $scope.media = {
             link : "",
             name : "",
@@ -123,7 +124,7 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
         $scope.remove = function(){
             if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
                 MediaApiV2.delete({id: $scope.media._id}, function (response) {
-                    toastService.toast("success", "Media supprimé");
+                    toastService.toast("success", $translate.instant("global.deleteMedia"));
                     $location.path('/medias');
                 });
             }
@@ -171,11 +172,11 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
         };
 
         $scope.success = function () {
-            toastService.toast("success", "Lien copié");
+            toastService.toast("success", $translate.instant("global.copiedLink"));
         };
 
         $scope.onErrorUploadMedia = function () {
-            toastService.toast("danger", "Error !");
+            toastService.toast("danger", $translate.instant("global.error"));
         }
 
         $scope.save = function () {
@@ -187,7 +188,7 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             }
             $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
-                toastService.toast("success", "Media sauvegardé !");
+                toastService.toast("success", $translate.instant("global.mediaSaved"));
                 if($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new"){
                     $location.path("/medias/"+response._id);
                 }
@@ -200,7 +201,7 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
                     toastService.toast("danger", error.code);
                 }else{
                     console.log(error);
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };
@@ -248,8 +249,8 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
     }
 ]);
 
-MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media",
-    function ($scope, toastService, $modalInstance, media) {
+MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media", "$translate",
+    function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
         $scope.positions = [
             { pos: "center",
@@ -323,7 +324,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                         !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
                 )
             ) {
-                toastService.toast("warning", "Veuillez saisir toutes les valeurs.");
+                toastService.toast("warning", $translate.instant("global.enterAllValue"));
             } else {
                 if ($scope.info.background) {
                     if ($scope.info.alpha) {
@@ -336,7 +337,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                 if ($scope.info.crop) {
                     crop = `-crop-${$scope.info.position}`;
                 }
-                toastService.toast("success", "Lien généré");
+                toastService.toast("success", $translate.instant("global.linkGenerated"));
                 $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                 const elem = document.getElementById("copy-link");
                 elem.focus();
@@ -349,7 +350,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
             elem.focus();
             elem.select();
             if (document.execCommand('copy')) {
-                toastService.toast("success", "Lien copié");
+                toastService.toast("success", $translate.instant("global.copiedLink"));
             }
         }
 
@@ -360,17 +361,17 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
 ]);
 
 
-MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance",
-    function ($scope, toastService, $modalInstance) {
+MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate",
+    function ($scope, toastService, $modalInstance, $translate) {
         $scope.local = {
             insertDBMediaUpload: true
         };
         $scope.beforeMediaMass = function () {
-            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
+            toastService.toast("info", $translate.instant("global.takeTime"));
         };
 
         $scope.uploadedMediaMass = function () {
-            toastService.toast("success", "Ajout en masse effectué.");
+            toastService.toast("success", $translate.instant("global.massAddDone"));
             $modalInstance.close('ok')
         };
 

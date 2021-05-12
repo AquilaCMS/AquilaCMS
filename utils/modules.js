@@ -15,7 +15,11 @@ const NSErrors = require('./errors/NSErrors');
 let loadedModules;
 
 /**
- * Module : Charge les fonctions dans les init.js des modules si besoin
+ * Module : Load the functions in the init.js of the modules if necessary
+ * @param {string} property
+ * @param {any} params
+ * @param {Function} functionToExecute
+ * @returns {any}
  */
 const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
@@ -28,6 +32,7 @@ const modulesLoadFunctions = async (property, params = {}, functionToExecute = u
 
 /**
  * Module : Create '\themes\ {theme_name}\modules\list_modules.js'
+ * @param {string} theme
  */
 const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
@@ -45,7 +50,7 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
 
 /**
  * display all modules installed with the current theme
- * @param {String} theme theme name
+ * @param {string} theme theme name
  */
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
@@ -58,6 +63,9 @@ const displayListModule = async (theme = global.envConfig.environment.currentThe
     }
 };
 
+/**
+ * @param {string} target_path_full
+ */
 const errorModule = async (target_path_full) => {
     try {
         await fs.unlink(target_path_full);
@@ -101,6 +109,9 @@ const checkModuleDepencendiesAtInstallation = async (module) => {
     }
 };
 
+/**
+ * @param {any} myModule
+ */
 const checkModuleDepencendiesAtUninstallation = async (myModule) => {
     if (myModule.moduleDependencies) {
         const needDeactivation = [];
@@ -128,7 +139,8 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
 };
 
 /**
- * Module : Charge les fichiers init.js des modules si besoin
+ * Module : Load the init.js files of the modules if necessary
+ * @param {any} server
  */
 const modulesLoadInit = async (server) => {
     const Modules  = require('../orm/models/modules');
@@ -169,7 +181,10 @@ const modulesLoadInit = async (server) => {
 };
 
 /**
- * Module : Charge les fichiers initAfter.js des modules actifs
+ * Module : Loads initAfter.js files for active modules
+ * @param {any} apiRouter
+ * @param {any} server
+ * @param {any} passport
  */
 const modulesLoadInitAfter = async (apiRouter, server, passport) => {
     loadedModules = loadedModules.filter((mod) => mod.init) || [];
@@ -177,7 +192,7 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
         console.log('Start initAfter loading modules');
         for (const mod of loadedModules) {
             try {
-                // Récupère les fichiers initAfter.js des modules
+                // Get the initAfter.js files of the modules
                 await new Promise(async (resolve, reject) => {
                     try {
                         if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {

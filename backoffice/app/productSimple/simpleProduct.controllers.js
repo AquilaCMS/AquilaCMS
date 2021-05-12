@@ -3,7 +3,7 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs", 
     function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -46,7 +46,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        toastService.toast('danger', $translate.instant("global.impossibleGeneratedURL"))
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -127,10 +127,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         const newPrd = {...$scope.product, code: newCode};
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
-                            toastService.toast("success", "Produit dupliqué !");
+                            toastService.toast("success", $translate.instant("global.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", "Le code existe déjà");
+                            toastService.toast("danger", $translate.instant("global.codeExists"));
                         });
                     }
                 },
@@ -259,7 +259,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     if (isQuit) {
                         $location.path("/products");
                     } else {
-                        toastService.toast("success", "Produit sauvegardé !");
+                        toastService.toast("success", $translate.instant("global.productSaved"));
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
@@ -286,10 +286,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.removeProduct = function (_id) {
             if (confirm("Etes-vous sûr de vouloir supprimer ce produit ?")) {
                 ProductsV2.delete({id: _id}, function () {
-                    toastService.toast("success", "Suppression éffectuée");
+                    toastService.toast("success", $translate.instant("global.deleteDone"));
                     $location.path("/products");
                 }, function () {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("global.errorDelete"));
                 });
             }
         };

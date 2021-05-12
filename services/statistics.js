@@ -13,7 +13,7 @@ const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
 
 /**
- * Ajoute une vue au produit (synchrone)
+ * Adds a view to the product (synchronous)
  */
 exports.setProductViews = function (product_id) {
     try {
@@ -25,7 +25,7 @@ exports.setProductViews = function (product_id) {
 };
 
 /**
- * Construit et envoie les statistiques des précédents jours
+ * Builds and sends statistics from previous days
  */
 exports.sendMetrics = async function (licence, date) {
     const stats = await exports.getGlobaleStats(date);
@@ -37,7 +37,7 @@ exports.sendMetrics = async function (licence, date) {
 };
 
 /**
- * Récupère la date du premier client ou de la première commande
+ * Get the date of the first customer or the first order
  */
 exports.getFirstDayMetrics = async function () {
     try {
@@ -69,7 +69,7 @@ exports.generateStatistics = function (data) {
 };
 
 /**
- * Get Globale Stats (accueil admin)
+ * Get Globale Stats (home admin)
  */
 exports.getGlobaleStats = async function (date) {
     let result;
@@ -110,7 +110,7 @@ exports.getGlobaleStats = async function (date) {
 };
 
 /**
- * Get Globale Stat (accueil admin)
+ * Get Globale Stat (home admin)
  */
 async function getGlobalStat(periode, dateStart, dateEnd) {
     let datas = {};
@@ -134,7 +134,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
     const sPeriodeStart = periodeStart.toISOString();
     const sPeriodeEnd   = periodeEnd.toISOString();
 
-    // --- Commande ---
+    // --- orders ---
     const allOrders = await Orders.find({
         createdAt : {
             $gte : sPeriodeStart,
@@ -147,7 +147,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
                 'PAYMENT_CONFIRMATION_PENDING',
                 'PAID',
                 'PROCESSING',
-                'PROCESSED', // Préparé. A ne pas à confondre avec Finished (Traité)
+                'PROCESSED', // Prepared. Not to be confused with Finished
                 'BILLED',
                 'DELIVERY_PROGRESS',
                 'DELIVERY_PARTIAL_PROGRESS',
@@ -158,11 +158,11 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         }
     });
 
-    let orderTotalAmount        = 0; // prix des toutes les commandes
-    let nbOrderPaid             = 0; // nb de commandes payées
-    let nbOrderNotPaid          = 0; // nb de commandes non payées
-    let orderTotalAmountPaid    = 0; // prix total des commandes payées
-    let orderTotalAmountNotPaid = 0; // prix total des commandes non payées
+    let orderTotalAmount        = 0; // prices for all orders
+    let nbOrderPaid             = 0; // number of paid orders
+    let nbOrderNotPaid          = 0; // number of unpaid orders
+    let orderTotalAmountPaid    = 0; // total price of paid orders
+    let orderTotalAmountNotPaid = 0; // total price of unpaid orders
 
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
@@ -175,7 +175,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         }
     }
 
-    // --- Fréquentation ---
+    // --- frequenting ---
     let attendance = 0;
     let newClients;
     if (dateStart && dateEnd) {
@@ -220,7 +220,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
 }
 
 /**
- * Nombre de panier abandonné
+ * Number of canceled cart
  */
 exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd) {
     const granularityQuery = {
@@ -242,7 +242,7 @@ exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd)
 };
 
 /**
- * Chiffre d'affaire globale
+ * Globale sales
  */
 exports.getCag = async function (granularity, periodeStart, periodeEnd) {
     return statsForOrders({granularity,
@@ -258,7 +258,7 @@ exports.getCag = async function (granularity, periodeStart, periodeEnd) {
 };
 
 /**
- * Nombre de commande
+ * Number of orders
  */
 exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
     return statsForOrders({granularity,
@@ -274,7 +274,7 @@ exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
 };
 
 /**
- * Chiffre d'affaire par produit
+ * sales by products
  */
 exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
     const datas = [];
@@ -292,7 +292,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentItem = allOrders[ii].items[i];
             const currentId   = currentItem.code;
 
-            // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
+            // We can't use the images as they are, we will look for the actual image of the product (if it still exists)
             let link = '';
             if (currentItem.id && currentItem.id._id) {
                 const realProduct = await require('./products').getProductById(currentItem.id._id);

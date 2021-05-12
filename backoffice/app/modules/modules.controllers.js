@@ -1,24 +1,28 @@
 var ModulesControllers = angular.module('aq.modules.controllers', ['ui.toggle', 'ui.bootstrap']);
 
-ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal) {
+ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$interval', '$location', 'toastService', '$modal', '$translate', 'ModuleServiceV2',
+function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $translate, ModuleServiceV2) {
     $scope.showModuleLoading = false;
     $scope.nsUploadFiles     = {
         isSelected : false
     };
-    $scope.getDatas          = function ()  {
-        $http.post('/v2/modules', {
+    $scope.getDatas = function ()  {
+        ModuleServiceV2.getModules({
             PostBody : {
                 filter    : {},
                 limit     : 100,
                 populate  : [],
                 skip      : 0,
-                sort      : {active:-1,name:1},
+                sort      : { active: -1, name: 1 },
                 structure : {},
                 page      : null
             }
-        }).then(function (response) {
-            $scope.modules           = response.data.datas;
+        }, function (response) {
+            $scope.modules           = response.datas;
             $scope.showModuleLoading = false;
+        }, function(error){
+            console.error(error);
+            toastService.toast("danger", $translate.instant("modules.toast.errGetPlugins"));
         });
     };
     $scope.getDatas();
@@ -41,16 +45,17 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
 
     $scope.displayReadMe = function(nameModule) {
         var responseFromAPI;
-        $http.post('/v2/modules/md', {
+        ModuleServiceV2.getMd({
             moduleName: nameModule
-        }).then(function (response) {
-            responseFromAPI = response.data.html;
+        }, function (response) {
+            responseFromAPI = response.html;
             if(!responseFromAPI || responseFromAPI == "") {
                 responseFromAPI = 'No ReadMe found';
             }
             $modal.open({
                 templateUrl: 'app/modules/views/modal/popUpReadMe.html',
-                controller: function ($scope, $modalInstance, reponse) {
+                controller: function ($scope, $modalInstance, reponse, nameModule) {
+                    $scope.moduleName = nameModule; //display name in popUp
                     $scope.modalReadMe = {}
                     $scope.modalReadMe.dispReadMe = reponse;
                     $scope.modalReadMe.close = function () {
@@ -61,21 +66,27 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                 resolve: {
                     reponse: function() {
                         return responseFromAPI;
+                    },
+                    nameModule: function(){
+                        return nameModule;
                     }
                 }
             });
+        }, function(error){
+            console.error(error);
+            toastService.toast("danger", $translate.instant("global.standardError"));
         });
     }
 
     $scope.toggleActive = function (id, name, state) {
         $scope.showModuleLoading = true;
-        $http.post('/v2/modules/toggle', {
+        ModuleServiceV2.check({
             idModule    : id,
             active      : state
-        }).then(function (response) {
+        }, function () {
             $scope.showModuleLoading = false;
             $scope.restart(name, state, false);
-        }).catch((err) => {
+        }, function (err) {
             $scope.showModuleLoading = false;
             if (err.data.datas && err.data.datas.missingDependencies && err.data.datas.needActivation) {
                 toastService.toast('danger',
@@ -92,9 +103,8 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
             } else {
                 toastService.toast('danger', err.data.message);
             }
-            if (err.data.datas && err.data.datas.modules) {
-                $scope.modules = err.data.datas.modules;
-            }
+
+            $scope.getDatas()
         });
     };
 
@@ -102,13 +112,13 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
         var check = window.confirm('Êtes-vous sur de vouloir supprimer ce module ?');
         if (check) {
             $scope.showModuleLoading = true;
-            $http.delete(`/v2/modules/${idModule}`).then(function (response) {
+            $http.delete(`/v2/modules/${idModule}`).then(function (resp) {
                 $scope.showModuleLoading = false;
-                if (!response.status) {
+                if (!resp.status) {
                     console.error('Error!');
                 }
                 $scope.restart(nameModule, state, true);
-                $http.post('/v2/modules', {
+                ModuleServiceV2.getModules({
                     PostBody : {
                         filter    : {},
                         limit     : 100,
@@ -118,8 +128,11 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
                         structure : {},
                         page      : null
                     }
-                }).then(function (response) {
-                    $scope.modules = response.data.datas;
+                }, function (response) {
+                    $scope.modules = response.datas;
+                }, function(error) {
+                    console.error(error);
+                    toastService.toast("danger", $translate.instant("modules.toast.errGetPlugins"));
                 });
             });
         }
@@ -129,7 +142,10 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
         ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
             $scope.config = config;
             $scope.showLoading = true;
-            $http.get('/restart').catch((err) => {});
+            $http.get('/restart').catch(function(error) {
+                console.error(error);
+                toastService.toast("danger", $translate.instant("global.restartFail"));
+            });
             if (active && !deleteBool) {
                 $scope.message = `Activation du module ${nomModule} en cours, merci de patienter ...`;
             } else if (!active && !deleteBool) {
@@ -150,19 +166,17 @@ ModulesControllers.controller('ModulesCtrl', ['$scope', '$http', 'ConfigV2', '$i
             }, 10000);
         });
     };
-
 }]);
 
 ModulesControllers.controller("PluginsNewCtrl", [
-    "$scope", "$modalInstance", "toastService", "$http", "toggleActive",
-    function ($scope, $modalInstance, toastService, $http, toggleActive) {
-
+    "$scope", "$modalInstance", "toastService", "$http", "toggleActive", "ModuleServiceV2", "$translate",
+    function ($scope, $modalInstance, toastService, $http, toggleActive, ModuleServiceV2, $translate) {
         $scope.before = function () {
             $scope.showModuleLoading = true;
         };
 
         $scope.uploaded = function (module) {
-            $http.post('/v2/modules', {
+            ModuleServiceV2.getModules({
                 PostBody : {
                     filter    : {},
                     limit     : 100,
@@ -172,25 +186,32 @@ ModulesControllers.controller("PluginsNewCtrl", [
                     structure : {},
                     page      : null
                 }
-            }).then(function (response) {
+            }, function (response) {
                 if (module.active) {
-                    toastService.toast('success', 'Module ajouté update en cours, veuillez patientez !');
+                    toastService.toast('success', $translate.instant("global.addModule"));
                     toggleActive(module._id, module.name, true);
                 } else {
                     $scope.showModuleLoading = false;
-                    toastService.toast('success', 'Module ajouté ! Pour l\'utiliser, il suffit de l\'activer');
+                    toastService.toast('success', $translate.instant("global.activateModule"));
                 }
-                $scope.modules = response.data.datas;
-                $modalInstance.close("save");
+                $scope.modules = response.datas;
+                $scope.close("save");
+            }, function(error){
+                console.error(error);
+                toastService.toast("danger", $translate.instant("modules.toast.errGetPlugins"));
             });
         };
 
         $scope.uploadError = function () {
             $scope.getDatas();
             $scope.showModuleLoading = false;
-            toastService.toast('danger', 'Problème à l\'ajout du module');
-            $modalInstance.close();
+            toastService.toast('danger', $translate.instant("global.errorActiveModule"));
+            $scope.close();
         };
+
+        $scope.close = function(data){
+            $modalInstance.close(data);
+        }
 
         $scope.cancel = function (){
             $modalInstance.dismiss("cancel");

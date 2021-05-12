@@ -24,7 +24,7 @@ const verifyingUpdate = async () => {
     const actualVersion = JSON.parse(await fs.readFile(packageJSONPath)).version;
 
     // Créer le dossier /uploads/temp s'il n'existe pas
-    fs.mkdirSync(tmpPath, {recursive: true});
+    await fs.mkdir(tmpPath, {recursive: true});
 
     // Get online version
     const fileURL  = 'https://last-aquila.s3-eu-west-1.amazonaws.com/version.txt';

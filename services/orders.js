@@ -82,7 +82,7 @@ const setStatus = async (_id, status, sendMail = true) => {
     }
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
     if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
-        // On supprime le panier sauf si la commande est en attente de paiement ou annulée
+        // The cart is deleted unless the order is pending payment or cancelled
         await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
@@ -114,7 +114,7 @@ const paymentSuccess = async (query, updateObject) => {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
         const paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
-        // Mode de paiement immédiat (ex: carte bancaire)
+        // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {
             await setStatus(_order._id, 'PAID');
             try {
@@ -128,7 +128,7 @@ const paymentSuccess = async (query, updateObject) => {
                 console.error(e);
             }
         }
-        // On verifie que les produits du panier soient bien commandable
+        // We check that the products of the basket are well orderable
         const {bookingStock} = global.envConfig.stockOrder;
         if (bookingStock === 'payment') {
             for (let i = 0; i < _order.items.length; i++) {
@@ -138,7 +138,7 @@ const paymentSuccess = async (query, updateObject) => {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
-                    // on reserve le stock
+                    // we book the stock
                     await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
                 } else if (_product.kind === 'BundleProduct') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
@@ -243,19 +243,20 @@ const rma = async (orderId, returnData) => {
             if (returnPrds[rmaProduct.product_id] === undefined) {
                 returnPrds[rmaProduct.product_id] = 0;
             }
+            if (rmaProduct.qty_returned) {
+                returnPrds[rmaProduct.product_id] += rmaProduct.qty_returned;
+            }
 
-            returnPrds[rmaProduct.product_id] += rmaProduct.qty_returned;
-
-            // on check si on gere le stock
+            // Check if we manage the stock
             if (global.envConfig.stockOrder.bookingStock !== 'none' && returnData.in_stock) {
                 const _product = await Products.findOne({_id: rmaProduct.product_id});
                 if (_product.type === 'simple') {
-                    // On incremente la quantité
+                    // The quantity is incremented
                     await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < rmaProduct.selections.length; i++) {
                         const selectionProducts = rmaProduct.selections[i].products;
-                        // on incremente la quantité de chaque produit de chaque section
+                        // Increase the quantity of each product of each section
                         for (let j = 0; j < selectionProducts.length; j++) {
                             const selectionProduct = await Products.findById(selectionProducts[j]);
                             if (selectionProduct.type === 'simple') {
@@ -369,7 +370,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
 
         // datas.orderdata = orderdata.join(", ");
         /**
-         * NS PAS DELETE LA CODE COMMENTÉ EN DESSOUS
+         * DO NOT DELETE THE COMMENTED CODE BELOW
          */
         try {
             await ServiceMail.sendMailOrderToClient(_order._id);
@@ -384,12 +385,12 @@ const duplicateItemsFromOrderToCart = async (req) => {
     const orderId = req.body.idOrder || null;
     let cartId    = req.body.idCart || null;
     let products  = [];
-    // Si on envoi un id de commande, on récupère les items de cette commande, sinon on récupère les products envoyés directement (ex: foodOption)
+    // If we send an order id, we get the items of this order, otherwise we get the products sent directly (ex: foodOption)
     if (orderId) {
         const _order = await Orders.findOne({_id: orderId});
         products     = _order.items;
     } else {
-        // Exemple :
+        // Sample :
         // products = [{id: "59f1f626aaa3a904c3a15b7f", quantity: 2}, {id         : "59f1f627aaa3a904c3a15bff",
         //     quantity   : 1,
         //     selections : [
@@ -421,24 +422,24 @@ const duplicateItemsFromOrderToCart = async (req) => {
     for (let i = 0; i < products.length; i++) {
         _cart                   = await Cart.findOne({_id: cartId, status: 'IN_PROGRESS'});
         const productThatExists = await Products.findOne({_id: products[i].id, active: true, _visible: true});
-        // On teste que le produit existe, est visible et est actif
+        // Test that the product exists, is visible and is active
         if (productThatExists && productThatExists.bundle_sections && productThatExists.bundle_sections.length > 0) {
-            // Code pour les menus
+            // Code for menus
             const item = {
                 id         : productThatExists._id,
                 quantity   : products[i].quantity,
                 weight     : productThatExists.weight,
                 selections : []
             };
-            // On parcours les sections
+            // We browse the sections
             for (let j = 0; j < products[i].selections.length; j++) {
                 item.selections.push({
                     products           : [],
                     bundle_section_ref : products[i].selections[j].bundle_section_ref
                 });
-                // Puis les produits des sections
+                // Then the products of the sections
                 for (let k = 0; k < products[i].selections[j].products.length; k++) {
-                    // On vérifie que le produit existe, est visible et est actif
+                    // Checks that the product exists, is visible and is active
                     const prd = await Products.findOne({
                         _id               : products[i].selections[j].products[k],
                         active            : true,
@@ -448,7 +449,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
                     if (prd) {
                         item.selections[j].products.push(products[i].selections[j].products[k]);
                     } else {
-                        // Sinon on met en erreur et on passe au produit suivant (on n'ajoute pas le menu)
+                        // Else put in error and we go to the next product (we don't add the menu)
                         isErrorOccured      = true;
                         isErrorOccuredIndex = j;
                         break;
@@ -480,7 +481,7 @@ const duplicateItemsFromOrderToCart = async (req) => {
                     await _cart.save();
                 }
             }
-            // Code pour les produits normaux
+            // Code for normal products
             const item  = {id: productThatExists._id, quantity: quantityToAdd, weight: productThatExists.weight};
             const _lang = await Languages.findOne({defaultLanguage: true});
             if (productThatExists.translation[_lang.code]) {
@@ -535,16 +536,16 @@ const addPackage = async (orderId, pkgData) => {
             }
 
             packages[pkgProduct.product_id] += pkgProduct.qty_shipped;
-            // on check si on gere le stock
+            // Check if we manage the stock
             if (global.envConfig.stockOrder.bookingStock !== 'none') {
                 const _product = await Products.findOne({_id: pkgProduct.product_id});
                 if (_product.type === 'simple') {
-                    // On decremente la quantité
+                    // Decrement the quantity
                     await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < pkgProduct.selections.length; i++) {
                         const selectionProducts = pkgProduct.selections[i].products;
-                        // on decremente la quantité de chaque produit de chaque section
+                        // Subtract the quantity of each product from each section
                         for (let j = 0; j < selectionProducts.length; j++) {
                             const selectionProduct = await Products.findById(selectionProducts[j]);
                             if (selectionProduct.type === 'simple') {
@@ -607,16 +608,19 @@ const delPackage = async (orderId, pkgId) => {
 };
 
 const updatePayment = async (body) => {
-    const findCondition = {
-        _id           : body._id,
-        'payment._id' : body.paymentId
-    };
-    let msg             = {status: true};
+    let msg = {status: true};
     if (body.field !== '') {
-        const updateValue                      = {};
-        updateValue[`payment.$.${body.field}`] = body.value;
         try {
-            const updOrder = await Orders.findOneAndUpdate(findCondition, {$set: updateValue}, {new: true});
+            const updOrder = await Orders.findOneAndUpdate({
+                _id : body._id
+            }, {
+                $set : {
+                    [`payment.$[item].${body.field}`] : body.value
+                }
+            }, {
+                new          : true,
+                arrayFilters : [{'item._id': body.paymentId}]
+            });
             if (!updOrder) msg = {status: false};
             return msg;
         } catch (error) {

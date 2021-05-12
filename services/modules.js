@@ -26,28 +26,28 @@ const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFields);
 
 /**
- * retourne les modules en fonction du PostBody
+ * Get modules
  */
 const getModules = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
 /**
- * retourne le module en fonction du PostBody
+ * Get one module
  */
 const getModule = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
 /**
- * Permet de modifier la configuration (champ conf) d'un module
- * @param body : body de la requête, il permettra de mettre à jour la configuration du module
- * @param _id : string : ObjectId de la configuration du module a modifié
- * @returns Retourne la configuration du module la review venant d'étre modifié
+ * Set the configuration (conf field) of a module
+ * @param body : body of the request, it will update the module configuration
+ * @param _id : string : ObjectId of the module configuration has changed
+ * @returns return configuration's module
  */
 const setModuleConfigById = async (_id, config) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
-    // Si un changement est effectué sur un document actif alors on désactive les autres
+    // If a change is made to an active document then the others are deactivated
     const result = await Modules.findByIdAndUpdate(_id, {config}, {new: true, runValidators: true});
     if (!result) throw NSErrors.AgendaUpdateError;
     return result;
@@ -154,7 +154,7 @@ const initModule = async (files) => {
             active                   : !!(myModule && myModule.active)
         }, {upsert: true, new: true});
 
-        // On teste si les fonctions init, initAfter, uninit et rgpd sont présentes
+        // Check if the functions init, initAfter, uninit and rgpd are present
         const pathUninit = path.join(global.appRoot, extractZipFilePath, 'uninit.js');
         if (!fs.existsSync(pathUninit)) {
             console.error(`Uninit file is missing for : ${info.name}`);
@@ -195,8 +195,8 @@ const initModule = async (files) => {
 };
 
 /**
- * Module : copie (back & front) depuis /modules, mettre en actif le module,
- * npm install back (dans aquila), npm install du theme (avec les modules actifs)
+ * Module : copy (back & front) from / modules, activate the module,
+ * npm install back (in aquila), npm install for the theme (with active modules)
  * @param {String} idModule mongoose id of the module
  */
 const activateModule = async (idModule) => {
@@ -263,7 +263,7 @@ const activateModule = async (idModule) => {
 
         await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
 
-        // Si le module doit importer des composants dans le front
+        // If the module must import components into the front
         await addOrRemoveThemeFiles(
             path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
             false,
@@ -302,7 +302,7 @@ const deactivateModule = async (idModule) => {
             console.error(error);
         }
 
-        // Suppression des fichiers copiés
+        // Deleting copied files
         for (let i = 0; i < _module.files.length; i++) {
             if (await fs.hasAccess(_module.files[i])) {
                 if ((await fs.lstat(_module.files[i])).isDirectory()) {
@@ -339,7 +339,7 @@ const deactivateModule = async (idModule) => {
 };
 
 /**
- * Module : supression module (si actif, bloquer la suppression) : supprime fichiers dans /modules, remove en BDD
+ * Delete module (if active, don't remove it): delete files in /modules, remove in DB
  * @param {string} id id of the module
  */
 const removeModule = async (idModule) => {
@@ -366,26 +366,26 @@ const removeModule = async (idModule) => {
  */
 const setFrontModules = async (theme) => {
     console.log('Set module\'s front files...');
-    // Création du fichier s'il n'existe pas, ou reinit du fichier
+    // Create the file if it does not exist, or reinit of the file
     await modulesUtils.createListModuleFile(theme || global.envConfig.environment.currentTheme);
 
-    // Mettre à jour le contenu du fichier par rapport aux modules
+    // Update file content (from modules)
     const listModules = await Modules.find({active: true/* , "et need front" */});
 
     for (let index = 0; index < listModules.length; index++) {
         const oneModule = listModules[index];
 
-        // Est ce que ce module comprend du front ?
+        // Does this module contain a front?
         if (await fs.hasAccess(`./${oneModule.path}`)) {
-            // Ecrire dans le fichier s'il n'est pas déjà dedans
+            // Write the file if it's not already in it
             await setFrontModuleInTheme(oneModule.path, theme || global.envConfig.environment.currentTheme);
         }
     }
 };
 
 /**
- * Permet d'ajouter dans le fichier montheme/modules/list_modules.js le ou les import(s) permettant d'utiliser le front du module sur le theme
- * @param {*} pathModule : chemin du module
+ * Add in the file /{myfront}/modules/list_modules.js the import(s) allowing to use the front of the module in the theme
+ * @param {*} pathModule : module path
  * @param {*} theme : theme
  */
 const setFrontModuleInTheme = async (pathModule, theme) => {
@@ -397,7 +397,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
     const currentTheme = theme || global.envConfig.environment.currentTheme; // serviceTheme.getThemePath(); // Bug
     const resultDir    = await fs.readdir(pathModule);
 
-    // Pour chaque fichier front du module
+    // For each module front file
     for (let i = 0; i < resultDir.length; i++) {
         const file = resultDir[i];
         if (!file.startsWith('Module') || !file.endsWith('.js')) {
@@ -406,7 +406,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         const info                  = await fs.readFile(path.resolve(savePath, 'info.json'));
         let type                    = JSON.parse(info).info.type;
         type                        = type ? `type: '${type}'` : '';
-        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleNomComposant.js -> nomcomposant
+        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> namecomponent
         const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
         const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
         const result                = await fs.readFile(pathListModules, 'utf8');
@@ -418,10 +418,10 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
             await fs.writeFile(pathListModules, replaceListModules, {flags: 'w'});
         }
 
-        // Copier les fichiers (du module) necessaire aux front
+        // Copy the files (of the module) needed by the front
         const copyTo  = `./themes/${currentTheme}/modules/${file}`;
         const copyTab = [`themes/${currentTheme}/modules/${file}`];
-        // ON enregistre les fichiers theme components pour chaque theme pour pouvoir les supprimer
+        // Set the theme components files for each theme to be able to delete them
         await Modules.updateOne({path: savePath}, {$push: {files: copyTab}});
         fs.copyFileSync(path.resolve(pathModule, file), copyTo);
         console.log(`Copy module's files front : ${path.resolve(pathModule, file)} -> ${copyTo}`);
@@ -429,12 +429,12 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
 };
 
 /**
- * Fonction permettant de gérer l'ajout ou la suppression d'un module front
- * @param {string} pathThemeComponents chemin vers le composant front du module ex: "modules/mon-module-aquila/theme_components"
- * @param {boolean} toRemove si true alors on supprime les fichiers de "themes/currentTheme/modules" ainsi que de "themes/currentTheme/list_modules"
+ * Add or delete a front's module
+ * @param {string} pathThemeComponents path to the front component of the module. ie: "modules/my-module-aquila/theme_components"
+ * @param {boolean} toRemove if true then we delete the files in "themes/currentTheme/modules" and "themes/currentTheme/list_modules"
  */
 const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
-    // On regarde si le dossier theme_components existe dans le module, si c'est le cas, alors c'est un module front
+    // Check if the theme_components folder exists in the module, then it's a front module
     if (!fs.existsSync(pathThemeComponents)) return;
     const currentTheme = global.envConfig.environment.currentTheme;
     if (toRemove) {
@@ -464,17 +464,17 @@ const addOrRemoveThemeFiles = async (pathThemeComponents, toRemove, type) => {
 };
 
 /**
- * Fonction permettant de supprimer un import dans themes/${currentTheme}/modules/list_modules.js
+ * Function allowing to delete an import in themes/${currentTheme}/modules/list_modules.js
  * @param {*} jsxModuleToImport { jsx: require('./ModuleMonModule.js').default, code: 'aq-monmodule' },
  * @param {*} exportDefaultListModule [{ jsx: require('./ModuleMonModule1.js').default, code: 'aq-monmodule1' }, ...]
  * @param {*} pathListModules themes/${currentTheme}/modules/list_modules.js`
  */
 const removeImport = async (jsxModuleToImport, exportDefaultListModule, pathListModules) => {
-    // On supprime les espaces
+    // We remove the spaces
     const objectToRemove = jsxModuleToImport.replace(/\s+/g, '');
-    // On supprime les espaces des infos contenus dans le tableau de l'export
+    // We remove the spaces from the information contained in the export table
     exportDefaultListModule = exportDefaultListModule.replace(/\s+/g, '');
-    // On replace par "" l'objet a supprimer de fichier
+    // We replace with "" the object to be deleted from the file
     const result = exportDefaultListModule.replace(objectToRemove, '');
     await fs.writeFile(pathListModules, `export default ${result}`);
 };
@@ -509,7 +509,7 @@ const removeModuleAddon = async (_module) => {
             if (error.code !== 'MODULE_NOT_FOUND') throw error;
         }
     }
-    // Si c'est un module contenant un job alors on supprime le job dans la collection agendaJobs
+    // If it is a module containing a job then we delete the job in the agendaJobs collection
     if (_module.cronNames && _module.cronNames.length > 0) {
         for (const cronName of _module.cronNames) {
             try {
@@ -601,9 +601,9 @@ const loadAdminModules = async () => {
 };
 
 /**
- * Permet récupérer la configuration (champ conf) d'un module
- * @param {string} name (string) nom/code du module
- * @returns Retourne la configuration du module
+ * Used to retrieve the configuration (conf field) of a module
+ * @param {string} name (string) module name / code
+ * @returns Returns the module configuration
  */
 const getConfig = async (name) => {
     const _module = await Modules.findOne({name});
@@ -611,10 +611,10 @@ const getConfig = async (name) => {
 };
 
 /**
- * Permet définir la configuration (champ conf) d'un module
- * @param name {string} nom/code du module
- * @param newConfig {object} la nouvelle configuration
- * @returns {Promise<*>} Retourne la nouvelle configuration du module
+ * Set the configuration (conf field) of a module
+ * @param name {string} module name / code
+ * @param newConfig {object} the new configuration
+ * @returns {Promise<*>} Returns the new module configuration
  * @deprecated
  */
 const setConfig = async (name, newConfig) => {
@@ -622,9 +622,9 @@ const setConfig = async (name, newConfig) => {
 };
 
 /**
- * Permet définir la configuration (champ conf) d'un module
- * @param body {object} corp de la requete
- * @returns {Promise<*>} Retourne le contenu du fichier md corespondant au nom du module fourni
+ * Used to define the configuration (conf field) of a module
+ * @param body {object} datas of the request
+ * @returns {Promise<*>} Returns the content of the md file corresponding to the name of the module
  * @deprecated
  */
 const getModuleMd = async (body) => {

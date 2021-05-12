@@ -1,8 +1,8 @@
 const ThemesController = angular.module("aq.themes.controllers", []);
 
 ThemesController.controller("ThemesCtrl", [
-    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal",
-    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal) {
+    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal", "$translate",
+    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal, $translate) {
 
         $scope.themeConfig = {};
         $scope.tab = "select";
@@ -80,7 +80,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 $http.post("/v2/themes/package/install", { themeName: $scope.config.environment.currentTheme }).then(function (response) {
-                    toastService.toast("success", "Succès");
+                    toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
@@ -88,7 +88,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", "Error !");
+                    toastService.toast("danger", $translate.instant("global.error"));
                 });
             }
 
@@ -101,7 +101,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 $http.post("/v2/themes/package/build", { themeName: $scope.config.environment.currentTheme }).then(function (response) {
-                    toastService.toast("success", "Succès");
+                    toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
@@ -109,7 +109,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", "Error !");
+                    toastService.toast("danger", $translate.instant("global.error"));
                 });
             }
         };
@@ -117,13 +117,13 @@ ThemesController.controller("ThemesCtrl", [
         $scope.packageRestart = async function () {
             try {
                 await $http.get("/restart");
-                toastService.toast("success", "Succès");
+                toastService.toast("success", $translate.instant("global.success"));
                 $scope.isLoading = false;
                 $scope.showThemeLoading = false;
             } catch (err) {
                 $scope.isLoading = false;
                 $scope.showThemeLoading = false;
-                toastService.toast("danger", "Error !");
+                toastService.toast("danger", $translate.instant("global.error"));
             }
         };
 
@@ -131,7 +131,7 @@ ThemesController.controller("ThemesCtrl", [
             if (confirm("Etes vous sur de vouloir supprimer ce theme ?")) {
                 try {
                     await $http.post("/v2/themes/delete", { themeName: $scope.config.environment.currentTheme });
-                    toastService.toast("success", "Thème supprimé avec succès.");
+                    toastService.toast("success", $translate.instant("global.deleteTheme"));
                     $scope.LoadAllThemes();
                 } catch (err) {
                     $scope.isLoading = false;
@@ -154,9 +154,9 @@ ThemesController.controller("ThemesCtrl", [
                         fileNames : $scope.listThemeFiles
                     });
                     if (data.data.noDatas) {
-                        toastService.toast("success", "Ce thème ne contient pas de données.");
+                        toastService.toast("success", $translate.instant("global.themeNoData"));
                     } else {
-                        toastService.toast("success", "Données du thème copiées avec succès.");
+                        toastService.toast("success", $translate.instant("global.copyThemeDataDone"));
                     }
                 } catch (err) {
                     $scope.isLoading = false;
@@ -171,10 +171,10 @@ ThemesController.controller("ThemesCtrl", [
                 ThemeConfig.update({config : $scope.themeConfig.variables}, function (response,err) {
                     if(err.errmsg){
                         $scope.showLoading2 = false;
-                        toastService.toast("danger", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
+                        toastService.toast("danger", $translate.instant("global.addedTheme"));
                     }else{
                         $scope.showLoading2 = false;
-                        toastService.toast("success", "Variables sauvegardées.");
+                        toastService.toast("success", $translate.instant("global.varSaved"));
                         $scope.keys = {};
                         $scope.themeConfig.variables = {};
                         if(response.datas.translation){
@@ -220,7 +220,7 @@ ThemesController.controller("ThemesCtrl", [
 
                             }, function (err) {
                                 $scope.showThemeLoading = false;
-                                toastService.toast("danger", "Une erreur est survenue !");
+                                toastService.toast("danger", $translate.instant("global.errorOccurred"));
                                 console.error(err);
                             });
                         } else {
@@ -278,13 +278,13 @@ ThemesController.controller("ThemesCtrl", [
 ]);
 
 ThemesController.controller("ThemesNewCtrl", [
-    "$scope", "$modalInstance", "toastService",
-    function ($scope, $modalInstance, toastService) {
+    "$scope", "$modalInstance", "toastService","$translate",
+    function ($scope, $modalInstance, toastService, $translate) {
 
         $scope.onErrorUploadTheme = function () {
             $scope.$parent.isLoading = false;
             $scope.showThemeLoading = false;
-            toastService.toast("danger", "Error !");
+            toastService.toast("danger", $translate.instant("global.error"));
         };
 
         $scope.beforeTheme = function () {
@@ -293,7 +293,7 @@ ThemesController.controller("ThemesNewCtrl", [
 
         $scope.uploadedTheme = function () {
             $scope.showThemeLoading = false;
-            toastService.toast("success", "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner");
+            toastService.toast("success", $translate.instant("global.addedTheme"));
             $modalInstance.close("save");
         };
 

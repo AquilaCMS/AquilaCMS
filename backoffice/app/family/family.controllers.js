@@ -247,8 +247,8 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
         };
     }]);
 
-FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter', '$modalInstance', 'FamilyV2', 'familyType', 'parent','toastService',
-    function ($scope, $location, $filter, $modalInstance, FamilyV2, familyType, parent,toastService)     {
+FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter', '$modalInstance', 'FamilyV2', 'familyType', 'parent','toastService','$translate',
+    function ($scope, $location, $filter, $modalInstance, FamilyV2, familyType, parent,toastService, $translate)     {
         // $scope.parents = Family.query();
         let parentsList = []
 
@@ -303,7 +303,7 @@ FamilyControllers.controller('FamilyNewCtrl', ['$scope', '$location', '$filter',
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.error"));
                 }
             });
         };

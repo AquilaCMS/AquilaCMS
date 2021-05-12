@@ -1404,7 +1404,7 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
- * Permet de faire un populate des champs spécifiques de chaque item
+ * Allows you to populate specific fields of each item
  * @param {array} items
  */
 const populateItems = async (items) => {
