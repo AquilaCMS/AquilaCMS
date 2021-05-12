@@ -90,7 +90,8 @@
         "alt": "Alt tag",
         "pos": "Position",
         "img": "Main Picture",
-        "url": "URL"
+        "url": "URL",
+        "noPics": "There are no images in this product, the default image will be displayed in the theme"
     },
     "list": {
         "ph1": "Name",
