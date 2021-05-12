@@ -6,7 +6,12 @@ const types = `
         img: String
         position: Int
         defaultLanguage: Boolean
-        status: String
+        status: LanguageStatus
+    }
+
+    enum LanguageStatus {
+        DELIVERY
+        RELAY_POINT
     }
 `;
 

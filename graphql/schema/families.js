@@ -3,12 +3,18 @@ const types = `
         _id: ObjectId!
         code: String!
         name: String!
-        type: String!
+        type: FamilyType!
         ancestors: [String]
         slug: String
         parent: ObjectId
         children: [ObjectId]
         details: Any
+    }
+
+    enum FamilyType {
+        universe
+        family
+        subfamily
     }
 `;
 

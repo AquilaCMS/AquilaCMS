@@ -1,15 +1,22 @@
 const types = `
     type adminInformations {
         code: String
-        type: String
+        type: adminInformationType
         translation: Any
         date: Date
         deleted: Boolean
     }
+
+    enum adminInformationType {
+        success
+        info
+        warning
+        danger
+    }
 `;
 
 const queries = `
-    getAdminInformation: adminInformations!
+    getAdminInformations: [adminInformations]!
 `;
 
 module.exports = {

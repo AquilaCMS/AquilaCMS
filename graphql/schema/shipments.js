@@ -1,7 +1,7 @@
 const types = `
     type shipment {
         code: String
-        type: String
+        type: shipmentType
         active: Boolean
         translation: Any,
         countries: [country],
@@ -15,6 +15,11 @@ const types = `
         component_template_front: String
     }
 
+    enum shipmentType {
+        DELIVERY
+        RELAY_POINT
+    }
+
     type preparation {
         delay: Int
         unit: String
@@ -24,10 +29,10 @@ const types = `
         country: String
         delay: Int
         unit: String
-        prices: [price]
+        prices: [countryPrice]
     }
 
-    type price {
+    type countryPrice {
         weight_min: Float
         weight_max: Float
         price: Float
@@ -35,8 +40,8 @@ const types = `
 `;
 
 const queries = `
-    getShipment: shipment!
-    getShipments: [shipment]!
+    getShipment(code: String): shipment!
+    getShipments(offset: Int, limit: Int, conditions: Any): [shipment]!
 `;
 
 module.exports = {

@@ -10,7 +10,7 @@ const types = `
 
 const queries = `
     getMedia(id: String!): Media!
-    listMedias(offset: Int, limit: Int, conditions: Any): [Media]!
+    getMedias(offset: Int, limit: Int, conditions: Any): [Media]!
 `;
 
 module.exports = {

@@ -2,7 +2,7 @@ const types = `
     type Attribute {
         _id: ObjectId!
         code: String!
-        type: String!
+        type: AttributeType!
         _type: AttributeType
         param: String!
         set_attributes: [SetAttribute]

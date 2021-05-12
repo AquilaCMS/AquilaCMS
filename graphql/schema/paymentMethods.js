@@ -13,8 +13,8 @@ const types = `
 `;
 
 const queries = `
-    getPaymentMethod: paymentMethods!
-    getPaymentMethods: [paymentMethods]!
+    getPaymentMethod(code : String!): paymentMethods!
+    getPaymentMethods(offset: Int, limit: Int, conditions: Any): [paymentMethods]!
 `;
 
 module.exports = {
