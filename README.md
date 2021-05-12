@@ -117,6 +117,30 @@ If you want to contribute, you will need to install husky or else you won't be a
 yarn husky:install
 ```
 
+## Demos
+
+Demos website are available:
+
+### Front
+
+You can check the default front here :
+
+- [https://dem01.aquila-cms.com/](https://dem01.aquila-cms.com/)
+- [https://dem02.aquila-cms.com/](https://dem02.aquila-cms.com/)
+
+### Backoffice
+
+You can check the backoffice here :
+
+- [https://dem01.aquila-cms.com/demadmin](https://dem01.aquila-cms.com/demadmin)
+- [https://dem02.aquila-cms.com/demadmin](https://dem02.aquila-cms.com/demadmin)
+
+Logins are :
+
+|         Email          | Password  |
+| :--------------------: | :-------: |
+| `demo@nextsourcia.com` | `Demo123` |
+
 ## License
 
 AquilaCMS is licensed under [OSL3](https://github.com/AquilaCMS/AquilaCMS/blob/master/LICENSE.md)
