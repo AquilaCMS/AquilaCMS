@@ -11,6 +11,7 @@ const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
+const aquilaEvents     = require('../../utils/aquilaEvents');
 const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
@@ -104,6 +105,8 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
 
     return errors;
 };
+
+aquilaEvents.emit('categoriesSchemaInit', CategoriesSchema);
 
 async function preUpdates(that) {
     await utilsDatabase.checkCode('categories', that._id, that.code);
