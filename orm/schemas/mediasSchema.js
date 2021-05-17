@@ -15,6 +15,8 @@ const MediasSchema = new Schema({
     link      : String,
     group     : {type: String, default: ''},
     extension : {type: String, default: '.jpg'}
+}, {
+    id : false
 });
 
 async function preUpdates(that) {

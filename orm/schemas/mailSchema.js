@@ -18,7 +18,10 @@ const MailSchema = new Schema({
     from        : {type: String, trim: true, required: true/* , validate: [{validator: (value) => isEmail(value), msg: 'Invalid email.'}] */}, // adresse mail d'envoi
     fromName    : {type: String, default: ''},
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 MailSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];

@@ -28,6 +28,8 @@ const AttributesSchema = new Schema({
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
     translation    : {}
+}, {
+    id : false
 });
 
 AttributesSchema.statics.translationValidation = async function (self) {

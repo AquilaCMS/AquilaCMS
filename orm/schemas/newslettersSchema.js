@@ -20,6 +20,8 @@ const NewslettersSchema = new Schema({
         date_subscribe   : {type: Date, default: Date.now},
         date_unsubscribe : {type: Date}
     }]
+}, {
+    id : false
 });
 
 module.exports = NewslettersSchema;

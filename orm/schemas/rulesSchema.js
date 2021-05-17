@@ -30,6 +30,8 @@ const RulesSchema = new Schema({
             value : {type: Number, required: true}
         }
     ]
+}, {
+    id : false
 });
 
 RulesSchema.add({
