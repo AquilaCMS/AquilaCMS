@@ -255,12 +255,12 @@ ProductsSchema.pre('updateOne', async function (next) {
 });
 
 ProductsSchema.pre('save', async function (next) {
-    await preUpdates(this);
     this.price.priceSort = {
         et  : this.price.et.special || this.price.et.normal,
         ati : this.price.ati.special || this.price.ati.normal
     };
     const errors         = await ProductsSchema.statics.translationValidation(undefined, this);
+    await preUpdates(this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
