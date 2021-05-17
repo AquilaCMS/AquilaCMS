@@ -97,21 +97,23 @@ module.exports = class QueryBuilder {
      * @param {PostBody} PostBody is the object describing the request to be performed by the find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [header_authorization=null] header_authorization
-     * @return {{datas: {} | mongoose.Model<this>, count: mongoose.Model<this>}} returns datas found and total of element
+     * @return {{datas: [] | [mongoose.Model<this>], count: number}} returns datas found and total of element
      */
     async find(PostBody, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
         const postBodyChecked                                  = this.verifyPostBody(PostBody);
         const {limit, skip, filter, populate, sort, structure} = postBodyChecked;
-        // TODO P4 : FABRICE change this behavior => we launch the requests one by one => launch both at the same time
-        const count        = await this.model.countDocuments(filter);
-        const addStructure = this.addToStructure(structure, sort);
-        let datas;
-        if (lean) {
-            datas = await this.model.find(filter, addStructure).lean().sort(sort).skip(skip).limit(limit).populate(populate);
-        } else {
-            datas = await this.model.find(filter, addStructure).sort(sort).skip(skip).limit(limit).populate(populate);
-        }
+
+        const addStructure   = this.addToStructure(structure, sort);
+        const [count, datas] = await Promise.all([
+            this.model.countDocuments(filter),
+            this.model.find(filter, addStructure)
+                .lean(!!lean)
+                .sort(sort)
+                .skip(skip)
+                .limit(limit)
+                .populate(populate)
+        ]);
         await this.removeFromStructure(structure, datas, isAdmin);
         return {datas, count};
     }
