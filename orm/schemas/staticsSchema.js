@@ -106,11 +106,7 @@ StaticsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 StaticsSchema.pre('save', async function (next) {
-    const update = this.getUpdate();
-    await StaticsSchema.statics.checkCode(update.$set || update);
-    await StaticsSchema.statics.checkSlugExist(update.$set || update);
-    const errors = await StaticsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 module.exports = StaticsSchema;

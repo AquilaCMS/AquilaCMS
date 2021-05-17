@@ -1432,16 +1432,17 @@ const preUpdates = async (that, next, schema) => {
             checkSlugExist,
             translationValidation
         } = schema.statics;
+        let errors;
+        if (typeof translationValidation === 'function' && elem._id) {
+            errors = await translationValidation(elem, that);
+        }
         if (typeof checkCode === 'function') {
             await checkCode(elem);
         }
         if (typeof checkSlugExist === 'function') {
             await checkSlugExist(elem);
         }
-        if (typeof translationValidation === 'function' && elem._id) {
-            const errors = await translationValidation(elem, that);
-            return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
-        }
+        return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
     }
     return next();
 };

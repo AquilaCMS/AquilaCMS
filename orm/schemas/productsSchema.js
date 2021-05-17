@@ -306,15 +306,11 @@ ProductsSchema.pre('updateOne', async function (next) {
 });
 
 ProductsSchema.pre('save', async function (next) {
-    const update = this.getUpdate();
-    await ProductsSchema.statics.checkCode(update.$set || update);
-    await ProductsSchema.statics.checkSlugExist(update.$set || update);
     this.price.priceSort = {
         et  : this.price.et.special || this.price.et.normal,
         ati : this.price.ati.special || this.price.ati.normal
     };
-    const errors         = await ProductsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
 aquilaEvents.emit('productSchemaInit', ProductsSchema);
