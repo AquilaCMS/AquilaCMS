@@ -635,8 +635,11 @@ const setProduct = async (req) => {
     // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
+    if (result.code === 'SlugAlreadyExist' ) {
+        throw NSErrors.SlugAlreadyExist;
+    }
     await ProductsPreview.deleteOne({code: req.body.code});
-    await Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
+    return Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
 };
 
 const createProduct = async (req) => {
