@@ -12,6 +12,8 @@ const Schema   = mongoose.Schema;
 const StatsHistorySchema = new Schema({
     visit   : {type: Array, default: []},
     oldCart : {type: Array, default: []}
+}, {
+    id : false
 });
 
 module.exports = StatsHistorySchema;

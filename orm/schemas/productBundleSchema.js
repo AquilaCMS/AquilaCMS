@@ -28,7 +28,6 @@ const ProductBundleSchema = new Schema({
                     et  : {type: Number}
                 },
                 modifier_weight : {type: Number}
-
             }],
             isRequired : Boolean,
             minSelect  : Number,
@@ -43,7 +42,10 @@ const ProductBundleSchema = new Schema({
         label        : String,
         translation  : {}
     }
-}, {discriminatorKey: 'kind'});
+}, {
+    discriminatorKey : 'kind',
+    id               : false
+});
 
 // LATER, calsulate qty and disponibility from child products on retrieving product
 /* ProductBundleSchema.virtual("stock").get(function () {
