@@ -22,6 +22,8 @@ const SetAttributesSchema = new Schema({
     questions : [{
         translation : {}
     }]
+}, {
+    id : false
 });
 
 async function preUpdates(that) {

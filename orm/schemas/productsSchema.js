@@ -120,7 +120,8 @@ const ProductsSchema = new Schema({
 }, {
     discriminatorKey : 'kind',
     timestamps       : true,
-    usePushEach      : true
+    usePushEach      : true,
+    id               : false
 });
 ProductsSchema.index({_visible: 1, active: 1});
 // ProductsSchema.index({

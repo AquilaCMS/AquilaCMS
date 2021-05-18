@@ -16,6 +16,8 @@ const CmsBlocksSchema = new Schema({
     group       : {type: String, default: ''},
     description : String,
     translation : {}
+}, {
+    id : false
 });
 
 async function translationValidation(self) {

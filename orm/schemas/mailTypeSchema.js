@@ -14,7 +14,10 @@ const MailTypeSchema = new Schema({
     name        : {type: String, required: true},
     position    : {type: Number, default: 1},
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 MailTypeSchema.pre('validate', function (next) {
     if (this.code === undefined || this.code == null || (this.code === '' && this.name !== 'Aucun type')) {

@@ -21,7 +21,10 @@ const FamiliesSchema = new Schema({
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
     children  : [{type: ObjectId, ref: 'families'}],
     details   : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 // FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 

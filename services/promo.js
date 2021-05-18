@@ -172,7 +172,7 @@ const middlewarePromoCatalog = async (req, res) => {
 
 /**
  * Function to apply catalog promotions
- * @param {Product} products list of products
+ * @param {mongoose.Document[]} products list of products
  * @param {User|null} [user=null]
  * @param {string|null} [lang=null]
  * @param {boolean} [keepObject=false]
@@ -182,31 +182,7 @@ const middlewarePromoCatalog = async (req, res) => {
  */
 const checkPromoCatalog = async (products, user = null, lang = null, keepObject = false, populate = [], associatedProducts = false, keepPromos = false) => {
     // TODO : improve speed because it's usefull
-    if ((!products || !products.length) && (!products || !products.items || !products.items.length)) return [];
-    // We get the current catalog promotions (we are after the start date and before the end date)
-    // or whose start and end dates are null
-    if ((!products || !products.length) && (products.items  && products.items.length)) {
-        products =  products.items.map((product) => {
-            if (product.type === 'bundle') {
-                return {
-                    ...product.id,
-                    price : {
-                        ...product.id.price,
-                        ati : {
-                            normal  : product.price.unit.ati,
-                            special : product.price.special ? product.price.special.ati : undefined
-                        },
-                        et : {
-                            normal  : product.price.unit.et,
-                            special : product.price.special ? product.price.special.et : undefined
-                        }
-
-                    }
-                };
-            }
-            return product.id;
-        });
-    }
+    if (!products || !products.length) return [];
     const returnedPromos = [];
     const currentDate    = new Date(Date.now());
     const promos         = await Promo.find(
@@ -275,7 +251,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
         }
         if (!keepObject) {
             products[i].isNew = false;
-            if (products[i].associated_prds) {
+            if (products[i]._doc && products[i].associated_prds) {
                 if (!associatedProducts) {
                     if (products[i].associated_prds.length > 0 && products[i].associated_prds[0]._id === undefined) {
                         populate.push('associated_prds');
@@ -331,7 +307,10 @@ const checkForApplyPromo = async (userInfo, cart, lang = null, codePromo) => {
                 user = userInfo;
             }
         }
-        if (typeof cart === 'string') {
+        if (
+            typeof cart === 'string'
+            && mongoose.Types.ObjectId.isValid(cart)
+        ) {
             cart = await Cart.findOne({_id: cart}).populate('items.id');
         }
         let code;

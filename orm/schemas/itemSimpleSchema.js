@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
 const ItemSimple = new Schema({}, {
-    discriminatorKey : 'type'
+    discriminatorKey : 'type',
+    id               : false
 });
 
 ItemSimple.methods.populateItem = async function () {

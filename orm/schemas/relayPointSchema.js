@@ -19,6 +19,8 @@ const RelayPointSchema = new Schema({
         isoCountryCode : String,
         country        : String
     }
+}, {
+    id : false
 });
 
 module.exports = RelayPointSchema;
