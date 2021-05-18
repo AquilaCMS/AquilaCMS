@@ -19,6 +19,8 @@ const PictosSchema = new Schema({
     location      : {type: String}, // Lieux d'affichage du picto sur l'image du produit...
     enabled       : {type: Boolean, default: false},
     usedInFilters : {type: Boolean, default: false}
+}, {
+    id : false
 });
 
 PictosSchema.statics.checkCode = async function (that) {

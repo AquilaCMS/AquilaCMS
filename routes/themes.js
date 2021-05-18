@@ -124,7 +124,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames);
+        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames,  req.body.otherParams);
         return res.end();
     } catch (error) {
         return next(error);
@@ -170,12 +170,12 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        const themeConf = await serviceThemeConfig.getThemeConfig({
+        const themeConf   = await serviceThemeConfig.getThemeConfig({
             filter    : {},
             structure : {},
             limit     : 99
         });
-        const config    = (await ServiceConfig.getConfig({
+        const config      = (await ServiceConfig.getConfig({
             structure : {
                 _id                        : 0,
                 'environment.adminPrefix'  : 1,
@@ -183,9 +183,10 @@ async function getThemeInformations(req, res, next) {
                 'environment.currentTheme' : 1
             }
         }, req.info));
-        const listTheme = await themesServices.listTheme();
-        const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
+        const listTheme   = await themesServices.listTheme();
+        const listFiles   = await themesServices.getDemoDatasFilesName();
+        const otherParams = [{name: 'files', value: true}];
+        res.send({themeConf, configEnvironment: config, listTheme, listFiles, otherParams});
     } catch (error) {
         return next(error);
     }

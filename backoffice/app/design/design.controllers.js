@@ -1,8 +1,8 @@
 
 const DesignControllers = angular.module('aq.design.controllers', []);
 
-DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService', 'designFactory',
-    function ($scope, $http, toastService, designFactory) {
+DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService', 'designFactory', '$translate',
+    function ($scope, $http, toastService, designFactory, $translate) {
         $scope.local = {
             customCSS   : '',
             allCssNames : [],
@@ -33,7 +33,7 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
             designFactory.saveCss(
                 { currentCss: $scope.local.currentCss }, { datas: $scope.local.customCSS },
                 (response) => {
-                    toastService.toast('success', 'Design sauvegardés !');
+                    toastService.toast('success', $translate.instant("global.designSaved"));
                 },
                 (err) => {
                     toastService.toast('danger', err.data.message);

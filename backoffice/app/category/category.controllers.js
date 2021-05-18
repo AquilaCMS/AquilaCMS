@@ -16,7 +16,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.selectedAttributes;
         $scope.selectedFilters;
         $scope.searchObj = {
-            productInCategory: ""
+            productInCategory: "true" // default value
         };
 
         $scope.getCategory = function(id){
@@ -24,8 +24,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 $scope.category = response;
             });
         }
-
-        $scope.getCategory($scope.category._id);
 
         $scope.getImage = function (category) {
             if(category && category.img) {
@@ -85,35 +83,37 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             return group;
         }
-        // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
-        CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 99, filter: { "usedInFilters":true}}}, function (resp)
-        {
-            let response = resp.datas;
-            for(var i = 0; i < response.length; i++)
+        function getAttrib(){
+            // On récupére les attributes disponibles dans les filtres automatique (attribute.usedInFilters = true)
+            CategoryGetAttributesUsedInFilters.query({ PostBody: { limit: 99, filter: { "usedInFilters":true}}}, function (resp)
             {
-                response[i].id_attribut = response[i]._id;
-            }
-            $scope.usedInFilters = response;
-            // Si l'attribut est déjà présent dans la category alors nous le supprimons de usedInFilters et nous ajoutons le code
-            // a l'objet category.filters.attributes[i].code
-            for(var i = 0; i < $scope.category.filters.attributes.length; i++)
-            {
-                // On recherche l'index de usedInFilters existant dans $scope.category.filters.attributes afin de le supprimer de usedInFilters
-                var indexFound = $scope.usedInFilters.findIndex(function (filter)
+                let response = resp.datas;
+                for(var i = 0; i < response.length; i++)
                 {
-                    return filter.id_attribut === $scope.category.filters.attributes[i]._id;
-                });
-                if(indexFound !== -1)
-                {
-                    // On ajoute au category.filters.attributes le code afin qu'il soit visible dans la partie de droite des filtres
-                    $scope.category.filters.attributes[i].code = $scope.usedInFilters[indexFound].code;
-                    $scope.usedInFilters.splice(indexFound, 1);
+                    response[i].id_attribut = response[i]._id;
                 }
-            }
-        }, function (err)
-        {
-            console.error(err);
-        });
+                $scope.usedInFilters = response;
+                // Si l'attribut est déjà présent dans la category alors nous le supprimons de usedInFilters et nous ajoutons le code
+                // a l'objet category.filters.attributes[i].code
+                if($scope.category.filters && $scope.category.filters.attributes){
+                    const attributesLength = $scope.category.filters.attributes.length;
+                    for(var i = 0; i < attributesLength; i++) {
+                        // On recherche l'index de usedInFilters existant dans $scope.category.filters.attributes afin de le supprimer de usedInFilters
+                        var indexFound = $scope.usedInFilters.findIndex(function (filter) {
+                            return filter.id_attribut === $scope.category.filters.attributes[i]._id;
+                        });
+                        if(indexFound !== -1)
+                        {
+                            // On ajoute au category.filters.attributes le code afin qu'il soit visible dans la partie de droite des filtres
+                            $scope.category.filters.attributes[i].code = $scope.usedInFilters[indexFound].code;
+                            $scope.usedInFilters.splice(indexFound, 1);
+                        }
+                    }
+                }
+            }, function (err) {
+                console.error(err);
+            });
+        }
         /*
          ** liste information upload image
          */
@@ -132,7 +132,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         $scope.totalItems = 1;
         $scope.itemPerPage = 15;
         $scope.local = {
-            sortType : "sortWeight", // On trie par poid du produit par defaut
+            sortType : "code", // On trie par code, le sortWeight n'existe pas dans products
             sortReverse : false
         }
         $scope.addCond = function ()
@@ -151,8 +151,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         };
 
         var initValues = {start: 0, limit: 15};
-        $scope.getProducts = function ()
-        {
+        $scope.getProducts = function () {
             var params = {
                 page: $scope.currentPage,
                 limit: $scope.itemPerPage,
@@ -217,92 +216,167 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     sort: params.sortObj
                 }
             };
-            ProductsV2.list(paramsV2, function (res)
-            {
-                if(angular.isArray(res.datas))
-                {
+            if(paramsV2.PostBody.filter && paramsV2.PostBody.filter._id) {
+                delete paramsV2.PostBody.filter._id;
+            }
+            let arrayListOfProducts;
+            if($scope.category && $scope.category.productsList){
+                arrayListOfProducts = $scope.category.productsList.map(function(element) {
+                    if(typeof element.id === "string"){
+                        return element.id;
+                    }else{
+                        return element.id.id || element.id._id; // product bundle doesn't have id :(
+                    }
+                });
+            }
+            if($scope.searchObj.productInCategory == "true"){
+                if(arrayListOfProducts && arrayListOfProducts.length > 0){
+                    paramsV2.PostBody.filter = {
+                        _id: {$in: arrayListOfProducts}, 
+                        ...paramsV2.PostBody.filter
+                    };
+                    paramsV2.PostBody.limit = arrayListOfProducts.length;
+                    delete paramsV2.PostBody.page;
+                }
+            }else{
+                paramsV2.PostBody.filter = {_id: {$nin: arrayListOfProducts}, ...paramsV2.PostBody.filter};
+            }
+
+            ProductsV2.list(paramsV2, function (res) {
+                if(angular.isArray(res.datas)) {
                     $scope.totalItems = res.count;
                     $scope.products = res.datas;
 
-                    if($scope.category.productsList && $scope.category.productsList.length > 0)
-                    {
-                        for(var i = 0; i < $scope.products.length; i++)
-                        {
-                            var prd = $scope.category.productsList.find(function (item)
-                            {
-                                return item.id == $scope.products[i]._id;
+                    if($scope.category.productsList && $scope.category.productsList.length > 0) {
+                        for(var i = 0; i < $scope.products.length; i++) {
+                            var prd = $scope.category.productsList.find(function (item) {
+                                let idOfItem;
+                                if(typeof item.id === "string"){
+                                    idOfItem = item.id;
+                                }else{
+                                    idOfItem = item.id.id || item.id._id; // product bundle doesn't have id :(
+                                }
+                                return idOfItem == $scope.products[i]._id;
                             });
-                            if(prd)
-                            {
+                            if(prd) {
                                 $scope.products[i].sortWeight = prd.sortWeight;
+                                $scope.products[i].checked = true;
                             }
                         }
-                        // On trie les produits par sortWeight, si aucune sortWeight n'est présent alors ces produits seront en bas de page
-                        $scope.products = $scope.products.sort(function (a, b)
-                        {
-                            let aSort, bSort;
-                            if(typeof a.sortWeight === "undefined" || a.sortWeight === null) aSort = -1;
-                            else aSort = a.sortWeight;
-                            if(typeof b.sortWeight === "undefined" || b.sortWeight === null) bSort = -1;
-                            else bSort = b.sortWeight;
-                            return aSort - bSort;
-                        }).reverse();
-                    }
+                        $scope.products = filterProducts($scope.products); // filter product by "sortWeight" and "checked" 
+                        if($scope.searchObj.productInCategory == "true"){
+                            // we only take 15 products, with the correct page (index sort)
+                            $scope.products = $scope.products.filter(function(value, index) {
+                                const page = $scope.currentPage;
+                                const indexMin = (page-1)*15;
+                                const indexMax = page*15;
+                                if(indexMin <= index && index <= indexMax) {
+                                    return true;
+                                }
 
-                    if($scope.category._id !== undefined)
-                    {
-                        for(var i = 0; i < res.datas.length; i++)
-                        {
-                            res.datas[i].check = $scope.category.productsList.findIndex(function (item)
-                            {
-                                return item.id == res.datas[i]._id;
-                            }) != -1;
+                            });
                         }
-
                     }
-                }
-                else
-                {
+                } else {
                     $scope.products = null;
                 }
             });
         };
 
-        RulesV2.query({PostBody: {filter: {owner_id: $scope.category._id}, structure: '*'}}, function (rule)
-        {
-            if(rule.operand === undefined)
-            {
+        function filterProducts(products) {
+            return products.sort(function (a, b) {
+                // two non checked or two checked, we use the sort
+                let aSort = (typeof a.sortWeight === "undefined" || a.sortWeight === null) ? -1 : a.sortWeight;
+                let bSort = (typeof b.sortWeight === "undefined" || b.sortWeight === null) ? -1 : b.sortWeight;
+                let aChecked = (typeof a.checked === "undefined" || a.checked === null) ? -1 : 1;
+                let bChecked = (typeof b.checked === "undefined" || b.checked === null) ? -1 : 1;
+                if(aChecked === bChecked){
+                    if(aSort == bSort){
+                        return 0;
+                    }if(aSort < bSort){
+                        return -1;
+                    }else{
+                        return 1;
+                    }
+                }else if(aChecked < bChecked){
+                    return -1;
+                }else{
+                    return 1;
+                }
+            }).reverse();
+        }
+
+        function init(){
+            CategoryV2.get({PostBody: {filter: {_id: $scope.category._id}, structure: '*', populate: ["productsList.id"]}}, function (response) {
+                $scope.category = response;
+                if($scope.category && $scope.category.productsList){
+                    if($scope.category.productsList.length > 0){
+                        $scope.products = $scope.category.productsList.map((element) => {
+                            return {
+                                checked: true,
+                                sortWeight: element.sortWeight || 0,
+                                ...element.id
+                            }
+                        })
+                        $scope.totalItems = $scope.category.productsList.length;
+                        $scope.products = filterProducts($scope.products);
+                        $scope.products = $scope.products.filter(function(value, index){
+                            return index < 14; // it the first page
+                        });
+                    }else{
+                        // no products in this cat, so we need to change the setup
+                        $scope.searchObj.productInCategory == "false";
+                        $scope.getProducts();
+                    }
+                }else{
+                    // no products in this cat, so we need to change the setup
+                    $scope.searchObj.productInCategory == "false";
+                    $scope.getProducts();
+                }
+            });
+        }
+        init();
+        getAttrib();
+
+        RulesV2.query({PostBody: {filter: {owner_id: $scope.category._id}, structure: '*'}}, function (rule) {
+            if(rule.operand === undefined) {
                 Object.assign($scope.rule, {
                     owner_id: $scope.category._id,
                     conditions: [],
                     other_rules: []
                 });
-            }
-            else
-            {
+            } else {
                 $scope.rule = rule;
             }
-
-            $scope.getProducts();
+        }, function(error){
+            console.error(error);
         });
 
-        $scope.changePosition = function (id, pos)
-        {
-            // $scope.products = $scope.products.sort(function (a, b)
-            // {
-            //     return a.sortWeight - b.sortWeight;
-            // }).reverse();
-            var index = $scope.category.productsList.findIndex(function (prd)
-            {
-                return prd.id == id;
+        $scope.changePosition = function (id, pos) {
+            const index = $scope.category.productsList.findIndex(function (prd) {
+                return prd.id._id == id;
             });
-            $scope.category.productsList[index].sortWeight = pos;
-            CategoryV2.save($scope.category, function (res)
-            {
-                toastService.toast("success", "Position sauvegardée");
-
-                if($scope.formMenu)
-                {
+            if(index == -1){
+                // the prodcuts isn't in productsList, so we need to add it to
+                if(typeof $scope.category.productsList === "undefined" || $scope.category.productsList == null){
+                    $scope.category.productsList = [];
+                }
+                $scope.category.productsList.push({
+                    checked: false,
+                    id: {_id: id},
+                    sortWeight: pos
+                });
+            }else{
+                $scope.category.productsList[index].sortWeight = pos;
+            }
+            // we re-build the correct array
+            const newCat = angular.copy($scope.category);
+            for(let oneProduct of newCat.productsList){
+                oneProduct.id = oneProduct.id._id;
+            }
+            CategoryV2.save(newCat, function (res) {
+                toastService.toast("success", $translate.instant("global.positionSaved"));
+                if($scope.formMenu) {
                     $scope.formMenu.$setPristine();
                 }
             });
@@ -323,8 +397,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             });
         };
 
-        $scope.search = function ()
-        {
+        $scope.search = function () {
             $scope.pagination.minPrice = undefined;
             $scope.pagination.maxPrice = undefined;
             $scope.pagination.minQuantity = undefined;
@@ -379,12 +452,15 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
         };
 
-        function saveCategory()
-        {
-            CategoryV2.save($scope.category, function (res)
-            {
+        function saveCategory() {
+            // we re-build the correct array
+            const newCat = angular.copy($scope.category);
+            for(let oneProduct of newCat.productsList){
+                oneProduct.id = oneProduct.id._id;
+            }
+            CategoryV2.save(newCat, function (res) {
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
-                toastService.toast("success", "Catégorie sauvegardée");
+                toastService.toast("success", $translate.instant("global.categorySaved"));
 
                 if($scope.formMenu)
                 {
@@ -403,15 +479,15 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.save = function (isQuit) {
             if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
-                toastService.toast("danger", "Formulaire des regles incomplet");
+                toastService.toast("danger", $translate.instant("global.incompleteRules"));
                 return;
             }
             if ($scope.rule.operand !== undefined) {
                 RulesV2.save($scope.rule, function (response){
-                        toastService.toast("success","Règle(s) sauvegardée(s)");
+                        toastService.toast("success",$translate.instant("global.ruleSaved"));
                         saveCategory();
                     }, function (err) {
-                        toastService.toast("danger","Pas de règles créées");
+                        toastService.toast("danger", $translate.instant("global.noNewRule"));
                         saveCategory();
                     }
                 );
@@ -452,27 +528,35 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             $location.path("/products/" + productType + "/" + productSlug);
         };
 
-        $scope.checkProduct = function ($index)
-        {
-            var tab = $scope.category.productsList;
-
-            if(!$scope.products[$index].check)
-            {
-                var index = tab.findIndex(function (item)
-                {
-                    return item.id === $scope.products[$index]._id;
-                });
-                if(index > -1)
-                {
-                    tab.splice(index, 1);
+        $scope.checkProduct = function (id, checked) {
+            var index = $scope.category.productsList.findIndex(function (item) {
+                return item.id._id === id;
+            });
+            if(index == -1) {
+                if(checked == true || typeof checked === "undefined"){
+                    // not in the list
+                    $scope.category.productsList.push({
+                        id: {_id: id},
+                        sortWeight: 0,
+                        checked: true
+                    });
+                }
+            }else{
+                if(checked == true || typeof checked === "undefined"){
+                    $scope.category.productsList[index].checked = true;
+                }else{
+                    $scope.category.productsList.splice(index, 1);
                 }
             }
-            else
-            {
-                tab.push({id: $scope.products[$index]._id, checked: true});
+            // we re-build the correct array
+            const newCat = angular.copy($scope.category);
+            for(let oneProduct of newCat.productsList){
+                oneProduct.id = oneProduct.id._id;
             }
-
-            CategoryV2.save({_id: $scope.category._id, productsList: tab}, function () {
+            CategoryV2.save({
+                _id: newCat._id,
+                productsList: newCat.productsList
+            }, function (response) {
 
             });
         };
@@ -609,7 +693,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     Promise.all(promiseArray).then(function () {
                         deferred.resolve();
                     }, function (err) {
-                        toastService.toast("danger", "Une erreur est survenue lors d'une requete API");
+                        toastService.toast("danger", $translate.instant("global.occurErrorAPI"));
                         deferred.reject();
                     });
                 }
@@ -621,7 +705,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             $scope.category.img = null;
             $scope.category.alt = null;
             CategoryV2.save($scope.category, function (res) {
-                toastService.toast("success", "Image supprimée ");
+                toastService.toast("success", $translate.instant("global.pictureDelete"));
             });
         }
 
@@ -816,7 +900,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     deferred.resolve();
                     $scope.$broadcast('angular-ui-tree:expand-all');
                 }, function (err) {
-                    toastService.toast("danger", "Une erreur est survenue lors du déplacement de la catégorie.");
+                    toastService.toast("danger", $translate.instant("global.errorCategoryMove"));
                     deferred.reject();
                 });
 

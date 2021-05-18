@@ -17,12 +17,15 @@
     "api": "API",
     "theme": "THEME",
     "info": "Informations",
-    "modalReadMe" : {
-        "title":"README.md of the module",
-        "close":"Close"
+    "modalReadMe": {
+        "title": "README.md of the module",
+        "close": "Close"
     },
     "new": {
         "createNewModule": "Add a new Plugin",
         "cancel": "Cancel"
+    },
+    "toast": {
+        "errGetPlugins": "Can't get the list of plugins"
     }
 }

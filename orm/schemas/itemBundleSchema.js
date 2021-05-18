@@ -16,7 +16,8 @@ const ItemBundle = new Schema({
         products           : [{type: ObjectId, ref: 'products'}]
     }]
 }, {
-    discriminatorKey : 'type'
+    discriminatorKey : 'type',
+    id               : false
 });
 
 ItemBundle.methods.decreaseStock = async function (cartId, cb) {

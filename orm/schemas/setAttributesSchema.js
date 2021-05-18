@@ -22,6 +22,8 @@ const SetAttributesSchema = new Schema({
     questions : [{
         translation : {}
     }]
+}, {
+    id : false
 });
 
 SetAttributesSchema.statics.checkCode = async function (that) {

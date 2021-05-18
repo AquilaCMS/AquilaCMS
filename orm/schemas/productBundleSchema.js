@@ -28,7 +28,6 @@ const ProductBundleSchema = new Schema({
                     et  : {type: Number}
                 },
                 modifier_weight : {type: Number}
-
             }],
             isRequired : Boolean,
             minSelect  : Number,
@@ -43,7 +42,10 @@ const ProductBundleSchema = new Schema({
         label        : String,
         translation  : {}
     }
-}, {discriminatorKey: 'kind'});
+}, {
+    discriminatorKey : 'kind',
+    id               : false
+});
 
 // LATER, calsulate qty and disponibility from child products on retrieving product
 /* ProductBundleSchema.virtual("stock").get(function () {
@@ -91,8 +93,8 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
                 // const selectionProduct = await this.model('products').findById(selectionProducts[j]);
                 if (selectionProducts[j].type === 'simple') {
                     if (
-                        !ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity).ordering.orderable
-                        || !ServicesProducts.checkProductOrderable(item.stock, null)
+                        !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity)).ordering.orderable
+                        || !(await ServicesProducts.checkProductOrderable(item.stock, null))
                     ) throw NSErrors.ProductNotOrderable;
                     await ServicesProducts.updateStock(selectionProducts[j], -item.quantity);
                 }

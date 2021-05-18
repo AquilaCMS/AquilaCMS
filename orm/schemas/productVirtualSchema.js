@@ -17,7 +17,8 @@ const ProductVirtualSchema = new Schema({
 }, {
     discriminatorKey : 'kind',
     toObject         : {virtuals: true},
-    toJSON           : {virtuals: true}
+    toJSON           : {virtuals: true},
+    id               : false
 });
 
 ProductVirtualSchema.methods.updateData = async function (data) {

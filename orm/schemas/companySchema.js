@@ -23,6 +23,8 @@ const CompanySchema = new Schema({
         email      : String,
         phone      : String
     }
+}, {
+    id : false
 });
 
 module.exports = CompanySchema;

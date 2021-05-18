@@ -1,6 +1,6 @@
 angular.module("aq.stock.controllers", []).controller("StockCtrl", [
-    "$scope", "$location", "toastService", "ConfigV2", "$modal",
-    function ($scope, $location, toastService, ConfigV2, $modal) {
+    "$scope", "$location", "toastService", "ConfigV2", "$modal", "$translate",
+    function ($scope, $location, toastService, ConfigV2, $modal, $translate) {
         $scope.stock = {
             cartExpireTimeout: 48,
             pendingOrderCancelTimeout: 48,
@@ -98,7 +98,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             var stock = $scope.stock;
 
             ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function () {
-                toastService.toast("success", "Stock & commandes sauvegardée !");
+                toastService.toast("success", $translate.instant("global.order&StockSaved"));
                 if (quit) $location.path("/");
             }, function (err) {
                 toastService.toast("danger", err.data);

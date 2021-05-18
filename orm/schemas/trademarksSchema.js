@@ -15,7 +15,10 @@ const TrademarksSchema = new Schema({
     code   : {type: String, unique: true},
     name   : {type: String, required: true, unique: true},
     active : {type: Boolean, default: true}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb ) {
     const res = await this.find({name: trademarkName});

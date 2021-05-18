@@ -18,6 +18,8 @@ const LanguagesSchema = new Schema({
     position        : {type: Number, default: 1},
     defaultLanguage : {type: Boolean, default: false},
     status          : {type: String, enum: ['visible', 'invisible', 'removing'], default: 'invisible'}
+}, {
+    id : false
 });
 
 LanguagesSchema.statics.checkCode = async function (that) {

@@ -19,7 +19,10 @@ const NewsSchema = new Schema({
     img         : {type: String, default: ''},
     extension   : {type: String, default: '.jpg'},
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 /* translation:
  slug: unique

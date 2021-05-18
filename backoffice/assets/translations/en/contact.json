@@ -1,9 +1,11 @@
 {
     "detail": {
         "datas": "Datas",
-        "t1": "Contact"
+        "t1": "Contact",
+        "confirm": "Are you sure to delete this contact ?"
     },
     "list": {
         "t1": "Contacts"
-    }
+    },
+    "noContact": "No contacts"
 }

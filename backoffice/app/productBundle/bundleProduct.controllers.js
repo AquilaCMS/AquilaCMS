@@ -2,8 +2,8 @@ var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []
 
 BundleProductControllers.controller("BundleProductCtrl", [
     "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs)
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs", "$translate",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs, $translate)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -50,7 +50,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        toastService.toast("danger", "product.toast.URLcanonical");
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -163,9 +163,10 @@ BundleProductControllers.controller("BundleProductCtrl", [
             });
         };
 
-        $scope.removeBundleSection = function (section)
-        {
-            $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
+        $scope.removeBundleSection = function (section) {
+            if(confirm($translate.instant("bundle.msg.deleteSelection"))){
+                $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
+            }
         };
 
         $scope.addBundleProduct = function (section) {
@@ -366,7 +367,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                     else
                     {
-                        toastService.toast("success", "Produit sauvegardé !");
+                        toastService.toast("success", $translate.instant("global.productSaved"));
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
@@ -412,7 +413,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     $location.path("/products");
                 }, function ()
                 {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
                 });
             }
         };
@@ -468,7 +469,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                         else
                         {
-                            toastService.toast("success", "Produit sauvegardé !");
+                            toastService.toast("success", $translate.instant("global.productSaved"));
                             if($scope.isEditMode)
                             {
                                 $scope.disableSave = false;
@@ -481,7 +482,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                     }, function (err)
                     {
-                        toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                        toastService.toast("danger", $translate.instant("global.errorSaving"));
                         $scope.disableSave = false;
                     });
                 },

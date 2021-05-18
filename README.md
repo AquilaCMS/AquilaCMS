@@ -16,12 +16,11 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 
 ## Server configuration
 
-To install the latest AquilaCMS, you need a web server running :
+To install the latest AquilaCMS, you need :
 
-- `node.js 12.19.0+`
+- `node.js 12.19.0+` (tested in v12.22.1)
 - `mongoDB 4.2.5+`
-
-The package manager `yarn 1.22.4+` is required.
+- `yarn 1.22.4+` package manager
 
 ### System packages
 
@@ -31,10 +30,10 @@ The package manager `yarn 1.22.4+` is required.
 g++ gcc libgcc libstdc++ linux-headers make python libtool automake autoconf nasm wkhtmltopdf vips vips-dev libjpeg-turbo libjpeg-turbo-dev
 ```
 
-- On Windows, you must download :
+- You will probably have to download:
 
-  - `wkhtmltopdf` : [https://wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html)
-  - `libvips` : [https://github.com/libvips/libvips/releases](https://github.com/libvips/libvips/releases) (beware of 32 or 64 bits versions)
+  - `wkhtmltopdf` : [https://wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html) (it needs to be in the `PATH`)
+  - `libvips` : [https://github.com/libvips/libvips/releases](https://github.com/libvips/libvips/releases) (beware of 32 or 64 bits versions and it also needs to be in the `PATH`)
 
 ## Installation
 
@@ -117,6 +116,30 @@ If you want to contribute, you will need to install husky or else you won't be a
 ```sh
 yarn husky:install
 ```
+
+## Demos
+
+Demos website are available:
+
+### Front
+
+You can check the default front here :
+
+- [https://dem01.aquila-cms.com/](https://dem01.aquila-cms.com/)
+- [https://dem02.aquila-cms.com/](https://dem02.aquila-cms.com/)
+
+### Backoffice
+
+You can check the backoffice here :
+
+- [https://dem01.aquila-cms.com/demadmin](https://dem01.aquila-cms.com/demadmin)
+- [https://dem02.aquila-cms.com/demadmin](https://dem02.aquila-cms.com/demadmin)
+
+Logins are :
+
+|         Email          | Password  |
+| :--------------------: | :-------: |
+| `demo@nextsourcia.com` | `Demo123` |
 
 ## License
 

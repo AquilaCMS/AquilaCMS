@@ -11,6 +11,7 @@ const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
+const aquilaEvents     = require('../../utils/aquilaEvents');
 const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
@@ -48,8 +49,11 @@ const CategoriesSchema = new Schema({
     },
     translation      : {},
     canonical_weight : {type: Number, default: 0}
-}, {usePushEach : true,
-    timestamps  : true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues
@@ -126,5 +130,7 @@ CategoriesSchema.pre('save', async function (next) {
     const errors = await CategoriesSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
+
+aquilaEvents.emit('categoriesSchemaInit', CategoriesSchema);
 
 module.exports = CategoriesSchema;

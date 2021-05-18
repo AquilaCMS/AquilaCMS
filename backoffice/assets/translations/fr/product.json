@@ -90,7 +90,8 @@
         "alt": "Balise Alt",
         "pos": "Position",
         "img": "Image Principale",
-        "url": "URL"
+        "url": "URL",
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
     },
     "list": {
         "ph1": "Nom",
@@ -135,5 +136,8 @@
         "countDownloads": "Nombre de fois telechargé",
         "downloadHistory": "Téléchargement",
         "email": "Email"
+    },
+    "toast": {
+        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
     }
 }

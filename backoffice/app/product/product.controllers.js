@@ -327,7 +327,7 @@ ProductControllers.controller("nsProductGeneral", [
                     $scope.runCanonicalisation = async function () {
                         ExecRules.exec({type: "category"}, function (result) {
                             CategoryV2.canonical({}, {}, function () {
-                                toastService.toast('success', "Terminé")
+                                toastService.toast('success', $translate.instant("global.finished"))
                                 ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
                                     $scope.product = response;
                                     $scope.product.active = true;
@@ -338,7 +338,7 @@ ProductControllers.controller("nsProductGeneral", [
                             })
                         }, function (error) {
                             console.log(error)
-                            toastService.toast('danger', "Erreur lors de la categorisation")
+                            toastService.toast('danger', $translate.instant("global.errorCategorization"))
                         })
                     }
                 },

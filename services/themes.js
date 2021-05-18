@@ -185,7 +185,7 @@ const getDemoDatasFilesName = async () => {
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null, fileNames = null ) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames = null, otherParams = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
     const listOfFile    = [];
@@ -261,7 +261,15 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
         throw new Error(`"${photoPath}" is not writable`);
     }
-    await fs.copyRecursive(path.join(themeDemoData, 'files'), photoPath, override);
+    if (typeof otherParams !== 'undefined' && otherParams != null && otherParams.length > 0) {
+        if (override) {
+            for (const oneParam of otherParams) {
+                if (oneParam.name === 'files' && oneParam.value === true) {
+                    await fs.copyRecursive(path.join(themeDemoData, 'files'), photoPath, override);
+                }
+            }
+        }
+    }
     return data;
 };
 

@@ -92,7 +92,11 @@ const CartSchema = new Schema({
         method : {type: String, enum: ['delivery', 'withdrawal'], default: 'delivery'},
         date   : Date
     }
-}, {usePushEach: true, timestamps: true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});

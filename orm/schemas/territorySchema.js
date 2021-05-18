@@ -17,6 +17,8 @@ const TerritorySchema = new Schema({
     type        : {type: String, enum: ['country', 'district', 'department', 'city']},
     taxeFree    : Boolean,
     children    : [{type: ObjectId, ref: 'territory'}]
+}, {
+    id : false
 });
 
 TerritorySchema.index({code: 1, name: 1}, {unique: true});

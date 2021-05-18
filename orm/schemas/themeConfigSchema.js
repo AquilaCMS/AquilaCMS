@@ -12,6 +12,8 @@ const Schema   = mongoose.Schema;
 const ThemeConfigSchema = new Schema({
     name   : String,
     config : {}
+}, {
+    id : false
 });
 
 module.exports = ThemeConfigSchema;

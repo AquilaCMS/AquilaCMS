@@ -8,3 +8,11 @@ ContactServices.service("Contact", [
         });
     }
 ]);
+
+ContactServices.service("OneContact", [
+    "$resource", function ($resource) {
+        return $resource("v2/contact/:id", {}, {
+            delete : {method: "DELETE", param: {}}
+        });
+    }
+]);

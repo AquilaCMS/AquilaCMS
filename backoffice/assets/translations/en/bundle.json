@@ -39,5 +39,8 @@
             "et": "ET price diff"
         },
         "modifierWeight": "Weight diff (gram)"
+    },
+    "msg": {
+        "deleteSelection": "Are you sure you want to delete the section ?"
     }
 }

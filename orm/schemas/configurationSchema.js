@@ -105,6 +105,8 @@ const ConfigurationSchema = new Schema({
         returnStockToFront : {type: Boolean, default: false},
         automaticBilling   : {type: Boolean, default: false}
     }
+}, {
+    id : false
 });
 
 ConfigurationSchema.post('updateOne', async function () {
