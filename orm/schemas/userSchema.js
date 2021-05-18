@@ -132,7 +132,10 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ]
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 UserSchema.index({email: 1});
 

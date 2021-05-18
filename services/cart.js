@@ -37,6 +37,7 @@ const getCarts = async (PostBody) => {
 
 /**
  * Get cart(s) for this client
+ * @returns {Promise<mongoose.Document>}
  */
 const getCartforClient = async (idclient) => {
     return Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
@@ -55,7 +56,8 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart, user, lang, false);
+        const products        = cart.items.map((product) => product.id);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
                 if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
@@ -601,7 +603,9 @@ const mailPendingCarts = async () => {
             let filter = {};
             if (job.attrs.lastRunAt) {
                 const lastRunAt = moment(job.attrs.lastRunAt);
-                // lastRun.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                lastRunAt.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                // $gte <-> min <-> lastRun - requestMailPendingCarts
+                // $lte <-> max <-> timeNow - requestMailPendingCarts
                 filter = {updatedAt: {$gte: lastRunAt.toISOString(), $lte: limit.toISOString()}, customer: {$exists: true, $ne: null}};
             } else {
                 // the 'lastRunAt' value is not set, so we take all carts (the first time)

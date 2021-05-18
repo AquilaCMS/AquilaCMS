@@ -26,6 +26,8 @@ const ModulesSchema = new Schema({
     type                     : {type: String},
     moduleDependencies       : {type: [String], default: []},
     component_template_front : {type: String, default: null}
+}, {
+    id : false
 });
 
 module.exports = ModulesSchema;

@@ -63,6 +63,8 @@ const DownloadHistory = new Schema({
     firstDownloadDate : {type: Date, default: Date.now, required: true},
     lastDownloadDate  : {type: Date, required: true},
     countDownloads    : {type: Number, default: 0, required: true}
+}, {
+    id : false
 });
 
 module.exports = DownloadHistory;

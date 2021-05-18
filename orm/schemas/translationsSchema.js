@@ -8,7 +8,8 @@ const ProductAttributeTranslationSchema = new Schema({
     name  : {type: String},
     value : {type: Mixed}
 }, {
-    _id : false
+    _id : false,
+    id  : false
 });
 
 const ProductTranslationSchema = new Schema({

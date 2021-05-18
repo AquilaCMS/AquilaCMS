@@ -12,7 +12,10 @@ const Schema       = mongoose.Schema;
 
 const ContactsSchema = new Schema({
     data : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 aquilaEvents.emit('contactSchemaInit', ContactsSchema);
 

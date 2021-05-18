@@ -48,7 +48,10 @@ const itemsSchema = new Schema({
     },
     atts        : [],
     typeDisplay : {type: String, default: undefined}
-}, {discriminatorKey: 'type'});
+}, {
+    discriminatorKey : 'type',
+    id               : false
+});
 
 itemsSchema.set('toJSON', {virtuals: true});
 itemsSchema.set('toObject', {virtuals: true});

@@ -79,6 +79,8 @@ const SliderSchema = new Schema({
     swipe : {
         ...boolDefault(true)
     }
+}, {
+    id : false
 });
 
 async function preUpdates(that) {

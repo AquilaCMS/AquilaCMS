@@ -22,42 +22,18 @@ ProductControllers.controller("SelectProductsCtrl", [
     function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
         $scope.queryFilter = queryFilter;
         $scope.selectedProducts = productSelected || [];
-        //$scope.selectedProducts = $scope.$parent.associatedPrds || [];
-        for(let oneProduct of $scope.selectedProducts){
-            oneProduct._selected = true;
-            oneProduct.style = {"background-color": "#3f51b5", "color": "white"};
-        }
-
-        $scope.selectProduct = function (product, ev) {
-            if (typeof product._selected ==='undefined' && typeof product.style ==='undefined'){
-                //le produit n'a jamais était selectionné
-                $scope.selectedProducts.push(product);
-                product._selected = true;
-                product.style = {"background-color": "#3f51b5", "color": "white"};
-            }else{
-                let index = 0;
-                for(let oneProduct of $scope.selectedProducts){
-                    if(oneProduct._id === product._id){
-                        break
-                    }else{
-                        index++;
-                    }
-                }
-                if(index > -1){
-                    $scope.selectedProducts.splice(index, 1);
-                }
-                delete product.style;
-                delete product._selected;
-            }
-        };
 
         $scope.validate = function () {
             for(let oneProduct of $scope.selectedProducts){
                 delete oneProduct._selected;
                 delete oneProduct.style;
             }
-            $modalInstance.close($scope.selectedProducts);
+            $scope.close($scope.selectedProducts)
         };
+
+        $scope.close = function (productsSelected) {
+            $modalInstance.close(productsSelected);
+        }
 
         $scope.cancel = function () {
             $modalInstance.dismiss("cancel");

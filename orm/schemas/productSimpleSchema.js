@@ -26,7 +26,8 @@ const ProductSimpleSchema = new Schema({
 }, {
     discriminatorKey : 'kind',
     toObject         : {virtuals: true},
-    toJSON           : {virtuals: true}
+    toJSON           : {virtuals: true},
+    id               : false
 });
 
 ProductSimpleSchema.virtual('stock.qty_real').get(function () {
@@ -58,7 +59,7 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
     // On gère le stock
     // Commandable et on gère la reservation du stock
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
-        if (!prdServices.checkProductOrderable(this.stock, item.quantity).ordering.orderable) throw NSErrors.ProductNotInStock;
+        if (!(await prdServices.checkProductOrderable(this.stock, item.quantity)).ordering.orderable) throw NSErrors.ProductNotInStock;
         // Reza de la qte
         await prdServices.updateStock(this._id, -item.quantity);
     }

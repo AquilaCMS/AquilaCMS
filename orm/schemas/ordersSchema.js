@@ -210,8 +210,11 @@ const OrdersSchema = new Schema({
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
     }
-}, {usePushEach : true,
-    timestamps  : true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});

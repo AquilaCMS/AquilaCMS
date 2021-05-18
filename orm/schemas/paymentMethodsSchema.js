@@ -28,6 +28,8 @@ const PaymentMethodsSchema = new Schema({
     urlLogo     : {type: String}, // obselete
     description : String, // obselete
     instruction : {type: String, default: ""} // obselete */
+}, {
+    id : false
 });
 
 /* translation:

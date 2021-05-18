@@ -6,5 +6,6 @@
     },
     "list": {
         "t1": "Contacts"
-    }
+    },
+    "noContact": "No contacts"
 }

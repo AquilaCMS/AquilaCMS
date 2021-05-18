@@ -1,21 +1,21 @@
 const ThemesController = angular.module("aq.themes.controllers", []);
 
 ThemesController.controller("ThemesCtrl", [
-    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal", "$translate",
-    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal, $translate) {
+    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal", "$translate", "Themes",
+    function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal, $translate, Themes) {
 
         $scope.themeConfig = {};
         $scope.tab = "select";
         $scope.config = {}
 
         $scope.onTabSelect = function (tabId) {
-          if(tabId == "select"){
-              $scope.tab = "select";
-          }else if (tabId == "config"){
-              $scope.tab = "config";
-          }else {
-            $scope.tab = "data";
-          }
+            if(tabId == "select"){
+                $scope.tab = "select";
+            }else if (tabId == "config"){
+                $scope.tab = "config";
+            }else {
+                $scope.tab = "data";
+            }
         };
 
         $scope.language = $rootScope.languages.find(function (lang) {
@@ -79,7 +79,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.isLoading = true;
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
-                $http.post("/v2/themes/package/install", { themeName: $scope.config.environment.currentTheme }).then(function (response) {
+                Themes.packageInstall({ themeName: $scope.config.environment.currentTheme }, function (response) {
                     toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
@@ -100,7 +100,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.isLoading = true;
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
-                $http.post("/v2/themes/package/build", { themeName: $scope.config.environment.currentTheme }).then(function (response) {
+                Themes.packageBuild({ themeName: $scope.config.environment.currentTheme }, function (response) {
                     toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
@@ -129,14 +129,21 @@ ThemesController.controller("ThemesCtrl", [
 
         $scope.removeTheme = async function () {
             if (confirm("Etes vous sur de vouloir supprimer ce theme ?")) {
-                try {
-                    await $http.post("/v2/themes/delete", { themeName: $scope.config.environment.currentTheme });
+                Themes.delete({ themeName: $scope.config.environment.currentTheme }, function(response){
                     toastService.toast("success", $translate.instant("global.deleteTheme"));
                     $scope.LoadAllThemes();
-                } catch (err) {
+                }, function (err) {
                     $scope.isLoading = false;
-                    toastService.toast("danger", err.data.message);
-                }
+                    if(err.data) {
+                        if(err.data.message){
+                            toastService.toast("danger", err.data.message);
+                        }
+                    } else if(err.message) {
+                        toastService.toast("danger", err.message);
+                    }else {
+                        toastService.toast("danger", $translate.instant("global.standardError"));
+                    }
+                });
             }
         };
         $scope.theme = {
@@ -146,22 +153,22 @@ ThemesController.controller("ThemesCtrl", [
 
         $scope.copyThemeDatas = async function () {
             if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
-                try {
-                    let data = await $http.post("/v2/themes/copyDatas", {
-                        themeName: $scope.config.environment.currentTheme,
-                        override: $scope.theme.themeDataOverride,
-                        configuration : null,
-                        fileNames : $scope.listThemeFiles
-                    });
-                    if (data.data.noDatas) {
+                Themes.copyData({
+                    themeName: $scope.config.environment.currentTheme,
+                    override: $scope.theme.themeDataOverride,
+                    configuration : null,
+                    fileNames : $scope.listThemeFiles,
+                    otherParams: $scope.otherParams
+                }, function(response) {
+                    if (response.noDatas) {
                         toastService.toast("success", $translate.instant("global.themeNoData"));
                     } else {
                         toastService.toast("success", $translate.instant("global.copyThemeDataDone"));
                     }
-                } catch (err) {
+                }, function(err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
-                }
+                });
             }
         };
 
@@ -192,7 +199,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.showThemeLoading = true;
                     if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
                         if (confirm("Êtes vous sur de vouloir changer de thème ?")) {
-                            $http.post("/v2/themes/save", { environment: $scope.config.environment }).then(function () {
+                            Themes.save({ environment: $scope.config.environment }, function () {
                                 if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
                                     $scope.showThemeLoading = false;
                                     $scope.showLoading = true;
@@ -212,12 +219,10 @@ ThemesController.controller("ThemesCtrl", [
                                             $interval.cancel(timerRestart);
                                         }
                                     }, 250);
-                                }
-                                else {
+                                } else {
                                     window.location.reload(true);
                                 }
                                 $scope.showThemeLoading = false;
-
                             }, function (err) {
                                 $scope.showThemeLoading = false;
                                 toastService.toast("danger", $translate.instant("global.errorOccurred"));
@@ -246,22 +251,23 @@ ThemesController.controller("ThemesCtrl", [
         }
 
         $scope.LoadThemeCongig = function () {
-            $http.get("/v2/themes/informations").then(function (response) {
-                $scope.config = response.data.configEnvironment;
+            Themes.info({}, function (response) {
+                $scope.config = response.configEnvironment;
                 $scope.listThemeFiles = [];
-                $scope.themesList = response.data.listTheme;
-                $scope.listThemeFiles = response.data.listFiles;
+                $scope.themesList = response.listTheme;
+                $scope.listThemeFiles = response.listFiles;
+                $scope.otherParams = response.otherParams;
                 if (!$scope.listThemeFiles.length) {
                     $scope.listThemeFiles.push("noDefaultData");
                 } 
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
-                $scope.themeConfig.selected = response.data.themeConf.name;
+                $scope.themeConfig.selected = response.themeConf.name;
 
-                if (response.data.configEnvironment && response.data.themeConf.config.translation) {
+                if (response.configEnvironment && response.themeConf.config.translation) {
                     $scope.languages.forEach(element  => {
-                        $scope.themeConfig.variables[element.code] = response.data.themeConf.config.translation[element.code].values;
+                        $scope.themeConfig.variables[element.code] = response.themeConf.config.translation[element.code].values;
                         delete $scope.themeConfig.variables[element.code].$promise;
                         delete $scope.themeConfig.variables[element.code].$resolved;
                         $scope.customiseTheme.keys[element.code] = Object.keys($scope.themeConfig.variables[element.code]);
