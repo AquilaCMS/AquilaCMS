@@ -136,5 +136,8 @@
         "countDownloads": "Nombre de fois telechargé",
         "downloadHistory": "Téléchargement",
         "email": "Email"
+    },
+    "toast": {
+        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
     }
 }

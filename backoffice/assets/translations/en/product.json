@@ -136,5 +136,8 @@
         "countDownloads": "Download count",
         "downloadHistory": "Download history",
         "email": "Email"
+    },
+    "toast": {
+        "URLcanonical": "Can't generate URL because canonical is empty"
     }
 }
