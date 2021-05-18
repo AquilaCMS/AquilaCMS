@@ -39,5 +39,8 @@
             "et": "Difference prix HT"
         },
         "modifierWeight": "Difference de poids (g)"
+    },
+    "msg": {
+        "deleteSelection": "Etes-vous sur de vouloir supprimer la section ?"
     }
 }

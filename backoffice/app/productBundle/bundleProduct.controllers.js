@@ -50,7 +50,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        toastService.toast("danger", "product.toast.URLcanonical");
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -163,9 +163,10 @@ BundleProductControllers.controller("BundleProductCtrl", [
             });
         };
 
-        $scope.removeBundleSection = function (section)
-        {
-            $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
+        $scope.removeBundleSection = function (section) {
+            if(confirm($translate.instant("bundle.msg.deleteSelection"))){
+                $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
+            }
         };
 
         $scope.addBundleProduct = function (section) {
