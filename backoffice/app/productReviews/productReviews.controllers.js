@@ -90,8 +90,8 @@ ProductReviewsControllers.controller("ProductReviewListCtrl", [
  * Controller de la page contenant le detail d'un Promo
  */
 PromoControllers.controller('ProductReviewDetailCtrl', [
-              '$scope', '$q', '$routeParams', '$location', 'toastService', 'ProductReviewService', 'ProductReviewById',
-    function ($scope, $q, $routeParams, $location, toastService, ProductReviewService, ProductReviewById) {
+              '$scope', '$q', '$routeParams', '$location', 'toastService', 'ProductReviewService', 'ProductReviewById', '$translate',
+    function ($scope, $q, $routeParams, $location, toastService, ProductReviewService, ProductReviewById, $translate) {
         $scope.local = {
             product: null,
             review: null,

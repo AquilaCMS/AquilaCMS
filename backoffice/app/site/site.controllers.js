@@ -2,7 +2,7 @@ var SiteControllers = angular.module("aq.site.controllers", []);
 
 // Liste des articles
 SiteControllers.controller("ArticlesSiteCtrl", [
-    "$scope", "$location", "$route", "ArticlesV2", "toastService", "$rootScope", function ($scope, $location, $route, ArticlesV2, toastService, $rootScope)
+    "$scope", "$location", "$route", "ArticlesV2", "toastService", "$rootScope", "$translate", function ($scope, $location, $route, ArticlesV2, toastService, $rootScope, $translate)
     {
         $scope.listArticles = [];
         $scope.page = 1;
