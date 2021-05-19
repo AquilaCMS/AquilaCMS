@@ -129,9 +129,8 @@ const initModule = async (files) => {
         if (!fs.existsSync(infoPath)) {
             throw NSErrors.ModuleInfoNotFound;
         }
-        let infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'));
-        infoFile     = infoFile.toString();
-        const {info} = JSON.parse(infoFile);
+        const infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'), 'utf8');
+        const {info}   = JSON.parse(infoFile);
         console.log('Installing module...');
 
         const myModule  = await Modules.findOne({name: info.name});
