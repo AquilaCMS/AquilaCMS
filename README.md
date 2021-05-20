@@ -60,8 +60,12 @@ npm run start:pm2
 - With docker :
 
 ```sh
-docker pull aquilacms/aquilacms
-docker run -p 127.0.0.1:3010:3010/tcp aquilacms/aquilacms
+# create a network to link mongo and Aquila CMS
+docker network create aquila
+# create the mongo instance
+docker run --name mongodb -p 27017:27017 --network=aquila mongo
+# pull the latest and run AquilaCMS
+docker run -p 127.0.0.1:3010:3010/tcp --network=aquila --name aquila aquilacms/aquilacms
 ```
 
 At the first launch, there is an installation page. It allows you to create an `env.json` file in the config folder.
@@ -69,9 +73,9 @@ At the first launch, there is an installation page. It allows you to create an `
 You can edit this file manually, an example of the different possible properties is in the `config/env.example.json` file.
 You can also found all the properties in the [documentation](https://doc.aquila-cms.com/#/Get_started/Configuration)
 
-> ⚠️Warning : there is not MongoDB in AquilaCMS image
+> ⚠️Warning : there is not MongoDB in AquilaCMS image, use the example above to install mongo for docker
 >
-> To connect your AquilaCMS website to a Mongo database, you can :
+> To connect your AquilaCMS website to a Mongo database, you can : (skip this if you used our docker instructions, simply use mongodb as hostname)
 >
 > - run a MongoDB image next to the AquilaCMS image
 > - use an external link to, for example, an Atlas database
