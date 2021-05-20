@@ -15,7 +15,7 @@ module.exports = function (app) {
 };
 
 /**
- * Récupèration de l'hisorique des telechargements enregistré (ou filtrer via le PostBody)
+ * Retrieving the history of recorded downloads (or filtering via the PostBody)
  */
 async function getHistory(req, res, next) {
     try {

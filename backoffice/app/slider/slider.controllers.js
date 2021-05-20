@@ -14,8 +14,8 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         });
     }
 ]).controller("SliderDetailCtrl", [
-    "$rootScope", "$scope", "$routeParams", "$location", "SliderService", "SliderItemService", "toastService", "$modal",
-    function ($rootScope, $scope, $routeParams, $location, SliderService, SliderItemService, toastService, $modal)
+    "$rootScope", "$scope", "$routeParams", "$location", "SliderService", "SliderItemService", "toastService", "$modal", "$translate",
+    function ($rootScope, $scope, $routeParams, $location, SliderService, SliderItemService, toastService, $modal, $translate)
     {
         $scope.isEditMode = false;
         $scope.disableSave = true;
@@ -115,7 +115,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         };
 
         $scope.close = function() {
-            toastService.toast("success", "Ajout réussi");
+            toastService.toast("success", $translate.instant("global.addDone"));
         };
 
         $scope.save = function (quit)
@@ -128,7 +128,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
             {
                 if($scope.isEditMode)
                 {
-                    toastService.toast("success", "Sauvegarde effectuée");
+                    toastService.toast("success", $translate.instant("global.savedDone"));
                 }
                 else
                 {
@@ -147,7 +147,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };
@@ -157,12 +157,12 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
             if(confirm("Êtes-vous sûr de vouloir supprimer ce carousel ?")){
                 SliderService.delete({id: $scope.slider._id}, function ()
                 {
-                    toastService.toast("success", "Suppression effectuée");
+                    toastService.toast("success", $translate.instant("global.deleteDone"));
                     $location.path("/component/slider");
                 }, function (err)
                 {
                     console.error(err);
-                    toastService.toast("danger", "Echec de la suppression");
+                    toastService.toast("danger", $translate.instant("global.errorDelete"));
                 });
             }
         };

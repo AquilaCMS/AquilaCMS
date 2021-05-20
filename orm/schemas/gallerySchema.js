@@ -26,7 +26,10 @@ const GallerySchema = new Schema({
         order     : {type: Number, default: 0},
         extension : {type: String, default: '.jpg'}
     }]
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 async function preUpdates(that) {
     await utilsDatabase.checkCode('gallery', that._id, that.code);

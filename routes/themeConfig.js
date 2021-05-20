@@ -9,7 +9,7 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
 const serviceThemeConfig          = require('../services/themeConfig');
 
-// Fichier themeConfig.json à la racine des thèmes
+// ThemeConfig.json file at the root of the themes
 
 module.exports = function (app) {
     app.post('/v2/themeConfig', getThemeConfig);

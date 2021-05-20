@@ -22,42 +22,18 @@ ProductControllers.controller("SelectProductsCtrl", [
     function ($scope, $modalInstance, queryFilter, toastService, productSelected) {
         $scope.queryFilter = queryFilter;
         $scope.selectedProducts = productSelected || [];
-        //$scope.selectedProducts = $scope.$parent.associatedPrds || [];
-        for(let oneProduct of $scope.selectedProducts){
-            oneProduct._selected = true;
-            oneProduct.style = {"background-color": "#3f51b5", "color": "white"};
-        }
-
-        $scope.selectProduct = function (product, ev) {
-            if (typeof product._selected ==='undefined' && typeof product.style ==='undefined'){
-                //le produit n'a jamais était selectionné
-                $scope.selectedProducts.push(product);
-                product._selected = true;
-                product.style = {"background-color": "#3f51b5", "color": "white"};
-            }else{
-                let index = 0;
-                for(let oneProduct of $scope.selectedProducts){
-                    if(oneProduct._id === product._id){
-                        break
-                    }else{
-                        index++;
-                    }
-                }
-                if(index > -1){
-                    $scope.selectedProducts.splice(index, 1);
-                }
-                delete product.style;
-                delete product._selected;
-            }
-        };
 
         $scope.validate = function () {
             for(let oneProduct of $scope.selectedProducts){
                 delete oneProduct._selected;
                 delete oneProduct.style;
             }
-            $modalInstance.close($scope.selectedProducts);
+            $scope.close($scope.selectedProducts)
         };
+
+        $scope.close = function (productsSelected) {
+            $modalInstance.close(productsSelected);
+        }
 
         $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
@@ -287,8 +263,8 @@ ProductControllers.controller("ProductListCtrl", [
 ]);
 
 ProductControllers.controller("nsProductGeneral", [
-    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2",
-    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2) {
+    "$scope", "$filter", "HookProductInfo", "SetAttributesV2", "AttributesV2", "$modal", "ProductsV2", "$translate",
+    function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2, $translate) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
         $scope.hookInfo = HookProductInfo;
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
@@ -327,7 +303,7 @@ ProductControllers.controller("nsProductGeneral", [
                     $scope.runCanonicalisation = async function () {
                         ExecRules.exec({type: "category"}, function (result) {
                             CategoryV2.canonical({}, {}, function () {
-                                toastService.toast('success', "Terminé")
+                                toastService.toast('success', $translate.instant("global.finished"))
                                 ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
                                     $scope.product = response;
                                     $scope.product.active = true;
@@ -338,7 +314,7 @@ ProductControllers.controller("nsProductGeneral", [
                             })
                         }, function (error) {
                             console.log(error)
-                            toastService.toast('danger', "Erreur lors de la categorisation")
+                            toastService.toast('danger', $translate.instant("global.errorCategorization"))
                         })
                     }
                 },

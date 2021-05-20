@@ -90,7 +90,8 @@
         "alt": "Alt tag",
         "pos": "Position",
         "img": "Main Picture",
-        "url": "URL"
+        "url": "URL",
+        "noPics": "There are no images in this product, the default image will be displayed in the theme"
     },
     "list": {
         "ph1": "Name",
@@ -110,7 +111,7 @@
         "t1": "Products",
         "ph1": "Code",
         "code": "Code",
-        "name": "Name",
+        "name": "Name (fr)",
         "picture": "Picture",
         "price": "Base price (tax incl.)",
         "quantity": "Quantity",
@@ -135,5 +136,8 @@
         "countDownloads": "Download count",
         "downloadHistory": "Download history",
         "email": "Email"
+    },
+    "toast": {
+        "URLcanonical": "Can't generate URL because canonical is empty"
     }
 }

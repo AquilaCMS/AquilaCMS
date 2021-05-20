@@ -6,6 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const mongoose     = require('mongoose');
 const {
     Rules,
     Users,
@@ -95,29 +96,62 @@ const deleteRule = async (_id) => {
 
 function conditionOperator(operator, obj, target, value) {
     let isTrue = false;
+    if (typeof obj !== 'object') return;
     try {
         // If value is an array (ex: multiple select attribute)
-        if (Object.prototype.toString.call(value) !== '[object String]' && value.length > -1) {
+        if (value && Object.prototype.toString.call(value) !== '[object String]' && value.length > -1) {
             for (let i = 0; i < value.length; i++) {
-                if (operator === 'contains') isTrue = isTrue || utils.getObjFromDotStr(obj, target).includes(value[i]);
-                else if (operator === 'ncontains') isTrue = isTrue || !utils.getObjFromDotStr(obj, target).includes(value[i]);
-                else if (operator === 'eq') isTrue = isTrue || utils.getObjFromDotStr(obj, target) === value[i];
+                if (operator === 'contains') {
+                    if (!isTrue) {
+                        const objVal = utils.getObjFromDotStr(obj, target);
+                        if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                        else if (objVal) isTrue = objVal.includes(value[i]);
+                    }
+                } else if (operator === 'ncontains') {
+                    if (!isTrue) {
+                        const objVal = !utils.getObjFromDotStr(obj, target);
+                        if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                        else if (objVal) isTrue = !objVal.includes(value[i]);
+                    }
+                } else if (operator === 'eq') isTrue = isTrue || utils.getObjFromDotStr(obj, target) === value[i];
                 else if (operator === 'neq') isTrue = isTrue || utils.getObjFromDotStr(obj, target) !== value[i];
-                else if (operator === 'startswith') isTrue = isTrue || utils.getObjFromDotStr(obj, target).startsWith(value[i]);
-                else if (operator === 'endswith') isTrue = isTrue || utils.getObjFromDotStr(obj, target).endsWith(value[i]);
-                else if (operator === 'gte') isTrue = isTrue || utils.getObjFromDotStr(obj, target) >= value[i];
+                else if (operator === 'startswith') {
+                    if (!isTrue) {
+                        const objVal = utils.getObjFromDotStr(obj, target);
+                        if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                        else if (objVal) isTrue = objVal.startsWith(value[i]);
+                    }
+                } else if (operator === 'endswith') {
+                    if (!isTrue) {
+                        const objVal = utils.getObjFromDotStr(obj, target);
+                        if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                        else if (objVal) isTrue = objVal.endsWith(value[i]);
+                    }
+                } else if (operator === 'gte') isTrue = isTrue || utils.getObjFromDotStr(obj, target) >= value[i];
                 else if (operator === 'gt') isTrue = isTrue || utils.getObjFromDotStr(obj, target) > value[i];
                 else if (operator === 'lte') isTrue = isTrue || utils.getObjFromDotStr(obj, target) <= value[i];
                 else if (operator === 'lt') isTrue = isTrue || utils.getObjFromDotStr(obj, target) < value[i];
             }
         } else {
-            if (operator === 'contains') isTrue = utils.getObjFromDotStr(obj, target).includes(value);
-            else if (operator === 'ncontains') isTrue = !utils.getObjFromDotStr(obj, target).includes(value);
-            else if (operator === 'eq') isTrue = utils.getObjFromDotStr(obj, target) === value;
+            if (operator === 'contains') {
+                const objVal = utils.getObjFromDotStr(obj, target);
+                if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                else if (objVal) isTrue = objVal.includes(value);
+            } else if (operator === 'ncontains') {
+                const objVal = utils.getObjFromDotStr(obj, target);
+                if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                else if (objVal) isTrue = !objVal.includes(value);
+            } else if (operator === 'eq') isTrue = utils.getObjFromDotStr(obj, target) === value;
             else if (operator === 'neq') isTrue = utils.getObjFromDotStr(obj, target) !== value;
-            else if (operator === 'startswith') isTrue = utils.getObjFromDotStr(obj, target).startsWith(value);
-            else if (operator === 'endswith') isTrue = utils.getObjFromDotStr(obj, target).endsWith(value);
-            else if (operator === 'gte') isTrue = utils.getObjFromDotStr(obj, target) >= value;
+            else if (operator === 'startswith') {
+                const objVal = utils.getObjFromDotStr(obj, target);
+                if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                else if (objVal) isTrue = objVal.startsWith(value);
+            } else if (operator === 'endswith') {
+                const objVal = utils.getObjFromDotStr(obj, target);
+                if (typeof objVal === 'undefined' && (typeof value === 'undefined' || value === '')) isTrue = true;
+                else if (objVal) isTrue = objVal.endsWith(value);
+            } else if (operator === 'gte') isTrue = utils.getObjFromDotStr(obj, target) >= value;
             else if (operator === 'gt') isTrue = utils.getObjFromDotStr(obj, target) > value;
             else if (operator === 'lte') isTrue = utils.getObjFromDotStr(obj, target) <= value;
             else if (operator === 'lt') isTrue = utils.getObjFromDotStr(obj, target) < value;
@@ -129,67 +163,13 @@ function conditionOperator(operator, obj, target, value) {
     }
 }
 
-// /**
-//  * Fonction récursive qui va construire un tableau dans une forme normalisé pour le produit dont l'index est passé en tant que indexPrd.
-//  * si un panier contient 2 produits et qu'une rule a 3 conditions panier
-//  * alors nous auront 3 tableaux (pour les 3 conditions)
-//  * contenant chacun 2 boolean (correspondant aux deux produits) ex : norm_conditions= ["ET", [true, false], [true, true], [true, false]]
-//  * Les premiers champs des tableaux correspondront au produit 1, les seconds correspondront au produit 2
-//  * Nous allons donc pour chaque produit normaliser norm_conditions afin qu'il soit utilisé par promoUtils.createIfStatement
-//  * @param {*} norm_conditions
-//  * @param {*} indexPrd index du produit
-//  * @param {*} res
-//  */
-// function normalizeConditions(norm_conditions, indexPrd, res = []) {
-//     for (let i = 0; i < norm_conditions.length; i++) {
-//         if (norm_conditions[i] instanceof Array && typeof norm_conditions[i][0] !== "string") {
-//             // On ajoute les booleans a booleanToMerge
-//             const boolNormCond = norm_conditions[i].find((cdt, idx) => idx === indexPrd);
-//             res.push(boolNormCond);
-//         } else if (typeof norm_conditions[i] === "string") {
-//             res.push(norm_conditions[i]);
-//         } else {
-//             // on a un tableau qui commence par 'ET' ou 'OU', on reboucle dessus
-//             const subRes = normalizeConditions(norm_conditions[i], indexPrd);
-//             res.push(subRes);
-//         }
-//     }
-//     return res;
-// }
-
-// function getCartBoolean(subCondition, itemsOk, nbRuleCartValid, validCartProduct) {
-//     let isTrue = false;
-//     for (let k = 0; k < itemsOk.length; k++) {
-//         const product = itemsOk[k];
-//         const tCartCondition = normalizeConditions(subCondition, k);
-//         const ifStatement = promoUtils.createIfStatement(tCartCondition);
-//         try {
-//             // On test si l'eval peut renvoyer une erreur
-//             eval(ifStatement);
-//         } catch (error) {
-//             throw global.errors_list.promo_code_if_statement_bad_format;
-//         }
-//         // Si la panier contient le
-//         if (eval(ifStatement)) {
-//             validCartProduct.push(product);
-//         }
-//     }
-//     if (validCartProduct.length > 0) {
-//         nbRuleCartValid++;
-//         isTrue = true;
-//     }
-//     return {isTrue, nbRuleCartValid};
-// }
-
 /**
  * Allows you to know the validity of a basket type promotion
  * @param {ModelRules} rule the rule to be processed
  * @param {ModelUsers} user user who initiated the request
  * @param {ModelCart} cart the user's cart
- * @param {Boolean} isCart if true then we are in a "basket.qte_min" condition
- * @param {Boolean} isRoot Allows to know if we are at the root rule
  */
-async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, isRoot = false */) {
+async function applyRecursiveRulesDiscount(rule, user, cart) {
     try {
         // fix in relation to the limitation of the fields of the user ...
         if (user) {
@@ -249,7 +229,14 @@ async function applyRecursiveRulesDiscount(rule, user, cart/* , isCart = false, 
                     }
                 } else {
                     let tItems = [];
-                    tItems     = cart.items.filter((product) => conditionOperator(condition.operator, product, target, value));
+                    tItems     = cart.items.filter((product) => {
+                        if (product.id) {
+                            if (mongoose.Types.ObjectId.isValid(product.id)) {
+                                return conditionOperator(condition.operator, product.id, target, value);
+                            }
+                        }
+                        return conditionOperator(condition.operator, product, target, value);
+                    });
                     if (tItems.length) isTrue = true;
                 }
             }
@@ -454,6 +441,13 @@ async function applyRecursiveRules(_rules, query) {
     return query;
 }
 
+/**
+ *
+ * @param {string} owner_type
+ * @param {any[]} products
+ * @param {string|undefined} optionPictoId
+ * @returns
+ */
 // eslint-disable-next-line no-unused-vars
 const execRules = async (owner_type, products = [], optionPictoId = undefined) => {
     const result = [];
@@ -596,7 +590,16 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
         const leni = cart.items.length;
 
         while (isTrue === false && i < leni) {
-            const prd = _cat.productsList.find((_prd) => _prd.id.toString() === cart.items[i].id._id.toString());
+            const prd = _cat.productsList.find((_prd) => {
+                // if items[i].id exist it's a Cart else items is an array of products
+                if (cart.items[i].id) {
+                    if (mongoose.Types.ObjectId.isValid(cart.items[i].id)) {
+                        return _prd.id.toString() === cart.items[i].id.toString();
+                    }
+                    return _prd.id.toString() === cart.items[i].id._id.toString();
+                }
+                return _prd.id.toString() === cart.items[i]._id.toString();
+            });
             if (prd) {
                 isTrue = true;
             }
@@ -608,7 +611,7 @@ async function checkCartPrdInCategory(cart, target, value, isTrue) {
 
 function getValueFromCondition(condition) {
     if (condition.type === 'number')  return Number(condition.value);
-    if (condition.type === 'bool')  return condition.value === 'true';
+    if (condition.type === 'bool')  return condition.value === true;
     return condition.value;
 }
 

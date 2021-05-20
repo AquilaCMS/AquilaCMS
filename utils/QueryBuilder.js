@@ -40,16 +40,16 @@ module.exports = class QueryBuilder {
      */
     constructor(model, restrictedFields = [], defaultFields = []) {
         this.model = model;
-        // Les projections par defaut
+        // Default projections
         this.defaultFields = defaultFields;
-        // operateur ne devant jamais être utilisé dans le filter
+        // operator never to be used in the filter
         this.restrictedOperators = ['$where'];
-        // champs ne devant jamais être retourné au client sauf si admin
+        // fields never to be returned to the client unless admin
         this.restrictedFields = restrictedFields;
     }
 
     /**
-     * Permet de retourner un objet PostBody valide
+     * Allows you to return a valid PostBody object
      *
      * @typedef {object} PostBody
      * @property {object} [PostBody.filter=] filter
@@ -64,13 +64,13 @@ module.exports = class QueryBuilder {
      */
     verifyPostBody(PostBody, request = 'find') {
         if (PostBody && PostBody.PostBody) { // Fix postbody pas au bon niveau
-            PostBody = PostBody.PostBody;    // P2 : Comment cela se fait-il qu'il y ait un PostBody dans un PostBody ?!
+            PostBody = PostBody.PostBody;    // P2 : How is it that there is a PostBody in a PostBody ?!
         }
 
         if (request === 'find') {
             const postBodyChecked = new PostBodyCheck(PostBody.filter, PostBody.limit, PostBody.populate, PostBody.skip, PostBody.sort, PostBody.structure, PostBody.page);
             if (this.containRestrictedLabels(postBodyChecked.filter)) throw NSErrors.OperatorRestricted;
-            // Permet de créer une pagination
+            // Allows you to create a pagination
             if (postBodyChecked.page && Number.isInteger(Number(postBodyChecked.page))) {
                 postBodyChecked.page = Number(postBodyChecked.page);
                 if (postBodyChecked.page < 1) postBodyChecked.page = 1;
@@ -85,7 +85,7 @@ module.exports = class QueryBuilder {
     }
 
     /**
-     * Fonction qui va constuire, verifier et lancer la requete
+     * Function that will build, verify and launch the request
      * @typedef {object} PostBody
      * @property {object} [PostBody.filter] filter
      * @property {object} [PostBody.structure] structure
@@ -94,30 +94,32 @@ module.exports = class QueryBuilder {
      * @property {number} [PostBody.limit] limit
      * @property {number} [PostBody.skip] skip
      *
-     * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
+     * @param {PostBody} PostBody is the object describing the request to be performed by the find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [header_authorization=null] header_authorization
-     * @return {{datas: {} | mongoose.Model<this>, count: mongoose.Model<this>}} returns datas found and total of element
+     * @return {{datas: [] | [mongoose.Model<this>], count: number}} returns datas found and total of element
      */
     async find(PostBody, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
         const postBodyChecked                                  = this.verifyPostBody(PostBody);
         const {limit, skip, filter, populate, sort, structure} = postBodyChecked;
-        // TODO P4 : FABRICE changer ce comportement => on lance les requetes une par une => lancer les deux a la fois
-        const count        = await this.model.countDocuments(filter);
-        const addStructure = this.addToStructure(structure, sort);
-        let datas;
-        if (lean) {
-            datas = await this.model.find(filter, addStructure).lean().sort(sort).skip(skip).limit(limit).populate(populate);
-        } else {
-            datas = await this.model.find(filter, addStructure).sort(sort).skip(skip).limit(limit).populate(populate);
-        }
+
+        const addStructure   = this.addToStructure(structure, sort);
+        const [count, datas] = await Promise.all([
+            this.model.countDocuments(filter),
+            this.model.find(filter, addStructure)
+                .lean(!!lean)
+                .sort(sort)
+                .skip(skip)
+                .limit(limit)
+                .populate(populate)
+        ]);
         await this.removeFromStructure(structure, datas, isAdmin);
         return {datas, count};
     }
 
     /**
-     * Fonction qui va constuire, verifier et lancer la requete
+     * Function that will build, verify and launch the request
      * @typedef {object} PostBody
      * @property {object} [PostBody.filter=] filter
      * @property {object} [PostBody.structure=] structure
@@ -126,14 +128,14 @@ module.exports = class QueryBuilder {
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
-     * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
+     * @param {PostBody} PostBody is the object describing the request to be performed by the find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {string} [isAdmin=false] header_authorization
      * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
     async findOne(PostBody = null, lean = false, isAdmin = false) {
         if (!PostBody) throw NSErrors.PostBodyUndefined;
-        // création d'un objet PostBody avec des valeurs par défaut
+        // creating a PostBody object with default values
         const postBodyCheck                 = this.verifyPostBody(PostBody, 'findOne');
         const {filter, populate, structure} = postBodyCheck;
         if (this.containRestrictedLabels(filter)) throw NSErrors.OperatorRestricted;
@@ -149,7 +151,7 @@ module.exports = class QueryBuilder {
     }
 
     /**
-     * Fonction qui va constuire, verifier et lancer la requete
+     * Function that will build, verify and launch the request
      * @typedef {object} PostBody
      * @property {object} [PostBody.filter=] filter
      * @property {object} [PostBody.structure=] structure
@@ -158,13 +160,13 @@ module.exports = class QueryBuilder {
      * @property {number} [PostBody.limit=] limit
      * @property {number} [PostBody.skip=] skip
      *
-     * @param {PostBody} PostBody est l'objet decrivant la requete devant être effectué par le find
+     * @param {PostBody} PostBody is the object describing the request to be performed by the find
      * @param {boolean} [lean=false] transform a mongoose object to object
      * @param {boolean} [isAdmin=false] header_authorization
      * @return {object|mongoose.Model<this>} returns datas found and total of element
      */
     async findById(id, PostBody = null, isAdmin = false) {
-        // création d'un objet PostBody avec des valeurs par défaut
+        // creating a PostBody object with default values
         const postBodyCheck         = this.verifyPostBody(PostBody, 'findById');
         const {populate, structure} = postBodyCheck;
         if (!mongoose.Types.ObjectId.isValid(id)) throw NSErrors.InvalidObjectIdError;
@@ -175,12 +177,12 @@ module.exports = class QueryBuilder {
     }
 
     /**
-     * Cette fonction ajoute les champs par défaut a l'object structure du queryBuilder
-     * @param {*} structure envoyé dans le queryBuilder
+     * This function adds the default fields to the object structure of the queryBuilder
+     * @param {*} structure sent to the queryBuilder
      */
     addToStructure(structure, sort = null) {
         const structureAdd = [];
-        // Si la structure[0] === "*" alors on renvoie tous les champs
+        // If the structure [0] === "*" then we return all the fields
         if ((this.defaultFields && this.defaultFields[0] === '*') || structure === '*') {
             if (sort) {
                 Object.entries(sort).forEach(([key, value]) => {
@@ -188,10 +190,10 @@ module.exports = class QueryBuilder {
                 });
                 const defaultProjection = [...this.defaultFields, ...structureAdd];
                 const oProjection       = {};
-                // On crée l'objet oProjection qui contiendra les champs a afficher
+                // We create the oProjection object which will contain the fields to display
                 defaultProjection.forEach((struct) =>  {
                     if (typeof struct === 'object') {
-                        // exemple : struct == {"score": {"$meta": "textScore"}} dans la projection
+                        // exemple : struct == {"score": {"$meta": "textScore"}} in the projection
                         const key        = Object.keys(struct)[0];
                         oProjection[key] = struct[key];
                     }
@@ -208,10 +210,10 @@ module.exports = class QueryBuilder {
         });
         const defaultProjection = [...this.defaultFields, ...structureAdd];
         const oProjection       = {};
-        // On crée l'objet oProjection qui contiendra les champs a afficher
+        // We create the oProjection object which will contain the fields to display
         defaultProjection.forEach((struct) =>  {
             if (typeof struct === 'object') {
-                // exemple : struct == {"score": {"$meta": "textScore"}} dans la projection
+                // exemple : struct == {"score": {"$meta": "textScore"}} in the projection
                 const key        = Object.keys(struct)[0];
                 oProjection[key] = struct[key];
             } else oProjection[struct] = 1;
@@ -220,7 +222,7 @@ module.exports = class QueryBuilder {
     }
 
     /**
-     * On supprime les champs
+     * We delete the fields
      * @param {*} structure
      * @param {*} datas
      * @param isAdmin
@@ -234,7 +236,7 @@ module.exports = class QueryBuilder {
             });
         if (datas.length) {
             for (let i = 0; i < datas.length; i++) {
-                // TODO P6 : gérer dynamiquement la suppression des champs en dot notation (plusieurs niveaux)
+                // TODO P6: dynamically manage the deletion of dot notation fields (several levels)
                 Object.values(structureRemove)
                     .forEach((key) => {
                         const arr = key.split('.');
@@ -292,21 +294,21 @@ module.exports = class QueryBuilder {
     }
 
     /**
-     * Fonction permettant de verifier les champs de l'objet "oFilter"
-     * @param {Object} oFilter => objet a passer dans le find, les champs seront verifiés par restrictedOperators
+     * Function allowing to check the fields of the "oFilter" object
+     * @param {Object} oFilter => object to pass in find, fields will be checked by restrictedOperators
      */
     containRestrictedLabels(oFilter) {
         for (const field in oFilter) {
-            // Si le champ est une primitive
+            // If the field is a primitive
             if (oFilter[field] !== Object(oFilter[field])) {
                 if (this.restrictedOperators.includes(field)) return true;
             } else if (Array.isArray(oFilter[field])) {
-                // voir ce qu'il est possible de faire en mongodb avec un array
+                // see what can be done in mongodb with an array
             } else if (oFilter[field] instanceof Object) {
                 if (this.containRestrictedLabels(oFilter[field], this.restrictedOperators)) {
                     return true;
                 }
-                // voir ce qu'il est possible de faire en mongodb avec un object
+                // see what can be done in mongodb with an object
             }
         }
         return false;

@@ -29,13 +29,13 @@
         "jeuOpt": "Jeu d'options",
         "selectJeuOpt": "Sélectionner le jeu d'options",
         "actif": "Actif",
-        "actifVisible": "Actif & Visible",
         "visible": "Visible",
+        "actifVisible": "Actif & Visible",
         "titleDescLg": "Titre description longue",
         "descLg": "Description longue",
         "titleDescCt": "Titre description courte",
-        "descCt": "Description courte",
         "metaDesc": "Meta description",
+        "descCt": "Description courte",
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs",
         "preview": "Aperçu",
@@ -90,7 +90,8 @@
         "alt": "Balise Alt",
         "pos": "Position",
         "img": "Image Principale",
-        "url": "URL"
+        "url": "URL",
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
     },
     "list": {
         "ph1": "Nom",
@@ -110,7 +111,7 @@
         "t1": "Produits",
         "ph1": "Code",
         "code": "Code",
-        "name": "Nom",
+        "name": "Nom (fr)",
         "picture": "Image",
         "price": "Prix base TTC",
         "quantity": "Quantité",
@@ -135,5 +136,8 @@
         "countDownloads": "Nombre de fois telechargé",
         "downloadHistory": "Téléchargement",
         "email": "Email"
+    },
+    "toast": {
+        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
     }
 }

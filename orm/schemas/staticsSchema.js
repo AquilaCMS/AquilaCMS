@@ -19,7 +19,10 @@ const StaticsSchema = new Schema({
     group       : {type: String, default: ''},
     // index        : {type: Boolean, default: true},
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 /* translation:
  title

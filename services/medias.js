@@ -98,12 +98,12 @@ const uploadAllMedias = async (reqFile, insertDB, group = '') => {
             return;
         }
 
-        // Déplacer le fichier dans /medias
+        // Move file to / medias
         require('mv')(init_file, target_file, {mkdirp: true}, (err) => {
             if (err) console.error(err);
         });
 
-        // L'inserer dans la base de données
+        // Insert it in the database
         if (insertDB) {
             await Medias.updateOne({name: name_file}, {
                 link : `medias/${filename}`,

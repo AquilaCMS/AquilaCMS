@@ -149,9 +149,9 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
-        product         = await queryBuilderPreview.findOne(PostBody, true);
+        product         = await queryBuilderPreview.findOne(PostBody, false);
     } else {
-        product = await queryBuilder.findOne(PostBody, true);
+        product = await queryBuilder.findOne(PostBody, false);
     }
     if (!product) {
         return product;
@@ -360,7 +360,7 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     // we use lean to greatly improve the performance of the query (x3 faster)
     // {virtuals: true} allows to get virtual fields (stock.qty_real)
     let prds       = await Products
-        .find(PostBody.filter, PostBody.structure)
+        .find(PostBody.filter)
         .populate(PostBody.populate)
         .sort(PostBody.sort)
         .lean({virtuals: true});
@@ -1110,7 +1110,7 @@ const handleStock = async (item, _product, inStockQty) => {
         // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
-        if (await ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
+        if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
             _product.stock.qty_booked = qtyAdded + _product.stock.qty_booked;
             await _product.save();
         } else {

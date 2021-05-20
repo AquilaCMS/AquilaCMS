@@ -135,7 +135,7 @@ const detectDuplicateInArray = (a) => {
  * @returns {Promise<string|null>}
  */
 const downloadFile = async (url, dest) => {
-    // on creer les dossier
+    // we create the files
     fs.mkdirSync(dest.replace(path.basename(dest), ''), {recursive: true});
     const file        = fs.createWriteStream(dest);
     const downloadDep = url.includes('https://') ? require('https') : require('http');
@@ -185,14 +185,28 @@ const toET = (ATIPrice, VAT) => {
     return undefined;
 };
 
+/**
+ *
+ * @param {any} obj
+ * @param {string} str
+ * @returns {any}
+ */
 const getObjFromDotStr = (obj, str) => {
-    return str.split('.').reduce((o, i) => {
-        if (!o[i]) return '';
-        if (o[i] instanceof mongoose.Types.ObjectId) {
-            return (o[i]).toString();
+    if (typeof obj === 'undefined') return;
+    if (obj instanceof mongoose.Document) {
+        const value = obj.get(str);
+        if (value instanceof mongoose.Types.ObjectId) {
+            return value.toString();
         }
-        return o[i];
-    }, obj);
+        return value;
+    }
+    return str
+        .split('.')
+        .reduce((o, i) => {
+            if (typeof o === 'undefined' || typeof o[i] === 'undefined') return;
+            if (o[i] instanceof mongoose.Types.ObjectId) return (o[i]).toString();
+            return o[i];
+        }, obj);
 };
 
 /**

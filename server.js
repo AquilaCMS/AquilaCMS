@@ -76,11 +76,11 @@ const initDatabase = async () => {
 
 const setEnvConfig = async () => {
     const {Configuration} = require('./orm/models');
-    global.envConfig      = await Configuration.findOne();
-    if (!global.envConfig) {
+    const configuration   = await Configuration.findOne();
+    if (!configuration) {
         throw new Error('Configuration collection is missing');
     }
-    global.envConfig = global.envConfig.toObject();
+    global.envConfig = configuration.toObject();
 };
 
 const initFrontFramework = async (themeFolder) => {

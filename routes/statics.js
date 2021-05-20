@@ -41,11 +41,11 @@ async function getStatics(req, res, next) {
         const {PostBody} = req.body;
         const result     = await ServiceStatic.getStatics(PostBody);
         if (!isAdmin(req.info)) {
-            // on boucle sur les resultats
+            // we loop on the results
             for (let i = 0; i < result.datas.length; i++) {
                 const page = result.datas[i];
                 if (page && page.translation) {
-                    // on boucle sur les langues contenue
+                    // we loop on the languages contained
                     for (let k = 0; k < Object.keys(page.translation).length; k++) {
                         const langKey = Object.keys(page.translation)[k];
                         delete page.translation[langKey].variables;
@@ -84,7 +84,7 @@ async function getStatic(req, res, next) {
             result = await ServiceStatic.getStatic(postBody);
         }
         if (!isAdmin(req.info) && result && result.translation) {
-            // on boucle sur les langues contenue
+            // we loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
                 delete result.translation[langKey].variables;
@@ -98,7 +98,7 @@ async function getStatic(req, res, next) {
 }
 
 /**
- * Fonction retournant une page statique en fonction de son id
+ * Function returning a static page according to its id
  */
 async function getStaticById(req, res, next) {
     console.warn('Unused route ?? : /v2/static/:id');
@@ -106,7 +106,7 @@ async function getStaticById(req, res, next) {
     try {
         const result = await ServiceStatic.getStaticById(req.params.id, req.body.PostBody);
         if (!isAdmin(req.info) && result.translation) {
-            // on boucle sur les langues contenue
+            // we loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
                 delete result.translation[langKey].variables;

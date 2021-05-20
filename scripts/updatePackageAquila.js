@@ -1,5 +1,5 @@
 /*
- * This script take the dependencies in package.json and copy them into the package-aquila.json file.
+ * This script take the dependencies in package.json and copy them into the package-aquila.json or package-theme.json file.
  * Before the copy, the dependencies are parsed in an array type.
  */
 

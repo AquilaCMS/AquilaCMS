@@ -89,7 +89,7 @@ const cacheSetting = () => {
  *  getChar('hello', 1)
  *  // returns e
  * ```
- * @param {string} string input string to get char
+ * @param {any} string input string to get char
  * @param {number} index index of char to find in string
  */
 const getChar = (string, index) => {

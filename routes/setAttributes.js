@@ -17,7 +17,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing de jeux d'attributs
+ * Function returning a listing of sets of attributes
  */
 async function getSetAttributes(req, res, next) {
     try {
@@ -28,7 +28,7 @@ async function getSetAttributes(req, res, next) {
     }
 }
 /**
- * Fonction retournant un jeu d'attributs
+ * Function returning a set of attributes
  */
 async function getSetAttribute(req, res, next) {
     try {
@@ -39,11 +39,11 @@ async function getSetAttribute(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour un jeu d'attributs
+ * Function to add or update an attribute set
  */
 async function setSetAttribute(req, res, next) {
     try {
-        // La route ne semble pas contenir de modification de setAttributes
+        // The route does not appear to contain a change to setAttributes
         const result = await setAttributeServices.createOrUpdateSetAttribute(req);
         res.json(result);
     } catch (error) {
@@ -51,7 +51,7 @@ async function setSetAttribute(req, res, next) {
     }
 }
 /**
- * Fonction supprimant un jeu d'attributs
+ * Function deleting a set of attributes
  */
 async function deleteSetAttribute(req, res, next) {
     try {

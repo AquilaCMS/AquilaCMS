@@ -17,6 +17,7 @@ const {ObjectId}        = Schema.Types;
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
+ * @returns {string}
  */
 const generateUserPassword = () => {
     const CHARACTER_SETS = [
@@ -38,7 +39,11 @@ const generateUserPassword = () => {
     return result;
 };
 
-// Returns a random integer in the range [0, n) using a variety of methods.
+/**
+ * Returns a random integer in the range [0, n) using a variety of methods.
+ * @param {number} n
+ * @returns {number}
+ */
 const randomInt = (n) => {
     const x = Math.floor(Math.random() * n);
     if (x < 0 || x >= n) throw new Error('Arithmetic exception');
@@ -127,7 +132,10 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ]
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 UserSchema.index({email: 1});
 

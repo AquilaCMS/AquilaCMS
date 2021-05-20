@@ -6,7 +6,7 @@
                     <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('contacts')" style="cursor: pointer" ></i>
                 </div>
             </div>
-            <div class="tableWrapperOverflow">
+            <div class="tableWrapperOverflow" ng-show="contacts.length > 0">
                 <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
                     aria-describedby="DataTables_Table_0_info">
                     <thead>
@@ -45,9 +45,9 @@
                 </table>
             </div>
             <div class="box-content" ng-show="contacts.length == 0">
-                <p>Aucune demande de contact</p>
+                <p translate>contact.noContact</p>
             </div>
-            <pagination page="page" total-items="totalItems" on-select-page="getContacts(page)" items-per-page="nbItemsPerPage" boundary-links="true" rotate="false" max-size="7"></pagination>
+            <pagination ng-show="contacts.length > 0" page="page" total-items="totalItems" on-select-page="getContacts(page)" items-per-page="nbItemsPerPage" boundary-links="true" rotate="false" max-size="7"></pagination>
         </div>
     </div>
 

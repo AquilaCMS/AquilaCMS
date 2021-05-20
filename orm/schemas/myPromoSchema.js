@@ -29,6 +29,8 @@ const PromoSchema = new Schema({
         basePriceET  : {type: Number, default: null},
         basePriceATI : {type: Number, default: null}
     }] // Si des items sont dans ce tableau alors la promo s'appliquera a ces produits
+}, {
+    id : false
 });
 
 module.exports = PromoSchema;

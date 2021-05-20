@@ -45,7 +45,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
 ]);
 
 StaticPageControllers.controller("StaticPageNewCtrl", [
-    "$scope", "$location", 'StaticV2', "toastService", "$rootScope", function ($scope, $location, StaticV2, toastService, $rootScope) {
+    "$scope", "$location", 'StaticV2', "toastService", "$rootScope", "$translate", function ($scope, $location, StaticV2, toastService, $rootScope, $translate) {
         $scope.static = {type: "page", group: "", translation: {[$rootScope.adminLang]: {variables: [], html: '', content: ''}}};
         $scope.groups = [];
         $scope.selectedDropdownItem = "";
@@ -148,7 +148,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             data.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save(data).$promise.then(function (response) {
-                toastService.toast("success", "Sauvegarde effectuée");
+                toastService.toast("success", $translate.instant("global.savedDone"));
                 if (isQuit) {
                     return $location.path("/staticPage");
                 }
@@ -161,7 +161,8 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 ]);
 
 StaticPageControllers.controller("StaticPageDetailCtrl", [
-    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo) {
+    "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', "$translate",
+    function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo, $translate) {
         $scope.local = {url: ""};
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
@@ -272,7 +273,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             $scope.static.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save($scope.static, function () {
-                toastService.toast("success", "Page sauvegardée !");
+                toastService.toast("success", $translate.instant("global.pageSaved"));
                 if (isQuit) {
                     $location.path("/staticPage");
                 }
@@ -290,7 +291,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                 StaticV2.delete({id: $scope.static._id}, function(msg) {
                     if (msg.status) {
                         $scope.statics.splice($scope.statics.indexOf(staticPage), 1);
-                        toastService.toast("success", "Suppression effectuée");
+                        toastService.toast("success", $translate.instant("global.deleteDone"));
                         $location.path("/staticPage");
                     } else {
                         console.error("Error!");

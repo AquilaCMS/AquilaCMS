@@ -78,7 +78,7 @@ const initAgendaDB = async () => {
                         } else if (tJobsSystem[i] === 'Remove previews') {
                             await setJob(undefined, tJobsSystem[12], '0 0 0 0 0', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
-                            await setJob(undefined, tJobsSystem[13], '0 0 0 0 0', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
+                            await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
                         }
                     } catch (error) {
                         console.error(error);
