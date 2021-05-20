@@ -193,7 +193,7 @@ function validateBySection(bundle_section, item) {
         // On vérifie que les produits sélectionnés sont dans la liste des choix
         let i = 0;
         while (i < selection.products.length && bundle_section.products.find(function (product) {
-            return product.id === selection.products[i];
+            return product.id.toString() === selection.products[i];
         }) !== undefined) {
             i++;
         }
