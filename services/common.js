@@ -46,7 +46,7 @@ const getBreadcrumb = async (url) => {
         isHome : true
     }];
 
-    // Page statique
+    // Static page
     if (!url.includes('blog') && url.length === 1) {
         const staticsServices = require('./statics');
         const result          = await staticsServices.getStatic({filter: {[`translation.${lang}.slug`]: url[0]}});
@@ -85,13 +85,13 @@ const getBreadcrumb = async (url) => {
                 });
             }
         }
-    } else if (url.includes('search') && url.length > 1) { // Recherche
+    } else if (url.includes('search') && url.length > 1) { // Search
         parts.push({
             text   : 'Recherche',
             link   : keepL,
             isHome : false
         });
-    } else if (!url.includes('c') && url.length > 1) { // Produit
+    } else if (!url.includes('c') && url.length > 1) { // Product
         parts = await parseUrlPrdCat(parts, url, keepL, lang);
     }
     return parts;

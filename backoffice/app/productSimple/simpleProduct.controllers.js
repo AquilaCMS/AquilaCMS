@@ -3,7 +3,7 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs", 
     function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -46,7 +46,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        toastService.toast('danger', $translate.instant("global.impossibleGeneratedURL"))
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -127,10 +127,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         const newPrd = {...$scope.product, code: newCode};
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
-                            toastService.toast("success", "Produit dupliqué !");
+                            toastService.toast("success", $translate.instant("global.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", "Le code existe déjà");
+                            toastService.toast("danger", $translate.instant("global.codeExists"));
                         });
                     }
                 },
@@ -176,6 +176,32 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $scope.lang = lang;
         };
 
+        function checkForm(fieldsToCheck){
+            let text = "";
+            for(let oneField of fieldsToCheck){
+                const elt = document.querySelector(`label[for="${oneField}"]`);
+                const translationToCheck = ["name"];  // TODO : you may need to add string here (also in bundleProduct)
+                if(translationToCheck.includes(oneField)){
+                    for(let oneLang of $scope.languages){
+                        if($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != ""){
+                        //good
+                        }else{
+                            text += `name (${oneLang.name}), `;
+                        }
+                    }
+                }else{
+                    if (elt) {
+                        if(elt.control && elt.control.value == ""){
+                            if(elt.innerText){
+                                text += `${elt.innerText}, `;
+                            }
+                        }
+                    }
+                }
+            }
+            return text;
+        }
+
         $scope.saveProduct = function (product, isQuit) {
             if ($scope.nsUploadFiles.isSelected) {
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
@@ -185,24 +211,22 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             // Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;
 
+            let strInvalidFields = "";
             if ($scope.form.$invalid) {
-                let strInvalidFields = "";
                 if ($scope.form.$error && $scope.form.$error.required) {
                     $scope.form.$error.required.forEach((requiredField, index) => {
-                        const elt = document.querySelector(`label[for="${requiredField.$name}"]`);
-                        if (index === 0) {
-                            strInvalidFields = ": ";
-                        }
-                        if (elt && elt.innerText) {
-                            if ($scope.form.$error.required.length - 1 === index) {
-                                strInvalidFields += `${elt.innerText}`;
-                            } else {
-                                strInvalidFields += `${elt.innerText}, `;
-                            }
-                        }
+                        strInvalidFields += checkForm([requiredField.$name]);
                     });
                 }
-                toastService.toast("danger", `Les informations saisies ne sont pas valides${strInvalidFields}`);
+            }else{
+                strInvalidFields = checkForm(["code", "name"]);
+            }
+            //we remove ", "
+            if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
+            }
+            if(strInvalidFields != ""){
+                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
                 return;
             }
 
@@ -235,7 +259,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     if (isQuit) {
                         $location.path("/products");
                     } else {
-                        toastService.toast("success", "Produit sauvegardé !");
+                        toastService.toast("success", $translate.instant("global.productSaved"));
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
@@ -262,10 +286,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.removeProduct = function (_id) {
             if (confirm("Etes-vous sûr de vouloir supprimer ce produit ?")) {
                 ProductsV2.delete({id: _id}, function () {
-                    toastService.toast("success", "Suppression éffectuée");
+                    toastService.toast("success", $translate.instant("global.deleteDone"));
                     $location.path("/products");
                 }, function () {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("global.errorDelete"));
                 });
             }
         };

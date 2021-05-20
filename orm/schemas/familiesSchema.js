@@ -10,7 +10,7 @@ const mongoose      = require('mongoose');
 const helper        = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 
 const FamiliesSchema = new Schema({
     code      : {type: String, required: true, unique: true},
@@ -21,7 +21,10 @@ const FamiliesSchema = new Schema({
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
     children  : [{type: ObjectId, ref: 'families'}],
     details   : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 // FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 

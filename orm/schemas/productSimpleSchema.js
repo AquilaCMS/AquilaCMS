@@ -26,7 +26,8 @@ const ProductSimpleSchema = new Schema({
 }, {
     discriminatorKey : 'kind',
     toObject         : {virtuals: true},
-    toJSON           : {virtuals: true}
+    toJSON           : {virtuals: true},
+    id               : false
 });
 
 ProductSimpleSchema.virtual('stock.qty_real').get(function () {

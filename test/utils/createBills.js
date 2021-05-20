@@ -6,10 +6,10 @@ const createBills = (params = {id: null, montant: null, facture: null, email: nu
     const bill                          = new Bills();
     bill.email                          = email || faker.internet.email();
     bill.facture                        = facture || faker.internet.email();
-    bill.montant                        = montant || faker.random.number();
-    bill.avoir                          = faker.random.boolean();
-    bill.withTaxes                      = faker.random.boolean();
-    bill.isPaid                         = faker.random.boolean();
+    bill.montant                        = montant || faker.datatype.number();
+    bill.avoir                          = faker.datatype.boolean();
+    bill.withTaxes                      = faker.datatype.boolean();
+    bill.isPaid                         = faker.datatype.boolean();
     bill.nom                            = faker.name.lastName();
     bill.prenom                         = faker.name.firstName();
     bill.client                         = '5fe301f3ab37321a541ade1b';

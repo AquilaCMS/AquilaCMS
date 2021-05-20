@@ -19,7 +19,7 @@ const utils         = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const aquilaEvents  = require('../../utils/aquilaEvents');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 const defaultVAT    = 20;
 
 const CartSchema = new Schema({
@@ -92,7 +92,11 @@ const CartSchema = new Schema({
         method : {type: String, enum: ['delivery', 'withdrawal'], default: 'delivery'},
         date   : Date
     }
-}, {usePushEach: true, timestamps: true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});

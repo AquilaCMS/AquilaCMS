@@ -9,6 +9,10 @@
 <hr />
 <div class="row col-sm-12" style="margin-top: 10px">
     <h3 translate>product.photo.picturessaved</h3>
+    <div ng-if="product.images.length == 0">
+        <br />
+        <p translate>product.photo.noPics</p>
+    </div>
     <div ng-repeat="image in product.images | orderBy: ['position']" class="col-sm-6 image-frame">
         <div class="row">
             <div class="col-sm-12">

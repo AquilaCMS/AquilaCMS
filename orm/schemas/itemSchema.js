@@ -9,7 +9,7 @@
 const mongoose     = require('mongoose');
 const aquilaEvents = require('../../utils/aquilaEvents');
 const Schema       = mongoose.Schema;
-const ObjectId     = Schema.ObjectId;
+const {ObjectId}   = Schema.Types;
 
 const itemsSchema = new Schema({
     id     : {type: ObjectId, ref: 'products', required: true},
@@ -48,7 +48,10 @@ const itemsSchema = new Schema({
     },
     atts        : [],
     typeDisplay : {type: String, default: undefined}
-}, {discriminatorKey: 'type'});
+}, {
+    discriminatorKey : 'type',
+    id               : false
+});
 
 itemsSchema.set('toJSON', {virtuals: true});
 itemsSchema.set('toObject', {virtuals: true});

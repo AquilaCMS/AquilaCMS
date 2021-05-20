@@ -12,6 +12,8 @@ const Schema   = mongoose.Schema;
 const SequencesSchema = new Schema({
     name : {type: String, required: true, unique: true},
     seq  : {type: Number, required: true, default: 0}
+}, {
+    id : false
 });
 
 SequencesSchema.statics.getNextSequence = function (name, cb) {

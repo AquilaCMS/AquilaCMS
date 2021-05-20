@@ -4,7 +4,7 @@
                     save-and-quit="save(true)" disable-save="disableSave"
                     hide-remove="job.data.flag == 'system'"
                     return-path="/jobs" form="form">
-            <h2 ng-show="job.data.flag == 'system'" style="margin-top:30px; margin-bottom:30px; color:red" translate>
+            <h2 ng-show="job.data.flag == 'system'" style="margin-top:30px; margin-bottom:30px; color:red;font-weight: bold;" translate>
                 job.detail.alert
             </h2>
 
@@ -47,7 +47,10 @@
                             <div ng-show="form.repeatInterval.$error.required" translate>job.detail.fieldRequired</div>
                         </div>
                         <div class="ns-error-message" ng-show="job.failReason && job.failReason != ''">
-                            <div translate>job.detail.invalidFq</div>
+                            <div>
+                                <span translate>job.detail.invalidFq</span>
+                                <i style="margin-left:10px" class="fa fa-question-circle" popover="{{job.failReason}}" popover-trigger="mouseenter" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
                 </div>

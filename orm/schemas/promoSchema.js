@@ -6,10 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
-const NSErrors = require('../../utils/errors/NSErrors');
+const mongoose   = require('mongoose');
+const NSErrors   = require('../../utils/errors/NSErrors');
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const PromoSchema = new Schema(
     {
@@ -36,7 +36,10 @@ const PromoSchema = new Schema(
         applyNextRules : {type: Boolean, default: false}, // true : applique les autres promos, false : applique uniquement une seule promo
         actions        : [{type: ObjectId, default: [], ref: 'rules'}]
     },
-    {timestamps: true}
+    {
+        timestamps : true,
+        id         : false
+    }
 );
 PromoSchema.index({dateStart: 1, dateEnd: 1, actif: 1, type: 1});
 PromoSchema.index({isQuantityBreak: 1, actif: 1, type: 1});

@@ -22,11 +22,12 @@ const {
 
 module.exports = function (app) {
     app.post('/v2/contacts', authentication, adminAuth, getContacts);
+    app.delete('/v2/contact/:id', authentication, adminAuth, deleteContact);
     app.post('/v2/contact/:mode', captchaValidation, setContact);
 };
 
 /**
- * Récupèration de toutes les contact (ou filtrer via le PostBody)
+ * Retrieve all contact (or filter via the PostBody)
  */
 async function getContacts(req, res, next) {
     try {
@@ -37,7 +38,18 @@ async function getContacts(req, res, next) {
 }
 
 /**
- * Création/edition d'un contact
+ * Delete a contact
+ */
+async function deleteContact(req, res, next) {
+    try {
+        return res.json(await ServiceContacts.deleteContact(req.params.id));
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * Creation / edition of a contact
  */
 async function setContact(req, res, next) {
     try {

@@ -15,7 +15,7 @@ const ItemSimpleSchema = require('./itemSimpleSchema');
 const AddressSchema    = require('./addressSchema');
 const aquilaEvents     = require('../../utils/aquilaEvents');
 const Schema           = mongoose.Schema;
-const ObjectId         = Schema.ObjectId;
+const {ObjectId}       = Schema.Types;
 
 const BillsSchema = new Schema({
     order_id    : {type: ObjectId, ref: 'orders', required: true},
@@ -64,7 +64,10 @@ const BillsSchema = new Schema({
     avoir           : {type: Boolean, default: false},
     additionnalFees : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}, tax: {type: Number, default: 0}},
     priceSubTotal   : {ati: {type: Number, default: 0}, et: {type: Number, default: 0}}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 const docArray = BillsSchema.path('items');
 

@@ -208,7 +208,8 @@
                                 </td>
                                 <td data-label="Description :">
                                     <div class="details-box">
-                                        <div style="font-size: 20px" class="name">{{item.name}}
+                                        <div style="font-size: 20px" class="name">
+                                            <span style="font-size: 18px">{{item.name}}</span>
                                             <span ng-show="item.parent"> - {{getParentItem(item.parent)}}</span>
                                         </div>
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->

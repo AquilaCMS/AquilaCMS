@@ -15,6 +15,8 @@ const AdmininformationSchema = new Schema({
     translation : {},
     date        : {type: Date},
     deleted     : {type: Boolean}
+}, {
+    id : false
 });
 
 module.exports = AdmininformationSchema;

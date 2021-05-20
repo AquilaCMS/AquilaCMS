@@ -205,7 +205,7 @@ const startListening = async (server) => {
 };
 
 /**
- * Renvoie l'url de base de l'application terminée par un '/', ou '/' tout court si non rempli
+ * Returns the base url of the application terminated by a '/', or '/' if not filled
  * @param {object} req request parameter from express
  * @returns {Promise<{appUrl: string, adminPrefix: string}>} an object containing the hostname, adminPrefix, analytics
  */
@@ -234,8 +234,7 @@ const getUploadDirectory = () => {
 };
 
 const generateNewEnv = (envExample) => {
-    let env = envExample;
-    env     = env.toString();
+    let env = JSON.stringify(envExample);
     env     = env.replace('{{environnement}}', getEnv('AQUILA_ENV'));
     env     = env.replace('{{secretKey}}', uuidv4());
     return JSON.parse(env);

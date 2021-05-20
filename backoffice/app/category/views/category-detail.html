@@ -68,7 +68,7 @@
                                 <div class="btn-group" style="z-index: 1;">
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                            translate>category.detail.catalogue</label>
-                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'page'"
+                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
                                            translate>category.detail.page</label>
                                 </div>
                             </td>
@@ -198,7 +198,7 @@
                     aria-describedby="DataTables_Table_0_info">
                     <thead>
                         <tr role="row">
-                            <th role="columnheader" style="width: 7%;"></th>
+                            <th role="columnheader" style="width: 7%;" translate>category.detail.inORout</th>
                             <!--<th role="columnheader" style="width: 1%;">Position</th>-->
                             <th role="columnheader" style="width: 1%;">
                                 <a ng-click="local.sortType = 'sortWeight'; local.sortReverse = !local.sortReverse; getProducts();"
@@ -269,7 +269,6 @@
                         <tr role="row">
                             <th>
                                 <select ng-model="searchObj.productInCategory" ng-change="getProducts()" class="form-control">
-                                    <option value="" translate>category.detail.indifferent</option>
                                     <option value="true" translate>category.detail.oui</option>
                                     <option value="false" translate>category.detail.non</option>
                                 </select>
@@ -320,9 +319,9 @@
                         </tr>
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
-                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" ng-show="product.check ? (searchObj.productInCategory == 'true' || searchObj.productInCategory == '' ? true : false) : (searchObj.productInCategory == 'false' || searchObj.productInCategory == '' ? true : false)"style="height: 80px;">
+                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" style="height: 80px;">
                             <td>
-                                <input type="checkbox" ng-model="product.check" ng-change="checkProduct($index);" ng-click="$event.stopPropagation()">
+                                <input type="checkbox" ng-model="product.checked" ng-change="checkProduct(product._id, product.checked)" ng-click="$event.stopPropagation()">
                             </td>
                             <td>
                                 <input type="number" ng-model="product.sortWeight" ng-change="changePosition(product._id, product.sortWeight)"

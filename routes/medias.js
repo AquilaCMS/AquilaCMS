@@ -145,7 +145,7 @@ async function uploadAllMedias(req, res, next) {
 /* **************** Documents **************** *
 
 /**
- * Permet de télécharger un zip contenant tous le dossier "upload"
+ * Allows you to download a zip containing all the "upload" folder
  */
 async function downloadAllDocuments(req, res, next) {
     try {
@@ -160,7 +160,7 @@ async function downloadAllDocuments(req, res, next) {
     }
 }
 /**
- * Permet d'uploader un zip contenant tous le dossier "upload"
+ * Allows you to upload a zip containing all the "upload" folder
  */
 async function uploadAllDocuments(req, res, next) {
     if (path.extname(req.files[0].originalname) === '.zip') {

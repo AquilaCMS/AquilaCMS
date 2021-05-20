@@ -32,7 +32,7 @@ const CSS_FOLDERS = [
 const changeTheme = async (selectedTheme) => {
     const oldConfig = await Configuration.findOne({});
 
-    // Si le theme a changé
+    // If the theme has changed
     if (oldConfig.environment.currentTheme !== selectedTheme) {
         console.log('Setup selected theme...');
         try {
@@ -115,7 +115,7 @@ const setConfigTheme = async (theme) => {
         const config    = JSON.parse(info);
         const oldConfig = await ThemeConfig.findOne({name: theme});
         if (oldConfig) {
-            const mergedConfig = {...config, ...oldConfig.config}; // On merge l'ancienne et la nouvelle config pour pas perdre les données
+            const mergedConfig = {...config, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
             await ThemeConfig.updateOne({name: theme}, {$set: {name: theme, config: mergedConfig}});
         } else {
             await ThemeConfig.create({name: theme, config});
@@ -153,7 +153,7 @@ const installDependencies = async (theme) => {
  * @param themePath : Theme selectionné
  */
 const deleteTheme = async (themePath) => {
-    // Bloquer la suppression du theme courant, ou le theme par default
+    // Block delete of the current theme, or the default theme
     const currentTheme = await getThemePath();
     if (!themePath || themePath === '' || themePath === currentTheme || themePath === 'default_theme') {
         throw NSErrors.DesignThemeRemoveCurrent;
@@ -185,7 +185,7 @@ const getDemoDatasFilesName = async () => {
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null, fileNames = null ) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames = null, otherParams = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
     const listOfFile    = [];
@@ -261,13 +261,21 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
         throw new Error(`"${photoPath}" is not writable`);
     }
-    await fs.copyRecursive(path.join(themeDemoData, 'files'), photoPath, override);
+    if (typeof otherParams !== 'undefined' && otherParams != null && otherParams.length > 0) {
+        if (override) {
+            for (const oneParam of otherParams) {
+                if (oneParam.name === 'files' && oneParam.value === true) {
+                    await fs.copyRecursive(path.join(themeDemoData, 'files'), photoPath, override);
+                }
+            }
+        }
+    }
     return data;
 };
 
 /**
- * @description Récupère le contenu du fichier cssName.css
- * @param {string} cssName : Nom de la css a récupérer
+ * @description Get content of the file cssName.css
+ * @param {string} cssName : Name of the css to recover
  */
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
@@ -285,9 +293,9 @@ const getCustomCss = async (cssName) => {
 };
 
 /**
- * @description Enregistre le contenu dans le fichier cssName.css
- * @param {string} cssName : Nom de la css a editer
- * @param {string} cssValue : Contenu à écrire dans le fichier
+ * @description Saves the content in the file cssName.css
+ * @param {string} cssName : Name of the css to edit
+ * @param {string} cssValue : Content to be written in the file
  */
 const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
@@ -308,7 +316,7 @@ const setCustomCss = async (cssName, cssValue) => {
 };
 
 /**
- * @description Récupère la liste des css du dossier
+ * @description Get the list of css in the folder
  */
 const getAllCssComponentName = async () => {
     try {

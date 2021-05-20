@@ -26,6 +26,7 @@
         "startNow": "Start Now",
         "lastRes": "Last planned task result",
         "fqDoc": "Frequency documentation",
-        "params": "Parameters"
+        "params": "Parameters",
+        "errFailReason": "The planned task has an error:"
     }
 }

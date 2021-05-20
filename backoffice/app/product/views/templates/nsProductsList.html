@@ -34,7 +34,7 @@
     <tbody role="alert" aria-live="polite" aria-relevant="all">
         <tr ng-class-odd="'odd'" ng-class-even="'even'"
             ng-repeat="product in products | orderBy:sortType:sortReverse | filter:display"
-            ng-click="onSelect(product, $event)"
+            ng-click="onSelectFunction(product, $event)"
             style="height: 80px;cursor:pointer;">
             <td style="vertical-align: middle" ng-style="product.style">{{product.code}}</td>
             <td style="vertical-align: middle" ng-style="product.style"><img ng-src="/images/products/300x300-50/{{product.images[0]._id}}/{{product.images[0].title+product.images[0].extension}}" height="80" width="120" class='no-product-image' /></td>
