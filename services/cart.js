@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment            = require('moment');
 const mongoose          = require('mongoose');
 const {
@@ -5,7 +13,8 @@ const {
     Orders,
     Products,
     Promo,
-    Languages
+    Languages,
+    Configuration
 }                       = require('../orm/models');
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
@@ -14,8 +23,9 @@ const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
 const ServiceShipment   = require('./shipment');
 const ServicesProducts  = require('./products');
-const ServiceAuth       = require('./auth');
 const servicesTerritory = require('./territory');
+const servicesMail      = require('./mail');
+const ServiceJob        = require('./job');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
@@ -27,6 +37,7 @@ const getCarts = async (PostBody) => {
 
 /**
  * Get cart(s) for this client
+ * @returns {Promise<mongoose.Document>}
  */
 const getCartforClient = async (idclient) => {
     return Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
@@ -34,7 +45,7 @@ const getCartforClient = async (idclient) => {
 
 const getCartById = async (id, PostBody = null, user = null, lang = null, req = null) => {
     if (PostBody && PostBody.structure) {
-        // obligé d'avoir tous les champs pour les règles de promo
+        // Need to have all the fields for the discount rules
         const structure = PostBody.structure;
         delete PostBody.structure;
         if (structure.score) {
@@ -45,10 +56,11 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
     let cart = await queryBuilder.findById(id, PostBody);
 
     if (cart) {
-        const productsCatalog = await ServicePromo.checkPromoCatalog(cart.items.map((item) => item.id), user, lang, false);
+        const products        = cart.items.map((product) => product.id);
+        const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -61,9 +73,9 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
 };
 
 /**
- * Met a jour l'addresse de livraison et/ou de facturation d'un panier
- * @param {*} cartId id du cart
- * @param {*} addresses adresse de livraison et/ou de facturation
+ * Updates the delivery and / or billing address of a cart
+ * @param {*} cartId cart's id
+ * @param {*} addresses delivery and / or billing address
  */
 const setCartAddresses = async (cartId, addresses) => {
     const addressesType = [{type: 'delivery', name: 'livraison'}, {type: 'billing', name: 'facturation'}];
@@ -113,7 +125,7 @@ const deleteCartItem = async (cartId, itemId) => {
             } else if (cartItem.type === 'bundle') {
                 for (let i = 0; i < cartItem.selections.length; i++) {
                     const selectionProducts = cartItem.selections[i].products;
-                    // on check que chaque produit soit commandable
+                    // we check that each product is orderable
                     for (let j = 0; j < selectionProducts.length; j++) {
                         const selectionProduct = await Products.findById(selectionProducts[j]);
                         if (selectionProduct.type === 'simple') {
@@ -181,18 +193,15 @@ const addItem = async (req) => {
     if (req.body.item.parent) {
         req.body.item._id = idGift;
     }
-    let user = null;
-    if (req.headers && req.headers.authorization) {
-        user = ServiceAuth.getDecodedToken(req.headers.authorization);
-    }
-    const item = {...req.body.item, weight: _product.weight};
+
+    const item = {...req.body.item, weight: _product.weight, price: _product.price};
     if (_product.type !== 'virtual') item.stock = _product.stock;
-    const data = await _product.addToCart(cart, item, user ? user.info : {}, _lang.code);
+    const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
     }
     cart           = data;
-    cart           = await ServicePromo.checkForApplyPromo(user, cart, _lang.code);
+    cart           = await ServicePromo.checkForApplyPromo(req.info, cart, _lang.code);
     const _newCart = await cart.save();
     if (req.body.item.parent) {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
@@ -224,12 +233,12 @@ const updateQty = async (req) => {
             ) {
                 throw NSErrors.ProductNotInStock;
             }
-            // Reza de la qte
+            // quantity reservation
             await ServicesProducts.updateStock(_product._id, -quantityToAdd);
         } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
-                // on check que chaque produit soit commandable
+                // we check that each product is orderable
                 for (let j = 0; j < selectionProducts.length; j++) {
                     const selectionProduct = await Products.findById(selectionProducts[j]);
                     if (selectionProduct.type === 'simple') {
@@ -246,24 +255,18 @@ const updateQty = async (req) => {
         }
     }
 
-    // On gère le stock
+    // Manage stock
     // await servicesProducts.handleStock(item, _product, req.body.item.quantity);
-    cart = await Cart.findOneAndUpdate(
-        {_id: req.body.cartId, status: 'IN_PROGRESS', 'items._id': req.body.item._id},
-        {'items.$.quantity': req.body.item.quantity},
-        {new: true}
-    );
-    if (!cart) {
-        throw NSErrors.InactiveCart;
-    }
+    await cart.updateOne({
+        $set : {'items.$[item].quantity': req.body.item.quantity}
+    }, {
+        arrayFilters : [{'item._id': req.body.item._id}],
+        new          : true
+    });
     await linkCustomerToCart(cart, req);
-    let user = null;
-    if (req.headers && req.headers.authorization) {
-        user = ServiceAuth.getDecodedToken(req.headers.authorization);
-    }
-    cart = await ServicePromo.checkForApplyPromo(user, cart);
+    cart = await ServicePromo.checkForApplyPromo(req.info, cart);
     await cart.save();
-    // Event appelé par les modules pour récupérer les modifications dans le panier
+    // Event called by the modules to retrieve the modifications in the cart
     const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
     if (shouldUpdateCart) {
         cart = await Cart.findOne({_id: cart._id});
@@ -279,8 +282,8 @@ const checkCountryTax = async (_cart, _user) => {
             const _country    = await servicesTerritory.getTerritory({filter: {code: countryCode}});
 
             if (_country) {
-                if (_country.taxeFree) { // Pas de taxe
-                    paidTax = false; // Payer en HT
+                if (_country.taxeFree) { // No tax
+                    paidTax = false; // Pay in ET
                 } else {
                     const {websiteCountry} = global.envConfig.environment;
                     if (websiteCountry && websiteCountry !== countryCode && _user.company && _user.company.intracom) {
@@ -290,7 +293,7 @@ const checkCountryTax = async (_cart, _user) => {
             }
         }
     } catch (err) {
-        // On retourne la valeur par défaut
+        // We return the default value
     }
 
     return paidTax;
@@ -303,30 +306,30 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             throw NSErrors.CartInactive;
         }
         lang = servicesLanguages.getDefaultLang(lang);
-        // On valide les données du panier
+        // We validate the basket data
         const result = validateForCheckout(_cart);
         if (result.code !== 'VALID') {
             throw {status: 400, code: result.code, translations: {fr: result.message}};
         }
-        // On verfifie que le code promo est toujours valide
+        // We check that the promo code is still valid
         if (_cart.promos && _cart.promos.length && _cart.promos[0].code) {
             try {
                 const cart = await ServicePromo.checkCodePromoByCode(_cart.promos[0].code, _cart._id, _user, lang);
                 if (!cart) throw NSErrors.PromoCodePromoInvalid;
-                // Si il y a des gifts dans promos alors on populate le gifts afin de recupérer le produit
+                // If there are gifts in promos then we populate the gifts in order to collect the product
                 if (_cart.promos[0].gifts.length) {
                     const cart_populated = await _cart.populate('promos.gifts').execPopulate();
-                    // On ajoute les produits offert aux items du cart
+                    // We add the products offered to the items of the cart
                     cart_populated.promos[0].gifts.forEach((gift) => _cart.items.push(gift));
                 }
-                // Si il y a des codes promo qui s'appliquent sur des items
+                // If there are promo codes that apply to items
                 if (_cart.promos[0].productsId && _cart.promos[0].productsId.length) {
                     for (let i = 0; i < _cart.promos[0].productsId.length; i++) {
                         const discountProduct                      = _cart.promos[0].productsId[i];
                         const {discountATI, discountET, productId} = discountProduct;
                         const itemFound                            = _cart.items.find((item) => item.id.toString() === productId.toString());
                         if (itemFound) {
-                            // Le priceTotal sera recalculé automatiquement
+                            // The priceTotal will be recalculated automatically
                             itemFound.price.unit.ati -= discountATI;
                             itemFound.price.unit.et  -= discountET;
                         }
@@ -337,7 +340,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                 throw NSErrors.PromoCodePromoInvalid;
             }
         }
-        // On verifie que les produits du panier soient bien commandable
+        // We check that the products in the basket are orderable
         const {bookingStock} = global.envConfig.stockOrder;
         if (bookingStock === 'commande') {
             for (let i = 0; i < _cart.items.length; i++) {
@@ -347,7 +350,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
-                    // on reserve le stock
+                    // we book the stock
                     await ServicesProducts.updateStock(_product._id, -cartItem.quantity);
                 } else if (_product.kind === 'BundleProduct') {
                     for (let j = 0; j < cartItem.selections.length; j++) {
@@ -387,19 +390,8 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             comment        : cartObj.comment,
             historyStatus  : [{status: (priceTotal.ati === 0 ? 'PAID' : 'PAYMENT_PENDING'), date: moment(new Date())}],
             customer       : {
-                id           : _user._id,
-                email        : _user.email,
-                code         : _user.code,
-                fullname     : _user.fullname,
-                phone        : _user.phone,
-                civility     : _user.civility,
-                phone_mobile : _user.phone_mobile,
-                company      : _user.company,
-                status       : _user.status,
-                campaign     : _user.campaign,
-                birthDate    : _user.birthDate,
-                details      : _user.details,
-                type         : _user.type
+                ..._user,
+                id : _user._id
             },
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
@@ -407,7 +399,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         if (_cart.schema.path('point_of_sale')) {
             newOrder.point_of_sale = cartObj.point_of_sale;
         }
-        // Si le mode de réception de la commande est la livraison...
+        // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {
                 newOrder.addresses.billing = newOrder.addresses.delivery;
@@ -432,15 +424,25 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         }
 
         const createdOrder = await Orders.create(newOrder);
-        // Si le order a une promo de type code promo
+        // If the order has a discount of type "promo code"
         if (createdOrder.promos && createdOrder.promos.length && createdOrder.promos[0].promoCodeId) {
             try {
-            // alors on incrémente le nombre d'utilisation de cette promo
-                await Promo.updateOne({'codes._id': createdOrder.promos[0].promoCodeId}, {$inc: {'codes.$.used': 1}});
-                // alors nous devons aussi actualiser le nombre de client unique ayant utilisé ce code promo
-                const result = await Orders.distinct('customer.id', {'promos.promoCodeId': createdOrder.promos[0].promoCodeId});
-                await Promo.updateOne({'codes._id': createdOrder.promos[0].promoCodeId}, {$set: {'codes.$.client_used': result.length}});
-            // TODO P6 : Décrémenter le stock du produit offert
+            // then we increase the number of uses of this promo
+                await Promo.updateOne({}, {
+                    $inc : {'codes.$[code].used': 1}
+                }, {
+                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
+                });
+                // then we must also update the number of unique users who have used this "promo code"
+                const result = await Orders.distinct('customer.id', {
+                    'promos.promoCodeId' : createdOrder.promos[0].promoCodeId
+                });
+                await Promo.updateOne({}, {
+                    $set : {'codes.$[code].client_used': result.length}
+                }, {
+                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
+                });
+            // TODO P6 : Decrease the stock of the product offered
             // if (_cart.promos[0].gifts.length)
             } catch (err) {
                 console.error(err);
@@ -449,7 +451,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
-        await Cart.updateOne({_id: cartId}, {status: 'IN_PROGRESS'});
+        await Cart.updateOne({_id: cartId}, {$set: {status: 'IN_PROGRESS'}});
         throw err;
     }
 };
@@ -462,7 +464,7 @@ const removeOldCarts = async () => {
 
     for (let cartIndex = 0; cartIndex < carts.length; cartIndex++) {
         for (let cartItemIndex = 0; cartItemIndex < carts[cartIndex].items.length; cartItemIndex++) {
-            // On gère les stock et reservation panier
+            // We manage the stock and reservation cart
             if (bookingStock === 'panier') {
                 const ServicesProducts = require('./products');
                 const cartItem         = carts[cartIndex].items[cartItemIndex];
@@ -471,7 +473,7 @@ const removeOldCarts = async () => {
                 } else if (cartItem.type === 'bundle') {
                     for (let selectionIndex = 0; selectionIndex < cartItem.selections.length; selectionIndex++) {
                         const selectionProducts = cartItem.selections[selectionIndex].products;
-                        // on check que chaque produit soit commandable
+                        // Check that each product is orderable
                         for (let productIndex = 0; productIndex < selectionProducts.length; productIndex++) {
                             const selectionProduct = await Products.findById(selectionProducts[productIndex]);
                             if (selectionProduct.type === 'simple') {
@@ -493,23 +495,26 @@ const removeOldCarts = async () => {
  * @param {Object} stock
  * @param {number} qty
  */
-const checkProductOrderable = async (stock, qty) => {
+const checkProductOrderable = (stock, qty) => {
     return stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
 };
 
 /**
- * Fonction pour associer un utilisateur à un panier
+ * Function to associate a user with a cart
+ * @param {any} cart
+ * @param {Express.Request} req
+ * @returns {Promise<any>}
  */
 const linkCustomerToCart = async (cart, req) => {
-    if (cart && (!cart.customer || !cart.customer.id) && req.headers && req.headers.authorization) {
-        const user = ServiceAuth.getDecodedToken(req.headers.authorization);
+    if (cart && (!cart.customer || !cart.customer.id)) {
+        const user = req.info;
         if (user) {
             const customer = {
-                id    : user.userId,
-                email : user.info.email,
-                phone : user.info.phone
+                id    : user._id,
+                email : user.email,
+                phone : user.phone
             };
-            const paidTax  = await checkCountryTax(cart, user.info);
+            const paidTax  = await checkCountryTax(cart, user);
             await Cart.findOneAndUpdate({_id: cart._id}, {customer, paidTax}, {new: true});
             cart.paidTax  = paidTax;
             cart.customer = customer;
@@ -518,47 +523,57 @@ const linkCustomerToCart = async (cart, req) => {
     return cart;
 };
 
-const updateDelivery = async (datas) => {
-    let {shipment}                       = datas;
-    const {lang, cartId, isoCountryCode} = datas;
-    const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
-    if (!shipment.countries || !shipment.preparation) {
-        const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
-        shipment        = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
-    }
-    const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
-    const delaysT       = country.translation;
-    const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
-    const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
-    const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
-    const delivery      = {
-        method : shipment._id,
-        value  : {
-            ati : arrayPrices[shipment.code] ? arrayPrices[shipment.code] : 0,
-            et  : arrayPrices[shipment.code] ? (arrayPrices[shipment.code] / (vat + 1)) : 0,
-            vat : shipment.vat_rate ? shipment.vat_rate : 20
-        },
-        code         : shipment.code,
-        name         : shipment.name,
-        url          : shipment.url,
-        date         : shipment.dateDelivery,
-        dateDelivery : {
-            delayDelivery    : delays.delay,
-            unitDelivery     : delays.unit,
-            delayPreparation : (shipment.preparation && shipment.preparation.delay) ? shipment.preparation.delay : 0,
-            unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
+const updateDelivery = async (datas, removeDeliveryDatas = false) => {
+    let cart = {};
+    if (removeDeliveryDatas) {
+        cart = await Cart.findOneAndUpdate({_id: datas.cartId}, {$unset: {delivery: {}, orderReceipt: ''}}, {new: true});
+    } else {
+        let {shipment}                       = datas;
+        const {lang, cartId, isoCountryCode} = datas;
+        const oCart                          = await Cart.findOneAndUpdate({_id: cartId}, {$set: {delivery: {}}}, {new: true});
+        if (!shipment.countries || !shipment.preparation) {
+            const oShipment = await ServiceShipment.getShipment({filter: {_id: shipment}, structure: '*'});
+            shipment        = {...shipment, ...oShipment.translation[lang], preparation: oShipment.preparation, countries: oShipment.countries};
         }
-    };
-    const cart          = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
-    if (!cart) {
-        throw NSErrors.CartInactive;
-    }
-    if (cart.orderReceipt.method === 'delivery') {
-        cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
-        cart.addresses.billing  = cart.customer.id.addresses[cart.customer.id.billing_address];
-        await cart.save();
+        const country       = shipment.countries.find((country) => (country.country).toLowerCase() === (isoCountryCode).toLowerCase());
+        const delaysT       = country.translation;
+        const delays        = delaysT && delaysT[lang] ? delaysT[lang] : {delay: 1, unit: 'day'};
+        const {arrayPrices} = await ServiceShipment.getShipmentsFilter(oCart);
+        const vat           = shipment.vat_rate ? shipment.vat_rate / 100 : 0.2;
+        const delivery      = {
+            method : shipment._id,
+            value  : {
+                ati : arrayPrices[shipment.code] ? arrayPrices[shipment.code] : 0,
+                et  : arrayPrices[shipment.code] ? (arrayPrices[shipment.code] / (vat + 1)) : 0,
+                vat : shipment.vat_rate ? shipment.vat_rate : 20
+            },
+            code         : shipment.code,
+            name         : shipment.name,
+            url          : shipment.url,
+            date         : shipment.dateDelivery,
+            dateDelivery : {
+                delayDelivery    : delays.delay,
+                unitDelivery     : delays.unit,
+                delayPreparation : (shipment.preparation && shipment.preparation.delay) ? shipment.preparation.delay : 0,
+                unitPreparation  : (shipment.preparation && shipment.preparation.unit) ? shipment.preparation.unit : 0
+            }
+        };
+        cart                = await Cart.findOneAndUpdate({_id: cartId, status: 'IN_PROGRESS'}, {delivery, 'orderReceipt.method': shipment.type === 'DELIVERY' ? 'delivery' : 'withdrawal'}, {new: true}).populate('customer.id').exec();
+        if (!cart) {
+            throw NSErrors.CartInactive;
+        }
+        if (cart.orderReceipt.method === 'delivery') {
+            cart.addresses.delivery = cart.customer.id.addresses[cart.customer.id.delivery_address];
+            cart.addresses.billing  = cart.customer.id.addresses[cart.customer.id.billing_address];
+            await cart.save();
+        }
     }
     return {code: 'CART_DELIVERY_UPDATED', data: {cart}};
+};
+
+const removeDelivery = async (body) => {
+    const cart = await Cart.updateOne({_id: body.cart_id}, {$unset: {delivery: '', 'orderReceipt.method': ''}});
+    return cart;
 };
 
 const removeDiscount = async (id) => {
@@ -577,47 +592,46 @@ const validateForCheckout = (cart) => {
     return {code: 'VALID'};
 };
 
-/**
- * @Deprecated
- */
-const _expireCarts = async () => {
-    require('../utils/utils').tmp_use_route('cart_service', '_expireCarts');
-    // Actually expire each cart
-    const expiredCarts = await Cart.find({status: 'EXPIRING'});
-    if (!expiredCarts) {
-        throw NSErrors.NotFound;
-    }
-    expiredCarts.forEach(function (currCart) {
-        let nbItem = 0;
-        currCart.items.forEach(async (item) => {
-            let where  = {id: item.id, 'carted.id_cart': currCart._id, 'carted.qty': item.qty};
-            let action = {$pull: {carted: {id_cart: currCart._id}}};
-            if (item.variation_id) {
-                where['carted.id_variation']     = item.variation_id;
-                action.$pull.carted.id_variation = item.variation_id;
-            }
-
-            await Products.findOneAndUpdate(where, action);
-            where = {id: item.product_id, qty: {$ne: null}};
-            if (item.variation_id) {
-                where['variation_event._id'] = item.variation_id;
-                action                       = {$inc: {'variation_event.$.qty': item.qty}};
+const mailPendingCarts = async () => {
+    try {
+        const config = await Configuration.findOne();
+        const now    = moment(new Date());
+        if (config.stockOrder.requestMailPendingCarts) {
+            const job   = await ServiceJob.getModuleJobByName('Mail to pending carts');
+            const limit = moment(new Date());
+            limit.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+            let filter = {};
+            if (job.attrs.lastRunAt) {
+                const lastRunAt = moment(job.attrs.lastRunAt);
+                lastRunAt.subtract(config.stockOrder.requestMailPendingCarts, 'hours');
+                // $gte <-> min <-> lastRun - requestMailPendingCarts
+                // $lte <-> max <-> timeNow - requestMailPendingCarts
+                filter = {updatedAt: {$gte: lastRunAt.toISOString(), $lte: limit.toISOString()}, customer: {$exists: true, $ne: null}};
             } else {
-                action = {$inc: {qty: item.qty}};
+                // the 'lastRunAt' value is not set, so we take all carts (the first time)
+                filter = {updatedAt: {$lte: limit.toISOString()}, customer: {$exists: true, $ne: null}};
             }
-
-            await Products.findOneAndUpdate(where, action);
-            nbItem++;
-            if (nbItem === currCart.items.length) {
-                currCart.status = 'expired';
-                currCart.save();
+            const carts = await Cart.find(filter);
+            let nbMails = 0;
+            for (const cart of carts) {
+                try {
+                    await servicesMail.sendMailPendingCarts(cart);
+                    nbMails++;
+                } catch (error) {
+                    console.error(error);
+                    throw error;
+                }
             }
-        });
-    });
+            return `Success, ${nbMails} mail(s) sent : ${now.toString()}`;
+        }
+        return `Success : ${now.toString()}`;
+    } catch (error) {
+        console.error('mailPendingCarts', error);
+        throw error;
+    }
 };
 
 module.exports = {
-    _expireCarts,
     getCarts,
     getCartforClient,
     getCartById,
@@ -632,5 +646,7 @@ module.exports = {
     addItem,
     updateDelivery,
     removeDiscount,
-    validateForCheckout
+    validateForCheckout,
+    removeDelivery,
+    mailPendingCarts
 };

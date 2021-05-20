@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose                                                 = require('mongoose');
 const {Attributes, Categories, SetAttributes, Products, Users} = require('../orm/models');
 const QueryBuilder                                             = require('../utils/QueryBuilder');
@@ -54,51 +62,54 @@ const setAttribute = async (body) => {
     delete body.multiModifAdd;
     delete body.update;
 
-    const attribute = await Attributes.findOne({code: body.code});
-    if (attribute) {
-        if (updateF) {
-        // Si le usedInFilters est changé et passe de true a false
-            if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
-            // Alors on supprime les categories.filtres dont l'_id est l'_id de l'attribut modifié
-                await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
-            }
-            const code = body.code;
-            delete body.code;
-            const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
-            await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
-            await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
-            for (let i = 0; i < body.set_attributes.length; i++) {
-                const {code, param, position, _id: id, type, visible, translation} = att;
-                const product_attributes                                           = {id, code, param, position, translation, type, visible};
-                if (attribute.default_value !== undefined) {
-                    product_attributes.value    = att.default_value;
-                    product_attributes.position = position;
+    if (body._id) {
+        // update
+        const attribute = await Attributes.findOne({code: body.code});
+        if (attribute) {
+            if (updateF) {
+            // If the usedInFilters is changed from true to false
+                if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {
+                // Then we delete the categories.filters whose _id is the _id of the modified attribute
+                    await Categories.updateMany({'filters.attributes._id': attribute._id}, {$pull: {'filters.attributes': {_id: attribute._id}}}, {new: true, runValidators: true});
                 }
-                await Products.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
-                await Users.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
-                if (body._type === 'products') {
-                    // update du nom et des valeurs pour les produits ayant deja cet attribut
-                    const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
-                    updateObjectAttribute(prdList, product_attributes, 'attributes');
-                    const cats = await Categories.find({'filters.attributes.id_attribut': id});
-                    updateObjectAttribute(cats, product_attributes, 'filters.attributes');
-                } else {
-                    // update du nom et des valeurs pour les users ayant deja cet attribut
-                    const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
-                    updateObjectAttribute(usrList, product_attributes, 'attributes');
+                const code = body.code;
+                delete body.code;
+                const att = await Attributes.findOneAndUpdate({code}, body, {new: true});
+                await SetAttributes.updateMany({_id: {$in: setToRemove}}, {$pull: {attributes: attribute._id}});
+                await SetAttributes.updateMany({_id: {$in: setToAdd}}, {$addToSet: {attributes: attribute._id}});
+                for (let i = 0; i < body.set_attributes.length; i++) {
+                    const {code, param, position, _id: id, type, visible, translation} = att;
+                    const product_attributes                                           = {id, code, param, position, translation, type, visible};
+                    if (attribute.default_value !== undefined) {
+                        product_attributes.value    = att.default_value;
+                        product_attributes.position = position;
+                    }
+                    await Products.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
+                    await Users.updateMany({set_attributes: body.set_attributes[i], 'attributes.id': {$ne: id}}, {$addToSet: {attributes: product_attributes}});
+                    if (body._type === 'products') {
+                        // update of the name and values for the products already having this attribute
+                        const prdList = await Products.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
+                        updateObjectAttribute(prdList, product_attributes, 'attributes');
+                        const cats = await Categories.find({'filters.attributes.id_attribut': id});
+                        updateObjectAttribute(cats, product_attributes, 'filters.attributes');
+                    } else {
+                        // update name and values for users who already have this attribute
+                        const usrList = await Users.find({set_attributes: body.set_attributes[i], 'attributes.id': id});
+                        updateObjectAttribute(usrList, product_attributes, 'attributes');
+                    }
                 }
+                await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
+                await Users.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
+                if (body.type === 'multiselect') {
+                    await editValues(att);
+                }
+                return att;
             }
-            await Products.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
-            await Users.updateMany({set_attributes: {$nin: body.set_attributes}}, {$pull: {attributes: {code}}});
-            if (body.type === 'multiselect') {
-                await editValues(att);
-            }
-            return att;
+
+            return attribute;
         }
-
-        return attribute;
     }
-
+    // we create
     const att = await Attributes.create(body);
 
     await SetAttributes.updateMany({_id: {$in: body.set_attributes}}, {$push: {attributes: att._id}});
@@ -164,11 +175,11 @@ const getAttribsFromPath = (obj, path) => {
 const editValues = async (attribute) => {
     if (attribute._type === 'products') {
         const products = await Products.find({'attributes.code': attribute.code});
-        // on boucle sur tous les produits
+        // we loop on all the products
         await applyAttribChanges(products, attribute, 'products');
     } else {
         const users = await Users.find({'attributes.code': attribute.code});
-        // on boucle sur tous les users
+        // we loop on all users
         await applyAttribChanges(users, attribute, 'users');
     }
 };
@@ -176,12 +187,12 @@ const editValues = async (attribute) => {
 async function applyAttribChanges(tab, attribute, model) {
     for (let i = 0; i < tab.length; i++) {
         let isEdit = false;
-        // on recupere l'attribut altéré du produit via son code
+        // we retrieve the altered attribute of the product via its code
         const attrIndex = tab[i].attributes.findIndex((attr) => attr.code === attribute.code);
         const langs     = Object.keys(tab[i].attributes[attrIndex].translation);
-        // on boucle sur chacune des langues de l'attribut
+        // we loop on each of the languages of the attribute
         for (let ii = 0; ii < langs.length; ii++) {
-        // on check que les valeurs du produit existe toujours les valeurs
+        // we check that the values of the product still exist the values
             const valueLength = tab[i].attributes[attrIndex].translation[langs[ii]].value ? tab[i].attributes[attrIndex].translation[langs[ii]].value.length : 0;
             for (let iii = 0; iii < valueLength; iii++) {
                 if (!attribute.translation[langs[ii]].values.includes(tab[i].attributes[attrIndex].translation[langs[ii]].value[iii])) {
@@ -191,7 +202,7 @@ async function applyAttribChanges(tab, attribute, model) {
             }
         }
         if (isEdit) {
-            await mongoose.model(model).updateOne({_id: tab[i]._id}, tab[i]);
+            await mongoose.model(model).updateOne({_id: tab[i]._id}, {$set: tab[i]});
         }
     }
 }

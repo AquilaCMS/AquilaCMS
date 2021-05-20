@@ -12,6 +12,7 @@
         "save": "Enregistrer"
     },
     "detail": {
+        "title": "Categorie",
         "t1": "3 caractères minimum",
         "ph1": "Nom",
         "action": "Action",
@@ -64,9 +65,9 @@
         "addSelect": "Ajouter la sélection ",
         "addAll": "Tout ajouter ",
         "supprSelect": " Supprimer la sélection",
-        "supprAll": " Tout supprimer"
+        "supprAll": " Tout supprimer",
+        "inORout": "Dans la catégorie"
     },
-
     "list": {
         "t1": "Catégories",
         "noCatCreated": "Aucune catégorie n'a encore été créée.",

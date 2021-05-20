@@ -1,0 +1,329 @@
+{
+    "/api/v2/carts": {
+        "post": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all carts",
+                                "description": "Get all carts",
+                                "value": {"PostBody":{"structure":"*","limit":9999}}
+                            },
+                            "example2": {
+                                "summary": "Get all carts filtered",
+                                "description": "Get all carts sorted, and populated",
+                                "value": {"PostBody":{"filter":{},"structure":{"updatedAt":1},"limit":9999,"populate":["customer.id"],"sort":{"updatedAt":1}}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/user/{idclient}": {
+        "get": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {}
+                },
+                "404": {
+                    "description": "",
+                    "content": {}
+                }
+            },
+            "parameters": [
+                {
+                    "name": "idclient",
+                    "in": "path",
+                    "description": "Client id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "test description",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "",
+                                "description": "",
+                                "value": {
+                                    "PostBody": {
+                                        "structure": {
+                                            "_id": 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {}
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID of cart to return",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "test description",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "",
+                                "description": "",
+                                "value": {
+                                    "PostBody": {
+                                        "structure": {
+                                            "_id": 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/to/order": {
+        "post": {
+            "deprecated": false,
+            "security": [{"user_authorization": []}],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/{cartId}/item/{itemId}": {
+        "delete": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "cartId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "itemId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ]
+        }
+    },
+    "/v2/cart/discount/{cartId}": {
+        "delete": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "cartId",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Cart"
+            ]
+        }
+    },
+    "/api/v2/cart/item": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "description": "",
+                            "properties": {
+                                "cartId" : {"type": "string"},
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id" : {"type": "string"},
+                                        "quantity" : {"type": "number"}
+                                    }
+                                }
+                            }
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Add product to new cart",
+                                "description": "Add product to new cart",
+                                "value": {"cartId":null,"item":{"id":"5f2aae034168fe0b983ca913","quantity":1}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/updateQty": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/comment": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/addresses": {
+        "put": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Cart"
+            ],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/cart/delivery": {
+        "put": {
+            "responses": {},
+            "tags": [
+                "Cart"
+            ],
+            "security": [{"user_authorization": []}],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,12 +1,18 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const aquilaEvents                = require('../utils/aquilaEvents');
 const ServiceProduct              = require('../services/products');
 const ProductPreview              = require('../services/preview');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
-const {getDecodedToken}           = require('../services/auth');
 
 module.exports = function (app) {
-    app.post('/v2/products/adminList', authentication, adminAuth, getProductsAdminList);
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
@@ -30,7 +36,11 @@ async function getCoherence(req, res, next) {
 }
 
 /**
- * Fonction retournant un listing de produits
+ * POST /api/v2/products
+ * @summary Listing of products
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
  */
 async function getProductsListing(req, res, next) {
     try {
@@ -50,7 +60,7 @@ async function getProductsListing(req, res, next) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
             return res.json(resultat, req.body.keepOriginalAttribs);
         }
-        // Si c'est une visualisation de produit, on modifie ces stats de vue
+        // If it is a product visualization, we modify these view stats
         if (req.body.countviews && result.datas.length > 0) {
             require('../services/statistics').setProductViews(result.datas[0]._id);
         }
@@ -62,7 +72,8 @@ async function getProductsListing(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /api/v2/product
+ * @summary Get product
  */
 async function getProduct(req, res, next) {
     try {
@@ -79,7 +90,8 @@ async function getProduct(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /v2/product/promos
+ * @summary Return product
  */
 async function getPromosByProduct(req, res, next) {
     try {
@@ -91,11 +103,11 @@ async function getPromosByProduct(req, res, next) {
 }
 
 /**
- * Fonction de duplicaiton de produit
+ * Product duplicating function
  */
 async function duplicateProduct(req, res, next) {
     try {
-        const result = await ServiceProduct.duplicateProduct(req.body.id, req.body.code);
+        const result = await ServiceProduct.duplicateProduct(req.body._id, req.body.code);
         res.json(result);
     } catch (error) {
         return next(error);
@@ -103,7 +115,8 @@ async function duplicateProduct(req, res, next) {
 }
 
 /**
- * Fonction retournant un produit
+ * POST /api/v2/product/{id}
+ * @summary Get one product by id
  */
 async function getProductById(req, res, next) {
     try {
@@ -115,21 +128,15 @@ async function getProductById(req, res, next) {
 }
 
 /**
- * Fonction retournant une liste de produit appartenant a la categorie dont l'id est passé en parametre
+ * POST /api/v2/products/category/{id}
+ * @summary Listing of product by category
  */
 async function getProductsByCategoryId(req, res, next) {
     try {
         let isAdmin = false;
-        let user;
-        if (req.headers.authorization) {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo && userInfo.info && userInfo.info.isAdmin === true) {
-                isAdmin = true;
-            }
-            if (userInfo) user = userInfo.info;
-        }
+        if (req.info) isAdmin = req.info.isAdmin;
 
-        const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.body.PostBody, req.body.lang, isAdmin, user, {req, res});
+        const result = await ServiceProduct._getProductsByCategoryId(req.params.id, req.body.PostBody, req.body.lang, isAdmin, req.info, {req, res});
         if (req.body.dynamicFilters) {
             const resultat = await ServiceProduct.calculateFilters(req, result);
             return res.json(resultat);
@@ -141,13 +148,14 @@ async function getProductsByCategoryId(req, res, next) {
 }
 
 /**
- * Fonction pour ajouter ou mettre à jour un produit
+ * PUT /api/v2/product
+ * @summary Set product
  */
 async function setProduct(req, res, next) {
-    // On ajoute le produit
+    // We add the product
     try {
         if (req.body._id) {
-            // On update le produit
+            // We update the product
             const result = await ServiceProduct.setProduct(req);
             return res.json(result);
         }
@@ -160,7 +168,8 @@ async function setProduct(req, res, next) {
 }
 
 /**
- * Fonction supprimant un produit
+ * DELETE /api/v2/product/{id}
+ * @summary Delete product
  */
 async function deleteProduct(req, res, next) {
     try {
@@ -172,7 +181,7 @@ async function deleteProduct(req, res, next) {
 }
 
 /**
- * @api {get} /v2/product/download Download virtual product
+ * @api {get} /api/v2/product/download Download virtual product
  * @apiGroup Products
  * @apiVersion 2.0.0
  * @apiDescription Download a virtual-product
@@ -195,7 +204,7 @@ async function downloadProduct(req, res, next) {
 }
 
 /**
- * Fonction permettant de calculer les informations de stock pour un produit
+ * Function for calculating stock information for a product
  */
 async function calculStock(req, res, next) {
     try {
@@ -203,31 +212,6 @@ async function calculStock(req, res, next) {
         return res.json(result);
     } catch (error) {
         return next(error);
-    }
-}
-
-/**
- * @api {post} /v2/products/searchObj Get products
- * @apiGroup Products
- * @apiVersion 2.0.0
- * @apiDescription Get all products
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-TODO
-{"page":1,"limit":12,"filter":{},"sortObj":{"code":1}}
- * @apiUse ProductSchemaDefault
- * @apiUse ProductPrice
- * @apiUse ProductTranslation
- * @apiUse ProductReviews
- * @apiUse ProductStats
- * @apiUse ErrorPostBody
- */
-async function getProductsAdminList(req, res, next) {
-    try {
-        const result = await ServiceProduct.getProductsAdminList(req.body, req.params);
-        return res.json(result);
-    } catch (error) {
-        next(error);
     }
 }
 

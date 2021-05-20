@@ -4,10 +4,13 @@
         "airbnb-base"
     ],
     "plugins": [
-        "align-assignments"
+        "align-assignments",
+        "chai-friendly"
     ],
     "env": {
-        "es6": true
+        "es6": true,
+        "node": true,
+        "mocha": true
     },
     "settings": {
         "import/resolver": {
@@ -15,6 +18,15 @@
         }
     },
     "parser": "@babel/eslint-parser",
+    "overrides": [
+        {
+            "files": ["*.test.js", "*.spec.js"],
+            "rules": {
+                "no-unused-expressions": "off",
+                "chai-friendly/no-unused-expressions": "error"
+            }
+        }
+    ],
     "rules": {
         "align-assignments/align-assignments": ["error"],
         "arrow-body-style": "off",
@@ -86,7 +98,7 @@
         "eol-last": "off",
         "consistent-return": "off",
         "object-curly-newline": "off",
-        "quotes": [2, "single"],
+        "quotes": [2, "single", { "avoidEscape": true }],
         "prefer-promise-reject-errors": "off",
         "prefer-arrow-callback": "off",
         "newline-per-chained-call": "off",

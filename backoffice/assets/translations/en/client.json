@@ -20,6 +20,7 @@
         "mdp": "Password",
         "connectAs": "Log as this customer",
         "resetMdp": "Reset password",
+        "active": "Active",
         "activeAccount": "Resend account confirm",
         "company": "Company",
         "newsletter": "Newsletter",
@@ -56,7 +57,11 @@
             "pCountry": "Country",
             "pPhone_mobile": "Mobile phone",
             "billing_address": "Billing address",
-            "shipping_address": "Shipping address"
+            "shipping_address": "Shipping address",
+            "civility":{
+                "0":"Mr.",
+                "1":"Mrs"
+            }
         },
         "downloadHistory": "Download",
         "productName": "Product name",
@@ -70,7 +75,9 @@
         "email": "Email",
         "nom": "Last name",
         "prenom": "First name",
+        "prenom2": "First name",
         "company": "Company",
+        "companyName": "Company name",
         "creationDate": "Creation date"
     }
 }

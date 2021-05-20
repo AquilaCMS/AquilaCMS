@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                    = require('moment-business-days');
 const axios                     = require('axios');
 const {Products, Orders, Users} = require('../orm/models');
@@ -5,7 +13,7 @@ const serviceStats              = require('./stats');
 const utils                     = require('../utils/utils');
 
 /**
- * Ajoute une vue au produit (synchrone)
+ * Adds a view to the product (synchronous)
  */
 exports.setProductViews = function (product_id) {
     try {
@@ -17,7 +25,7 @@ exports.setProductViews = function (product_id) {
 };
 
 /**
- * Construit et envoie les statistiques des précédents jours
+ * Builds and sends statistics from previous days
  */
 exports.sendMetrics = async function (licence, date) {
     const stats = await exports.getGlobaleStats(date);
@@ -29,17 +37,17 @@ exports.sendMetrics = async function (licence, date) {
 };
 
 /**
- * Récupère la date du premier client ou de la première commande
+ * Get the date of the first customer or the first order
  */
 exports.getFirstDayMetrics = async function () {
     try {
-        const User  = await Users.find().sort({creationDate: 1}).limit(1);
-        const Order = await Orders.find().sort({creationDate: 1}).limit(1);
+        const User  = await Users.find().sort({createdAt: 1}).limit(1);
+        const Order = await Orders.find().sort({createdAt: 1}).limit(1);
         if (User.length === 1 || Order.length === 1) {
-            if (User[0].creationDate > Order[0].creationDate) {
-                return Order[0].creationDate;
+            if (User[0].createdAt > Order[0].createdAt) {
+                return Order[0].createdAt;
             }
-            return User[0].creationDate;
+            return User[0].createdAt;
         }
         return false;
     } catch (error) {
@@ -53,7 +61,7 @@ exports.getFirstDayMetrics = async function () {
 exports.generateStatistics = function (data) {
     try {
         const model     = data.currentRoute;
-        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['Aucune donnee'];
+        const csvFields = data.params && Object.keys(data.params).length > 0 ? Object.keys(data.params[0]) : ['No datas'];
         return utils.json2csv(data.params, csvFields, './exports', `export_${model}_${moment().format('YYYYMMDD')}.csv`);
     } catch (error) {
         console.error(error);
@@ -61,7 +69,7 @@ exports.generateStatistics = function (data) {
 };
 
 /**
- * Get Globale Stats (accueil admin)
+ * Get Globale Stats (home admin)
  */
 exports.getGlobaleStats = async function (date) {
     let result;
@@ -102,7 +110,7 @@ exports.getGlobaleStats = async function (date) {
 };
 
 /**
- * Get Globale Stat (accueil admin)
+ * Get Globale Stat (home admin)
  */
 async function getGlobalStat(periode, dateStart, dateEnd) {
     let datas = {};
@@ -126,9 +134,9 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
     const sPeriodeStart = periodeStart.toISOString();
     const sPeriodeEnd   = periodeEnd.toISOString();
 
-    // --- Commande ---
+    // --- orders ---
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : sPeriodeStart,
             $lte : sPeriodeEnd
         },
@@ -139,7 +147,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
                 'PAYMENT_CONFIRMATION_PENDING',
                 'PAID',
                 'PROCESSING',
-                'PROCESSED', // Préparé. A ne pas à confondre avec Finished (Traité)
+                'PROCESSED', // Prepared. Not to be confused with Finished
                 'BILLED',
                 'DELIVERY_PROGRESS',
                 'DELIVERY_PARTIAL_PROGRESS',
@@ -150,11 +158,11 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         }
     });
 
-    let orderTotalAmount        = 0; // prix des toutes les commandes
-    let nbOrderPaid             = 0; // nb de commandes payées
-    let nbOrderNotPaid          = 0; // nb de commandes non payées
-    let orderTotalAmountPaid    = 0; // prix total des commandes payées
-    let orderTotalAmountNotPaid = 0; // prix total des commandes non payées
+    let orderTotalAmount        = 0; // prices for all orders
+    let nbOrderPaid             = 0; // number of paid orders
+    let nbOrderNotPaid          = 0; // number of unpaid orders
+    let orderTotalAmountPaid    = 0; // total price of paid orders
+    let orderTotalAmountNotPaid = 0; // total price of unpaid orders
 
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
@@ -167,7 +175,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         }
     }
 
-    // --- Fréquentation ---
+    // --- frequenting ---
     let attendance = 0;
     let newClients;
     if (dateStart && dateEnd) {
@@ -212,7 +220,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
 }
 
 /**
- * Nombre de panier abandonné
+ * Number of canceled cart
  */
 exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd) {
     const granularityQuery = {
@@ -234,7 +242,7 @@ exports.getCanceledCart = async function (granularity, periodeStart, periodeEnd)
 };
 
 /**
- * Chiffre d'affaire globale
+ * Globale sales
  */
 exports.getCag = async function (granularity, periodeStart, periodeEnd) {
     return statsForOrders({granularity,
@@ -250,7 +258,7 @@ exports.getCag = async function (granularity, periodeStart, periodeEnd) {
 };
 
 /**
- * Nombre de commande
+ * Number of orders
  */
 exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
     return statsForOrders({granularity,
@@ -266,17 +274,17 @@ exports.getNbOrder = async function (granularity, periodeStart, periodeEnd) {
 };
 
 /**
- * Chiffre d'affaire par produit
+ * sales by products
  */
 exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
     const datas = [];
 
     const allOrders = await Orders.find({
-        creationDate : {
+        createdAt : {
             $gte : periodeStart.toDate(),
             $lte : periodeEnd.toDate()
         }
-    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id']).lean();
+    }).select({_id: 1, priceTotal: 1, items: 1, status: 1}).populate(['items.id'])/* .lean() */;
 
     const tabIDProduct = [];
     for ( let ii = 0; ii < allOrders.length; ii++ ) {
@@ -284,7 +292,7 @@ exports.getCapp = async function (granularity, periodeStart, periodeEnd) {
             const currentItem = allOrders[ii].items[i];
             const currentId   = currentItem.code;
 
-            // On ne peut pas utiliser les images tel quel, on va chercher l'image actuelle du produit (s'il existe encore)
+            // We can't use the images as they are, we will look for the actual image of the product (if it still exists)
             let link = '';
             if (currentItem.id && currentItem.id._id) {
                 const realProduct = await require('./products').getProductById(currentItem.id._id);
@@ -339,7 +347,7 @@ exports.getTopCustomer = async function (granularity, periodeStart, periodeEnd) 
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }
@@ -373,18 +381,18 @@ async function statsForOrders({granularity, periodeStart, periodeEnd, statusMatc
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allOrders = await Orders.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             },
@@ -408,18 +416,18 @@ async function statsForClients({granularity, periodeStart, periodeEnd, sumGroup}
     let datas = [];
 
     const granularityQuery = {
-        year : {$year: '$creationDate'}
+        year : {$year: '$createdAt'}
     };
     if (granularity === 'month' || granularity === 'day') {
-        granularityQuery.month = {$month: '$creationDate'};
+        granularityQuery.month = {$month: '$createdAt'};
     }
     if (granularity === 'day') {
-        granularityQuery.day = {$dayOfMonth: '$creationDate'};
+        granularityQuery.day = {$dayOfMonth: '$createdAt'};
     }
 
     const allUsers = await Users.aggregate([
         {$match : {
-            creationDate : {
+            createdAt : {
                 $gte : periodeStart.toDate(),
                 $lte : periodeEnd.toDate()
             }

@@ -1,0 +1,140 @@
+{
+    "/api/v2/config": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/configurationSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "key",
+                    "in": "path",
+                    "description": "key config ex: environment",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Configuration"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}, {"user_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "string"
+                            },
+                            "examples": {
+                                "success": {
+                                    "value": "\"success\""
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Configuration"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/configurationSchema"
+                        }
+                    }
+                },
+                "description": "config",
+                "required": false
+            }
+        }
+    },
+    "/api/restart": {
+        "get": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Configuration"
+            ]
+        }
+    },
+    "/api/robot": {
+        "get": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [],
+            "tags": [
+                "Configuration"
+            ]
+        },
+        "post": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "examples": {
+                                "success": {
+                                    "value": "{\r\n\"message\": \"success\"\r\n}"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Configuration"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "",
+                "required": false
+            }
+        }
+    }
+}

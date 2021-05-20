@@ -5,12 +5,13 @@ SupplierControllers.controller("SupplierListCtrl", [
         $scope.totalItems = 0;
         $scope.nbItemsPerPage = 15;
         $scope.maxSize = 10;
-
+        $scope.page = 1;
+        $scope.filter = {query: ""};
         //Pagination
-        $scope.onPageChange = function (page, query) {
-            let filter = {}
-            if(query) {
-                filter.name = {$regex: query, $options: 'i'}
+        $scope.onPageChange = function (page) {
+            let filter = {};
+            if($scope.filter.query != "") {
+                filter["name"] = {$regex: $scope.filter.query, $options: 'i'};
             }
             SuppliersV2.list({PostBody: {filter, page, limit: $scope.nbItemsPerPage, structure: '*', limit: 99}}, function (res) {
                 $scope.suppliers = res.datas;
@@ -28,7 +29,7 @@ SupplierControllers.controller("SupplierListCtrl", [
 ]);
 
 SupplierControllers.controller("SupplierNewCtrl", [
-    "$scope", "$location", "SuppliersV2", "toastService", function ($scope, $location, SuppliersV2, toastService) {
+    "$scope", "$location", "SuppliersV2", "toastService","$translate", function ($scope, $location, SuppliersV2, toastService, $translate) {
 
         $scope.supplier = {};
         $scope.form = {};
@@ -36,12 +37,12 @@ SupplierControllers.controller("SupplierNewCtrl", [
         $scope.save = function (data, isQuit) {
             $scope.form.nsSubmitted = true;
             if ($scope.form.supplier.$invalid) {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides.");
+                toastService.toast("danger", $translate.instant("global.enterInvalid"));
                 return;
             }
           
         SuppliersV2.save(data, function (response) {
-            toastService.toast("success", "Fournisseur créé.");
+            toastService.toast("success", $translate.instant("global.supplierCreated"));
             console.log("Supplier Saved!", response);
             if (isQuit) {
                 $location.path("/suppliers/");
@@ -49,9 +50,17 @@ SupplierControllers.controller("SupplierNewCtrl", [
                 $location.path("/suppliers/" + response.code);
 
             }
-            }, function (err) {
-                console.error(err);
-                toastService.toast("danger", "Une erreur interne est survenue.");
+            }, function (error) {
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    console.error(err);
+                    toastService.toast("danger", $translate.instant("global.occurrenceError"));
+                }
             });
         };
 
@@ -59,8 +68,8 @@ SupplierControllers.controller("SupplierNewCtrl", [
 ]);
 
 SupplierControllers.controller("SupplierDetailCtrl", [
-    "$scope", "$http", "$q", "$location", "$routeParams", "SuppliersV2", "toastService", "ProductsV2", "$rootScope",
-    function ($scope, $http, $q, $location, $routeParams, SuppliersV2, toastService, ProductsV2, $rootScope) {
+    "$scope", "$http", "$q", "$location", "$routeParams", "SuppliersV2", "toastService", "ProductsV2", "$rootScope", "$translate",
+    function ($scope, $http, $q, $location, $routeParams, SuppliersV2, toastService, ProductsV2, $rootScope, $translate) {
         $scope.isEditMode = false;
         $scope.form = {};
 
@@ -103,7 +112,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
 
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides.");
+                toastService.toast("danger", $translate.instant("global.enterInvalid"));
                 return;
             }
 
@@ -117,7 +126,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
                 }
                 else
                 {
-                    toastService.toast("success", "Informations sauvegardées !");
+                    toastService.toast("success", $translate.instant("global.infoSaved"));
                     if(!$scope.isEditMode)
                     {
                         $location.path("/suppliers/" + response.supplier.code);
@@ -129,7 +138,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
                 }
 
             }, function (err) {
-                toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                toastService.toast("danger", $translate.instant("global.savedError"));
                 $scope.disableSave = false;
             });
         };
@@ -140,7 +149,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
                 SuppliersV2.delete({id: _id}, function () {
                     $location.path("/suppliers");
                 }, function () {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("global.deleteError"));
                 });
             }
         };

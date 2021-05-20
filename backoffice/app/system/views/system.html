@@ -1,0 +1,162 @@
+<ns-box data-title="system.environment.t1" title-icon="fa fa-server fa-lg">
+    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" role="form">
+        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#security" target="_self" translate>system.environment.security.title</a></li>
+                    <li><a data-toggle="tab" href="#nextjs" target="_self" translate>system.environment.nextjs.title</a></li>
+                    <li><a data-toggle="tab" href="#other" target="_self" translate>system.environment.other.title</a></li>
+                    <li><a data-toggle="tab" href="#log" target="_self" translate>system.environment.log.title</a></li>
+                </ul>
+            </div>
+            <div class="tab-content ng-scope" style="width:50%;margin-left:10%">
+                <div id="security" class="tab-pane fade in active">
+                    <div>
+                        <h3 translate>system.environment.security.contentPolicy.title</h3>
+                        <div class="form-group">
+                            <ns-switch ng-model="system.environment.contentSecurityPolicy.active" yes-value="Oui" no-value="Non" name="contentPolicyActive"></ns-switch>
+                        </div>
+                        <div class="form-group">
+                            <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
+                                <thead>
+                                    <tr>
+                                        <th translate>system.environment.security.contentPolicy.value</th>
+                                        <th translate>system.environment.security.contentPolicy.delAndAdd</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="value in contentPolicy.content">
+                                        <td>{{value}}</td>
+                                        <td><span ng-click="removePolicy(value)"><i class="fa fa-minus-circle fa-2x" aria-hidden="true"></i></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input form="otherForm" type="text" class="form-control" ng-keypress="($event.charCode==13) ? addPolicy(contentPolicy.newPolicy) : return" ng-model="contentPolicy.newPolicy">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <span ng-click="addPolicy(contentPolicy.newPolicy)"><i class="fa fa-plus-circle fa-2x" aria-hidden="true"></i></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 translate>system.environment.security.ssl.ssl</h3>
+                        <div class="form-group">
+                            <ns-switch ng-model="system.environment.ssl.active" yes-value="true" no-value="false" name="active"></ns-switch>
+                        </div>
+                        <div ng-show="system.environment.ssl.active">
+                            <div class="form-group">
+                                <label for="cert">
+                                    <span class="btn btn-default" translate>system.environment.security.ssl.cert</span>
+                                    <input type="file" name="cert" id="cert" style="display:none" ng-model="system.environment.security.ssl.cert" input-file-ssl>
+                                </label>
+                                <span>{{ssl.cert}}</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="key">
+                                    <span class="btn btn-default" translate>system.environment.security.ssl.key</span>
+                                    <input type="file" name="key" id="key" style="display:none" ng-model="system.environment.ssl.key" input-file-ssl>
+                                </label>
+                                <span>{{ssl.key}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="nextjs" class="tab-pane fade">
+                    <style>
+                        .loader {
+                            border: 10px solid #f3f3f3; /* Light grey */
+                            border-top: 10px solid #576fa1;
+                            border-radius: 50%;
+                            width: 80px;
+                            height: 80px;
+                            animation: spin 2s linear infinite;
+                            margin: auto;
+                        }
+
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                    <p><span translate>system.environment.nextjs.actualVersion</span>: {{next.actual}}</p>
+                    <div class="input-group">
+                        <select class="form-control" id="nextVersion" ng-options="version for version in next.versions track by version" ng-model="nextVersion" ng-hide="nextVLoader">
+                        </select>
+                        <div ng-show="nextVLoader">
+                            <div class="fa fa-spinner fa-spin" style="font-size: 30px;"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" type="button" ng-click="newNextVersion(nextVersion)" ng-hide="nextVLoader" translate>system.environment.nextjs.changeNextVersion</button>
+                </div>
+                <div id="other" class="tab-pane fade">
+                    <h3 translate>system.environment.other.database</h3>
+                    <br />
+                    <div class="form-group">
+                        <label translate>system.environment.other.connectionString</label>
+                        <input type="text" class="form-control" ng-model="system.environment.databaseConnection" class="btn btn-default">
+                    </div>
+                    <div class="form-group">
+                        <a download class="btn btn-success" ng-click="dumpDatabase()" ng-disabled="disabledButton" translate>
+                            system.environment.other.dlDBAnonymized
+                        </a>
+                    </div>
+                    <h3 translate>system.environment.other.dlAllDocumentTitle</h3>
+                    <br />
+                    <div class="form-group">
+                        <a download class="btn btn-success" ng-click="downloadDocuments()" ng-disabled="disabledButton"
+                            translate>
+                            system.environment.other.dlAllDocument
+                        </a>
+                        <div translate>system.environment.other.dlAllDocumentInfo</div>
+                    </div>
+                    <div class="form-group">
+                        <label translate>system.environment.other.uploadAllDocument</label>
+                        <ns-upload-files accepttype=".zip" multiple="false" type="document" before-function="beforeDocument()" after-function="uploadedDocument()"></ns-upload-files>
+                        <div translate>system.environment.other.uploadAllDocumentInfo</div>
+                    </div>
+                </div>
+                <div id="log" class="tab-pane fade">
+                    <h3 translate>system.environment.log.titleMenu</h3>
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-success" ng-click="refreshLog()"><p translate>system.environment.log.refreshLog</p></button>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <div class="form-group">
+                        <label translate>system.environment.log.logFileTitle</label><br/>
+                        <input type="text" class="form-control" ng-model="system.environment.logPath" value="{{system.environment.logPath}}">
+                    </div>
+                    <div class="form-group">
+                        <label translate>system.environment.log.logTitle</label>
+                        <textarea rows="8" class="form-control" ng-model="log.log" readonly></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label translate>system.environment.log.errorFileTitle</label>
+                        <input type="text" class="form-control" ng-model="system.environment.errorPath" value="{{system.environment.errorPath}}">
+                    </div>
+                    <div class="form-group">
+                        <label translate>system.environment.log.errorTitle</label><br/>
+                        <textarea rows="8" class="form-control" ng-change="zaer" ng-model="log.error" readonly></textarea>
+                    </div>
+                </div>
+                <!--other div here-->
+            </div>
+        </ns-buttons>
+    </form>
+    <div ng-show="showLoading" style="text-align: center;">
+        <h3 translate>system.environment.redemarrage</h3>
+        <h4 translate>system.environment.redirect</h4>
+        <h4>
+            <i>
+                <a href="{{urlRedirect}}">{{urlRedirect}}</a>
+            </i>
+        </h4>
+        <div class="loader"></div>
+    </div>
+    <div ng-show="showThemeLoading" id="overlayModule">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+    </div>
+</ns-box>

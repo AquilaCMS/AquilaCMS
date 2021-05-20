@@ -11,7 +11,7 @@ function getPage() {
 }
 
 ContactControllers.controller("ContactListCtrl", [
-    "$scope", "$location", "$rootScope", "Contact", function ($scope, $location, $rootScope, Contact) {
+    "$scope", "$location", "$rootScope", "Contact", "ExportCollectionCSV", function ($scope, $location, $rootScope, Contact, ExportCollectionCSV) {
         $scope.contacts = [];
         $scope.cols = [];
         $scope.nbItemsPerPage = 15;
@@ -71,7 +71,7 @@ ContactControllers.controller("ContactListCtrl", [
                 window.scrollTo(0, 0);
                 for (let i = 0; i < $scope.contacts.length; i++) {
                     const contact = $scope.contacts[i];
-                    contact.data.date = moment(contact.creationDate).format('L');
+                    contact.data.date = moment(contact.createdAt).format('L');
                     for (let j = 0; j < Object.keys(contact.data).length; j++) {
                         if (!$scope.cols.includes(Object.keys(contact.data)[j])) {
                             $scope.cols.push(Object.keys(contact.data)[j]);
@@ -88,12 +88,14 @@ ContactControllers.controller("ContactListCtrl", [
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
             $scope.getContacts();
         }, 100);
+        
+        $scope.export = ExportCollectionCSV;
     }
 ]);
 
 ContactControllers.controller("ContactDetailsCtrl", [
-    "$scope", "$routeParams", "Contact", "$rootScope",
-    function ($scope, $routeParams, Contact, $rootScope) {
+    "$scope", "$routeParams", "Contact", "$rootScope", "$translate", "OneContact", "toastService", "$location", 
+    function ($scope, $routeParams, Contact, $rootScope, $translate, OneContact, toastService, $location) {
         $scope.isEditMode = false;
         $scope.contact = {};
         $scope.keys = [];
@@ -104,8 +106,19 @@ ContactControllers.controller("ContactDetailsCtrl", [
 
         Contact.list({PostBody: {filter: {_id: $routeParams.id}, limit: 1}, lang: $scope.defaultLang}, function (res) {
             $scope.contact = res.datas[0];
-            $scope.contact.data.date = moment($scope.contact.creationDate).format('L');
+            $scope.contact.data.date = moment($scope.contact.createdAt).format('L');
             $scope.keys = Object.keys($scope.contact.data);
         });
+
+        $scope.removeContact = function (_id) {
+            const translation = $translate.instant("contact.detail.confirm");
+            if(confirm(translation)) {
+                OneContact.delete({id: _id}).$promise.then(function () {
+                    $location.path("/contacts");
+                }, function () {
+                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
+                });
+            }
+        }
     }
 ]);

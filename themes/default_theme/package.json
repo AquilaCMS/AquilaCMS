@@ -7,27 +7,36 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "../../node_modules/next/dist/bin/next build ."
+    "build": "../../node_modules/next/dist/bin/next build .",
+    "cypress": "cypress open",
+    "lint:check": "eslint . --ext js,jsx,ts,tsx .",
+    "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix"
   },
   "license": "OSL-3.0",
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@zeit/next-source-maps": "0.0.3",
-    "aqlrc": "0.4.42",
-    "aqt-base-components": "^1.3.57",
+    "aqlrc": "*",
     "html-react-parser": "0.13.0",
     "lightbox-react": "0.3.7",
+    "prop-types": "^15.7.2",
     "react-i18next": "7.13.0",
     "react-js-pagination": "3.0.3",
     "react-responsive-modal": "3.6.0",
     "react-slick": "0.26.1"
   },
   "devDependencies": {
-    "eslint-config-airbnb": "^18.2.0",
+    "@babel/eslint-parser": "^7.13.8",
+    "cypress": "^6.5.0",
     "eslint-config-import": "^0.13.0",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-module-utils": "^2.6.0",
+    "eslint-plugin-cypress": "^2.11.2",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.21.2",
     "eslint-plugin-react-hooks": "^4.1.2"
+  },
+  "peerDependencies": {
+    "eslint": "^7.21.0"
   }
 }

@@ -1,7 +1,14 @@
 /*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+/*
  * Passport / Authentification
  */
-// const LocalStrategy = require('passport-local').Strategy;
 const passportJWT  = require('passport-jwt');
 const NSErrors     = require('../utils/errors/NSErrors');
 const aquilaEvents = require('../utils/aquilaEvents');
@@ -24,10 +31,11 @@ const init = async (pp) => {
     }, async (payload, done) => {
         try {
             const {Users} = require('../orm/models');
-            const user    = await Users.findById(payload.userId, '-password');
+            let user      = await Users.findById(payload.userId, '-password');
             if (!user) {
                 throw NSErrors.BadLogin;
             }
+            user = user.toObject();
             return done(null, {
                 type   : 'USER',
                 info   : user,
@@ -82,9 +90,10 @@ const init = async (pp) => {
  * Authenticate
  */
 const authenticate = (req, res) => new Promise((resolve, reject) => {
+    const _res = res;
     passport.authenticate('jwt', {session: false}, (err, user) => {
         if (err) reject(err);
-        else if (!user) reject(NSErrors.Unauthorized);
+        else if (!user) _res.clearCookie('jwt'); // reject(NSErrors.Unauthorized);
         resolve(user);
     })(req, res);
 });

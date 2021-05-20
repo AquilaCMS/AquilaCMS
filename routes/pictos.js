@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceRule                 = require('../services/rules');
 const ServicePicto                = require('../services/pictos');
@@ -11,7 +19,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing de picto
+ * Function returning a picto listing
  */
 async function getPictos(req, res, next) {
     try {
@@ -22,7 +30,7 @@ async function getPictos(req, res, next) {
     }
 }
 /**
- * Fonction retournant un picto en fonction de son id
+ * Function returning a pictogram according to its id
  */
 async function getPictoById(req, res, next) {
     try {
@@ -36,7 +44,7 @@ async function getPictoById(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour un picto
+ * Function to add or update a pictogram
  */
 async function savePicto(req, res, next) {
     try {
@@ -52,7 +60,7 @@ async function savePicto(req, res, next) {
     }
 }
 /**
- * Fonction supprimant un picto
+ * Function removing a pictogram
  */
 async function deletePicto(req, res, next) {
     try {

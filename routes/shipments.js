@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceActif}        = require('../middleware/security');
 const ServiceShipment             = require('../services/shipment');
@@ -15,7 +23,8 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction pour récupérer des shipments en fonction du PostBody
+ * POST /api/v2/shipments
+ * @summary Get shipments
  */
 async function getShipments(req, res, next) {
     try {
@@ -28,7 +37,8 @@ async function getShipments(req, res, next) {
 }
 
 /**
- * Fonction pour récupérer un shipment en fonction du PostBody
+ * POST /api/v2/shipment
+ * @summary Get shipment
  */
 async function getShipment(req, res, next) {
     try {
@@ -41,7 +51,8 @@ async function getShipment(req, res, next) {
 }
 
 /**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * POST /api/v2/shipments/filter
+ * @summary Get shipments for country and an order
  */
 async function getShipmentsFilter(req, res, next) {
     try {
@@ -53,7 +64,8 @@ async function getShipmentsFilter(req, res, next) {
 }
 
 /**
- * Fonction pour ajouter ou mettre à jour un shipment
+ * PUT /api/v2/shipment
+ * @summary Set shipment
  */
 async function setShipment(req, res, next) {
     try {
@@ -63,8 +75,10 @@ async function setShipment(req, res, next) {
         return next(error);
     }
 }
+
 /**
- * Fonction supprimant un shipment
+ * DELETE /api/v2/shipment/{id}
+ * @summary Delete shipment
  */
 async function deleteShipment(req, res, next) {
     try {
@@ -80,7 +94,7 @@ async function deleteShipment(req, res, next) {
 //= ====================================================================
 
 /**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * Function to recover shipments according to the country and the weight of an order
  * @deprecated
  */
 async function getEstimatedFee(req, res, next) {

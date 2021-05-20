@@ -18,13 +18,12 @@
             "universe"           : {"type": "string"},
             "family"             : {"type": "string"},
             "subfamily"          : {"type": "string"},
-            "slugMenus"          : {
-                "type": "array",
-                "items": {"type": "string"}
-            },
             "component_template" : {"type": "string"},
             "weight"             : {"type": "number", "default": 0, "description": "Le poids du produit"},
-            "creationDate"       : {"type": "string", "format": "date", "default": "Date.now"},
+            "createdAt"          : {
+                "type": "string",
+                "format": "date"
+            },
             "price"              : {
                 "type": "object",
                 "properties": {
@@ -52,10 +51,6 @@
                         }
                     }
                 }
-            },
-            "presentInLastImport" : {
-                "type": "boolean",
-                "description": "true if product is still present in last import, set visible to false"
             },
             "specific"            : {
                 "type": "object",
@@ -88,11 +83,6 @@
                         "position"    : {"type": "number", "default": 1}
                     }
                 }
-            },
-            "set_options" : {
-                "type": "string",
-                "format": "ObjectId",
-                "description": "ref setoptions"
             },
             "images"      : {
                 "type": "array",
@@ -153,7 +143,7 @@
                                 "name"        : {"type": "string"},
                                 "id_client"   : {"type": "string", "format": "ObjectId", "description": "Si on peut l’avoir avec avisverifies c’est cool"},
                                 "ip_client"   : {"type": "string"},
-                                "review_date" : {"type": "string", "format": "Date", "default": "Date.now"},
+                                "review_date" : {"type": "string", "format": "date", "default": "Date.now"},
                                 "review"      : {"type": "string"},
                                 "lang"        : {"type": "string"},
                                 "rate"        : {"type": "number"},

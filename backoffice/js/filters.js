@@ -122,56 +122,70 @@ adminCatagenFilters.filter('btdate', function() {
   }
 });
 
-adminCatagenFilters.filter('orderStatus', ['NSConstants', function(NSConstants) {
-  return function (item, lang = "fr") {
-      var allStatus = NSConstants.orderStatus.translation[lang];
-      var status = allStatus.find(function(status){
-          return status.code == item;
-      });
-
-      if(!status){
-          return item;
-      }
-      else return status.name;
+adminCatagenFilters.filter('orderStatus', function() {
+  return function (item) {
+    const arrayOfTranslationWrited = [
+      "PAYMENT_PENDING",
+      "PAYMENT_RECEIPT_PENDING",
+      "PAYMENT_CONFIRMATION_PENDING",
+      "PAYMENT_FAILED",
+      "PAID",
+      "PROCESSING",
+      "PROCESSED",
+      "BILLED",
+      "DELIVERY_PROGRESS",
+      "DELIVERY_PARTIAL_PROGRESS",
+      "FINISHED",
+      "CANCELED",
+      "ASK_CANCEL",
+      "RETURNED"
+    ];
+    if(arrayOfTranslationWrited.includes(item)){
+      return `order.status.${item}`;
+    }
+    //translation is undefined
+    return item;
   }
-}]);
+});
 
 adminCatagenFilters.filter('paymentType', function() {
   return function (item) {
-    if (item == "DEBIT") {
-      return "Remboursement";
-    } else if (item == "CREDIT") {
-      return "Règlement";
+    //this function return a translation code of the translation file : "order.json"
+    //the returned value need the be translated
+    const arrayOfTranslationWrited = ["DEBIT", "CREDIT"];
+    if(arrayOfTranslationWrited.includes(item)){
+      return `order.paymentType.${item}`;
     }
+    //translation is undefined (not writed)
     return item;
   }
 });
 
 adminCatagenFilters.filter('paymentStatus', function() {
   return function (item) {
-    if (item == "DONE") {
-      return "Effectué";
-    } else if (item == "TODO") {
-      return "A effectuer";
-    } else if (item == "FAILED") {
-      return "Non effectué";
-    } else if (item == "CANCELED") {
-      return "Annulé";
+    //this function return a translation code of the translation file : "order.json"
+    //the returned value need the be translated
+    const arrayOfTranslationWrited = ["DONE", "TODO", "FAILED", "CANCELED"];
+    if(arrayOfTranslationWrited.includes(item)){
+      return `order.paymentStatus.${item}`;
     }
+    //translation is undefined (not writed)
     return item;
   }
 });
 
 adminCatagenFilters.filter('paymentMode', function() {
+  //this function return a translation code of the translation file : "order.json"
+  //the returned value need the be translated
   return function (item) {
     if (item == "CB") {
-      return "CB";
+      return "order.paymentMode.CB";
     } else if (item == "CHEQUE") {
-      return "Chèque";
+      return "order.paymentMode.CHEQUE";
     } else if (item == "TRANSFER") {
-      return "Virement";
+      return "order.paymentMode.TRANSFER";
     } else if (item == "CASH") {
-      return "Espèces";
+      return "order.paymentMode.CASH";
     }
     return item;
   }

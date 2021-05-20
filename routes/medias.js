@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const mediasServices              = require('../services/medias');
@@ -137,7 +145,7 @@ async function uploadAllMedias(req, res, next) {
 /* **************** Documents **************** *
 
 /**
- * Permet de télécharger un zip contenant tous le dossier "upload"
+ * Allows you to download a zip containing all the "upload" folder
  */
 async function downloadAllDocuments(req, res, next) {
     try {
@@ -152,7 +160,7 @@ async function downloadAllDocuments(req, res, next) {
     }
 }
 /**
- * Permet d'uploader un zip contenant tous le dossier "upload"
+ * Allows you to upload a zip containing all the "upload" folder
  */
 async function uploadAllDocuments(req, res, next) {
     if (path.extname(req.files[0].originalname) === '.zip') {

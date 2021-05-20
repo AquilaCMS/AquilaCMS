@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path                   = require('path');
 const themeServices          = require('../services/themes');
 const fs                     = require('../utils/fsp');
@@ -55,7 +63,7 @@ const postConfiguratorDatas = async (req) => {
     try {
         console.log('Installer : Record datas value');
         const datas = req.body;
-        if (!await fs.access(datas.envPath) || path.extname(datas.envPath) !== '.json') {
+        if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
             throw new Error('envPath is not correct');
         }
 
@@ -92,9 +100,9 @@ const postConfiguratorDatas = async (req) => {
         }
         await createListModuleFile('default_theme');
         // Compilation du theme par default
-        console.log('Installer : start default theme installation and compilation');
+        console.log('Installer : start default theme compilation');
         await themeCompile('default_theme');
-        console.log('Installer : end default theme installation and compilation');
+        console.log('Installer : end default theme compilation');
     } catch (err) {
         console.error(err);
         throw err;
@@ -108,7 +116,7 @@ const recoverConfiguration = async (req) => {
     console.log('Installer : fetching new env path');
     let {envPath} = req.body;
 
-    if (!await fs.access(envPath)) {
+    if (fs.existsSync(envPath)) {
         throw new Error('env file doesn\'t exist or is not located in this folder');
     }
 
@@ -132,17 +140,17 @@ const recoverConfiguration = async (req) => {
 const createConfiguration = async (datas) => {
     datas.appUrl          = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
     const {Configuration} = require('../orm/models');
-
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
             currentTheme    : 'default_theme',
             adminPrefix     : datas.adminPrefix,
             websiteCountry  : datas.language && datas.language === 'EN' ? 'UK' : 'FR',
-            port            : global.port,
             siteName        : datas.siteName,
             demoMode        : true,
-            websiteTimezone : 'Europe/Paris'
+            websiteTimezone : 'Europe/Paris',
+            // We don't want to apply migration after the installation, so we calculate the current migration step
+            migration       : require('../utils/migration').migrationScripts.length
         },
         stockOrder : {
             cartExpireTimeout         : 1,
@@ -170,7 +178,8 @@ const createUserAdmin = async (userDatas) => {
             firstname : userDatas.firstname,
             lastname  : userDatas.lastname,
             email     : userDatas.email,
-            isAdmin   : true
+            isAdmin   : true,
+            isActive  : true
         });
     } catch (err) {
         if (err._errors && err._errors.message === 'FORMAT_PASSWORD') {

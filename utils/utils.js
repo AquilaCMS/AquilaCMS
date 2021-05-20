@@ -1,17 +1,25 @@
 /*
  * Product    : AQUILA-CMS
  * Author     : Nextsourcia - contact@aquila-cms.com
- * Copyright  : 2020 © Nextsourcia - All rights reserved.
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
  * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 const axios          = require('axios');
 const path           = require('path');
 const Json2csvParser = require('json2csv').Parser;
+const {
+    transforms: {unwind, flatten}
+} = require('json2csv');
 const {v4: uuidv4}   = require('uuid');
 const mongoose       = require('mongoose');
 const fs             = require('./fsp');
 
+/**
+ *
+ * @param {string} moduleName
+ * @returns {boolean}
+ */
 const checkModuleRegistryKey = async (moduleName) => {
     try {
         let registryFile    = path.resolve(global.appRoot, 'modules', moduleName, 'licence.json');
@@ -69,8 +77,34 @@ const checkOrCreateAquilaRegistryKey = async () => {
 };
 
 const json2csv = async (data, fields, folderPath, filename) => {
+    let decomposedAttribute = [];
+    for (let j = 0; j < data.length; j++) {
+        const line = data[j];
+        for (const [key, value] of Object.entries(line)) {
+            if (Array.isArray(value)) {
+                for (let i = 0; i < value.length; i++) {
+                    if (typeof value[i] === 'object') {
+                        const index = fields.indexOf(key);
+                        if (index !== -1) {
+                            fields.splice(index, 1);
+                            for (let x = 0; x < Object.entries(value[i]).length; x++) {
+                                fields.push(`${key}.${Object.entries(value[i])[x][0]}`);
+                                if (decomposedAttribute.includes(key) === false) {
+                                    decomposedAttribute = key;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     await fs.mkdir(path.resolve(folderPath), {recursive: true});
-    const json2csvParser = new Json2csvParser({fields});
+    const transforms     = [
+        unwind({paths: decomposedAttribute}),
+        flatten({objects: true})
+    ];
+    const json2csvParser = new Json2csvParser({fields, transforms});
     return {
         csv        : json2csvParser.parse(data),
         file       : filename,
@@ -80,8 +114,8 @@ const json2csv = async (data, fields, folderPath, filename) => {
 
 /**
  * Detect if array contain duplicated values
- * @param {Array} a array to check duplicate
- * @returns {Boolean} Contains duplicated
+ * @param {array} a array to check duplicate
+ * @returns {boolean} Contains duplicated
  */
 const detectDuplicateInArray = (a) => {
     for (let i = 0; i <= a.length; i++) {
@@ -94,8 +128,14 @@ const detectDuplicateInArray = (a) => {
     return false;
 };
 
+/**
+ * download a file
+ * @param {string} url url of the file to download
+ * @param {string} dest destination where the file will be downloaded
+ * @returns {Promise<string|null>}
+ */
 const downloadFile = async (url, dest) => {
-    // on creer les dossier
+    // we create the files
     fs.mkdirSync(dest.replace(path.basename(dest), ''), {recursive: true});
     const file        = fs.createWriteStream(dest);
     const downloadDep = url.includes('https://') ? require('https') : require('http');
@@ -127,8 +167,12 @@ const slugify = (text) => {
     return require('slug')(text, {lower: true});
 };
 
-// Returns ET price
-// VAT is 20 if if is 20%
+/**
+ * transform a price in ATI to ET
+ * @param {number|undefined} ATIPrice
+ * @param {number|undefined} VAT ex: VAT is 20 if it is 20%
+ * @returns {number|undefined}
+ */
 const toET = (ATIPrice, VAT) => {
     if ((ATIPrice !== undefined) && (VAT !== undefined)) {
         if (VAT === 0) {
@@ -141,23 +185,29 @@ const toET = (ATIPrice, VAT) => {
     return undefined;
 };
 
+/**
+ *
+ * @param {any} obj
+ * @param {string} str
+ * @returns {any}
+ */
 const getObjFromDotStr = (obj, str) => {
-    return str.split('.').reduce((o, i) => {
-        if (!o[i]) return '';
-        if (o[i] instanceof mongoose.Types.ObjectId) {
-            return (o[i]).toString();
+    if (typeof obj === 'undefined') return;
+    if (obj instanceof mongoose.Document) {
+        const value = obj.get(str);
+        if (value instanceof mongoose.Types.ObjectId) {
+            return value.toString();
         }
-        return o[i];
-    }, obj);
+        return value;
+    }
+    return str
+        .split('.')
+        .reduce((o, i) => {
+            if (typeof o === 'undefined' || typeof o[i] === 'undefined') return;
+            if (o[i] instanceof mongoose.Types.ObjectId) return (o[i]).toString();
+            return o[i];
+        }, obj);
 };
-
-/* temp : determiner les routes non utilisés */
-// eslint-disable-next-line no-unused-vars
-const tmp_use_route = async (api, fct) => {
-    // Delete this function as soon as possible
-    console.error(`/!\\ Si vous voyez ce message, merci de supprimer l'appel à tmp_use_route() dans la foncion ${api} / ${fct}`);
-};
-/* End temp : determiner les routes non utilisés */
 
 /**
  * Check if two objects or arrays are equal
@@ -197,7 +247,12 @@ const isEqual = (value, other) => {
     return true;
 };
 
-// Compare two items
+/**
+ * Compare two items
+ * @param {any} item1
+ * @param {any} item2
+ * @returns {boolean}
+ */
 let compare = (item1, item2) => {
 // Get the object type
     const itemType = Object.prototype.toString.call(item1);
@@ -218,7 +273,12 @@ let compare = (item1, item2) => {
     }
 };
 
-const IsJsonString = (str) => {
+/**
+ * check if a string is parseable as a JSON
+ * @param {string} str
+ * @returns {boolean}
+ */
+const isJsonString = (str) => {
     try {
         JSON.parse(str);
     } catch (e) {
@@ -227,22 +287,23 @@ const IsJsonString = (str) => {
     return true;
 };
 
+/**
+ * Check if user is admin
+ * @param {object | undefined} info
+ * @returns {boolean}
+ */
+const isAdmin = (info) => info && info.isAdmin;
+
 module.exports = {
-    // utils/datas
     downloadFile,
     json2csv,
-    // utils/helpers
     getObjFromDotStr,
     detectDuplicateInArray,
-    // services/seo ou utils/utils : Strings for slugs
     slugify,
-    // utils/utils : Dev info
-    tmp_use_route,
-    // utils/utils : Taxes
     toET,
-    // utils/utils : Retrocompatibilité
     checkModuleRegistryKey,
     checkOrCreateAquilaRegistryKey,
     isEqual,
-    IsJsonString
+    isJsonString,
+    isAdmin
 };

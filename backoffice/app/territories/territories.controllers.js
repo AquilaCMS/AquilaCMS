@@ -1,7 +1,8 @@
 var TerritoriesControllers = angular.module("aq.territories.controllers", []);
 
-TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi", "toastService", "$rootScope", '$location',
-	function ($scope, TerritoriesApi, toastService, $rootScope, $location) {
+TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi", "toastService", "$rootScope", '$location', '$translate',
+	function ($scope, TerritoriesApi, toastService, $rootScope, $location, $translate) {
+		$scope.filter = {};
 
 		function getLanguages() {
 			$scope.firstLang = $rootScope.languages[0].code;
@@ -9,42 +10,61 @@ TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi"
 		
 		getLanguages();
 
+		$scope.defaultLang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+		}).code;
+		
 		$scope.detail = function (territory) {
 			$location.url("/territories/" + territory._id);
 		};
-	$scope.territoriesList = [];
-	$scope.loadDatas = function() {
-		TerritoriesApi.list({terr: 'territories'}, {
-			PostBody: {
-				limit: 1024,
-				sort: {
-					name: 1  
+		$scope.territoriesList = [];
+		$scope.getTerritories = function() {
+			let filter = {};
+			const filterKeys = Object.keys($scope.filter);
+			for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+				if($scope.filter[filterKeys[i]] === null){
+					break;
 				}
-			},
-			
-		},
-		function (response) {
-			$scope.territoriesList = response.datas;
-		});
-	};
-		
-	$scope.loadDatas();
-
-	$scope.remove = function (id) {
-		if(confirm("Etes-vous sûr de vouloir supprimer ce territoire ?"))
-		{
-			TerritoriesApi.remove({terr: 'territory', action: id}, function (response) {
-				toastService.toast("success", "Territoire supprimé");
-				$scope.loadDatas();
+				if(filterKeys[i].includes("name")) {
+					if($scope.filter.name != ""){
+						filter["translation."+$scope.defaultLang+".name"] = { $regex: $scope.filter.name, $options: "i" }
+					}
+				}else if(filterKeys[i].includes("children")) {
+					if($scope.filter.children != ""){
+						filter["children"] = { $gte: $scope.filter.children, $options: "i" }
+					}
+				} else if($scope.filter[filterKeys[i]].toString() != ""){
+						filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+				}
+			}
+			TerritoriesApi.list({terr: 'territories'}, {
+				PostBody: {
+					filter,
+					limit: 1024,
+					sort: { name: 1 }
+				},
+			},function (response) {
+				$scope.territoriesList = response.datas;
 			});
-		}
-	};
+		};
+			
+		$scope.getTerritories();
 
-}]);
+		$scope.remove = function (id) {
+			if(confirm("Etes-vous sûr de vouloir supprimer ce territoire ?"))
+			{
+				TerritoriesApi.remove({terr: 'territory', action: id}, function (response) {
+					toastService.toast("success", $translate.instant("global.territoryDelete"));
+					$scope.getTerritories();
+				});
+			}
+		};
+	}
+]);
 
 
-TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routeParams", "$location", "TerritoriesApi", "toastService",
-	function ($scope, $routeParams, $location, TerritoriesApi, toastService) {
+TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routeParams", "$location", "TerritoriesApi", "toastService", "$translate",
+	function ($scope, $routeParams, $location, TerritoriesApi, toastService, $translate) {
 		if ($routeParams.territoryId) {
 			$scope.isEditMode = true;
 		}
@@ -74,7 +94,7 @@ TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routePara
 		$scope.remove = function (id) {
 			if (confirm("Etes-vous sûr de vouloir supprimer ce territoire ?")) {
 				TerritoriesApi.remove({ terr: 'territory', action: id }, function (response) {
-					toastService.toast("success", "Territoire supprimé");
+					toastService.toast("success", $translate.instant("global.territoryDelete"));
 					$location.path("/territories");
 				});
 			}

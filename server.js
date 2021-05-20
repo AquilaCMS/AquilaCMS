@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 require('dotenv').config();
 const express           = require('express');
 const passport          = require('passport');
@@ -7,29 +15,28 @@ const i18nextMiddleware = require('i18next-http-middleware');
 global.envPath          = null;
 global.envFile          = null;
 global.appRoot          = path.resolve(__dirname);
-global.port             = process.env.PORT || 3010;
+global.port             = Number(process.env.PORT || 3010);
 global.defaultLang      = '';
 global.moduleExtend     = {};
-global.translate        = require('Utils/translate');
-const utils             = require('Utils/utils');
-const npm               = require('Utils/npm');
-const fs                = require('Utils/fsp');
-const translation       = require('Utils/translation');
-const serverUtils       = require('Utils/server');
-const utilsModules      = require('Utils/modules');
-const utilsThemes       = require('Utils/themes');
+global.translate        = require('./utils/translate');
+const utils             = require('./utils/utils');
+const fs                = require('./utils/fsp');
+const translation       = require('./utils/translation');
+const serverUtils       = require('./utils/server');
+const utilsModules      = require('./utils/modules');
+const utilsThemes       = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
     middlewareServer
 }                           = require('./middleware');
 
-const dev    = !serverUtils.isProd();
+const dev    = !serverUtils.isProd;
 const server = express();
 
-// ATTENTION, ne pas require des services directement en haut de ce fichier
-// car cela cause des problèmes dans l'ordre d'appel des fichiers
-// Exemple : modification du schéma des modèles mongo appelés dans les dits services
+// ATTENTION, do not require services directly on top of this file
+// because it causes problems in the order of calling the files
+// Example : modification of the mongo models schema called in the said services
 
 // If an error occurred we exit the process because there is no point on continuing
 // if for any reason you want to handle error later, don't do that just fix your code
@@ -46,7 +53,6 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const init = async () => {
-    await npm.npmLoad({});
     await serverUtils.getOrCreateEnvFile();
     require('./utils/logger')();
     await serverUtils.logVersion();
@@ -66,11 +72,11 @@ const initDatabase = async () => {
 
 const setEnvConfig = async () => {
     const {Configuration} = require('./orm/models');
-    global.envConfig      = await Configuration.findOne();
-    if (!global.envConfig) {
+    const configuration   = await Configuration.findOne();
+    if (!configuration) {
         throw new Error('Configuration collection is missing');
     }
-    global.envConfig = global.envConfig.toObject();
+    global.envConfig = configuration.toObject();
 };
 
 const initFrontFramework = async (themeFolder) => {
@@ -148,3 +154,5 @@ const startServer = async () => {
         setTimeout(() => process.exit(1), 2000);
     }
 })();
+
+module.exports = server;

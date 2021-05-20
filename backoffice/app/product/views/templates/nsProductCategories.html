@@ -1,0 +1,27 @@
+<script type="text/ng-template" id="nodes_renderer.html" ui-tree="treeOptions">
+    <div ui-tree-handle style="cursor:initial" class="tree-node tree-node-content cleanBorder" data-nodrag>
+        <span style="margin-left: 5px;" data-nodrag>
+            <input type="checkbox" ng-checked="catCheck(node)" ng-click="selectNode(node)" ng-disabled="catDisabled(node)">
+        </span>
+        <a class="pull-right btn btn-blue" style="height: 21px;margin-top: 5px;" ng-if="node.children.length > 0" ng-click="listChildren(node, this)" data-nodrag>
+            <span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span>
+        </a>
+        <span class="tree-node-title" ng-class="{'tree-leaf': node.children.length == 0}">{{node.translation[lang].name && node.translation[lang].name !== "" ? node.translation[lang].name : (node.code + " (code)")}}</span>
+    </div>
+    <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}" data-nodrag>
+        <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder" data-nodrag></li>
+    </ol>
+</script>
+<div ui-tree="treeOptions" ng-if="categories.length > 0" class="cleanBorder">
+    <ol ui-tree-nodes="" ng-model="categories" id="tree-root">
+        <li ng-repeat="node in categories" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+    </ol>
+</div>
+<div ng-if="categories.length == 0" translate>category.list.noCatCreated</div>
+</div>
+<div ng-repeat="tab in additionnalTabs" id="{{tab.id}}" class="tab-pane fade">
+    <h3 style="display: inline" translate="tab.title"></h3>
+    <div class="form-group" style="margin-top: 20px;">
+        <div bind-html-compile="tab.content"></div>
+    </div>
+</div>

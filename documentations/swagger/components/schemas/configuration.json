@@ -46,7 +46,9 @@
                     "siteName"          : {"type": "string"},
                     "websiteCountry"    : {"type": "string"},
                     "websiteTimezone"   : {"type": "string"},
-                    "migration"          : {"type": "number"}
+                    "migration"         : {"type": "number"},
+                    "logPath"           : {"type": "string"},
+                    "errorPath"         : {"type": "string"}
                 }
             },
             "taxerate" : {
@@ -69,6 +71,7 @@
                 "properties": {
                     "cartExpireTimeout"         : {"type": "number"},
                     "pendingOrderCancelTimeout" : {"type": "number"},
+                    "requestMailPendingCarts"   : {"type": "number" },
                     "bookingStock"              : {"type": "string", "enum": ["commande", "panier", "none", "payment"]},
                     "labels"                    : {
                         "type": "array",

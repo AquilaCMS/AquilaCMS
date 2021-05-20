@@ -108,13 +108,24 @@
 
 .ico-arrow-down {
     background-image: url(images/sprite.png);
-    background-position: 50% 24.8%;
+    background-position: 50% 25.8%;
     background-size: 604% 1488.888888888889%;
     width: 25px;
     height: 9px;
     display: inline-block;
     vertical-align: middle;
     font-size: 0;
+}
+.ico-arrow-up {
+    background-image: url(images/sprite.png);
+    background-position: 50% 25.8%;
+    background-size: 604% 1488.888888888889%;
+    width: 25px;
+    height: 9px;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 0;
+    transform: scaleY(-1);
 }
 
 .ico-arrow-left,
@@ -1302,6 +1313,7 @@ img.ico{
 
 }
 
+/* /!\ ATTENTION: la regle du dessous retir les icon de tous les boutons, tres chiant */
 @media screen and (min-width: 768px) {
     
     button.btn i {
@@ -1454,7 +1466,7 @@ img.ico{
 }
 
 .main .content.shrink {
-    width: calc(100% - 237px);
+    width: calc(100% - 250px);
     padding-left: 0px;
     padding-right: 19px;
 }
@@ -2438,15 +2450,15 @@ input:-webkit-autofill {
 
 .nav-fixed {
     position: fixed;
-    /*height: 100vh;*/
     top: 60px;
-    height: 100vh;
+    min-height: 100vh;
     z-index: 1039;
     left: 0;
     width: 55px;
     background: #576fa1;
     transition: width .3s;
     overflow-y: auto;
+    max-height: 1vh;
 }
 
 
@@ -2660,7 +2672,7 @@ input:-webkit-autofill {
 }
 
 .nav-fixed-open .dropdown-open .dropdown {
-    max-height: 350px;
+    max-height: 400px;
 }
 
 .nav-fixed-open .dropdown li {
@@ -2948,21 +2960,66 @@ input:-webkit-autofill {
         Section Table
 \* ------------------------------------------------------------ */
 
+.buttonIconStyle{
+    color:white;
+    padding: 0px;
+}
+
+.caseOfIcon{
+    float: right;
+    padding: 19px;
+    background-color: #576fa1;
+    /* change here the color */
+}
+
 .box {
     background: #dfe6ee;
     border: 1px solid #bec4ca;
     border-radius: 3px;
-    padding: 11px 13px 25px;
+    padding: 0px;
 }
 
 .box+.box {
     margin-top: 43px;
 }
 
+.box-header-table{
+    margin-bottom: 0px !important;
+}
+
 .box .box-header {
     background: #576fa1;
-    padding: 10px 0;
+    padding: 0px 0;
     margin-bottom: 23px;
+}
+
+
+.box .box-header h2{
+    padding: 10px;
+    margin: 10px 0px 10px;
+}
+
+.box .textInBox{
+    padding: 10px 10px 20px;
+    word-break: break-word;
+}
+
+.multipleBoxInLine{
+    margin-bottom: 20px;
+}
+
+.box table {
+    overflow: auto;
+}
+
+.fsbox h2{
+    padding-left: 66px !important;
+    padding-top: 6px !important;
+}
+
+.tableWrapperOverflow{
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .box .box-header:after {
@@ -2974,6 +3031,7 @@ input:-webkit-autofill {
 
 .box .box-header-actions {
     float: right;
+    margin-top: 10px;
 }
 
 .box .section-title,

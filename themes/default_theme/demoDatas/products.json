@@ -28,8 +28,8 @@
           "special": 13
         },
         "priceSort": {
-            "et": 10.83,
-            "ati": 13
+          "et": 10.83,
+          "ati": 13
         },
         "purchase": 10,
         "tax": 20
@@ -88,7 +88,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 404,
       "associated_prds": [
         "5c667ff128a49c049c5863c9",
@@ -96,9 +95,8 @@
         "5d24a43a4aa9c1692db04ad8",
         "5d24a4844aa9c1692db04ae4"
       ],
-      "is_new": false,
+      "is_new": true,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -208,7 +206,8 @@
             "title": "Tubular cut",
             "text": "Unisex"
           },
-          "canonical": "/my-products/first-product"
+          "canonical": "/my-products/first-product",
+          "metaDesc": "White basic t-shirt"
         },
         "fr": {
           "name": "T-shirt basique blanc",
@@ -221,7 +220,8 @@
             "title": "Coupe tubulaire",
             "text": "Unisexe"
           },
-          "canonical": "/mes-produits/t-shirt/premier-produit"
+          "canonical": "/mes-produits/t-shirt/premier-produit",
+          "metaDesc": "T-shirt basique blanc"
         }
       },
       "createdAt": "2020-05-13T09:07:33.753Z",
@@ -253,8 +253,8 @@
           "normal": 22
         },
         "priceSort": {
-            "et": 18.33,
-            "ati": 22
+          "et": 18.33,
+          "ati": 22
         },
         "purchase": 9.8,
         "tax": 20
@@ -299,7 +299,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 982,
       "associated_prds": [
         "5d24a43a4aa9c1692db04ad8",
@@ -309,7 +308,6 @@
       ],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "attributes": [
         {
           "type": "color",
@@ -412,7 +410,8 @@
             "title": "Tubular cut",
             "text": "Unisex"
           },
-          "canonical": "/my-products/t-shirt/product-two"
+          "canonical": "/my-products/t-shirt/product-two",
+          "metaDesc": "T-shirt white / green"
         },
         "fr": {
           "description1": {
@@ -425,7 +424,8 @@
           },
           "name": "T-shirt blanc/vert",
           "slug": "produit-deux",
-          "canonical": "/mes-produits/t-shirt/produit-deux"
+          "canonical": "/mes-produits/t-shirt/produit-deux",
+          "metaDesc": "T-shirt blanc/vert"
         }
       },
       "createdAt": "2020-05-13T09:07:33.753Z",
@@ -457,8 +457,8 @@
           "normal": 25
         },
         "priceSort": {
-            "et": 20.83,
-            "ati": 25
+          "et": 20.83,
+          "ati": 25
         },
         "purchase": 3.75,
         "tax": 20
@@ -489,12 +489,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 178,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:25:46.019Z",
       "attributes": [
         {
           "type": "color",
@@ -597,7 +595,8 @@
             "title": "Coupe droite",
             "text": "Unisexe"
           },
-          "canonical": "/mes-produits/t-shirt/t-shirt-mariniere-rouge"
+          "canonical": "/mes-produits/t-shirt/t-shirt-mariniere-rouge",
+          "metaDesc": "T-shirt marinière rouge"
         },
         "en": {
           "name": "Red sailor t-shirt",
@@ -610,7 +609,8 @@
             "title": "Straight cut",
             "text": "Unisex"
           },
-          "canonical": "/my-products/t-shirt/red-sailor-t-shirt"
+          "canonical": "/my-products/t-shirt/red-sailor-t-shirt",
+          "metaDesc": "Red sailor t-shirt"
         }
       },
       "createdAt": "2020-05-09T14:25:46.095Z",
@@ -639,11 +639,11 @@
           "normal": 14.17
         },
         "ati": {
-          "normal": 17
+          "normal": 16
         },
         "priceSort": {
-            "et": 14.17,
-            "ati": 17
+          "et": 14.17,
+          "ati": 16
         },
         "purchase": 10,
         "tax": 20
@@ -674,12 +674,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 189,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:27:06.737Z",
       "attributes": [
         {
           "type": "color",
@@ -778,7 +776,8 @@
             "title": "Coupe droite",
             "text": "T-shirt homme"
           },
-          "canonical": "/mes-produits/t-shirt/t-shirt-basique-noir"
+          "canonical": "/mes-produits/t-shirt/t-shirt-basique-noir",
+          "metaDesc": "T-shirt basique noir"
         },
         "en": {
           "name": "Basic black t-shirt",
@@ -791,7 +790,8 @@
             "title": "Straight cut",
             "text": "Men's T-shirt"
           },
-          "canonical": "/my-products/t-shirt/basic-black-t-shirt"
+          "canonical": "/my-products/t-shirt/basic-black-t-shirt",
+          "metaDesc": "Basic black t-shirt"
         }
       },
       "createdAt": "2020-05-09T14:27:06.739Z",
@@ -823,8 +823,8 @@
           "normal": 17
         },
         "priceSort": {
-            "et": 14.17,
-            "ati": 17
+          "et": 14.17,
+          "ati": 17
         },
         "purchase": 4.54,
         "tax": 20
@@ -840,12 +840,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 243,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-09T14:28:20.190Z",
       "attributes": [
         {
           "type": "color",
@@ -955,7 +953,8 @@
             "title": "Coupe droite",
             "text": "T-shirt femme"
           },
-          "canonical": "/mes-produits/t-shirt/t-shirt-basique-bleu"
+          "canonical": "/mes-produits/t-shirt/t-shirt-basique-bleu",
+          "metaDesc": "T-shirt basique bleu"
         },
         "en": {
           "name": "Basic blue t-shirt",
@@ -968,7 +967,8 @@
             "title": "Straight cut",
             "text": "Women's T-shirt"
           },
-          "canonical": "/my-products/t-shirt/basic-blue-t-shirt"
+          "canonical": "/my-products/t-shirt/basic-blue-t-shirt",
+          "metaDesc": "Basic blue t-shirt"
         }
       },
       "createdAt": "2020-05-09T14:28:20.192Z",
@@ -1000,8 +1000,8 @@
           "normal": 8
         },
         "priceSort": {
-            "et": 6.67,
-            "ati": 8
+          "et": 6.67,
+          "ati": 8
         },
         "purchase": 11,
         "tax": 20
@@ -1046,12 +1046,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 28,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:32:04.688Z",
       "attributes": [
         {
           "type": "color",
@@ -1150,7 +1148,8 @@
             "text": "Disponible en noir, blanc et bleu",
             "title": "Chaussettes de tennis"
           },
-          "canonical": "/mes-produits/chaussettes/chaussettes-noires"
+          "canonical": "/mes-produits/chaussettes/chaussettes-noires",
+          "metaDesc": "Chaussettes noires"
         },
         "en": {
           "name": "Black socks",
@@ -1163,7 +1162,8 @@
             "text": "Available in black, white and blue",
             "title": "Tennis socks"
           },
-          "canonical": "/my-products/socks/black-socks"
+          "canonical": "/my-products/socks/black-socks",
+          "metaDesc": "Black socks"
         }
       },
       "createdAt": "2020-05-18T13:32:04.714Z",
@@ -1192,11 +1192,11 @@
           "normal": 6.67
         },
         "ati": {
-          "normal": 8
+          "normal": 8.5
         },
         "priceSort": {
-            "et": 6.67,
-            "ati": 8
+          "et": 6.67,
+          "ati": 8.5
         },
         "purchase": 1.58,
         "tax": 20
@@ -1212,12 +1212,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 38,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:48:26.795Z",
       "attributes": [
         {
           "type": "color",
@@ -1327,7 +1325,8 @@
             "title": "Chaussettes de sport",
             "text": "Disponible en noir, blanc et bleu"
           },
-          "canonical": "/mes-produits/chaussettes/chaussettes-blanches"
+          "canonical": "/mes-produits/chaussettes/chaussettes-blanches",
+          "metaDesc": "Chaussettes bleues"
         },
         "en": {
           "name": "Blue socks",
@@ -1340,7 +1339,8 @@
             "text": "Available in black, white and blue",
             "title": "Tennis socks"
           },
-          "canonical": "/my-products/socks/blue-socks"
+          "canonical": "/my-products/socks/blue-socks",
+          "metaDesc": "Blue socks"
         }
       },
       "universe": "chaussettes-chaussettes",
@@ -1372,8 +1372,8 @@
           "normal": 28
         },
         "priceSort": {
-            "et": 23.33,
-            "ati": 28
+          "et": 23.33,
+          "ati": 28
         },
         "purchase": 4.25,
         "tax": 20
@@ -1389,12 +1389,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 425,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:53:34.890Z",
       "attributes": [
         {
           "type": "color",
@@ -1493,7 +1491,8 @@
             "title": "Streatwear",
             "text": "Urban streetwear"
           },
-          "canonical": "/mes-produits/sweat/sweat-noir"
+          "canonical": "/mes-produits/sweat/sweat-noir",
+          "metaDesc": "Sweat noir"
         },
         "en": {
           "name": "Black sweat",
@@ -1506,7 +1505,8 @@
             "text": "Streatwear",
             "title": "Urban streetwear"
           },
-          "canonical": "/my-products/sweat/black-sweat"
+          "canonical": "/my-products/sweat/black-sweat",
+          "metaDesc": "Black sweat"
         }
       },
       "universe": "sweats-sweats",
@@ -1538,8 +1538,8 @@
           "normal": 29
         },
         "priceSort": {
-            "et": 24.17,
-            "ati": 29
+          "et": 24.17,
+          "ati": 29
         },
         "purchase": 3,
         "tax": 20
@@ -1584,12 +1584,10 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 385,
       "associated_prds": [],
       "is_new": false,
       "kind": "SimpleProduct",
-      "creationDate": "2020-05-18T13:54:30.441Z",
       "attributes": [
         {
           "type": "color",
@@ -1688,7 +1686,8 @@
             "title": "Streetwear",
             "text": "Urban streetwear"
           },
-          "canonical": "/mes-produits/sweat-jaune"
+          "canonical": "/mes-produits/sweat-jaune",
+          "metaDesc": "Sweat jaune"
         },
         "en": {
           "name": "Yellow sweat",
@@ -1701,7 +1700,8 @@
             "text": "Streatwear",
             "title": "Urban streetwear"
           },
-          "canonical": "/my-products/sweat/yellow-sweat"
+          "canonical": "/my-products/sweat/yellow-sweat",
+          "metaDesc": "Yellow sweat"
         }
       },
       "universe": "sweats-sweats",
@@ -1718,8 +1718,8 @@
           "normal": 59.99
         },
         "priceSort": {
-            "et": 49.99,
-            "ati": 59.99
+          "et": 49.99,
+          "ati": 59.99
         },
         "purchase": 0,
         "tax": 20
@@ -1735,7 +1735,6 @@
       },
       "active": true,
       "_visible": true,
-      "slugMenus": [],
       "weight": 0,
       "associated_prds": [],
       "is_new": false,
@@ -1747,24 +1746,34 @@
           "_id": "5eb2cff36cdf0b436c831f27",
           "products": [
             {
-              "_id": "5eb3125b6cdf0b436c8326ce",
+              "_id": "5fda1d8a3cc9692058b04f6a",
               "id": "5c667ff128a49c049c5863c9",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": 3,
+                "et": 2.5
+              }
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326cf",
+              "_id": "5fda1d8a3cc9692058b04f6b",
               "id": "5d24a3e94aa9c1692db04ac7",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": -2,
+                "et": -1.67
+              }
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d0",
+              "_id": "5fda1d8a3cc9692058b04f6c",
               "id": "5d24a43a4aa9c1692db04ad8",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_weight": 250
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d1",
+              "_id": "5fda1d8a3cc9692058b04f6d",
               "id": "5d24a4844aa9c1692db04ae4",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_weight": -50
             }
           ],
           "ref": "thisrt",
@@ -1777,12 +1786,12 @@
           "_id": "5eb2dab66cdf0b436c83220b",
           "products": [
             {
-              "_id": "5eb3125b6cdf0b436c8326d3",
+              "_id": "5fda1d8a3cc9692058b04f6f",
               "id": "5d3079de4aa9c1692db0549d",
               "isDefault": false
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d4",
+              "_id": "5fda1d8a3cc9692058b04f70",
               "id": "5d307a164aa9c1692db054a4",
               "isDefault": false
             }
@@ -1797,19 +1806,29 @@
           "_id": "5eb2db8d6cdf0b436c83225e",
           "products": [
             {
-              "_id": "5eb3125b6cdf0b436c8326d6",
+              "_id": "5fda1d8a3cc9692058b04f72",
               "id": "5d3078aa4aa9c1692db05498",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": 10,
+                "et": 8.33
+              },
+              "modifier_weight": 150
             },
             {
-              "_id": "5eb3125b6cdf0b436c8326d7",
+              "_id": "5fda1d8a3cc9692058b04f73",
               "id": "5d3074d44aa9c1692db0534d",
-              "isDefault": false
+              "isDefault": false,
+              "modifier_price": {
+                "ati": 10,
+                "et": 8.33
+              },
+              "modifier_weight": 150
             }
           ],
           "ref": "chaussette",
           "type": "SINGLE",
-          "isRequired": true,
+          "isRequired": false,
           "displayMode": "RADIO_BUTTON",
           "title": "Chaussette"
         }
@@ -1889,7 +1908,8 @@
             "title": "Votre tenue sur mesure",
             "text": "Choisissez parmis une selection de thirts, sweats et chausettes"
           },
-          "canonical": "/mes-produits/tenue-complete"
+          "canonical": "/mes-produits/tenue-complete",
+          "metaDesc": "Tenue complète"
         },
         "en": {
           "name": "Full outfit",
@@ -1902,10 +1922,10 @@
             "title": "Your custom outfit",
             "text": "Choose from a selection of thirts, sweatshirts and socks"
           },
-          "canonical": "/en/my-products/full-outfit"
+          "canonical": "/en/my-products/full-outfit",
+          "metaDesc": "Full outfit"
         }
       },
-      "creationDate": "2020-05-13T09:07:33.753Z",
       "pictos": [],
       "createdAt": "2020-05-13T09:07:33.753Z",
       "updatedAt": "2020-05-20T14:02:13.859Z"

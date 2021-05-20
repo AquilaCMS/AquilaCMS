@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path     = require('path');
 const fs       = require('./fsp');
 const utils    = require('./utils');
@@ -7,24 +15,31 @@ const NSErrors = require('./errors/NSErrors');
 let loadedModules;
 
 /**
- * Module : Charge les fonctions dans les init.js des modules si besoin
+ * Module : Load the functions in the init.js of the modules if necessary
+ * @param {string} property
+ * @param {any} params
+ * @param {Function} functionToExecute
+ * @returns {any}
  */
-const modulesLoadFunctions = async (property, params = {}, functionToExecute) => {
+const modulesLoadFunctions = async (property, params = {}, functionToExecute = undefined) => {
     if (global.moduleExtend[property] && typeof global.moduleExtend[property].function === 'function') {
         return global.moduleExtend[property].function(params);
     }
-    return functionToExecute();
+    if (functionToExecute && typeof functionToExecute === 'function') {
+        return functionToExecute();
+    }
 };
 
 /**
  * Module : Create '\themes\ {theme_name}\modules\list_modules.js'
+ * @param {string} theme
  */
 const createListModuleFile = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
     try {
         modules_folder = path.join(global.appRoot, `themes/${theme}/modules`);
         await fs.ensureDir(modules_folder);
-        const isFileExists = await fs.access(`${modules_folder}/list_modules.js`);
+        const isFileExists = await fs.hasAccess(`${modules_folder}/list_modules.js`);
         if (!isFileExists) {
             await fs.writeFile(`${modules_folder}/list_modules.js`, 'export default [];');
         }
@@ -35,7 +50,7 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
 
 /**
  * display all modules installed with the current theme
- * @param {String} theme theme name
+ * @param {string} theme theme name
  */
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
@@ -48,6 +63,9 @@ const displayListModule = async (theme = global.envConfig.environment.currentThe
     }
 };
 
+/**
+ * @param {string} target_path_full
+ */
 const errorModule = async (target_path_full) => {
     try {
         await fs.unlink(target_path_full);
@@ -62,6 +80,13 @@ const errorModule = async (target_path_full) => {
     }
 };
 
+/**
+ *
+ * @param {any} myModule
+ * @param {any} modulesActivated
+ * @param {boolean} install
+ * @returns {{api: {[index: string]: string}, theme: {[index: string]: string}}}
+ */
 const compareDependencies = (myModule, modulesActivated, install = true) => {
     const sameDependencies = {
         api   : {},
@@ -100,6 +125,9 @@ const compareDependencies = (myModule, modulesActivated, install = true) => {
     return sameDependencies;
 };
 
+/**
+ * @param {any} module
+ */
 const checkModuleDepencendiesAtInstallation = async (module) => {
     if (module.moduleDependencies) {
         const missingDependencies = [];
@@ -129,6 +157,9 @@ const checkModuleDepencendiesAtInstallation = async (module) => {
     }
 };
 
+/**
+ * @param {any} myModule
+ */
 const checkModuleDepencendiesAtUninstallation = async (myModule) => {
     if (myModule.moduleDependencies) {
         const needDeactivation = [];
@@ -156,7 +187,8 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
 };
 
 /**
- * Module : Charge les fichiers init.js des modules si besoin
+ * Module : Load the init.js files of the modules if necessary
+ * @param {any} server
  */
 const modulesLoadInit = async (server) => {
     const Modules  = require('../orm/models/modules');
@@ -172,7 +204,7 @@ const modulesLoadInit = async (server) => {
     }
     for (let i = 0; i < loadedModules.length; i++) {
         const initModuleFile = path.join(global.appRoot, `/modules/${loadedModules[i].name}/init.js`);
-        if (await fs.access(initModuleFile)) {
+        if (fs.existsSync(initModuleFile)) {
             process.stdout.write(`- ${loadedModules[i].name}`);
             try {
                 const isValid = await utils.checkModuleRegistryKey(loadedModules[i].name);
@@ -192,12 +224,15 @@ const modulesLoadInit = async (server) => {
     if (loadedModules.length > 0) {
         console.log('Finish init loading modules');
     } else {
-        console.log('no modules to load');
+        console.log('No modules to load');
     }
 };
 
 /**
- * Module : Charge les fichiers initAfter.js des modules actifs
+ * Module : Loads initAfter.js files for active modules
+ * @param {any} apiRouter
+ * @param {any} server
+ * @param {any} passport
  */
 const modulesLoadInitAfter = async (apiRouter, server, passport) => {
     loadedModules = loadedModules.filter((mod) => mod.init) || [];
@@ -205,10 +240,10 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
         console.log('Start initAfter loading modules');
         for (const mod of loadedModules) {
             try {
-                // Récupère les fichiers initAfter.js des modules
+                // Get the initAfter.js files of the modules
                 await new Promise(async (resolve, reject) => {
                     try {
-                        if (await fs.access(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
+                        if (fs.existsSync(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))) {
                             process.stdout.write(`- ${mod.name}`);
                             if (!mod.valid) {
                                 const isValid = await utils.checkModuleRegistryKey(mod.name);

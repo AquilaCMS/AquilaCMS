@@ -28,7 +28,7 @@ SetAttributesControllers.controller("SetAttributesListCtrl", [
 ]);
 
 SetAttributesControllers.controller("SetAttributesNewCtrl", [
-    "$scope", "$location", "SetAttributesV2", "toastService", function ($scope, $location, SetAttributesV2, toastService) {
+    "$scope", "$location", "SetAttributesV2", "toastService","$translate", function ($scope, $location, SetAttributesV2, toastService, $translate) {
         $scope.setAttribute = {};
 
         $scope.type = window.location.hash.indexOf('users') > -1 ? 'users' : 'products';
@@ -38,18 +38,9 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
             data["update"] = false;
             data.type = $scope.type
             SetAttributesV2.save(data, function (msg) {
-                console.log(msg)
-                if(msg.alreadyExist)
+                if(msg.status)
                 {
-                    toastService.toast("warning", "Un jeu d'attribut existe déjà avec ce code");
-                    if(isQuit)
-                    {
-                        $location.path(`/${$scope.type}/setAttributes/${data["code"]}`);
-                    }
-                }
-                else if(msg.status)
-                {
-                    toastService.toast("success", "Sauvegarde effectuée");
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                     if(isQuit)
                     {
                         $location.path(`/${$scope.type}/setAttributes`);
@@ -59,6 +50,16 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
                 {
                     console.error("Error!");
                 }
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", $translate.instant("global.error"));
+                }
             });
         };
 
@@ -66,8 +67,8 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
 ]);
 
 SetAttributesControllers.controller("SetAttributesDetailCtrl", [
-    "$scope", "$location", "$routeParams", "SetAttributesV2", "toastService", "$rootScope",
-    function ($scope, $location, $routeParams, SetAttributesV2, toastService, $rootScope) {
+    "$scope", "$location", "$routeParams", "SetAttributesV2", "toastService", "$rootScope", "$translate",
+    function ($scope, $location, $routeParams, SetAttributesV2, toastService, $rootScope, $translate) {
 
         $scope.type = window.location.hash.indexOf('users') > -1 ? 'users' : 'products';
 
@@ -75,7 +76,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
             $scope.tabActive = "setAttributes";
             if(obj.code === undefined)
             {
-                toastService.toast("warning", "Ce jeu d'attributs n'existe pas");
+                toastService.toast("warning", $translate.instant("global.attributNotExist"));
                 $location.path(`/${$scope.type}/setAttributes`);
             }
             if(!angular.isDefined($scope.setAttribute.code))
@@ -144,7 +145,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
                 console.log(msg)
                 if(msg.status)
                 {
-                    toastService.toast("success", "Sauvegarde effectuée");
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                     if(isQuit)
                     {
                         $location.path(`/${$scope.type}/setAttributes`);

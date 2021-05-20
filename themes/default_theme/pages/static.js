@@ -4,8 +4,8 @@ import { NSPageStatic, NSContext } from 'aqlrc';
 import { withRouter } from 'next/router';
 import CMS from 'components/CMS';
 import Layout from 'components/Layout';
-import Error from './_error.js';
 import { withI18next } from 'lib/withI18n';
+import Error from './_error';
 
 /**
  * PageStatic - Page statique (surcharge NSPageStatic)
@@ -15,7 +15,7 @@ import { withI18next } from 'lib/withI18n';
 class PageStatic extends NSPageStatic {
     render() {
         const { oCmsHeader, oCmsFooter, sitename, t } = this.props;
-        const _slug = this.props.router.query._slug  !== undefined && this.props.router.query._slug.length !== 2 ? this.props.router.query._slug : 'home';
+        const _slug = this.props.router.query._slug !== undefined && this.props.router.query._slug.length !== 2 ? this.props.router.query._slug : 'home';
         if (this.props.notFound) {
             return (
                 <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -32,17 +32,17 @@ class PageStatic extends NSPageStatic {
                             <meta property="og:type" content="website" />
                         </Head>
                     ) : (
-                        <>
-                            <Head>
-                                <title>{sitename} | {this.props[`nsCms_${_slug}`].title || ''}</title>
-                                <meta name="description" content={this.props[`nsCms_${_slug}`].metaDesc || ''} />
-                                <meta property="og:title" content={this.props[`nsCms_${_slug}`].title || ''} />
-                                <meta property="og:description" content={this.props[`nsCms_${_slug}`].metaDesc || ''} />
-                                <meta property="og:type" content="website" />
-                            </Head>
-                            <CMS {...this.props} ns-code={_slug} content={this.props[`nsCms_${_slug}`].content || '<p>Vide</p>'} />
-                        </>
-                    )}
+                            <>
+                                <Head>
+                                    <title>{sitename} | {this.props[`nsCms_${_slug}`].title || ''}</title>
+                                    <meta name="description" content={this.props[`nsCms_${_slug}`].metaDesc || ''} />
+                                    <meta property="og:title" content={this.props[`nsCms_${_slug}`].title || ''} />
+                                    <meta property="og:description" content={this.props[`nsCms_${_slug}`].metaDesc || ''} />
+                                    <meta property="og:type" content="website" />
+                                </Head>
+                                <CMS {...this.props} ns-code={_slug} content={this.props[`nsCms_${_slug}`].content || '<p>Vide</p>'} />
+                            </>
+                        )}
                     {this.jsxHook}
                 </Layout>
             </NSContext.Provider>

@@ -1,12 +1,25 @@
 angular.module("aq.stock.controllers", []).controller("StockCtrl", [
-    "$scope", "$location", "toastService", "ConfigV2", "$modal", function ($scope, $location, toastService, ConfigV2, $modal)
-    {
+    "$scope", "$location", "toastService", "ConfigV2", "$modal", "$translate",
+    function ($scope, $location, toastService, ConfigV2, $modal, $translate) {
         $scope.stock = {
-            cartExpireTimeout: 48, pendingOrderCancelTimeout: 48, bookingStock: "panier",
+            cartExpireTimeout: 48,
+            pendingOrderCancelTimeout: 48,
+            requestMailPendingCarts: 24,
+            bookingStock: "panier",
             labels: {}
         };
         $scope.disableEdit = false;
         $scope.taxerate = []
+
+        $scope.pendingCartCheck = function(){
+            if ($scope.stock.cartExpireTimeout <= $scope.stock.requestMailPendingCarts){
+                if ($scope.stock.cartExpireTimeout === 0){
+                    $scope.stock.requestMailPendingCarts = 0;
+                }else{
+                    $scope.stock.requestMailPendingCarts = $scope.stock.cartExpireTimeout -1;
+                }
+            }
+        }
 
         $scope.fixAdditionnalFees = function () {
             if (
@@ -17,21 +30,14 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             }
             $scope.stock.additionnalFees.et = Number($scope.stock.additionnalFees.et.toFixed(2))
         }
-
-        ConfigV2.stockOrder( function (cfg)
-        {
-            if(Object.keys(cfg).length > 2)
-            {
-                $scope.stock = cfg;
+        ConfigV2.get({PostBody: {structure: {stockOrder: 1, taxerate: 1}}}, function (config) {
+            if(Object.keys(config.stockOrder).length > 2) {
+                $scope.stock = config.stockOrder;
             }
-        });
-        ConfigV2.taxerate( function (cfg)
-        {
-                $scope.taxerate = cfg;
+            $scope.taxerate = config.taxerate;
         });
 
-        $scope.manageLabel = function (label)
-        {
+        $scope.manageLabel = function (label) {
             $modal.open({
                 templateUrl: "app/stock/stock-labels.html",
                 controller: "StockLabelCtrl",
@@ -41,27 +47,18 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
                         return label;
                     }
                 }
-            }).result.then(function (result)
-            {
-                if(result)
-                {
-                    if(result.isNew)
-                    {
+            }).result.then(function (result) {
+                if(result) {
+                    if(result.isNew) {
                         $scope.stock.labels.push(result.label);
                         console.log($scope.stock.labels);
-                    }
-                    else
-                    {
-                        $scope.stock.labels[$scope.stock.labels.findIndex(function (_label)
-                        {
+                    } else {
+                        $scope.stock.labels[$scope.stock.labels.findIndex(function (_label) {
                             return _label.code === result.label.code;
                         })] = result.label;
                     }
-                }
-                else
-                {
-                    $scope.stock.labels.splice($scope.stock.labels.findIndex(function (_label)
-                    {
+                } else {
+                    $scope.stock.labels.splice($scope.stock.labels.findIndex(function (_label) {
                         return _label.code === label.code;
                     }), 1);
                 }
@@ -97,19 +94,13 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             });
         };
 
-        $scope.save = function (quit)
-        {
+        $scope.save = function (quit) {
             var stock = $scope.stock;
 
-            ConfigV2.save({stockOrder: stock, taxerate:$scope.taxerate}, function ()
-            {
-                toastService.toast("success", "Stock & commandes sauvegardée !");
-                if(quit)
-                {
-                    $location.path("/");
-                }
-            }, function (err)
-            {
+            ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function () {
+                toastService.toast("success", $translate.instant("global.order&StockSaved"));
+                if (quit) $location.path("/");
+            }, function (err) {
                 toastService.toast("danger", err.data);
             });
         };
@@ -120,11 +111,11 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         $scope.isEditMode = false;
         $scope.label = {code: "", translation: {}};
 
-        for(var i = 0; i < $scope.languages.length; i++) {
+        for (var i = 0; i < $scope.languages.length; i++) {
             $scope.label.translation[$scope.languages[i].code] = {value: ''}
         }
 
-        if(label)
+        if (label)
         {
             $scope.isEditMode = true;
             $scope.label = angular.copy(label);

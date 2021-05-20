@@ -1,4 +1,13 @@
-const mongoose = require('mongoose');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const mongoose     = require('mongoose');
+const {encryption} = require('../../utils');
 
 const Schema = mongoose.Schema;
 
@@ -15,6 +24,9 @@ const ConfigurationSchema = new Schema({
         authorizedIPs     : {type: String, default: ''},
         autoMaintenance   : {type: Boolean, default: false},
         billsPattern      : {type: String},
+        logPath           : {type: String},
+        errorPath         : {type: String},
+        favicon           : {type: String},
         cacheTTL          : {type: Number},
         currentTheme      : {type: String, required: true},
         demoMode          : {type: Boolean, default: true},
@@ -29,15 +41,19 @@ const ConfigurationSchema = new Schema({
         maintenance       : {type: Boolean, default: false},
         overrideSendTo    : {type: String},
         photoPath         : {type: String},
-        port              : {type: Number, required: true},
         sendMetrics       : {
             active   : {type: Boolean, default: true},
             lastSent : {type: Date}
         },
-        siteName        : {type: String, required: true},
-        websiteCountry  : {type: String, required: true},
-        websiteTimezone : {type: String},
-        migration       : {type: Number}
+        siteName              : {type: String, required: true},
+        websiteCountry        : {type: String, required: true},
+        websiteTimezone       : {type: String},
+        migration             : {type: Number},
+        contentSecurityPolicy : {
+            values : {type: [String]},
+            active : {type: Boolean, default: false}
+        }
+
     },
     taxerate : {
         type : [
@@ -48,6 +64,7 @@ const ConfigurationSchema = new Schema({
     stockOrder : {
         cartExpireTimeout         : {type: Number, required: true, default: 48},
         pendingOrderCancelTimeout : {type: Number, required: true, default: 48},
+        requestMailPendingCarts   : {type: Number, required: true, default: 24},
         bookingStock              : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
         labels                    : {
             type    : [{code: {type: String, required: true}, translation: {}}],
@@ -88,10 +105,29 @@ const ConfigurationSchema = new Schema({
         returnStockToFront : {type: Boolean, default: false},
         automaticBilling   : {type: Boolean, default: false}
     }
+}, {
+    id : false
 });
 
 ConfigurationSchema.post('updateOne', async function () {
+    const update = this.getUpdate().$set;
+    if (update.environment && update.environment.mailPass) {
+        try {
+            update.environment.mailPass = encryption.cipher(update.environment.mailPass);
+        } catch (err) {
+            console.error(err);
+        }
+    }
     global.envConfig = (await this.findOne({})).toObject();
+});
+
+ConfigurationSchema.post('findOne', async function (doc) {
+    if (doc.environment && doc.environment.mailPass) {
+        try {
+            doc.environment.mailPass = encryption.decipher(doc.environment.mailPass);
+        // eslint-disable-next-line no-empty
+        } catch (err) {}
+    }
 });
 
 module.exports = ConfigurationSchema;

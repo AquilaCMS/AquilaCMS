@@ -1,9 +1,18 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose         = require('mongoose');
 const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
-const ObjectId         = Schema.ObjectId;
+const aquilaEvents     = require('../../utils/aquilaEvents');
+const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
     code         : {type: String, required: true, unique: true},
@@ -15,7 +24,6 @@ const CategoriesSchema = new Schema({
     colorName    : {type: String},
     openDate     : {type: Date, default: Date.now},
     closeDate    : {type: Date},
-    creationDate : {type: Date, default: Date.now},
     ancestors    : [{type: ObjectId, ref: 'categories'}],
     children     : [{type: ObjectId, ref: 'categories'}],
     productsList : [{
@@ -41,7 +49,11 @@ const CategoriesSchema = new Schema({
     },
     translation      : {},
     canonical_weight : {type: Number, default: 0}
-}, {usePushEach: true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues
@@ -97,15 +109,25 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
     return errors;
 };
 
+aquilaEvents.emit('categoriesSchemaInit', CategoriesSchema);
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('categories', that._id, that.code);
+    await utilsDatabase.checkSlugExist(that, 'categories');
+}
+
 CategoriesSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, CategoriesSchema);
 });
 
 CategoriesSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, CategoriesSchema);
 });
 
 CategoriesSchema.pre('save', async function (next) {
+    await preUpdates(this);
     const errors = await CategoriesSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });

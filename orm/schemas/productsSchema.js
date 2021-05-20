@@ -1,14 +1,24 @@
-const fs                  = require('fs');
-const mongoose            = require('mongoose');
-const aquilaEvents        = require('../../utils/aquilaEvents');
-const NSErrors            = require('../../utils/errors/NSErrors');
-const utils               = require('../../utils/utils');
-const {checkCustomFields} = require('../../utils/translation');
-const utilsDatabase       = require('../../utils/database');
-const translation         = require('../../utils/translation');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
 
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const mongoose      = require('mongoose');
+const fs            = require('../../utils/fsp');
+const aquilaEvents  = require('../../utils/aquilaEvents');
+const NSErrors      = require('../../utils/errors/NSErrors');
+const utils         = require('../../utils/utils');
+const {
+    checkCustomFields,
+    checkTranslations
+} = require('../../utils/translation');
+const utilsDatabase = require('../../utils/database');
+
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -21,10 +31,8 @@ const ProductsSchema = new Schema({
     universe           : String,
     family             : String,
     subfamily          : String,
-    slugMenus          : {type: [String], index: true},
     component_template : String,
     weight             : {type: Number, default: 0}, // Le poids du produit
-    creationDate       : {type: Date, default: Date.now},
     price              : {
         purchase : Number,
         tax      : Number,
@@ -41,15 +49,6 @@ const ProductsSchema = new Schema({
             ati : {type: Number, default: 0}
         }
     },
-    presentInLastImport : {type: Boolean},    // True if product is still present in last import, set visible to false
-    specific            : {
-        custom_text1            : String,
-        custom_text2            : String,
-        custom_text3            : String,
-        custom_supplier_code    : String,
-        custom_traitement       : String,
-        custom_code_fabrication : String
-    },
     associated_prds : [{type: ObjectId, ref: 'products'}],
     set_attributes  : {type: ObjectId, ref: 'setAttributes', index: true},
     attributes      : [
@@ -64,8 +63,7 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
-    set_options : {type: ObjectId, ref: 'setoptions'}, // Fin Module Options
-    images      : [
+    images : [
         {
             url              : String,
             name             : String,
@@ -122,51 +120,15 @@ const ProductsSchema = new Schema({
 }, {
     discriminatorKey : 'kind',
     timestamps       : true,
-    usePushEach      : true
+    usePushEach      : true,
+    id               : false
 });
 ProductsSchema.index({_visible: 1, active: 1});
-ProductsSchema.index({
-    code                               : 'text',
-    trademark                          : 'text',
-    type                               : 'text',
-    universe                           : 'text',
-    family                             : 'text',
-    subfamily                          : 'text',
-    slugMenus                          : 'text',
-    code_ean                           : 'text',
-    'specific.custom_text1'            : 'text',
-    'specific.custom_text2'            : 'text',
-    'specific.custom_text3'            : 'text',
-    'specific.custom_supplier_code'    : 'text',
-    'specific.custom_traitement'       : 'text',
-    'specific.custom_code_fabrication' : 'text',
-    // "cmsBlocks.title"                  : "text",
-    // "cmsBlocks.text"                   : "text",
-    'images.url'                       : 'text',
-    'images.name'                      : 'text',
-    'images.alt'                       : 'text',
-    'pictos.code'                      : 'text',
-    'pictos.url'                       : 'text',
-    'pictos.title'                     : 'text',
-    'pictos.location'                  : 'text',
-    'attributes.code'                  : 'text'
-}, {name: 'textSearchIndex', default_language: 'french'});
-
-/* translation:
- slug: requis, unique entre les produits, pas entre ses langues
- name
- title
- metaDesc
- canonical
- description1: {
-    title
-    text
-  }
- description2: {
-    title
-    text
-  }
- */
+// ProductsSchema.index({
+//     code        : 'text',
+//     trademark   : 'text',
+//     code_ean    : 'text',
+// }, {name: 'textSearchIndex', default_language: 'french'});
 
 ProductsSchema.statics.translationValidation = async function (updateQuery, self) {
     let errors = [];
@@ -181,7 +143,18 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
         for (const lang of languages) {
             if (!translationKeys.includes(lang.code)) {
                 translationKeys.push(lang.code);
-                updateQuery.translation[lang.code] = {slug: utils.slugify(updateQuery.code)};
+                let correctCode;
+                // when we want the preview of a product
+                // the updateQuery object don't have the code (only updatedAt)
+                // so we need to get the code to update and get the preview !
+                if (typeof updateQuery.code === 'undefined') {
+                    if (self && self._update && self._update.code) {
+                        correctCode = self._update.code;
+                    }
+                } else {
+                    correctCode = updateQuery.code;
+                }
+                updateQuery.translation[lang.code] = {slug: utils.slugify(correctCode)};
             }
             if (!updateQuery.translation[lang.code].slug) {
                 updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].name ? utils.slugify(updateQuery.translation[lang.code].name) : updateQuery.code;
@@ -200,12 +173,12 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
             ]));
 
             if (updateQuery.translation[lang.code].description1) {
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                errors = checkTranslations(updateQuery.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
+                errors = checkTranslations(updateQuery.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
             }
             if (updateQuery.translation[lang.code].description2) {
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                errors = checkTranslations(updateQuery.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
+                errors = checkTranslations(updateQuery.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
             }
         }
     } else {
@@ -225,23 +198,23 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
                 self.translation[lang.code].slug = utils.slugify(self.translation[lang.code].slug);
             }
             if (self.translation[lang.code].slug.length <= 2) {
-                errors.push('slug trop court');
+                errors.push(`slug '${lang.code}' trop court`);
                 return errors;
             }
             if (await mongoose.model('products').countDocuments({_id: {$ne: self._id}, [`translation.${lang.code}.slug`]: self.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
+                errors.push(`slug '${lang.code}' déjà existant`);
             }
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
                 {key: 'slug'}, {key: 'name'}, {key: 'title'}, {key: 'metaDesc'}, {key: 'canonical'}
             ]));
 
             if (self.translation[lang.code].description1) {
-                errors = translation.checkTranslations(self.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(self.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
+                errors = checkTranslations(self.translation[lang.code].description1.title, 'description1.title', errors, translationKeys[lang.code]);
+                errors = checkTranslations(self.translation[lang.code].description1.text, 'description1.text', errors, translationKeys[lang.code]);
             }
             if (self.translation[lang.code].description2) {
-                errors = translation.checkTranslations(self.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
-                errors = translation.checkTranslations(self.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
+                errors = checkTranslations(self.translation[lang.code].description2.title, 'description2.title', errors, translationKeys[lang.code]);
+                errors = checkTranslations(self.translation[lang.code].description2.text, 'description2.text', errors, translationKeys[lang.code]);
             }
         }
     }
@@ -249,7 +222,13 @@ ProductsSchema.statics.translationValidation = async function (updateQuery, self
     return errors;
 };
 
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('products', that._id, that.code);
+    await utilsDatabase.checkSlugExist(that, 'products');
+}
+
 ProductsSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     // suppression des images en cache si la principale est supprimée
     if (this.getUpdate().$set && this.getUpdate().$set._id) {
         const oldPrd = await mongoose.model('products').findOne({_id: this.getUpdate().$set._id.toString()});
@@ -257,7 +236,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
             if (this.getUpdate().$set.images) {
                 if (this.getUpdate().$set.images.findIndex((img) => oldPrd.images[i]._id.toString() === img._id.toString()) === -1) {
                     try {
-                        await fs.unlinkSync(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
+                        await fs.unlink(`${require('../../utils/server').getUploadDirectory()}/temp/${oldPrd.images[i].url}`);
                     } catch (error) {
                         console.log(error);
                     }
@@ -274,6 +253,7 @@ ProductsSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 ProductsSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, ProductsSchema);
 });
 
@@ -283,6 +263,7 @@ ProductsSchema.pre('save', async function (next) {
         ati : this.price.ati.special || this.price.ati.normal
     };
     const errors         = await ProductsSchema.statics.translationValidation(undefined, this);
+    await preUpdates(this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
 
@@ -292,53 +273,33 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
         throw NSErrors.CartQuantityError;
     }
     const ServicePromo = require('../../services/promo');
-    const prd          = await ServicePromo.checkPromoCatalog([item], user, lang);
-    if (prd && prd[0] && prd[0].price) {
-        if (prd[0].price.et && prd[0].price.et.special !== undefined) {
-            this.price.et.special = prd[0].price.et.special;
+    let prd            = [item];
+    if (item.type !== 'bundle') {
+        prd = await ServicePromo.checkPromoCatalog(prd, user, lang);
+        if (prd && prd[0] && prd[0].type !== 'bundle' && prd[0].price) {
+            if (prd[0].price.et && prd[0].price.et.special !== undefined) {
+                this.price.et.special = prd[0].price.et.special;
+            }
+            if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
+                this.price.ati.special = prd[0].price.ati.special;
+            }
         }
-        if (prd[0].price.ati && prd[0].price.ati.special !== undefined) {
-            this.price.ati.special = prd[0].price.ati.special;
+        item.price = {
+            vat  : {rate: this.price.tax},
+            unit : {
+                et  : this.price.et.normal,
+                ati : this.price.ati.normal
+            }
+        };
+
+        if (this.price.et.special !== undefined && this.price.et.special !== null) {
+            item.price.special = {
+                et  : this.price.et.special,
+                ati : this.price.ati.special
+            };
         }
     }
-    await new Promise((resolve, reject) => {
-        fs.access('modules/priceRules.js', async (err) =>  {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    item.price = {
-                        vat  : {rate: this.price.tax},
-                        unit : {
-                            et  : this.price.et.normal,
-                            ati : this.price.ati.normal
-                        }
-                    };
-
-                    if (this.price.et.special !== undefined && this.price.et.special !== null) {
-                        item.price.special = {
-                            et  : this.price.et.special,
-                            ati : this.price.ati.special
-                        };
-                    }
-                    resolve();
-                } else {
-                    reject(err);
-                }
-            } else {
-                // eslint-disable-next-line import/no-unresolved
-                const priceRules = require('../modules/priceRules');
-                priceRules(item, this, function (err, calculatedPrice) {
-                    if (err) return reject(err);
-                    item.price = {
-                        vat  : {rate: this.price.tax},
-                        unit : {ati: calculatedPrice}
-                    };
-                    resolve();
-                });
-            }
-        });
-    });
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
-    // cb(null, resp);
     return resp;
 };
 

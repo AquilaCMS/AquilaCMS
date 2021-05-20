@@ -1,0 +1,23 @@
+<form name="form" novalidate class="form-horizontal" ng-submit="save(media)" role="form">
+    <div class="modal-header">
+        <h3 translate>medias.new.media</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box-content">
+                    <div class="form-group">
+                        <label for="code" class="col-sm-2 control-label" translate>medias.new.nom</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="code" ng-model="media.name" required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()" translate>medias.multi.cancel</button>
+        <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>medias.new.add</button>
+    </div>
+</form>

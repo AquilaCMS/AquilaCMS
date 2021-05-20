@@ -4,11 +4,19 @@ import App from 'next/app';
 import Head from 'next/head';
 import parse from 'html-react-parser';
 import {
-    NSToast, initAqlrc, initLangAqlrc, getCmsBlock, initPage, jwtManager, getUser, logoutUser, scrollToTop
+    NSToast,
+    initAqlrc,
+    initLangAqlrc,
+    getCmsBlock,
+    initPage,
+    jwtManager,
+    getUser,
+    logoutUser,
+    scrollToTop
 } from 'aqlrc';
 import getAPIUrl from 'lib/getAPIUrl';
 import { Router } from 'routes';
-import {getModulesHookFunctionsByType} from '../lib/utils';
+import { getModulesHookFunctionsByType } from '../lib/utils';
 import 'styles/global.css';
 import 'public/static/css/slider.css';
 import 'rc-slider/assets/index.css';
@@ -25,12 +33,14 @@ class AquilaApp extends App {
         let appurl = null;
         let sitename = null;
         let demo = null;
+        let favicon = null;
         let langs = null;
         try {
             // Récupération de variables globales dont nous aurons besoin basées sur la configuration du back-office
             // "appurl" : l'URL de base du site
             // "sitename" : le nom du site
             // "demo" : le booléen d'activation du site en mode démo
+            // "favicon" : le chemin du favicon
             // "langs" : tableau des langues
             // Ces données sont cachées (limite de 2 jours) dans le local storage
             // Le cache ne fonctionne donc que côté client !
@@ -41,30 +51,34 @@ class AquilaApp extends App {
                 }
             }
             if (!cache || (cache && Date.now() >= cache.date)) {
-                const resConf = await axios.get(`${getAPIUrl(bundle.ctx)}config/data`);
-                appurl = resConf.data.appUrl;
-                sitename = resConf.data.siteName;
-                demo = resConf.data.demoMode;
+                const resConf = await axios.post(`${getAPIUrl(bundle.ctx)}v2/config`, {
+                    PostBody: { structure: { environment: 1 } }
+                });
+                appurl = resConf.data.environment.appUrl;
+                sitename = resConf.data.environment.siteName;
+                demo = resConf.data.environment.demoMode;
+                favicon = resConf.data.environment.favicon;
                 const resLangs = await axios.post(`${getAPIUrl(bundle.ctx)}v2/languages`, { PostBody: { limit: 99 } }); // Récupération des langues
                 langs = resLangs.data.datas;
                 if (typeof window !== 'undefined') {
                     window.localStorage.setItem('cache', JSON.stringify({
-                        appurl, sitename, demo, langs, date : Date.now() + 172800000
+                        appurl, sitename, demo, favicon, langs, date: Date.now() + 172800000
                     }));
                 }
             } else {
                 appurl = cache.appurl;
                 sitename = cache.sitename;
                 demo = cache.demo;
+                favicon = cache.favicon;
                 langs = cache.langs;
             }
 
             // Récupération des blocs CMS existants
             // On se basera sur cette liste afin d'éviter de récupérer des blocs CMS qui n'existent pas (ce qui peut arriver)
             const resCms = await axios.post(`${getAPIUrl(bundle.ctx)}v2/cmsBlocks`, {
-                PostBody : {
-                    structure : { translation: 0 },
-                    limit     : 99
+                PostBody: {
+                    structure: { translation: 0 },
+                    limit: 99
                 }
             });
             const cmsBlocks = resCms.data.count > 0 ? resCms.data.datas : [];
@@ -74,7 +88,7 @@ class AquilaApp extends App {
             if (typeof window !== 'undefined' && (!window.localStorage.getItem('lang') || window.localStorage.getItem('lang') !== lang)) {
                 window.localStorage.setItem('lang', lang);
             }
-            
+
             // Affection de la langue dans les headers
             axios.defaults.headers.common.lang = lang;
             initLangAqlrc(lang);
@@ -113,15 +127,15 @@ class AquilaApp extends App {
                 if (user) {
                     try {
                         const PostBody = {
-                            structure : {
-                                isActiveAccount   : 1,
-                                company           : 1,
-                                civility          : 1,
-                                preferredLanguage : 1,
-                                type              : 1,
-                                addresses         : 1,
-                                delivery_address  : 1,
-                                billing_address   : 1
+                            structure: {
+                                isActiveAccount: 1,
+                                company: 1,
+                                civility: 1,
+                                preferredLanguage: 1,
+                                type: 1,
+                                addresses: 1,
+                                delivery_address: 1,
+                                billing_address: 1
                             }
                         };
                         user = await getUser(user._id, PostBody, bundle.ctx);
@@ -158,15 +172,16 @@ class AquilaApp extends App {
                 ...pageProps,
                 ...initData,
                 demo,
-                cmsHead       : cmsHead.content,
-                messageCookie : cmsCookieBanner.content,
+                favicon,
+                cmsHead: cmsHead.content,
+                messageCookie: cmsCookieBanner.content,
                 appurl,
                 sitename,
                 cmsBlocks,
-                themeConfig   : themeConfig.data.config,
-                currentUrl    : bundle.ctx.asPath, // => NSMenu
+                themeConfig: themeConfig.data.config.values,
+                currentUrl: bundle.ctx.asPath, // => NSMenu
                 user,
-                gNext         : { Router },
+                gNext: { Router },
                 langs,
                 lang,
                 routerLang,
@@ -199,7 +214,7 @@ class AquilaApp extends App {
         /* Évènements levés pour Google Analytics */
         const init = new CustomEvent('init', {});
         window.dispatchEvent(init);
-        let logPageView = new CustomEvent('logPageView', {detail: {url: window.location.pathname}});
+        let logPageView = new CustomEvent('logPageView', { detail: { url: window.location.pathname } });
         window.dispatchEvent(logPageView);
 
         Router.onRouteChangeStart = () => {
@@ -209,7 +224,7 @@ class AquilaApp extends App {
 
         Router.router.events.on('routeChangeComplete', (url) => {
             if (typeof window !== 'undefined' && window.location.hash === '') scrollToTop(1000);
-            const onChangeLogPageView = new CustomEvent('logPageView', {detail: {url}});
+            const onChangeLogPageView = new CustomEvent('logPageView', { detail: { url } });
             window.dispatchEvent(onChangeLogPageView);
         });
 
@@ -227,6 +242,7 @@ class AquilaApp extends App {
                 <Head>
                     <meta property="og:site_name" content={pageProps.sitename} />
                     <meta itemProp="name" content={pageProps.sitename} />
+                    {pageProps.favicon && <link rel="shortcut icon" href={pageProps.favicon} />}
                     {
                         !pageProps.demo ? <meta name="robots" content="index,follow" />
                             : (
@@ -248,7 +264,7 @@ class AquilaApp extends App {
                                 </>
                             )
                     }
-                    { pageProps.cmsHead ? parse(pageProps.cmsHead) : null }
+                    {pageProps.cmsHead ? parse(pageProps.cmsHead) : null}
                 </Head>
                 <Component {...pageProps} />
             </>

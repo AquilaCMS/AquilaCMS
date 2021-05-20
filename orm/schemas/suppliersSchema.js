@@ -1,5 +1,14 @@
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const mongoose      = require('mongoose');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
 
 const SuppliersSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -12,10 +21,12 @@ const SuppliersSchema = new Schema({
     cpostal            : String,
     city               : String,
     mail               : String,
-    phone              : Number,
+    phone              : String,
     purchasing_manager : String,
-    active             : {type: Boolean, default: true},
-    creationDate       : {type: Date, default: Date.now}
+    active             : {type: Boolean, default: true}
+}, {
+    timestamps : true,
+    id         : false
 });
 
 SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
@@ -28,5 +39,22 @@ SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
         cb(sp._id, res);
     }
 };
+
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('suppliers', that._id, that.code);
+}
+
+SuppliersSchema.pre('updateOne', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+SuppliersSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+SuppliersSchema.pre('save', async function (next) {
+    await preUpdates(this);
+    next();
+});
 
 module.exports = SuppliersSchema;

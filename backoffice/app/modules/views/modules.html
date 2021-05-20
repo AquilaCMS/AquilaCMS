@@ -15,17 +15,9 @@
     }
 </style>
 
-<ns-box data-title="modules.t1" title-icon="fa fa-plug fa-lg" ng-show="!showLoading">
-    <div class="row" style="margin: 0px;">
-        <p translate>modules.addMod</p>
-        <div class="col-md-12">
-            <div class="col-md-6">
-                <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype=".zip" multiple="false" type="module" before-function="before()" after-function="uploaded(module)" on-error="uploadError()"></ns-upload-files>
-            </div>
-        </div>
-    </div>
+<ns-box data-title="modules.t1" title-icon="fa fa-plug fa-lg" ng-show="!showLoading" new-click="addPlugin()">   
     <br/>
-    <div>
+    <div class="tableWrapperOverflow">
         <table class="shortTable table table-striped table-bordered">
             <thead>
                 <tr style="cursor: pointer">
@@ -58,11 +50,12 @@
                         {{module.version}}
                     </td>
                     <td>
+                        
                         <toggle
                             ng-model="module.active"
                             ng-change="toggleActive(module._id, module.name, module.active)"
-                            on="Activé"
-                            off="Désactivé"
+                            on="{{'modules.activate' | translate}}"
+                            off="{{'modules.deactivate' | translate}}"
                             onstyle="btn btn-success btnsuccess"
                             offstyle="btn btn-red"
                         ></toggle>

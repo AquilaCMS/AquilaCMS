@@ -1,0 +1,133 @@
+{
+    "/api/v2/component/{componentName}/{code}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success response",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            },
+                            "examples": {
+                                "ns-gallery": {
+                                    "value": "{\r\n\"datas\": [\r\n{\r\n\"src\": \"medias/gallery/imagename.jpg\",\r\n\"srcset\": [\r\n\"medias/gallery/imagename.jpg\"\r\n],\r\n\"content\": \"\",\r\n\"alt\": \"alt name\",\r\n\"order\": 1,\r\n\"extension\": \".jpg\"\r\n}\r\n],\r\n\"count\": 1,\r\n\"maxColumnNumber\": 3\r\n}"
+                                },
+                                "ns-cms" : {
+                                    "value":{
+                                        "code": "header",
+                                        "content": "html content",
+                                        "description": "descr"
+                                    }
+                                },
+                                "ns-menu" : {
+                                    "value":{
+                                        "action": "catalog",
+                                        "children": [
+                                            {
+                                                "action": "catalog",
+                                                "displayOrder": 1,
+                                                "code": "catcode",
+                                                "productsList": [
+                                                    {
+                                                        "checked": false,
+                                                        "sortWeight": 0,
+                                                        "_id": "5da57915de6bed65e1d2a8ad",
+                                                        "id": "5c667f8a28a49c049c5863c8"
+                                                    }
+                                                ],
+                                                "slug": {
+                                                    "en": "my-slugen",
+                                                    "fr": "slugfr"
+                                                },
+                                                "name": "product name",
+                                                "metaDescription": "meta description",
+                                                "extraText": "html content"
+                                            }
+                                        ],
+                                        "code": "menu-header",
+                                        "slug": {
+                                            "fr": "menu-header",
+                                            "en": "menu-header"
+                                        },
+                                        "name": "Menu header"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad request response",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "componentName",
+                    "in": "path",
+                    "description": "componentName always start with \"ns-\"",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "code",
+                    "in": "path",
+                    "description": "code",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Component"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get ns-gallery",
+                                "description": "Get gallery in english.<br/><br/>Specify in parameters :<br/>'componentName' = 'ns-gallery'<br/>'code' equals the gallery code",
+                                "value": {"lang":"en"}
+                            },
+                            "example2": {
+                                "summary": "Get ns-cms",
+                                "description": "Get BlockCMS in english.<br/><br/>Specify in parameters : 'componentName' : 'ns-cms'<br/>'code' equals the block-cms code",
+                                "value": {"lang":"en"}
+                            },
+                            "example3": {
+                                "summary": "Get ns-menu",
+                                "description": "Get menu.<br/><br/>Specify in parameters : 'componentName' : 'ns-menu'<br/>'code' equals the menu code",
+                                "value": {"lang":"en"}
+                            },
+                            "example4": {
+                                "summary": "Get ns-slider",
+                                "description": "Get slider.<br/><br/>Specify in parameters : 'componentName' : 'ns-slider'<br/>'code' equals the slider code",
+                                "value": {"lang":"en"}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    }
+}

@@ -1,14 +1,15 @@
 var BundleProductControllers = angular.module("aq.bundleProduct.controllers", []);
 
 BundleProductControllers.controller("BundleProductCtrl", [
-    "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "SetOption", "SetOptionId", "toastService", "CategoryV2",
-    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2",
-    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, SetOption, SetOptionId, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2)
+    "$scope", "$http", "$location", "$modal", "ProductService", "$routeParams", "AttributesV2", "toastService", "CategoryV2",
+    "BundleSectionDisplayModes", "ProductsV2", "ProductsV2","SetAttributesV2", "ProductsTabs", "$translate",
+    function ($scope, $http, $location, $modal, ProductService, $routeParams, AttributesV2, toastService, CategoryV2, BundleSectionDisplayModes, ProductsV2, ProductsV2, SetAttributesV2, ProductsTabs, $translate)
     {   
         $scope.isEditMode = false;
         $scope.disableSave = false;
         $scope.promos = [];
         $scope.displayModes = BundleSectionDisplayModes;
+        $scope.additionnalTabs = ProductsTabs;
         $scope.nsUploadFiles = {
             isSelected: false
         };
@@ -49,7 +50,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        toastService.toast("danger", "product.toast.URLcanonical");
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -61,21 +62,11 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             $scope.isEditMode = true;
 
-            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: 'bundle'}, structure: '*', populate: ["set_attributes", "bundle_sections.products.id"], withPromos: false}}, function (product)
+            ProductsV2.query({PostBody: {filter: {code: $routeParams.code, type: 'bundle'}, structure: '*', populate: ["set_attributes", "bundle_sections.products.id", "associated_prds"], withPromos: false}}, function (product)
             {
                 $scope.product = product;
 
-                if($scope.product.set_options !== undefined)
-                {
-                    SetOptionId.fOne({id: $scope.product.set_options}, function (setOpt)
-                    {
-                        $scope.product.set_options_name = setOpt.name;
-                    });
-                }
-
                 genAttributes();
-
-                $scope.product.set_options_all = SetOption.query();
             });
             $scope.promos = ProductsV2.getPromos({PostBody: { filter: {code: $routeParams.code}, structure: '*'}}, function (result) {
                 $scope.promos = result.datas.promos;
@@ -91,7 +82,6 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $scope.product = ProductService.getProductObject();
             $scope.product.type = "bundle";
             $scope.product.bundle_sections = [];
-            $scope.product.set_options_all = SetOption.query();
 
             $scope.product.price = {purchase: 0, et: {normal: 0}, ati: {normal: 0}};
             $scope.product.qty = 0;
@@ -173,30 +163,52 @@ BundleProductControllers.controller("BundleProductCtrl", [
             });
         };
 
-        $scope.removeBundleSection = function (section)
-        {
-            $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
+        $scope.removeBundleSection = function (section) {
+            if(confirm($translate.instant("bundle.msg.deleteSelection"))){
+                $scope.product.bundle_sections.splice($scope.product.bundle_sections.indexOf(section), 1);
+            }
         };
 
-        $scope.addBundleProduct = function (section)
-        {
+        $scope.addBundleProduct = function (section) {
             var modalInstance = $modal.open({
-                templateUrl: "app/product/views/modals/selectproducts.html", controller: "SelectProductsCtrl", windowClass: "modal-big", scope: $scope, resolve: {
-                    queryFilter: function ()
-                    {
+                templateUrl: "app/product/views/modals/selectproducts.html",
+                controller: "SelectProductsCtrl",
+                windowClass: "modal-big",
+                scope: $scope,
+                resolve: {
+                    queryFilter: function (){
                         return {
                             type: "simple"
                         };
+                    },
+                    productSelected(){
+                        let newObj = [];
+                        for(let oneProd of section.products){
+                            oneProd.id.modifier = {
+                                modifier_weight: oneProd.modifier_weight,
+                                modifier_price: oneProd.modifier_price
+                            }
+                            newObj.push(oneProd.id);
+                        }
+                        return newObj;
                     }
                 }
             });
-            modalInstance.result.then(function (products)
-            {
-                var newProducts = products.map(function (item)
-                {
-                    return {id: item, isDefault: false};
+            modalInstance.result.then(function (products) {
+                section.products = products.map((item) => {
+                    let productReturned       = {};
+                    productReturned.id        = item;
+                    productReturned.isDefault = false;
+                    if(item.modifier){
+                        if(item.modifier.modifier_price){
+                            productReturned.modifier_price = item.modifier.modifier_price;
+                        }
+                        if(item.modifier.modifier_weight){
+                            productReturned.modifier_weight = item.modifier.modifier_weight
+                        }
+                    }
+                    return productReturned;
                 });
-                section.products = section.products.concat(newProducts);
             });
         };
 
@@ -204,6 +216,67 @@ BundleProductControllers.controller("BundleProductCtrl", [
         {
             section.products.splice(section.products.indexOf(product), 1);
         };
+
+        $scope.recalculate = function (target, prd) {
+            const fields = target.split(".");
+            const vat = $scope.product.price.tax / 100 + 1;
+
+            if (fields.length > 1) {
+                let removeFields = false;
+
+                if (fields[1] === "et") {
+                    if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                        prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                    } else {
+                        removeFields = true;
+                    }
+                } else {
+                    if (prd.modifier_price.ati !== undefined && prd.modifier_price.ati != null) {
+                        prd.modifier_price.et = parseFloat((prd.modifier_price.ati / vat).toFixed(2));
+                    } else {
+                        removeFields = true;
+                    }
+                }
+
+                if (removeFields) {
+                    delete prd.modifier_price.et;
+                    delete prd.modifier_price.ati;
+                }
+            } else {
+                if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                }
+                if (prd.modifier_price.et !== undefined && prd.modifier_price.et != null) {
+                    prd.modifier_price.ati = parseFloat((prd.modifier_price.et * vat).toFixed(2));
+                }
+            }
+        };
+
+        function checkForm(fieldsToCheck){
+            let text = "";
+            for(let oneField of fieldsToCheck){
+                const elt = document.querySelector(`label[for="${oneField}"]`);
+                const translationToCheck = ["name"]; // TODO : you may need to add string here (also in simpleProduct)
+                if(translationToCheck.includes(oneField)){
+                    for(let oneLang of $scope.languages){
+                        if($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != ""){
+                        //good
+                        }else{
+                            text += `name (${oneLang.name}), `;
+                        }
+                    }
+                }else{
+                    if (elt) {
+                        if(elt.control && elt.control.value == ""){
+                            if(elt.innerText){
+                                text += `${elt.innerText}, `;
+                            }
+                        }
+                    }
+                }
+            }
+            return text;
+        }
 
         $scope.saveProduct = function (product, isQuit)
         {
@@ -219,13 +292,37 @@ BundleProductControllers.controller("BundleProductCtrl", [
             {
                 section.products = section.products.map(function (item)
                 {
-                    return {id: item.id, isDefault: item.isDefault};
+                    const prd = {id: item.id, isDefault: item.isDefault};
+                    if (item.modifier_price && item.modifier_price.ati) {
+                        prd.modifier_price = item.modifier_price;
+                    } else {
+                        prd.$unset = {modifier_price: ""}
+                    }
+                    if (item.modifier_weight) {
+                        prd.modifier_weight = item.modifier_weight;
+                    } else {
+                        prd.$unset = {modifiers_weight: ""}
+                    }
+                    return prd;
                 });
             });
 
-            if($scope.form.$invalid)
-            {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides");
+            let strInvalidFields = "";
+            if ($scope.form.$invalid) {
+                if ($scope.form.$error && $scope.form.$error.required) {
+                    $scope.form.$error.required.forEach((requiredField, index) => {
+                        strInvalidFields += checkForm([requiredField.$name]);
+                    });
+                }
+            }else{
+                strInvalidFields = checkForm(["code", "name"]);
+            }
+            //we remove ", "
+            if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
+            }
+            if(strInvalidFields != ""){
+                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
                 return;
             }
 
@@ -257,7 +354,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                 }
             }
-
+            
             if(attrsErrors === false)
             {
                 $scope.disableSave = !$scope.isEditMode;
@@ -270,7 +367,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                     else
                     {
-                        toastService.toast("success", "Produit sauvegardé !");
+                        toastService.toast("success", $translate.instant("global.productSaved"));
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
@@ -285,8 +382,8 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         if(!$scope.isEditMode)
                         {
                             window.location.href = "#/products/" + savedPrd.type + "/" + savedPrd.code;
+                            $location.path(window.location.href);
                         }
-                        window.location.reload();
                     }
                 }, function (err)
                 {
@@ -316,7 +413,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     $location.path("/products");
                 }, function ()
                 {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
                 });
             }
         };
@@ -327,13 +424,6 @@ BundleProductControllers.controller("BundleProductCtrl", [
             $location.path("/products");
         };
 
-        $scope.getCategoriesLink = function (){
-            if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
-                    $scope.categoriesLink = categoriesLink.datas;
-                });
-            }
-        };
         
         $scope.moreButtons = [
             {
@@ -379,7 +469,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                         else
                         {
-                            toastService.toast("success", "Produit sauvegardé !");
+                            toastService.toast("success", $translate.instant("global.productSaved"));
                             if($scope.isEditMode)
                             {
                                 $scope.disableSave = false;
@@ -392,7 +482,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                     }, function (err)
                     {
-                        toastService.toast("danger", "Une erreur est survenue lors de la sauvegarde.");
+                        toastService.toast("danger", $translate.instant("global.errorSaving"));
                         $scope.disableSave = false;
                     });
                 },

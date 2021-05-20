@@ -20,6 +20,10 @@ yarn-error.log
 # NEXT.JS
 .next/
 
+# nyc
+.nyc_output
+coverage
+
 # AquilaCMS
 sitemap.xml
 robots.txt
@@ -65,6 +69,7 @@ log
 !/backoffice/app/cmsBlocks/
 !/backoffice/app/config/
 !/backoffice/app/contact/
+!/backoffice/app/system/
 !/backoffice/app/dependencies/
 !/backoffice/app/design/
 !/backoffice/app/family/
@@ -85,7 +90,7 @@ log
 !/backoffice/app/productBundle/
 !/backoffice/app/productReviews/
 !/backoffice/app/productSimple/
-!/backoffice/app/produtVirtual/
+!/backoffice/app/productVirtual/
 !/backoffice/app/promo/
 !/backoffice/app/shipment/
 !/backoffice/app/site/

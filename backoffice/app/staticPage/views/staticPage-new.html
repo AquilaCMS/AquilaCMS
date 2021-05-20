@@ -66,11 +66,46 @@
             </div>
 
             <div class="form-group">
-                <div class="col-sm-12">
-                    <label class="col-sm-2 control-label" translate>cmsBlocks.detail.content</label>
-                    <div class="col-sm-10">
-                        <ns-tinymce lang="lang" text="static.translation[lang].content"></ns-tinymce>
-                        <button type="button" class="btn btn-default " ng-click="preview()" translate>static.detail.preview</button>
+                <div class="col-sm-2"></div>
+                <div class=" col-sm-10 scrollmenu">
+                    <ul class="nav nav-tabs" >
+                        <li class='active' ng-click="generateContent();selectTab('result')"><a data-toggle="tab" href="#result" target="_self" translate>static.detail.result</a></li>
+                        <li ng-click="generateVariables();selectTab('variables')"><a data-toggle="tab" href="#variables" target="_self" translate>static.detail.variables</a></li>
+                        <li><a data-toggle="tab" href="#html" target="_self" ng-click="selectTab('html')" translate>static.detail.html</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10 tab-content">
+                    <div id="result" class="tab-pane fade in active">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div style="background-color: white; padding: 20px; border-radius: 10px;" ng-bind-html="static.translation[lang].content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="variables" class="tab-pane">
+                        <div ng-repeat="var in static.translation[lang].variables">
+                            <div class="form-group">
+                                <label for="" class="col-sm-1 control-label" style="max-width: 150px;">{{var.label}}</label>
+                                <div class="col-sm-11">
+                                    <textarea rows="1" class="form-control" ng-model="var.value"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="static.translation[lang].variables.length === 0">
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label class="control-label" translate>static.detail.noVars</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="html" class="tab-pane">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <ns-tinymce ng-if="selectedTab.active == 'html'" lang="lang" text="static.translation[lang].html"></ns-tinymce>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,6 @@
+{
+    "baseUrl": "http://localhost:3010/",
+    "failOnStatusCode:": false,
+    "viewportWidth": 1200,
+    "viewportHeight": 860
+}

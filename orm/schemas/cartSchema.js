@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose = require('mongoose');
 const fs       = require('../../utils/fsp');
 
@@ -11,7 +19,7 @@ const utils         = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const aquilaEvents  = require('../../utils/aquilaEvents');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 const defaultVAT    = 20;
 
 const CartSchema = new Schema({
@@ -57,7 +65,6 @@ const CartSchema = new Schema({
             onAllSite   : Boolean,
             openDate    : Date,
             closeDate   : Date,
-            slugMenus   : [String],
             priceATI    : {type: Number, required: true} // TODO P3 : renommer en amountATI - 2X - (y a til une raison de renommer ?)
         }
     ],
@@ -85,7 +92,11 @@ const CartSchema = new Schema({
         method : {type: String, enum: ['delivery', 'withdrawal'], default: 'delivery'},
         date   : Date
     }
-}, {usePushEach: true, timestamps: true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
@@ -253,7 +264,7 @@ async function updateCarts(update, id, next) {
     const {Modules} = require('../models');
     const _modules  = await Modules.find({active: true});
     for (let i = 0; i < _modules.length; i++) {
-        if (await fs.access(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
+        if (await fs.hasAccess(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`)) {
             const updateCart = require(`${global.appRoot}/modules/${_modules[i].name}/updateCart.js`);
             await updateCart(update, id, next);
         }

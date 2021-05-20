@@ -1,5 +1,12 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {getUserFromRequest}        = require('../middleware/server');
 const ServicePromo                = require('../services/promo');
 
 module.exports = function (app) {
@@ -13,10 +20,13 @@ module.exports = function (app) {
     app.delete('/v2/promo/:promoId/code/:codeId',    authentication, adminAuth, deletePromoCode);
 };
 
+/**
+ * GET /api/v2/promo/check/code/{code}/{cartId}/{lang}
+ * @summary Validate discount code and return the new cart
+ */
 async function checkCodePromoByCode(req, res, next) {
     try {
-        const user   = getUserFromRequest(req);
-        const result = await ServicePromo.checkForApplyPromo(user, req.params.cartId, req.params.lang, req.params.code);
+        const result = await ServicePromo.checkForApplyPromo(req.info, req.params.cartId, req.params.lang, req.params.code);
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -24,7 +34,7 @@ async function checkCodePromoByCode(req, res, next) {
 }
 
 /**
- * Fonction retournant des promos
+ * Function returning promos
  */
 async function getPromos(req, res, next) {
     try {
@@ -36,7 +46,7 @@ async function getPromos(req, res, next) {
 }
 
 /**
- * Fonction retournant une promo en fonction de son PostBody
+ * Function returning a promo based on its PostBody
  */
 async function getPromo(req, res, next) {
     try {
@@ -48,7 +58,7 @@ async function getPromo(req, res, next) {
 }
 
 /**
- * Fonction retournant une promo en fonction de son _id
+ * Function returning a promo based on its _id
  */
 async function getPromoById(req, res, next) {
     try {
@@ -60,7 +70,7 @@ async function getPromoById(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer une promo
+ * Function allowing to delete a promo
  */
 async function setPromo(req, res, next) {
     try {
@@ -72,7 +82,7 @@ async function setPromo(req, res, next) {
 }
 
 /**
- * Fonction permettant de cloner une promo
+ * Function to clone a promotion
  */
 async function clonePromo(req, res, next) {
     try {
@@ -84,7 +94,7 @@ async function clonePromo(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer une promo
+ * Function allowing to delete a promo
  */
 async function deletePromo(req, res, next) {
     try {
@@ -96,7 +106,7 @@ async function deletePromo(req, res, next) {
 }
 
 /**
- * Fonction permettant de supprimer un code d'une promo
+ * Function used to delete a code from a promo
  */
 async function deletePromoCode(req, res, next) {
     try {

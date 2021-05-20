@@ -4,7 +4,11 @@
         "properties": {
             "updated" : {"type": "string", "format": "date", "default": "Date.now"},
             "paidTax" : {"type": "boolean", "default": true},
-            "status"  : {"type": "String", "enum": ["IN_PROGRESS", "EXPIRING", "EXPIRED"], "default": "IN_PROGRESS", "index": true},
+            "status"  : {"type": "string", "enum": ["IN_PROGRESS", "EXPIRING", "EXPIRED"], "default": "IN_PROGRESS", "index": true},
+            "createdAt" : {
+                "type": "string",
+                "format": "date"
+            },
             "promos"  : {
                 "type": "array",
                 "items": {
@@ -14,9 +18,9 @@
                         "promoCodeId" : {"type": "ObjectId", "required": true, "index": true, "description": "L'id d'un promo.codes[i].code"},
                         "discountATI" : {"type": "number", "default": null},
                         "discountET"  : {"type": "number", "default": null},
-                        "name"        : {"type": "String", "required": true},
-                        "description" : {"type": "String", "required": true},
-                        "code"        : {"type": "String", "required": true},
+                        "name"        : {"type": "string", "required": true},
+                        "description" : {"type": "string", "required": true},
+                        "code"        : {"type": "string", "required": true},
                         "gifts"       : {
                             "type": "array",
                             "items": {
@@ -44,8 +48,8 @@
                 "type": "object",
                 "properties": {
                     "id"    : {"type": "ObjectId", "ref": "users", "index": true},
-                    "email" : {"type": "String", "index": true},
-                    "phone" : {"type": "String"}
+                    "email" : {"type": "string", "index": true},
+                    "phone" : {"type": "string"}
                 }
             },
             "addresses" : {
@@ -76,14 +80,14 @@
                         "value"       : {"type": "number"},
                         "description" : {"type": "string"},
                         "minimumATI"  : {"type": "number"},
-                        "onAllSite"   : {"type": "Boolean"},
-                        "openDate"    : {"type": "Date"},
-                        "closeDate"   : {"type": "Date"},
-                        "slugMenus"   : {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                        "onAllSite"   : {"type": "boolean"},
+                        "openDate"    : {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "closeDate"   : {
+                            "type": "string",
+                            "format": "date"
                         },
                         "priceATI"    : {"type": "number", "required": true}
                     }
@@ -105,14 +109,17 @@
                     "code"           : {"type": "string"},
                     "name"           : {"type": "string"},
                     "url"            : {"type": "string"},
-                    "date"           : {"type": "date"},
+                    "date"           : {
+                        "type": "string",
+                        "format": "date"
+                    },
                     "dateDelivery"   : {
                         "type": "object",
                         "properties": {
                             "delayDelivery"    : {"type": "number"},
-                            "unitDelivery"     : {"type": "String"},
+                            "unitDelivery"     : {"type": "string"},
                             "delayPreparation" : {"type": "number"},
-                            "unitPreparation"  : {"type": "String"}
+                            "unitPreparation"  : {"type": "string"}
                         }
                     }
                 }
@@ -120,8 +127,11 @@
             "orderReceipt" : {
                 "type": "object",
                 "properties": {
-                    "method" : {"type": "String", "enum": ["delivery", "withdrawal"], "default": "delivery"},
-                    "date"   : {"type": "Date"}
+                    "method" : {"type": "string", "enum": ["delivery", "withdrawal"], "default": "delivery"},
+                    "date"   : {
+                        "type": "string",
+                        "format": "date"
+                    }
                 }
             }
         }

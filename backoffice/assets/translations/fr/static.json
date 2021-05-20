@@ -9,7 +9,11 @@
         "preview": "Prévisualiser",
         "save": "Enregistrer",
         "index": "Indexer la page",
-        "group": "Groupe"
+        "group": "Groupe",
+        "html": "HTML",
+        "variables": "Variables",
+        "result": "Resultat",
+        "noVars": "Pas de variables"
     },
     "list": {
         "t1": "Pages statiques",
@@ -32,6 +36,10 @@
         "metaDesc": "Méta description",
         "preview": "Prévisualiser",
         "save": "Enregistrer",
-        "group": "Groupe"
+        "group": "Groupe",
+        "html": "HTML",
+        "variables": "Variables",
+        "result": "Resultat",
+        "noVars": "Pas de variables"
     }
 }

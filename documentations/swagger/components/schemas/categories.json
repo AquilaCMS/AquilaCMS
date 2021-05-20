@@ -9,9 +9,12 @@
                 "isDisplayed"  : {"type": "boolean", "default": true},
                 "action"       : {"type": "string", "default": "catalog"},
                 "colorName"    : {"type": "string"},
-                "openDate"     : {"type": "string", "format": "Date", "default": "Date.now"},
-                "closeDate"    : {"type": "string", "format": "Date"},
-                "creationDate" : {"type": "string", "format": "Date", "default": "Date.now"},
+                "openDate"     : {"type": "string", "format": "date", "default": "Date.now"},
+                "closeDate"    : {"type": "string", "format": "date"},
+                "createdAt" : {
+                    "type": "string",
+                    "format": "date"
+                },
                 "ancestors"    : {
                     "type": "array",
                     "items": {
@@ -64,7 +67,7 @@
                             }
                         },
                         "attributesValues" : {"type": "object"},
-                        "pictos"           : {"type": "array"}
+                        "pictos"           : {"type": "object"}
                     }
                 },
                 "translation"      : {"type": "object"},

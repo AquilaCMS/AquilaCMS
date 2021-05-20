@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                  = require('moment-business-days');
 const path                    = require('path');
 const mongoose                = require('mongoose');
@@ -18,13 +26,9 @@ const {
     Configuration,
     Products,
     ProductsPreview,
-    ProductSimple,
-    ProductBundle,
-    ProductVirtual,
     Categories,
     SetAttributes,
-    Attributes,
-    Languages
+    Attributes
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
@@ -33,13 +37,13 @@ const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'tra
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
 
-// si dans le config, on demande de ne pas retourner les champs de stock, on les ajoute au restrictedFields
+// if in the config, we ask not to return the stock fields, we add them to the restrictedFields
 if (global.envConfig.stockOrder.returnStockToFront !== true) {
     restrictedFields = restrictedFields.concat(['stock.qty', 'stock.qty_booked', 'stock.qty_real']);
 }
 
 /**
- * Lors de la recupération d'un produit on y ajout aussi le prix min et max des produits trouvés par le queryBuilder
+ * When a product is retrieved, the minimum and maximum price of the products found by the queryBuilder is also added
  * @param {PostBody} PostBody
  * @param {Express.Request} reqRes
  * @param {string} lang
@@ -49,7 +53,7 @@ const getProducts = async (PostBody, reqRes, lang) => {
     let properties = [];
     let structure;
     if (PostBody && PostBody.structure) {
-        // obligé d'avoir tous les champs pour les règles de promo
+        // required to have all fields for promo rules
         structure  = PostBody.structure;
         properties = Object.keys(PostBody.structure).concat(defaultFields);
         properties.push('_id');
@@ -59,8 +63,8 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
         queryBuilder.defaultFields = ['*'];
     }
-    let result = await queryBuilder.find(PostBody);
-    if (PostBody && PostBody.filter && PostBody.filter.$text) { // La recherche fulltext ne permet pas de couper des mot (chercher "TO" dans "TOTO")
+    // The fulltext search does not allow to cut words (search "TO" in "TOTO")
+    if (PostBody && PostBody.filter && PostBody.filter.$text) {
         if (PostBody.structure && PostBody.structure.score) {
             delete PostBody.structure.score;
         }
@@ -72,12 +76,11 @@ const getProducts = async (PostBody, reqRes, lang) => {
         PostBody.filter.$or.push({[`translation.${lang}.description2.title`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         PostBody.filter.$or.push({[`translation.${lang}.description2.text`]: {$regex: PostBody.filter.$text.$search, $options: 'i'}});
         delete PostBody.filter.$text;
-
-        result = await queryBuilder.find(PostBody);
     }
+    let result                 = await queryBuilder.find(PostBody);
     queryBuilder.defaultFields = defaultFields;
 
-    // On supprime les reviews qui ne sont pas visible et verify
+    // We delete the reviews that are not visible and verify
     if (PostBody && structure && structure.reviews === 1) {
         serviceReviews.keepVisibleAndVerifyArray(result);
     }
@@ -124,14 +127,20 @@ const getProducts = async (PostBody, reqRes, lang) => {
         }
     }
 
-    result.specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
-    result.specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
+    result.specialPriceMin = {
+        et  : Math.min(...arraySpecialPrice.et),
+        ati : Math.min(...arraySpecialPrice.ati)
+    };
+    result.specialPriceMax = {
+        et  : Math.max(...arraySpecialPrice.et),
+        ati : Math.max(...arraySpecialPrice.ati)
+    };
 
     return result;
 };
 
 /**
- * On récupére le produit correspondant au filtre du PostBody
+ * Get the product corresponding to the PostBody filter
  * @param {*} PostBody
  * @param reqRes
  * @param keepReviews
@@ -140,15 +149,15 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
     let product;
     if (reqRes && reqRes.req.query.preview) {
         PostBody.filter = {_id: reqRes.req.query.preview};
-        product         = await queryBuilderPreview.findOne(PostBody);
+        product         = await queryBuilderPreview.findOne(PostBody, false);
     } else {
-        product = await queryBuilder.findOne(PostBody);
+        product = await queryBuilder.findOne(PostBody, false);
     }
     if (!product) {
         return product;
     }
 
-    // On supprime les reviews qui ne sont pas visible et verify
+    // We delete the reviews that are not visible and verify
     if (
         product.reviews
         && product.reviews.datas
@@ -161,24 +170,25 @@ const getProduct = async (PostBody, reqRes = undefined, keepReviews = false, lan
         serviceReviews.keepVisibleAndVerify(product);
     }
 
+    if (product.associated_prds) {
+        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
+    }
     if (reqRes !== undefined && PostBody.withPromos !== false) {
         reqRes.res.locals = product;
         product           = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-    }
-    if (product.associated_prds) {
-        product.associated_prds = product.associated_prds.filter((p) => p.translation && p.translation[lang]);
     }
     return product;
 };
 
 /**
- * On récupére les promos correspondant au produit demandé
+ * Get the discount corresponding to the requested product
  * @param {*} PostBody
  * @param reqRes
  * @param keepReviews
  */
 const getPromosByProduct = async (PostBody, reqRes = undefined) => {
-    const product = await queryBuilder.findOne(PostBody, false, reqRes.req.headers.authorization);
+    const isAdmin = !!(reqRes.req && reqRes.req.info && reqRes.req.info.isAdmin);
+    const product = await queryBuilder.findOne(PostBody, false, isAdmin);
     if (!product) {
         return product;
     }
@@ -193,7 +203,7 @@ const getPromosByProduct = async (PostBody, reqRes = undefined) => {
 };
 
 /**
- * Duplication de produit dans le back-office
+ * Product duplication in the back office
  */
 const duplicateProduct = async (idProduct, newCode) => {
     const doc       = await Products.findById(idProduct);
@@ -223,6 +233,13 @@ const duplicateProduct = async (idProduct, newCode) => {
         status     : 'liv'
     };
     doc.code    = newCode;
+    for (const lang of Object.entries(doc.translation)) {
+        if (doc.translation[lang[0]].canonical) {
+            delete doc.translation[lang[0]].canonical;
+        }
+    }
+    doc.active   = false;
+    doc._visible = false;
     await doc.save();
     return doc;
 };
@@ -235,8 +252,8 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
 };
 
 /**
- * On récupére les produits contenus dans une categorie
- * @param {*} id de la categorie
+ * We get the products contained in a category
+ * @param {*} id category id
  * @param {*} PostBody
  * @param {*} lang
  * @param isAdmin
@@ -245,20 +262,35 @@ const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false
  */
 const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
     moment.locale(global.defaultLang);
-    let matchCategory = {_visible: true, active: true};
-    // Si admin alors on populate tout les documents sans restriction de visibilité ou d'actif
-    if (isAdmin) {
-        matchCategory = {};
+    lang = servicesLanguages.getDefaultLang(lang);
+    // If admin then we populate all documents without visibility or asset restriction
+    if (!PostBody.filter) PostBody.filter = {};
+    if (!isAdmin) {
+        PostBody.filter = {
+            ...PostBody.filter,
+            _visible : true,
+            active   : true
+        };
     }
-    const menu = await Categories.findById(id).populate({
-        path  : 'productsList.id',
-        match : matchCategory
-    }).lean();
+    PostBody.filter = {
+        ...PostBody.filter,
+        [`translation.${lang}`] : {$exists: true}
+    };
+    if (!PostBody.structure) {
+        PostBody.structure = {};
+    }
+    PostBody.structure = {
+        ...PostBody.structure,
+        price : 1,
+        type  : 1
+    };
+
+    const menu = await Categories.findById(id).lean();
     if (menu === null) {
         throw NSErrors.CategoryNotFound;
     }
     if (isAdmin && PostBody && PostBody.filter && PostBody.filter.inProducts !== undefined) {
-        // On supprime les produits de productsList en fonction de inProducts (true ou false)
+        // We delete products from productsList depending on inProducts (true or false)
         for (let i = menu.productsList.length - 1; i >= 0; i--) {
             const prd = menu.productsList[i];
             if (prd.checked !== PostBody.filter.inProducts) {
@@ -268,53 +300,36 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         delete PostBody.filter.inProducts;
         delete PostBody.filter.productsIds;
     }
-    lang = servicesLanguages.getDefaultLang(lang);
-    // Si un productsList.id ne répond pas au match alors productsList.id === null
-    menu.productsList = menu.productsList.filter((p) => p.id !== null);
-    menu.productsList = menu.productsList.filter((p) => p.id.translation && p.id.translation[lang]);
-    if (PostBody.filter === undefined)  PostBody.filter = {};
-    const _config = await Configuration.findOne({}, {stockOrder: 1});
-    if (_config.stockOrder.bookingStock !== 'none') { // Besoin impératif des stock si un le gère
+    // If a productsList.id does not respond to the match then productsList.id === null
+    if (global.envConfig.stockOrder.bookingStock !== 'none') { // Imperative need of stock if one manages it
         PostBody.structure.stock = 1;
     }
 
-    // On verifie que les infos de PostBody sont correctes
+    // We check that the PostBody information is correct
     const {limit, skip} = queryBuilder.verifyPostBody(PostBody, 'find');
-    // On récupére les produits trié par sortWeight, et on slice(filter.skip, filter.limit)
-    // si PostBody.sort n'existe pas ou que sort.sortWeight existe
-    if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-        // on trie les sortWeight du plus petit au plus grand
-        if (PostBody.sort && PostBody.sort.sortWeight && PostBody.sort.sortWeight === 1 ) {
-            menu.productsList.sort((p1, p2) => p1.sortWeight  - p2.sortWeight);
-        } else {
-            menu.productsList.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        }
-    }
-    // Si il y a un tri sur les produits alors on va trier les produits dans le queryBuilder
-    const productListSorted = menu.productsList;
+    // We get the products sorted by sortWeight, and we slice(filter.skip, filter.limit)
 
-    PostBody.filter._id = {$in: productListSorted.map((item) => item.id._id.toString())};
-    // On récupére les produits de productList
+    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id.toString())};
+    // Get products from productList
     const result = await queryBuilder.find(PostBody, true);
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
-        // On ajoute le sortWeight correspondant au produit dans le doc produit
-        productListSorted.forEach((product) => {
-            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id._id.toString());
-            // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
+        // We add the sortWeight corresponding to the product in the product doc
+        menu.productsList.forEach((product) => {
+            const ProdFound = result.datas.find((resProd) => resProd._id.toString() === product.id.toString());
+            // add sortWeight to result.datas[i] (modification of an object by reference)
             if (ProdFound) {
                 ProdFound.sortWeight = product.sortWeight;
             }
         });
-        // On trie les produits par poids
+        // Products are sorted by weight
         result.datas.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
-        result.count = menu.productsList.length;
     }
-    if (_config.stockOrder.bookingStock !== 'none') {
+    if (global.envConfig.stockOrder.bookingStock !== 'none') {
         for (let i = 0; i < result.datas.length; i++) {
             const product   = result.datas[i];
             const stockData = await calculStock({lang}, product);
             if (product.type === 'simple') {
-                // TODO P2 "shipping : business day" : ne marche plus, on met le jour même en dur
+                // TODO P2 "shipping : business day" : doesn't work anymore, we put the same day in hard
                 // const dateShipped = moment().businessAdd(shipment.delay.unit === "DAY" ? shipment.delay.value : 1).format('DD/MM/YYYY');
                 result.datas[i].stock.label       = stockData.label;
                 result.datas[i].stock.dateShipped = stockData.dateShipped;
@@ -322,31 +337,33 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
                 result.datas[i].stock.qty         = stockData.product.stock.qty;
                 result.datas[i].stock.orderable   = stockData.product.stock.orderable;
                 result.datas[i].stock.qty_real    = stockData.product.stock.qty_real;
-                // result.datas[i] = {...result.datas[i], label, dateShipped, status: product.stock.status, qty: product.stock.qty, orderable: product.stock.orderable, qty_real: product.stock.qty_real};
             }
         }
     }
 
     if (PostBody.structure && PostBody.structure.sortWeight) {
         for (let i = 0; i < result.datas.length; i++) {
-            const sortedPrd = productListSorted.find((sortedPrd) => sortedPrd.id._id.toString() === result.datas[i]._id.toString());
+            const sortedPrd = menu.productsList.find((sortedPrd) => sortedPrd.id.toString() === result.datas[i]._id.toString());
             if (sortedPrd) {
                 result.datas[i].sortWeight = sortedPrd.sortWeight;
             }
         }
     }
 
-    // On récupére tous les produits appartenant a cette categorie afin d'avoir le min et max
-    PostBody.filter._id = {$in: menu.productsList.map((item) => item.id._id.toString())};
+    // We collect all the products belonging to this category in order to have the min and max
     let priceFilter;
     if (PostBody.filter.$and) {
         priceFilter = PostBody.filter.$and[0];
         PostBody.filter.$and.shift();
         if (PostBody.filter.$and.length === 0) delete PostBody.filter.$and;
     }
-    // on utilise lean afin d'améliorer grandement les performances de la requete (x3 plus rapide)
-    // {virtuals: true} permet de récupérer les champs virtuels (stock.qty_real)
-    let prds       = await Products.find(PostBody.filter).sort(PostBody.sort).lean({virtuals: true});
+    // we use lean to greatly improve the performance of the query (x3 faster)
+    // {virtuals: true} allows to get virtual fields (stock.qty_real)
+    let prds       = await Products
+        .find(PostBody.filter)
+        .populate(PostBody.populate)
+        .sort(PostBody.sort)
+        .lean({virtuals: true});
     let prdsPrices = JSON.parse(JSON.stringify(prds));
 
     prdsPrices = await servicePromos.checkPromoCatalog(prdsPrices, user, lang, true);
@@ -402,15 +419,17 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const arraySpecialPrice = {et: [], ati: []};
 
     for (const prd of prds) {
-        if (prd.price.et.special) {
-            arrayPrice.et.push(prd.price.et.special);
-        } else {
-            arrayPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arrayPrice.ati.push(prd.price.ati.special);
-        } else {
-            arrayPrice.ati.push(prd.price.ati.normal);
+        if (prd.price) {
+            if (prd.price.et.special) {
+                arrayPrice.et.push(prd.price.et.special);
+            } else {
+                arrayPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arrayPrice.ati.push(prd.price.ati.special);
+            } else {
+                arrayPrice.ati.push(prd.price.ati.normal);
+            }
         }
     }
 
@@ -418,95 +437,76 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
     const priceMax = {et: Math.max(...arrayPrice.et), ati: Math.max(...arrayPrice.ati)};
 
     for (const prd of prdsPrices) {
-        if (prd.price.et.special) {
-            arraySpecialPrice.et.push(prd.price.et.special);
-        } else {
-            arraySpecialPrice.et.push(prd.price.et.normal);
-        }
-        if (prd.price.ati.special) {
-            arraySpecialPrice.ati.push(prd.price.ati.special);
-        } else {
-            arraySpecialPrice.ati.push(prd.price.ati.normal);
+        if (prd.price) {
+            if (prd.price.et.special) {
+                arraySpecialPrice.et.push(prd.price.et.special);
+            } else {
+                arraySpecialPrice.et.push(prd.price.et.normal);
+            }
+            if (prd.price.ati.special) {
+                arraySpecialPrice.ati.push(prd.price.ati.special);
+            } else {
+                arraySpecialPrice.ati.push(prd.price.ati.normal);
+            }
         }
     }
 
     const specialPriceMin = {et: Math.min(...arraySpecialPrice.et), ati: Math.min(...arraySpecialPrice.ati)};
     const specialPriceMax = {et: Math.max(...arraySpecialPrice.et), ati: Math.max(...arraySpecialPrice.ati)};
 
-    // On récupére uniquement l'image ayant pour default = true si aucune image trouvé on prend la premiére image du produit
+    // Get only the image having for default = true if no image found we take the first image of the product
     for (let i = 0; i < result.datas.length; i++) {
-        if (!result.datas[i].images.length) continue;
-        const image = utilsMedias.getProductImageUrl(result.datas[i]);
-        if (!image) result.datas[i].images = [result.datas[i].images[0]];
-        else result.datas[i].images = [image];
+        if (result.datas[i].images) {
+            if (!result.datas[i].images.length) continue;
+            const image = utilsMedias.getProductImageUrl(result.datas[i]);
+            if (!image) result.datas[i].images = [result.datas[i].images[0]];
+            else result.datas[i].images = [image];
+        }
     }
 
     if ((PostBody.sort && PostBody.sort.sortWeight) || !PostBody.sort) {
         prds.forEach((product, index) => {
-            const idx = productListSorted.findIndex((resProd) => resProd.id._id.toString() === product._id.toString());
-            // on ajoute sortWeight au result.datas[i] (modification d'un objet par réference)
+            const idx = menu.productsList.findIndex((resProd) => resProd.id.toString() === product._id.toString());
+            // add sortWeight to result.datas[i] (modification of an object by reference)
             if (idx > -1) {
-                prds[index].sortWeight = productListSorted[idx].sortWeight;
+                prds[index].sortWeight = menu.productsList[idx].sortWeight;
             } else {
                 prds[index].sortWeight = -1;
             }
         });
 
-        // On trie les produits par poids, le trie par pertinence se fait toujours du plus pertinent au moins pertienent
+        // Products are sorted by weight, sorting by relevance is always done from most relevant to least relevant
         prds.sort((p1, p2) => p2.sortWeight - p1.sortWeight);
     }
 
-    const products = prds.slice(skip, limit + skip);
-    // On transforme les produits en produit mongoose afin que la translation puisse être effectué après le res.json()
-    let tProducts = [];
-    for (let k = 0; k < products.length; k++) {
-        switch (products[k].type) {
-        case 'simple':
-            tProducts.push(new ProductSimple(products[k]));
-            // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
-            // on utilise la fonction addToStructure pour connaitre les champs a garder (obligatoire + demandés)
-            // permettra de récupérer le champ sortWeight également
-            // const newPrd = new ProductSimple(products[k]);
-            // if (Object.keys(PostBody.structure).length > 0) {
-            //     const structure = queryBuilder.addToStructure(PostBody.structure);
-            //     const productWithStructure = Object.keys(structure).map(k => (k in newPrd ? {[k]: newPrd[k]} : {})).reduce((res, o) => Object.assign(res, o), {});
-            //     tProducts.push(productWithStructure);
-            // } else {
-            //     tProducts.push(newPrd);
-            // }
-            break;
-        case 'virtual':
-            tProducts.push(new ProductVirtual(products[k]));
-            break;
-        case 'bundle':
-            const prd = await new ProductBundle(products[k]).populate(PostBody.populate || '').execPopulate();
-            tProducts.push(prd);
-            break;
+    let products = prds.slice(skip, limit + skip);
 
-        default:
-            break;
-        }
-    }
-
-    // TODO P5 (chaud) le code ci-dessous permet de retourner la structure que l'on envoi dans le PostBody car actuellement ça renvoi tout les champs
-    // ce code ne marche pas car _doc n'exsite pas dans produits et removeFromStructure en a besoin
+    // TODO P5 (hot) the code below allows to return the structure that we send in the PostBody because currently it returns all the fields
+    // this code does not work because _doc does not exist in products and removeFromStructure needs it
     // if (Object.keys(PostBody.structure).length > 0) {
     //     queryBuilder.removeFromStructure(PostBody.structure, tProducts);
     // }
 
     if (reqRes !== undefined && PostBody.withPromos !== false) {
-        reqRes.res.locals.datas  = tProducts;
+        reqRes.res.locals.datas  = products;
         reqRes.req.body.PostBody = PostBody;
         const productsDiscount   = await servicePromos.middlewarePromoCatalog(reqRes.req, reqRes.res);
-        tProducts                = productsDiscount.datas;
-        // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
-        // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
-        if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
-            tProducts = tProducts.filter((prd) =>  {
-                const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
-                return pr >= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte) && pr <= (PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte);
-            });
-        }
+        products                 = productsDiscount.datas;
+        // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
+        // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
+    }
+    if (PostBody.filter.$and && PostBody.filter.$and[0] && PostBody.filter.$and[0].$or) {
+        products = products.filter((prd) =>  {
+            const pr = prd.price[getTaxDisplay(user)].special || prd.price[getTaxDisplay(user)].normal;
+            return pr >= (
+                PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$gte
+                || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$gte
+            )
+            && pr <= (
+                PostBody.filter.$and[0].$or[1][`price.${getTaxDisplay(user)}.special`].$lte
+                || PostBody.filter.$and[0].$or[0][`price.${getTaxDisplay(user)}.normal`].$lte
+            );
+        });
     }
 
     if (
@@ -517,39 +517,32 @@ const getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false,
         )
     ) {
         if (PostBody.sort['price.priceSort.et']) {
-            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.et');
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.et');
         } else if (PostBody.sort['price.priceSort.ati']) {
-            tProducts = orderByPriceSort(tProducts, PostBody, 'price.priceSort.ati');
+            products = orderByPriceSort(products, PostBody, 'price.priceSort.ati');
         }
     }
 
     return {
-        ...result, count : prds.length, datas : tProducts, priceMin, priceMax, specialPriceMin, specialPriceMax
+        count : prds.length,
+        datas : products,
+        priceMin,
+        priceMax,
+        specialPriceMin,
+        specialPriceMax
     };
 };
 
 const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => {
-    if (PostBody.sort[param] === '1') {
-        tProducts = tProducts.sort((a, b) => {
-            if (a.price.priceSort > b.price.priceSort) {
-                return 1;
-            }
-            if (b.price.priceSort > a.price.priceSort) {
-                return -1;
-            }
-            return 0;
-        });
-    } else {
-        tProducts = tProducts.sort((a, b) => {
-            if (a.price.priceSort > b.price.priceSort) {
-                return -1;
-            }
-            if (b.price.priceSort > a.price.priceSort) {
-                return 1;
-            }
-            return 0;
-        });
-    }
+    tProducts = tProducts.sort((a, b) => {
+        if (a.price.priceSort > b.price.priceSort) {
+            return Number(PostBody.sort[param]) === 1 ? 1 : -1;
+        }
+        if (b.price.priceSort > a.price.priceSort) {
+            return Number(PostBody.sort[param]) === 1 ? -1 : 1;
+        }
+        return 0;
+    });
     return tProducts;
 };
 
@@ -558,7 +551,7 @@ const getProductById = async (id, PostBody = null) => {
 };
 
 const calculateFilters = async (req, result) => {
-    // On récupère les attributs, le dernier attribut sélectionné et si la valeur a été check ou non
+    // We recover the attributes, the last selected attribute and if the value has been checked or not
     const attributes            = req.body.attributes;
     const attributeLastSelected = req.body.attributeSelected ? req.body.attributeSelected.id_attribut : '';
     const checked               = req.body.checked;
@@ -568,15 +561,15 @@ const calculateFilters = async (req, result) => {
     const returnArrayAttributes = {};
     const returnArrayToRemove   = {};
 
-    // Pour chaque attribut
+    // For each attribute
     for (let i = 0; i < attributes.length; i++) {
         const attrId = attributes[i]._id || attributes[i].id_attribut;
-        // On recalcule uniquement si l'attribut bouclé est différent de celui sélectionné dans le front sauf si la valeur vient d'être uncheck dans le front
+        // We recalculate only if the looped attribute is different from the one selected in the front except if the value has just been unchecked in the front
         if (attrId.toString() !== attributeLastSelected.toString() || (attrId.toString() === attributeLastSelected.toString() && checked)) {
             returnArray[attrId]           = [];
             returnArrayAttributes[attrId] = [];
             returnArrayToRemove[attrId]   = [];
-            // ON parcourt tout les produits et on va distinct les différentes valeurs des attributs
+            // We go through all the products and we will distinguish the different values of the attributes
             const unique = [...new Set(products.map((item) => {
                 const index = item && item.attributes ? item.attributes.findIndex((att) => att.id.toString() === attrId) : -1;
                 if (index > -1) {
@@ -584,7 +577,7 @@ const calculateFilters = async (req, result) => {
                 }
                 return null;
             }))];
-            // Cas d'un attribut à sélection multiple
+            // Case of an attribute with multiple selection
             if (Array.isArray(unique[0])) {
                 const toPush = [];
                 for (let j = 0; j < unique.length; j++) {
@@ -596,11 +589,11 @@ const calculateFilters = async (req, result) => {
                 }
                 returnArray[attrId] = toPush;
             } else {
-                // Cas d'une liste déroulante
+                // Case of a drop-down list
                 returnArray[attrId] = unique;
             }
             const attr = await Attributes.findOne({_id: attrId});
-            // On récupère toutes les valeurs possibles pour un attribut
+            // We get all possible values for an attribute
             if (attributes[i].type === 'bool') {
                 returnArrayAttributes[attrId] = [false, true];
             } else if (attributes[i].type === 'textfield' || attributes[i].type === 'color') {
@@ -622,7 +615,7 @@ const calculateFilters = async (req, result) => {
         }
     }
     for (let i = 0; i < Object.keys(returnArray).length; i++) {
-        // On connaît les attributs à garder mais il faut donc calculer les attributs à supprimer
+        // We know the attributes to keep but we must calculate the attributes to delete
         if (returnArrayAttributes[Object.keys(returnArray)[i]]) {
             returnArrayToRemove[Object.keys(returnArray)[i]] = returnArrayAttributes[Object.keys(returnArray)[i]].filter((x) => !returnArray[Object.keys(returnArray)[i]].includes(x));
         }
@@ -636,26 +629,18 @@ const calculateFilters = async (req, result) => {
 };
 
 const setProduct = async (req) => {
-    // On update le produit
+    // We update the product
     const product = await Products.findById(req.body._id);
     if (!product) throw NSErrors.ProductNotFound;
-    // On met à jour le slug du produit
+    // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
-    return new Promise((resolve, reject) => {
-        product.updateData(req.body, async (err, result) => {
-            if (err && err.message === 'slug trop court') {
-                reject(NSErrors.ProductUpdateSlugError);
-            } else if (err) {
-                reject(NSErrors.ProductUpdateError);
-            }
-            await ProductsPreview.deleteOne({code: req.body.code});
-            return resolve(result);
-        });
-    });
+    const result = await product.updateData(req.body);
+    await ProductsPreview.deleteOne({code: req.body.code});
+    await Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
 };
 
 const createProduct = async (req) => {
-    // On vérifie que l'id n'est pas déjà pris
+    // We check that the id is not already taken
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
     switch (req.body.type) {
@@ -725,45 +710,52 @@ const deleteProduct = async (_id) => {
 };
 
 /**
- * Controle la commandabilité d'un produit par rapport à ses stocks
- * @param   {object}  objstock Objet stock du produit²
- * @param   {number?} qtecdé   Quantité a commander
- * @returns {object}  Informations de retour
+ * Controls the orderability of a product in relation to its inventory
+ * @param   {object}  objstock Product stock item
+ * @param   {number?} qtecdé   Quantity to order
+ * @returns {object}  Return Information
  */
-const checkProductOrderable = (objstock, qtecdé = 0) => {
+const checkProductOrderable = async (objstock, qtecdé = 0) => {
+    let prdStock = {};
+    // if objstock is an id, we get the product
+    if (typeof objstock === 'string') {
+        prdStock = (await Products.findById(objstock)).stock;
+    } else {
+        prdStock = objstock;
+    }
     const datas = {
-        selling : {// Affichage
-            sellable : false,   // Produit vendable (affichage du bouton d'achat en gros)
-            message  : ''       // Libelé à afficher
+        selling : {// Display
+            sellable : false,   // Saleable product (display of bulk purchase button)
+            message  : ''       // Label to display
         },
-        delivery : {// Livraison
-            dates : []          // Eventuelles dates de livraison (donne indication sur le nombre de ligne à créer). Si y'en a deux, il faut aussi passer le status à "dif"
+        delivery : {// Delivery
+            dates : []          // Possible delivery dates (gives indication on the number of lines to create). If there are two, you must also change the status to "dif".
         }
     };
     if (qtecdé > 0) {
-        datas.ordering = {// Produit commandable
-            orderable : false,  // Ajoutable au panier / commandable (par rapport à la demande)
-            message   : ''      // Message de retour à afficher dans un toast (succes ou erreur)
+        datas.ordering = {// Orderable product
+            orderable : false,  // Add to cart / orderable (on demand)
+            message   : ''      // Return message to display in a toast (success or error)
         };
     }
 
-    // si qtecdé est null, c'est que l'on teste si un produit bundle est orderable ou non
+    // if qtecdé is null, it means that we are testing if a bundle product is orderable or not
     if (qtecdé === null) {
-        if (objstock.status === 'epu') {
+        if (prdStock.status === 'epu') {
             datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
             return datas;
         }
     }
 
-    const change_lib_stock = 5; // a récup en bdd
+    const change_lib_stock = 5; // to recover in db
 
-    if (typeof objstock.date_selling !== 'undefined'/* && objstock.date_selling > date.now() */) {
-        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${objstock.date_selling}`, en: `Orderable from ${objstock.date_selling}`}};
-        datas.delivery.dates[0] = objstock.date_selling;
-    } else if (objstock.qty_real === 0 && objstock.status === 'epu') {
+    if (typeof prdStock.date_selling !== 'undefined'/* && prdStock.date_selling > date.now() */) {
+        datas.selling.message   = {code: 'OrderableFrom', translation: {fr: `Commandable à partir du ${prdStock.date_selling}`, en: `Orderable from ${prdStock.date_selling}`}};
+        datas.delivery.dates[0] = prdStock.date_selling;
+    } else if (prdStock.qty_real === 0 && prdStock.status === 'epu') {
         datas.selling.message = {code: 'Épuisé', translation: {fr: 'Produit définitivement épuisé', en: 'Product permanently out of stock'}};
-    } else if (objstock.qty_real <= change_lib_stock) {
-        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${objstock.qty_real} produits disponibles`, en: `Only ${objstock.qty_real} products available`}};
+    } else if (prdStock.qty_real <= change_lib_stock) {
+        datas.selling.message   = {code: 'NbObjAvailable', translation: {fr: `Plus que ${prdStock.qty_real} produits disponibles`, en: `Only ${prdStock.qty_real} products available`}};
         datas.delivery.dates[0] = 'today';
         datas.selling.sellable  = true;
     } else {
@@ -772,9 +764,9 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
         datas.selling.sellable  = true;
     }
 
-    // Commandable ?
+    // Orderable ?
     if (qtecdé > 0 && datas.selling.sellable) {
-        if (qtecdé > objstock.qty_real) {
+        if (qtecdé > prdStock.qty_real) {
             datas.ordering.message = {code: 'NotEnoughPdts', translation: {fr: 'Pas assez de produits disponibles pour votre commande.', en: 'There not enough products in our stock for your order.'}};
         } else {
             datas.ordering.orderable = true;
@@ -785,8 +777,8 @@ const checkProductOrderable = (objstock, qtecdé = 0) => {
 };
 
 /**
- * Controle la cohérence de chaque produit
- * @returns {object}  Informations sur les produits incohérent
+ * Checks the consistency of each product
+ * @returns {object}  Inconsistent product information
  */
 const controlAllProducts = async (option) => {
     try {
@@ -803,41 +795,41 @@ const controlAllProducts = async (option) => {
             productsList = await Products.find({});
         }
         for (const oneProduct of productsList) {
-            // Control du code
+            // Code control
             if (typeof oneProduct.code === 'undefined' || oneProduct.code === '') {
                 returnErrors += `<b>${oneProduct._id}</b> : Code undefined<br/>`;
                 continue;
             }
 
-            // Control par langue
+            // Control by language
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
                 const currentLang = tabLang[iLang];
 
-                // Control de translation
+                // Translation control
                 if (typeof oneProduct.translation === 'undefined' || typeof oneProduct.translation[currentLang] === 'undefined') {
                     returnErrors += `<b>${oneProduct.code}</b> : Language (${currentLang}) undefined<br/>`;
                     continue;
                 }
 
-                // Control du nom
+                // Name control
                 if (typeof oneProduct.translation[currentLang].name === 'undefined' || oneProduct.translation[currentLang].name === '') {
                     returnErrors += `<b>${oneProduct.code}</b> : Name undefined (${currentLang})<br/>`;
                 }
 
-                // Control du slug
+                // Slug control
                 if (typeof oneProduct.translation[currentLang].slug === 'undefined' || oneProduct.translation[currentLang].slug === '') {
                     returnErrors += `<b>${oneProduct.code}</b> : Slug undefined (${currentLang})<br/>`;
                 }
 
-                // Control des attributs 1 : vérifie la localisation
+                // Attribute control 1: checks the location
                 for (let iAttri = 0; iAttri < oneProduct.attributes.length; iAttri++) {
                     if (!oneProduct.attributes[iAttri].translation || !oneProduct.attributes[iAttri].translation[currentLang]) {
                         returnErrors += `<b>${oneProduct.code}</b> : attributes '<i>${oneProduct.attributes[iAttri].code}</i>' lake of translate (${currentLang})<br/>`;
                     }
                 }
-            } // End Control par langue
+            } // End Control by language
 
-            // Control des images
+            // Image control
             if (typeof oneProduct.images === 'undefined' || oneProduct.images.length === 0) {
                 returnWarning += `<b>${oneProduct.code}</b> : No image<br/>`;
             }
@@ -852,12 +844,17 @@ const controlAllProducts = async (option) => {
                 }
             }
 
-            // Control du prix
-            if (typeof oneProduct.price.et.normal === 'undefined' || oneProduct.price.et.normal <= 0 || typeof oneProduct.price.ati.normal === 'undefined' || oneProduct.price.ati.normal <= 0) {
+            // Price control
+            if (
+                typeof oneProduct.price.et.normal === 'undefined'
+                || oneProduct.price.et.normal <= 0
+                || typeof oneProduct.price.ati.normal === 'undefined'
+                || oneProduct.price.ati.normal <= 0
+            ) {
                 returnWarning += `<b>${oneProduct.code}</b> : Price is undefined or zero<br/>`;
             }
 
-            // Control du prix spécial
+            // Control of the special price
             if (
                 (
                     !(typeof oneProduct.price.et.special === 'undefined' || oneProduct.price.et.special == null)
@@ -871,19 +868,19 @@ const controlAllProducts = async (option) => {
                 returnWarning += `<b>${oneProduct.code}</b> : Special price is maybe wrong<br/>`;
             }
 
-            // Control du stock
-            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type !== 'bundle') { // On gère le stock
+            // Stock control
+            if (_config.stockOrder.bookingStock !== 'none' && oneProduct.type === 'simple') { // On gère le stock
                 if (typeof oneProduct.stock === 'undefined' || oneProduct.stock.length === 0 || (oneProduct.stock.qty <= 0 && oneProduct.stock.status === 'liv')) {
                     returnWarning += `<b>${oneProduct.code}</b> : Stock issues<br/>`;
                 }
             }
 
-            // Control du poids
-            if (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0) {
+            // Weight control
+            if (oneProduct.type !== 'virtual' && (typeof oneProduct.weight === 'undefined' || oneProduct.weight <= 0)) {
                 returnWarning += `<b>${oneProduct.code}</b> : No weight<br/>`;
             }
 
-            // Control des attributs 2 : vérifie le bon nombre d'attributs par rapport au SetAttributs
+            // Attribute control 2: check the right number of attributes against the SetAttributes
             if (!oneProduct.set_attributes) {
                 returnErrors += `<b>${oneProduct.code}</b> : set_attributes is undefined<br/>`;
             } else {
@@ -892,13 +889,13 @@ const controlAllProducts = async (option) => {
                     returnErrors += `<b>${oneProduct.code}</b> : ${usedSetAttribut.attributes.length - oneProduct.attributes.length} attribute(s) missing<br/>`;
                 }
             }
-            // Control des attributs 3 : vérifie l'ordre des attributs
+            // Attribute control 3: checks the order of the attributes
             if (!checkAttribsValidity(oneProduct.attributes)) {
                 returnWarning += `<b>${oneProduct.code}</b> : Unsorted attributes<br/>`;
                 fixAttributs   = true;
             }
 
-            // Control de la catégorisation
+            // Control of the categorization
             await Categories.find({'productsList.id': oneProduct._id.toString()}, (err, categories) => {
                 if (typeof categories === 'undefined' || categories.length === 0) {
                     returnWarning += `<b>${oneProduct.code}</b> : No category<br/>`;
@@ -906,7 +903,7 @@ const controlAllProducts = async (option) => {
             });
         }
 
-        // Affichage du résumé
+        // Displaying the summary
         if (returnErrors.length !== 0) returnErrors = `<br/>Errors :<br/>${returnErrors}`;
         if (returnWarning.length !== 0) returnWarning = `<br/>Warning :<br/>${returnWarning}`;
         if (returnErrors.length === 0 && returnWarning.length === 0) returnErrors = 'All products are fine';
@@ -947,49 +944,6 @@ function checkAttribsValidity(array) {
     return true;
 }
 
-const applyTranslatedAttribs = async (PostBody) => {
-    require('../utils/utils').tmp_use_route('products_service', 'applyTranslatedAttribs');
-
-    try {
-        // On récupere ts les produits
-        let _products = [];
-        if (PostBody === {} || PostBody === undefined) {
-            _products = await Products.find({});
-        } else {
-            _products = [await queryBuilder.find(PostBody)];
-        }
-        // On récupere ts les attributs
-        const _attribs = await Attributes.find({});
-
-        // On boucle sur les produits
-        for (let i = 0; i < _products.length; i++) {
-            if (_products[i].attributes !== undefined) {
-                // On boucle sur les attributs du produit [i]
-                for (let j = 0; j < _products[i].attributes.length; j++) {
-                    // On recupere l'attribut original correspondant a l'attribut [j] du produit [i]
-                    const attrib = _attribs.find((attrib) => attrib._id.toString() === _products[i].attributes[j].id.toString());
-
-                    if (attrib && attrib.translation) {
-                        // On boucle sur chaque langue dans laquelle l'attribut original est traduit
-                        for (let k = 0; k < Object.keys(attrib.translation).length; k++) {
-                            const lang = Object.keys(attrib.translation)[k];
-                            if (_products[i].attributes[j].translation[lang] === undefined) {
-                                _products[i].attributes[j].translation[lang] = {name: ''};
-                            }
-                            _products[i].attributes[j].translation[lang].name = attrib.translation[lang].name;
-                        }
-                    }
-                }
-                await Products.updateOne({_id: _products[i]._id}, {$set: {attributes: _products[i].attributes}});
-            }
-        }
-        return 'OK';
-    } catch (e) {
-        console.error(e);
-        return 'ERROR';
-    }
-};
-
 function getTaxDisplay(user) {
     if (user && user.taxDisplay !== undefined) {
         if (!user.taxDisplay) {
@@ -1003,9 +957,9 @@ const downloadProduct = async (req, res) => {
     let prd    = {};
     const user = req.info;
 
-    // si produit payant et que l'on passe par une commande
+    // if the product is paid for and the order is placed
     if (req.query.op_id) {
-        // on check que la commande et le produit existe
+        // we check that the order and the product exist
 
         // require('./orders') : need to use require there because circular reference is detected
         const order = await require('./orders').getOrder({
@@ -1020,14 +974,14 @@ const downloadProduct = async (req, res) => {
             throw NSErrors.OrderNotPaid;
         }
         prd = order.items.find((item) => item._id.toString() === req.query.op_id.toString()).id;
-        // on check que le produit est bien dans le commande
+        // we check that the product is in the order
         if (!prd) {
             throw NSErrors.ProductNotFoundInOrder;
         }
-        // si produit (p_id)
+        // if product (p_id)
     } else if (req.query.p_id) {
         prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res}, undefined);
-        // on check qu'il soit bien virtuel, et que sont prix est egal a 0
+        // we check that it is virtual, and that its price is equal to 0
         if (!prd || prd.kind !== 'VirtualProduct') {
             throw NSErrors.ProductNotFound;
         } else if (prd.price.ati.special !== undefined) {
@@ -1043,7 +997,7 @@ const downloadProduct = async (req, res) => {
         throw NSErrors.AccesUnauthorized;
     }
     if (!prd.downloadLink) throw NSErrors.ProductDownloadLinkInvalid;
-    // on genere le path du fichier temp en local
+    // we generate the path of the local temp file
     let tmpFileLocalPath;
     let unlink = true;
     if (/^https?:\/\//.test(prd.downloadLink)) {
@@ -1052,7 +1006,7 @@ const downloadProduct = async (req, res) => {
                 utilsServer.getUploadDirectory(),
                 `/modules/${(new Date()).getTime()}${path.basename(prd.downloadLink)}`
             );
-            // on DL le fichier
+            // we DL the file
             await utils.downloadFile(prd.downloadLink, tmpFileLocalPath);
         } catch (err) {
             console.error(err);
@@ -1066,24 +1020,21 @@ const downloadProduct = async (req, res) => {
             prd.downloadLink
         );
     }
-    // on recupere le binaire du fichier
+    // we get the binary of the file
     const fileBinary = await fs.readFile(tmpFileLocalPath, 'binary');
-    // on delete le fichier tmp
+    // delete the tmp file
     if (unlink) await fs.unlinkSync(tmpFileLocalPath);
-    // on enregistre que le client télécharge un produit
+    // we register that the customer downloads a product
     await ServicesDownloadHistory.addToHistory(user, prd);
     return fileBinary;
 };
 
 const getProductsListing = async (req, res) => {
-    // TODO P1 : bug lors d'un populate (produit complémentaires) : il faut les filtrer par actif / visible
-    let result = {};
-    if (req.params.withFilters || req.body.withFilters) {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
+    // TODO P1 : bug during a populate (complementary products) : you have to filter them by active / visible
+    const result = await getProducts(req.body.PostBody, {req, res}, req.body.lang, false);
+    if (req.params.withFilters === 'true') {
         delete req.body.PostBody.page;
         delete req.body.PostBody.limit;
-
-        // result.productsList = await Products.find(req.body.PostBody.filter);
 
         const attrs = await Attributes.find({usedInFilters: true});
         if (!result.filters) {
@@ -1098,15 +1049,13 @@ const getProductsListing = async (req, res) => {
         }));
 
         await servicesCategory.generateFilters(result, req.body.lang);
-    } else {
-        result = await getProducts(req.body.PostBody, {req, res}, req.body.lang);
     }
     if ({req, res} !== undefined && req.params.withFilters === 'true') {
         res.locals.datas = result.datas;
         /* const productsDiscount = await servicePromos.middlewarePromoCatalog(req, res);
         result.datas = productsDiscount.datas; */
-        // Ce bout de code permet de recalculer les prix en fonction des filtres notamment après le middlewarePromoCatalog
-        // Le code se base sur le fait que les filtres de prix seront dans PostBody.filter.$and[0].$or
+        // This code snippet allows to recalculate the prices according to the filters especially after the middlewarePromoCatalog
+        // The code is based on the fact that the price filters will be in PostBody.filter.$and[0].$or
         if (
             req.body.PostBody.filter.$and
             && req.body.PostBody.filter.$and[0]
@@ -1124,227 +1073,17 @@ const getProductsListing = async (req, res) => {
     }
     return result;
 };
-const getProductsAdminList = async (body, params) => {
-    // Filtre de base
-    const filter    = body.filter === undefined ? {} : body.filter;
-    const searchObj = body.searchObj;
-    filter.$or      = [];
-
-    await Promise.all([
-        new Promise(((resolve, reject) => {
-            // Objet contenant d'autres paramètres de recherche
-            if (body.searchObj) {
-                if (body.q && searchObj.code) {
-                    filter.$or.push({code: searchObj.code});
-                    filter.$or.push({$text: {$search: body.q}});
-                } else if (body.q) {
-                    filter.$text = {$search: body.q};
-                } else if (searchObj.code) {
-                    filter.code = {$regex: `^(?=.*${searchObj.code.replace(/ /g, ')(?=.*')}).*$`, $options: 'i'};
-                }
-
-                // Recherche parmi une liste déterminée de produits
-                if (searchObj.productsIds) {
-                    if (searchObj.inProducts) {
-                        filter._id = {$in: searchObj.productsIds};
-                    } else {
-                        filter._id = {$nin: searchObj.productsIds};
-                    }
-                }
-
-                if (filter.qty === true) {
-                    if (filter.$or[0] !== undefined) {
-                        filter.$or[0].stock = {qty: {$gt: 1}};
-                        filter.$or[1].stock = {qty: {$gt: 1}};
-                    } else {
-                        filter.stock = {qty: {$gt: 1}};
-                    }
-                }
-                delete filter.qty;
-                if (searchObj['price.ati.normal']) {
-                    filter['price.ati.normal'] = searchObj['price.ati.normal'];
-                }
-                // Recherche par actif/non actif
-                if (searchObj.active !== undefined) {
-                    filter.active = {$eq: searchObj.active};
-                }
-                // Recherche par visible/non visible
-                if (searchObj._visible !== undefined) {
-                    filter._visible = {$eq: searchObj._visible};
-                }
-                // Recherche par prix vente min et prix vente max
-                if (searchObj.priceSaleMin || searchObj.priceSaleMax) {
-                    filter['price.ati.normal'] = {};
-                }
-                if (searchObj.priceSaleMin) {
-                    filter['price.ati.normal'].$gte = searchObj.priceSaleMin;
-                }
-                if (searchObj.priceSaleMax) {
-                    filter['price.ati.normal'].$lte = searchObj.priceSaleMax;
-                }
-                // Recherche par mots cles
-                if (searchObj.nameId) {
-                    let nameCode = searchObj.nameId.split(' ');
-                    nameCode     = nameCode.map((word) => new RegExp(make_pattern(word), 'i'));
-                    filter.$or.push({name: {$in: nameCode}}, {code: {$in: nameCode}});
-                }
-                if (searchObj.type) {
-                    filter.type = searchObj.type;
-                }
-
-                if (searchObj.translation && searchObj.translation.name !== '') {
-                    return Languages.find({}).then(function (_languages) {
-                        for (let i = 0; i < _languages.length; i++) {
-                            if (searchObj.translation.name !== '') {
-                                const name                                     = {};
-                                name[`translation.${_languages[i].code}.name`] = {
-                                    $regex   : `^(?=.*${searchObj.translation.name.replace(/ /g, ')(?=.*')}).*$`,
-                                    $options : 'i'
-                                };
-                                filter.$or.push(name);
-                            }
-                        }
-                        resolve();
-                    }).catch(function (err) {
-                        reject(err);
-                    });
-                }
-
-                // Recherche par quantite min et quantite vente max
-                if (searchObj['stock.qty']) {
-                    filter['stock.qty'] = searchObj['stock.qty'];
-                }
-                if (searchObj.qtyMin || searchObj.qtyMax) {
-                    filter['stock.qty'] = {};
-                }
-                if (searchObj.qtyMin) {
-                    filter['stock.qty'].$gte = searchObj.qtyMin;
-                }
-                if (searchObj.qtyMax) {
-                    filter['stock.qty'].$lte = searchObj.qtyMax;
-                }
-
-                resolve();
-            } else {
-                if (body.q) {
-                    filter.$text = {$search: body.q};
-                }
-
-                Languages.find({}).then(function (_languages) {
-                    for (let i = 0; i < _languages.length; i++) {
-                        const orLang                                     = {};
-                        orLang[`translation.${_languages[i].code}.name`] = new RegExp('.*', 'i');
-                        filter.$or.push(orLang);
-                    }
-                    resolve();
-                }).catch(function (err) {
-                    reject(err);
-                });
-            }
-        }))
-    ]);
-
-    let sortObj = {};
-    if (body.sortObj) {
-        sortObj = body.sortObj;
-    }
-    const oIdCatProduct = {};
-    // Si on veut trier par sortWeight (qui est un attribut de categories.productsList)
-    if (sortObj.sortWeight && body.categoryId /* && Object.keys(body.searchObj).length === 0 */) {
-        // on récupére la categorie afin de trier productsList par sortWeight
-        const category = await Categories.findById(body.categoryId);
-        for (let i = 0; i < category.productsList.length; i++) {
-            const catProduct             = category.productsList[i];
-            oIdCatProduct[catProduct.id] = catProduct.sortWeight;
-        }
-    }
-    const results = await Promise.all([
-        new Promise((async (resolve, reject) => {
-            if (filter.$or.length === 0) {
-                delete filter.$or;
-            }
-            if (Object.keys(oIdCatProduct).length === 0) {
-                Products.find(filter, null, {
-                    skip  : (body.page - 1) * body.limit,
-                    limit : body.limit,
-                    sort  : sortObj
-                })
-                    .populate('location.country location.town')
-                    .then((prdFound) => resolve(prdFound))
-                    .catch((err) => reject(err));
-            } else {
-                const prdFound = await Products.find(filter);
-                for (let i = 0; i < prdFound.length; i++) {
-                    if (typeof oIdCatProduct[prdFound[i]._id.toString()] === 'undefined') {
-                        prdFound[i].sortWeight = -1; // sortWeight fictif que ne sera pas répercuté sur le front
-                        continue;
-                    }
-                    prdFound[i].sortWeight = oIdCatProduct[prdFound[i]._id];
-                }
-                let prdSorted;
-                if (sortObj.sortWeight === -1) {
-                    prdSorted = prdFound.sort((a, b) => b.sortWeight - a.sortWeight);
-                } else {
-                    prdSorted = prdFound.sort((a, b) => a.sortWeight - b.sortWeight);
-                }
-                prdSorted = prdSorted.splice((body.page - 1) * body.limit, body.limit);
-                resolve(prdSorted);
-            }
-        })), new Promise(((resolve, reject) => {
-            Products.countDocuments(filter, (err, count) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(count);
-            });
-        })), new Promise(((resolve, reject) => {
-            Products.findOne(filter).sort('-price.ati.normal').exec((err, maxProd) => {
-                if (err) {
-                    return reject(err);
-                }
-                if (!maxProd) {
-                    resolve(0);
-                } else {
-                    resolve(maxProd.price.ati.normal);
-                }
-            });
-        })), new Promise(((resolve, reject) => {
-            Products.findOne(filter).sort('price.ati.normal').exec((err, minProd) => {
-                if (err) {
-                    return reject(err);
-                }
-                if (!minProd) {
-                    resolve(0);
-                } else {
-                    resolve(minProd.price.ati.normal);
-                }
-            });
-        }))
-    ]);
-
-    const result = {
-        products : results[0],
-        count    : results[1],
-        priceMax : results[2],
-        priceMin : results[3]
-    };
-
-    if (params.trademark !== undefined) {
-        result.trademarks = results[4];
-    }
-    return result;
-};
 
 const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
     if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
         throw NSErrors.ProductNotSalable;
     }
-    // si qty2 existe, c'est soit un retour produit ou d'un envoi de colis
+    // if qty2 exists, it is either a product return or a shipment
     if (qty2 !== undefined) {
-        // si qty2 === 0, il s'agit d'un retour produit, sino, c'est un envoi
+        // if qty2 === 0, it is a product return, sino, it is a shipment
         if (qty2 === 0) {
-            // qty1 = la quantité à retourné
+            // qty1 = the quantity to return
             const qtyToReturn = qty1;
             prd.stock.qty    += qtyToReturn;
         } else if (qty1 === 0) {
@@ -1353,29 +1092,12 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
             prd.stock.qty_booked += qtyToSend;
         }
     } else {
-        // dans le cas d'un ajout au panier, qty change ou d'une suppression d'item dans un panier
+        // in the case of an addition to the cart, qty change or deletion of an item in a cart
         const qtyToAddOrRemove = qty1;
         prd.stock.qty_booked  -= qtyToAddOrRemove;
     }
     await prd.save();
 };
-
-function make_pattern(search_string) {
-    require('../utils/utils').tmp_use_route('products_api', 'make_pattern');
-    // escape meta characters
-    search_string = search_string.replace(/([|()[{.+*?^$\\])/g, '\\$1');
-
-    // split into words
-    const words = search_string.split(/\s+/);
-
-    // sort by length
-    const length_comp = (a, b) => b.length - a.length;
-    words.sort(length_comp);
-
-    // join as alternatives
-    const regexp = words.join('|');
-    return new RegExp(regexp, 'g');
-}
 
 const handleStock = async (item, _product, inStockQty) => {
     const {Configuration} = require('../orm/models');
@@ -1385,7 +1107,7 @@ const handleStock = async (item, _product, inStockQty) => {
             const product_no_salable = {code: 'product_no_salable'};
             throw product_no_salable;
         }
-        // Commandable et on gère la reservation du stock
+        // Orderable and we manage the stock reservation
         const qtyAdded    = inStockQty - item.quantity;
         const ServiceCart = require('./cart');
         if (ServiceCart.checkProductOrderable(_product.stock, qtyAdded)) {
@@ -1398,7 +1120,7 @@ const handleStock = async (item, _product, inStockQty) => {
 };
 
 /**
- * Fonction permettant de calculer les informations de stock pour un produit
+ * Function to calculate stock information for a product
  */
 const calculStock = async (params, product = undefined) => {
     moment.locale('fr', {
@@ -1425,7 +1147,7 @@ const calculStock = async (params, product = undefined) => {
             ? stockLabelExists.translation[params.lang].value.replace('{date}', moment(date).format('DD/MM/YYYY'))
             : stockLabelExists.translation[params.lang].value;
     }
-    // TODO P2 "shipping : business day" : ne marche plus, on met le jour même en dur
+    // TODO P2 "shipping : business day" : doesn't work anymore, we put the same day in hard
     // const dateShipped = moment().businessAdd(shipment.delay.unit === "DAY" ? shipment.delay.value : 1).format('DD/MM/YYYY');
     const dateShipped = moment().format('DD/MM/YYYY');
     return {
@@ -1452,10 +1174,8 @@ module.exports = {
     deleteProduct,
     checkProductOrderable,
     controlAllProducts,
-    applyTranslatedAttribs,
     downloadProduct,
     getProductsListing,
-    getProductsAdminList,
     updateStock,
     handleStock,
     calculStock,

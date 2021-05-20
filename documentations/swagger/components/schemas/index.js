@@ -24,7 +24,6 @@ const modules          = require('./modules.json');
 const myPromo          = require('./myPromo.json');
 const newsletters      = require('./newsletters.json');
 const news             = require('./news.json');
-const opts             = require('./opts.json');
 const orders           = require('./orders.json');
 const paymentMethods   = require('./paymentMethods.json');
 const pictos           = require('./pictos.json');
@@ -37,7 +36,6 @@ const relayPoint       = require('./relayPoint.json');
 const rules            = require('./rules.json');
 const sequences        = require('./sequences.json');
 const setAttributes    = require('./setAttributes.json');
-const setOptions       = require('./setOptions.json');
 const shipment         = require('./shipment.json');
 const shortcodes       = require('./shortcodes.json');
 const slider           = require('./slider.json');
@@ -50,6 +48,7 @@ const territory        = require('./territory.json');
 const themeConfig      = require('./themeConfig.json');
 const trademarks       = require('./trademarks.json');
 const user             = require('./user.json');
+const PostBody         = require('./PostBody.json');
 
 module.exports = {
     ...address,
@@ -78,7 +77,6 @@ module.exports = {
     ...myPromo,
     ...newsletters,
     ...news,
-    ...opts,
     ...orders,
     ...paymentMethods,
     ...pictos,
@@ -91,7 +89,6 @@ module.exports = {
     ...rules,
     ...sequences,
     ...setAttributes,
-    ...setOptions,
     ...shipment,
     ...shortcodes,
     ...slider,
@@ -103,5 +100,6 @@ module.exports = {
     ...territory,
     ...themeConfig,
     ...trademarks,
-    ...user
+    ...user,
+    ...PostBody
 };

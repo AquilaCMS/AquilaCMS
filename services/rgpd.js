@@ -1,7 +1,17 @@
-const MongoClient  = require('mongodb').MongoClient;
-const ObjectID     = require('mongodb').ObjectID;
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const {
+    Types: {ObjectId: ObjectID},
+    mongo: {MongoClient}
+} = require('mongoose');
 const {v4: uuidv4} = require('uuid');
-const MongoURI     = require('mongo-uri');
+const mongoURI     = require('mongodb-uri');
 const bcrypt       = require('bcrypt');
 const rimraf       = require('rimraf');
 const path         = require('path');
@@ -21,7 +31,7 @@ const aquilaEvents = require('../utils/aquilaEvents');
 const appdirname   = path.dirname(require.main.filename);
 faker.locale       = 'fr';
 /*
-RGPD : Exemple de fonction à implémenter dans un module utilisant les données users
+RGPD : Example of a function to implement in a module using users data
 */
 
 // const aquilaEvents = require('../../../utils/aquilaEvents');
@@ -98,8 +108,8 @@ const anonymizeModulesByUser = async (user) => {
     if (_modules.length >= 0) {
         for (const module of _modules) {
             await new Promise(async (resolve, reject) => {
-                // Récupère les fichiers rgpd.js des modules
-                if (await fs.access(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                // Retrieves rgpd.js files from modules
+                if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${module.name}/rgpd.js`);
                     await rgpd.anonymize(user, resolve, reject);
                 }
@@ -122,11 +132,13 @@ const anonymizeBillsByUser = async (id) => {
 };
 
 const anonymizeReviewsByUser = async (id) => {
-    return Products.updateMany({'reviews.datas.id_client': id}, {
+    return Products.updateMany({}, {
         $set : {
-            'reviews.datas.$.ip_client' : faker.internet.ip(),
-            'reviews.datas.$.name'      : faker.name.firstName()
+            'reviews.datas.$[data].ip_client' : faker.internet.ip(),
+            'reviews.datas.$[data].name'      : faker.name.firstName()
         }
+    }, {
+        arrayFilters : [{'data.id_client': id}]
     });
 };
 
@@ -148,18 +160,18 @@ const anonymizeUser = async (id) => {
             addresses        : [
                 generateFakeAddresses({firstname: firstName, lastname: lastName, _id: new ObjectID()})
             ],
-            birthDate    : faker.date.past(),
-            creationDate : new Date()
+            birthDate : faker.date.past(),
+            createdAt : new Date()
         }
     });
 };
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!! Mettre à jour les champs si besoin !!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!! Update fields as needed !!!!!!!!!!!!!!!!!!!!!!!!!!
 /*
-* Clone la base de données passée en paramètre puis remplace les données utilisateurs par des données fake
+* Clone the database passed in parameter then replace the user data by fake data
  */
 const copyDatabase = async (cb) => {
-    // Connexion à la database
+    // Connection to the database
     try {
         await new Promise((resolve, reject) => rimraf('dump', (err) => {
             if (err) return reject(err);
@@ -172,7 +184,7 @@ const copyDatabase = async (cb) => {
             resolve();
         }));
 
-        // Anonymisation de la base de données copiée
+        // Anonymization of the copied database
         await anonymizeDatabase(cb);
     } catch (err) {
         console.error(err);
@@ -180,9 +192,9 @@ const copyDatabase = async (cb) => {
     }
 };
 
-function mongodump(uri) {
-    const data = MongoURI.parse(uri);
-    let cmd    = createConnectionStringMongoose(data);
+async function mongodump(uri) {
+    const data = mongoURI.parse(uri);
+    let cmd    = await createConnectionStringMongoose(data);
     if (data.database) {
         cmd += ` --db ${data.database}`;
     }
@@ -197,9 +209,9 @@ function mongodump(uri) {
     });
 }
 
-function mongorestore(uri) {
-    const data = MongoURI.parse(uri);
-    const cmd  = createConnectionStringMongoose(data);
+async function mongorestore(uri) {
+    const data = mongoURI.parse(uri);
+    const cmd  = await createConnectionStringMongoose(data);
     return new Promise((resolve, reject) => {
         exec(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`, (error, stdout) => {
             if (error) {
@@ -212,24 +224,24 @@ function mongorestore(uri) {
 }
 
 /*
-* Remplace les données utilisateurs par des données fake
+* Replaces user data with fake data
  */
 const anonymizeDatabase = async (cb) => {
-    // Connexion à la nouvelle database
-    const databaseName = global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1];
-    const client       = await MongoClient.connect(
-        global.envFile.db.replace(
-            databaseName,
-            `${databaseName}_anonymized`
-        ),
+    // Connection to the new database
+    const data     = mongoURI.parse(global.envFile.db);
+    data.database += '_anonymized';
+    const client   = new MongoClient(
+        mongoURI.format(data),
         {
             useNewUrlParser    : true,
             useUnifiedTopology : true
         }
     );
-    const database     = client.db(`${databaseName}_anonymized`);
+    await client.connect();
 
-    // Génération d'un mot de passe commun
+    const database = client.db(data.database);
+
+    // Generation of a common password
     const hash  = await bcrypt.hash('password', 10);
     const users = await database.collection('users').find({}).toArray();
     for (let i = 0; i < users.length; i++) {
@@ -260,8 +272,8 @@ const anonymizeDatabase = async (cb) => {
                 addresses        : [
                     generateFakeAddresses({firstname: firstName, lastname: lastName, _id: new ObjectID()})
                 ],
-                birthDate    : faker.date.past(),
-                creationDate : new Date()
+                birthDate : faker.date.past(),
+                createdAt : new Date()
             }
         });
     }
@@ -323,40 +335,35 @@ const anonymizeDatabase = async (cb) => {
     if (_modules.length >= 0) {
         for (const mod of _modules) {
             await new Promise(async (resolve, reject) => {
-                if (await fs.access(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
+                if (await fs.hasAccess(`${appdirname}/modules/${mod.name}/rgpd.js`)) {
                     const rgpd = require(`${appdirname}/modules/${mod.name}/rgpd.js`);
                     await rgpd.anonymizeDatabase(database, resolve, reject);
                 }
                 resolve();
             });
         }
-        await client.close();
-        if (cb !== undefined) {
-            cb();
-        }
-    } else {
-        await client.close();
-        if (cb !== undefined) {
-            cb();
-        }
+    }
+    await client.close();
+    if (cb !== undefined) {
+        cb();
     }
 };
 
 /*
-* Supprime la base de données de copie
- */
+* Deletes the copy database
+*/
 const dropDatabase = async () => {
-    const client = await MongoClient.connect(
-        global.envFile.db.replace(
-            global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1],
-            `${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`
-        ),
+    const mongodbUri     = mongoURI.parse(global.envFile.db);
+    mongodbUri.database += '_anonymized';
+    const client         = new MongoClient(
+        mongoURI.format(mongodbUri),
         {
             useNewUrlParser    : true,
             useUnifiedTopology : true
         }
     );
-    const db     = client.db(`${global.envFile.db.replace(/mongodb:\/\/(.*@)?/g, '').replace(/\?.*/g, '').split('/')[1]}_anonymized`);
+    await client.connect();
+    const db = client.db(mongodbUri.database);
     await db.dropDatabase();
 };
 
@@ -379,7 +386,7 @@ const deleteUserDatas = async (id) => {
     await anonymizeReviewsByUser(id);
     await anonymizeModulesByUser(thisUser);
 
-    // Leve un evenement, qui peut etre catché par n'importe quel module (d'export de datas)
+    // Raises an event, which can be cached by any (data export) module
     aquilaEvents.emit('aqUserRemoved', id);
 };
 
@@ -402,7 +409,7 @@ const anonymizeUserDatas = async (id) => {
     await anonymizeModulesByUser(thisUser);
     await anonymizeUser(id);
 
-    // Leve un evenement, qui peut etre catché par n'importe quel module (d'export de datas)
+    // Raises an event, which can be cached by any (data export) module
     aquilaEvents.emit('aqUserAnonymized', id);
 };
 
@@ -443,8 +450,9 @@ const generateFakeAddresses = async (options) => {
         complementaryInfo : ''
     };
     if (options) {
-        for (let i = 0; i < Object.keys(options).length; i++) {
-            addr[Object.keys(options)[i]] = Object.values[i];
+        const opts = Object.keys(options);
+        for (let i = 0; i < opts.length; i++) {
+            addr[opts[i]] = Object.values[i];
         }
     }
     return addr;

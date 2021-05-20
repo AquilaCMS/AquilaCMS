@@ -1,11 +1,19 @@
 import React from 'react';
 import {
-    NSAddressMultiple, NSCartResume, NSContext, NSToast, getCart, getCmsBlock, getLangPrefix
+    NSAddressMultiple,
+    NSCartResume,
+    NSContext,
+    NSToast,
+    getCart,
+    getCmsBlock,
+    getLangPrefix
 } from 'aqlrc';
+import PropTypes from 'prop-types'
 import Head from 'next/head';
 import CartStructure from 'components/CartStructure';
 import { withI18next } from 'lib/withI18n';
 import { Link, Router } from 'routes';
+import { listModulePage } from 'lib/utils';
 
 /**
  * CartAddress - Page des adresses client dans le panier
@@ -19,8 +27,8 @@ class CartAddress extends React.Component {
 
         return {
             cmsLegalTxt,
-            userRequired : { url: '/cart/login', route: 'cartLogin' },
-            layoutCms    : { header: 'header_cart', footer: 'footer_cart' }
+            userRequired: { url: '/cart/login', route: 'cartLogin' },
+            layoutCms: { header: 'header_cart', footer: 'footer_cart' }
         };
     };
 
@@ -28,16 +36,16 @@ class CartAddress extends React.Component {
         super(props);
         this.state = {
             ...props,
-            editMode : false,
-            address  : { company: {} },
-            cart     : {
-                items : []
+            editMode: false,
+            address: { company: {} },
+            cart: {
+                items: []
             },
-            isDelivery      : false,
-            isBilling       : false,
-            selectedCountry : {},
-            useSameAddress  : false,
-            selectedIndex   : -1
+            isDelivery: false,
+            isBilling: false,
+            selectedCountry: {},
+            useSameAddress: false,
+            selectedIndex: -1
         };
     }
 
@@ -76,6 +84,7 @@ class CartAddress extends React.Component {
             oCmsHeader, oCmsFooter, sitename, t
         } = this.props;
         const { cart } = this.state;
+        const hookSelectDate = listModulePage('select-date');
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <CartStructure oCmsFooter={oCmsFooter} oCmsHeader={oCmsHeader} step={2}>
@@ -85,9 +94,14 @@ class CartAddress extends React.Component {
                     </Head>
                     <section className="section-shipping-address">
                         <div className="container--flex align-top">
-                            { cart.items.length > 0 && (
+                            {cart.items.length > 0 && (
                                 <>
-                                    <NSAddressMultiple t={t} gNext={{ Router }} />
+                                    {
+                                        hookSelectDate ? hookSelectDate : null
+                                    }
+                                    {
+                                        (!hookSelectDate || !hookSelectDate.length) && <NSAddressMultiple t={t} gNext={{ Router }} />
+                                    }
                                     <NSCartResume t={t} gNext={{ Link }} />
                                 </>
                             )}
@@ -97,6 +111,15 @@ class CartAddress extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+CartAddress.propTypes = {
+    lang: PropTypes.string,
+    routerLang: PropTypes.string,
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func,
 }
 
 export default withI18next(['cart', 'addresses'])(CartAddress);

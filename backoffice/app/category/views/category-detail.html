@@ -1,18 +1,6 @@
-
-
-<div ng-controller="CategoryIncludeCtrl">
-    <form name="formMenu" ng-submit="save()"> 
-        <div align="right" style="position:sticky;top:115px;z-index:1000;pointer-events:none;">
-            <button style="position:sticky;top:115px;z-index:1000;pointer-events:auto;float:left" type="button"
-                class="btn btn-default ng-scope" ng-click="setEditCat(formMenu)" ><span translate>category.list.back</span><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
-            <button style="pointer-events:auto;" type="button" class="btn btn-danger ng-scope" ng-click="removeMenu()">
-            <span translate>category.detail.delete</span><i class="fa fa-trash" aria-hidden="true"></i>
-            </button>
-            <button style="pointer-events:auto;" type="submit" class="btn btn-success" ng-disabled="form.$invalid"  ><span translate>category.detail.save2</span><i class="fa fa-floppy-o" aria-hidden="true"></i>
-            </button>
-            <br />
-            <br />
-        </div>
+<ns-box data-title="category.detail.title" title-icon="fa fa-list-ul fa-lg">
+    <form name="form" novalidate ng-submit="save()">
+        <ns-buttons is-edit-mode="isEditMode" return-path="/categories" form="form" remove="removeMenu()" save-and-quit="save(true)" disable-save="disableSave" return-path="/picto">
         <ns-translation ng-model="lang" class="pull-right" style="margin-top: 50px;float:right"></ns-translation>
 
         <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
@@ -35,7 +23,6 @@
         </div>
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-
                 <table style="clear: both" id="switch">
                     <tbody>
                         <tr>
@@ -81,7 +68,7 @@
                                 <div class="btn-group" style="z-index: 1;">
                                     <label class="btn btn-primary" ng-model="category.action" btn-radio="'catalog'"
                                            translate>category.detail.catalogue</label>
-                                    <label class="btn btn-primary" ng-model="category.action" btn-radio="'page'"
+                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
                                            translate>category.detail.page</label>
                                 </div>
                             </td>
@@ -111,7 +98,7 @@
                             </td>
                             <td>
                                 <select class="form-control ng-pristine ng-valid ng-not-empty ng-touched"
-                                    ng-options="page.translation[lang].slug as (page.translation[lang].title + ' (' +page.translation[lang].title +')') group by getOptGroup(page.group) for page in pages | filter:exist"
+                                    ng-options="page.translation[lang].slug as (page.translation[lang].title + ' (' + page.translation[lang].slug +')') group by getOptGroup(page.group) for page in pages | filter:exist"
                                     ng-model="category.translation[lang].pageSlug">
                                 </select>
                             </td>
@@ -130,7 +117,7 @@
                         <tr id="createDate">
                             <td translate>category.detail.creationDate</td>
                             <td>
-                                {{category.creationDate | date:"dd MMMM yyyy"}}
+                                {{category.createdAt | date:"dd MMMM yyyy"}}
                             </td>
                         </tr>
                         <tr id="openDate">
@@ -206,11 +193,12 @@
                 </table>
             </div>
             <div id="listProduct" class="tab-pane fade" ng-if="category.action == 'catalog'">
-                <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
-                       aria-describedby="DataTables_Table_0_info">
+                <div class="tableWrapperOverflow">
+                    <table class="shortTable table table-bordered table-striped" style="clear: both;" id="DataTables_Table_0"
+                    aria-describedby="DataTables_Table_0_info">
                     <thead>
                         <tr role="row">
-                            <th role="columnheader" style="width: 7%;"></th>
+                            <th role="columnheader" style="width: 7%;" translate>category.detail.inORout</th>
                             <!--<th role="columnheader" style="width: 1%;">Position</th>-->
                             <th role="columnheader" style="width: 1%;">
                                 <a ng-click="local.sortType = 'sortWeight'; local.sortReverse = !local.sortReverse; getProducts();"
@@ -280,14 +268,15 @@
                         </tr>
                         <tr role="row">
                             <th>
-                                <select ng-model="searchObj.slugMenus" ng-change="getProducts()" class="form-control">
-                                    <option value="" translate>category.detail.indifferent</option>
+                                <select ng-model="searchObj.productInCategory" ng-change="getProducts()" class="form-control">
                                     <option value="true" translate>category.detail.oui</option>
                                     <option value="false" translate>category.detail.non</option>
                                 </select>
                             </th>
                             <th></th>
-                            <th></th>
+                            <th>
+                                <input type="text" ng-change="getProducts()" ng-model="searchObj.code" translate translate-attr-placeholder='category.detail.code' class="form-control" />
+                            </th>
                             <th>
                             </th>
                             <th>
@@ -332,7 +321,7 @@
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                         <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="product in products" style="height: 80px;">
                             <td>
-                                <input type="checkbox" ng-model="product.check" ng-change="checkProduct($index);" ng-click="$event.stopPropagation()">
+                                <input type="checkbox" ng-model="product.checked" ng-change="checkProduct(product._id, product.checked)" ng-click="$event.stopPropagation()">
                             </td>
                             <td>
                                 <input type="number" ng-model="product.sortWeight" ng-change="changePosition(product._id, product.sortWeight)"
@@ -360,10 +349,10 @@
                             </td>
                         </tr>
                     </tbody>
-                </table>
-
+                    </table>
+                </div>
                 <pagination total-items="totalItems" page="currentPage" on-select-page="pageChanged(page)"
-                            items-per-page="itemPerPage" max-size="10" boundary-links="true" rotate="false"></pagination>
+                    items-per-page="itemPerPage" max-size="10" boundary-links="true" rotate="false"></pagination>
             </div>
             <div id="filters" class="tab-pane fade">
                 <div class="row col-sm-12">
@@ -438,7 +427,9 @@
         </div> -->
     </form>
 </div>
-
+</ns-buttons>
+</form>
+</ns-box>
 <!--<div class="modal-footer ">
 <button class="btn btn-default " ng-click="ok() ">OK</button>
 <button class="btn btn-default " ng-click="cancel() ">Annuler</button>

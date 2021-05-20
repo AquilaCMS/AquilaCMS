@@ -5,14 +5,26 @@
     "use": "Utiliser",
     "custom": "Personnalisés :",
     "themeChoice": "Choix du thème",
-    "currentThemeVar":"Modifier les variables du thème courant.",
-    "noThemeVar":"Pas de variables du thème courant",
+    "currentThemeVar": "Modifier les variables du thème courant.",
+    "noThemeVar": "Ce thème n'est pas customisable",
     "themePort": "Port du thème",
     "myTheme": "Mes thèmes",
     "customisation": "Personnalisation",
-    "newtheme": "Ajout d'un theme",
+    "data": "Données du theme",
+    "newtheme": "Ajout d'un thème",
     "themeDatas": "Données du thème",
     "themeDatasLead": "Installer les données du thème",
     "themeDatasOverride": "Ecraser les données existantes",
-    "remove":"Supprimer le thème"
+    "remove": "Supprimer le thème",
+    "required": "Requis",
+    "noDefaultData": "Pas de donnée par default pour ce thème",
+    "filesHelper": "Medias, photo, Carrousel...",
+    "new": {
+        "createNewTheme": "Ajouter un nouveau thème",
+        "cancel": "Annuler"
+    },
+    "themeSelect": "Sélectionner ce thème",
+    "themeInstallDependencies": "Installer les dépendances de ce thème",
+    "themeCompile": "Compiler le thème",
+    "themeDelete": "Supprimer le thème"
 }

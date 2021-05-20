@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import { NSContext, getLangPrefix } from 'aqlrc';
+import PropTypes from 'prop-types'
 import Layout from 'components/Layout';
 import getAPIUrl from 'lib/getAPIUrl';
 import { withI18next } from 'lib/withI18n';
@@ -16,7 +17,7 @@ class CheckEmailValid extends React.Component {
         super(props);
         this.state = {
             ...props,
-            user : {}
+            user: {}
         };
     }
 
@@ -64,6 +65,13 @@ class CheckEmailValid extends React.Component {
             </NSContext.Provider>
         );
     }
+}
+
+CheckEmailValid.propTypes = {
+    oCmsHeader: PropTypes.object,
+    oCmsFooter: PropTypes.object,
+    sitename: PropTypes.string,
+    t: PropTypes.func.isRequired,
 }
 
 export default withI18next(['common'])(CheckEmailValid);

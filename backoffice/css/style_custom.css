@@ -1,3 +1,37 @@
+.searchBar{
+    width: 100%;
+    position: relative;
+    display: flex;
+}
+
+.searchBarTerm{
+    width: 100%;
+    height: 32px;
+    border: 1px solid #9DBFAF;
+    border-right: none;
+    padding: 5px;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    color: #9DBFAF;
+}
+
+.searchBarTerm:focus{
+    color: #576fa1;
+    border: 1px solid #576fa1;
+}
+
+.searchBarButton{
+    width: 40px;
+    height: 32px;
+    border: 1px solid #576fa1;
+    background: #576fa1;
+    text-align: center;
+    color: #fff;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 20px;
+}
+
 .textarea-vert
 {
     resize: vertical;
@@ -112,7 +146,7 @@ h3, .h3
 
 .image-frame img
 {
-    height: 120px;
+    width: 120px;
 }
 
 .dropdown-menu
@@ -253,14 +287,16 @@ table.ns-table-grey td
 
     .fsbox
     {
-        margin-top: 60px;
+        margin-top: -30px;
         margin-bottom: 0px !important;
         position: fixed;
         width: calc(100% - 250px);
+        transition: width .3s;
     }
 
     .fsboxM
     {
+        margin-top: -30px;
         width: calc(100% - 55px);
     }
 
@@ -282,13 +318,16 @@ table.ns-table-grey td
     .boxShrinkM
     {
         padding: 0px !important;
-        width: calc(100% - 42px) !important;
+        width: calc(100% - 55px) !important;
     }
 
     .boxTop > .box-content
     {
+        right: 0px;
         padding: 45px;
-        padding-top: 150px;
+        margin-top: 90px;
+        background-color: #dfe6ee;
+        transition: width .3s;
     }
 
     .boxTop > .box-header

@@ -1,33 +1,34 @@
-const expressJSDocSwagger             = require('@haegemonia/express-jsdoc-swagger');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const swaggerUi                       = require('swagger-ui-express-updated');
 const cookieParser                    = require('cookie-parser');
 const cors                            = require('cors');
 const express                         = require('express');
+const helmet                          = require('helmet');
 const morgan                          = require('morgan');
 const multer                          = require('multer');
 const path                            = require('path');
 const {v1: uuidv1}                    = require('uuid');
-const {getDecodedToken}               = require('../services/auth');
 const {fsp, translation, serverUtils} = require('../utils');
+const {retrieveUser}                  = require('./authentication');
 
-const getUserFromRequest = (req) => {
+const getUserFromRequest = async (req) => {
     const user = null;
-    if (req.info) {
-        return req.info;
-    } if (req.headers && req.headers.authorization) {
-        try {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo) return userInfo.info;
-        } catch (error) {
-            console.error(error);
-        }
-    } else if (req.query.u_id) {
+    if (req.info) return req.info;
+    if (req.query.u_id) {
         return require('../services/users').getUser({filter: {_id: req.query.u_id}});
     }
     return user;
 };
 
-const serverUseRequest = (req, res, next) => {
-    const user = getUserFromRequest(req);
+const serverUseRequest = async (req, res, next) => {
+    const user = await getUserFromRequest(req);
     if (user && user.isAdmin) {
         return next();
     }
@@ -51,40 +52,14 @@ const serverUseRequest = (req, res, next) => {
             if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
-            if (json.collection && json.collection.collectionName) {
-                json = translation.translateDocument(json, lang, keepOriginalAttribs);
-                json = restrictProductFields(json, req.originalUrl);
-                // remove hidden attributes from document
-                if (json.attributes) {
-                    for (let i = 0; i < json.attributes.length; i++) {
-                        if (!json.attributes[i].visible) {
-                            json.attributes.splice(i, 1);
-                            i--;
-                        }
-                    }
-                }
-            } else if (json.datas !== undefined) {
-                for (let i = 0; i < json.datas.length; i++) {
-                    json.datas[i] = translation.translateDocument(json.datas[i], lang, keepOriginalAttribs);
-                    json.datas[i] = restrictProductFields(json.datas[i], req.originalUrl);
-                    // remove hidden attributes from document
-                    if (json.datas[i].attributes) {
-                        for (let j = 0; j < json.datas[i].attributes.length; j++) {
-                            if (!json.datas[i].attributes[j].visible) {
-                                json.datas[i].attributes.splice(j, 1);
-                                j--;
-                            }
-                        }
-                    }
-                }
-                if (json.filters !== undefined) {
-                    for (let i = 0; i < Object.keys(json.filters).length; i++) {
-                        const filterKey = Object.keys(json.filters)[i];
-                        if (json.filters[filterKey].length) {
-                            for (let j = 0; j < json.filters[filterKey].length; j++) {
-                                json.filters[filterKey][j] = translation.translateDocument(json.filters[filterKey][j], lang);
-                            }
-                        }
+            json = translation.translateDocument(json, lang, keepOriginalAttribs);
+            json = restrictProductFields(json, req.originalUrl);
+            // remove hidden attributes from document
+            if (json._id && json.attributes) {
+                for (let i = 0; i < json.attributes.length; i++) {
+                    if (!json.attributes[i].visible) {
+                        json.attributes.splice(i, 1);
+                        i--;
                     }
                 }
             }
@@ -106,19 +81,63 @@ const serverUseRequest = (req, res, next) => {
     return next();
 };
 
+const useHelmet = async (server) => {
+    let envContentSecurityPolicy = {values: [], active: false};
+    if (global.envConfig && global.envConfig.environment && global.envConfig.environment.contentSecurityPolicy) {
+        envContentSecurityPolicy = global.envConfig.environment.contentSecurityPolicy;
+    }
+
+    // If security is active
+    if (envContentSecurityPolicy.active) {
+        // Use own policy
+        let contentSecurityPolicyValues = [
+            "'self'",
+            'https://cdnjs.cloudflare.com',
+            "'unsafe-inline'",
+            "'unsafe-eval'"
+        ];
+        if (global.envConfig && global.envConfig.environment) {
+            if (global.envConfig.environment.appUrl) {
+                contentSecurityPolicyValues.push(global.envConfig.environment.appUrl);
+            }
+            if (global.envConfig.environment.contentSecurityPolicy.values) {
+                contentSecurityPolicyValues = [
+                    ...contentSecurityPolicyValues,
+                    ...global.envConfig.environment.contentSecurityPolicy.values
+                ];
+            }
+        }
+        const contentSecurityPolicyString = envContentSecurityPolicy.values ? global.envConfig.environment.contentSecurityPolicy.values.join(' ') : '';
+        server.use(helmet.contentSecurityPolicy({
+            directives : {
+                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+                'font-src'    : [`'self' ${contentSecurityPolicyString}`, 'https:', 'data:'],
+                'img-src'     : [`'self' ${contentSecurityPolicyString}`, 'data:'],
+                'script-src'  : contentSecurityPolicyValues,
+                'frame-src'   : [`'self' ${contentSecurityPolicyString}`],
+                'connect-src' : [`'self' ${contentSecurityPolicyString}`]
+            },
+            // reportOnly ignore the CSP error, but report it
+            reportOnly : false
+        }));
+        server.use(helmet.dnsPrefetchControl({allow: true}));
+        server.use(helmet.originAgentCluster());
+        server.use(helmet.frameguard({action: 'sameorigin'}));
+        server.use(helmet.hsts());
+        server.use(helmet.ieNoOpen());
+        server.use(helmet.noSniff());
+    }
+};
+
 /**
  * initialize express server configuration
  * @param {Express} server server
  * @param {passport.PassportStatic} passport passport
  */
 const initExpress = async (server, passport) => {
-    let port = 3010;
-    if (global.envConfig) {
-        port = global.envConfig.environment.port;
-    } else if (process.env.PORT) {
-        port = process.env.PORT;
-    }
-    server.set('port', port);
+    server.set('port', global.port);
+
+    useHelmet(server);
 
     const photoPath = serverUtils.getUploadDirectory();
     server.use(express.static(path.join(global.appRoot, 'backoffice'))); // BackOffice V1
@@ -128,7 +147,7 @@ const initExpress = async (server, passport) => {
 
     server.set('views', path.join(global.appRoot, 'backoffice/views/ejs'));
     server.set('view engine', 'ejs');
-    if (serverUtils.getEnv() !== 'test' && global.envFile.logs && global.envFile.logs.http) {
+    if (serverUtils.getEnv('NODE_ENV') !== 'test' && global.envFile.logs && global.envFile.logs.http) {
         server.use(morgan('combined', {stream: require('../utils/logger').stream}));
         server.use(morgan('dev'));
     }
@@ -142,7 +161,7 @@ const initExpress = async (server, passport) => {
         methods        : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
     }));
-    server.use('/api', serverUseRequest);
+    server.use('/api', retrieveUser, serverUseRequest);
     server.get('*', require('../routes/index').manageExceptionsRoutes);
 
     // set a cookie
@@ -165,9 +184,10 @@ const initExpress = async (server, passport) => {
     });
 
     server.use(multer({storage, limits: {fileSize: 1048576000/* 1Gb */}}).any());
-    const configFile  = JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')));
-    const swaggerFile = require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js'));
-    await expressJSDocSwagger(server)({...configFile, baseDir: global.appRoot}, swaggerFile);
+    server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(
+        require(path.resolve(global.appRoot, 'documentations/swagger/swagger.js')),
+        JSON.parse(await fsp.readFile(path.resolve(global.appRoot, 'documentations/swagger/config.json')))
+    ));
 };
 
 const maintenance = async (req, res, next) => {
@@ -177,7 +197,7 @@ const maintenance = async (req, res, next) => {
             && global.envConfig.environment.authorizedIPs.slice(';').indexOf(ip) === -1
     ) {
         const maintenanceFile = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'maintenance.html');
-        if (fsp.existsSync(maintenanceFile) && await fsp.access(maintenanceFile)) {
+        if (fsp.existsSync(maintenanceFile)) {
             return res.status(301).sendFile(maintenanceFile);
         }
         return res.status(301).send('<h1>Maintenance</h1>');
@@ -195,12 +215,38 @@ const extendTimeOut = (req, res, next) => {
     next();
 };
 
+/**
+ * if a child of translation is requested don't request entire translation\
+ * if not request all translation
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ * @returns {void}
+ */
+const setupTranslationIfMissing = (req, res, next) => {
+    const {PostBody} = req.body;
+    if (PostBody && PostBody.structure) {
+        let hasTranslation      = false;
+        let hasTranslationChild = false;
+        for (const elem of Object.keys(PostBody.structure)) {
+            if (elem.startsWith('translation.')) hasTranslationChild = true;
+            if (elem === 'translation') hasTranslation = true;
+        }
+        if (!hasTranslation && !hasTranslationChild) {
+            PostBody.structure.translation = 1;
+        }
+    }
+    next();
+};
+
 module.exports = {
     getUserFromRequest,
     initExpress,
     maintenance,
     deprecatedRoute,
-    extendTimeOut
+    extendTimeOut,
+    setupTranslationIfMissing
 };
 
 const restrictProductFields = (element, url) => {

@@ -1,5 +1,12 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
-const {getDecodedToken}           = require('../services/auth');
 const ServiceReviews              = require('../services/reviews');
 
 module.exports = function (app) {
@@ -9,7 +16,7 @@ module.exports = function (app) {
 };
 
 /**
- * Permet de recupérer les reviews dans des documents séparées
+ * Allows you to retrieve reviews in separate documents
  */
 async function getAggregateReviews(req, res, next) {
     try {
@@ -21,18 +28,15 @@ async function getAggregateReviews(req, res, next) {
 }
 
 /**
- * Fonction pour d'ajouter une review dans product.reviews.datas
+ * Function to add a review in product.reviews.datas
  */
 const setProductReview = async (req, res, next) => {
-    // On ajoute le produit
+    // We add the product
     try {
         const {review, title, rate, lang, questions} = req.body;
-        let user                                     = null;
-        if (req.headers && req.headers.authorization) {
-            user = getDecodedToken(req.headers.authorization);
-        }
+
         const ipClient = req.header('x-forwarded-for') || req.connection.remoteAddress;
-        const result   = await ServiceReviews.setProductReview(req.params.id, user, review, title, rate, lang, questions, ipClient);
+        const result   = await ServiceReviews.setProductReview(req.params.id, req.info, review, title, rate, lang, questions, ipClient);
         return res.status(200).json(result);
     } catch (error) {
         return next(error);

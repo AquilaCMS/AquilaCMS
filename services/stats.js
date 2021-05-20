@@ -1,9 +1,17 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment                                    = require('moment-business-days');
 const {StatsToday, StatsHistory, Configuration} = require('../orm/models');
 const ServiceStatistics                         = require('./statistics');
 
 /**
- * Permet de compter le nombre de panier supprimé
+ * Count the number of deleted baskets
  */
 const addOldCart = async (cartNb) => {
     try {
@@ -21,7 +29,7 @@ const getStatstoday = async () => {
 };
 
 /**
- * Ajout un visiteur (req) unique pour les stats de fréquentation
+ * Add a unique visitor (req) for the traffic stats
  */
 const addUserVisitReq = (req) => {
     const ipClient = req.header('x-forwarded-for') || req.connection.remoteAddress;
@@ -29,7 +37,7 @@ const addUserVisitReq = (req) => {
 };
 
 /**
- * Ajout un visiteur (IP) unique pour les stats de fréquentation
+ * Add a unique visitor (IP) for traffic statistics
  */
 const addUserVisitIP = async (ipClient) => {
     try {
@@ -37,15 +45,15 @@ const addUserVisitIP = async (ipClient) => {
         let existing   = -1;
 
         if (thisStat == null) {
-            // Création de la collection si elle n'exite pas
+            // Creation of the collection if it does not exist
             await StatsToday.updateOne({}, {visit: [], oldCart: 0}, {upsert: true, new: true});
         } else {
-            // On récupère la donnée
+            // Get the data
             existing = thisStat.visit.indexOf(ipClient);
         }
 
         if (existing === -1) {
-            // MAJ de la donnée
+            // Update data
             await StatsToday.updateOne({}, {
                 $push : {visit: {$each: [ipClient]}}
             },
@@ -89,7 +97,7 @@ const buildStats = async () => {
         if (dbToday) {
             await insertType('oldCart', dbToday.oldCart);
             await insertType('visit', dbToday.visit.length);
-            // Reinit les datas du jours
+            // Reinit datas of the day
             await StatsToday.findOneAndUpdate({}, {oldCart: 0, visit: []}, {upsert: true, new: true});
             const _config = await Configuration.findOne({});
             if (_config.environment.sendMetrics.active && _config.licence.registryKey) {
@@ -128,7 +136,7 @@ const buildStats = async () => {
 };
 
 /**
- * Ajoute les valeurs pour le jour dans history
+ * Adds the values for the day in history
  * @param {string} type visit || oldCart
  * @param {number} nb number to add in history for today
  */

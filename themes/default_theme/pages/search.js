@@ -19,10 +19,10 @@ class PageSearch extends NSPageSearch {
         super(props);
         this.state = {
             ...props,
-            itemsPerPages : 15,
-            productsList  : props.products,
-            selectedSort  : JSON.stringify({ field: 'sortWeight', sortValue: -1 }),
-            gridDisplay   : false,
+            itemsPerPages: 15,
+            productsList: props.products,
+            selectedSort: JSON.stringify({ field: 'sortWeight', sortValue: -1 }),
+            gridDisplay: false,
         };
     }
 
@@ -133,9 +133,9 @@ class PageSearch extends NSPageSearch {
                                     </div>{/* <!-- /.bar-filters --> */}
                                 </div>{/* <!-- /.tab-filter --> */}
 
-                                <div className="container container--flex align-top" style={themeConfig && themeConfig.filters && themeConfig.filters === 'right' ? { flexDirection: "row-reverse" } : {}}>
+                                <div className="container container--flex align-top" style={themeConfig && themeConfig.find(t => t.key === 'filters') && themeConfig.find(t => t.key === 'filters').value === 'right' ? { flexDirection: "row-reverse" } : {}}>
 
-                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2" style={themeConfig && themeConfig.filters && themeConfig.filters === 'none' ? { display: "none" } : {}}>
+                                    <div className={`tab-filter${this.state.tab === 'filter2' ? ' current' : ''}`} id="filter2" style={themeConfig && themeConfig.find(t => t.key === 'filters') && themeConfig.find(t => t.key === 'filters').value === 'none' ? { display: "none" } : {}}>
                                         <NSFilters
                                             search={this.props.router.query.search}
                                             color="#f00"

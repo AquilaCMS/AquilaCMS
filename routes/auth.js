@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {
     login,
     IsAuthenticate
@@ -10,7 +18,15 @@ const {middlewareServer} = require('../middleware');
 const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
+    /**
+     * POST /api/v2/auth/login/{from}
+     * @summary Authentification
+     */
     app.post('/v2/auth/login/:from?', login);
+    /**
+     * GET /api/v2/auth/isauthenticated
+     * @summary Is authentificated
+     */
     app.get('/v2/auth/isauthenticated', authentication, IsAuthenticate);
     app.get('/v2/auth/logout', logout);
     app.post('/v2/auth/logout/admin', logoutAdmin);
@@ -20,16 +36,20 @@ module.exports = function (app) {
     app.get('/auth/logout', middlewareServer.deprecatedRoute, logout);
 };
 
+/**
+ * GET /api/v2/auth/logout
+ * @summary Delete the cookie for authentification
+ */
 const logout = (req, res) => {
     res.clearCookie('jwt');
     res.removeHeader('x-auth-token');
-    res.status(200).end();
+    res.status(204).end();
 };
 
 const logoutAdmin = (req, res, next) => {
     try {
         req.logOut();
-        return res.status(200).end();
+        return res.status(204).end();
     } catch (err) {
         next(err);
     }

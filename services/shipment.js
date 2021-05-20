@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose          = require('mongoose');
 const moment            = require('moment');
 const {Shipments, Cart} = require('../orm/models');
@@ -9,7 +17,7 @@ const defaultFields    = ['_id', 'code', 'url', 'url_logo', 'translation'];
 const queryBuilder     = new QueryBuilder(Shipments, restrictedFields, defaultFields);
 
 /**
- * @description retourne les shipment
+ * @description Get shipments
  */
 const getShipments = async (PostBody) => {
     return queryBuilder.find(PostBody);
@@ -65,8 +73,11 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
                 }
             }
         }
-        // on filtre les shipment pour retourner le plus interessant
-        return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
+        // we filter the shipments to return the most interesting
+        if (choices.length) {
+            return choices.reduce( (prev, curr) => ((prev.price < curr.price) ? prev : curr));
+        }
+        return [];
     }
     let shipments = [];
     if (cart.addresses && cart.addresses.delivery && cart.addresses.delivery.isoCountryCode) {
@@ -111,17 +122,17 @@ const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
 function getShippingDate(cart, shipment) {
     let maxSupplyDate = null;
     if (cart.items) {
-        // on boucle sur les produits du cart (i)
+        // Loop on the products of the cart (i)
         for (let i = 0; i < cart.items.length; i++) {
             const item = cart.items[i];
             if (item.id.stock && item.id.stock.status === 'dif' && (maxSupplyDate === null || (new Date(item.id.stock.date_supply)).getTime() > (maxSupplyDate).getTime())) {
                 maxSupplyDate = item.id.stock.date_supply;
             }
             if (item.type === 'bundle') {
-                // on boucle sur les sections du bundle (j)
+                // loop on the bundle sections (j)
                 for (let j = 0; j < item.selections.length; j++) {
-                    const selection = item.selections[i];
-                    // on boucle sur la liste de produits selectionnés (k)
+                    const selection = item.selections[j];
+                    // loop on the list of selected products (k)
                     for (let k = 0; k < selection.products.length; k++) {
                         const product = selection.products[k];
                         if (product.stock && product.stock.status === 'dif' && (maxSupplyDate === null || (new Date(product.stock.date_supply)).getTime() > (maxSupplyDate).getTime())) {
@@ -152,9 +163,9 @@ function getShippingDate(cart, shipment) {
 }
 
 /**
- * @description Retourne le shipment venant d'étre ajouté ou modifié
- * @param body : body de la requête, il permettra de mettre à jour le shipment ou de le créer
- * @param _id : string : ObjectId du shipment, si null alors on est en mode création
+ * @description Returns the equipment just added or modified
+ * @param body : body of the request, it will allow to update the shipment or to create it
+ * @param _id : string : ObjectId of the shipment, if null then we are in creation mode
  */
 const setShipment = async (_id = null, body) => {
     let result;
@@ -171,7 +182,7 @@ const setShipment = async (_id = null, body) => {
 };
 
 /**
- * Retourne le shipment venant d'étre supprimé en fonction de son _id
+ * Returns the just deleted shipment according to its _id
  */
 const deleteShipment = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
@@ -181,7 +192,7 @@ const deleteShipment = async (_id) => {
 };
 
 /**
- * Fonction pour récupérer des shipments en fonction du pays et du poids d'une commande
+ * Function to retrieve shipments based on the country and weight of an order
  * @deprecated
  */
 const getEstimatedFee = async (cartId, shipmentId, countryCode) => {

@@ -3,52 +3,75 @@ const ClientControllers = angular.module("aq.client.controllers", []);
 ClientControllers.controller("ClientCtrl", [
     "$scope", "$location", "ClientSearch", "Client", "toastService", "ClientColumns", "User", "$http", "ExportCollectionCSV", "ClientV2",
     function ($scope, $location, ClientSearch, Client, toastService, ClientColumns, User, $http, ExportCollectionCSV, ClientV2) {
+        $scope.columns = ClientColumns;
         $scope.query = {search: ""};
         $scope.page = 1;
-
-        $scope.columns = ClientColumns;
-
-        function init() {
-            $scope.sort = {};
-        }
-
-        init();
+        $scope.nbItemsPerPage = 10;
+        $scope.maxSize = 5;
+        $scope.filter = {};
         $scope.valeurTri = -1;
-        $scope.tri = {creationDate : -1}
-        $scope.sortSearch = function(valeur){
-            $scope.valeurTri;
+        $scope.tri = {createdAt : -1}
+        
+        function getFilter(){
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("company")) {
+                    if($scope.filter.company != ""){
+                        filter["company.name"] = { $regex: $scope.filter.company, $options: "i" };
+                    }
+                } else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                    const key = filterKeys[i].split("_");
+                    const value = $scope.filter[filterKeys[i]];
+
+                    if (filter[key[1]] === undefined) {
+                        filter[key[1]] = {};
+                    }
+                    filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            filter["isAdmin"] = false;
+            return filter;
+        }
+        $scope.sortSearch = function(name, pageNumber){
             if($scope.valeurTri == 1){
                 $scope.valeurTri = -1;
-                //$scope.sort.reverse = false;
             }else{
                 $scope.valeurTri = 1;
-                //$scope.sort.reverse = true;
             }
-            $scope.tri = {}
-            $scope.tri[valeur] = $scope.valeurTri
-            valeurPage = $scope.page;
+            if(name){
+                $scope.tri = { [name]: $scope.valeurTri};
+            }
+            if(pageNumber){
+                $scope.page = pageNumber;
+            }
+            let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
-                filter : {
-                    $or : [
-                        {firstname: {$regex: $scope.query.search, $options: 'i'}},
-                        {lastname: {$regex: $scope.query.search, $options: 'i'}},
-                        {email: {$regex: $scope.query.search, $options: 'i'}},
-                        {'company.name': {$regex: $scope.query.search, $options: 'i'}}
-                    ],
-                    isAdmin : false
-                },
-                structure : {'details': 1, creationDate: 1, company : 1},
-                valeurPage,
+                filter,
+                structure : {createdAt: 1, company : 1},
+                page      : $scope.page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
             }}, function (response) {
                 $scope.clients = response.datas;
                 $scope.totalClients = response.count;
+            }, function(error){
+                console.error(error);
+                //deal with error here
             });
         }
 
-        $scope.nbItemsPerPage = 10;
-        $scope.maxSize = 5;
 
         $scope.onClientsPageChange = function (page) {
 
@@ -74,17 +97,10 @@ ClientControllers.controller("ClientCtrl", [
             }
 
             $scope.currentClientsPage = page;
+            let filter = getFilter();
             ClientV2.list({type: "users"}, {PostBody : {
-                filter : {
-                    $or : [
-                        {firstname: {$regex: $scope.query.search, $options: 'i'}},
-                        {lastname: {$regex: $scope.query.search, $options: 'i'}},
-                        {email: {$regex: $scope.query.search, $options: 'i'}},
-                        {'company.name': {$regex: $scope.query.search, $options: 'i'}}
-                    ],
-                    isAdmin : false
-                },
-                structure : {'details': 1, creationDate: 1},
+                filter,
+                structure : {createdAt: 1, company : 1},
                 page,
                 limit     : $scope.nbItemsPerPage,
                 sort      : $scope.tri
@@ -112,9 +128,9 @@ ClientControllers.controller("ClientCtrl", [
 
 ClientControllers.controller("ClientDetailCtrl", [
     "$scope", "$routeParams", "$location", "toastService", "ClientFields", "ClientBlocks", "Orders", "Carts", "Newsletter",
-    "$rootScope", "ClientAdmin", "ClientCountry", "ActivateAccount", "ProductsV2", "TerritoryCountries", 'SetAttributesV2', 'AttributesV2', 'ClientV2', 'RulesV2',
+    "$rootScope", "ClientAdmin", "ClientCountry", "ActivateAccount", "ProductsV2", "TerritoryCountries", 'SetAttributesV2', 'AttributesV2', 'ClientV2', 'RulesV2', "$translate",
     function ($scope, $routeParams, $location, toastService, ClientFields, ClientBlocks, Orders, Carts,
-         Newsletter, $rootScope, ClientAdmin, ClientCountry, ActivateAccount, ProductsV2, TerritoryCountries, SetAttributesV2, AttributesV2, ClientV2, RulesV2) {
+         Newsletter, $rootScope, ClientAdmin, ClientCountry, ActivateAccount, ProductsV2, TerritoryCountries, SetAttributesV2, AttributesV2, ClientV2, RulesV2, $translate) {
         $scope.isEditMode = false;
 
         $scope.fields = ClientFields;
@@ -126,11 +142,11 @@ ClientControllers.controller("ClientDetailCtrl", [
         $scope.civilities = [
             {
                 code : 0,
-                name : "Monsieur"
+                name : "client.detail.address.civility.0"
             },
             {
                 code: 1,
-                name: "Madame"
+                name: "client.detail.address.civility.1"
             }
         ];
 
@@ -165,7 +181,6 @@ ClientControllers.controller("ClientDetailCtrl", [
             });
         }
 
-        getAttributesClient();
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item.type;
@@ -214,7 +229,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
             ClientV2.query({PostBody: {filter: {_id: $routeParams.clientId}, structure: '*', limit: 1}}, function (response) {
                 if (response._id === undefined) {
-                    toastService.toast("danger", "Ce client n'existe pas");
+                    toastService.toast("danger", $translate.instant("global.customerNotExist"));
                     $location.path("/clients");
                 }
                 $scope.client = response;
@@ -232,18 +247,21 @@ ClientControllers.controller("ClientDetailCtrl", [
                     for(let i = 0; i < $scope.client.addresses.length; i++)
                     {
                         var isoCountryCode = $scope.client.addresses[i].isoCountryCode;
-                        ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
-                        {
-                            // On récupére le nom du pays
-                            $scope.client.addresses[i].country = response.name;
-                        }, function (error) {
-                            console.error("Impossible de récupérer le pays des clients", error);
-                            // si une erreur se produit on met le code iso du pays dans country
-                            $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
-                        });
+                        if(isoCountryCode){
+                            ClientCountry.query({PostBody: {filter: {code: isoCountryCode}}}, function (response)
+                            {
+                                // On récupére le nom du pays
+                                $scope.client.addresses[i].country = response.name;
+                            }, function (error) {
+                                console.error("Impossible de récupérer le pays des clients", error);
+                                // si une erreur se produit on met le code iso du pays dans country
+                                $scope.client.addresses[i].country = $scope.client.addresses[i].isoCountryCode;
+                            });
+                        }
                     }
                 }
 
+                // recup les attributs (tous les attr users en gros)
                 genAttributes();
 
                 $scope.selectedDropdownItem = $scope.client.type ? $scope.client.type : "";
@@ -255,6 +273,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 $scope.client.oldEmail = response.email;
                 $scope.isEditMode = true;
 
+                // on recup ceux lié a cet user
                 getAttributesClient();
 
                 $scope.downloadHistoryFilters = {$and: [{[`product.translation.${$rootScope.adminLang}.name`]: {$regex: "", $options: "i"}}, { "user.email": $scope.client.email}]}
@@ -309,14 +328,14 @@ ClientControllers.controller("ClientDetailCtrl", [
                         }
                     } else if ((attr.type === "Couleur" || attr.type === "color") && !(/\#([a-z0-9]{3}|[a-z0-9]{6})$/i).test(attr.translation[$scope.lang].value)) {
                         attrsErrors = true;
-                        toastService.toast("danger", "Valeur hexadecimal pour la couleur incorrect");
+                        toastService.toast("danger", $translate.instant("global.incorrectHex"));
                         return;
                     }
                 }
             }
             $scope.form.nsSubmitted = true;
             if ($scope.form.$invalid) {
-                toastService.toast("danger", "Les informations saisies ne sont pas valides.");
+                toastService.toast("danger", $translate.instant("global.invalidEntry"));
                 return;
             }
             $scope.client.type = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
@@ -334,13 +353,19 @@ ClientControllers.controller("ClientDetailCtrl", [
                 if (isQuit) {
                     $location.path("/clients");
                 } else {
-                    toastService.toast("success", "Informations sauvegardées !");
+                    toastService.toast("success", $translate.instant("global.infoSaved"));
                     $location.path(`/clients/${response.user._id}`);
                 }
             }, function(err) {
                 console.error(err)
                 if(err.data.code === 'login_subscribe_email_existing') {
+                    if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
                     toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
+                    }else{
+                        toastService.toast('danger', $translate.instant("global.alreadyExistEmail"));
+                    }
+                }else{
+                    toastService.toast('danger', err.data.message);
                 }
             })
         };
@@ -348,7 +373,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         $scope.remove = function () {
             if (confirm("Etes-vous sûr de vouloir supprimer ce client ? Ses commandes seront également supprimées !")) {
                 ClientV2.delete({type: 'user', id: $scope.client._id}, function (response) {
-                    toastService.toast("success", "Client supprimé");
+                    toastService.toast("success", $translate.instant("global.customerDeleted"));
                     $location.path("/clients");
                 });
             }
@@ -357,7 +382,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         const loginAdminAsClient = function () {
             ClientAdmin.logAsClient({_id: $scope.client._id}, function (response) {
                 document.cookie = `jwt=${response.data};path=/`;
-                toastService.toast("success", "Vous êtes maintenant connectés en tant que client sur le site");
+                toastService.toast("success", $translate.instant("global.customerConnected"));
             });
         };
 
@@ -366,30 +391,30 @@ ClientControllers.controller("ClientDetailCtrl", [
                 && new RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i).test($scope.client.email)) {
                 const userRes = ClientV2.resetpassword({email: $scope.client.email, lang: $scope.client.preferredLanguage}, function () {
                     $scope.mailError = undefined;
-                    toastService.toast("success", "Requête envoyée");
+                    toastService.toast("success", $translate.instant("global.requestSend"));
                 }, function (res) {
                     if (res.data != null) {
                         toastService.toast("danger", res.data.message);
                     } else {
-                        toastService.toast("danger", "Une erreur est survenue. Veuillez contacter un administrateur.");
+                        toastService.toast("danger", $translate.instant("global.errorContactAdmin"));
                     }
                 });
             } else {
-                toastService.toast("danger", "L'adresse e-mail du client n'est valide.");
+                toastService.toast("danger", $translate.instant("global.customerEmailinvalid"));
             }
         };
         const submitActiveAccountRequest = function () {
             ActivateAccount.query({userId: $scope.client._id, lang: $scope.adminLang}, function (resp) {
                 if (resp.accepted && resp.accepted.length) {
-                    toastService.toast("success", "Mail de confirmation de compte envoyé");
+                    toastService.toast("success", $translate.instant("global.confirmationEmailSent"));
                 } else {
-                    toastService.toast("danger", "Une erreur est survenue lors de l'envoie du mail");
+                    toastService.toast("danger", $translate.instant("global.errorSendMail"));
                 }
             }, function (res) {
                 if (res.data != null) {
                     toastService.toast("danger", res.data.translations[$scope.adminLang]);
                 } else {
-                    toastService.toast("danger", "Une erreur est survenue. Veuillez contacter un administrateur.");
+                    toastService.toast("danger", $translate.instant("global.errorContactAdmin"));
                 }
             });
         };

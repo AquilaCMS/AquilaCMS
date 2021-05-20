@@ -28,10 +28,19 @@
         "maxSel": "Max selections",
         "addPdt": "Add product",
         "pdt": "Product",
+        "picture": "Picture",
         "act": "Actions",
         "qt": "Quantity",
         "attrJeux": "Attributes set attributes",
         "idFirst": "You must type the product's ID before configuring attributes!",
-        "catNom": "Category name"
+        "catNom": "Category name",
+        "modifierPrice": {
+            "ati": "ATI price diff",
+            "et": "ET price diff"
+        },
+        "modifierWeight": "Weight diff (gram)"
+    },
+    "msg": {
+        "deleteSelection": "Are you sure you want to delete the section ?"
     }
 }

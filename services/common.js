@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const moment   = require('moment-business-days');
 const utils    = require('../utils/utils');
 const NSErrors = require('../utils/errors/NSErrors');
@@ -38,7 +46,7 @@ const getBreadcrumb = async (url) => {
         isHome : true
     }];
 
-    // Page statique
+    // Static page
     if (!url.includes('blog') && url.length === 1) {
         const staticsServices = require('./statics');
         const result          = await staticsServices.getStatic({filter: {[`translation.${lang}.slug`]: url[0]}});
@@ -77,13 +85,13 @@ const getBreadcrumb = async (url) => {
                 });
             }
         }
-    } else if (url.includes('search') && url.length > 1) { // Recherche
+    } else if (url.includes('search') && url.length > 1) { // Search
         parts.push({
             text   : 'Recherche',
             link   : keepL,
             isHome : false
         });
-    } else if (!url.includes('c') && url.length > 1) { // Produit
+    } else if (!url.includes('c') && url.length > 1) { // Product
         parts = await parseUrlPrdCat(parts, url, keepL, lang);
     }
     return parts;
@@ -91,7 +99,7 @@ const getBreadcrumb = async (url) => {
 
 const exportData = async (model, PostBody) => {
     moment.locale(global.defaultLang);
-    const models = ['users', 'products', 'orders'];
+    const models = ['users', 'products', 'orders', 'contacts', 'bills'];
     if (models.includes(model)) {
         PostBody           = !PostBody || PostBody === {}   ? {} : PostBody;
         PostBody.filter    = !PostBody.filter               ? {} : PostBody.filter;

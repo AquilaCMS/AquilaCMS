@@ -1,7 +1,16 @@
-const mongodb      = require('mongodb');
-const NSError      = require('../utils/errors/NSError');
-const NSErrors     = require('../utils/errors/NSErrors');
-const errorMessage = require('../utils/translate/errors');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const {mongo: {MongoError}} = require('mongoose');
+const NSError               = require('../utils/errors/NSError');
+const NSErrors              = require('../utils/errors/NSErrors');
+const {getEnv}              = require('../utils/server');
+const errorMessage          = require('../utils/translate/errors');
 
 const mongoErrorCodeToNsError = {
     11000 : NSErrors.Conflict
@@ -69,37 +78,37 @@ const applyTranslation = (err, lang) => {
 const expressErrorHandler = (err, req, res, next) => {
     if (err) {
         if (!err.status) err.status = 500;
-        if (err instanceof NSError && err.level !== 'none') {
-            console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}"
-                ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
-        } else if (!(err instanceof NSError)) {
-            console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}"
-                ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+        if (getEnv('NODE_ENV') !== 'test') {
+            if (err instanceof NSError && err.level !== 'none') {
+                console[err.level](`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+            } else if (!(err instanceof NSError)) {
+                console.error(`"${req.method} ${req.originalUrl} HTTP/${req.httpVersion}" ${err.status} - "${req.protocol}://${req.get('host')}${req.originalUrl}"`);
+            }
         }
 
         let lang = 'en';
         if (req.headers && req.headers.lang) lang = req.headers.lang;
         else if (req.query && req.query.lang) lang = req.query.lang;
-        else if (req.body && req.body.lang) lang = req.body.lang;
+        else if (req.body && req.body.lang && typeof req.body.lang === 'string') lang = req.body.lang;
         else if (global.defaultLang) lang = global.defaultLang;
 
-        if (err instanceof mongodb.MongoError) {
-            log(err);
+        if (err instanceof MongoError) {
+            if (getEnv('NODE_ENV') !== 'test') log(err);
             const knownError = mongoErrorCodeToNsError[err.code];
             if (knownError) err = knownError;
             err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
         } else if (err instanceof NSError) {
             err.message = errorMessage[err.code] ? errorMessage[err.code][lang] : '';
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
         } else if (err instanceof Object && !(err instanceof Error)) {
             err.message = applyTranslation(err, lang);
             delete err.translations;
             if (!err.message) err = NSErrors.InternalError;
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
         } else if (err instanceof Object && err instanceof Error) {
             err.message = applyTranslation(err, lang);
             delete err.translations;
-            log(err);
+            if (getEnv('NODE_ENV') !== 'test') log(err);
         }
 
         return sendError(res, err);

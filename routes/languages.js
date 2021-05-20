@@ -1,3 +1,10 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {securityForceFilter}       = require('../middleware/security');
 const servicesLanguages           = require('../services/languages');
@@ -12,6 +19,10 @@ module.exports = function (app) {
     app.post('/V2/translate/:lang/:currentTranslate', translateSet);
 };
 
+/**
+ * POST /api/v2/languages
+ * @summary Language list
+ */
 async function listLangs(req, res, next) {
     try {
         const {PostBody} = req.body;
@@ -50,7 +61,7 @@ async function removeLang(req, res, next) {
 }
 
 /**
- * @description Récupère des fichiers de traduction
+ * @description Retrieves translation files
  */
 async function translateList(req, res, next) {
     try {
@@ -62,7 +73,7 @@ async function translateList(req, res, next) {
 }
 
 /**
- * @description Récupère le fichier de traduction particulier
+ * @description Retrieve the particular translation file
  */
 async function translateGet(req, res, next) {
     try {

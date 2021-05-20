@@ -15,6 +15,7 @@ PaymentControllers.controller("PaymentListCtrl", [
         $scope.queryOrderStatus = {statusTodo: false, statusDone: false, statusCanceled: false, statusFailed: false};
         $scope.queryOrderType = {typeCredit: false, typeDebit: false};
         $scope.exportDates = {}
+        $scope.showLoader = true;
 
         $scope.getPayments = function (page) {
 
@@ -67,6 +68,7 @@ PaymentControllers.controller("PaymentListCtrl", [
             }
 
             Payment.query({PostBody: {filter, structure: {payment: 1}, sort, page, limit: $scope.nbItemsPerPage}}, function (data) {
+                $scope.showLoader = false;
                 const _orders = data.datas;
                 $scope.totalItems = data.count;
                 $scope.listPayment = [];
@@ -79,7 +81,7 @@ PaymentControllers.controller("PaymentListCtrl", [
                             number        : _orders[i].number,
                             customer      : _orders[i].customer,
                             addresses     : _orders[i].addresses,
-                            creationDate  : _orders[i].payment.creationDate,
+                            createdAt     : _orders[i].payment.createdAt,
                             operationDate : _orders[i].payment.operationDate,
                             status        : _orders[i].payment.status,
                             mode          : _orders[i].payment.mode,
@@ -94,6 +96,9 @@ PaymentControllers.controller("PaymentListCtrl", [
                     }
 
                 }
+            }, function(error) {
+                console.error("Can't get data");
+                console.error(error);
             });
         };
 

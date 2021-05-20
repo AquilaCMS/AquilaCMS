@@ -7,21 +7,24 @@
             "type"
         ],
         "properties": {
-            "code"         : {"type": "String"},
-            "name"         : {"type": "String"},
-            "type"         : {"type": "String", "enum": ["universe", "family", "subfamily"]},
-            "creationDate" : {"type": "Date", "default": "Date.now"},
+            "code"         : {"type": "string"},
+            "name"         : {"type": "string"},
+            "type"         : {"type": "string", "enum": ["universe", "family", "subfamily"]},
+            "createdAt" : {
+                "type": "string",
+                "format": "date"
+            },
             "ancestors"    : {
                 "type": "array",
                 "items": {
                     "type": "object",
                     "properties": {
-                        "code": {"type": "String"},
-                        "slug": {"type": "String"}
+                        "code": {"type": "string"},
+                        "slug": {"type": "string"}
                     }
                 }
             },
-            "slug"         : {"type": "String"},
+            "slug"         : {"type": "string"},
             "parent"       : {"type": "string", "format": "ObjectId", "description": "ref families"},
             "children"     : {
                 "type": "array",

@@ -7,6 +7,10 @@
             "type"        : {"type": "string", "default": "", "description": "jointure entre type et code dans mail_type"},
             "from"        : {"type": "string", "description": "adresse mail d'envoi"},
             "fromName"    : {"type": "string", "default": ""},
+            "createdAt" : {
+                "type": "string",
+                "format": "date"
+            },
             "translation" : {"type": "object"}
         }
     }

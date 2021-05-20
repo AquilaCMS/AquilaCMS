@@ -1,7 +1,14 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const utilsDatabase               = require('../utils/database');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const ServiceCart                 = require('../services/cart');
-const {getDecodedToken}           = require('../services/auth');
 const {authentication, adminAuth} = require('../middleware/authentication');
 
 module.exports = function (app) {
@@ -20,10 +27,7 @@ module.exports = function (app) {
 
 /**
  * POST /api/v2/carts
- * @tags Cart
  * @summary Listing of carts
- * @security api_key
- * @param {PostBody} request.body.required - PostBody
  */
 const getCarts = async (req, res, next) => {
     try {
@@ -34,8 +38,7 @@ const getCarts = async (req, res, next) => {
 };
 
 /**
- * GET /v2/cart/user/{idclient}
- * @tags Cart
+ * GET /api/v2/cart/user/{idclient}
  * @summary Get cart(s) for this client
  */
 const getCartforClient = async (req, res, next) => {
@@ -47,20 +50,12 @@ const getCartforClient = async (req, res, next) => {
 };
 
 /**
- * Post /api/v2/cart/:id
- * @tags Cart
+ * POST /api/v2/cart/{id}
  * @summary Get cart by id
  */
 const getCartById = async (req, res, next) => {
     try {
-        let user;
-        if (req.headers.authorization) {
-            const userInfo = getDecodedToken(req.headers.authorization);
-            if (userInfo) {
-                user = userInfo.info;
-            }
-        }
-        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, user, req.body.lang, req);
+        const result = await ServiceCart.getCartById(req.params.id, req.body.PostBody, req.info, req.body.lang, req);
         if (result) {
             await utilsDatabase.populateItems(result.items);
             return res.json(result);
@@ -71,6 +66,10 @@ const getCartById = async (req, res, next) => {
     }
 };
 
+/**
+ * POST /api/v2/cart/to/order
+ * @summary Transform cart to order
+ */
 async function setCartToOrder(req, res, next) {
     try {
         const result = await ServiceCart.cartToOrder(req.body.cartId, req.info, req.body.lang);
@@ -81,7 +80,8 @@ async function setCartToOrder(req, res, next) {
 }
 
 /**
- * Fonction supprimant un panier
+ * DELETE /api/v2/cart/{cartId}/item/{itemId}
+ * @summary Delete an item in cart
  */
 async function deleteCartItem(req, res, next) {
     try {
@@ -92,13 +92,17 @@ async function deleteCartItem(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/item
+ * @summary Add an item in cart
+ */
 const addItem = async (req, res, next) => {
     // Check if user has cart in progress
     // YES : add product
     // NO : create and add
     try {
         const result = await ServiceCart.addItem(req);
-        if (result.data.cart) {
+        if (result && result.data && result.data.cart) {
             return res.json(result.data.cart);
         }
         return res.status(400).json(result);
@@ -107,6 +111,10 @@ const addItem = async (req, res, next) => {
     }
 };
 
+/**
+ * PUT /api/v2/cart/updateQty
+ * @summary Update an item quantity in cart
+ */
 async function updateQty(req, res, next) {
     try {
         const result = await ServiceCart.updateQty(req);
@@ -119,6 +127,10 @@ async function updateQty(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/comment
+ * @summary Update comment in cart
+ */
 async function updateComment(req, res, next) {
     try {
         const result = await ServiceCart.setComment(req.body.cartId, req.body.comment);
@@ -129,6 +141,10 @@ async function updateComment(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/addresses
+ * @summary Update address in cart
+ */
 async function updateAddresses(req, res, next) {
     try {
         const result = await ServiceCart.setCartAddresses(req.body.cartId, req.body.addresses);
@@ -139,9 +155,13 @@ async function updateAddresses(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/cart/delivery
+ * @summary Update delivery address in cart
+ */
 async function updateDelivery(req, res, next) {
     try {
-        const result = await ServiceCart.updateDelivery(req.body);
+        const result = await ServiceCart.updateDelivery(req.body, req.query ? req.query.removeDeliveryDatas : false);
         await ServiceCart.linkCustomerToCart(result.data.cart, req);
         return res.send(result.data.cart);
     } catch (err) {
@@ -149,6 +169,10 @@ async function updateDelivery(req, res, next) {
     }
 }
 
+/**
+ * DELETE /v2/cart/discount/{cartId}
+ * @summary Remove discount in cart
+ */
 async function removeDiscount(req, res, next) {
     try {
         const result = await ServiceCart.removeDiscount(req.params.cartId);

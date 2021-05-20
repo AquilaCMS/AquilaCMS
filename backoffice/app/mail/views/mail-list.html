@@ -25,6 +25,19 @@
                         </a>
                     </th>
                 </tr>
+                <tr>
+                    <th>
+                        <input type="text" ng-change="getAllMails(page)" ng-model="filter.code" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='mail.list.code' class="form-control">
+                    </th>
+                    <th>
+                        <input type="text" ng-change="getAllMails(page)" ng-model="filter.subject" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='mail.list.sujet' class="form-control">
+                    </th>
+                    <th>
+                        <select ng-model="filter.type" ng-change="getAllMails(page)" class="form-control" type="boolean">
+                            <option ng-repeat="option in mailTypes" value="{{option.code}}">{{option.translation[adminLang].name}}</option>
+                        </select>
+                    </th>
+                </tr>
             </thead>
             <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()" infinite-scroll-distance="1"
                 infinite-scroll-immediate-check="true" infinite-scroll-disabled='scroller.busy'>
@@ -33,7 +46,7 @@
                     ng-click="detail(mail)" ng-repeat="mail in mails|orderBy:sortPlay.type:sortPlay.reverse">
                     <td data-label="Code :" class=" ">{{mail.code}}</td>
                     <td data-label="Objet :" class=" ">{{mail.translation[defaultLang].subject}}</td>
-                    <td data-label="Action :" class=" ">{{mail.type}}</td>
+                    <td data-label="Action :" class=" ">{{getMailTypeDesc(mail.type)}}</td>
                 </tr>
             </tbody>
         </table>

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceSlider               = require('../services/slider');
 
@@ -11,7 +19,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing de produits
+ * Function returning a product listing
  */
 async function getSliders(req, res, next) {
     try {
@@ -22,7 +30,7 @@ async function getSliders(req, res, next) {
     }
 }
 /**
- * Fonction retournant un slider en fonction de son id
+ * Function returning a slider according to its id
  */
 async function getSliderById(req, res, next) {
     try {
@@ -33,7 +41,7 @@ async function getSliderById(req, res, next) {
     }
 }
 /**
- * Fonction retournant un slider en fonction des parametres du filter du queryBuilder
+ * Function returning a slider according to the parameters of the queryBuilder filter
  */
 async function getSlider(req, res, next) {
     try {
@@ -44,17 +52,17 @@ async function getSlider(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour un slider
+ * Function to add or update a slider
  */
 async function setSlider(req, res, next) {
-    // On ajoute le slider
+    // We add the slider
     try {
         let result;
         if (req.body._id) {
-            // On update le slider
+            // We update the slider
             result = await ServiceSlider.setSlider(req);
         } else {
-            // Création du slider
+            // Creating the slider
             result = await ServiceSlider.createSlider(req);
         }
         return res.json(result);
@@ -63,7 +71,7 @@ async function setSlider(req, res, next) {
     }
 }
 /**
- * Fonction supprimant un slider
+ * Function removing a slider
  */
 async function deleteSlider(req, res, next) {
     try {

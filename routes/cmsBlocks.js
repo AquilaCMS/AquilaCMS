@@ -1,33 +1,49 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const ServiceCmsBlock             = require('../services/cmsBlocks');
 const {authentication, adminAuth} = require('../middleware/authentication');
+const {setupTranslationIfMissing} = require('../middleware/server');
+const {isAdmin}                   = require('../utils/utils');
 
 module.exports = function (app) {
-    app.post('/v2/cmsBlocks', getCMSBlocks);
-    app.post('/v2/cmsBlock', getCMSBlock);
-    app.post('/v2/cmsBlock/:code', getCMSBlockById);
+    app.post('/v2/cmsBlocks', setupTranslationIfMissing, getCMSBlocks);
+    app.post('/v2/cmsBlock', setupTranslationIfMissing, getCMSBlock);
+    app.post('/v2/cmsBlock/:id', setupTranslationIfMissing, getCMSBlockById);
     app.put('/v2/cmsBlock', authentication, adminAuth, setCMSBlock);
     app.delete('/v2/cmsBlock/:code', authentication, adminAuth, deleteCMSBlock);
 };
 
 /**
- * @api {post} /v2/cmsBlocks Get CMSBlocks
- * @apiName getCMSBlocks
- * @apiGroup CMSBlock
- * @apiVersion 2.0.0
- * @apiDescription Get CMSBlocks
- * @apiParam {String} lang Get the translation in the right language
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-Get all CMSBlocks with the default fields for default language :
-{"PostBody":{"filter":{}}}
+ * POST /api/v2/cmsBlocks
+ * @summary List of CMSBlocks
  * @apiSuccess {Array}  datas           Array of CMSBlocks
  * @apiSuccess {String} datas.code      Code of the CMSBlock
  * @apiSuccess {Number} datas.content   HTML content of the CMSBlock (from translation[lang] fields)
- * @apiUse ErrorPostBody
  */
 async function getCMSBlocks(req, res, next) {
     try {
-        const result = await ServiceCmsBlock.getCMSBlocks(req.body.PostBody);
+        const {PostBody} = req.body;
+        const result     = await ServiceCmsBlock.getCMSBlocks(PostBody);
+        if (!isAdmin(req.info)) {
+            // loop on result
+            for (let i = 0; i < result.datas.length; i++) {
+                const block = result.datas[i];
+                if (block.translation) {
+                    // loop on the languages contained
+                    for (let k = 0; k < Object.keys(block.translation).length; k++) {
+                        const langKey = Object.keys(block.translation)[k];
+                        delete block.translation[langKey].variables;
+                        delete block.translation[langKey].html;
+                    }
+                }
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
@@ -37,36 +53,49 @@ async function getCMSBlocks(req, res, next) {
 /**
  * @api {post} /v2/cmsBlock Get CMSBlock
  * @apiName getCMSBlock
- * @apiGroup CMSBlock
- * @apiVersion 2.0.0
- * @apiDescription Get one CMSBlock
- * @apiParam {String} lang Get the translation in the right language
- * @apiUse param_PostBody
- * @apiParamExample {js} Example usage:
-// Get the CMSBlock for code "mycode" with the default fields for default language :
-{PostBody:{filter:{code: "mycode"}}}
- * @apiSuccess {String}   code          Code of the CMSBlock
- * @apiSuccess {Number}   content       HTML content of the CMSBlock (from translation[lang] fields)
- * @apiUse ErrorPostBody
  */
 async function getCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.getCMSBlock(req.body.PostBody);
+        if (!isAdmin(req.info) && result.translation) {
+            // loop on the languages contained
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
     }
 }
 
+/**
+ * POST /v2/cmsBlock/{id}
+ * @summary Get one CMSBlock by id
+ */
 async function getCMSBlockById(req, res, next) {
     try {
-        const result = await ServiceCmsBlock.getCMSBlockById(req.params.code, req.body.PostBody);
+        const result = await ServiceCmsBlock.getCMSBlockById(req.params.id, req.body.PostBody);
+        if (!isAdmin(req.info) && result.translation) {
+            // loop on the languages contained
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
         return res.json(result);
     } catch (error) {
         return next(error);
     }
 }
 
+/**
+ * PUT /v2/cmsBlock
+ * @summary Set CMSBlock
+ */
 async function setCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.setCMSBlock(req.body);
@@ -76,6 +105,10 @@ async function setCMSBlock(req, res, next) {
     }
 }
 
+/**
+ * DELETE /v2/cmsBlock/:code
+ * @summary Delete CMSBlock
+ */
 async function deleteCMSBlock(req, res, next) {
     try {
         const result = await ServiceCmsBlock.deleteCMSBlock(req.params.code);

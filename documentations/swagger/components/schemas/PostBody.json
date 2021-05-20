@@ -1,0 +1,25 @@
+{
+    "PostBody": {
+        "description": "",
+        "properties": {
+            "lang":{"type": "string"},
+            "PostBody" : {
+                "type": "object",
+                "properties": {
+                    "filter" : {"type": "object"},
+                        "limit" : {"type": "number", "default": 1},
+                        "populate" : {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "skip"      : {"type": "integer", "default": 0},
+                        "sort"      : {"type": "object"},
+                        "structure" : {"type": "object"},
+                        "page"      : {"type": "integer", "default": null}
+                }
+            }
+        }
+    }
+}

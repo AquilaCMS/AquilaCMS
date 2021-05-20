@@ -4,8 +4,8 @@ AttributeControllers.controller("AttributeListCtrl", [
     "$scope", "$rootScope", "$location", "LanguagesApi", 'AttributesV2',
     function ($scope, $rootScope,  $location, LanguagesApi, AttributesV2) {
         $scope._type = window.location.hash.indexOf('users') > -1 ? 'users' : 'products';
-        $scope.local= {search: ""};
-
+        $scope.local = {search: ""};
+        $scope.filter = {};
         function init() {
             $scope.sortType = "name"; // set the default sort type
             $scope.sortReverse = false;  // set the default sort order
@@ -14,11 +14,34 @@ AttributeControllers.controller("AttributeListCtrl", [
         init();
 
         $scope.getAttributesClassed = function() {
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("type")) {
+                    if($scope.filter.type != ""){
+                        filter["type"] = $scope.filter.type;
+                    }
+                } else if(filterKeys[i].includes("name")) {
+                    if($scope.filter.name != ""){
+                        filter["translation.fr.name"] = { $regex: $scope.filter.name, $options: "i" };;
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
+            filter["_type"] = $scope._type;
+            filter["set_attributes"] = {$gt: []};
             let PostBody = {
-                filter : {
-                    _type          : $scope._type,
-                    set_attributes : {$gt: []},
-                },
+                filter,
                 structure: '*',
                 populate : 'set_attributes',
                 limit    : 99
@@ -30,6 +53,8 @@ AttributeControllers.controller("AttributeListCtrl", [
                 PostBody
             }, function (attributesList) {
                 $scope.attributesClassed = attributesList.datas;
+            }, function(error){
+                //deal with error here
             });
         }
 
@@ -54,8 +79,8 @@ AttributeControllers.controller("AttributeListCtrl", [
 ]);
 
 AttributeControllers.controller("AttributeDetailCtrl", [
-    "$scope", "$rootScope", "$location", "$routeParams", "AttributesV2", "SetAttributesV2", "toastService", "AttributesFields",
-    function ($scope, $rootScope, $location, $routeParams, AttributesV2, SetAttributesV2, toastService, AttributesFields) {
+    "$scope", "$rootScope", "$location", "$routeParams", "AttributesV2", "SetAttributesV2", "toastService", "AttributesFields", "$translate",
+    function ($scope, $rootScope, $location, $routeParams, AttributesV2, SetAttributesV2, toastService, AttributesFields, $translate) {
         $scope.fields = AttributesFields;
         $scope.local = {valuesList: []};
         $scope.selectedSet = "";
@@ -111,7 +136,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.getAttr = function () {
             $scope.attribute = AttributesV2.query({PostBody: {filter: {code: $routeParams.attributeCode, _type: $scope._type}, structure: '*'}}, function (obj) {
                 if (obj.code === undefined) {
-                    toastService.toast("danger", "Cet attribut n'existe pas");
+                    toastService.toast("danger", $translate.instant("global.attributeNotExist"));
                     $location.path(`/${$scope._type}/attributes`);
                 }
 
@@ -231,7 +256,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                 data._type = $scope._type;
                  AttributesV2.save(data, function (res) {
                     if (res._id) {
-                        toastService.toast("success", "Sauvegarde effectuée");
+                        toastService.toast("success", $translate.instant("global.saveDone"));
                         if (isQuit) {
                             if($routeParams.code) {
                                 return $location.path(`/${$scope._type}/setAttributes/${$routeParams.code}`);
@@ -243,8 +268,18 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                             return $location.path(`/${$scope._type}/attributes/${res.code}`);
                         }
                     } else {
-                        toastService.toast("danger", "Une erreur est survenue");
+                        toastService.toast("danger", $translate.instant("global.errorOccurred"));
                         console.error(res);
+                    }
+                }, function(error){
+                    if(error.data){
+                        if(error.data.message && error.data.message != ""){
+                            toastService.toast("danger",  error.data.message);
+                        }
+                    }else if(error && error.code != ""){
+                        toastService.toast("danger", error.code);
+                    }else{
+                        toastService.toast("danger", $translate.instant("global.error"));
                     }
                 });
             }
@@ -253,7 +288,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.removeAttribute = function (attr) {
             if (confirm("Etes-vous sûr de vouloir supprimer cet attribut ?")) {
                 AttributesV2.delete({id: attr._id}, function () {
-                    toastService.toast("success", "Attribut supprimé");
+                    toastService.toast("success", $translate.instant("global.deleteAttribute"));
                     $location.path(`/${$scope._type}/attributes`);
                 }, function (err) {
                     toastService.toast("danger", err.data);

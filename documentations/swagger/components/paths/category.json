@@ -1,0 +1,163 @@
+{
+    "/api/v2/categories": {
+        "post": {
+            "tags": ["Category"],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas" : {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/categoriesSchema"
+                                        }
+                                    },
+                                    "count" : {"type": "number"}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all categories",
+                                "description": "Get 10 categories with default fields for current language'",
+                                "value": {
+                                    "PostBody": {
+                                        "limit": 10
+                                    }
+                                }
+                            },
+                            "example2": {
+                                "summary": "Get all catalog type categories",
+                                "description": "Get all categories which are catalog type with the default fields",
+                                "value": {
+                                    "PostBody": {
+                                        "limit": 10,
+                                        "filter": {
+                                            "action": "catalog"
+                                        }
+                                    }
+                                }
+                            },
+                            "example3": {
+                                "summary": "Get a specific french category",
+                                "description": "Get the french category for slug 'myslug' with the default fields except one field 'img'",
+                                "value": {
+                                    "lang": "fr",
+                                    "PostBody": {
+                                        "limit": 1,
+                                        "filter": {
+                                            "translation.fr.slug": "myslug"
+                                        },
+                                        "structure": {
+                                            "img": 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/api/v2/category/{id}": {
+        "delete": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Category"
+            ]
+        }
+    },
+    "/api/v2/category": {
+        "post": {
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/categoriesSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": ["Category"],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get specific category",
+                                "description": "Get the category for code 'mycode' with default fields for the default language",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "code": "mycode"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "put": {
+            "responses": {},
+            "tags": ["Category"],
+            "security": [{"admin_authorization": []}],
+            "requestBody": {
+                "description": "",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Update a category",
+                                "description": "Update the french name of category for the matched _id",
+                                "value": {
+                                    "_id":"myId",
+                                    "translation.fr.name":"New name FR"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

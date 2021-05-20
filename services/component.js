@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const NSErrors = require('../utils/errors/NSErrors');
 
 /**
@@ -6,11 +14,11 @@ const NSErrors = require('../utils/errors/NSErrors');
  * @param {string} code
  * @param {string} [authorization]
  */
-const getComponent = async (componentName, code, authorization = null) => {
+const getComponent = async (componentName, code, user = null) => {
     if (code === null) throw NSErrors.ComponentCodeNotFound;
-    // Le component doit commencer par ns- sinon ce composant n'est pas valide
+    // The component must start with ns- otherwise this component is not valid
     if (!componentName.startsWith('ns-')) throw NSErrors.ComponentNotAllowed;
-    // On passe de ns-slider a slider on pourra ainsi facilement recupérer son modéle et son service
+    // Transform ns-xxxxx to xxxxx : we can easily recover its model and its service
     componentName = componentName.replace('ns-', '');
 
     let models;
@@ -20,13 +28,22 @@ const getComponent = async (componentName, code, authorization = null) => {
     case 'menu':
         models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
-        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, authorization);
+        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
         return X;
     case 'cms':
         models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
         PostBody               = {filter: {code}, structure: {content: 1, translation: 1}};
-        return cmsBlockServices.getCMSBlock(PostBody);
+        const result           = await cmsBlockServices.getCMSBlock(PostBody);
+        if ((user && !user.isAdmin) && result && result.translation) {
+            // Loop on the languages contained
+            for (let k = 0; k < Object.keys(result.translation).length; k++) {
+                const langKey = Object.keys(result.translation)[k];
+                delete result.translation[langKey].variables;
+                delete result.translation[langKey].html;
+            }
+        }
+        return result;
     case 'gallery':
         models               = require(`../orm/models/${componentName}`);
         const ServiceGallery = require(`./${componentName}`);
@@ -37,16 +54,16 @@ const getComponent = async (componentName, code, authorization = null) => {
         return ServiceAgenda.getAgendaByCode(code);
     default:
         /**
-         * On cherchera le composant en fonction du "code"
-         * on crée donc une requete queryBuilder ici afin de ne pas avoir a la recréer coté client a chaque fois
+         * We will look for the component by the "code"
+         * Create a queryBuilder : Don't need to be recreate it on the client side each time
          */
         PostBody = {filter: {code}};
-        // On récupére le models en fonction du componentName
+        // Get the models according to the componentName
         models = require(`../orm/models/${componentName}`);
         if (!models) throw NSErrors.ComponentInvalidModel;
-        // On recupére le service en fonction du componentName
+        // Get the service according to the componentName
         const genericServices = require(`./${componentName}`);
-        // Exemple : slider deviendra Slider afin d'appeler la fonction getSlider
+        // Example: slider will become Slider in order to call the getSlider function
         const funcName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
         return genericServices[`get${funcName}`](PostBody);
     }

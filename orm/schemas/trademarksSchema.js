@@ -1,13 +1,23 @@
-const mongoose  = require('mongoose');
-const {slugify} = require('../../utils/utils');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
 
-const Schema = mongoose.Schema;
+const mongoose      = require('mongoose');
+const {slugify}     = require('../../utils/utils');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
 
 const TrademarksSchema = new Schema({
-    code         : {type: String, unique: true},
-    name         : {type: String, required: true, unique: true},
-    active       : {type: Boolean, default: true},
-    creationDate : {type: Date, default: Date.now}
+    code   : {type: String, unique: true},
+    name   : {type: String, required: true, unique: true},
+    active : {type: Boolean, default: true}
+}, {
+    timestamps : true,
+    id         : false
 });
 
 TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb ) {
@@ -21,8 +31,23 @@ TrademarksSchema.statics.insertIfNotExists = async function ( trademarkName, cb 
     cb(trademarkName, res);
 };
 
-TrademarksSchema.pre('save', function (next) {
+async function preUpdates(that) {
+    await utilsDatabase.checkCode('trademarks', that._id, that.code);
+}
+
+/*
+TrademarksSchema.pre('updateOne', async function () {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
+});
+
+TrademarksSchema.pre('findOneAndUpdate', async function () {
+    await preUpdates(this._update);
+    //we don't update the code but the name
+});
+*/
+TrademarksSchema.pre('save', async function (next) {
     this.code = slugify(this.name);
+    await preUpdates(this);
     return next();
 });
 

@@ -49,7 +49,8 @@
         "dispoPts": "Available for every delivery point",
         "pts": "Delivery points",
         "addPays": "Add a country",
-        "paysPds": "Country / Weight"
+        "paysPds": "Country / Weight",
+        "del": "Period"
     },
     "detailOld": {
         "t1": "Delivery detail",
@@ -82,6 +83,9 @@
         "code": "Code",
         "nom": "Name",
         "url": "Logo",
-        "minAchat": "Minimum purchase amount"
+        "minAchat": "Minimum purchase amount",
+        "indiff": "Indifferent",
+        "actif": "Active",
+        "noActif": "Not active"
     }
 }

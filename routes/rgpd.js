@@ -1,10 +1,18 @@
-const fs                          = require('fs');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path                        = require('path');
 const {exec}                      = require('child_process');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
 const rgpdServices                = require('../services/rgpd');
 const {Modules}                   = require('../orm/models');
+const fs                          = require('../utils/fsp');
 const NSErrors                    = require('../utils/errors/NSErrors');
 const appdirname                  = path.dirname(require.main.filename);
 
@@ -17,13 +25,13 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un fichier contenant toutes les données d'un utilisateur au format JSON dans un fichier txt
+ * Function returning a file containing all the data of a user in JSON format in a txt file
  */
 async function exportData(req, res, next) {
-    const userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+    const userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     if (userVerified) {
         try {
-            // On récupère les infos de l'user, ses commandes et ses factures
+            // We retrieve the user's information, their orders and invoices
             const userData  = await rgpdServices.getUserById(userVerified);
             const orders    = await rgpdServices.getOrdersByUser(userVerified);
             const bills     = await rgpdServices.getBillsByUser(userVerified);
@@ -35,7 +43,7 @@ async function exportData(req, res, next) {
             if (_modules.length >= 0) {
                 for (const module of _modules) {
                     await new Promise(async (resolve, reject) => {
-                        if (fs.existsSync(`${appdirname}/modules/${module.name}/rgpd.js`)) {
+                        if (await fs.hasAccess(`${appdirname}/modules/${module.name}/rgpd.js`)) {
                             const rgpd   = require(`${appdirname}/modules/${module.name}/rgpd.js`);
                             const data   = await rgpd.exportData(userData, resolve, reject);
                             modulesData += `\n\n${module.name} :\n`;
@@ -46,12 +54,12 @@ async function exportData(req, res, next) {
                 }
             }
 
-            // Traitement des données (mise en forme, suppression du password, isAdmin et __v)
+            // Data processing (formatting, deletion of password, isAdmin and __v)
             delete userData.password;
             delete userData.isAdmin;
             delete userData.__v;
 
-            // Création du fichier dynamique pour télécharger
+            // Creation of dynamic file to download
             res.setHeader('Content-disposition', 'attachment; filename=export_data.txt');
             res.setHeader('Content-type', 'text/plain');
             res.charset = 'UTF-8';
@@ -75,7 +83,7 @@ async function exportData(req, res, next) {
 }
 
 /**
- * Création d'une base de données anonymisée
+ * Creation of an anonymized database
  */
 async function copyAndAnonymizeDatabase(req, res, next) {
     try {
@@ -87,14 +95,14 @@ async function copyAndAnonymizeDatabase(req, res, next) {
 }
 
 /**
- * Dump d'une base de données anonymisée
+ * Dump an anonymized database
  */
 async function dumpAnonymizedDatabase(req, res, next) {
     try {
         res.set({'content-type': 'application/gzip'});
         await rgpdServices.copyDatabase(async () => {
             let uri = global.envFile.db;
-            // Gestion des replicaSet
+            // ReplicaSet management
             if (uri.includes('replicaSet')) {
                 uri = uri.replace('?', '_anonymized?');
             } else {
@@ -106,9 +114,9 @@ async function dumpAnonymizedDatabase(req, res, next) {
             } catch (err) {
                 console.error(err);
             }
-            // Suppression de la bdd copy
+            // Removal of the copy database
             await rgpdServices.dropDatabase();
-            // Téléchargement du fichier dump
+            // Download the dump file
             return res.download(`./${pathUpload}/temp/database_dump.gz`);
         });
     } catch (error) {
@@ -129,12 +137,12 @@ function dump(cmd) {
 }
 
 /**
- * Suppression de toutes les données utilisateur
+ * Delete all user data
  */
 async function deleteUserDatas(req, res, next) {
     let userVerified = null;
     try {
-        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     } catch (err) {
         throw NSErrors.AccessUnauthorized;
     }
@@ -150,12 +158,12 @@ async function deleteUserDatas(req, res, next) {
 }
 
 /**
- * Anonymise les données d'un utilisateur
+ * Anonymizes a user's data
  */
 async function anonymizeUser(req, res, next) {
     let userVerified = null;
     try {
-        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.headers.authorization, req.params.id);
+        userVerified = await ServiceAuth.validateUserAuthWithoutPostBody(req.info, req.params.id);
     } catch (err) {
         throw NSErrors.AccessUnauthorized;
     }

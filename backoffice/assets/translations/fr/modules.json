@@ -5,6 +5,8 @@
     "desc": "Description",
     "ver": "Version",
     "actif": "Actif ?",
+    "activate": "Activé",
+    "deactivate": "Désactivé",
     "actions": "ACTIONS",
     "config": "Configurer",
     "delete": "Supprimer",
@@ -15,8 +17,15 @@
     "api": "API",
     "theme": "THEME",
     "info": "Informations",
-    "modalReadMe" : {
-        "title":"README.md du module",
-        "close":"Fermer"
+    "modalReadMe": {
+        "title": "README.md du module",
+        "close": "Fermer"
+    },
+    "new": {
+        "createNewModule": "Ajouter un nouveau module",
+        "cancel": "Annuler"
+    },
+    "toast": {
+        "errGetPlugins": "Impossible de récupérer la liste des modules"
     }
 }

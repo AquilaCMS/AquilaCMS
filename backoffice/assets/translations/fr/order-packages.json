@@ -4,11 +4,12 @@
     "refArt": "Référence article",
     "nomArt": "Nom article",
     "qt": "Quantité",
-    "ret": "retourné",
-    "exp": "déjà expédié",
-    "liv": "à livrer",
     "all": "Tout",
     "part": "Partiel",
     "add": "Ajouter",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "ret": "retournée",
+    "exp": "déjà expédiée",
+    "ord": "commandée",
+    "liv": "à livrer"
 }

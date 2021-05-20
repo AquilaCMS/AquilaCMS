@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const NSErrors = require('../utils/errors/NSErrors');
 
 /**
@@ -42,11 +50,11 @@ const getAggregateReviews = async (body) => {
 };
 
 /**
- * Permet d'ajouter une review dans product.reviews.datas[],
- * de recalculer la moyenne du produit product.review.average,
- * d'incrémenter le product.review.reviews_nb.
- * @param {ObjectId} idProduct id du produit
- * @param {Object} review commentaire sur l'article idProduct
+ * Add a review in product.reviews.datas[],
+ * recalculate the average of the product product.review.average,
+ * increment the product.review.reviews_nb
+ * @param {ObjectId} idProduct product id
+ * @param {Object} review comment on item idProduct
  */
 const setProductReview = async (idProduct, user = null, review, title, rate, lang, questions = [], ipClient = null) => {
     const {Products} = require('../orm/models');
@@ -67,7 +75,7 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
     let id_client = null;
     if (user) {
         name                             = '';
-        const {firstname, lastname, _id} = user.info;
+        const {firstname, lastname, _id} = user;
         id_client                        = _id;
         if (firstname) name += firstname;
         if (lastname) name += ` ${lastname.trim().substring(0, 1)}.`;
@@ -86,7 +94,7 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
     };
     product.reviews.datas.push(oReview);
     if (product.reviews && product.reviews.datas) {
-        // On calcule la moyenne des notes
+        // We calculate the average of the scores
         computeAverageRateAndCountReviews(product);
     }
     const newProduct = await product.save();
@@ -95,8 +103,8 @@ const setProductReview = async (idProduct, user = null, review, title, rate, lan
 
 /**
  * Remove a specific review
- * @param {ObjectId} idProduct id du produit
- * @param {ObjectId} idreview id de la review
+ * @param {ObjectId} idProduct product's id
+ * @param {ObjectId} idreview review's id
  */
 const deleteProductReview = async (idProduct, idReview) => {
     if (!idProduct) {
@@ -106,17 +114,17 @@ const deleteProductReview = async (idProduct, idReview) => {
         throw NSErrors.InvalidParameters;
     }
     const {Products} = require('../orm/models');
-    // on recupere le produit dans lequel la review est stokée
+    // Get the product in which the review is stored
     const product = await Products.findById(idProduct);
     if (product.reviews && product.reviews.datas) {
-        // on recupere l'index de cette reviews dans le tableau des reviews du produit
+        // Get the index of this review in the reviews table of the product
         const indexReview = product.reviews.datas.findIndex((review) => review.id === idReview);
         if (indexReview > -1) {
             if (product.reviews.datas[indexReview].verify === true && product.reviews.datas[indexReview].visible === true) {
                 product.reviews.reviews_nb--;
                 product.reviews.average = 0;
             }
-            // on la delete du tableau
+            // we delete it from the table
             product.reviews.datas.splice(indexReview, 1);
             return product.save();
         }
@@ -127,8 +135,8 @@ const deleteProductReview = async (idProduct, idReview) => {
 };
 
 /**
- * On supprime les reviews qui ne sont pas visible et verify dans la liste passé en param
- * @param {Array<Products>} result Tableau de produits
+ * We delete the reviews that are not visible and verify in the list passed in param
+ * @param {Array<Products>} result Table of products
  */
 const keepVisibleAndVerifyArray = async (result) => {
     for (let i = 0; i < result.datas.length; i++) {
@@ -141,10 +149,10 @@ const keepVisibleAndVerifyArray = async (result) => {
 };
 
 /**
- * On supprime les reviews qui ne sont pas visible et verify pour ce produit
- * @param {Products} product Produit
+ * We remove the reviews that are not visible and verified for this product
+ * @param {Products} product Product
  */
-const keepVisibleAndVerify = async (product) => {
+const keepVisibleAndVerify = (product) => {
     for (let j = product.reviews.datas.length - 1; j >= 0; j--) {
         const {visible, verify} = product.reviews.datas[j];
         if (!visible || !verify) product.reviews.datas.splice(j, 1);
@@ -159,11 +167,11 @@ const computeAverageRateAndCountReviews = async (product) => {
         return {average: 0, reviews_nb: 0};
     }
     let sum = 0;
-    // Permet pour chaque question de définir si elle a été set a true, si oui alors question.reviews_nb sera = a 0 et
-    // on incrémentera son nombre pour chaque produit contenant cette question
+    // Allows for each question to define if it has been set to true, if yes then question.reviews_nb will be = a 0 and
+    // we will increment its number for each product containing this question
     const oSumQuestion = {};
     let count          = 0;
-    // On compte chaque review visible et verify
+    // We count each visible and verified review
     for (let i = 0, l = product.reviews.datas.length; i < l; i++) {
         if (!product.reviews.datas[i].visible || !product.reviews.datas[i].verify) continue;
         sum += product.reviews.datas[i].rate;
@@ -173,11 +181,11 @@ const computeAverageRateAndCountReviews = async (product) => {
             continue;
         }
 
-        // On va comtper le nombre total de question x existant dans les reviews visible et verify
+        // We will count the total number of questions x existing in the visible and verified reviews
         for (let j = 0; j < product.reviews.datas[i].questions.length; j++) {
             const question = product.reviews.datas[i].questions[j];
-            // Pour chaque product.reviews.datas[i].questions[j] on compte le nombre d'occurence afin de ne pas avoir
-            // d'incohérence en cas de suppression de commentaire
+            // For each product.reviews.datas[i].questions[j] we count the number of occurrences in order not to have
+            // inconsistency in case of comment deletion
             if (!oSumQuestion[question.idQuestion]) {
                 oSumQuestion[question.idQuestion] = {reviews_nb: 0, sum: 0};
             }

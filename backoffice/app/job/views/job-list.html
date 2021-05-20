@@ -1,4 +1,4 @@
-<ns-box data-title="job.list.t1" title-icon="fa fa-tasks fa-lg" new-href="#/jobs/new">
+<ns-box data-title="job.list.t1" title-icon="fa fa-calendar fa-lg" new-href="#/jobs/new">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
         <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable" id="DataTables_Table_0"
             aria-describedby="DataTables_Table_0_info">
@@ -43,7 +43,7 @@
                 <tr class="{{job.disabled == true ? 'disabled disabledcolor pointer' : 'pointer' }}" ng-class-odd="'odd'" ng-class-even="'even'"
                     ng-click="detail(job)" ng-repeat="job in activeJobs|orderBy:sortPlay.type:sortPlay.reverse">
                     <td data-label="Nom :" class=" ">{{job.name}}</td>
-                    <td data-label="Commentaire :" class=" ">{{job.data.comment}}</td>
+                    <td data-label="Commentaire :" class=" ">{{job.data.comment[lang]}}</td>
                     <td data-label="Fréquence :" class=" ">{{job.repeatInterval}}</td>
                     <td data-label="Prochaine exécution :" class=" ">
                         <span ng-if="!job.disabled">{{(job.nextRunAt | date:'yyyy-MM-dd HH:mm:ss Z')}}</span>

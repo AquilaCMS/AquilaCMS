@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {Orders, PaymentMethods} = require('../orm/models');
 const QueryBuilder             = require('../utils/QueryBuilder');
 
@@ -5,10 +13,18 @@ const restrictedFields = [];
 const defaultFields    = ['_id', 'active', 'isDeferred', 'sort', 'code', 'translation', 'inCartVisible'];
 const queryBuilder     = new QueryBuilder(PaymentMethods, restrictedFields, defaultFields);
 
-exports.getOrdersPayments = async function (postBody) {
+const getOrdersPayments = async (postBody) => {
     postBody.limit = postBody.limit || 12;
     if (!postBody.page) {
         postBody.page = 1;
+    }
+
+    if (postBody.filter && postBody.filter['payment.operationDate']) {
+        for (const operator of Object.keys(postBody.filter['payment.operationDate'])) {
+            if (['$gte', '$lte', '$lt', '$gt'].indexOf(operator) !== -1) {
+                postBody.filter['payment.operationDate'][operator] = new Date(postBody.filter['payment.operationDate'][operator]);
+            }
+        }
     }
 
     const allPayments = await Orders.aggregate([{
@@ -46,31 +62,39 @@ exports.getOrdersPayments = async function (postBody) {
 };
 
 /**
- * @description retourne les methodes de payment
+ * @description return payment methods
  */
-exports.getPaymentMethods = async function (PostBody) {
+const getPaymentMethods = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
 
 /**
- * @description retourne les methodes de payment
+ * @description return payment methods
  */
-exports.getPaymentMethod = async function (PostBody) {
+const getPaymentMethod = async (PostBody) => {
     return queryBuilder.findOne(PostBody);
 };
 
 /**
- * @description sauvegarde la methode de payment
+ * @description save payment method
  */
 
-exports.savePaymentMethod = async function (pm) {
+const savePaymentMethod = async (pm) => {
     if (pm._id) {
-        await PaymentMethods.updateOne({_id: pm._id}, pm);
+        await PaymentMethods.updateOne({_id: pm._id}, {$set: pm});
         return pm;
     }
     return PaymentMethods.ceate(pm);
 };
 
-exports.deletePaymentMethod = async function (_id) {
+const deletePaymentMethod = async (_id) => {
     return PaymentMethods.findOneAndDelete({_id});
+};
+
+module.exports = {
+    getOrdersPayments,
+    getPaymentMethods,
+    getPaymentMethod,
+    savePaymentMethod,
+    deletePaymentMethod
 };

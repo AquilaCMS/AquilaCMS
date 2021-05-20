@@ -1,4 +1,12 @@
-const fs           = require('fs');
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const fs           = require('../utils/fsp');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -20,7 +28,7 @@ const saveLang = async (lang) => {
 
     if (lang.defaultLanguage) { // Remove other default language
         lang.status = 'visible'; // The default language need to be visible
-        await Languages.updateOne({defaultLanguage: true}, {defaultLanguage: false});
+        await Languages.updateOne({defaultLanguage: true}, {$set: {defaultLanguage: false}});
     }
 
     if (lang._id) {
@@ -40,45 +48,44 @@ const removeLang = async (_id) => {
 };
 
 /**
- * @description Renvoi le code lang par défaut
- * @param {string} language - Langue demandée (df par défaut)
+ * @description Return the default lang code
+ * @param {string} language - Requested language
  */
 const getDefaultLang = (language) => {
-    // Si la langue demandé est celle par défault, on va récupérer la "vrai" langue par défaut
+    // If the language requested is the default one, we will recover the "real" default language
     if (language === undefined || language === null || language === '') return global.defaultLang;
     return language;
 };
 
 /**
- * @description Enregistre le contenu dans le fichier des traductions
- * @param translateName : Nom du fichier de translate a editer
- * @param translateValue : Contenu à écrire dans le fichier
+ * @description Save the content in the translations file
+ * @param translateName : Name of the translate file to edit
+ * @param translateValue : Content to write to file
  */
 const translateSet = async (translateName, translateValue, lang) => {
     const translatePath = await getTranslatePath(lang);
-    if (!fs.existsSync(translatePath)) {
-        fs.mkdirSync(translatePath);
+    await fs.mkdir(translatePath, {recursive: true});
+    try {
+        await fs.writeFile(`${translatePath}/${translateName}.json`, translateValue);
+    } catch (err) {
+        throw NSErrors.TranslationError;
     }
-
-    fs.writeFile(`${translatePath}/${translateName}.json`, translateValue, (err) => {
-        if (err) {throw NSErrors.TranslationError;}
-    });
 };
 
 /**
- * @description Récupère le contenue du fichier de traduction
+ * @description Get the contents of the translation file
  */
 const translateGet = async (filePath, lang) => {
     try {
         const themePath = await getTranslatePath(lang);
-        return await fs.readFileSync(`${themePath}/${filePath}.json`, 'UTF-8');
+        return fs.readFile(`${themePath}/${filePath}.json`, 'utf8');
     } catch (error) {
         throw NSErrors.TranslationError;
     }
 };
 
 /**
- * @description Récupère la liste des fichier de translate
+ * @description Get the list of translate files
  */
 const translateList = async () => {
     try {
@@ -86,11 +93,11 @@ const translateList = async () => {
         const translateList = [];
         const translatePath = await getTranslatePath(lang);
 
-        fs.readdirSync(translatePath).forEach((file) => {
+        for (const file of await fs.readdir(translatePath)) {
             if (file.endsWith('.json')) {
                 translateList.push(file.substring(0, file.lastIndexOf('.json')));
             }
-        });
+        }
 
         return translateList;
     } catch (error) {
@@ -113,7 +120,11 @@ const createDynamicLangFile = async () => {
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
-    fs.writeFileSync('./config/dynamic_langs.js', contentFile);
+    await fs.writeFile('./config/dynamic_langs.js', contentFile, (err) => {
+        if (err) {
+            throw "Error writing file 'dynamic_langs.js'";
+        }
+    });
 };
 
 module.exports = {

@@ -1,6 +1,14 @@
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
+const mongoose   = require('mongoose');
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const ItemBundle = new Schema({
     selections : [{
@@ -8,7 +16,8 @@ const ItemBundle = new Schema({
         products           : [{type: ObjectId, ref: 'products'}]
     }]
 }, {
-    discriminatorKey : 'type'
+    discriminatorKey : 'type',
+    id               : false
 });
 
 ItemBundle.methods.decreaseStock = async function (cartId, cb) {
@@ -51,7 +60,7 @@ ItemBundle.methods.populateItem = async function () {
     const self       = this;
     for (const selection of self.selections) {
         for (const [index, _product] of Object.entries(selection.products)) {
-            if (selection.products[index]._id === undefined) {
+            if (selection.products[index].type === undefined) {
                 selection.products[index] = await Products.findById(_product);
             }
         }

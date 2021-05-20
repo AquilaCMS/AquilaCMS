@@ -157,14 +157,15 @@ adminCatagenDirectives.directive("nsSwitch", [
             {
                 scope.switchName = attrs.name;
                 scope.disableSwitch = (attrs.disableSwitch === "true") || false;
-                $translate("ns.switch.yes").then(function (yes)
-                {
-                    scope.yes_value = attrs.yesValue || yes;
-                });
-                $translate("ns.switch.no").then(function (no)
-                {
-                    scope.no_value = attrs.noValue || no;
-                });
+
+                setTimeout(function(){
+                    $translate("ns.switch.yes").then(function (yes) {
+                        scope.yes_value = attrs.yesValue || yes;
+                    });
+                    $translate("ns.switch.no").then(function (no) {
+                        scope.no_value = attrs.noValue || no;
+                    });
+                }, 10);
 
                 ngModel.$render = function ()
                 {
@@ -199,28 +200,34 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         restrict: "E",
         scope: {
             text: "=",
-            lang: "="
+            lang: "=",
+            mail: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
-            "$scope","$rootScope", "$filter", "$modal","$http",
-            function ($scope, $rootScope, $filter, $modal, $http) {
-                    // $scope.id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            "$scope","$rootScope", "$filter", "$modal","$http","toastService","$translate",
+            function ($scope, $rootScope, $filter, $modal, $http, toastService, $translate) {
+                    let toolbarOption = "customAddShortcode";
+                    if($scope.mail){
+                        toolbarOption = "customAddMailVar";
+                    }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
                         extended_valid_elements: "*[*]",//allow empty <a>-tag
                         valid_children: "+a[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+area[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+article[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+aside[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+blockquote[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+body[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+button[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+canvas[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+caption[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+cite[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+col[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+datalist[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+dd[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+div[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+dl[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+dt[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+em[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+fieldset[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+figcaption[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+figure[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+footer[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+form[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h1[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h2[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h3[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h4[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h5[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+h6[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+head[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+header[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+html[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+label[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+legend[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+li[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+link[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+main[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+map[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+menu[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+nav[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+ol[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+option[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+output[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+p[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+pre[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+section[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+span[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+strong[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+summary[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+sup[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+title[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video],+ul[a|area|article|aside|b|blockquote|body|br|button|canvas|caption|cite|code|col|datalist|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|head|header|hr|html|i|img|input|label|legend|li|link|main|map|menu|meta|nav|ol|option|output|p|pre|progress|section|select|span|strong|style|summary|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|ul|video]",
                         entity_encoding: "raw",
                         branding: false,
+                        height: "500",
                         convert_urls: false,
                         forced_root_block: false,
                         relative_urls: false,
                         selector: '#editor',
-                        plugins: 'code, fullscreen, preview, link',
+                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
-                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | customAddShortcode | customAddImg | fullscreen preview | code',
+                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | codeeditor',
                         fontsize_formats: '8px 10px 12px 14px 16px, 20px',
+                        codeeditor_font_size: 14,
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
@@ -246,8 +253,62 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $scope.addShortcode();
                                 }
                             });
+                            editor.ui.registry.addButton('customAddMailVar', {
+                                icon: "template",
+                                tooltip: 'Add mail variables',
+                                onAction: function () {
+                                    $scope.addMailVar($scope.mail);
+                                }
+                            });
                         }
                     };
+
+                $scope.addMailVar = function (code) {
+                    if (code === 'none') {
+                        toastService.toast('danger', $translate.instant("global.emailType"));
+                    }else{
+                        const modalInstance = $modal.open({
+                            backdrop: 'static',
+                            keyboard: false,
+                            templateUrl: 'views/modals/add-mailvar-tinymce.html',
+                            controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
+                                function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
+                                    $scope.mailType = [];
+                                    MailTypeGet.query({ code }, function (mailType) {
+                                        $scope.mailType = mailType;
+                                    });
+                                    $scope.lang = $rootScope.adminLang;
+                                    $scope.selected = false;
+                                    $scope.mailTypeSelected = {};
+    
+                                    $scope.selectVariable = function (variable) {
+                                        $scope.selected = true;
+                                        $scope.variableSelected = variable;
+                                    }
+    
+                                    $scope.addMailVariable = function(variable){
+                                        $modalInstance.close(variable);
+                                    }
+    
+                                    $scope.cancel = function () {
+                                        $modalInstance.dismiss('cancel');
+                                    };
+                                }],
+                            resolve: {
+                            }
+                        });
+    
+                        modalInstance.result.then(function (variable) {
+                            variable = '{{' + variable + '}}';
+                            if ($scope.tinymceId) {
+                                tinyMCE.get($scope.tinymceId).selection.setContent(variable);
+                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                            } else {
+                                tinyMCE.activeEditor.selection.setContent(variable);
+                            }
+                        });
+                    }
+                };
 
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
@@ -320,103 +381,184 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     });
                 };
 
-                    $scope.addImage = function () {
-                        const modalInstance = $modal.open({
-                            backdrop: 'static',
-                            keyboard: false,
-                            templateUrl: 'views/modals/add-image-tinymce.html',
-                            controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
-                                function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
-                                $scope.link = "-";
-                                $scope.nbItemsPerPage = 20;
-                                $scope.maxSize = 5;
-                                $scope.totalMedias = 0;
-                                $scope.groups = [];
-                                $scope.local = {
-                                    insertDBMediaUpload: true,
-                                    search: ""
-                                };
+                $scope.addImage = function () {
+                    const modalInstance = $modal.open({
+                        backdrop: 'static',
+                        keyboard: false,
+                        templateUrl: 'views/modals/add-image-tinymce.html',
+                        controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
+                            function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
+                            $scope.link = "-";
+                            $scope.nbItemsPerPage = 20;
+                            $scope.maxSize = 5;
+                            $scope.totalMedias = 0;
+                            $scope.groups = [];
+                            $scope.local = {
+                                insertDBMediaUpload: true,
+                                search: ""
+                            };
 
-                                    $scope.generateFilter = function () {
-                                        const filter = {};
-                                        if ($scope.currentTab === 'general') {
-                                            filter.$or = [{ group: null }, { group: "" }, { group: "general" }]
-                                        } else {
-                                            filter.group = $scope.currentTab
-                                        }
-                                        if ($scope.local.search !== "") {
-                                            filter.name = { $regex: $scope.local.search, $options: 'gim' }
-                                            delete filter.$or;
-                                            delete filter.group;
-                                        } else {
-                                            delete filter.name
-                                        }
-                                        return filter;
+                                $scope.generateFilter = function () {
+                                    const filter = {};
+                                    if ($scope.currentTab === 'general') {
+                                        filter.$or = [{ group: null }, { group: "" }, { group: "general" }]
+                                    } else {
+                                        filter.group = $scope.currentTab
                                     }
+                                    if ($scope.local.search !== "") {
+                                        filter.name = { $regex: $scope.local.search, $options: 'gim' }
+                                        delete filter.$or;
+                                        delete filter.group;
+                                    } else {
+                                        delete filter.name
+                                    }
+                                    return filter;
+                                }
 
-                                    $scope.init = function () {
-                                        MediaApiV2.getGroupsImg({}, function (groups) {
-                                            $scope.groups = groups;
-                                            $scope.currentTab = $scope.groups[0];
+                                $scope.init = function () {
+                                    MediaApiV2.getGroupsImg({}, function (groups) {
+                                        $scope.groups = groups;
+                                        $scope.currentTab = $scope.groups[0];
 
-                                            MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page: 1 } }, function ({ datas, count }) {
-                                                $scope.list = datas;
-                                                $scope.totalMedias = count;
-                                            });
-                                        });
-                                    };
-
-                                    $scope.init();
-
-                                    $scope.onPageChange = function (page) {
-                                        $scope.page = page;
-                                        MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page } }, function ({ datas, count }) {
+                                        MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page: 1 } }, function ({ datas, count }) {
                                             $scope.list = datas;
                                             $scope.totalMedias = count;
                                         });
-                                    }
-
-                                    $scope.changeTab = function (group) {
-                                        $scope.currentTab = group;
-                                        $scope.onPageChange(1);
-                                        $scope.imageSelected = null;
-                                        $scope.imageId = null;
-                                    }
-
-                                    $scope.mediaDetails = (media) => {
-                                        $location.path('/medias/' + media._id)
-                                    }
-                                    $scope.isPicture = function (media) {
-                                        if (media.link.match(new RegExp("jpg|jpeg|png|gif|svg", 'i'))) {
-                                            return true
-                                        }
-                                        return false
-                                    }
-
-                                $scope.size = {};
-                                $scope.size.max = true;
-
-                                $scope.changeSwitch = function(){
-                                    if ($scope.size.max === true){
-                                        $scope.size.max = false;
-                                    }else{
-                                        $scope.size.max = true;
-                                    }
-                                }
-
-                                $scope.selectImage = function(image){
-                                    $scope.imageId = image._id;
-                                    $scope.imageSelected = image.link;
+                                    });
                                 };
 
-                                $scope.generate = function () {
-                                    let url = $scope.imageSelected.split('medias/')[1];
-                                    if($scope.size.max){
-                                        url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
-                                    }else{
-                                        url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
+                                $scope.init();
+
+                                $scope.onPageChange = function (page) {
+                                    $scope.page = page;
+                                    MediaApiV2.list({ PostBody: { filter: $scope.generateFilter(), structure: '*', limit: $scope.nbItemsPerPage, page } }, function ({ datas, count }) {
+                                        $scope.list = datas;
+                                        $scope.totalMedias = count;
+                                    });
+                                }
+
+                                $scope.changeTab = function (group) {
+                                    $scope.currentTab = group;
+                                    $scope.onPageChange(1);
+                                    $scope.imageSelected = null;
+                                    $scope.imageId = null;
+                                }
+
+                                $scope.mediaDetails = (media) => {
+                                    $location.path('/medias/' + media._id)
+                                }
+                                $scope.isPicture = function (media) {
+                                    if (media.link.match(new RegExp("jpg|jpeg|png|gif|svg", 'i'))) {
+                                        return true
                                     }
-                                    $modalInstance.close(url);
+                                    return false
+                                }
+
+                            $scope.size = {};
+                            $scope.size.max = true;
+
+                            $scope.changeSwitch = function(){
+                                if ($scope.size.max === true){
+                                    $scope.size.max = false;
+                                }else{
+                                    $scope.size.max = true;
+                                }
+                            }
+
+                            $scope.selectImage = function(image){
+                                $scope.imageId = image._id;
+                                $scope.imageSelected = image.link;
+                            };
+
+                            $scope.generate = function () {
+                                let url = $scope.imageSelected.split('medias/')[1];
+                                if($scope.size.max){
+                                    url = '/images/medias/' + 'max-80/' + $scope.imageId + "/" + url;
+                                }else{
+                                    url = '/images/medias/' + $scope.size.width + 'x' + $scope.size.height + '-80/' + $scope.imageId + "/" + url;
+                                }
+                                $modalInstance.close(url);
+                            };
+
+                            $scope.cancel = function () {
+                                $modalInstance.dismiss('cancel');
+                            };
+
+                        }],
+                        resolve: {
+                        }
+                    });
+                    modalInstance.result.then(function (url) {
+                        if ($scope.tinymceId) {
+                        tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                    } else {
+                        tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
+                    }
+                    });
+                };
+
+                $scope.addLink = function (textSelected, lang) {
+                    const modalInstance = $modal.open({
+                        backdrop: 'static',
+                        keyboard: false,
+                        templateUrl: 'views/modals/add-link-tinymce.html',
+                        controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
+                            function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
+                                $scope.lang = lang;
+                                $scope.selected = {};
+
+                                StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
+                                    $scope.pages = {};
+                                    $scope.pages = staticsList.datas;
+                                    if ($scope.pages[0]) {
+                                        $scope.selected.pageSelelected = $scope.pages[0].translation[lang].slug;
+                                    }
+                                    if (!$scope.group) {
+                                        $scope.group = staticsList.datas.getAndSortGroups()[0];
+                                    }
+                                });
+                                CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
+                                    $scope.categories = {};
+                                    $scope.categories = response.datas;
+                                    if ($scope.categories[0]) {
+                                        $scope.selected.categorySelelected = $scope.categories[0].translation[$scope.lang].slug;
+                                    }
+                                });
+
+                                $scope.types = [
+                                    {id:'page', name:'Page'},
+                                    {id:'cat', name:'Catégorie'}
+                                ];
+                                $scope.name = textSelected;
+                                $scope.typeSelected = 'page';
+
+                                $scope.getOptGroup = function (group) {
+                                    if (!group) {
+                                        group = $scope.group;
+                                    }
+                                    return group;
+                                }
+
+                                $scope.exist = function (item) {
+                                    if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug) {
+                                        return true;
+                                    }
+                                    return false;
+                                }
+
+                                $scope.ok = function (slug, name, cat) {
+                                    if(!name){
+                                        name = slug;
+                                    }
+                                    if(cat){
+                                        $scope.categories.forEach(element => {
+                                            if (element.translation[lang].slug === slug && element.action === "catalog") {
+                                                slug = 'c/' + slug;
+                                            }
+                                        });
+                                    }
+                                    $modalInstance.close({slug,name});
                                 };
 
                                 $scope.cancel = function () {
@@ -424,103 +566,22 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 };
 
                             }],
-                            resolve: {
+                        resolve: {
+                            textSelected: function () {
+                                return textSelected;
                             }
-                        });
-                        modalInstance.result.then(function (url) {
-                            if ($scope.tinymceId) {
-                            tinyMCE.get($scope.tinymceId).selection.setContent('<img src="' + url + '"/>');
-                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                        } else {
-                            tinyMCE.activeEditor.selection.setContent('<img src="' + url + '"/>');
                         }
-                        });
-                    };
+                    });
 
-                    $scope.addLink = function (textSelected, lang) {
-                        const modalInstance = $modal.open({
-                            backdrop: 'static',
-                            keyboard: false,
-                            templateUrl: 'views/modals/add-link-tinymce.html',
-                            controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
-                                function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
-                                    $scope.lang = lang;
-                                    $scope.selected = {};
-
-                                    StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
-                                        $scope.pages = {};
-                                        $scope.pages = staticsList.datas;
-                                        if ($scope.pages[0]) {
-                                            $scope.selected.pageSelelected = $scope.pages[0].translation[lang].slug;
-                                        }
-                                        if (!$scope.group) {
-                                            $scope.group = staticsList.datas.getAndSortGroups()[0];
-                                        }
-                                    });
-                                    CategoryV2.list({ PostBody: { populate: ["children"], structure: '*', limit: 99 } }, function (response) {
-                                        $scope.categories = {};
-                                        $scope.categories = response.datas;
-                                        if ($scope.categories[0]) {
-                                            $scope.selected.categorySelelected = $scope.categories[0].translation[$scope.lang].slug;
-                                        }
-                                    });
-
-                                    $scope.types = [
-                                        {id:'page', name:'Page'},
-                                        {id:'cat', name:'Catégorie'}
-                                    ];
-                                    $scope.name = textSelected;
-                                    $scope.typeSelected = 'page';
-
-                                    $scope.getOptGroup = function (group) {
-                                        if (!group) {
-                                            group = $scope.group;
-                                        }
-                                        return group;
-                                    }
-
-                                    $scope.exist = function (item) {
-                                        if (item.translation && item.translation[$scope.lang] && item.translation[$scope.lang].title && item.translation[$scope.lang].slug) {
-                                            return true;
-                                        }
-                                        return false;
-                                    }
-
-                                    $scope.ok = function (slug, name, cat) {
-                                        if(!name){
-                                            name = slug;
-                                        }
-                                        if(cat){
-                                            $scope.categories.forEach(element => {
-                                                if (element.translation[lang].slug === slug && element.action === "catalog") {
-                                                    slug = 'c/' + slug;
-                                                }
-                                            });
-                                        }
-                                        $modalInstance.close({slug,name});
-                                    };
-
-                                    $scope.cancel = function () {
-                                        $modalInstance.dismiss('cancel');
-                                    };
-
-                                }],
-                            resolve: {
-                                textSelected: function () {
-                                    return textSelected;
-                                }
-                            }
-                        });
-
-                        modalInstance.result.then(function (response) {
-                            if ($scope.tinymceId) {
-                                tinyMCE.get($scope.tinymceId).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                                $scope.text = tinyMCE.get($scope.tinymceId).getContent();
-                            } else {
-                                tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
-                            }
-                        });
-                    };
+                    modalInstance.result.then(function (response) {
+                        if ($scope.tinymceId) {
+                            tinyMCE.get($scope.tinymceId).selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                            $scope.text = tinyMCE.get($scope.tinymceId).getContent();
+                        } else {
+                            tinyMCE.activeEditor.selection.setContent('<a href="' + response.slug + '">' + response.name + '</a>');
+                        }
+                    });
+                };
             }
         ]
     };
@@ -597,6 +658,7 @@ adminCatagenDirectives.directive("nsButtons", function ()
             remove: "&remove",
             saveAndQuit: "&saveAndQuit",
             hideSaveAndQuit: "=",
+            hideSave: "=",
             disableSave: "=?",
             isEditMode: "=",
             hideRemove: "=", //Si on est en Edit Mode mais qu'on ne veut pas la suppresion pour autant (par exemple sur un ou plusieurs éléments)
@@ -959,7 +1021,8 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
         templateUrl: "views/templates/nsStatusLabel.html",
         scope: {
             type: "@",
-            status: "="
+            status: "=",
+            name: "@"
         },
         controller: [
             "$scope",
@@ -989,7 +1052,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PROGRESS";
                     $scope.statusObj.isYellow =
                         $scope.status === "PAYMENT_RECEIPT_PENDING";
-                    $scope.statusObj.name = $filter("orderStatus")($scope.status, $rootScope.adminLang);
+                    $scope.statusObj.name = $filter("orderStatus")($scope.status);
                 }
                 else if($scope.type === "paymentStatus")
                 {
@@ -1008,7 +1071,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "CREDIT";
                     $scope.statusObj.isDanger =
                         $scope.status === "DEBIT";
-                    $scope.statusObj.name = $scope.status;
+                    $scope.statusObj.name = $filter("paymentType")($scope.status);
                 }
                 else if($scope.type === "picto")
                 {
@@ -1016,16 +1079,37 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
                 }
                 else if ($scope.type === "category") {
                     $scope.statusObj.isSuccess = $scope.status === true;
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
+                }else if($scope.type === "custom"){
+                    // the name is the translation
+                    if($scope.name){
+                        $scope.statusObj.name = $scope.name;
+                    }
+                    $scope.statusObj.isSuccess = true; // default
+                    $scope.statusObj.isWarning = false;
+                    $scope.statusObj.isDanger = false;
+                    switch($scope.status){
+                        case "success":
+                            /*its is the default*/
+                            break;
+                        case "warning":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isWarning = true;
+                            break;
+                        case "danger":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isDanger = true;
+                            break;
+                    }
                 }
             }
         ]
@@ -1551,10 +1635,10 @@ adminCatagenDirectives.directive("nsRule", [
                                 name: 'qty'
                             },
                             {
-                                value: "creationDate",
+                                value: "createdAt",
                                 type: "date",
                                 params: {},
-                                name: 'creationDate'
+                                name: 'createdAt'
                             },
                             {
                                 value: "visible",
@@ -1742,10 +1826,11 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             );
                         }
-
-                        for(var i = 0; i < $scope.rule.conditions.length; i++)
-                        {
-                            $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                        if($scope.rule.conditions){
+                            const conditionsLength = $scope.rule.conditions.length;
+                            for(var i = 0; i < conditionsLength; i++) {
+                                $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                            }
                         }
                     });
                 };
@@ -2122,12 +2207,13 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 onError: '&',
                 styleProp: '=',
                 lang: '=',
-                isSelected: '='
+                isSelected: '=',
+                uploadUrl: '=',
             },
             templateUrl: "views/templates/nsUploadFiles.html",
             controller: [
-                "$scope", "Upload",
-                function ($scope, Upload)
+                "$scope", "Upload", "toastService",
+                function ($scope, Upload, toastService)
                 {
                     $scope.disableUpload = false;
                     $scope.idOptional = "";
@@ -2200,6 +2286,19 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 insertDB: $scope.entity
                                             }
                                         });
+                                    }
+                                    else if ($scope.type === "genericFile"){
+                                        if(!$scope.uploadUrl){
+                                            throw ('Error use the parameter "upload-url" with "genericFile"');
+                                        }else{
+                                            $scope.up = Upload.upload({
+                                                url: $scope.uploadUrl,
+                                                method: 'POST',
+                                                data: {
+                                                    file: file
+                                                }
+                                            });
+                                        }
                                     }
                                     else {
                                         if ($scope.entity) {
@@ -2282,6 +2381,10 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                                 break;
                                             }
                                             case 'mediaMass': {
+                                                $scope.afterFunction();
+                                                break;
+                                            }
+                                            case 'genericFile': {
                                                 $scope.afterFunction();
                                                 break;
                                             }

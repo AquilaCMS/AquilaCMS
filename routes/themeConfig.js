@@ -1,7 +1,15 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const serviceThemeConfig          = require('../services/themeConfig');
 
-// Fichier themeConfig.json à la racine des thèmes
+// ThemeConfig.json file at the root of the themes
 
 module.exports = function (app) {
     app.post('/v2/themeConfig', getThemeConfig);
@@ -9,6 +17,10 @@ module.exports = function (app) {
     app.put('/v2/themeConfig', authentication, adminAuth, setThemeConfig);
 };
 
+/**
+ * POST /api/v2/themeConfig
+ * @summary Get the configutation of the current theme
+ */
 async function getThemeConfig(req, res, next) {
     try {
         let themeConf = await serviceThemeConfig.getThemeConfig(req.body.PostBody);
@@ -21,6 +33,10 @@ async function getThemeConfig(req, res, next) {
     }
 }
 
+/**
+ * GET /api/v2/themeConfig/:key
+ * @summary Get ThemeConfig by Key
+ */
 async function getThemeConfigByKey(req, res, next) {
     try {
         res.json(await serviceThemeConfig.getThemeConfigByKey(req.params.key));
@@ -29,6 +45,10 @@ async function getThemeConfigByKey(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/v2/themeConfig
+ * @summary Set ThemeConfig
+ */
 async function setThemeConfig(req, res, next) {
     try {
         res.json(await serviceThemeConfig.setThemeConfig(req.body));

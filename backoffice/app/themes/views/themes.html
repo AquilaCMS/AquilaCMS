@@ -1,78 +1,139 @@
 <ns-box data-title="themes.t1" title-icon="fa fa-desktop">
-    <form name="form" ng-submit="validate(tab)" ng-show="!showLoading"
-        role="form">
-        <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
-            <ns-translation ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
+    <form name="form" ng-submit="validate(tab)" ng-show="!showLoading" role="form">
+        <ns-buttons hide-save-and-quit="true" hide-save="true" return-path="/" form="form">
+            <ns-translation ng-hide ="tab !== 'config'" ng-show="tab === 'config'" ng-model="lang" class="pull-right"></ns-translation>
     <div class="box-content">
     <div class="scrollmenu">
         <ul class="nav nav-tabs">
             <li ng-click="onTabSelect('select')" class="active"><a data-toggle="tab" href="#select" target="_self" translate>themes.myTheme</a></li>
             <li ng-click="onTabSelect('config')"><a data-toggle="tab" href="#config" target="_self" translate>themes.customisation</a></li>
+            <li ng-click="onTabSelect('data')"><a data-toggle="tab" href="#data" target="_self" translate>themes.data</a></li>
             <!-- <li><a data-toggle="tab" href="#auth" target="_self" translate>config.environment.menu.third-party-auth</a></li> -->
         </ul>
     </div>
         <div class="tab-content">
-           <div id="select" class="tab-pane fade in active" ng-if="tab === 'select'">
+           <div id="select" class="col-md-8 tab-pane fade in active" ng-if="tab === 'select'" >
                 <!-- <h3 translate>themes.t1</h3> -->
                 <br/>
 
                 <!-- <div class="form-group">
-                                                <label translate>config.environment.theme</label>
-                                                <input type="text" class="form-control" ng-model="config.currentTheme">
-                                            </div> -->
+                    <label translate>config.environment.theme</label>
+                    <input type="text" class="form-control" ng-model="config.currentTheme">
+                </div> -->
                 <div class="form-group">
-                    <label translate>themes.themeChoice</label> <br />
-                    <select name="themesList" id="themesList" class="form-control" ng-model="config.currentTheme">
+                    <h3 style="margin-left:10px;" translate>themes.themeChoice</h3>
+                    <br>
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="addTheme()" ng-disabled="disabledButton" translate>
+                        themes.newtheme
+                    </a>
+                    <br>
+                    <br>
+                    <br>
+                    <select name="themesList" id="themesList" class="form-control" ng-model="config.environment.currentTheme">
                         <!-- <option value="default_theme">Default theme</option> -->
                         <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <a download class="btn btn-success" ng-click="packageInstall()" ng-disabled="disabledButton">
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="validate(tab)" ng-disabled="disabledButton" translate>
+                        ns.save
+                    </a>
+                    <p style="display:inline;margin-left:20px;" translate>themes.themeSelect</p>
+                    <br>
+                    <br>
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageInstall()" ng-disabled="disabledButton">
                         yarn install
                     </a>
-                    <a download class="btn btn-success" ng-click="packageBuild()" ng-disabled="disabledButton">
+                    <p style="display:inline;margin-left:20px;" translate>themes.themeInstallDependencies</p>
+                    <br>
+                    <br>
+                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageBuild()" ng-disabled="disabledButton">
                         build theme
                     </a>
-                    <a download class="btn btn-danger" ng-click="removeTheme()" ng-disabled="disabledButton" style="float:right" translate>
+                    <p style="display:inline;margin-left:20px;"translate>themes.themeCompile</p>
+                    <br>
+                    <br>
+                    <a download class="btn btn-danger" style="min-width: 184px;" ng-click="removeTheme()" ng-disabled="disabledButton" translate>
                         themes.remove
                     </a>
+                    <p style="display:inline;margin-left:20px;" translate>themes.themeDelete</p>
                 </div>
                 <br />
-                <div class="col-md-12">
-                    <label translate="">themes.newtheme</label>
-                    <ns-upload-files accepttype=".zip" multiple="false" type="theme" before-function="beforeTheme()"
-                        after-function="uploadedTheme()" on-error="onErrorUploadTheme()"></ns-upload-files>
-                    <div ng-show="showThemeLoading" id="overlayModule">
-                        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
-                    </div>
-                </div>
            </div>
 
-           <div id="config" class="tab-pane fade in active" ng-if="tab === 'config'" style="width:50%;margin-left:10%">
-            <div class="form-group">
-                <label translate>themes.themeDatas</label> <br />
-                <a download class="btn btn-success" ng-click="copyThemeDatas()" translate>
-                    themes.themeDatasLead
-                </a>
+           <div id="config" class="col-md-8 tab-pane fade in active" ng-if="tab === 'config'" >
+            <a download class="btn btn-success pull-right" style="min-width: 184px;" ng-click="validate(tab)" ng-disabled="disabledButton" translate>
+                ns.save
+            </a>
                 <br />
-                <input type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
-                <label class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
-            </div>
-            <br />
-                <label ng-if="theme.currentThemeVar" style="margin:20px 0" translate>themes.currentThemeVar</label>
+                <div class="form-group">
+                    <h3 ng-if="theme.currentThemeVar" style="margin-left:10px;margin:20px 0" translate>themes.currentThemeVar</h3>
+                </div>
                 <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
-               <div ng-repeat="var in keys[lang]">
-                    <div class="form-group">
-                        <label style="float:left">{{var}} :</label><br/>
-                        <input type="text" class="form-control" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'string'">
-                        <input type="number" class="form-control" step="any" ng-model="themeConfig.variables[lang][var]" ng-if="typeOf(themeConfig.variables[lang][var]) == 'number'">
-                        <ns-switch name='{{var}}' ng-model='themeConfig.variables[lang][var]' ng-if="typeOf(themeConfig.variables[lang][var]) == 'boolean'"></ns-switch>
-                        <color-picker ng-model="themeConfig.variables[lang][var]" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var]) == 'color'"></color-picker>
+                <div>
+                    <div ng-repeat = "group in customiseTheme.arrayGroup">
+                        <h4><b>{{group}} </b></h4>
+                        <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group">
+                            <b>{{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) :</b> {{themeConfig.variables[lang][var].description}}
+                            <br>
+                            <input style = "float : right" type="text" class="form-control" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
+                            <input style = "float : right" type="number" class="form-control" step="0.1" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'number'">
+                            <ns-switch style = "float : right" name='{{var}}' ng-model='themeConfig.variables[lang][var].value' ng-if="typeOf(themeConfig.variables[lang][var].value) == 'boolean'"></ns-switch>
+                            <color-picker style = "float : right" ng-model="themeConfig.variables[lang][var].value" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'color'"></color-picker>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                        <br>
                     </div>
-               </div>
+                </div>
                <!-- <label ng-if="themeConfig.variables.lenght === 0">Pas de variables</label> -->
+            </div>
+            <div id="data" class="col-md-8 tab-pane fade in active" ng-if="tab === 'data'" >
+                <br />
+                <div class="form-group">
+                    <h3 style="margin-left:10px;" translate>themes.themeDatas</h3>
+                </div>
+                <div >
+                    <table>
+                        <tbody>
+                            <tr style="height: 50px;" ng-repeat="file in listThemeFiles">
+                                <td style="text-align: right;">
+                                    <label ng-if='file != "noDefaultData"'>{{file.name.substr(0, file.name.length-5)}} : </label>
+                                    <label ng-if='file == "noDefaultData"' translate>themes.noDefaultData</label>
+                                </td>
+                                <td style = "margin-left: 10px;" ng-if = "file.value != undefined" >
+                                    <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
+                                    <label style = "margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
+                                </td>
+                            </tr>
+                            <tr style="height: 50px;" ng-repeat="file in otherParams">
+                                <td style="text-align: right;">
+                                    <label>
+                                        <span>{{file.name}}</span> 
+                                        <i ng-if="file.name == 'files'" style="margin-left:10px" class="fa fa-question-circle" popover="{{'themes.filesHelper' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
+                                        <span>:</span>
+                                    </label>
+                                </td>
+                                <td style="margin-left: 10px;">
+                                    <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-model='file.value' ></ns-switch>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <br>
+                </div>
+
+                <div style="float : right ;" class="form-group">
+                    <a ng-if='listThemeFiles[0] != "noDefaultData"' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
+                        themes.themeDatasLead
+                    </a>
+                    <br />
+                    <input ng-if='listThemeFiles[0] != "noDefaultData"' type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
+                    <label ng-if='listThemeFiles[0] != "noDefaultData"' class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
+                </div>
             </div>
         </div>
     </div>
@@ -85,5 +146,8 @@
                     href="{{urlRedirect}}">{{urlRedirect}}</a></i></h4>
         <progressbar style="width: 50%" class="progress-striped active" animate="true" max="100" value="progressValue"
             type="success"></progressbar>
+    </div>
+    <div ng-show="showLoading2" id="overlayModule">
+        <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
     </div>
 </ns-box>

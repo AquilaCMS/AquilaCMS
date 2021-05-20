@@ -28,9 +28,14 @@
                     "type": "boolean"
                 },
                 "client"       : {
-                    "type": "string",
-                    "format": "ObjectId",
-                    "description": "ref users"
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "format": "ObjectId",
+                            "description": "ref users"
+                        },
+                        {"$ref": "#/components/schemas/userSchema"}
+                    ]
                 },
                 "nom"          : {
                     "type": "string"
@@ -47,10 +52,9 @@
                 "email"        : {
                     "type": "string"
                 },
-                "creationDate" : {
+                "createdAt" : {
                     "type": "string",
-                    "format": "date",
-                    "default": "Date.now"
+                    "format": "date"
                 },
                 "filename"     : {
                     "type": "string"

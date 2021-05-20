@@ -1,13 +1,23 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const bcrypt            = require('bcrypt');
 const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
 const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
+const NSErrors          = require('../../utils/errors/NSErrors');
 const Schema            = mongoose.Schema;
-const ObjectId          = Schema.ObjectId;
+const {ObjectId}        = Schema.Types;
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
+ * @returns {string}
  */
 const generateUserPassword = () => {
     const CHARACTER_SETS = [
@@ -29,7 +39,11 @@ const generateUserPassword = () => {
     return result;
 };
 
-// Returns a random integer in the range [0, n) using a variety of methods.
+/**
+ * Returns a random integer in the range [0, n) using a variety of methods.
+ * @param {number} n
+ * @returns {number}
+ */
 const randomInt = (n) => {
     const x = Math.floor(Math.random() * n);
     if (x < 0 || x >= n) throw new Error('Arithmetic exception');
@@ -67,7 +81,6 @@ const UserSchema = new Schema({
         }
     },
     code     : {type: String, unique: true, sparse: true},
-    active   : {type: Boolean},
     civility : {
         type : Number,
         enum : [0, 1] // 0 pour homme, 1 pour femme
@@ -91,31 +104,19 @@ const UserSchema = new Schema({
             phone      : String
         }
     },
-    status           : String,
-    creationDate     : {type: Date, default: Date.now},
-    delivery_address : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
-    billing_address  : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
-    addresses        : [AddressSchema],
-    isAdmin          : {type: Boolean, default: false},
-    campaign         : {
-        referer      : String,
-        utm_campaign : String,
-        utm_medium   : String,
-        utm_source   : String,
-        utm_content  : String,
-        utm_term     : String
-    },
+    status               : String,
+    delivery_address     : {type: Number, default: -1}, // index définissant l'addresse de livraison dans users.addresses
+    billing_address      : {type: Number, default: -1}, // index définissant l'addresse de facturation dans users.addresses
+    addresses            : [AddressSchema],
+    isAdmin              : {type: Boolean, default: false},
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
-    payementChoice       : String,
+    isActive             : {type: Boolean, default: true},
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
-    migrated             : {type: Boolean, default: false},
     birthDate            : Date,
-    presentInLastImport  : {type: Boolean},
     accessList           : [{type: String}],
-    details              : {},
     type                 : String,
     preferredLanguage    : String,
     set_attributes       : {type: ObjectId, ref: 'setAttributes', index: true},
@@ -124,13 +125,19 @@ const UserSchema = new Schema({
             id          : {type: ObjectId, ref: 'attributes', index: true},
             code        : String,
             values      : String,
+            visible     : {type: Boolean, default: true},
             param       : String,
             type        : {type: String, default: 'unset'},
             translation : {},
             position    : {type: Number, default: 1}
         }
     ]
+}, {
+    timestamps : true,
+    id         : false
 });
+
+UserSchema.index({email: 1});
 
 UserSchema.set('toJSON', {virtuals: true});
 UserSchema.set('toObject', {virtuals: true});
@@ -143,7 +150,7 @@ UserSchema.methods.hashPassword = async function () {
 };
 
 UserSchema.post('validate', async function () {
-    if (this.isNew) {
+    if (this.isNew || this.needHash) {
         await this.hashPassword();
     }
 });
@@ -176,6 +183,14 @@ UserSchema.pre('remove', async function (next) {
 
 UserSchema.pre('save', function (next) {
     this.wasNew = this.isNew;
+    next();
+});
+
+UserSchema.pre('findOneAndUpdate', async function (next) {
+    const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
+    if (users > 0) {
+        throw NSErrors.LoginSubscribeEmailExisting;
+    }
     next();
 });
 

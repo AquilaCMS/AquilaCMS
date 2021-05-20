@@ -44,12 +44,17 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "$translate",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, $translate) {
         $scope.isEditMode = false;
+        $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
         $scope.groups = [];
+        $scope.selectedTab = { active: "result" };
 
+        $scope.selectTab = function (tab) {
+            $scope.selectedTab.active = tab;
+        }
         $scope.getGroups = function () {
             $scope.itemObjectSelected = function (item) {
                 $scope.selectedDropdownItem = item;
@@ -72,22 +77,80 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                 $scope.cmsBlock = block;
                 $scope.isEditMode = true;
                 $scope.selectedDropdownItem = block.group ? block.group : "";
+                if($scope.cmsBlock && !$scope.cmsBlock.translation[$scope.lang].html) {
+                    $scope.cmsBlock.translation[$scope.lang].html = $scope.cmsBlock.translation[$scope.lang].content
+                }
 
                 $scope.getGroups()
             });
         } else {
-            $scope.cmsBlock = {group: ""};
+            $scope.cmsBlock = {group: "",translation:{}};
             $scope.selectedDropdownItem = "";
 
             $scope.getGroups()
         }
 
+        $scope.generateVariables = function () {
+            for (const value of Object.entries($scope.cmsBlock.translation)) {
+                if ($scope.cmsBlock && $scope.cmsBlock.translation[value[0]] && $scope.cmsBlock.translation[value[0]].html) {
+                    var originalArray = $scope.cmsBlock.translation[value[0]].variables || [],
+                        founds = [...$scope.cmsBlock.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)]
+                    $scope.cmsBlock.translation[value[0]].variables = [];
+                    for (var i = 0; i < founds.length; i++) {
+                        if (originalArray.find(_var => _var.label === founds[i][1])) {
+                            $scope.cmsBlock.translation[value[0]].variables.push(originalArray.find(_var => _var.label === founds[i][1]))
+                        } else {
+                            $scope.cmsBlock.translation[value[0]].variables.push({ label: founds[i][1], value: '' })
+                        }
+                    }
+                }
+            }
+            
+        }
+
+        $scope.generateContent = function () {
+            $scope.generateVariables();
+            for (const value of Object.entries($scope.cmsBlock.translation)) {
+                if ($scope.cmsBlock && $scope.cmsBlock.translation[value[0]] && $scope.cmsBlock.translation[value[0]].html) {
+                    var founds = [...$scope.cmsBlock.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)];
+                    $scope.cmsBlock.translation[value[0]].content = $scope.cmsBlock.translation[value[0]].html;
+                    var missingVariables = [];
+                    for (var i = 0; i < founds.length; i++) {
+                        var variable;
+                        if($scope.cmsBlock.translation[value[0]].variables){
+                            variable = $scope.cmsBlock.translation[value[0]].variables.find(_var => _var.label === founds[i][1])
+                        }
+                        if(variable) {
+                            $scope.cmsBlock.translation[value[0]].content = $scope.cmsBlock.translation[value[0]].content.replace(founds[i][0], variable ? variable.value : '')
+                        } else {
+                            missingVariables.push(founds[i][1])
+                        }
+                    }
+                    if (missingVariables.length) {
+                        toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                    }
+                }
+            }
+            resizeContent();
+        } 
+        
+        resizeContent();
+
+        function resizeContent(){
+            $timeout(() => {
+                let height = document.getElementById('previewCMSBlock').offsetHeight;
+                height = height + 150;
+                document.getElementsByClassName('box-content')[0].style.paddingBottom = `${height}px`;
+            },1000);
+        }
+
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
             $scope.cmsBlock.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
+            $scope.generateContent();
 
             await CmsBlocksApi.save($scope.cmsBlock, function (res) {
-                toastService.toast("success", "Bloc CMS sauvegardé !");
+                toastService.toast("success", $translate.instant("global.blocSaved"));
                 if (quit) {
                     $location.path("/cmsBlocks");
                 }else{
@@ -103,17 +166,28 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.delete = function () {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce bloc CMS ?")) {
                 CmsBlocksApi.delete({code: $scope.cmsBlock.code}, function (response) {
-                    toastService.toast("success", "Bloc supprimé");
+                    toastService.toast("success", $translate.instant("global.blocDeleted"));
                     $location.path("/cmsBlocks");
                 }, function (err) {
                     console.error(err);
-                    toastService.toast("danger", "Echec de la suppresion");
+                    toastService.toast("danger", $translate.instant("global.failDelete"));
                 });
             }
             // CmsBlocksApi.delete({id: block.id}, function(){
             //     $scope.cmsBlocks.splice($scope.cmsBlocks.indexOf(block), 1);
             // });
         };
+
+        $scope.langChange = function (lang) {
+            $scope.lang = lang;
+            if ($scope.selectedTab.active == 'html'){
+                $scope.selectedTab.active = 'result';
+                setTimeout(function () {
+                    $scope.$digest();
+                    $scope.selectedTab.active = 'html';
+                }, 10);
+            }
+        }
 
         $http.post('/v2/modules', {
             PostBody: {

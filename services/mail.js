@@ -1,7 +1,14 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const nodemailer       = require('nodemailer');
 const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
-const url              = require('url');
 const path             = require('path');
 const ServiceLanguages = require('./languages');
 const encryption       = require('../utils/encryption');
@@ -14,19 +21,24 @@ const fs               = require('../utils/fsp');
 const {
     Users,
     Mail,
-    Modules,
     Orders,
     PaymentMethods
 }                      = require('../orm/models');
 
+const QueryBuilder     = require('../utils/QueryBuilder');
+const users            = require('../orm/models/users');
+const restrictedFields = [];
+const defaultFields    = ['*'];
+const queryBuilder     = new QueryBuilder(Mail, restrictedFields, defaultFields);
+
 /**
- * @description On récupére les mails
+ * @description Get the emails
  */
-const getMails = async () => {
-    return Mail.find({}).sort({createdAt: -1});
+const getMails = async (PostBody) => {
+    return queryBuilder.find(PostBody);
 };
 /**
- * @description on récupére le mail en fonction de son _id
+ * @description Get the email by _id
  * @param {ObjectId} _id
  */
 const getMail = async (_id) => {
@@ -41,9 +53,9 @@ const getMail = async (_id) => {
 };
 
 /**
- * @description Permet de récupérer un email en fonction de son type et sa langue (la langue est optionnel)
- * @param {string} type type du mail (ex: "", "register", "orderSuccess" etc...)
- * @param {string} [lang] (ex: df, us, uk etc...) (optionnel)
+ * @description Get an email by its type and language (the language is optional)
+ * @param {string} type type of mail (ie: "", "register", "orderSuccess" etc...)
+ * @param {string} [lang] (ie: df, us, uk etc...) (optionnal)
  */
 const getMailByTypeAndLang = async (type, lang = '') => {
     lang         = ServiceLanguages.getDefaultLang(lang);
@@ -55,9 +67,9 @@ const getMailByTypeAndLang = async (type, lang = '') => {
     return result;
 };
 /**
- * @description Permet de modifier ou créer un nouveau mail dans l'admin
- * @param {Object} body les data a enregistrer
- * @param {ObjectId} [_id] si l'_id existe alors on met a jour sinon on update (Optionnel)
+ * @description Modify or create a new mail in the admin
+ * @param {Object} body datas to set
+ * @param {ObjectId} [_id] if the_id exists then we update otherwise we create (Optional)
  */
 const setMail = async (body, _id = null) => {
     try {
@@ -99,18 +111,18 @@ const setMail = async (body, _id = null) => {
 };
 
 /**
- * @description Un mail a un type (inscription, mot de passe oublié, etc). Ce type ne doit appartenir qu'a un seul mail
- * Si un nouveau mail de type "inscription" est crée, l'ancien mail de type "inscription" verra son type passer à "noType" (correspondant au code de la collection mailtypes)
- * @param {string} type: correspond au type du mail
+ * @description An email has a type (registration, forgotten password, etc.). This type must only belong to one email
+ * If a new "registration" type mail is created, the old "registration" type mail will see its type change to "noType" (corresponding to the code of the mailtypes collection)
+ * @param {string} type: corresponds to the type of email
  */
 async function checkUniqueType(type) {
     try {
         const mails = await Mail.find({type});
-        // Si il n'y a aucun mail ayant ce type alors nous ne faisons rien
+        // If there is no mail with this type then we do nothing
         if (!mails.length) {
             return;
         }
-        // Un ou plusieurs (le cas : 'plusieurs' ne devrait jamais arriver) mail possède ce type, nous assignons ces mail.type = ""
+        // One or more (case: 'several' should never happen) mail has this type, we assign these mail.type = ""
         for (let i = 0; i < mails.length; i++) {
             const result = await Mail.findByIdAndUpdate({_id: mails[i]._id}, {type: ''}, {new: true, runValidators: true});
             if (!result) {
@@ -123,7 +135,7 @@ async function checkUniqueType(type) {
 }
 
 /**
- * @description supprime le mail dont l'_id est passé en parametre
+ * @description delete the mail
  * @param {ObjectId} _id
  */
 const deleteMail = async (_id, lang = 'fr') => {
@@ -169,8 +181,12 @@ const sendMailTest = async (mail, values = [], lang = 'fr') => {
     }
 
     const data = {};
-    for (const element of values) {
-        data[`{{${element.name}}}`] = element.value;
+    values.forEach((element) => {
+        data[`{{${element.value}}}`] = element.text;
+    });
+
+    if (['orderSuccessDeferred', 'orderSuccessCompany', 'orderSuccess'].includes(mail.code)) {
+        content.replace('<!--startitems-->', '').replace('<!--enditems-->', '');
     }
 
     const htmlBody = generateHTML(content, data);
@@ -224,7 +240,7 @@ const sendMailActivationAccount = async (user_id, lang = '') => {
 };
 
 /**
- * @description Permet d'envoyer un mail contenant les informations d'inscription d'un client
+ * @description Allows you to send an email containing the registration information of a customer
  * @param {guid} user_id - _id de l'utilisateur destinataire
  * @param {string} [lang] - langue du mail (Optionnel)
  */
@@ -245,7 +261,7 @@ const sendRegister = async (user_id, lang = '') => {
         '{{lastname}}'  : _user.lastname,
         '{{login}}'     : _user.email
     };
-    // if (true) { // Possibilité d'utiliser une variable : valider l'email à l'inscription
+    // if (true) { // Possibility to use a variable: validate the email at registration
     oDataMail['{{activate_account_token}}'] = `${_config.environment.appUrl}${lang}/checkemailvalid?token=${_user.activateAccountToken}`;
     // }
     const htmlBody = generateHTML(content, oDataMail);
@@ -276,9 +292,9 @@ const sendRegisterForAdmin = async (user_id, lang = '') => {
 };
 
 /**
- * @description Envoie le mail de réinitialisation du mot de passe
- * @param {string|array} to Destinataire ou liste de destinataires
- * @param {string} tokenlink Token de validation de la réinitialisation du mot de passe
+ * @description Send the password reset email
+ * @param {string|array} to Recipient or list of recipients
+ * @param {string} tokenlink Password reset validation token
  * @param {string} [lang="fr"] lang
  */
 const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
@@ -291,7 +307,7 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
         throw NSErrors.MailFieldSubjectNotFound;
     }
     if (!content) {
-        // Si c'est l'admin qui a fait la demande
+        // If the admin made the request
         if (_user.isAdmin) {
             throw NSErrors.ResetPasswordMailContentAdminNotExists;
         } else {
@@ -319,88 +335,81 @@ const sendResetPassword = async (to, tokenlink, lang = 'fr') => {
 };
 
 /**
- * Utilisé par FKA
- */
-const sendPDFAttachmentToClient = async (subject = '', htmlBody = '', mailTo, mailFrom = null, pathAttachment) => {
-    if (!pathAttachment || !mailTo) {
-        throw NSErrors.MailAttachmentParameterError;
-    }
-    return sendMail({subject, htmlBody, mailTo, mailFrom, pathAttachment});
-};
-
-/**
- * Ce service permet d'envoyer un mail a l'entreprise lorsqu'une commande est passé
- * Ainsi lorsqu'un client de l'entreprise commande, l'entreprise est informée de cette commande
- * @param {ObjectId} order_id l'id d'une commande
- * @param {string} lang langue du mail
+ * This service allows you to send an email to the company when a new order
+ * So when a customer orders, the company is informed of this order.
+ * @param {ObjectId} order_id the id of an order
+ * @param {string} lang email language
  */
 const sendMailOrderToCompany = async (order_id, lang = '') => {
-    const _order     = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
-    lang             = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const taxDisplay = _order.priceTotal.paidTax ? 'ati' : 'et';
-    const {
-        content,
-        subject,
-        from,
-        fromName,
-        pathAttachment
-    }                = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
-    const tmpTrad    = require('../utils/translate');
-
-    // Les informations de mailling sont enregistrées en BDD
-    if (!_order) {
+    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    if (_order.payment.length && _order.payment[0].mode === 'CB' && _order.status !== 'PAID' && _order.status !== 'FINISHED') {
+    lang                                            = determineLanguage(lang, order.customer.id.preferredLanguage);
+    const taxDisplay                                = order.priceTotal.paidTax ? 'ati' : 'et';
+    const mailDatas                                 = await getMailDataByTypeAndLang('orderSuccessCompany', lang);
+    const {subject, from, fromName, pathAttachment} = mailDatas;
+    let {content}                                   = mailDatas;
+
+    // Mailing information is recorded in DB
+    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
         throw NSErrors.OrderNotPaid;
     }
-    const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = _order.addresses.delivery;
-    // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
-    let templateItems = '';
-    _order.items.forEach((item) => {
-        const {translation} = item.id;
-        let basePrice       = null;
-        let descPromo       = '';
-        let descPromoT      = '';
-        if (_order.quantityBreaks && _order.quantityBreaks.productsId.length) {
-            // On check si le produit courant a recu une promo
-            const prdPromoFound = _order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
-            if (prdPromoFound) {
-                basePrice  = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                descPromo  = `<del><span>${(basePrice).toFixed(2)} €</span></del><br />`;
-                descPromoT = `<del><span>${(basePrice * item.quantity).toFixed(2)} €</span></del><br />`;
+    const {line1, line2, zipcode, city, country, complementaryInfo, phone_mobile, companyName} = order.addresses.delivery;
+    // Create from order's details (the table that will be displayed in the email)
+    let templateItems  = '';
+    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    if (itemTemplate && itemTemplate[0]) {
+        const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
+        for (const item of order.items) {
+            const {translation} = item.id;
+
+            const prdData = {
+                '{{product.quantity}}'         : item.quantity,
+                '{{product.name}}'             : translation[lang].name,
+                '{{product.specialUnitPrice}}' : '',
+                '{{product.bundleName}}'       : translation[lang].name,
+                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.basePrice}}'        : '',
+                '{{product.descPromo}}'        : '',
+                '{{product.descPromoT}}'       : '',
+                '{{product.sumSpecialPrice}}'  : ''
+            };
+
+            /* if (item.price.special && item.price.special[taxDisplay]) {
+                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
+                prdData['{{product.specialUnitPriceWithPromo}}']    = getUnitPrice(item, order).toFixed(2);
+                prdData['{{product.sumSpecialPriceWithoutPromo}}']  = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
+                prdData['{{product.sumSpecialPriceWithPromo}}']     = (getUnitPrice(item, order) * item.quantity).toFixed(2);
+            } */
+
+            if (item.parent && translation[lang]) {
+                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
             }
+            let basePrice  = null;
+            let descPromo  = '';
+            let descPromoT = '';
+            if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
+                // Check if the current product has received a discount
+                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
+                if (prdPromoFound) {
+                    basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
+                    descPromo                         = basePrice.toFixed(2);
+                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    prdData['{{product.basePrice}}']  = basePrice;
+                    prdData['{{product.descPromo}}']  = descPromo;
+                    prdData['{{product.descPromoT}}'] = descPromoT;
+                }
+            }
+            templateItems += await generateHTML(htmlItem, prdData);
         }
-        templateItems += `<tr>
-        <td>${item.quantity} x</td>
-        <td>${translation[lang] ? translation[lang].name : translation.en.name} ${item.parent && translation[lang] ? _order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name : ''}</td>
-        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay]).toFixed(2)}€</span></del>` : descPromo} ${getUnitPrice(item, _order).toFixed(2)} €</td>
-        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay] * item.quantity).toFixed(2)}€</span></del>` : descPromoT} ${(getUnitPrice(item, _order) * item.quantity).toFixed(2)} €</td>
-    </tr>`;
-    });
-    templateItems += _order.quantityBreaks && _order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]
-        ? `<tr>
-            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.cart_discount[lang]}</b> - ${_order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]} €</td>
-        </tr>`
-        : '';
-
-    templateItems += _order.promos && _order.promos.length && (_order.promos[0].productsId.length === 0)
-        ? `<tr>
-            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.discount[lang]}</b> - ${_order.promos[0][`discount${taxDisplay.toUpperCase()}`]} € / Code: ${_order.promos[0].code}</td>
-        </tr>`
-        : '';
-
-    if (_order.delivery && _order.delivery.price && _order.delivery.price[taxDisplay]) {
-        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.message[lang]}</b> + ${_order.delivery.price[taxDisplay].toFixed(2)} €</td></tr>`;
+        content = content.replace(htmlItem, templateItems);
     }
-    if (_order.additionnalFees && _order.additionnalFees[taxDisplay] && _order.additionnalFees[taxDisplay] !== 0) {
-        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.additionnalFees[lang]}</b> + ${_order.additionnalFees[taxDisplay].toFixed(2)} €</td></tr>`;
-    }
-    templateItems  += `<tr><td colspan="4" style="text-align:right"><b>TOTAL:</b> ${_order.priceTotal[taxDisplay].toFixed(2)} €</td></tr>`;
     let dateReceipt = '';
     let hourReceipt = '';
-    if (_order.orderReceipt && _order.orderReceipt.date) {
-        const d       = _order.orderReceipt.date;
+    if (order.orderReceipt && order.orderReceipt.date) {
+        const d       = order.orderReceipt.date;
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
@@ -408,92 +417,71 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
-    const htmlBody = generateHTML(content, {
-        '{{company}}'               : _order.customer.company.name,
-        '{{taxdisplay}}'            : tmpTrad.common[taxDisplay][lang],
-        '{{fullname}}'              : _order.customer.id.fullname,
-        '{{name}}'                  : _order.customer.id.fullname,
-        '{{firstname}}'             : _order.customer.id.firstname,
-        '{{lastname}}'              : _order.customer.id.lastname,
-        '{{number}}'                : _order.number,
-        '{{dateReceipt}}'           : dateReceipt,
-        '{{hourReceipt}}'           : hourReceipt,
-        '{{orderdata}}'             : templateItems,
-        '{{address}}'               : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
-        '{{totalamount}}'           : `${_order.priceTotal[taxDisplay].toFixed(2)} € ${tmpTrad.common[taxDisplay][lang]}`,
-        '{{customer_mobile_phone}}' : phone_mobile || _order._doc.customer.id.addresses[0].phone_mobile,
-        '{{payment_type}}'          : _order._doc.payment[0].mode,
-        '{{delivery_type}}'         : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang],
-        '{{shipment}}'              : _order._doc.delivery.name
-    });
+    const datas = {
+        '{{taxdisplay}}'                 : global.translate.common[taxDisplay][lang],
+        '{{order.customer.company}}'     : order.customer.company.name,
+        '{{order.customer.fullname}}'    : order.customer.id.fullname,
+        '{{order.customer.name}}'        : order.customer.id.fullname,
+        '{{order.customer.firstname}}'   : order.customer.id.firstname,
+        '{{order.customer.lastname}}'    : order.customer.id.lastname,
+        '{{order.customer.mobilePhone}}' : phone_mobile || order._doc.customer.id.addresses[0].phone_mobile,
+        '{{order.number}}'               : order.number,
+        '{{quantityBreaks}}'             : '',
+        '{{order.dateReceipt}}'          : dateReceipt,
+        '{{order.hourReceipt}}'          : hourReceipt,
+        '{{order.priceTotal}}'           : order.priceTotal[taxDisplay].toFixed(2),
+        '{{order.delivery}}'             : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
+        '{{order.paymentMode}}'          : order._doc.payment[0].mode,
+        '{{order.paymentDescription}}'   : order._doc.payment[0].description,
+        '{{order.shipment}}'             : order._doc.delivery.name,
+        '{{address.line1}}'              : line1 || '',
+        '{{address.line2}}'              : line2 || '',
+        '{{address.companyName}}'        : companyName || '',
+        '{{address.complementaryInfo}}'  : complementaryInfo || '',
+        '{{address.zipcode}}'            : zipcode || '',
+        '{{address.city}}'               : city || '',
+        '{{address.country}}'            : country || ''
+    };
+
+    if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
+        datas['{{quantityBreaks}}'] = order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
+    }
+
+    if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
+        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
+    }
+
+    if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
+        datas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        datas['{{promo.code}}']     = order.promos[0].code;
+    }
+    const htmlBody = await generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 };
 
 /**
- * Ce service permet d'envoyer un mail au client lorsqu'il passe une commande
- * @param {ObjectId} order_id l'id d'une commande
- * @param {string} lang langue du mail
+ * Send an email to the customer when he places an order.
+ * @param {ObjectId} order_id the id of an order
+ * @param {string} lang email language
  */
 const sendMailOrderToClient = async (order_id, lang = '') => {
-    const tmpTrad = require('../utils/translate');
-    const _order  = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
-    if (!_order) {
+    const order = await Orders.findOne({_id: order_id}).populate('customer.id items.id');
+    if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    // Si une commande est payé en CB le status de la commande doit être a paid ou finished pour continuer
-    if (_order.payment.length && _order.payment[0].mode === 'CB' && _order.status !== 'PAID' && _order.status !== 'FINISHED') {
+    // If an order is paid in credit card the status of the order must be paid or finished to continue
+    if (order.payment.length && order.payment[0].mode === 'CB' && order.status !== 'PAID' && order.status !== 'FINISHED') {
         throw NSErrors.OrderNotPaid;
     }
 
-    lang                                                                         = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const taxDisplay                                                             = _order.priceTotal.paidTax ? 'ati' : 'et';
-    const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = _order.addresses.delivery;
-    // Création a partir de la commande du détail des articles commandés (le tableau qui va s'afficher dans la mail)
-    let templateItems = '';
-    _order.items.forEach((item) => {
-        const {translation} = item.id;
-        let basePrice       = null;
-        let descPromo       = '';
-        let descPromoT      = '';
-        if (_order.quantityBreaks && _order.quantityBreaks.productsId.length) {
-            // On check si le produit courant a recu une promo
-            const prdPromoFound = _order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
-            if (prdPromoFound) {
-                basePrice  = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
-                descPromo  = `<del><span>${(basePrice).toFixed(2)} €</span></del><br />`;
-                descPromoT = `<del><span>${(basePrice * item.quantity).toFixed(2)} €</span></del><br />`;
-            }
-        }
-        templateItems += `<tr>
-        <td>${translation[lang] ? translation[lang].name : translation.en.name} ${item.parent && translation[lang] ? _order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name : ''} ${item.type === 'virtual' ? `<br/><a href="${url.resolve(global.envConfig.environment.appUrl, '/account/orders')}">${tmpTrad.mail.sendMailOrderToClient.download[lang]}</a>` : ''}</td>
-        <td>${item.quantity} x</td>
-        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay]).toFixed(2)}€</span></del>` : descPromo} ${getUnitPrice(item, _order).toFixed(2)} €</td>
-        <td>${item.price.special && item.price.special[taxDisplay] ? `<del><span>${(item.price.unit[taxDisplay] * item.quantity).toFixed(2)}€</span></del>` : descPromoT} ${(getUnitPrice(item, _order) * item.quantity).toFixed(2)} €</td>
-    </tr>`;
-    });
-    templateItems += _order.quantityBreaks && _order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]
-        ? `<tr>
-            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.cart_discount[lang]}</b> - ${_order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]} €</td>
-        </tr>`
-        : '';
+    lang                                                                         = determineLanguage(lang, order.customer.id.preferredLanguage);
+    const taxDisplay                                                             = order.priceTotal.paidTax ? 'ati' : 'et';
+    const {line1, line2, zipcode, city, country, complementaryInfo, companyName} = order.addresses.delivery;
 
-    templateItems += _order.promos && _order.promos.length && (_order.promos[0].productsId.length === 0)
-        ? `<tr>
-            <td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.discount[lang]}</b> - ${_order.promos[0][`discount${taxDisplay.toUpperCase()}`]} € / Code: ${_order.promos[0].code}</td>
-        </tr>`
-        : '';
-
-    if (_order.delivery && _order.delivery.price && _order.delivery.price[taxDisplay]) {
-        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.message[lang]}</b> + ${_order.delivery.price[taxDisplay].toFixed(2)} €</td></tr>`;
-    }
-    if (_order.additionnalFees && _order.additionnalFees[taxDisplay] && _order.additionnalFees[taxDisplay] !== 0) {
-        templateItems += `<tr><td colspan="4" style="text-align:right"><b>${tmpTrad.mail.sendMailOrderToClient.additionnalFees[lang]}</b> + ${_order.additionnalFees[taxDisplay].toFixed(2)} €</td></tr>`;
-    }
-    templateItems  += `<tr><td colspan="4" style="text-align:right"><b>TOTAL:</b> ${_order.priceTotal[taxDisplay].toFixed(2)} €</td></tr>`;
     let dateReceipt = '';
     let hourReceipt = '';
-    if (_order.orderReceipt && _order.orderReceipt.date) {
-        const d       = _order.orderReceipt.date;
+    if (order.orderReceipt && order.orderReceipt.date) {
+        const d       = order.orderReceipt.date;
         const _config = global.envConfig;
         if (!_config) {
             throw NSErrors.ConfigurationNotFound;
@@ -501,50 +489,125 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
-    const oMailData = {
-        '{{taxdisplay}}'    : tmpTrad.common[taxDisplay][lang],
-        '{{company}}'       : _order.customer.company.name,
-        '{{firstname}}'     : _order.customer.id.firstname,
-        '{{lastname}}'      : _order.customer.id.lastname,
-        '{{fullname}}'      : _order.customer.id.fullname,
-        '{{name}}'          : _order.customer.id.fullname,
-        '{{number}}'        : _order.number,
-        '{{dateReceipt}}'   : dateReceipt,
-        '{{hourReceipt}}'   : hourReceipt,
-        '{{address}}'       : `${line1 || ''}${line2 ? ` ${line2}` : ''}${companyName ? `, ${companyName}` : ''}${complementaryInfo ? `, ${complementaryInfo}` : ''}, ${zipcode || ''}, ${city || ''} ${country ? `, ${country}` : ''}`,
-        '{{totalamount}}'   : `${_order.priceTotal[taxDisplay].toFixed(2)}`,
-        '{{orderdata}}'     : templateItems,
-        '{{payment_type}}'  : _order._doc.payment[0].mode,
-        '{{delivery_type}}' : _order._doc.orderReceipt ? tmpTrad.common[_order._doc.orderReceipt.method][lang] : tmpTrad.common.delivery[lang]
+    const mailDatas = {
+        '{{taxdisplay}}'                : global.translate.common[taxDisplay][lang],
+        '{{payment.instruction}}'       : '',
+        '{{order.customer.company}}'    : order.customer.company.name,
+        '{{order.customer.firstname}}'  : order.customer.id.firstname,
+        '{{order.customer.lastname}}'   : order.customer.id.lastname,
+        '{{order.customer.fullname}}'   : order.customer.id.fullname,
+        '{{order.customer.name}}'       : order.customer.id.fullname,
+        '{{order.number}}'              : order.number,
+        '{{order.dateReceipt}}'         : dateReceipt,
+        '{{order.hourReceipt}}'         : hourReceipt,
+        '{{address.line1}}'             : line1 || '',
+        '{{address.line2}}'             : line2 || '',
+        '{{address.companyName}}'       : companyName || '',
+        '{{address.complementaryInfo}}' : complementaryInfo || '',
+        '{{address.zipcode}}'           : zipcode || '',
+        '{{address.city}}'              : city || '',
+        '{{address.country}}'           : country || '',
+        '{{order.paymentMode}}'         : order._doc.payment[0].mode,
+        '{{order.paymentDescription}}'  : order._doc.payment[0].description,
+        '{{order.delivery}}'            : order._doc.orderReceipt ? global.translate.common[order._doc.orderReceipt.method][lang] : global.translate.common.delivery[lang],
+        '{{order.priceTotal}}'          : order.priceTotal[taxDisplay].toFixed(2)
     };
-    // On verifie si le module billetterie-aquila n'existe en base de données ou qu'il n'est actif
-    const moduleTicketing = await Modules.findOne({name: 'billetterie-aquila'});
-    if (!moduleTicketing || !moduleTicketing.active) {
-        let mailByType;
-        // On va chercher la methode de paiement afin de récupérer isDeferred
-        let paymentMethod;
-        if (_order.payment && _order.payment[0] && _order.payment[0].mode) {
-            paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
-        }
-        if ((paymentMethod && paymentMethod.isDeferred === false) || _order.status === 'PAID' || _order.status === 'FINISHED') {
-            // On envoie le mail de succès de commande au client
-            mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
-        } else {
-            // On envoie le mail de succès de commande au client avec les instructions pour payer avec cheque ou virement
-            mailByType = await getMailDataByTypeAndLang('orderSuccessDeferred', lang);
-            if (!paymentMethod) oMailData['{{instruction}}'] = '';
-            else oMailData['{{instruction}}'] = paymentMethod.translation[lang].instruction;
-        }
-        const {content, subject, from, fromName, pathAttachment} = mailByType;
-        const htmlBody                                           = generateHTML(content, oMailData);
-        return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
+
+    if (order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
+        mailDatas['{{quantityBreaks}}'] = order.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
     }
+
+    if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
+        mailDatas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        mailDatas['{{promo.code}}']     = order.promos[0].code;
+    }
+
+    if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
+        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
+    }
+
+    if (order.additionnalFees && order.additionnalFees[taxDisplay] && order.additionnalFees[taxDisplay] !== 0) {
+        mailDatas['{{additionnalFees}}'] = order.additionnalFees[taxDisplay].toFixed(2);
+    }
+
+    let mailByType;
+    // Get the payment method for check isDeferred
+    let paymentMethod;
+    if (order.payment && order.payment[0] && order.payment[0].mode) {
+        paymentMethod = await PaymentMethods.findOne({code: order.payment[0].mode.toLowerCase()});
+    }
+    if ((paymentMethod && paymentMethod.isDeferred === false) || order.status === 'PAID' || order.status === 'FINISHED') {
+        // We send the order success email to the customer
+        mailByType = await getMailDataByTypeAndLang('orderSuccess', lang);
+    } else {
+        // We send the order success email to the customer with instructions to pay by check or bank transfer
+        mailByType = await getMailDataByTypeAndLang('orderSuccessDeferred', lang);
+        if (paymentMethod) {
+            mailDatas['{{payment.instruction}}'] = paymentMethod.translation[lang].instruction;
+        }
+    }
+
+    const {subject, from, fromName, pathAttachment} = mailByType;
+    let {content}                                   = mailByType;
+    // Create from the order the items ordered (the table that will be displayed in the email)
+    let templateItems  = '';
+    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    if (itemTemplate && itemTemplate[0]) {
+        const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
+        for (const item of order.items) {
+            const {translation} = item.id;
+            const prdData       = {
+                '{{product.quantity}}'         : item.quantity,
+                '{{product.name}}'             : translation[lang].name,
+                '{{product.specialUnitPrice}}' : '',
+                '{{product.bundleName}}'       : translation[lang].name,
+                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.basePrice}}'        : '',
+                '{{product.descPromo}}'        : '',
+                '{{product.descPromoT}}'       : '',
+                '{{product.sumSpecialPrice}}'  : ''
+            };
+
+            /* if (item.price.special && item.price.special[taxDisplay]) {
+                prdData['{{product.specialUnitPriceWithoutPromo}}'] = (item.price.unit[taxDisplay]).toFixed(2);
+                prdData['{{product.specialUnitPriceWithPromo}}'] = getUnitPrice(item, order).toFixed(2);
+                prdData['{{product.sumSpecialPriceWithoutPromo}}'] = (item.price.unit[taxDisplay] * item.quantity).toFixed(2);
+                prdData['{{product.sumSpecialPriceWithPromo}}'] = (getUnitPrice(item, order) * item.quantity).toFixed(2);
+            } */
+
+            if (item.parent && translation[lang]) {
+                prdData['{{product.bundleName}}'] = order.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+            }
+
+            let basePrice  = null;
+            let descPromo  = '';
+            let descPromoT = '';
+            if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
+                // We check if the current product has received a discount
+                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
+                if (prdPromoFound) {
+                    basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
+                    descPromo                         = basePrice.toFixed(2);
+                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    prdData['{{product.basePrice}}']  = basePrice;
+                    prdData['{{product.descPromo}}']  = descPromo;
+                    prdData['{{product.descPromoT}}'] = descPromoT;
+                }
+            }
+            templateItems += await generateHTML(htmlItem, prdData);
+        }
+        content = content.replace(htmlItem, templateItems);
+    }
+
+    const htmlBody = await generateHTML(content, mailDatas);
+    return sendMail({subject, htmlBody, mailTo: order.customer.email, mailFrom: from, fromName, pathAttachment});
 };
 
 /**
- * Ce service permet d'envoyer un mail au client lorsqu'il y a un changement de status de sa commande
- * @param {ObjectId} order_id l'id d'une commande
- * @param {string} lang langue du mail
+ * This service allows you to send an email to the customer when the order's status is changing
+ * @param {ObjectId} order_id the id of an order
+ * @param {string} lang email language
  */
 const sendMailOrderStatusEdit = async (order_id, lang = '') => {
     const _order = await Orders.findOne({_id: order_id}).populate('customer.id');
@@ -575,61 +638,15 @@ const sendMailOrderStatusEdit = async (order_id, lang = '') => {
 };
 
 /**
- * @description Permet d'envoyer un mail pour informer le client que ca commande a bien été envoyée
- * @param {guid} user_id - _id de l'utilisateur destinataire
- * @param {string} [lang] - langue du mail (Optionnel)
- */
-const sendMailOrderSent = async (order_id, lang = '') => {
-    require('../utils/utils').tmp_use_route('mails_service', 'sendMailOrderSent');
-    const _config = global.envConfig;
-    if (!_config) {
-        throw NSErrors.ConfigurationNotFound;
-    }
-    const _order = await Orders.findOne({_id: order_id}).populate(['customer.id']);
-    if (!_order) {
-        throw NSErrors.OrderNotFound;
-    }
-    lang                                                     = determineLanguage(lang, _order.customer.id.preferredLanguage);
-    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('orderSent', lang);
-    // On format la date pour l'envoyer dans le mail ex: 1/5/2015 deviendra 01/05/2018
-    const d                                      = new Date();
-    let month                                    = (d.getMonth() + 1).toString();
-    let day                                      = d.getDate().toString();
-    month                                        = month.length > 1 ? month : `0${month}`;
-    day                                          = day.length > 1 ? day : `0${day}`;
-    const date                                   = `${day}/${month}/${d.getFullYear()}`;
-    const {line1, line2, zipcode, city, country} = _order.addresses.delivery;
-    let dateReceipt                              = '';
-    let hourReceipt                              = '';
-    if (_order.orderReceipt && _order.orderReceipt.date) {
-        const d       = _order.orderReceipt.date;
-        const _config = global.envConfig;
-        if (!_config) {
-            throw NSErrors.ConfigurationNotFound;
-        }
-        dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
-        hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
-    }
-    const htmlBody = generateHTML(content, {
-        '{{date}}'        : date,
-        '{{number}}'      : _order.number,
-        '{{dateReceipt}}' : dateReceipt,
-        '{{hourReceipt}}' : hourReceipt,
-        '{{address}}'     : `${line1}${line2 ? ` ${line2}` : ''}, ${zipcode}, ${city}, ${country}`
-    });
-    return sendMail({subject, htmlBody, mailTo: _order.customer.email, mailFrom: from, fromName, pathAttachment});
-};
-
-/**
- * @description Envoi d'un email
- * @param {Object} mailinformation - information about the mail
- * @param {string} mailinformation.subject - Sujet du mail
- * @param {string} mailinformation.htmlBody - HTML du mail
- * @param {string} mailinformation.mailTo - Destinataire du mail
- * @param {string} [mailinformation.mailFrom=null] - Emeteur du mail (Optionnel)
- * @param {string} [mailinformation.pathAttachment=null] - Chemin du fichier a envoyer (Optionnel)
- * @param {string} [mailinformation.textBody=null] - Text du mail (si pas de lecteur html) (Optionnel)
- * @param {string} [mailinformation.fromName=null] - Nom de l'emeteur (Optionnel)
+ * @description Sending an email
+ * @param {Object} mailinformation - Sending an email
+ * @param {string} mailinformation.subject - Email subject
+ * @param {string} mailinformation.htmlBody - Email HTML
+ * @param {string} mailinformation.mailTo - Mail recipient
+ * @param {string} [mailinformation.mailFrom=null] - Email sender (Optional)
+ * @param {string} [mailinformation.pathAttachment=null] - Path of the file to send (Optional)
+ * @param {string} [mailinformation.textBody=null] - Mail text (if no html reader) (Optional)
+ * @param {string} [mailinformation.fromName=null] - Sender name (Optionnal)
  * @return {Promise<{envelope: {from: string, to: string[]}, messageId: string}>}
  * envelope – is an envelope object {from:‘address’, to:[‘address’]}\
  * messageId – is the Message-ID header value
@@ -649,12 +666,12 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
         let {mailPass} = global.envConfig.environment;
         mailPass       = encryption.decipher(mailPass);
 
-        // Vérifier qu'il n'y a pas de surcharge du destinataire dans la config
+        // Check that there is no recipient overload in the config
         if (overrideSendTo) {
             mailTo = overrideSendTo;
         }
 
-        // Si on est en mode DEV, le destinataire est le dev, et non le "client"
+        // If we are in DEV mode, the recipient is the dev, and not the real mail
         const devMode = global.envFile.devMode;
         if (devMode && devMode.mailTo) {
             mailTo = devMode.mailTo;
@@ -747,11 +764,11 @@ function replaceMultiple(html, obj = {}) {
 }
 
 /**
- * @description Envoyer les informations d'un formulaire de contact par mail
- * @param {string} type - Type de mail
- * @param {string} to - Destinataire
- * @param {Object} datas - Objet du formulaire envoyé
- * @param {string} lang - Langue du sujet et du contenu
+ * @description Send the information of a contact form by email
+ * @param {string} type - Mail type
+ * @param {string} to - Recipient
+ * @param {Object} datas - Subject of the form sent
+ * @param {string} lang - Language of subject and content
  */
 const sendGeneric = async (type, to, datas, lang = '') => {
     lang            = ServiceLanguages.getDefaultLang(lang);
@@ -788,8 +805,8 @@ const sendGeneric = async (type, to, datas, lang = '') => {
 };
 
 /**
- * @description Envoyer les informations d'un formulaire de contact par mail
- * @param {Object} datas - Objet du formulaire envoyé
+ * @description Send the information of a contact form by email
+ * @param {Object} datas - Datas of the form sent
  */
 const sendContact = async (datas, lang = '') => {
     lang              = determineLanguage(lang, datas.lang);
@@ -821,9 +838,9 @@ const sendContact = async (datas, lang = '') => {
 };
 
 /**
- * @description Generation du HTML depuis un template et ses données
- * @param {string} html template HTML récupéré de la collection mail
- * @param {object} [datas={}] Object contenant les datas à remplacer : {"variable_a_remplacer":"la_valeur", "var2":"value2"}
+ * @description Generation of HTML from a template and datas
+ * @param {string} html HTML template retrieved from the mail collection
+ * @param {object} [datas={}] Object containing the data to replace : {"variable_to_replace":"the_value", "var2":"value2"}
  */
 const generateHTML = (html, datas = {}) => {
     if (!datas) datas = {};
@@ -848,11 +865,11 @@ function determineLanguage(lang, preferredLanguage) {
 }
 
 /**
- * Permet de récupérer le prix unitaire du produit avec promo appliqué si necessaire
+ * Allows you to recover the unit price of the product with promo applied if necessary
  * @param {*} item item pour lequel on calcul le prix unitaire
  * @returns {number} prix unitaire
  */
-function getUnitPrice(item, order) {
+/* function getUnitPrice(item, order) {
     const taxDisplay = order.priceTotal.paidTax ? 'ati' : 'et';
     let price        = item.price.unit[taxDisplay];
     if (item.price && item.price.special && item.price.special[taxDisplay] >= 0) {
@@ -865,7 +882,7 @@ function getUnitPrice(item, order) {
         }
     }
     return price;
-}
+} */
 
 async function sendMailOrderRequestCancel(_id, lang = '') {
     const _order = await Orders.findOne({_id}).populate('customer.id');
@@ -890,6 +907,83 @@ async function sendMailOrderRequestCancel(_id, lang = '') {
         '{{firstname}}' : _order.customer.id.firstname,
         '{{lastname}}'  : _order.customer.id.lastname});
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
+}
+
+async function sendMailPendingCarts(cart) {
+    const customer = await users.findOne({_id: cart.customer.id});
+    if (!customer) return;
+    const lang                                      = customer.preferredLanguage;
+    const mailTo                                    = cart.customer.email;
+    const taxDisplay                                = cart.paidTax ? 'ati' : 'et';
+    const mailDatas                                 = await getMailDataByTypeAndLang('pendingCarts', lang);
+    let {content}                                   = mailDatas;
+    const {subject, from, fromName, pathAttachment} = mailDatas;
+
+    let templateItems  = '';
+    const itemTemplate = content.match(new RegExp(/<!--startitems-->(.|\n)*?<!--enditems-->/, 'g'));
+    if (itemTemplate && itemTemplate[0]) {
+        const htmlItem = itemTemplate[0].replace('<!--startitems-->', '').replace('<!--enditems-->', '');
+        for (const item of cart.items) {
+            const prdData = {
+                '{{product.quantity}}'         : item.quantity,
+                '{{product.name}}'             : item.name,
+                '{{product.specialUnitPrice}}' : '',
+                '{{product.bundleName}}'       : item.name,
+                '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.basePrice}}'        : '',
+                '{{product.descPromo}}'        : '',
+                '{{product.descPromoT}}'       : '',
+                '{{product.sumSpecialPrice}}'  : ''
+            };
+            if (item.parent) {
+                prdData['{{product.bundleName}}'] = cart.items.find((i) => i._id.toString() === item.parent.toString()).id.translation[lang].name;
+            }
+            let basePrice  = null;
+            let descPromo  = '';
+            let descPromoT = '';
+            if (cart.quantityBreaks && cart.quantityBreaks.productsId.length) {
+                // Check if the current product has received a discount
+                const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId.toString() === item.id.id.toString());
+                if (prdPromoFound) {
+                    basePrice                         = prdPromoFound[`basePrice${taxDisplay.toUpperCase()}`];
+                    descPromo                         = basePrice.toFixed(2);
+                    descPromoT                        = (basePrice * item.quantity).toFixed(2);
+                    prdData['{{product.basePrice}}']  = basePrice;
+                    prdData['{{product.descPromo}}']  = descPromo;
+                    prdData['{{product.descPromoT}}'] = descPromoT;
+                }
+            }
+            templateItems += await generateHTML(htmlItem, prdData);
+        }
+        content = content.replace(htmlItem, templateItems);
+    }
+
+    const datas = {
+        '{{taxdisplay}}'         : global.translate.common[taxDisplay][lang],
+        '{{customer.fullname}}'  : customer.fullname,
+        '{{customer.name}}'      : customer.fullname,
+        '{{customer.firstname}}' : customer.firstname,
+        '{{customer.lastname}}'  : customer.lastname,
+        '{{quantityBreaks}}'     : '',
+        '{{order.priceTotal}}'   : cart.priceTotal[taxDisplay].toFixed(2)
+    };
+
+    if (cart.quantityBreaks && cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`]) {
+        datas['{{quantityBreaks}}'] = cart.quantityBreaks[`discount${taxDisplay.toUpperCase()}`];
+    }
+
+    if (cart.delivery && cart.delivery.price && cart.delivery.price[taxDisplay]) {
+        mailDatas['{{delivery.price}}'] = cart.delivery.price[taxDisplay].toFixed(2);
+    }
+
+    if (cart.promos && cart.promos.length && (cart.promos[0].productsId.length === 0)) {
+        datas['{{promo.discount}}'] = cart.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        datas['{{promo.code}}']     = cart.promos[0].code;
+    }
+    const htmlBody = generateHTML(content, datas);
+    return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, pathAttachment});
+    // TODO CartMail : Analyze the return from sendMail to send the correct info
 }
 
 const sendError = async (error) => {
@@ -921,14 +1015,13 @@ module.exports = {
     sendRegister,
     sendRegisterForAdmin,
     sendResetPassword,
-    sendPDFAttachmentToClient,
     sendMailOrderToCompany,
     sendMailOrderToClient,
     sendMailOrderStatusEdit,
-    sendMailOrderSent,
     sendMail,
     sendGeneric,
     sendContact,
     sendMailOrderRequestCancel,
+    sendMailPendingCarts,
     sendError
 };

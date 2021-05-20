@@ -5,6 +5,8 @@
     "desc": "Description",
     "ver": "Version",
     "actif": "Active ?",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
     "actions": "ACTIONS",
     "config": "Configure",
     "delete": "Delete",
@@ -15,8 +17,15 @@
     "api": "API",
     "theme": "THEME",
     "info": "Informations",
-    "modalReadMe" : {
-        "title":"README.md of the module",
-        "close":"Close"
+    "modalReadMe": {
+        "title": "README.md of the module",
+        "close": "Close"
+    },
+    "new": {
+        "createNewModule": "Add a new Plugin",
+        "cancel": "Cancel"
+    },
+    "toast": {
+        "errGetPlugins": "Can't get the list of plugins"
     }
 }

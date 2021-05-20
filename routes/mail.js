@@ -1,8 +1,16 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceMail                 = require('../services/mail');
 
 module.exports = function (app) {
-    app.get('/v2/mails', authentication, adminAuth, getMails);
+    app.post('/v2/mails', authentication, adminAuth, getMails);
     app.get('/v2/mail/:_id', authentication, adminAuth, getMail);
     app.get('/v2/mail/activation/account/sent/:user_id/:lang?', sendMailActivationAccount);
     app.put('/v2/mail', authentication, adminAuth, setMail);
@@ -37,21 +45,21 @@ async function removePdf(req, res, next) {
 }
 
 /**
- * Permet de recupérer les mails dans la collection mail
+ * Allows you to retrieve mails in the mail collection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
  */
 async function getMails(req, res, next) {
     try {
-        const result = await ServiceMail.getMails();
+        const result = await ServiceMail.getMails(req.body.PostBody);
         return res.json(result);
     } catch (error) {
         return next(error);
     }
 }
 /**
- * Permet de récupérer un mail en fonction de son _id
+ * Allows you to retrieve an email according to its _id
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -75,7 +83,7 @@ async function sendMailActivationAccount(req, res, next) {
 }
 
 /**
- * Permet de modifier un mail dans la collection mail
+ * Allows you to modify an email in the mail collection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -89,7 +97,7 @@ async function setMail(req, res, next) {
     }
 }
 /**
- * Supprime le mail dont l'_id est passé en parametre
+ * Delete the email whose _id is passed in parameter
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -104,7 +112,7 @@ async function deleteMail(req, res, next) {
 }
 
 /**
- * Envoyer les informations d'un formulaire de contact par mail
+ * Send the information of a contact form by email
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next

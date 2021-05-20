@@ -1,6 +1,6 @@
 const components = require('./components');
 
-module.exports = {
+const swaggerObject = {
     openapi : '3.0.3',
     info    : {
         version     : '2.0.0',
@@ -11,7 +11,7 @@ module.exports = {
         contact     : {
             email : 'contact@nextsourcia.com'
         },
-        licence : {
+        license : {
             name : 'OSL3.0',
             url  : 'https://opensource.org/licenses/OSL-3.0'
         }
@@ -22,3 +22,5 @@ module.exports = {
     },
     ...components
 };
+
+module.exports = swaggerObject;

@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const axios                    = require('axios');
 const AdmZip                   = require('adm-zip');
 const path                     = require('path');
@@ -13,7 +21,7 @@ const tmpPath                  = path.resolve('./uploads/temp');
 const verifyingUpdate = async () => {
     const actualVersion = JSON.parse(fsp.readFileSync(path.resolve(global.appRoot, './package.json'))).version;
 
-    // Créer le dossier /uploads/temp s'il n'existe pas
+    // Create the /uploads/temp folder if it doesn't exist
     if (!fsp.existsSync(tmpPath)) {
         fsp.mkdirSync(tmpPath, {recursive: true});
     }
@@ -38,21 +46,7 @@ const verifyingUpdate = async () => {
 const update = async () => {
     console.log('Update Aquila...');
 
-    const _config   = await Configuration.findOne({});
-    let maintenance = false;
-    if (
-        _config
-        && _config.environment
-        && _config.environment.autoMaintenance === true
-        && _config.environment.maintenance === false
-    ) {
-        _config.environment.maintenance = true;
-        maintenance                     = true;
-        await Configuration.updateOne(
-            {_id: _config._id},
-            {$set: {environment: _config.environment}}
-        );
-    }
+    await setMaintenance(true);
 
     const filePathV = path.resolve(`${tmpPath}/version.txt`);
     const version   = fsp.readFileSync(filePathV).toString().replace('\n', '').trim();
@@ -66,7 +60,7 @@ const update = async () => {
         aquilaPath = tmpPath;
     }
 
-    // Télécharger le fichier
+    // Download the file
     try {
         console.log(`Downloading Aquila ${version}...`);
         await downloadURL(fileURL, filePath);
@@ -74,41 +68,29 @@ const update = async () => {
         console.error(`Get ${fileURL} failed`);
     }
 
-    // Décompresser dossier temporaire
+    // Unzip temporary folder
     try {
         console.log('Extracting archive...');
         const zip = new AdmZip(filePath);
-        zip.extractAllTo(aquilaPath);
+        zip.extractAllTo(aquilaPath, true);
     } catch (exc) {
         console.error(`Unzip ${filePath} failed`);
     }
 
     // yarn install du aquila
-    await packageManager.execCmd(`yarn install${isProd() ? ' --prod' : ''}`, './');
+    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
     const modules = await Modules.find({active: true});
 
     for (const module of modules) {
         if (module.packageDependencies && module.packageDependencies.api && module.packageDependencies.api.length > 0) {
-            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`, './');
+            await packageManager.execCmd(`yarn add ${module.packageDependencies.api.join(' ')}`);
         }
     }
 
-    if (
-        _config
-        && _config.environment
-        && _config.environment.autoMaintenance === true
-        && _config.environment.maintenance === true
-        && maintenance === true
-    ) {
-        _config.environment.maintenance = false;
-        await Configuration.updateOne(
-            {_id: _config._id},
-            {$set: {environment: _config.environment}}
-        );
-    }
+    await fsp.unlink(filePath);
+    await setMaintenance(false);
 
     console.log('Aquila is updated !');
-    await fsp.unlink(filePath);
     // Reboot
     return packageManager.restart();
 };
@@ -138,7 +120,21 @@ async function downloadURL(url, dest) {
     });
 }
 
+/**
+ * Set in maintenance mode (no front is delivered)
+ * @param {boolean} isInMaintenance Maintenance status to set
+ */
+const setMaintenance = async (isInMaintenance) =>  {
+    const configuration = await Configuration.findOne({});
+
+    if (configuration && configuration.environment && configuration.environment.autoMaintenance) {
+        configuration.environment.maintenance = isInMaintenance;
+        await configuration.save();
+    }
+};
+
 module.exports = {
     verifyingUpdate,
-    update
+    update,
+    setMaintenance
 };

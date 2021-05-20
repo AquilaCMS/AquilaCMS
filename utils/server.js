@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path         = require('path');
 const spdy         = require('spdy');
 const mongoose     = require('mongoose');
@@ -11,6 +19,7 @@ const fs           = require('./fsp');
  * @returns {String} property
  */
 const getEnv = (property) =>  {
+    if (!property) throw new Error('property is mandatory');
     let env = process.env[property];
     if (!env && property === 'AQUILA_ENV') env = 'aquila';
     if (!env && property === 'NODE_ENV') env = 'production';
@@ -21,29 +30,12 @@ const getEnv = (property) =>  {
  * check if in prod or not
  * @returns {boolean}
  */
-const isProd = () => {
-    if (getEnv('NODE_ENV') === 'production') {
-        return true;
-    }
-    return false;
-};
+const isProd = getEnv('NODE_ENV') === 'production';
 
 const updateEnv = async () => {
     let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
     envPath       = path.resolve(global.appRoot, envPath);
-    const envFile = JSON.parse(await fs.readFile(envPath));
-    for (const env of Object.keys(envFile)) {
-        if (envFile[env].jwt && envFile[env].jwt.session !== undefined) {
-            envFile[env].jwt.options = envFile[env].jwt.session;
-            delete envFile[env].jwt.session;
-        }
-        if (envFile[env].useJwt) {
-            delete envFile[env].useJwt;
-        }
-        if (envFile[env].front) {
-            delete envFile[env].front;
-        }
-    }
+    const envFile = JSON.parse(await fs.readFile(envPath, {encoding: 'utf8'}));
     await fs.writeFile(envPath, JSON.stringify(envFile, null, 2));
     global.envFile = envFile[getEnv('AQUILA_ENV')];
 };
@@ -61,16 +53,32 @@ const getOrCreateEnvFile = async () => {
 
     try {
         let envFile;
-        const envExample = await fs.readFile(path.join(global.appRoot, 'config/env.template.json'));
-        if (await fs.access(path.resolve(global.envPath))) {
-            envFile = await fs.readFile(global.envPath);
-            envFile = JSON.parse(envFile);
+        const envExample = JSON.parse(await fs.readFile(
+            path.join(global.appRoot, 'config/env.template.json'),
+            {encoding: 'utf8'}
+        ));
+        if (fs.existsSync(path.resolve(global.envPath))) {
+            envFile = await fs.readFile(global.envPath, {encoding: 'utf8'});
+            if (envFile === '') {
+                envFile = {};
+            } else {
+                try {
+                    envFile = JSON.parse(envFile);
+                } catch (error) {
+                    console.error('Access to the env file is possible but the file is invalid');
+                    throw new Error('Cannot read env.json');
+                }
+            }
             if (!envFile[getEnv('AQUILA_ENV')]) {
                 console.error('no correct NODE_ENV specified, generating new env in env.json');
                 const newEnv                  = generateNewEnv(envExample);
                 envFile[getEnv('AQUILA_ENV')] = newEnv[getEnv('AQUILA_ENV')];
             }
-            const merged                  = deepObjectVerification(envFile[getEnv('AQUILA_ENV')], JSON.parse(envExample)['{{environnement}}']);
+            const merged = deepObjectVerification(
+                envFile[getEnv('AQUILA_ENV')],
+                envExample['{{environnement}}']
+            );
+
             envFile[getEnv('AQUILA_ENV')] = merged;
         } else {
             envFile = generateNewEnv(envExample);
@@ -123,7 +131,7 @@ const showAquilaLogo = () => {
 
 const controlNodeVersion = async () => {
     try {
-        const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json')));
+        const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json'), {encoding: 'utf8'}));
         const check       = (hilo) => {
             return outside(process.version, packageJSON.engines.node, hilo);
         };
@@ -154,35 +162,52 @@ const logVersion = async () => {
 };
 
 const startListening = async (server) => {
-    if (global.envFile && global.envFile.ssl && global.envFile.ssl.key
-        && global.envFile.ssl.cert && global.envFile.ssl.active
-        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.key))
-        && await fs.access(path.resolve(global.appRoot, global.envFile.ssl.cert))
-    ) {
-        spdy.createServer({
-            key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
-            cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
-            spdy : {
-                protocols : ['h2', 'http1.1'],
-                plain     : false,
-                ssl       : true
-            }
-        }, server).listen(global.port, (err) => {
-            if (err) throw err;
-            console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
-        });
+    if (global.envFile && global.envFile.ssl && global.envFile.ssl.active) {
+        const {key, cert} = global.envFile.ssl;
+        if (!key || !cert) {
+            throw new Error('SSL Error - need a cert and a key file');
+        }
+        const keyPath  = path.resolve(global.appRoot, key);
+        const certPath = path.resolve(global.appRoot, cert);
+        try {
+            await fs.access(keyPath);
+            await fs.access(certPath);
+        } catch (err) {
+            console.error('SSL is enabled but invalid');
+            console.error('Access to the key file and certification file is not possible');
+            throw new Error('SSL Error - Path to cert or key file are invalid');
+        }
+        try {
+            spdy.createServer({
+                key  : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.key)),
+                cert : await fs.readFile(path.resolve(global.appRoot, global.envFile.ssl.cert)),
+                spdy : {
+                    protocols : ['h2', 'http/1.1'],
+                    plain     : false
+                }
+            }, server).listen(global.port, (err) => {
+                if (err) throw err;
+                global.isServerSecure = true;
+                console.log(`%sserver listening on port ${global.port} with HTTP/2%s`, '\x1b[32m', '\x1b[0m');
+                server.emit('started');
+            });
+        } catch (error) {
+            console.error(error);
+            throw new Error('SSL Error - Cert or Key file are invalid');
+        }
     } else {
         server.listen(global.port, (err) => {
             if (err) throw err;
             console.log(`%sserver listening on port ${global.port} with HTTP/1.1%s`, '\x1b[32m', '\x1b[0m');
+            server.emit('started');
         });
     }
 };
 
 /**
- * Renvoie l'url de base de l'application terminée par un '/', ou '/' tout court si non rempli
+ * Returns the base url of the application terminated by a '/', or '/' if not filled
  * @param {object} req request parameter from express
- * @returns {Object} an object containing the hostname, adminPrefix, analytics
+ * @returns {Promise<{appUrl: string, adminPrefix: string}>} an object containing the hostname, adminPrefix, analytics
  */
 const getAppUrl = async (req) => {
     if (!req) {
@@ -196,8 +221,7 @@ const getAppUrl = async (req) => {
 
     return {
         appUrl      : `${req.protocol}://${req.get('host')}/`,
-        adminPrefix : config.adminPrefix,
-        analytics   : config.analytics
+        adminPrefix : config.adminPrefix
     };
 };
 
@@ -210,8 +234,7 @@ const getUploadDirectory = () => {
 };
 
 const generateNewEnv = (envExample) => {
-    let env = envExample;
-    env     = env.toString();
+    let env = JSON.stringify(envExample);
     env     = env.replace('{{environnement}}', getEnv('AQUILA_ENV'));
     env     = env.replace('{{secretKey}}', uuidv4());
     return JSON.parse(env);

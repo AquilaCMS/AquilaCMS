@@ -3,7 +3,7 @@ var ShipmentControllers = angular.module('aq.shipment.controllers', []);
 ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Shipment', '$http', '$rootScope',
     function ($scope, $location, Shipment, $http, $rootScope) {
         $scope.lang = $rootScope.adminLang;
-
+        $scope.filter = {};
         function init() {
             $scope.sort = {
                 type: 'type',
@@ -11,10 +11,41 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
             };
         }
 
+        $scope.defaultLang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+        }).code;
+
         init();
 
-        function getShipments() {
+        $scope.getShipments = function() {
+            let filter = {};
+            const filterKeys = Object.keys($scope.filter);
+            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
+                if($scope.filter[filterKeys[i]] === null){
+                    break;
+                }
+                if(filterKeys[i].includes("active")) {
+                    if($scope.filter.active == "true"){
+                        filter["active"] = true;
+                    }else if($scope.filter.active == "false"){
+                        filter["active"] = false;
+                    }
+                } else if(filterKeys[i].includes("name")) {
+                    if($scope.filter.name != ""){
+                        filter["translation."+$scope.defaultLang+".name"] = { $regex: $scope.filter.name, $options: "i" };
+                    }
+                } else {
+                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
+                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
+                    }else{
+                        if($scope.filter[filterKeys[i]].toString() != ""){
+                            filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        }
+                    }
+                }
+            }
             Shipment.list({PostBody: {
+                filter,
                 structure: {
                     active: 1,
                     vat_rate: 1,
@@ -29,7 +60,7 @@ ShipmentControllers.controller('ShipmentListCtrl', ['$scope', '$location', 'Ship
             });
         }
 
-        getShipments();
+        $scope.getShipments();
 
         $scope.goToShipmentDetails = function (shipmentId) {
             $location.path("shipments/delivery/" + shipmentId);
@@ -47,8 +78,8 @@ ShipmentControllers.controller('ShipmentBeforeCreateCtrl', ['$scope', '$location
         };
     }]);
 
-ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$location', '$routeParams', 'toastService', 'TerritoryCountries', 'Shipment', 'ShipmentOld', '$rootScope', '$modal','ConfigV2',
-    function ($scope, $http, $location, $routeParams, toastService, TerritoryCountries, Shipment, ShipmentOld, $rootScope, $modal, ConfigV2) {
+ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$location', '$routeParams', 'toastService', 'TerritoryCountries', 'Shipment', 'ShipmentOld', '$rootScope', '$modal','ConfigV2', "$translate",
+    function ($scope, $http, $location, $routeParams, toastService, TerritoryCountries, Shipment, ShipmentOld, $rootScope, $modal, ConfigV2, $translate) {
 
         $scope.changeTab = function (tabActive) {
             if (!$scope.isEditMode && tabActive === "country") return;
@@ -56,9 +87,9 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
             $scope.tabActive = tabActive
         };
 
-        $scope.taxerate = [];
-        ConfigV2.taxerate( function (cfg) {
-            $scope.taxerate = cfg;
+        $scope.config = [];
+        ConfigV2.get({PostBody: {structure: {taxerate: 1}}}, function (cfg) {
+            $scope.config = cfg;
         });
 
         $scope.isEditMode      = false;
@@ -67,7 +98,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
         $scope.countries = [];
         TerritoryCountries.query({PostBody: { filter: { type: 'country'}, limit: 999}}, function (countries) {
             $scope.countries = countries;
-            $scope.countries.datas.forEach(function (country, i){
+            $scope.countries.datas.forEach(function (country, i) {
                 $scope.languages.forEach(lang => {
                     if(country.translation[lang.code] === undefined){
                         $scope.countries.datas[i].translation[lang.code] = {};
@@ -136,7 +167,11 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                         translation: {},
                         prices: tabPrice
                     });
+                }else{
+                    toastService.toast("warning", $translate.instant("global.contryAlreadySelected"));
                 }
+            }else{
+                toastService.toast("warning", $translate.instant("global.selectContry"));
             }
         };
 
@@ -234,7 +269,17 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 else {
                     $location.path("/shipments/delivery/" + savedShipment._id);
                 }
-                toastService.toast("success", 'Sauvegarde effectuée')
+                toastService.toast("success", $translate.instant("global.savedDone"))
+            }, function(error){
+                if(error.data){
+                    if(error.data.message && error.data.message != ""){
+                        toastService.toast("danger",  error.data.message);
+                    }
+                }else if(error && error.code != ""){
+                    toastService.toast("danger", error.code);
+                }else{
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                }
             });
         };
 
@@ -247,7 +292,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 Shipment.delete({id: shipment._id}, function () {
                     $scope.shipments.splice($scope.shipments.indexOf(shipment), 1);
                 });
-                toastService.toast("success", 'Suppression effectuée');
+                toastService.toast("success", $translate.instant("global.deleteDone"));
                 $location.path("/shipments");
             }
         };

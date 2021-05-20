@@ -2,9 +2,19 @@
     "promoSchema": {
         "description": "",
         "properties": {
-            "dateStart"     : {"type": "Date"},
-            "dateEnd"       : {"type": "Date"},
+            "dateStart"     : {
+                "type": "string",
+                "format": "date"
+            },
+            "dateEnd"       : {
+                "type": "string",
+                "format": "date"
+            },
             "actif"         : {"type": "boolean", "default": false},
+            "createdAt"     : {
+                "type": "string",
+                "format": "date"
+            },
             "type"          : {"type": "string", "enum": ["1", "2"], "required": true, "description": "Promo panier (type: 1) ou catalogue (type: 2)"},
             "name"          : {"type": "string", "required": true},
             "description"   : {"type": "string", "required": true},

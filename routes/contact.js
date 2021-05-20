@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path                 = require('path');
 const url                  = require('url');
 const ServiceContacts      = require('../services/contacts');
@@ -14,11 +22,12 @@ const {
 
 module.exports = function (app) {
     app.post('/v2/contacts', authentication, adminAuth, getContacts);
+    app.delete('/v2/contact/:id', authentication, adminAuth, deleteContact);
     app.post('/v2/contact/:mode', captchaValidation, setContact);
 };
 
 /**
- * Récupèration de toutes les contact (ou filtrer via le PostBody)
+ * Retrieve all contact (or filter via the PostBody)
  */
 async function getContacts(req, res, next) {
     try {
@@ -29,7 +38,18 @@ async function getContacts(req, res, next) {
 }
 
 /**
- * Création/edition d'un contact
+ * Delete a contact
+ */
+async function deleteContact(req, res, next) {
+    try {
+        return res.json(await ServiceContacts.deleteContact(req.params.id));
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * Creation / edition of a contact
  */
 async function setContact(req, res, next) {
     try {
@@ -57,8 +77,8 @@ async function setContact(req, res, next) {
                     target_path_full = path.resolve(pathUpload, target_path_full);
 
                     try {
-                        await fsp.copyRecursiveSync(tmp_path, target_path_full);
-                        await fsp.deleteRecursiveSync(tmp_path);
+                        await fsp.copyRecursive(tmp_path, target_path_full);
+                        await fsp.deleteRecursive(tmp_path);
                     } catch (err) {
                         return next(err);
                     }

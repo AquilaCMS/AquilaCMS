@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const path              = require('path');
 const fileSystemBackend = require('i18next-fs-backend');
 
@@ -25,10 +33,10 @@ const initI18n = async (i18nInstance, ns) => {
 };
 
 /**
- * traduit un document mongo
- * @param {object} doc - document mongo à traduire
- * @param {string} lang - code de la langue
- * @returns {object} - retourne l'objet traduit
+ * translate a Mongo document
+ * @param {object} doc - Mongo document to translate
+ * @param {string} lang - language code
+ * @returns {object} - returns the translated object
  */
 function translateDocument(doc, lang) {
     if (doc._doc) {
@@ -39,14 +47,16 @@ function translateDocument(doc, lang) {
 }
 
 const deepTranslation = (doc, lang) => {
+    if (!doc) return doc;
+    if (doc._doc) doc = doc.toObject();
     const docKeys = Object.keys(doc);
     for (let i = 0; i < docKeys.length; i++) {
         if (!(['__v', '_bsontype']).includes(docKeys[i])) {
-            // si le champs est translation
+            // if the field is translation
             if (docKeys[i] === 'translation') {
                 doc = assignTranslation(doc, lang);
             } else
-            // si le champs est un object
+            // if the field is an object
             if (doc[docKeys[i]] && (typeof doc[docKeys[i]] !== 'string') && doc[docKeys[i]].length) {
                 for (let j = 0; j < doc[docKeys[i]].length; j++) {
                     if (typeof doc[docKeys[i]][j] === 'object') {
@@ -54,7 +64,7 @@ const deepTranslation = (doc, lang) => {
                     }
                 }
             } else
-            // si on trouve un tableaux, on parcours les elements du tableau
+            // if we find an array, we browse the elements of the array
             if (doc[docKeys[i]] && typeof doc[docKeys[i]] === 'object') {
                 doc[docKeys[i]] = deepTranslation(doc[docKeys[i]], lang);
             }
@@ -64,10 +74,10 @@ const deepTranslation = (doc, lang) => {
 };
 
 /**
- * assigne la traduction à l'object et supprime la propriété translation
+ * assign the translation to the object and remove the translation property
  * @param {Object} json - document
- * @param {string} lang - code de la langue
- * @returns {Object} - retourne l'objet traduit
+ * @param {string} lang - language code
+ * @returns {Object} - returns the translated object
  */
 const assignTranslation = (json, lang) => {
     let result = json;
@@ -115,7 +125,7 @@ function checkCustomFields(customObject, parent, fields) {
                 // eslint-disable-next-line valid-typeof
                 && ((typeof customObject[customKeys[i]]) !== fields[j].type.toString())
             ) {
-                // TODO P4 "Gestion erreur": mettre le système de code
+                // TODO P4 "Error management": put the code system
                 errors.push(`${(parent ? `${parent}.` : '') + fields[j].key}, n'est pas ${errorsType[fields[j].type]}`);
             }
         }

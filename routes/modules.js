@@ -1,8 +1,15 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const showdown                    = require('showdown');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const serviceModule               = require('../services/modules');
 const NSErrors                    = require('../utils/errors/NSErrors');
-const {middlewareServer}          = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/modules',          authentication, adminAuth, getAllModules);
@@ -12,9 +19,7 @@ module.exports = function (app) {
     app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
-
-    // Deprecated
-    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, authentication, adminAuth, setModuleConfigById);
+    app.put('/v2/module/config/:id',  authentication, adminAuth, setModuleConfigById);
 };
 
 const checkDependencies = async (req, res, next) => {
@@ -35,7 +40,7 @@ const checkDependencies = async (req, res, next) => {
 };
 
 /**
- * Permet de recupérer les modules en fonction du PostBody
+ * Allows you to retrieve the modules according to the PostBody
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -49,7 +54,7 @@ async function getAllModules(req, res, next) {
     }
 }
 /**
- * Permet de recupérer un module en fonction du PostBody
+ * Allows you to retrieve a module according to the PostBody
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -66,7 +71,7 @@ async function getModule(req, res, next) {
 const uploadModule = async (req, res, next) => {
     req.setTimeout(300000);
     try {
-        const moduleInstalled = await serviceModule.initModule(req.files[0]);
+        const moduleInstalled = await serviceModule.initModule(req.files);
         return res.json(moduleInstalled);
     } catch (error) {
         return next(error);
@@ -109,11 +114,7 @@ const getModuleMd = async (req, res, next) => {
 };
 
 /**
- * Permet de mettre a jour la configuration du module dont l'id est passé en parametre
- * @param {Express.Request} req
- * @param {Express.Response} res
- * @param {Function} next
- * @deprecated
+ * Used to update the configuration of the module whose id is passed in parameter
  */
 async function setModuleConfigById(req, res, next) {
     try {

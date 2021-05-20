@@ -1,0 +1,295 @@
+{
+    "/api/v2/products": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/productsSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get 12 products",
+                                "description": "Get 12 products with a default structure, sorted by english name",
+                                "value": {"lang":"en", "PostBody":{"filter":{},"sort":{"translation.en.name":1}, "limit":12}}
+                            },
+                            "example2": {
+                                "summary": "Get product filtered by english slug",
+                                "description": "Get products filtered by slug",
+                                "value": {"PostBody":{"filter":{"translation.en.slug":"english_slug"}}}
+                            },
+                            "example3": {
+                                "summary": "Get 12 products between two price",
+                                "description": "Get 12 products between two price, '$gte' (here 10) is the minimum price and '$lte' (here 20) is the maximum price",
+                                "value": {"PostBody":{"filter":{"price.ati.normal": {"$gte": 10, "$lte": 21}}},"limit":12,"sort":{"code":1}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/product": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Get one product",
+                                    "description": "Get one product with the correct code. In this example, we populate the result to have more data",
+                                    "value": {"PostBody":{"filter":{"code":"THE_CODE"},"structure":"*","populate":["set_attributes","associated_prds"],"withPromos":false}}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get product by slug",
+                                "description": "Get product in english version, filtering by slug, with default structure and populate associated_prds & bundle_sections",
+                                "value": {"lang":"en","countviews":true,"withFilters":false,"PostBody":{"filter":{"translation.en.slug":"slug-in-en"},"populate":["associated_prds","bundle_sections.products.id"]}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/product/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "product id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "delete": {
+            "deprecated": false,
+            "security": [{"admin_authorization": []}],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Product"
+            ]
+        }
+    },
+    "/api/v2/products/category/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/productsSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "category id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get all products by category id",
+                                "description": "Get products by category in french, with specific structure",
+                                "value": {"lang":"fr","PostBody":{"filter":{},"structure":{"slug":1,"pos":1,"price":1,"type":1,"translation":1,"images":1,"bundle_sections":1},"populate":["bundle_sections.products.id"],"limit":15,"page":1,"sort":{"sortWeight":-1}}}
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/v2/product/promos": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "success",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/productsSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "tags": [
+                "Product"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    }
+}

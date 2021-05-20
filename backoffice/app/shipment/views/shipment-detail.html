@@ -12,11 +12,10 @@
                         <a data-toggle="tab" target="_self" ng-click="changeTab('general')" translate>shipment.detail.gen</a>
                     </li>
                     <li>
-                        <a data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self"
-                            ng-click="changeTab('country')" translate>shipment.detail.paysDel</a>
+                        <a data-toggle="{{isEditMode ? 'tab' : ''}}" ng-hide="!isEditMode" target="_self" ng-click="changeTab('country')" translate>shipment.detail.paysDel</a>
                     </li>
                     <li>
-                        <a data-toggle="{{isEditMode ? 'tab' : ''}}" target="_self" ng-click="changeTab('price')" translate>shipment.detail.prix</a>
+                        <a data-toggle="{{isEditMode ? 'tab' : ''}}" ng-hide="!isEditMode" target="_self" ng-click="changeTab('price')" translate>shipment.detail.prix</a>
                     </li>
                 </ul>
             </div>
@@ -86,7 +85,7 @@
                     <div class="form-group">
                         <label for="vat_rate" class="col-sm-2 control-label" translate>shipment.detail.tva</label>
                         <div class="col-sm-5">
-                                <select class="form-control" ng-options="tax.rate as tax.rate for tax in taxerate" ng-model="shipment.vat_rate" required></select>
+                                <select class="form-control" ng-options="tax.rate as tax.rate for tax in config.taxerate" ng-model="shipment.vat_rate" required></select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -149,69 +148,92 @@
                 </div>
 
                 <div id="country" class="tab-pane fade in active" ng-show="tabActive === 'country'">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px #ddd solid; vertical-align: middle;" translate>shipment.detail.pays</th>
+                                <th style="border: 1px #ddd solid; vertical-align: middle;" translate>shipment.detail.trait</th>
+                                <th style="border: 1px #ddd solid; vertical-align: middle;" translate>shipment.detail.del</th>
+                                <th style="border: 1px #ddd solid; vertical-align: middle;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="country in shipment.countries">
+                                <td>
+                                    <p>{{getCountryByCode(country.country)}}</p>
+                                </td>
+                                <td>
+                                    <input name="country.delay" type="number" class="form-control" min="0" ng-model="shipment.countries[$index].delay">
+                                </td>
+                                <td>
+                                    <select name="unit" class="form-control" ng-model="shipment.countries[$index].unit">
+                                        <option value="day" translate>shipment.detail.days</option>
+                                        <option value="week" translate>shipment.detail.weeks</option>
+                                        <option value="hour" translate>shipment.detail.hours</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn-remove" type="button" ng-click="removeCountry($index)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select name="countries" id="countries" class="form-control"
+                                        ng-options="country.code as country.translation[lang].name for country in countries.datas"
+                                        ng-model="selectedCountry.code"
+                                        ng-change="changeCountry()">
+                                        <option value="" translate>shipment.detail.addPays</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn-add" type="button" ng-click="addCountry()">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <div class="form-group">
                         <label for="name" class="col-sm-2 control-label"></label>
                         <div class="col-sm-6 col-lg-3">
-                            <select name="countries" id="countries" class="form-control"
-                                    ng-options="country.code as country.translation[lang].name for country in countries.datas"
-                                    ng-model="selectedCountry.code"
-                                    ng-change="changeCountry()">
-                                <option value="" translate>shipment.detail.addPays</option>
-                            </select>
+                            
                         </div>
-                        <button class="btn-add" type="button" ng-click="addCountry()">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                    </div>
-                    <br />
-                    <div class="form-group" ng-repeat="country in shipment.countries">
-                        <label for="delay" class="col-sm-2 control-label">{{getCountryByCode(country.country)}}</label>
-                        <div class="col-sm-6 col-lg-1">
-                            <input name="country.delay" type="number" class="form-control" min="0" ng-model="shipment.countries[$index].delay">
-                        </div>
-                        <div class="col-sm-6 col-lg-2">
-                            <select name="unit" class="form-control"
-                                    ng-model="shipment.countries[$index].unit">
-                                <option value="day" translate>shipment.detail.days</option>
-                                <option value="week" translate>shipment.detail.weeks</option>
-                                <option value="hour" translate>shipment.detail.hours</option>
-                            </select>
-                        </div>
-                        <button class="btn-remove" type="button" ng-click="removeCountry($index)">
-                            <i class="fa fa-trash"></i>
-                        </button>
                     </div>
                 </div>
-                <div id="price" class="tab-pane fade in active" ng-show="tabActive === 'price'">
+                <div id="price" style="overflow: auto;" class="tab-pane fade in active" ng-show="tabActive === 'price'">
                     <table class="table table-striped">
                         <thead>
-                        <tr>
-                            <th style="width: 250px; border: 1px #ddd solid; vertical-align: middle;" translate>
-                                shipment.detail.paysPds
-                            </th>
-                            <th style="width: 200px; border: 1px #ddd solid; text-transform: none;" ng-repeat="weight in weights">
-                                {{weight.min}} - {{weight.max}} g
-                                <button class="btn-remove" type="button" ng-click="removeColumn($index)">
-                                    <span class="fa fa-trash"></span>
-                                </button>
-                            </th>
-                            <th style="border: none;">
-                                <button class="btn-add" type="button" ng-click="addColumn()">
-                                    <span class="fa fa-plus"></span>
-                                </button>
-                            </th>
-                        </tr>
+                            <tr>
+                                <th style="border: 1px #ddd solid; vertical-align: middle;">
+                                    <button class="btn-add" type="button" ng-click="addColumn()">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                    <p style="font-weight: bold;color: #5c6b7b;margin-left:10px;" translate>shipment.add.add</p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 250px; border: 1px #ddd solid; vertical-align: middle;" translate>
+                                    shipment.detail.paysPds
+                                </th>
+                                <th style="width: 200px; border: 1px #ddd solid; text-transform: none;" ng-repeat="weight in weights">
+                                    {{weight.min}} - {{weight.max}} g
+                                    <button class="btn-remove" type="button" ng-click="removeColumn($index)">
+                                        <span class="fa fa-trash"></span>
+                                    </button>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="country in shipment.countries">
-                            <td>
-                                <strong>{{getCountryByCode(country.country)}}</strong>
-                            </td>
-                            <td ng-repeat="weight in weights">
-                                <input name="price" type="number" step='Any' class="form-control" ng-model="country.prices[$index].price" min="0" style="width: 70px; float: left;" />&nbsp;&nbsp;<span style="vertical-align: sub;">&euro;</span>
-                            </td>
-                            <td></td>
-                        </tr>
+                            <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="country in shipment.countries">
+                                <td style="width: 250px;">
+                                    <strong>{{getCountryByCode(country.country)}}</strong>
+                                </td>
+                                <td ng-repeat="weight in weights">
+                                    <input name="price" type="number" step='Any' class="form-control" ng-model="country.prices[$index].price" min="0" style="width: 70px; float: left;" />&nbsp;&nbsp;<span style="vertical-align: sub;">&euro;</span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -230,10 +252,6 @@
                     padding: 5px 8px;
                     color: white;
                     border-radius: 5px;
-                }
-                .table tr td:last-child {
-                    border: none;
-                    background-color: transparent!important;
                 }
             </style>
 

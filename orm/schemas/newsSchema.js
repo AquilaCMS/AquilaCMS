@@ -1,3 +1,11 @@
+/*
+ * Product    : AQUILA-CMS
+ * Author     : Nextsourcia - contact@aquila-cms.com
+ * Copyright  : 2021 © Nextsourcia - All rights reserved.
+ * License    : Open Software License (OSL 3.0) - https://opensource.org/licenses/OSL-3.0
+ * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
+ */
+
 const mongoose            = require('mongoose');
 const utils               = require('../../utils/utils');
 const utilsDatabase       = require('../../utils/database');
@@ -11,7 +19,10 @@ const NewsSchema = new Schema({
     img         : {type: String, default: ''},
     extension   : {type: String, default: '.jpg'},
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 /* translation:
  slug: unique
@@ -71,15 +82,22 @@ NewsSchema.statics.translationValidation = async function (updateQuery, self) {
     return errors;
 };
 
+async function preUpdates(that) {
+    await utilsDatabase.checkSlugExist(that, 'news');
+}
+
 NewsSchema.pre('updateOne', async function (next) {
+    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
 NewsSchema.pre('findOneAndUpdate', async function (next) {
+    await preUpdates(this._update);
     utilsDatabase.preUpdates(this, next, NewsSchema);
 });
 
 NewsSchema.pre('save', async function (next) {
+    await preUpdates(this);
     const errors = await NewsSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
