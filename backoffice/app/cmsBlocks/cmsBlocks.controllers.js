@@ -131,18 +131,8 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     }
                 }
             }
-            resizeContent();
         } 
         
-        resizeContent();
-
-        function resizeContent(){
-            $timeout(() => {
-                let height = document.getElementById('previewCMSBlock').offsetHeight;
-                height = height + 150;
-                document.getElementsByClassName('box-content')[0].style.paddingBottom = `${height}px`;
-            },1000);
-        }
 
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
