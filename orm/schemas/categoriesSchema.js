@@ -93,8 +93,11 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
                 if (updateQuery) {
                     self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
                 }
-                if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                    errors.push('slug déjà existant');
+                if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                    lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                    if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                        errors.push('slug déjà existant');
+                    }
                 }
                 errors = errors.concat(translationUtils.checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                     {key: 'slug'}, {key: 'pageSlug'}, {key: 'name'}, {key: 'extraLib'}, {key: 'extraText'}, {key: 'extraText2'}, {key: 'extraText3'}
