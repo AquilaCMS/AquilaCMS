@@ -121,7 +121,7 @@ ProductServices.service("ProductColumns", function () {
         {
             filter : {
                 component_template : "<a ng-click=\"local.sortType = 'translation.' + defaultLang + '.name'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
-                    + "<span translate>product.list2.name</span>"
+                    + "<span translate>product.list2.name</span><span>({{filterLang}})</span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"

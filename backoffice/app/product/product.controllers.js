@@ -57,7 +57,6 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.export = ExportCollectionCSV;
         $scope.attribs = [];
         $scope.filtersAttribs = {};
-        $scope.langs = [];
         $scope.filterLang = "";
         $scope.showLoader = false;
 
@@ -232,12 +231,15 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.goToProductDetails = function (productType, productSlug) {
             $location.path(`/products/${productType}/${productSlug}`);
         };
-
-        $scope.defaultLang = $rootScope.languages.find(function (lang) {
-            return lang.defaultLanguage;
-        }).code;
-        $scope.langs = $rootScope.languages;
-        $scope.filterLang = $rootScope.languages[0].code;
+        if(window.localStorage.getItem("adminLang")) {
+            // there is a default admin lang (99% of cases), so we took it
+            $scope.defaultLang = window.localStorage.getItem("adminLang");
+        } else {
+            $scope.defaultLang = $rootScope.languages.find(function (lang) {
+                return lang.defaultLanguage;
+            }).code;
+        }
+        $scope.filterLang = $scope.defaultLang;
 
         $scope.getProducts();
         $scope.getAttributesClassed();
