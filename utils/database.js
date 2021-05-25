@@ -1421,30 +1421,34 @@ const populateItems = async (items) => {
  * @return {mongoose.HookNextFunction} HookNextFunction
  */
 const preUpdates = async (that, next, schema) => {
-    let data = that;
-    if (that instanceof mongoose.Query) {
-        data = that.getUpdate();
+    try {
+        let data = that;
+        if (that instanceof mongoose.Query) {
+            data = that.getUpdate();
+        }
+        if (data) {
+            const elem = (typeof data.$set !== 'function' && data.$set) || data;
+            const {
+                checkCode,
+                checkSlugExist,
+                translationValidation
+            } = schema.statics;
+            let errors = [];
+            if (typeof translationValidation === 'function' && elem._id) {
+                errors = await translationValidation(elem, that);
+            }
+            if (typeof checkCode === 'function') {
+                await checkCode(elem);
+            }
+            if (typeof checkSlugExist === 'function') {
+                await checkSlugExist(elem);
+            }
+            return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+        }
+        return next();
+    } catch (error) {
+        return next(error);
     }
-    if (data) {
-        const elem = (typeof data.$set !== 'function' && data.$set) || data;
-        const {
-            checkCode,
-            checkSlugExist,
-            translationValidation
-        } = schema.statics;
-        let errors = [];
-        if (typeof translationValidation === 'function' && elem._id) {
-            errors = await translationValidation(elem, that);
-        }
-        if (typeof checkCode === 'function') {
-            await checkCode(elem);
-        }
-        if (typeof checkSlugExist === 'function') {
-            await checkSlugExist(elem);
-        }
-        return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
-    }
-    return next();
 };
 
 module.exports = {

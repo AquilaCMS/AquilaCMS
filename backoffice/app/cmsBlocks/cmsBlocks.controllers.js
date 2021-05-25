@@ -131,25 +131,16 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                     }
                 }
             }
-            resizeContent();
         } 
         
-        resizeContent();
 
-        function resizeContent(){
-            $timeout(() => {
-                let height = document.getElementById('previewCMSBlock').offsetHeight;
-                height = height + 150;
-                document.getElementsByClassName('box-content')[0].style.paddingBottom = `${height}px`;
-            },1000);
-        }
 
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
             $scope.cmsBlock.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
 
-            await CmsBlocksApi.save($scope.cmsBlock, function (res) {
+            CmsBlocksApi.save($scope.cmsBlock, function (res) {
                 toastService.toast("success", $translate.instant("global.blocSaved"));
                 if (quit) {
                     $location.path("/cmsBlocks");
@@ -158,6 +149,9 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
                         $location.path(`/cmsBlocks/${$scope.cmsBlock.code}`);
                     }
                 }
+            },(err) => {
+                toastService.toast("danger", err.data.message);
+                console.log(err);
             });
 
             
