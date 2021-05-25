@@ -19,7 +19,26 @@ module.exports = function (app) {
     app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
-    app.put('/v2/module/config/:id',  authentication, adminAuth, setModuleConfigById);
+    app.put('/v2/module/config/:id', authentication, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
+    app.post('/v2/module/setConfig',  authentication, adminAuth, setModuleConfig);
+};
+
+/**
+ * Set the config of a module using his name
+ * req.body.name -> the name of the module
+ * req.body.config -> the new config
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ * @returns {Object} {config : theNewConfig}
+ */
+const setModuleConfig = async (req, res, next) => {
+    try {
+        const newConfig = await serviceModule.setConfig(req.body.name, req.body.config);
+        return res.json({config: newConfig});
+    } catch (err) {
+        next(err);
+    }
 };
 
 const checkDependencies = async (req, res, next) => {
