@@ -52,7 +52,7 @@ const deepTranslation = (doc, lang) => {
     const docKeys = Object.keys(doc);
     for (let i = 0; i < docKeys.length; i++) {
         if (!(['__v', '_bsontype']).includes(docKeys[i])) {
-            if (Object.prototype.toString.call(docKeys[i]) === '[object Map]') {
+            if (Object.prototype.toString.call(doc[docKeys[i]]) === '[object Map]') {
                 doc[docKeys[i]] = Object.fromEntries(doc[docKeys[i]]);
             }
             // if the field is translation
@@ -86,6 +86,7 @@ const assignTranslation = (json, lang) => {
         result = json.toObject();
     }
     if (result.translation) {
+        if (result.translation[lang] && result.translation[lang].toObject) result.translation[lang] = result.translation[lang].toObject();
         if (result.translation[lang] && result.translation[lang].slug) {
             const translationKeys = Object.keys(result.translation);
             result.slug           = {};
