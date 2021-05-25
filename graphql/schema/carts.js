@@ -36,7 +36,7 @@ const types = `
         EXPIRING
         EXPIRED
     }
-    
+
     type orderReceipt {
         method: orderReceiptMethod
         date: Date
