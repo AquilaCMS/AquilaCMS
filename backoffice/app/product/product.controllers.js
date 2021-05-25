@@ -231,14 +231,10 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.goToProductDetails = function (productType, productSlug) {
             $location.path(`/products/${productType}/${productSlug}`);
         };
-        if(window.localStorage.getItem("adminLang")) {
-            // there is a default admin lang (99% of cases), so we took it
-            $scope.defaultLang = window.localStorage.getItem("adminLang");
-        } else {
-            $scope.defaultLang = $rootScope.languages.find(function (lang) {
-                return lang.defaultLanguage;
-            }).code;
-        }
+
+        $scope.defaultLang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+        }).code;
         $scope.filterLang = $scope.defaultLang;
 
         $scope.getProducts();
