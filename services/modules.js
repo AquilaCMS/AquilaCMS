@@ -20,6 +20,7 @@ const fs               = require('../utils/fsp');
 const NSErrors         = require('../utils/errors/NSErrors');
 const {Modules}        = require('../orm/models');
 const themesService    = require('./themes');
+const aquilaEvents     = require('../utils/aquilaEvents');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -857,7 +858,10 @@ const getConfig = async (name) => {
  * @returns {Promise<*>} Returns the new module configuration
  */
 const setConfig = async (name, newConfig) => {
-    await Modules.updateOne({name}, {$set: {config: newConfig}}, {new: true});
+    const configToSave = {config: newConfig};
+    await aquilaEvents.emit(`changePluginConfig_${name}`, configToSave);
+    const correctConfigToSave = configToSave.config || {};
+    await Modules.updateOne({name}, {$set: {config: correctConfigToSave}}, {new: true});
     return getConfig(name);
 };
 
