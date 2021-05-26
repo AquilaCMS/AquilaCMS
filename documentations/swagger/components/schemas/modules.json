@@ -15,13 +15,6 @@
             "files"                : {"type": "array", "items": {"type": "string"}},
             "active"               : {"type": "boolean", "default": false},
             "config"               : {"type": "object", "default": {}},
-            "packageDependencies"  : {
-                "type": "object",
-                "properties": {
-                    "theme" : {"type": "array", "items": {"type": "string"}, "default": []},
-                    "api"   : {"type": "array", "items": {"type": "string"}, "default": []}
-                }
-            },
             "type"                     : {"type": "string"},
             "moduleDependencies"       : {"type": "array", "items": {"type": "string"}, "default": []},
             "component_template_front" : {"type": "string", "default": null}

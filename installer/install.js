@@ -13,6 +13,7 @@ const serverUtils            = require('../utils/server');
 const {themeCompile}         = require('../utils/themes');
 const {createListModuleFile} = require('../utils/modules');
 const NSErrors               = require('../utils/errors/NSErrors');
+const {PackageJSON}          = require('../utils');
 
 /**
  * If it's the first launch (/config/env.js exist or not), display the configurator
@@ -101,6 +102,12 @@ const postConfiguratorDatas = async (req) => {
         await createListModuleFile('default_theme');
         // Compilation du theme par default
         console.log('Installer : start default theme compilation');
+        const packageJSON = new PackageJSON();
+        await packageJSON.read();
+        const currentThemeIndex = packageJSON.workspaces.findIndex(`themes/${global.envConfig.environment.currentTheme}`);
+        if (currentThemeIndex !== -1) packageJSON.workspaces.splice(currentThemeIndex, 1);
+        packageJSON.workspaces.push('themes/default_theme');
+        await packageJSON.save();
         await themeCompile('default_theme');
         console.log('Installer : end default theme compilation');
     } catch (err) {

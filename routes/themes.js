@@ -6,7 +6,6 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const themesServices              = require('../services/themes');
 const serviceThemeConfig          = require('../services/themeConfig');
@@ -136,14 +135,7 @@ const copyDatas = async (req, res, next) => {
  */
 async function packageInstall(req, res, next) {
     try {
-        let themPath = req.body.themeName;
-        if (!themPath || themPath === '' || themPath === './themes/') {
-            themPath = `./themes/${themesServices.getThemePath()}`;
-        }
-        await packageManager.execCmd(
-            `yarn install${serverUtils.isProd ? ' --prod' : ''}`,
-            path.resolve(`./themes/${themPath}`)
-        );
+        await packageManager.execCmd(`yarn install${serverUtils.isProd ? ' --prod' : ''}`);
         return res.json();
     } catch (error) {
         return next(error);
