@@ -129,7 +129,7 @@ const initModule = async (files) => {
         if (!fs.existsSync(infoPath)) {
             throw NSErrors.ModuleInfoNotFound;
         }
-        const infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'), 'utf8');
+        const infoFile = await fs.readFile(infoPath, 'utf8');
         const packageFile = await fs.readFile(path.resolve(extractZipFilePath, 'package.json'), 'utf8');
         const packageJSON = JSON.parse(packageFile)
         const {info}   = JSON.parse(infoFile);
