@@ -693,6 +693,7 @@ OrderControllers.controller("HistoryStatusCtrl", [
 OrderControllers.controller("PackagesNewCtrl", [
     "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate",
     function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate) {
+        $scope.typePopUp = "new"; // useful for plugin, they can have one controller and one html for the send and return
         $scope.order = angular.copy(item);
         // the Hook for package module
         // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
@@ -868,6 +869,7 @@ OrderControllers.controller("RMANewCtrl", [
     "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2", "orderReturnHook", "$translate", 
     function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2, orderReturnHook, $translate)
     {
+        $scope.typePopUp = "rma"; // useful for plugin, they can have only one controller and one html for the send and return
         // variable
         $scope.order = angular.copy(item);
         $scope.return = {mode: "", comment: "", in_stock: true, sendMail: true, refund: 0, tax: 0, products: []};
