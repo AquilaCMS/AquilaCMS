@@ -134,7 +134,7 @@ const parseUrlPrdCat = async (parts, url, keepL, lang) => {
             const result           = await productsServices.getProduct({filter: {[`translation.${lang}.slug`]: url[j]}});
             if (result !== null) {
                 parts.push({
-                    text   : result.translation[lang].name,
+                    text   : result.translation.get(lang).name,
                     link   : keepL + url.slice(0, j + 1).join('/'),
                     isHome : false
                 });

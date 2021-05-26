@@ -16,9 +16,13 @@ const {
     checkTranslations
 } = require('../../utils/translation');
 const utilsDatabase = require('../../utils/database');
+const {
+    ProductAttributeTranslationSchema,
+    ProductTranslationSchema
+} = require('./translationsSchema');
 
-const Schema     = mongoose.Schema;
-const {ObjectId} = Schema.Types;
+const Schema          = mongoose.Schema;
+const {Map, ObjectId} = Schema.Types;
 
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -58,9 +62,12 @@ const ProductsSchema = new Schema({
             values      : String,
             param       : String,
             type        : {type: String, default: 'unset'},
-            translation : {},
-            position    : {type: Number, default: 1},
-            visible     : {type: Boolean, default: true}
+            translation : {
+                type : Map,
+                of   : ProductAttributeTranslationSchema
+            },
+            position : {type: Number, default: 1},
+            visible  : {type: Boolean, default: true}
         }
     ], // Module Options
     images : [
@@ -77,8 +84,11 @@ const ProductsSchema = new Schema({
     ],
     code_ean    : String,
     is_new      : {type: Boolean, default: false},
-    translation : {},
-    pictos      : [{
+    translation : {
+        type : Map,
+        of   : ProductTranslationSchema
+    },
+    pictos : [{
         code     : String,
         image    : String,
         title    : String,

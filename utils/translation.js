@@ -52,20 +52,21 @@ const deepTranslation = (doc, lang) => {
     const docKeys = Object.keys(doc);
     for (let i = 0; i < docKeys.length; i++) {
         if (!(['__v', '_bsontype']).includes(docKeys[i])) {
+            if (Object.prototype.toString.call(doc[docKeys[i]]) === '[object Map]') {
+                doc[docKeys[i]] = Object.fromEntries(doc[docKeys[i]]);
+            }
             // if the field is translation
             if (docKeys[i] === 'translation') {
                 doc = assignTranslation(doc, lang);
-            } else
-            // if the field is an object
-            if (doc[docKeys[i]] && (typeof doc[docKeys[i]] !== 'string') && doc[docKeys[i]].length) {
+            // if we find an array, we browse the elements of the array
+            } else if (doc[docKeys[i]] && typeof doc[docKeys[i]] !== 'string' && doc[docKeys[i]].length) {
                 for (let j = 0; j < doc[docKeys[i]].length; j++) {
                     if (typeof doc[docKeys[i]][j] === 'object') {
                         doc[docKeys[i]][j] = deepTranslation(doc[docKeys[i]][j], lang);
                     }
                 }
-            } else
-            // if we find an array, we browse the elements of the array
-            if (doc[docKeys[i]] && typeof doc[docKeys[i]] === 'object') {
+            // if the field is an object
+            } else if (doc[docKeys[i]] && typeof doc[docKeys[i]] === 'object') {
                 doc[docKeys[i]] = deepTranslation(doc[docKeys[i]], lang);
             }
         }
@@ -85,6 +86,7 @@ const assignTranslation = (json, lang) => {
         result = json.toObject();
     }
     if (result.translation) {
+        if (result.translation[lang] && result.translation[lang].toObject) result.translation[lang] = result.translation[lang].toObject();
         if (result.translation[lang] && result.translation[lang].slug) {
             const translationKeys = Object.keys(result.translation);
             result.slug           = {};

@@ -73,14 +73,25 @@ const checkIfReplicaSet = async () => {
 const checkSlugExist = async (doc, modelName) => {
     const query = {$or: []};
     if (!doc || !doc.translation) return;
+    let keys = Object.entries(doc.translation);
+    if (doc.translation && doc.translation.toString() === '[object Map]') {
+        keys = Array.from(doc.translation.keys());
 
-    for (const [lang] of Object.entries(doc.translation)) {
-        if (doc.translation[lang]) {
-            query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
+        for (const lang of keys) {
+            if (doc.translation[lang]) {
+                query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
+            }
+        }
+    } else {
+        for (const [lang] of Object.entries(doc.translation)) {
+            if (doc.translation[lang]) {
+                query.$or.push({[`translation.${lang}.slug`]: doc.translation[lang].slug});
+            }
         }
     }
+
     if (doc._id) {
-        query._id = {$nin: [doc._id]};
+        query._id = {$ne: doc._id};
     }
 
     if (await mongoose.model(modelName).exists(query)) {
