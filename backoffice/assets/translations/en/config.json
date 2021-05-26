@@ -91,6 +91,6 @@
         "callbackURL": "Callback URL (full)"
     },
     "path": {
-        "mediaHelper": "Leave empty to have the default folder (/uploads/medias). For a specific folder, an absolute path is required"
+        "mediaHelper": "Leave empty to have the default folder (/uploads). For a specific folder, a relative path is required"
     }
 }

@@ -91,6 +91,6 @@
         "callbackURL": "URL de retour (complète)"
     },
     "path": {
-        "mediaHelper": "Laisser vide pour avoir le dossier par defaut (/uploads/medias). Pour un dossier specifique, un chemin absolue est necessaire"
+        "mediaHelper": "Laisser vide pour avoir le dossier par defaut (/uploads). Pour un dossier specifique, un chemin relatif est necessaire"
     }
 }
