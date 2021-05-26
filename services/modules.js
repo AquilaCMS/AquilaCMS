@@ -130,14 +130,16 @@ const initModule = async (files) => {
             throw NSErrors.ModuleInfoNotFound;
         }
         const infoFile = await fs.readFile(path.resolve(extractZipFilePath, 'info.json'), 'utf8');
+        const packageFile = await fs.readFile(path.resolve(extractZipFilePath, 'package.json'), 'utf8');
+        const packageJSON = JSON.parse(packageFile)
         const {info}   = JSON.parse(infoFile);
         console.log('Installing module...');
 
         const myModule  = await Modules.findOne({name: info.name});
         const newModule = await Modules.findOneAndUpdate({name: info.name}, {
-            name                     : info.name,
-            description              : info.description,
-            version                  : info.version,
+            name                     : packageJSON.name,
+            description              : packageJSON.description,
+            version                  : packageJSON.version,
             path                     : extractZipFilePath,
             url                      : info.url,
             cronNames                : info.cronNames,
