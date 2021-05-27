@@ -19,6 +19,12 @@
         "botRight": "Bas droit",
         "actif": "Actif",
         "dispoFiltres": "Disponible dans les filtres automatiques :",
+        "pictoDone": "Pictorialisation: terminé",
+        "formRuleIncomplete": "Formulaire des regles incomplet",
+        "pictoSegmentation": "Sauvegarde effectuée, lancez la tâche planifiée 'Segmentation picto'",
+        "formPictoIncomplete": "Formulaire du pictogramme incomplet",
+        "rulesFail": "Echec de sauvegarde des règles",
+        "ruleSaved": "Règle(s) sauvegardée(s)",
         "pictorisation": "Effectuer la pictorisation"
     },
     "list": {

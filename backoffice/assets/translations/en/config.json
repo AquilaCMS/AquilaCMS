@@ -57,6 +57,9 @@
         "favicon": "Favicon link",
         "billsPattern": "Billing pattern code",
         "billsVariables": "Available variables : {year} for the current year and {numAuto} for an autoincremented number. Example : MYSITE_{year}_{numAuto}",
+        "testMailSend": "Test mail sent.",
+        "errorCheckInfo": "An error has occurred. Please check the connection information to the mail server.",
+        "enterRecipient": "Please enter the recipient.",
         "menu": {
             "general": "General",
             "path": "Path & folder",
@@ -83,6 +86,8 @@
     },
     "import": {
         "t1": "Products imports",
+        "importFinish": "Import completed",
+        "modifyRobot": "The robot.txt file has been modified.",
         "import": "Import"
     },
     "auth": {

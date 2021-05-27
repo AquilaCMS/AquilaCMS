@@ -22,6 +22,8 @@
         "titre": "Title",
         "avis": "Review",
         "gererQuestions": "You can manage your surveys in set attributes",
+        "noticeSaved": "Notice saved!",
+        "promoDelete": "Promo canceled",
         "ipClient": "IP du client" 
     }
 }

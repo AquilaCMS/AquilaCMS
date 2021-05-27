@@ -7,5 +7,6 @@
     "list": {
         "t1": "Contacts"
     },
-    "noContact": "No contacts"
+    "noContact": "No contacts",
+    "errorDeleting": "An error occurred while deleting."
 }

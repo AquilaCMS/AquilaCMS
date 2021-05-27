@@ -27,6 +27,12 @@
         "lastRes": "Dernier résultat de la tâche planifiée",
         "fqDoc": "Documentation fréquence",
         "params": "Paramètres",
+        "cronSuccess": "Tâche planifiée exécutée avec succès",
+        "infoInvalid": "Les informations saisies ne sont pas valides.",
+        "cronSaved": "Tâche planifiée sauvegardée !",
+        "errorDeleteCron": "Impossible de supprimer une Tâche planifiée système",
+        "cronDelete": "Tâche planifiée supprimée",
+        "errorUnknown": "Une erreur inconnue s'est produite",
         "errFailReason": "La tâche planifiée à une erreur :"
     }
 }

@@ -46,7 +46,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', $translate.instant("global.impossibleGeneratedURL"))
+                        toastService.toast('danger', $translate.instant("simple.impossibleGeneratedURL"))
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -127,10 +127,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         const newPrd = {...$scope.product, code: newCode};
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
-                            toastService.toast("success", $translate.instant("global.productDuplicate"));
+                            toastService.toast("success", $translate.instant("simple.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", $translate.instant("global.codeExists"));
+                            toastService.toast("danger", $translate.instant("simple.codeExists"));
                         });
                     }
                 },
@@ -259,7 +259,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     if (isQuit) {
                         $location.path("/products");
                     } else {
-                        toastService.toast("success", $translate.instant("global.productSaved"));
+                        toastService.toast("success", $translate.instant("simple.productSaved"));
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
@@ -286,10 +286,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.removeProduct = function (_id) {
             if (confirm("Etes-vous sûr de vouloir supprimer ce produit ?")) {
                 ProductsV2.delete({id: _id}, function () {
-                    toastService.toast("success", $translate.instant("global.deleteDone"));
+                    toastService.toast("success", $translate.instant("simple.deleteDone"));
                     $location.path("/products");
                 }, function () {
-                    toastService.toast("danger", $translate.instant("global.errorDelete"));
+                    toastService.toast("danger", $translate.instant("simple.errorDelete"));
                 });
             }
         };

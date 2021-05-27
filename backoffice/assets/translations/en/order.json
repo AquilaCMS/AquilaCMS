@@ -93,6 +93,15 @@
         "modifyAddress": "Modify address",
         "save": "Save",
         "cancel": "Cancel",
+        "invoiceCreated": "Invoice created",
+        "orderAlreadyState": "The order is already in this state!",
+        "removePackage": "Unable to remove the package",
+        "changeStateImpossible": "This change of state is not possible",
+        "addressChanged": "Address changed",
+        "addedParcel": "Correctly added parcel",
+        "returnAdded": "Return correctly added",
+        "paymentInfoAdded": "Correctly added payment information",
+        "errorChangingAddress": "Error when changing address",
         "transactionId": "Transaction ID"
     },
     "list": {

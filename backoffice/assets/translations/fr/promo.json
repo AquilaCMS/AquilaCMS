@@ -71,6 +71,16 @@
         "lim": "Limite / Personne",
         "priority": "Priorité",
         "applyNextRules": "Appliquer les promo de priorité inférieur",
+        "actionSaved": "Action(s) sauvegardée(s)",
+        "errorSavedRules": "Echec de sauvegarde des règles",
+        "formRulesIncomplete": "Formulaire des règles incomplet",
+        "enterInvalid": "Les informations saisies ne sont pas valides.",
+        "ruleSaved": "Règle(s) sauvegardée(s)",
+        "failSavedRules": "Echec de sauvegarde des règles",
+        "promoSaved": "Promotion sauvegardée !",
+        "promoDeleted": "Promo supprimé",
+        "promoCloned": "Promotion clonée !",
+        "errorQteMaxEnter": "Quantité maximale et Utilisation max par client doivent être des nombres ou '*'",
         "msgDiscount": "La promotion est négative, le prix va augmenter !"
     },
     "list": {

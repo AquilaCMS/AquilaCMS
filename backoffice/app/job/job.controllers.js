@@ -57,13 +57,13 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
             if ($scope.runImmediate == false) return;
             JobPlayImmediate.play({ _id }, function () {
                 $scope.JobGetById();
-                toastService.toast("success", $translate.instant("global.cronSuccess"));
+                toastService.toast("success", $translate.instant("job.detail.cronSuccess"));
                 $scope.runImmediate = true;
             }, function(err){
                 $scope.JobGetById();
                 if(err.data && err.data.code) return toastService.toast("danger", err.data.message);
                 $scope.runImmediate = true;
-                return toastService.toast("danger", $translate.instant("global.errorUnknown"));
+                return toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
             });
             $scope.runImmediate = false;
         };
@@ -87,7 +87,7 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
         $scope.save = function (isQuit) {
             $scope.form.nsSubmitted = true;
             if ($scope.form.$invalid) {
-                toastService.toast("danger", $translate.instant("global.infoInvalid"));
+                toastService.toast("danger", $translate.instant("job.detail.infoInvalid"));
                 return;
             }
             var deferred = $q.defer();
@@ -114,7 +114,7 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
                 } else {
                     $scope.job = response;
                     checkFailReason();
-                    toastService.toast("success", $translate.instant("global.cronSaved"));
+                    toastService.toast("success", $translate.instant("job.detail.cronSaved"));
                     $location.path("/jobs/" + response._id);
                 }
             }, function (err) {
@@ -133,10 +133,10 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
         $scope.remove = function (_id) {
             if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche planifiée ?")) {
                 if ($scope.job.data.flag == "system") {
-                    return toastService.toast("danger", $translate.instant("global.errorDeleteCron"));
+                    return toastService.toast("danger", $translate.instant("job.detail.errorDeleteCron"));
                 }
                 JobRemove.remove({ _id }, function () {
-                    toastService.toast("success", $translate.instant("global.cronDelete"));
+                    toastService.toast("success", $translate.instant("job.detail.cronDelete"));
                     $location.path("/jobs");
                 });
             }

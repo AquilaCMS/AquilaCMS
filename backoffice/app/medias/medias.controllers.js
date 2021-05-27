@@ -68,7 +68,7 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
             event.stopPropagation();
             if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
                 MediaApiV2.delete({id: media._id}, function (response) {
-                    toastService.toast("success", $translate.instant("global.deleteMedia"));
+                    toastService.toast("success", $translate.instant("medias.medias.deleteMedia"));
                     $route.reload();
                 });
             }
@@ -124,7 +124,7 @@ MediasControllers.controller("MediasDetailsCtrl",
         $scope.remove = function(){
             if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
                 MediaApiV2.delete({id: $scope.media._id}, function (response) {
-                    toastService.toast("success", $translate.instant("global.deleteMedia"));
+                    toastService.toast("success", $translate.instant("medias.medias.deleteMedia"));
                     $location.path('/medias');
                 });
             }
@@ -172,7 +172,7 @@ MediasControllers.controller("MediasDetailsCtrl",
         };
 
         $scope.success = function () {
-            toastService.toast("success", $translate.instant("global.copiedLink"));
+            toastService.toast("success", $translate.instant("medias.medias.copiedLink"));
         };
 
         $scope.onErrorUploadMedia = function () {
@@ -188,7 +188,7 @@ MediasControllers.controller("MediasDetailsCtrl",
             }
             $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
-                toastService.toast("success", $translate.instant("global.mediaSaved"));
+                toastService.toast("success", $translate.instant("medias.medias.mediaSaved"));
                 if($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new"){
                     $location.path("/medias/"+response._id);
                 }
@@ -324,7 +324,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                         !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
                 )
             ) {
-                toastService.toast("warning", $translate.instant("global.enterAllValue"));
+                toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
             } else {
                 if ($scope.info.background) {
                     if ($scope.info.alpha) {
@@ -337,7 +337,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                 if ($scope.info.crop) {
                     crop = `-crop-${$scope.info.position}`;
                 }
-                toastService.toast("success", $translate.instant("global.linkGenerated"));
+                toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
                 $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                 const elem = document.getElementById("copy-link");
                 elem.focus();
@@ -350,7 +350,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
             elem.focus();
             elem.select();
             if (document.execCommand('copy')) {
-                toastService.toast("success", $translate.instant("global.copiedLink"));
+                toastService.toast("success", $translate.instant("medias.modal.copiedLink"));
             }
         }
 
@@ -367,11 +367,11 @@ MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService"
             insertDBMediaUpload: true
         };
         $scope.beforeMediaMass = function () {
-            toastService.toast("info", $translate.instant("global.takeTime"));
+            toastService.toast("info", $translate.instant("medias.modal.takeTime"));
         };
 
         $scope.uploadedMediaMass = function () {
-            toastService.toast("success", $translate.instant("global.massAddDone"));
+            toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
             $modalInstance.close('ok')
         };
 

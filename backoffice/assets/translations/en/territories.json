@@ -12,6 +12,7 @@
     },
     "details" : {
         "t1":"Territories details",
+        "territoryDelete": "Territory deleted",
         "taxeFree" : "Taxe free"
     }
 }

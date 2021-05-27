@@ -27,6 +27,12 @@
         "lastRes": "Last planned task result",
         "fqDoc": "Frequency documentation",
         "params": "Parameters",
+        "cronSuccess": "Scheduled task executed successfully",
+        "infoInvalid": "The information entered is not valid.",
+        "cronSaved": "Scheduled task saved!",
+        "errorDeleteCron": "Cannot delete a System Scheduled Task",
+        "cronDelete": "Scheduled task deleted",
+        "errorUnknown": "An unknown error has occurred",
         "errFailReason": "The planned task has an error:"
     }
 }
