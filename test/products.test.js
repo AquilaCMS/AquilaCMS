@@ -46,7 +46,7 @@ describe('Products', () => {
                     }
                 });
             expect(res).to.have.status(200);
-            expect(res.body.datas).to.be.an('array').and.to.be.not.empty();
+            expect(res.body.datas).to.be.an('array').and.to.be.not.empty;
             expect(res.body.datas[0].name).to.be.equals(product.translation.fr.name);
             expect(res.body.datas[0].slug.fr).to.be.equals(product.translation.fr.slug);
         });

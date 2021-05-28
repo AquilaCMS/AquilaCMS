@@ -35,9 +35,9 @@ describe('Category', () => {
                 .post('/api/v2/categories')
                 .send({PostBody: {filter: {_id: category._id}, limit: 99}});
             expect(res).to.have.status(200);
-            expect(res.body.datas).to.be.an('array');
+            expect(res.body.datas).to.be.an('array').and.to.be.not.empty;
             expect(res.body.datas[0]).to.have.property('code');
-            expect(res.body.datas[0].code).be.equals(category.code);
+            expect(res.body.datas[0].code).to.be.equals(category.code);
         });
 
         it('Should create a category and try get it with a wrong id (and not found it)', async () => {
@@ -59,7 +59,7 @@ describe('Category', () => {
                 .set('authorization', credentials.token)
                 .send({PostBody: {filter: {_id: category._id}}});
             expect(res).to.have.status(200);
-            expect(res.body.name).be.equals(category.name);
+            expect(res.body.name).to.be.equals(category.name);
         });
 
         it('Should create category and get it with the id - w/o authentication', async () => {
