@@ -240,6 +240,7 @@ class AquilaApp extends App {
         return (
             <>
                 <Head>
+                    <meta name="powered-by" content="AquilaCMS"/>
                     <meta property="og:site_name" content={pageProps.sitename} />
                     <meta itemProp="name" content={pageProps.sitename} />
                     {pageProps.favicon && <link rel="shortcut icon" href={pageProps.favicon} />}
