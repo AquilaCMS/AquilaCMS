@@ -61,21 +61,51 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
                 $scope.runImmediate = true;
             }, function(err){
                 $scope.JobGetById();
-                if(err.data && err.data.code) return toastService.toast("danger", err.data.message);
+                console.error(err);
+                if(err.data) {
+                    if(err.data.message) {
+                        toastService.toast("danger", err.data.message);
+                    } else if(err.data.code) {
+                        toastService.toast("danger", err.data.code);
+                    }
+                } else {
+                    toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
+                }
                 $scope.runImmediate = true;
-                return toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
             });
             $scope.runImmediate = false;
         };
         $scope.play = function (_id) {
             JobPlay.play({ _id }, function () {
                 $scope.JobGetById();
+            }, function(error) {
+                console.error(error);
+                if(error.data) {
+                    if(error.data.message) {
+                        toastService.toast("danger", error.data.message);
+                    } else if(error.data.code) {
+                        toastService.toast("danger", error.data.code);
+                    }
+                } else {
+                    toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
+                }
             });
         };
 
         $scope.pause = function (_id) {
             JobPause.pause({ _id }, function () {
                 $scope.JobGetById();
+            }, function(error) {
+                console.error(error);
+                if(error.data) {
+                    if(error.data.message) {
+                        toastService.toast("danger", error.data.message);
+                    } else if(error.data.code) {
+                        toastService.toast("danger", error.data.code);
+                    }
+                } else {
+                    toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
+                }
             });
         };
         //On récupére le document uniquement si nous sommes en mode edit
