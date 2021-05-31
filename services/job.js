@@ -323,8 +323,8 @@ const getPlayImmediateJob = async (_id, option) => {
             sError += ` with error ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `;
         }
         console.error(sError);
-        if (err.code) {
-            console.error(err.code);
+        if (err.error && err.error.code) {
+            console.error(`Error -> ${err.error.code.toString()}`);
         }
         throw err;
     }
