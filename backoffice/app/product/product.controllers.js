@@ -57,6 +57,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.export = ExportCollectionCSV;
         $scope.attribs = [];
         $scope.filtersAttribs = {};
+        $scope.langs = [];
         $scope.filterLang = "";
         $scope.showLoader = false;
 
@@ -235,6 +236,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.defaultLang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
+        $scope.langs = $rootScope.languages;
         $scope.filterLang = $scope.defaultLang;
 
         $scope.getProducts();
