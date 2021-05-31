@@ -7,7 +7,7 @@ const createStaticPage = (params = {code: null, content: null, title: null, acti
     staticPage.type                      = 'page';
     staticPage.group                     = null;
     staticPage.code                      = code || faker.lorem.slug();
-    staticPage.active                    = active;
+    staticPage.active                    = active || true;
     staticPage.translation               = {
         fr : {
             variables : [],

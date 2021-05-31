@@ -43,7 +43,13 @@ describe('Statics', () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .post('/api/v2/static/')
-                .send({PostBody: {filter: {_id: staticPage._id}, limit: 99}});
+                .send({PostBody : {
+                    filter : {
+                        _id : staticPage._id
+                    },
+                    limit : 99
+                }
+                });
             expect(res).to.have.status(200);
             expect(res.body.title).be.equals(staticPage.translation.fr.title);
         });

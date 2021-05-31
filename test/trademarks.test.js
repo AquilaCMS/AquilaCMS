@@ -34,9 +34,9 @@ describe('Trademarks', () => {
             const res        = await chai.request(app)
                 .post('/api/v2/trademark')
                 .send({PostBody: {filter: {_id: trademarks._id}, limit: 99}});
-            expect(res).to.have.status(401);
-            expect(res.body).have.property('code');
-            expect(res.body.code).to.be.equal('Unauthorized');
+            expect(res).to.have.status(200);
+            expect(res.body).have.property('name');
+            expect(res.body.name).to.be.equal(trademarks.name);
         });
 
         it('Should create a trademark and get it with a (wrong) ID', async () => {
