@@ -14,7 +14,27 @@ const ItemBundle = new Schema({
     selections : [{
         bundle_section_ref : {type: String, required: true},
         products           : [{type: ObjectId, ref: 'products'}]
-    }]
+    }],
+    bundle_sections : [
+        {
+            ref         : {type: String, required: true},
+            title       : {type: String},
+            displayMode : {type: String, enum: ['RADIO_BUTTON', 'SELECT']}, // Ne sert que pour le type 'SINGLE'
+            type        : {type: String, enum: ['SINGLE', 'MULTIPLE']},
+            products    : [{
+                id             : {type: ObjectId, ref: 'products'},
+                isDefault      : Boolean,
+                modifier_price : {
+                    ati : {type: Number},
+                    et  : {type: Number}
+                },
+                modifier_weight : {type: Number}
+            }],
+            isRequired : Boolean,
+            minSelect  : Number,
+            maxSelect  : Number
+        }
+    ]
 }, {
     discriminatorKey : 'type',
     id               : false

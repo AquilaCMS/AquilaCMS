@@ -57,6 +57,10 @@ const getProductImageUrl = (product) => {
     return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
 };
 
+const getProductImageId = (product) => {
+    return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : '';
+};
+
 // Generic file deletion function
 const deleteFile = async (filePath) => {
     if (filePath) {
@@ -131,6 +135,7 @@ const existsFile = async (key) => {
 module.exports = {
     compressImg,
     getProductImageUrl,
+    getProductImageId,
     deleteFile,
     deleteFolder,
     renameFile,
