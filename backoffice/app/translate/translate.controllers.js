@@ -54,7 +54,7 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
                     translateFactory.saveTranslate(
                         { currentTranslate: $scope.local.currentTranslate, lang : $scope.local.lang }, { datas: $scope.local.customTranslate },
                         (response) => {
-                            toastService.toast('success', $translate.instant("global.translateSaved"));
+                            toastService.toast('success', $translate.instant("translate.translateSaved"));
                         },
                         (err) => {
                             toastService.toast('danger', err.data.translations.fr);
@@ -69,13 +69,13 @@ TranslateControllers.controller('TranslateHomeCtrl', ['$scope', '$http', 'toastS
         $scope.local.compileFront = function() {
             $scope.showLoader = true;
             $http.post('/v2/themes/package/build/', {"themeName":""}).then((response) => {
-                toastService.toast('success', $translate.instant("global.buildSucceed"));
+                toastService.toast('success', $translate.instant("translate.buildSucceed"));
                 $scope.showLoader = false;
                 $http.get('/restart').then((response) => {
 
                 });
             }).catch(function(error){
-                toastService.toast('danger', $translate.instant("global.buildFailed"));
+                toastService.toast('danger', $translate.instant("translate.buildFailed"));
             });
         }
 

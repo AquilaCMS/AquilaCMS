@@ -6,6 +6,9 @@
         "miniature": "Thumbnail",
         "cpLien": "Copy link",
         "delete": "Delete",
+        "deleteMedia": "Media deleted",
+        "copiedLink": "Copied link",
+        "mediaSaved": "Saved media",
         "uploadInsert": "Insert in database",
         "uploadButton": "Massive adding"
     },
@@ -53,7 +56,11 @@
         "topLeft": "Top left",
         "topRight": "Top right",
         "bottomLeft": "Bottom left",
-        "bottomRight": "Bottom right"
+        "bottomRight": "Bottom right",
+        "enterAllValue": "Please enter all values.",
+        "linkGenerated": "Generated link",
+        "massAddDone.": "Mass addition performed.",
+        "takeTime": "It may take a while, please wait ..."
     },
     "multi": {
         "title": "Massive adding",

@@ -417,6 +417,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         dateReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('DD/MM/YYYY');
         hourReceipt = moment(d).tz(_config.environment.websiteTimezone ? _config.environment.websiteTimezone : 'Europe/Paris').format('HH:mm');
     }
+
     const datas = {
         '{{taxdisplay}}'                 : global.translate.common[taxDisplay][lang],
         '{{order.customer.company}}'     : order.customer.company.name,
@@ -424,7 +425,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
         '{{order.customer.name}}'        : order.customer.id.fullname,
         '{{order.customer.firstname}}'   : order.customer.id.firstname,
         '{{order.customer.lastname}}'    : order.customer.id.lastname,
-        '{{order.customer.mobilePhone}}' : phone_mobile || order._doc.customer.id.addresses[0].phone_mobile,
+        '{{order.customer.mobilePhone}}' : phone_mobile || (order._doc.customer.id.addresses && order._doc.customer.id.addresses.length > 0 ? order._doc.customer.id.addresses[0].phone_mobile : ''),
         '{{order.number}}'               : order.number,
         '{{quantityBreaks}}'             : '',
         '{{order.dateReceipt}}'          : dateReceipt,

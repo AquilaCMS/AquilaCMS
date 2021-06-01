@@ -21,11 +21,13 @@
         "hoverPause": "Pause au survol",
         "lecLoop": "Lecture en boucle",
         "tps2Defil": "Temps entre 2 défilements",
+        "addDone": "Ajout réussi",
         "add": "Ajouter"
     },
     "list": {
         "t1": "Carrousel",
         "code": "Code",
+        "errorDelete": "Une erreur est survenue lors de la suppression.",
         "imgs": "Images"
     }
 }

@@ -140,7 +140,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             $scope.generateContent();
 
             await CmsBlocksApi.save($scope.cmsBlock, function (res) {
-                toastService.toast("success", $translate.instant("global.blocSaved"));
+                toastService.toast("success", $translate.instant("cmsBlocks.detail.blocSaved"));
                 if (quit) {
                     $location.path("/cmsBlocks");
                 }else{
@@ -156,11 +156,11 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.delete = function () {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce bloc CMS ?")) {
                 CmsBlocksApi.delete({code: $scope.cmsBlock.code}, function (response) {
-                    toastService.toast("success", $translate.instant("global.blocDeleted"));
+                    toastService.toast("success", $translate.instant("cmsBlocks.detail.blocDeleted"));
                     $location.path("/cmsBlocks");
                 }, function (err) {
                     console.error(err);
-                    toastService.toast("danger", $translate.instant("global.failDelete"));
+                    toastService.toast("danger", $translate.instant("cmsBlocks.detail.failDelete"));
                 });
             }
             // CmsBlocksApi.delete({id: block.id}, function(){

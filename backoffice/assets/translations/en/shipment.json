@@ -50,6 +50,8 @@
         "pts": "Delivery points",
         "addPays": "Add a country",
         "paysPds": "Country / Weight",
+        "contryAlreadySelected": "Country already selected",
+        "selectContry": "You need to select a country",
         "del": "Period"
     },
     "detailOld": {

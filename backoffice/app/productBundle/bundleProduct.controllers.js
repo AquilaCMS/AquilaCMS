@@ -367,7 +367,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                     else
                     {
-                        toastService.toast("success", $translate.instant("global.productSaved"));
+                        toastService.toast("success", $translate.instant("bundle.product.productSaved"));
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
@@ -413,7 +413,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     $location.path("/products");
                 }, function ()
                 {
-                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
+                    toastService.toast("danger", $translate.instant("bundle.product.errorDeleting"));
                 });
             }
         };
@@ -469,7 +469,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                         else
                         {
-                            toastService.toast("success", $translate.instant("global.productSaved"));
+                            toastService.toast("success", $translate.instant("bundle.product.productSaved"));
                             if($scope.isEditMode)
                             {
                                 $scope.disableSave = false;
@@ -482,7 +482,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                     }, function (err)
                     {
-                        toastService.toast("danger", $translate.instant("global.errorSaving"));
+                        toastService.toast("danger", $translate.instant("bundle.product.errorSaving"));
                         $scope.disableSave = false;
                     });
                 },

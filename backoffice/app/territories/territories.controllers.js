@@ -54,7 +54,7 @@ TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi"
 			if(confirm("Etes-vous sûr de vouloir supprimer ce territoire ?"))
 			{
 				TerritoriesApi.remove({terr: 'territory', action: id}, function (response) {
-					toastService.toast("success", $translate.instant("global.territoryDelete"));
+					toastService.toast("success", $translate.instant("territories.detail.territoryDelete"));
 					$scope.getTerritories();
 				});
 			}
@@ -94,7 +94,7 @@ TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routePara
 		$scope.remove = function (id) {
 			if (confirm("Etes-vous sûr de vouloir supprimer ce territoire ?")) {
 				TerritoriesApi.remove({ terr: 'territory', action: id }, function (response) {
-					toastService.toast("success", $translate.instant("global.territoryDelete"));
+					toastService.toast("success", $translate.instant("territories.detail.territoryDelete"));
 					$location.path("/territories");
 				});
 			}

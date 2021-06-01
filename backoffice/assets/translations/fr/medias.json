@@ -6,6 +6,9 @@
         "miniature": "Miniature",
         "cpLien": "Copier lien",
         "delete": "Supprimer",
+        "deleteMedia": "Media supprimé",
+        "copiedLink": "Lien copié",
+        "mediaSaved": "Media sauvegardé",
         "uploadInsert": "Inserer en base",
         "uploadButton": "Ajout en masse"
     },
@@ -53,7 +56,11 @@
         "topLeft": "Haut gauche",
         "topRight": "Haut droite",
         "bottomLeft": "Bas gauche",
-        "bottomRight": "Bas droite"
+        "bottomRight": "Bas droite",
+        "enterAllValue": "Veuillez saisir toutes les valeurs.",
+        "linkGenerated": "Lien généré",
+        "massAddDone.": "Ajout en masse effectué.",
+        "takeTime": "Cela peut prendre du temps, merci de patienter ..."
     },
     "multi": {
         "title": "Ajout en masse",

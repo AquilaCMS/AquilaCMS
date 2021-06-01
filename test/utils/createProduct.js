@@ -4,7 +4,7 @@ const {Products} = require('../../orm/models');
 const createProduct = (params = {code: null, name: null}) => {
     const {code, name}      = params;
     const product           = new Products();
-    product.active          = false;
+    product.active          = true;
     product.associated_prds = [];
     product.attributes      = [];
     product.autoSlug        = true;
@@ -12,7 +12,7 @@ const createProduct = (params = {code: null, name: null}) => {
     product.code            = code || faker.lorem.slug();
     product.images          = [];
     product.type            = 'simple';
-    product._visible        = false;
+    product._visible        = true;
     product.price           = {
         purchase : 0,
         et       : {

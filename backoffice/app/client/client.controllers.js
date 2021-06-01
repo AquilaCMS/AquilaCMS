@@ -229,7 +229,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
             ClientV2.query({PostBody: {filter: {_id: $routeParams.clientId}, structure: '*', limit: 1}}, function (response) {
                 if (response._id === undefined) {
-                    toastService.toast("danger", $translate.instant("global.customerNotExist"));
+                    toastService.toast("danger", $translate.instant("client.detail.customerNotExist"));
                     $location.path("/clients");
                 }
                 $scope.client = response;
@@ -328,14 +328,14 @@ ClientControllers.controller("ClientDetailCtrl", [
                         }
                     } else if ((attr.type === "Couleur" || attr.type === "color") && !(/\#([a-z0-9]{3}|[a-z0-9]{6})$/i).test(attr.translation[$scope.lang].value)) {
                         attrsErrors = true;
-                        toastService.toast("danger", $translate.instant("global.incorrectHex"));
+                        toastService.toast("danger", $translate.instant("client.detail.incorrectHex"));
                         return;
                     }
                 }
             }
             $scope.form.nsSubmitted = true;
             if ($scope.form.$invalid) {
-                toastService.toast("danger", $translate.instant("global.invalidEntry"));
+                toastService.toast("danger", $translate.instant("client.detail.invalidEntry"));
                 return;
             }
             $scope.client.type = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
@@ -353,7 +353,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                 if (isQuit) {
                     $location.path("/clients");
                 } else {
-                    toastService.toast("success", $translate.instant("global.infoSaved"));
+                    toastService.toast("success", $translate.instant("client.detail.infoSaved"));
                     $location.path(`/clients/${response.user._id}`);
                 }
             }, function(err) {
@@ -362,7 +362,7 @@ ClientControllers.controller("ClientDetailCtrl", [
                     if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
                     toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
                     }else{
-                        toastService.toast('danger', $translate.instant("global.alreadyExistEmail"));
+                        toastService.toast('danger', $translate.instant("client.detail.alreadyExistEmail"));
                     }
                 }else{
                     toastService.toast('danger', err.data.message);
@@ -373,7 +373,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         $scope.remove = function () {
             if (confirm("Etes-vous sûr de vouloir supprimer ce client ? Ses commandes seront également supprimées !")) {
                 ClientV2.delete({type: 'user', id: $scope.client._id}, function (response) {
-                    toastService.toast("success", $translate.instant("global.customerDeleted"));
+                    toastService.toast("success", $translate.instant("client.detail.customerDeleted"));
                     $location.path("/clients");
                 });
             }
@@ -382,7 +382,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         const loginAdminAsClient = function () {
             ClientAdmin.logAsClient({_id: $scope.client._id}, function (response) {
                 document.cookie = `jwt=${response.data};path=/`;
-                toastService.toast("success", $translate.instant("global.customerConnected"));
+                toastService.toast("success", $translate.instant("client.detail.customerConnected"));
             });
         };
 
@@ -391,30 +391,30 @@ ClientControllers.controller("ClientDetailCtrl", [
                 && new RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i).test($scope.client.email)) {
                 const userRes = ClientV2.resetpassword({email: $scope.client.email, lang: $scope.client.preferredLanguage}, function () {
                     $scope.mailError = undefined;
-                    toastService.toast("success", $translate.instant("global.requestSend"));
+                    toastService.toast("success", $translate.instant("client.detail.requestSend"));
                 }, function (res) {
                     if (res.data != null) {
                         toastService.toast("danger", res.data.message);
                     } else {
-                        toastService.toast("danger", $translate.instant("global.errorContactAdmin"));
+                        toastService.toast("danger", $translate.instant("client.detail.errorContactAdmin"));
                     }
                 });
             } else {
-                toastService.toast("danger", $translate.instant("global.customerEmailinvalid"));
+                toastService.toast("danger", $translate.instant("client.detail.customerEmailinvalid"));
             }
         };
         const submitActiveAccountRequest = function () {
             ActivateAccount.query({userId: $scope.client._id, lang: $scope.adminLang}, function (resp) {
                 if (resp.accepted && resp.accepted.length) {
-                    toastService.toast("success", $translate.instant("global.confirmationEmailSent"));
+                    toastService.toast("success", $translate.instant("client.detail.confirmationEmailSent"));
                 } else {
-                    toastService.toast("danger", $translate.instant("global.errorSendMail"));
+                    toastService.toast("danger", $translate.instant("client.detail.errorSendMail"));
                 }
             }, function (res) {
                 if (res.data != null) {
                     toastService.toast("danger", res.data.translations[$scope.adminLang]);
                 } else {
-                    toastService.toast("danger", $translate.instant("global.errorContactAdmin"));
+                    toastService.toast("danger", $translate.instant("client.detail.errorContactAdmin"));
                 }
             });
         };

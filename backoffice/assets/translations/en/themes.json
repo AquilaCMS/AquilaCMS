@@ -26,5 +26,10 @@
     "themeSelect": "Select this theme",
     "themeInstallDependencies": "Install dependencies of the theme",
     "themeCompile": "Compile the theme",
+    "deleteTheme": "Theme deleted successfully.",
+    "themeNoData": "This theme does not contain data.",
+    "copyThemeDataDone": "Theme data successfully copied.",
+    "varSaved": "Saved variables.",
+    "addedTheme": "Theme added! To use it, just select it",
     "themeDelete": "Delete the theme"
 }
