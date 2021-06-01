@@ -265,6 +265,17 @@ ProductControllers.controller("nsProductGeneral", [
     function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2, $translate) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
         $scope.hookInfo = HookProductInfo;
+
+        $scope.loadNewAttrs = async function () {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes, _type: 'users' }, structure: '*', limit: 99 } }, function ({ datas }) {
+                $scope.product.attributes = datas.map(function (attr) {
+                    attr.id = attr._id;
+                    delete attr._id;
+                    return attr;
+                });
+            });
+        };
+
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
             $scope.setAttributes = datas;
 
