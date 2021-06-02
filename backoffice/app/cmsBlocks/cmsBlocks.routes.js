@@ -17,5 +17,12 @@ CmsBlocksRoutes.config(['$routeProvider', function ($routeProvider)
             loggedin: checkLoggedin,
 			checkAccess: checkAccess('cmsBlocks'),
         }
-    });
+    }).when('/cmsBlocks/:code/preview', {
+        templateUrl: 'app/cmsBlocks/views/cmsBlocks-preview.html',
+        controller: 'CmsBlocksPreview',
+        resolve: {
+            loggedin: checkLoggedin,
+            checkAccess: checkAccess('cmsBlocks'),
+        }
+    })
 }]);
