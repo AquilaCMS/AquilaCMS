@@ -366,7 +366,11 @@
                                             <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : ''}}
                                         </p>
                                         <p>
-                                            <b translate>order.detail.pdsTotal</b> : {{getTotalWeight()}} g
+                                            <b translate>order.detail.pdsTotal</b>
+                                            <span>:</span>
+                                            <span>{{getTotalWeight()}}</span>
+                                            <span>g</span>
+                                            <span ng-show="getTotalWeight() > 1000">({{getTotalWeight()/1000}} kg)</span>
                                         </p>
                                     </td>
                                 </tr>
