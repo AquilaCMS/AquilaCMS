@@ -1,8 +1,7 @@
 <form name="form" class="form-horizontal" ng-submit="save(static)" role="form">
     <ns-box data-title="static.new.t1" title-icon="fa fa-file-text fa-lg" close-href="#/staticPage">
-        <ns-translation ng-model="lang" class="pull-right"></ns-translation>
         <ns-buttons save-and-quit="save(static, true)" disable-save="disableSave" additionnal-buttons="additionnalButtons" return-path="/staticPage" form="form">
-
+            <ns-translation ng-model="lang" class="pull-right"></ns-translation>
             <input type="hidden" value="" name="id" id="template" ng-model="static._id" />
 
             <div class="form-group">
