@@ -62,7 +62,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git commit -m "[github actions] Updating automatically AquilaCMS version number (${newAquilaVersion})"
+        git commit -m "[skip ci] Updating automatically AquilaCMS version number (${newAquilaVersion})"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:

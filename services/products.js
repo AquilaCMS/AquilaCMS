@@ -27,7 +27,6 @@ const {
     Products,
     ProductsPreview,
     Categories,
-    SetAttributes,
     Attributes
 }                             = require('../orm/models');
 
@@ -660,20 +659,8 @@ const createProduct = async (req) => {
         break;
     }
     if (req.body.set_attributes === undefined) {
-        req.body.attributes          = [];
-        const setAtt                 = await SetAttributes.findOne({code: 'defaut'});
-        req.body.set_attributes_name = setAtt.name;
-        req.body.set_attributes      = setAtt._id;
-        for (const attrs of setAtt.attributes) {
-            const attr = await Attributes.findOne({_id: attrs});
-            if (attr != null) {
-                let arrAttr = [];
-                arrAttr     = JSON.parse(JSON.stringify(attr));
-                arrAttr.id  = attr._id;
-                req.body.attributes.push(arrAttr);
-            }
-        }
-        const result = await Products.create(req.body);
+        const product = await serviceSetAttributs.addAttributesToProduct(req.body);
+        const result  = await Products.create(product);
         aquilaEvents.emit('aqProductCreated', result._id);
         return result;
     }

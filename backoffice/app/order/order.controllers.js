@@ -323,7 +323,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         {
             let query = Invoice.orderToBill({idOrder: $scope.order._id});
             query.$promise.then(function (response) {
-                toastService.toast('success', $translate.instant("global.invoiceCreated"))
+                toastService.toast('success', $translate.instant("order.detail.invoiceCreated"))
                 $scope.init()
             }).catch(function (err) {
                 toastService.toast('danger', err.data.message);
@@ -366,7 +366,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             if(field === "status")
             {
                 if(data === $scope.order.status){
-                    toastService.toast("danger", $translate.instant("global.orderAlreadyState"));
+                    toastService.toast("danger", $translate.instant("order.detail.orderAlreadyState"));
                 }else if(data == "PAID"){
                     $scope.editStatus = false;
                     $scope.addInfoPayment("PAID");
@@ -398,7 +398,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if(err.data.message)
                         {
-                            toastService.toast("danger", $translate.instant("global.changeStateImpossible"));
+                            toastService.toast("danger", $translate.instant("order.detail.changeStateImpossible"));
                             d.reject(err.data.message);
                         }
                         else
@@ -459,7 +459,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             }, function (err)
             {
                 console.error(err.data);
-                toastService.toast("danger", $translate.instant("global.removePackage"));
+                toastService.toast("danger", $translate.instant("order.detail.removePackage"));
             });
         };
 
@@ -661,11 +661,11 @@ OrderControllers.controller("InfoAddressCtrl", [
             $scope.order.addresses[$scope.type].country = countryName.translation[$scope.defaultLang].name;
             Orders.save({order:$scope.order}, function(response){
                 if(response.nModified === 1){
-                    toastService.toast("success", $translate.instant("global.addressChanged"));
+                    toastService.toast("success", $translate.instant("order.detail.addressChanged"));
                     $modalInstance.close(3);
                     // $scope.order = Order.get({ orderId: $scope.order._id });
                 }else{
-                    toastService.toast("danger", $translate.instant("global.errorChangingAddress"));
+                    toastService.toast("danger", $translate.instant("order.detail.errorChangingAddress"));
                 }
             });
         };
@@ -693,6 +693,7 @@ OrderControllers.controller("HistoryStatusCtrl", [
 OrderControllers.controller("PackagesNewCtrl", [
     "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate",
     function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate) {
+        $scope.typePopUp = "new"; // useful for plugin, they can have one controller and one html for the send and return
         $scope.order = angular.copy(item);
         // the Hook for package module
         // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
@@ -825,7 +826,7 @@ OrderControllers.controller("PackagesNewCtrl", [
             if(pkg.products.length > 0) {
                 if(pkg.tracking != ""){
                     Orders.addPkg({order: $scope.order._id, package: pkg}, function () {
-                        toastService.toast("success", $translate.instant("global.addedParcel"));
+                        toastService.toast("success", $translate.instant("order.detail.addedParcel"));
                         $scope.disabledAddButton = false;
                         $scope.loadingAdd = false;
                         $scope.close();
@@ -868,6 +869,7 @@ OrderControllers.controller("RMANewCtrl", [
     "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2", "orderReturnHook", "$translate", 
     function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2, orderReturnHook, $translate)
     {
+        $scope.typePopUp = "rma"; // useful for plugin, they can have only one controller and one html for the send and return
         // variable
         $scope.order = angular.copy(item);
         $scope.return = {mode: "", comment: "", in_stock: true, sendMail: true, refund: 0, tax: 0, products: []};
@@ -1013,7 +1015,7 @@ OrderControllers.controller("RMANewCtrl", [
 
             if(returnData.products.length > 0) {
                 Orders.rma({order: $scope.order._id, return: returnData}, function () {
-                    toastService.toast("success", $translate.instant("global.returnAdded"));
+                    toastService.toast("success", $translate.instant("order.detail.returnAdded"));
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
                     $scope.close();
@@ -1131,7 +1133,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             delete returnData.sendMail;
             Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
             {
-                toastService.toast("success", $translate.instant("global.paymentInfoAdded"));
+                toastService.toast("success", $translate.instant("order.detail.paymentInfoAdded"));
                 $scope.close();
             }, function (err)
             {

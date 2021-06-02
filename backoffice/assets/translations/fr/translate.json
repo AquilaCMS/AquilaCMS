@@ -2,5 +2,8 @@
     "t1": "Traduction",
     "translateFile": "Fichier de traduction :",
     "reboot" : "Appliquer au site (reboot)",
+    "translateSaved": "Traduction sauvegardés !",
+    "buildSucceed": "Construction réussie, redémarrage du serveur",
+    "buildFailed": "Construction échoué",
     "nb" : "Note : afin que vos modifications soient effectives sur le site, il faut cliquer sur 'Appliquer au site (reboot)'"
 }

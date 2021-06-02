@@ -16,6 +16,9 @@
         "html": "HTML",
         "variables": "Vars",
         "result": "Result",
+        "blocSaved": "CMS block saved!",
+        "blocDeleted": "Block deleted",
+        "failDelete": "Deletion failed",
         "noVars": "No vars"
 
     }

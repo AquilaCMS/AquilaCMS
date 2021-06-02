@@ -28,5 +28,6 @@
     "valider": "Valider",
     "additionnalFeesTax": "Frais supplémentaires (Tax)",
     "additionnalFeesEt": "Frais supplémentaires (HT)",
+    "order&StockSaved": "Stock & commandes sauvegardée !",
     "automaticBilling": "Facturation automatique (la commande est payée)"
 }

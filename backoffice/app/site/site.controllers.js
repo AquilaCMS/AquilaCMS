@@ -2,7 +2,7 @@ var SiteControllers = angular.module("aq.site.controllers", []);
 
 // Liste des articles
 SiteControllers.controller("ArticlesSiteCtrl", [
-    "$scope", "$location", "$route", "ArticlesV2", "toastService", "$rootScope", function ($scope, $location, $route, ArticlesV2, toastService, $rootScope)
+    "$scope", "$location", "$route", "ArticlesV2", "toastService", "$rootScope", "$translate", function ($scope, $location, $route, ArticlesV2, toastService, $rootScope, $translate)
     {
         $scope.listArticles = [];
         $scope.page = 1;
@@ -69,7 +69,7 @@ SiteControllers.controller("ArticlesSiteCtrl", [
         $scope.remove = function (articles) {
             if(confirm("Etes-vous sûr de vouloir supprimer cet article ?")) {
                 ArticlesV2.delete({id: articles._id, type: 'new'}, function () {
-                    toastService.toast("success", $translate.instant("global.itemDelete"));
+                    toastService.toast("success", $translate.instant("site.articles.itemDelete"));
                     $route.reload();
                 });
             }
@@ -114,7 +114,7 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
 
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", $translate.instant("global.invalidEntry"));
+                toastService.toast("danger", $translate.instant("site.detail.invalidEntry"));
                 return;
             }
 
@@ -122,11 +122,11 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
             {
                 if(response.msg)
                 {
-                    toastService.toast("danger", $translate.instant("global.slugEverUsed"));
+                    toastService.toast("danger", $translate.instant("site.detail.slugEverUsed"));
                 }
                 else
                 {
-                    toastService.toast("success", $translate.instant("global.itemSaved"));
+                    toastService.toast("success", $translate.instant("site.detail.itemSaved"));
                     if(isQuit)
                     {
                         $location.path("/site/articles");
@@ -141,7 +141,7 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
                 if(err){
                     toastService.toast("danger", err.data.message);
                 }else{
-                    toastService.toast("danger", $translate.instant("global.errorSaved"));
+                    toastService.toast("danger", $translate.instant("site.detail.errorSaved"));
                 }
             });
         };
@@ -182,7 +182,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 {
                     if(response._id === undefined)
                     {
-                        toastService.toast("danger", $translate.instant("global.articleNotExist"));
+                        toastService.toast("danger", $translate.instant("site.detail.articleNotExist"));
                         $location.path("/site/articles");
                     }
 
@@ -212,7 +212,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 $scope.articles.img = "";
                 SiteDeleteImage.deleteImage({_id: articles._id}, function (response)
                 {
-                    toastService.toast("success", $translate.instant("global.imgDelete"));
+                    toastService.toast("success", $translate.instant("site.detail.imgDelete"));
                 });
             }
         };
@@ -247,13 +247,13 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
 
             if($scope.articles.translation[selectedLang].slug === "" || $scope.articles.translation[selectedLang].slug === undefined)
             {
-                toastService.toast("danger", $translate.instant("global.slugEmpty"));
+                toastService.toast("danger", $translate.instant("site.detail.slugEmpty"));
                 return;
             }
 
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", $translate.instant("global.invalidEntry"));
+                toastService.toast("danger", $translate.instant("site.detail.invalidEntry"));
                 return;
             }
 
@@ -262,11 +262,11 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             {
                 if(response.msg)
                 {
-                    toastService.toast("danger", $translate.instant("global.slugEverUsed"));
+                    toastService.toast("danger", $translate.instant("site.detail.slugEverUsed"));
                 }
                 else
                 {
-                    toastService.toast("success", $translate.instant("global.infoSaved"));
+                    toastService.toast("success", $translate.instant("site.detail.infoSaved"));
                     if(isQuit)
                     {
                         $location.path("/site/articles");
@@ -284,7 +284,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", $translate.instant("global.errorSaved"));
+                    toastService.toast("danger", $translate.instant("site.detail.errorSaved"));
                 }
                 $scope.disableSave = false;
             });
@@ -296,7 +296,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             {
                 ArticlesV2.delete({id: $scope.articles._id, type: 'new'}, function ()
                 {
-                    toastService.toast("success", $translate.instant("global.imgDelete"));
+                    toastService.toast("success", $translate.instant("site.detail.imgDelete"));
                     $location.path("/site/articles");
                 });
             }

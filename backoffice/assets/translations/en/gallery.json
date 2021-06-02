@@ -2,6 +2,9 @@
     "list": {
         "t1": "Gallery",
         "code": "Code",
+        "failDelete": "Deletion failed",
+        "failSave": "Backup failed",
+        "deleteDone": "Deletion completed",
         "img": "Pictures"
     },
     "detail": {

@@ -6,13 +6,30 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {SetAttributes, Products} = require('../orm/models');
-const NSErrors                  = require('../utils/errors/NSErrors');
-const QueryBuilder              = require('../utils/QueryBuilder');
+const {SetAttributes, Products, Attributes} = require('../orm/models');
+const NSErrors                              = require('../utils/errors/NSErrors');
+const QueryBuilder                          = require('../utils/QueryBuilder');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'code', 'name'];
 const queryBuilder     = new QueryBuilder(SetAttributes, restrictedFields, defaultFields);
+
+exports.addAttributesToProduct = async function (product, code = 'defaut') {
+    product.attributes          = [];
+    const setAtt                = await SetAttributes.findOne({code});
+    product.set_attributes_name = setAtt.name;
+    product.set_attributes      = setAtt._id;
+    for (const attrs of setAtt.attributes) {
+        const attr = await Attributes.findOne({_id: attrs});
+        if (attr != null) {
+            let arrAttr = [];
+            arrAttr     = JSON.parse(JSON.stringify(attr));
+            arrAttr.id  = attr._id;
+            product.attributes.push(arrAttr);
+        }
+    }
+    return product;
+};
 
 exports.getSetAttributes = async function (PostBody) {
     if (!PostBody) {

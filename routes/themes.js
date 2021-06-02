@@ -170,12 +170,12 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        const themeConf   = await serviceThemeConfig.getThemeConfig({
+        const themeConf = await serviceThemeConfig.getThemeConfig({
             filter    : {},
             structure : {},
             limit     : 99
         });
-        const config      = (await ServiceConfig.getConfig({
+        const config    = (await ServiceConfig.getConfig({
             structure : {
                 _id                        : 0,
                 'environment.adminPrefix'  : 1,
@@ -183,10 +183,9 @@ async function getThemeInformations(req, res, next) {
                 'environment.currentTheme' : 1
             }
         }, req.info));
-        const listTheme   = await themesServices.listTheme();
-        const listFiles   = await themesServices.getDemoDatasFilesName();
-        const otherParams = [{name: 'files', value: true}];
-        res.send({themeConf, configEnvironment: config, listTheme, listFiles, otherParams});
+        const listTheme = await themesServices.listTheme();
+        const listFiles = await themesServices.getDemoDatasFilesName();
+        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }

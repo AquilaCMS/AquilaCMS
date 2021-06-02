@@ -1,52 +1,12 @@
 let ProductDirectives = angular.module("aq.product.directives", []);
 
-// plus utilisé
-// ProductDirectives.directive("nsProductList", function ()
-// {
-//     return {
-//         restrict: "E",
-//         scope: {},
-//         templateUrl: "app/product/views/templates/nsProductList.html",
-//         controller: [
-//             "$scope", "Product", "ProductPagination", "ProductSearch",
-//             function ($scope, Product, ProductPagination, ProductSearch)
-//             {
-//                 $scope.getProducts = function (page, limit)
-//                 {
-//                     var filter = {};
-//                     filter.page = page;
-//                     filter.limit = limit;
-//                     return ProductPagination.query(filter).$promise;
-//                 };
-//
-//                 $scope.config = {
-//                     columns: [
-//                         {title: "ID", field: "id"},
-//                         {title: "Image", field: "imageUrl", format: "image"},
-//                         {title: "Nom", field: "name"},
-//                         {title: "Prix", field: "price_sale"},
-//                         {title: "Quantité", field: "qty"},
-//                         {title: "Type", field: "type", format: "nsProductTypeName"},
-//                         {title: "Actif", field: "active"},
-//                         {title: "Visible", field: "_visible"}
-//                     ],
-//                     sourceData: {read: $scope.getProducts, dataField: "products", totalField: "count"},
-//                     pagination: {
-//                         serverPaging: true
-//                     }
-//                 };
-//
-//             }
-//         ]
-//     };
-// });
-
 ProductDirectives.directive("nsProductsList", function () {
     return {
         restrict : "E",
         scope    : {
-            onSelect: "=",
-            queryFilter : "="
+            onSelect: "=", // to override the on-select function
+            queryFilter: "=",
+            selectedProducts: "=", // array of object with contains _id
         },
         templateUrl : "app/product/views/templates/nsProductsList.html",
         controller  : [
@@ -64,6 +24,41 @@ ProductDirectives.directive("nsProductsList", function () {
                     nameFilter : "",
                     codeFilter : ""
                 };
+                
+                if(typeof $scope.selectedProducts === "undefined" || $scope.selectedProducts == null) {
+                    $scope.selectedProducts = [];
+                }
+
+                $scope.defaultLang = $rootScope.languages.find(function (lang) {
+                    return lang.defaultLanguage;
+                }).code;
+
+                $scope.onSelectFunction = function (product, $event) {
+                    if(typeof $scope.onSelect === "undefined" || $scope.onSelect == null) {
+                        // "normal" onSelect
+                        const indexInSelected = $scope.selectedProducts.findIndex((element)=> {
+                            return element._id == product._id;
+                        });
+                        if(indexInSelected == -1) {
+                            // we add a style to the product array
+                            product.style = {"background-color": "#3f51b5", "color": "white"};
+                            product._selected = true;
+                            // we add it into selected product
+                            $scope.selectedProducts.push(product);
+                        } else {
+                            // we remove the product for the product array
+                            delete product.style;
+                            delete product._selected;
+                            // we delete the product from seletected array
+                            const indexInProducts = $scope.selectedProducts.findIndex((element)=> {
+                                return element._id == product._id;
+                            });
+                            $scope.selectedProducts.splice(indexInProducts, 1);
+                        }
+                    } else {
+                        $scope.onSelect(product, $event);
+                    }
+                }
 
                 // Pagination
                 $scope.onPageChange = function (page) {
@@ -75,10 +70,10 @@ ProductDirectives.directive("nsProductsList", function () {
 
                         const filter = angular.copy($scope.queryFilter);
                         // Si pagination avec recherche
-                        console.log("open popup");
+                        //console.log("open popup");
                         // if ($scope.f.nameFilter.length > 0) {
                         const paramsV2 = {
-                            lang: "fr",
+                            lang: $scope.defaultLang,
                             PostBody: {
                                 filter:{}, // q: $scope.f.nameFilter
                                 structure: {
@@ -91,25 +86,10 @@ ProductDirectives.directive("nsProductsList", function () {
                         };
                         // TODO adminList : Edit prd, popup crossselling call this. Pb with filter, etc
                         ProductsV2.list(paramsV2, function (res) {
-                            // for (let prd of res.datas) {
-                            //     prd.images = prd.images.filter(i => i.default)
-                            // }
                             $scope.products = res.datas;
-                            $scope.addStyle($scope.products)
+                            $scope.addStyle();
                             $scope.totalItems = res.count;
                         });
-                        // } else {
-                        //     ProductsV2.list({PostBody: {filter, structure: '*', limit: $scope.nbItemsPerPage, page}}, function ({datas, count}) {
-                        //         for (let prd of datas) {
-                        //             prd.images = prd.images.filter(i => i.default)
-                        //         }
-                        //         $scope.products = datas;
-                        //         $scope.addStyle($scope.products)
-                        //         $scope.totalItems = count;
-                        //     });
-                        // }
-
-                        // $scope.queryFilter.supplier_ref = "";
                     });
                 };
                 $scope.changeTri = function () {
@@ -122,20 +102,20 @@ ProductDirectives.directive("nsProductsList", function () {
                     });
                 };
                 // modifie le style css en selectionnee et de cette maniere il permet de garder le champ selectione lors du changement de page
-                $scope.addStyle = function (allProducts) {
-                    for(product of allProducts){
-                        for (selectProduct of $scope.$parent.$parent.$parent.selectedProducts) {
-                            if (selectProduct._id == product._id) {
-                                product.style = {"background-color": "#3f51b5", "color": "white"};
-                                continue;
+                $scope.addStyle = function () {
+                    for (oneSelectProduct of $scope.selectedProducts) {
+                        if(typeof oneSelectProduct != "undefined " && oneSelectProduct){
+                            let index = $scope.products.findIndex((element) => {
+                                return oneSelectProduct._id == element._id
+                            })
+                            if(index != -1) {
+                                $scope.products[index].style = {"background-color": "#3f51b5", "color": "white"};
+                                $scope.products[index]._selected = true;
                             }
                         }
                     }
                 };
 
-                $scope.defaultLang = $rootScope.languages.find(function (lang) {
-                    return lang.defaultLanguage;
-                }).code;
 
                 $scope.onPageChange(1);
 
@@ -159,7 +139,7 @@ ProductDirectives.directive("nsProductsList", function () {
                     }
                     // lang : "fr" ???
                     const paramsV2 = {
-                        lang: "fr",
+                        lang: $scope.defaultLang,
                         PostBody: {
                             filter: filterObj,
                             structure: {
@@ -181,7 +161,7 @@ ProductDirectives.directive("nsProductsList", function () {
                         $scope.products = res.datas;
                         $scope.totalItems = res.count;
                         $scope.currentPage = 1;
-                        $scope.addStyle($scope.products); //we colorize product alerady added
+                        $scope.addStyle(); //we colorize product already added
                     });
                 };
             }
@@ -417,7 +397,10 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
     return {
         restrict : "E",
         scope    : {
-            product    : "=", form       : "=", isEditMode : "=", lang       : "="
+            product    : "=",
+            form       : "=",
+            isEditMode : "=",
+            lang       : "="
         },
         templateUrl : "app/product/views/templates/nsProductCrossSelling.html",
         controller  : [
@@ -461,16 +444,13 @@ ProductDirectives.directive("nsProductCrossSelling", function () {
                         });
                     });
                 };
+
                 $scope.removeElementAssociatedPrds = function (index) {
                     $scope.associatedPrds.splice(index, 1);
-                    if($scope.selectedProducts){
-                        let index2 = $scope.selectedProducts.indexOf($scope.associatedPrds[index])
-                        $scope.selectedProducts.splice(index2, 1);
-                    }
                     $scope.product.associated_prds = $scope.associatedPrds.map(function (item) {
                         return item._id;
                     });
-                };
+                }
             }
         ]
     };

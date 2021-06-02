@@ -138,7 +138,6 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         } 
         
 
-
         $scope.save = async function (quit) {
             if(!$scope.cmsBlock || !$scope.cmsBlock.code || $scope.cmsBlock.code === "") return;
             $scope.cmsBlock.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
@@ -164,11 +163,11 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.delete = function () {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce bloc CMS ?")) {
                 CmsBlocksApi.delete({code: $scope.cmsBlock.code}, function (response) {
-                    toastService.toast("success", $translate.instant("global.blocDeleted"));
+                    toastService.toast("success", $translate.instant("cmsBlocks.detail.blocDeleted"));
                     $location.path("/cmsBlocks");
                 }, function (err) {
                     console.error(err);
-                    toastService.toast("danger", $translate.instant("global.failDelete"));
+                    toastService.toast("danger", $translate.instant("cmsBlocks.detail.failDelete"));
                 });
             }
             // CmsBlocksApi.delete({id: block.id}, function(){

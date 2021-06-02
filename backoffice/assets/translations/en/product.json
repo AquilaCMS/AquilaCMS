@@ -39,6 +39,8 @@
         "canon": "Canonical",
         "noAttribs": "No attributes",
         "preview": "Preview",
+        "finished": "Finished",
+        "errorCategorization": "Error during categorization",
         "coherenceTitle": "Coherence of the product"
     },
     "modal": {

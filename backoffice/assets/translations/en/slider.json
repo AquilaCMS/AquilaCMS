@@ -21,11 +21,13 @@
         "hoverPause": "Pause when hovering",
         "lecLoop": "Loop Play",
         "tps2Defil": "Time between 2 scrolls",
+        "addDone": "Successful addition",
         "add": "Add"
     },
     "list": {
         "t1": "Carousel",
         "code": "Code",
+        "errorDelete": "An error occurred while deleting.",
         "imgs": "Pictures"
     }
 }

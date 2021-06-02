@@ -130,7 +130,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.removeTheme = async function () {
             if (confirm("Etes vous sur de vouloir supprimer ce theme ?")) {
                 Themes.delete({ themeName: $scope.config.environment.currentTheme }, function(response){
-                    toastService.toast("success", $translate.instant("global.deleteTheme"));
+                    toastService.toast("success", $translate.instant("themes.deleteTheme"));
                     $scope.LoadAllThemes();
                 }, function (err) {
                     $scope.isLoading = false;
@@ -161,9 +161,9 @@ ThemesController.controller("ThemesCtrl", [
                     otherParams: $scope.otherParams
                 }, function(response) {
                     if (response.noDatas) {
-                        toastService.toast("success", $translate.instant("global.themeNoData"));
+                        toastService.toast("success", $translate.instant("themes.themeNoData"));
                     } else {
-                        toastService.toast("success", $translate.instant("global.copyThemeDataDone"));
+                        toastService.toast("success", $translate.instant("themes.copyThemeDataDone"));
                     }
                 }, function(err) {
                     $scope.isLoading = false;
@@ -178,10 +178,10 @@ ThemesController.controller("ThemesCtrl", [
                 ThemeConfig.update({config : $scope.themeConfig.variables}, function (response,err) {
                     if(err.errmsg){
                         $scope.showLoading2 = false;
-                        toastService.toast("danger", $translate.instant("global.addedTheme"));
+                        toastService.toast("danger", $translate.instant("themes.addedTheme"));
                     }else{
                         $scope.showLoading2 = false;
-                        toastService.toast("success", $translate.instant("global.varSaved"));
+                        toastService.toast("success", $translate.instant("themes.varSaved"));
                         $scope.keys = {};
                         $scope.themeConfig.variables = {};
                         if(response.datas.translation){
@@ -225,7 +225,7 @@ ThemesController.controller("ThemesCtrl", [
                                 $scope.showThemeLoading = false;
                             }, function (err) {
                                 $scope.showThemeLoading = false;
-                                toastService.toast("danger", $translate.instant("global.errorOccurred"));
+                                toastService.toast("danger", $translate.instant("global.standardError"));
                                 console.error(err);
                             });
                         } else {
@@ -255,11 +255,8 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.config = response.configEnvironment;
                 $scope.listThemeFiles = [];
                 $scope.themesList = response.listTheme;
-                $scope.listThemeFiles = response.listFiles;
+                $scope.listThemeFiles = response.listFiles || [];
                 $scope.otherParams = response.otherParams;
-                if (!$scope.listThemeFiles.length) {
-                    $scope.listThemeFiles.push("noDefaultData");
-                } 
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
@@ -277,7 +274,11 @@ ThemesController.controller("ThemesCtrl", [
                 }
             }, function (err) {
                 $scope.isLoading = false;
-                toastService.toast("danger", err.data);
+                toastService.toast("danger", $translate.instant("global.standardError"));
+                console.error(err);
+                if(err && err.data && err.data.message) {
+                    toastService.toast("danger", err.data.message);
+                }
             });
         };
     }
@@ -299,7 +300,7 @@ ThemesController.controller("ThemesNewCtrl", [
 
         $scope.uploadedTheme = function () {
             $scope.showThemeLoading = false;
-            toastService.toast("success", $translate.instant("global.addedTheme"));
+            toastService.toast("success", $translate.instant("themes.addedTheme"));
             $modalInstance.close("save");
         };
 

@@ -50,6 +50,8 @@
         "pts": "Points de vente",
         "addPays": "Ajouter un pays",
         "paysPds": "Pays / Poids",
+        "contryAlreadySelected": "Pays déjà selectionné",
+        "selectContry": "Vous avez besoin de selectionner un pays",
         "del": "Periode"
     },
     "detailOld": {

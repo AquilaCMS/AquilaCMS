@@ -31,5 +31,11 @@
     "attrJeu": "Attributs du jeu d'attributs {{ product.set_attributes.name }}",
     "beforeConfig": "Vous devez d'abord renseigner le code du produit avant de pouvoir configurer les attributs !",
     "beforeConfigImages": "Vous devez d'abord renseigner le code du produit avant de pouvoir configurer les images !",
+    "impossibleGeneratedURL": "Impossible de générer l'URL de test car pas de canonical",
+    "productDuplicate": "Produit dupliqué !",
+    "codeExists": "Le code existe déjà",
+    "productSaved": "Produit sauvegardé",
+    "errorDelete": "Une erreur est survenue lors de la suppression.",
+    "deleteDone": "Suppression effectuée",
     "catNom": "Nom de la catégorie"
 }

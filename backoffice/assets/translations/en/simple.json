@@ -31,5 +31,11 @@
     "attrJeu": "Attributes set attributes {{ product.set_attributes.name }}",
     "beforeConfig": "You must type first the product code before configuring attributes!",
     "beforeConfigImages": "You must type first the product code before configuring images!",
+    "impossibleGeneratedURL": "Cannot generate test url because no canonical",
+    "productDuplicate": "Duplicate product!",
+    "codeExists": "Code already exists",
+    "productSaved": "Saved product",
+    "errorDelete": "An error occurred while deleting.",
+    "deleteDone": "Deletion completed",
     "catNom": "Category name"
 }

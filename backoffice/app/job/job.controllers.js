@@ -57,25 +57,55 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
             if ($scope.runImmediate == false) return;
             JobPlayImmediate.play({ _id }, function () {
                 $scope.JobGetById();
-                toastService.toast("success", $translate.instant("global.cronSuccess"));
+                toastService.toast("success", $translate.instant("job.detail.cronSuccess"));
                 $scope.runImmediate = true;
             }, function(err){
                 $scope.JobGetById();
-                if(err.data && err.data.code) return toastService.toast("danger", err.data.message);
+                console.error(err);
+                if(err.data) {
+                    if(err.data.message) {
+                        toastService.toast("danger", err.data.message);
+                    } else if(err.data.code) {
+                        toastService.toast("danger", err.data.code);
+                    }
+                } else {
+                    toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
+                }
                 $scope.runImmediate = true;
-                return toastService.toast("danger", $translate.instant("global.errorUnknown"));
             });
             $scope.runImmediate = false;
         };
         $scope.play = function (_id) {
             JobPlay.play({ _id }, function () {
                 $scope.JobGetById();
+            }, function(error) {
+                console.error(error);
+                if(error.data) {
+                    if(error.data.message) {
+                        toastService.toast("danger", error.data.message);
+                    } else if(error.data.code) {
+                        toastService.toast("danger", error.data.code);
+                    }
+                } else {
+                    toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
+                }
             });
         };
 
         $scope.pause = function (_id) {
             JobPause.pause({ _id }, function () {
                 $scope.JobGetById();
+            }, function(error) {
+                console.error(error);
+                if(error.data) {
+                    if(error.data.message) {
+                        toastService.toast("danger", error.data.message);
+                    } else if(error.data.code) {
+                        toastService.toast("danger", error.data.code);
+                    }
+                } else {
+                    toastService.toast("danger", $translate.instant("job.detail.errorUnknown"));
+                }
             });
         };
         //On récupére le document uniquement si nous sommes en mode edit
@@ -87,7 +117,7 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
         $scope.save = function (isQuit) {
             $scope.form.nsSubmitted = true;
             if ($scope.form.$invalid) {
-                toastService.toast("danger", $translate.instant("global.infoInvalid"));
+                toastService.toast("danger", $translate.instant("job.detail.infoInvalid"));
                 return;
             }
             var deferred = $q.defer();
@@ -114,7 +144,7 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
                 } else {
                     $scope.job = response;
                     checkFailReason();
-                    toastService.toast("success", $translate.instant("global.cronSaved"));
+                    toastService.toast("success", $translate.instant("job.detail.cronSaved"));
                     $location.path("/jobs/" + response._id);
                 }
             }, function (err) {
@@ -133,10 +163,10 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
         $scope.remove = function (_id) {
             if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche planifiée ?")) {
                 if ($scope.job.data.flag == "system") {
-                    return toastService.toast("danger", $translate.instant("global.errorDeleteCron"));
+                    return toastService.toast("danger", $translate.instant("job.detail.errorDeleteCron"));
                 }
                 JobRemove.remove({ _id }, function () {
-                    toastService.toast("success", $translate.instant("global.cronDelete"));
+                    toastService.toast("success", $translate.instant("job.detail.cronDelete"));
                     $location.path("/jobs");
                 });
             }

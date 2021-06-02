@@ -27,9 +27,9 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
 
         $scope.validate = function (tab) {
             ConfigV2.save({ environment: $scope.config.environment }).$promise.then(function () {
-                toastService.toast("success", $translate.instant("global.configurationSaved"));
+                toastService.toast("success", $translate.instant("update.configurationSaved"));
             }, function (err) {
-                toastService.toast("danger", $translate.instant("global.errorArise"));
+                toastService.toast("danger", $translate.instant("update.errorArise"));
                 console.error(err);
             });
         };
@@ -49,10 +49,10 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
                 $scope.local.showLoading     = false;
                 $scope.local.verifyingUpdate = false;
                 $scope.local.needUpdate      = false;
-                toastService.toast('success', $translate.instant("global.majSucceded"));
+                toastService.toast('success', $translate.instant("update.majSucceded"));
             }, (err) => {
                 $scope.local.showLoading     = false;
-                toastService.toast('danger', $translate.instant("global.majFailed"));
+                toastService.toast('danger', $translate.instant("update.majFailed"));
                 console.error(err);
             });
 
@@ -64,7 +64,7 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             $scope.local.currentVersion  = response.data.version;
             $scope.local.onlineVersion      = response.data.onlineVersion;
         }, (err) => {
-            toastService.toast('danger', $translate.instant("global.checkMajFailed"));
+            toastService.toast('danger', $translate.instant("update.checkMajFailed"));
         });
     }]
 );

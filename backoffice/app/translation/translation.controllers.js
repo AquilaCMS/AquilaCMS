@@ -96,7 +96,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         if(err.data.message){
                             toastService.toast("danger", err.data.message);
                         }else if(err.code === "Conflict" || err.data.code === "Conflict"){
-                            toastService.toast("danger", $translate.instant("global.alreadyExist"));
+                            toastService.toast("danger", $translate.instant("translation.alreadyExist"));
                         }else{
                             toastService.toast("danger", err.data);
                         }

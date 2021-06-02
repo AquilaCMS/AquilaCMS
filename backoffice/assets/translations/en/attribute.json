@@ -32,6 +32,11 @@
         "addValeur": "Add a value",
         "color": "Color",
         "visible": "Visible in product",
+        "saveDone": "Backup performed",
+        "attributeNotExist": "This attribute does not exist",
+        "errorOccurred": "An error has occurred",
+        "error": "Error", 
+        "deleteAttribute": "Attribute deleted",
         "infoDispoFiltres": "Allows an attribute selection category to be visible in filters"
     },
 

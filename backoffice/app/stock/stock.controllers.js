@@ -98,7 +98,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             var stock = $scope.stock;
 
             ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function () {
-                toastService.toast("success", $translate.instant("global.order&StockSaved"));
+                toastService.toast("success", $translate.instant("stock.order&StockSaved"));
                 if (quit) $location.path("/");
             }, function (err) {
                 toastService.toast("danger", err.data);
