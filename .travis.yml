@@ -1,5 +1,6 @@
 branches:
   only:
+  - master
   - preprod
   
 language: node_js
