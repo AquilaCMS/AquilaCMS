@@ -411,20 +411,28 @@ ProductControllers.controller("nsProductCategories", [
             return final;
         };
 
-        $scope.expandAll = function(){
-            for(let oneCat of $scope.categories){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                    oneCat.nodes = response.datas;
-                    $scope.$broadcast('angular-ui-tree:expand-all');
-                    for(let oneNode of oneCat.nodes){
-                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                            oneNode.nodes = response.datas;
-                            $scope.$broadcast('angular-ui-tree:expand-all');
-                        });
-                    }
-                });
+        $scope.expandOneCat = function (oneCat) {
+            if (typeof oneCat.children === "undefined") {
+                oneCat.children = [];
             }
-            //or use the $scope.listChildren()
+            if (oneCat.children.length > 0) {
+                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 99 } }, function (response) {
+                    oneCat.nodes = response.datas || [];
+                    for (let oneNode of oneCat.nodes) {
+                        $scope.expandOneCat(oneNode);
+                    }
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                });
+            } else {
+                oneCat.nodes = [];
+            }
+        }
+
+
+        $scope.expandAll = function () {
+            for (let oneCat of $scope.categories) {
+                $scope.expandOneCat(oneCat)
+            }
         }
 
         $scope.listChildren = function (cat, scope) {
