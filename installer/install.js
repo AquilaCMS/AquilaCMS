@@ -44,12 +44,13 @@ const testdb = async (req) => {
 // Only for installation purpose, will be inaccessible after first installation
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
     console.log('-= Start installation =-');
+    global.installMode = true;
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
     require('../routes/install')(installRouter);
     server.use('/', installRouter, (req, res, next) => {
-        if (req.originalUrl !== '/') {
+        if (req.originalUrl !== '/' && req.originalUrl !== '/favicon.ico') {
             return res.status(301).redirect('/');
         }
         return next();
