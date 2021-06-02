@@ -21,7 +21,7 @@ const defaultFields    = [
 ];
 const queryBuilder     = new QueryBuilder(Slider, restrictedFields, defaultFields);
 
-// Voir plus d'informations sur react slick: https://react-slick.neostack.com/
+// See more information on react slick: https://react-slick.neostack.com/
 const getSliders = async (PostBody) => {
     return queryBuilder.find(PostBody);
 };
@@ -61,9 +61,9 @@ const deleteSlider = async (req) => {
 };
 
 /**
- * @description Retourne le slider dont un item vient d'étre ajouté ou modifié
- * @param _id : _id du slider
- * @param datas : correspond a l'item qui doit être ajouté au slider
+ * @description Returns the slider from which an item has just been added or modified
+ * @param _id : slider's _id
+ * @param datas : corresponds to the item to be added to the slider
  */
 const setItemSlider = async (_id, datas) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.UnprocessableEntity;
@@ -85,9 +85,9 @@ const setItemSlider = async (_id, datas) => {
 };
 
 /**
- * @description Retourne le slider dont un item vient d'être supprimé
- * @param _id : _id du slider
- * @param _id_item : id de l'item à supprimer dans le slider
+ * @description Returns the slider from which an item has just been deleted
+ * @param _id : slider's _id
+ * @param _id_item : id of the item to delete in the slider
  */
 const deleteItemSlider = async (_id, _id_item) => {
     if (!mongoose.Types.ObjectId.isValid(_id) || !mongoose.Types.ObjectId.isValid(_id_item)) {

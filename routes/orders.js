@@ -15,6 +15,7 @@ const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
 const {authentication, adminAuth}    = require('../middleware/authentication');
 const NSErrors                       = require('../utils/errors/NSErrors');
+const {isAdmin}                      = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
@@ -37,7 +38,7 @@ module.exports = function (app) {
 };
 
 /**
- * Fonction retournant un listing des commandes
+ * Function returning a list of commands
  *
  * @param {Express.Request} req
  * @param {Express.Response} res
@@ -46,7 +47,7 @@ module.exports = function (app) {
 async function getOrders(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
-        if (req.info && !req.info.isAdmin) {
+        if (!isAdmin(req.info)) {
             PostBodyVerified.filter.status = {$nin: ['PAYMENT_FAILED']};
         }
         const result = await ServiceOrder.getOrders(PostBodyVerified);
@@ -57,10 +58,10 @@ async function getOrders(req, res, next) {
 }
 
 /**
- * Fonction pour ajouter ou mettre à jour une commande
+ * Function to add or update an order
  */
 async function setOrder(req, res, next) {
-    // On update la commande
+    // We update the order
     try {
         if (req.body.order._id) {
             const order  = req.body.order;
@@ -171,7 +172,7 @@ async function delPackage(req, res, next) {
 }
 
 /**
- * Permet de mettre à jour le statut d'une commande si cette modification peut être faite manuellement
+ * Allows you to update the status of an order if this modification can be done manually
  *
  * @param {Express.Request} req
  * @param {Express.Response} res
@@ -244,11 +245,11 @@ async function payOrder(req, res, next) {
     }
     const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
     query.active = true;
-    // Si la commande est associée à un point de vente, alors on recupere les modes de paiement de ce point de vente
-    // Sinon, on recupere tous les modes de paiement actifs
+    // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
+    // Otherwise, we recover all the active payment methods
     try {
         const paymentMethods = await PaymentMethods.find(query);
-        // On vérifie que le mode de paiement souhaité est disponible
+        // We check that the desired payment method is available
         const method = paymentMethods.find((method) => method.code === req.body.paymentMethod);
         if (!method) {
             return next(NSErrors.PaymentModeNotAvailable);
@@ -274,7 +275,7 @@ async function payOrder(req, res, next) {
         await order.save();
 
         try {
-            // On envoie la langue par defaut a l'entreprise
+            // We send the default language to the company
             await ServiceMail.sendMailOrderToCompany(order._id);
         } catch (err) {
             console.error('payOrder sendMailOrderToCompany ->', err);

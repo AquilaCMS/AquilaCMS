@@ -10,15 +10,15 @@ const {authentication, adminAuth} = require('../middleware/authentication');
 const trademarkServices           = require('../services/trademarks');
 
 module.exports = function (app) {
-    app.post('/v2/trademarks',      authentication, adminAuth, getTrademarks);
-    app.post('/v2/trademark',       authentication, adminAuth, getTrademark);
-    app.post('/v2/trademark/:id',   authentication, adminAuth, getTrademarkById);
-    app.put('/v2/trademark',        authentication, adminAuth, setTrademark);
+    app.post('/v2/trademarks', getTrademarks);
+    app.post('/v2/trademark', getTrademark);
+    app.post('/v2/trademark/:id', getTrademarkById);
+    app.put('/v2/trademark', authentication, adminAuth, setTrademark);
     app.delete('/v2/trademark/:id', authentication, adminAuth, deleteTrademark);
 };
 
 /**
- * Fonction retournant un listing marque
+ * Function returning a trademark listing
  */
 async function getTrademarks(req, res, next) {
     try {
@@ -30,7 +30,7 @@ async function getTrademarks(req, res, next) {
 }
 
 /**
- * Fonction retournant une marque
+ * Function returning a trademark listing
  */
 async function getTrademark(req, res, next) {
     try {
@@ -41,7 +41,7 @@ async function getTrademark(req, res, next) {
     }
 }
 /**
- * Fonction retournant une marque
+ * Function returning a trademark
  */
 async function getTrademarkById(req, res, next) {
     try {
@@ -52,7 +52,7 @@ async function getTrademarkById(req, res, next) {
     }
 }
 /**
- * Fonction pour ajouter ou mettre à jour une marque
+ * Function to add or update a trademark
  */
 async function setTrademark(req, res, next) {
     try {
@@ -63,10 +63,10 @@ async function setTrademark(req, res, next) {
     }
 }
 /**
- * Fonction supprimant une marque
+ * Function deleting a trademark
  */
 async function deleteTrademark(req, res, next) {
-    // On supprime la marque des produits
+    // We remove the trademark from the products
     try {
         const result = await trademarkServices.deleteTrademark(req);
         return res.json(result);

@@ -50,9 +50,9 @@ const getUserByAccountToken = async (activateAccountToken) => {
 const setUser = async (id, info, isAdmin = false) => {
     try {
         if (!isAdmin) {
-            // On ne peut pas mettre à jour le champ addresses (voir updateAddresses)
+            // The addresses field cannot be updated (see updateAddresses)
             delete info.addresses;
-            // On ne peut pas mettre à jour le champ email (voir updateemail)
+            // The email field cannot be updated (see updateemail)
             delete info.email;
             delete info.isAdmin;
         }
@@ -142,7 +142,7 @@ const createUser = async (body, isAdmin = false) => {
 
 const deleteUser = async (id) => {
     const query = {_id: id};
-    // On verifie si l'_id est valide
+    // Checks if the _id is valid
     if (!mongoose.Types.ObjectId.isValid(query._id)) {
         throw NSErrors.InvalidObjectIdError;
     }
@@ -160,9 +160,9 @@ const getUserTypes = async (query) => {
     return result.filter((obj, pos, arr) => arr.map((mapObj) => mapObj.type).indexOf(obj.type) === pos);
 };
 /**
- * Permet de generer un token a envoyer au client afin de réinitialiser son mot de passe
- * @param {*} email email du client
- * @param {*} lang lang du client
+ * Allows to generate a token to send to the customer to reset his password
+ * @param {*} email customer's email
+ * @param {*} lang customer's language
  * @see https://github.com/Automattic/mongoose/issues/7984 can't use updateOne
  */
 const generateTokenSendMail = async (email, lang, sendMail = true) => {
@@ -185,7 +185,11 @@ const generateTokenSendMail = async (email, lang, sendMail = true) => {
     return {message: email};
 };
 
+/**
+ * @deprecated
+ */
 const changePassword = async (email, password) => {
+    console.error('changePassword is deprecated !');
     const user = await Users.findOne({email});
     if (!user) {
         return {message: 'Utilisateur introuvable, impossible de réinitialiser le mot de passe.', status: 500};
@@ -208,25 +212,26 @@ const changePassword = async (email, password) => {
 };
 
 /**
- * Permet de changer le password si le token est valide et que le password réponds aux critéres
- * @param {*} token token de réinitialisation de mot de passe
- * @param {*} password nouveau mot de passe
+ * Allows to change the password if the token is valid and the password meets the criteria
+ * @param {*} token password reset token
+ * @param {*} password new password
  * @see https://github.com/Automattic/mongoose/issues/7984 can't use updateOne
  */
 const resetPassword = async (token, password) => {
     const user = await Users.findOne({resetPassToken: token});
-    if (password === undefined && user) return {message: 'Token valide'};
-    if (password === undefined && !user) return {message: 'Token invalide'};
+    if (password === undefined) {
+        if (user) {
+            return {message: 'Token valide'};
+        }
+        return {message: 'Token invalide'};
+    }
 
     if (user) {
         try {
             user.password = password;
-            await user.hashPassword();
+            user.needHash = true;
             await user.save();
             await Users.updateOne({_id: user._id}, {$unset: {resetPassToken: 1}});
-            // await Users.updateOne({_id: user._id}, {$set: {password}, $unset: {resetPassToken: 1}}, {
-            //     runValidators : true
-            // });
             return {message: 'Mot de passe réinitialisé.'};
         } catch (err) {
             if (err.errors && err.errors.password && err.errors.password.message === 'FORMAT_PASSWORD') {

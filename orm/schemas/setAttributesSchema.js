@@ -9,7 +9,7 @@
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 
 const SetAttributesSchema = new Schema({
     code       : {type: String, required: true, unique: true},
@@ -22,6 +22,8 @@ const SetAttributesSchema = new Schema({
     questions : [{
         translation : {}
     }]
+}, {
+    id : false
 });
 
 async function preUpdates(that) {

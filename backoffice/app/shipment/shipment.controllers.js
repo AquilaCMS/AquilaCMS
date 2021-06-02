@@ -78,8 +78,8 @@ ShipmentControllers.controller('ShipmentBeforeCreateCtrl', ['$scope', '$location
         };
     }]);
 
-ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$location', '$routeParams', 'toastService', 'TerritoryCountries', 'Shipment', 'ShipmentOld', '$rootScope', '$modal','ConfigV2',
-    function ($scope, $http, $location, $routeParams, toastService, TerritoryCountries, Shipment, ShipmentOld, $rootScope, $modal, ConfigV2) {
+ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$location', '$routeParams', 'toastService', 'TerritoryCountries', 'Shipment', 'ShipmentOld', '$rootScope', '$modal','ConfigV2', "$translate",
+    function ($scope, $http, $location, $routeParams, toastService, TerritoryCountries, Shipment, ShipmentOld, $rootScope, $modal, ConfigV2, $translate) {
 
         $scope.changeTab = function (tabActive) {
             if (!$scope.isEditMode && tabActive === "country") return;
@@ -167,7 +167,11 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                         translation: {},
                         prices: tabPrice
                     });
+                }else{
+                    toastService.toast("warning", $translate.instant("simple.contryAlreadySelected"));
                 }
+            }else{
+                toastService.toast("warning", $translate.instant("simple.selectContry"));
             }
         };
 
@@ -265,7 +269,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 else {
                     $location.path("/shipments/delivery/" + savedShipment._id);
                 }
-                toastService.toast("success", 'Sauvegarde effectuée')
+                toastService.toast("success", $translate.instant("global.savedDone"))
             }, function(error){
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
@@ -274,7 +278,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };
@@ -288,7 +292,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                 Shipment.delete({id: shipment._id}, function () {
                     $scope.shipments.splice($scope.shipments.indexOf(shipment), 1);
                 });
-                toastService.toast("success", 'Suppression effectuée');
+                toastService.toast("success", $translate.instant("global.deleteDone"));
                 $location.path("/shipments");
             }
         };

@@ -1,3 +1,21 @@
 {
-    "saveMessage": "Saved settings"
+    "saveMessage": "Saved settings",
+    "visible": "Visible",
+    "nonVisible": "Non visible",
+    "yes": "Yes",
+    "no": "No",
+    "standardError": "An error has occurred",
+    "success": "Success",
+    "accessForbidden": "Access forbidden !",
+    "saveDone": "Backup performed",
+    "error": "Error",
+    "apiError": "API error",
+    "deleteDone": "Deletion completed",
+    "deleteAdmin": "Admin deleted!",
+    "emailType": "Please select an email type",
+    "infoSaved": "Information saved!",
+    "emailSent": "An email has been sent to this address.",
+    "carrierDeleted": "Carrier deleted",
+    "carrierSaved": "Saved carrier",
+    "invalidMail": "Email is not valid"
 }

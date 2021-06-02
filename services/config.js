@@ -25,16 +25,19 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
     if (!user || !user.isAdmin) {
         isAdmin                       = false;
         queryBuilder.defaultFields    = [];
-        queryBuilder.restrictedFields = [
-            'environment.adminPrefix',
-            'environment.authorizedIPs',
-            'environment.mailHost',
-            'environment.mailPass',
-            'environment.mailPort',
-            'environment.mailUser',
-            'environment.overrideSendTo',
-            'licence'
-        ];
+        queryBuilder.restrictedFields = [];
+        // two choice :
+        // - add many field in "restrictedFields" (need change if we change the config file)
+        // - change the Postbody to just have only one parameters
+        PostBody = {
+            structure : {
+                'environment.siteName' : 1,
+                'environment.demoMode' : 1
+            },
+            filter : {}
+        };
+    } else {
+        queryBuilder.restrictedFields = [];
     }
     const config = await queryBuilder.findOne(PostBody, true);
     if (config.environment) {
@@ -49,7 +52,7 @@ const getConfig = async (PostBody = {filter: {}}, user = null) => {
                     ssl : global.envFile.ssl
                 };
             } else {
-                // on met les links SSL vide si false
+                // Put the SSL links empty if false
                 config.environment = {
                     ...config.environment,
                     ssl : {
@@ -137,16 +140,15 @@ const saveEnvConfig = async (body) => {
         if (environment.photoPath) {
             environment.photoPath = path.normalize(environment.photoPath);
         }
-        // traitement spécifique
+        // specific treatment
         if (environment.demoMode) {
             const seoService = require('./seo');
-            await seoService.removeSitemap(); // Supprime le sitemap.xml
-            await seoService.manageRobotsTxt(false); // Interdire le robots.txt
+            await seoService.removeSitemap(); // Remove the sitemap.xml
+            await seoService.manageRobotsTxt(false); // Ban robots.txt
         }
     }
 
-    // si le stockOrder a changé, en l'occurence pour les labels de stock,
-    // on applique les modif sur les produit possedant ces labels
+    // if the stockOrder has changed, in this case for the stock labels, we apply the changes to the product with these labels
     if (stockOrder) {
         const result = diff(
             JSON.parse(JSON.stringify(oldConfig.stockOrder.labels)),

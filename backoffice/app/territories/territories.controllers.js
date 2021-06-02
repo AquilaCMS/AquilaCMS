@@ -1,7 +1,7 @@
 var TerritoriesControllers = angular.module("aq.territories.controllers", []);
 
-TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi", "toastService", "$rootScope", '$location',
-	function ($scope, TerritoriesApi, toastService, $rootScope, $location) {
+TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi", "toastService", "$rootScope", '$location', '$translate',
+	function ($scope, TerritoriesApi, toastService, $rootScope, $location, $translate) {
 		$scope.filter = {};
 
 		function getLanguages() {
@@ -54,7 +54,7 @@ TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi"
 			if(confirm("Etes-vous sûr de vouloir supprimer ce territoire ?"))
 			{
 				TerritoriesApi.remove({terr: 'territory', action: id}, function (response) {
-					toastService.toast("success", "Territoire supprimé");
+					toastService.toast("success", $translate.instant("territories.detail.territoryDelete"));
 					$scope.getTerritories();
 				});
 			}
@@ -63,8 +63,8 @@ TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi"
 ]);
 
 
-TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routeParams", "$location", "TerritoriesApi", "toastService",
-	function ($scope, $routeParams, $location, TerritoriesApi, toastService) {
+TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routeParams", "$location", "TerritoriesApi", "toastService", "$translate",
+	function ($scope, $routeParams, $location, TerritoriesApi, toastService, $translate) {
 		if ($routeParams.territoryId) {
 			$scope.isEditMode = true;
 		}
@@ -94,7 +94,7 @@ TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routePara
 		$scope.remove = function (id) {
 			if (confirm("Etes-vous sûr de vouloir supprimer ce territoire ?")) {
 				TerritoriesApi.remove({ terr: 'territory', action: id }, function (response) {
-					toastService.toast("success", "Territoire supprimé");
+					toastService.toast("success", $translate.instant("territories.detail.territoryDelete"));
 					$location.path("/territories");
 				});
 			}

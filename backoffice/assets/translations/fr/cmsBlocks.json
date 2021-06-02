@@ -16,6 +16,9 @@
         "html": "HTML",
         "variables": "Variables",
         "result": "Resultat",
+        "blocSaved": "Bloc CMS sauvegardé !",
+        "blocDeleted": "Bloc supprimé",
+        "failDelete": "Echec de la suppression",
         "noVars": "Pas de variable"
 
     }

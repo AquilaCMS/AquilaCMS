@@ -4,7 +4,7 @@ const {Territory} = require('../../orm/models');
 const createTerritory = (params = {name: null, code: null, taxeFree: null}) => {
     const {name, code, taxeFree} = params;
     const territory              = new Territory();
-    territory.taxeFree           = taxeFree || faker.random.boolean();
+    territory.taxeFree           = taxeFree || faker.datatype.boolean();
     territory.code               = code || faker.lorem.slug();
     territory.name               = '';
     territory.translation        = {

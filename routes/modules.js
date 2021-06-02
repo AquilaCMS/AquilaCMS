@@ -19,7 +19,26 @@ module.exports = function (app) {
     app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
     app.get('/v2/modules/check',     authentication, adminAuth, checkDependencies);
-    app.put('/v2/module/config/:id',  authentication, adminAuth, setModuleConfigById);
+    app.put('/v2/module/config/:id', authentication, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
+    app.post('/v2/module/setConfig',  authentication, adminAuth, setModuleConfig);
+};
+
+/**
+ * Set the config of a module using his name
+ * req.body.name -> the name of the module
+ * req.body.config -> the new config
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ * @returns {Object} {config : theNewConfig}
+ */
+const setModuleConfig = async (req, res, next) => {
+    try {
+        const newConfig = await serviceModule.setConfig(req.body.name, req.body.config);
+        return res.json({config: newConfig});
+    } catch (err) {
+        next(err);
+    }
 };
 
 const checkDependencies = async (req, res, next) => {
@@ -40,7 +59,7 @@ const checkDependencies = async (req, res, next) => {
 };
 
 /**
- * Permet de recupérer les modules en fonction du PostBody
+ * Allows you to retrieve the modules according to the PostBody
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -54,7 +73,7 @@ async function getAllModules(req, res, next) {
     }
 }
 /**
- * Permet de recupérer un module en fonction du PostBody
+ * Allows you to retrieve a module according to the PostBody
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next
@@ -114,7 +133,7 @@ const getModuleMd = async (req, res, next) => {
 };
 
 /**
- * Permet de mettre a jour la configuration du module dont l'id est passé en parametre
+ * Used to update the configuration of the module whose id is passed in parameter
  */
 async function setModuleConfigById(req, res, next) {
     try {

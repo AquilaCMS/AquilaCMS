@@ -19,6 +19,12 @@
         "botRight": "Bottom right",
         "actif": "Active",
         "dispoFiltres": "Available in automatic filters:",
+        "pictoDone": "Pictorisation : done",
+        "formRuleIncomplete": "Rules form incomplete",
+        "pictoSegmentation": "Backup performed, launch the scheduled task 'Segmentation picto'",
+        "formPictoIncomplete": "Incomplete pictogram form",
+        "rulesFail": "Failed to save rules",
+        "ruleSaved": "Saved rule(s)",
         "pictorisation": "Perform pictorization"
     },
     "list": {

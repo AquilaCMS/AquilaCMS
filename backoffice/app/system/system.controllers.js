@@ -1,8 +1,8 @@
 const SystemControllers = angular.module("aq.system.controllers", []);
 
 SystemControllers.controller("systemGeneralController", [
-    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks",
-    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks) {
+    "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
+    function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
 
         $scope.log = {
@@ -90,7 +90,7 @@ SystemControllers.controller("systemGeneralController", [
             if (nextVersion !== $scope.next) {
                 $scope.showThemeLoading = true;
                 System.changeNextVersionRoute({nextVersion}, function(response){
-                    toastService.toast("success", "restart in progress...");
+                    toastService.toast("success", $translate.instant("system.other.restartProgress"));
                     $scope.showThemeLoading = false;
                     $scope.showLoading = true;
                     $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
@@ -106,14 +106,14 @@ SystemControllers.controller("systemGeneralController", [
                     toastService.toast("danger", error.message);
                 });
             } else {
-                toastService.toast("danger", "change version of nextjs");
+                toastService.toast("danger", $translate.instant("system.other.changeVersion"));
             }
         };
 
         // Permet de télécharger l'ensemble des documents du serveur au format zip
 
         $scope.downloadDocuments = function () {
-            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
+            toastService.toast("info", $translate.instant("system.other.takeTime"));
             $scope.disabledButton = true;
 
             $http({
@@ -128,15 +128,15 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.beforeDocument = function () {
-            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
+            toastService.toast("info", $translate.instant("system.other.takeTime"));
         };
 
         $scope.uploadedDocument = function () {
-            toastService.toast("success", "Ajout des documents effectué.");
+            toastService.toast("success", $translate.instant("system.other.addDoc"));
         };
 
         $scope.dumpDatabase = function () {
-            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
+            toastService.toast("info", $translate.instant("system.other.takeTime"));
             $scope.disabledButton = true;
             $http({
                 method       : "POST",
@@ -249,7 +249,7 @@ SystemControllers.controller("systemGeneralController", [
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", "Une erreur est survenue !");
+                    toastService.toast("danger", $translate.instant("system.other.errorOccurred"));
                     console.error(err);
                 });
             });

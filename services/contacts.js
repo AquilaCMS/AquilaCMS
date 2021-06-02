@@ -15,6 +15,10 @@ const getContacts = async (body) => {
     return queryBuilder.find(body.PostBody);
 };
 
+const deleteContact = async (id) => {
+    return Contacts.deleteOne({_id: id});
+};
+
 const setContact = async (body, mode) => {
     if (body === undefined) {
         throw new Error('Invalid contact in body');
@@ -60,5 +64,6 @@ async function sendContact(body) {
 
 module.exports = {
     getContacts,
-    setContact
+    setContact,
+    deleteContact
 };

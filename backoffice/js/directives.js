@@ -205,8 +205,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
-            "$scope","$rootScope", "$filter", "$modal","$http","toastService",
-            function ($scope, $rootScope, $filter, $modal, $http, toastService) {
+            "$scope","$rootScope", "$filter", "$modal","$http","toastService","$translate",
+            function ($scope, $rootScope, $filter, $modal, $http, toastService, $translate) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
@@ -265,7 +265,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                 $scope.addMailVar = function (code) {
                     if (code === 'none') {
-                        toastService.toast('danger', "Veuillez sélectionner un type de mail");
+                        toastService.toast('danger', $translate.instant("global.emailType"));
                     }else{
                         const modalInstance = $modal.open({
                             backdrop: 'static',
@@ -1021,7 +1021,8 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
         templateUrl: "views/templates/nsStatusLabel.html",
         scope: {
             type: "@",
-            status: "="
+            status: "=",
+            name: "@"
         },
         controller: [
             "$scope",
@@ -1051,7 +1052,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PROGRESS";
                     $scope.statusObj.isYellow =
                         $scope.status === "PAYMENT_RECEIPT_PENDING";
-                    $scope.statusObj.name = $filter("orderStatus")($scope.status, $rootScope.adminLang);
+                    $scope.statusObj.name = $filter("orderStatus")($scope.status);
                 }
                 else if($scope.type === "paymentStatus")
                 {
@@ -1070,7 +1071,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "CREDIT";
                     $scope.statusObj.isDanger =
                         $scope.status === "DEBIT";
-                    $scope.statusObj.name = $scope.status;
+                    $scope.statusObj.name = $filter("paymentType")($scope.status);
                 }
                 else if($scope.type === "picto")
                 {
@@ -1078,16 +1079,37 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
                 }
                 else if ($scope.type === "category") {
                     $scope.statusObj.isSuccess = $scope.status === true;
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
+                }else if($scope.type === "custom"){
+                    // the name is the translation
+                    if($scope.name){
+                        $scope.statusObj.name = $scope.name;
+                    }
+                    $scope.statusObj.isSuccess = true; // default
+                    $scope.statusObj.isWarning = false;
+                    $scope.statusObj.isDanger = false;
+                    switch($scope.status){
+                        case "success":
+                            /*its is the default*/
+                            break;
+                        case "warning":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isWarning = true;
+                            break;
+                        case "danger":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isDanger = true;
+                            break;
+                    }
                 }
             }
         ]
@@ -1804,10 +1826,11 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             );
                         }
-
-                        for(var i = 0; i < $scope.rule.conditions.length; i++)
-                        {
-                            $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                        if($scope.rule.conditions){
+                            const conditionsLength = $scope.rule.conditions.length;
+                            for(var i = 0; i < conditionsLength; i++) {
+                                $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                            }
                         }
                     });
                 };

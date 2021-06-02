@@ -50,6 +50,7 @@
         "paidTax": "Payé en TTC",
         "taxFree": "Payé en HT",
         "colis": "Colis",
+        "partial": "Partiel",
         "nbPack": "Numéro de colis",
         "datePack": "Date du colis",
         "arts": "Articles",
@@ -92,6 +93,15 @@
         "modifyAddress": "Modifier l'adresse",
         "save": "Sauvegarder",
         "cancel": "Annuler",
+        "invoiceCreated": "Facture créée",
+        "orderAlreadyState": "La commande est déjà dans cet état !",
+        "removePackage": "Impossible de supprimer le colis",
+        "changeStateImpossible": "Ce changement d'état n'est pas possible",
+        "addressChanged": "Adresse changée",
+        "addedParcel": "Colis correctement ajouté",
+        "returnAdded": "Retour correctement ajouté",
+        "paymentInfoAdded": "Information de paiement correctement ajoutée",
+        "errorChangingAddress": "Erreur lors du changement d'adresse",
         "transactionId": "ID de la transaction"
     },
     "list": {
@@ -146,5 +156,11 @@
         "CHEQUE": "Chèque",
         "TRANSFER": "Virement",
         "CASH": "Espèces"
+    },
+    "error": {
+        "noReturnDef": "Aucun retour définit",
+        "refundMode": "Choisissez le mode de remboursement",
+        "noTrackNum": "Pas de numéro de colis",
+        "emptyPkg": "Colis vide"
     }
 }

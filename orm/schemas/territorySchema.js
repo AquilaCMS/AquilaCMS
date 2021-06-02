@@ -8,7 +8,7 @@
 
 const mongoose      = require('mongoose');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 const utilsDatabase = require('../../utils/database');
 
 const TerritorySchema = new Schema({
@@ -17,6 +17,8 @@ const TerritorySchema = new Schema({
     type        : {type: String, enum: ['country', 'district', 'department', 'city']},
     taxeFree    : Boolean,
     children    : [{type: ObjectId, ref: 'territory'}]
+}, {
+    id : false
 });
 
 TerritorySchema.index({code: 1, name: 1}, {unique: true});

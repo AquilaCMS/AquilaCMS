@@ -70,8 +70,8 @@ TranslationControllers.controller('LanguagesCtrl',
 ]);
 
 TranslationControllers.controller('LanguageEditCtrl',
-        ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService',
-            function ($scope, LanguagesApiV2, $modalInstance, lang, toastService) {
+        ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService', '$translate',
+            function ($scope, LanguagesApiV2, $modalInstance, lang, toastService, $translate) {
                 function getLanguages() {
                     LanguagesApiV2.list({}, {PostBody: {filter: {}, limit: 99}},function (languages) {
                         $scope.languages = languages.datas;
@@ -96,7 +96,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         if(err.data.message){
                             toastService.toast("danger", err.data.message);
                         }else if(err.code === "Conflict" || err.data.code === "Conflict"){
-                            toastService.toast("danger", "Already exist");
+                            toastService.toast("danger", $translate.instant("translation.alreadyExist"));
                         }else{
                             toastService.toast("danger", err.data);
                         }

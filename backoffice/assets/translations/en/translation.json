@@ -24,5 +24,6 @@
     "act": "Actions",
     "delete": "Delete",
 
+    "alreadyExist": "Already exist",
     "saveFirst": "You must save the language first before adding a picture"
 }

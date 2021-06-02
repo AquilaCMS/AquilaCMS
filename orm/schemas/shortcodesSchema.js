@@ -19,7 +19,10 @@ const ShortcodesSchema = new Schema({
     tag         : {type: String, required: true, unique: true},
     weight      : Number,
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 module.exports = ShortcodesSchema;
 aquilaEvents.emit('ShortcodesSchemaInit', ShortcodesSchema);

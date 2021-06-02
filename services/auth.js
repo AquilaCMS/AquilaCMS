@@ -27,10 +27,10 @@ const IsAuthenticate = async (req, res) => {
 /**
  * Return the decoded token
  * @param {String} token
- * @returns utilisateur
+ * @returns user
  */
 const getDecodedToken = (token) => {
-    return jwt.decode(token.substr(token.indexOf(' ') + 1));
+    return jwt.verify(token.substr(token.indexOf(' ') + 1), global.envFile.jwt.secret);
 };
 
 /**

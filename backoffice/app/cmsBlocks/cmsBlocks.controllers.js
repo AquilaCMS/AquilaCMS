@@ -44,8 +44,8 @@ CmsBlocksControllers.controller("CmsBlocksListCtrl", [
 ]);
 
 CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
-    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "StaticV2",
-    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, StaticV2) {
+    "$scope", "CmsBlocksApi", "$routeParams", "$location", "toastService", "$http","$modal","$rootScope", "$timeout", "$translate", "StaticV2",
+    function ($scope, CmsBlocksApi, $routeParams, $location, toastService, $http, $modal, $rootScope, $timeout, $translate, StaticV2) {
         $scope.isEditMode = false;
         $scope.lang = $rootScope.adminLang;
         $scope.modules = [];
@@ -144,7 +144,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             $scope.generateContent();
 
             await CmsBlocksApi.save($scope.cmsBlock, function (res) {
-                toastService.toast("success", "Bloc CMS sauvegardé !");
+                toastService.toast("success", $translate.instant("cmsBlocks.detail.blocSaved"));
                 if (quit) {
                     $location.path("/cmsBlocks");
                 }else{
@@ -160,11 +160,11 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         $scope.delete = function () {
             if (confirm("Êtes-vous sûr de vouloir supprimer ce bloc CMS ?")) {
                 CmsBlocksApi.delete({code: $scope.cmsBlock.code}, function (response) {
-                    toastService.toast("success", "Bloc supprimé");
+                    toastService.toast("success", $translate.instant("cmsBlocks.detail.blocDeleted"));
                     $location.path("/cmsBlocks");
                 }, function (err) {
                     console.error(err);
-                    toastService.toast("danger", "Echec de la suppresion");
+                    toastService.toast("danger", $translate.instant("cmsBlocks.detail.failDelete"));
                 });
             }
             // CmsBlocksApi.delete({id: block.id}, function(){

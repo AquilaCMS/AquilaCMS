@@ -1,7 +1,7 @@
 const MediasControllers = angular.module("aq.medias.controllers", []);
 
-MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "MediaApiV2", "toastService", "ConfigV2", "$location",
-    function ($scope, $route, $modal, MediaApiV2, toastService, ConfigV2, $location) {
+MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "MediaApiV2", "toastService", "ConfigV2", "$location", "$translate",
+    function ($scope, $route, $modal, MediaApiV2, toastService, ConfigV2, $location, $translate) {
         $scope.link = "-";
         $scope.nbItemsPerPage = 20;
         $scope.maxSize = 5;
@@ -9,6 +9,19 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         $scope.groups = [];
         $scope.local = {
             search: ""
+        };
+
+        $scope.addMedia = function () {
+            var modalInstance = $modal.open({
+                templateUrl: "app/medias/views/modals/media-new.html",
+                controller: "MediasModalNewCtrl"
+            });
+
+            modalInstance.result.then(function (returnedValue) {
+                if(returnedValue.create == true){
+                    $scope.mediaDetails({_id: `${returnedValue._id}:new`})
+                }
+            });
         };
 
         $scope.generateFilter = function () {
@@ -55,7 +68,7 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
             event.stopPropagation();
             if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
                 MediaApiV2.delete({id: media._id}, function (response) {
-                    toastService.toast("success", "Media supprimé");
+                    toastService.toast("success", $translate.instant("medias.medias.deleteMedia"));
                     $route.reload();
                 });
             }
@@ -80,7 +93,7 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
         }
 
         $scope.mediaDetails = (media) => {
-            $location.path('/medias/' + media._id)
+            $location.path('/medias/' + media._id);
         }
         $scope.isPicture = function(media) {
             if(media.link.match(new RegExp("jpg|jpeg|png|gif|svg", 'i'))) {
@@ -91,22 +104,60 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
     }]
 );
 
-MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams",
-    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams) {
+MediasControllers.controller("MediasDetailsCtrl",
+    ["$scope", "$location", "toastService", "ConfigV2", "MediaApiV2","$modal", "$routeParams", "$translate",
+    function ($scope, $location, toastService, ConfigV2, MediaApiV2, $modal, $routeParams, $translate) {
         $scope.media = {
             link : "",
             name : "",
-            group: ""
+            group: "",
+            groups: []
         };
 
         $scope.nsUploadFiles = {
             isSelected : false
         };
-
-        $scope.routeId = $routeParams.id;
-
         $scope.selectedDropdownItem = "";
+        
+        $scope.isEditMode = true;
 
+        $scope.remove = function(){
+            if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
+                MediaApiV2.delete({id: $scope.media._id}, function (response) {
+                    toastService.toast("success", $translate.instant("medias.medias.deleteMedia"));
+                    $location.path('/medias');
+                });
+            }
+        }
+
+        function setMode(mode){
+            let id;
+            if(mode == true){
+                // it is a new media
+                id = $routeParams.id.substring(0, $routeParams.id.length - 4);
+                $scope.filterDropdown();
+                $scope.additionnalButtons = [
+                    {
+                        text: 'medias.medias.uploadButton',
+                        onClick: function(){
+                            $scope.addMulti();
+                        }
+                    }
+                ];
+            }else{
+                id = $routeParams.id;
+            }
+            $scope.id = id;
+            // $scope.id is used in the nsUpload, with this parameter, we upload the pictures to the correct media already created
+            MediaApiV2.query({PostBody: {filter: {_id: $scope.id}, limit: 99}}, function (response) {
+                $scope.media = response;
+                $scope.filterDropdown();
+                if($scope.media.group){
+                    // to bind the input "group"
+                    $scope.selectedDropdownItem = $scope.media.group;
+                }
+            });
+        }
 
         $scope.copyLink = function (media) {
             $modal.open({
@@ -120,25 +171,27 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             });
         };
 
-        $scope.isEditMode = false;
-
         $scope.success = function () {
-            toastService.toast("success", "Lien copié");
+            toastService.toast("success", $translate.instant("medias.medias.copiedLink"));
         };
 
         $scope.onErrorUploadMedia = function () {
-            toastService.toast("danger", "Error !");
+            toastService.toast("danger", $translate.instant("global.error"));
         }
 
         $scope.save = function () {
             if ($scope.nsUploadFiles.isSelected){
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
-                if (!response){return}
+                if (!response){
+                    return
+                }
             }
             $scope.media.group = $scope.selectedDropdownItem;
             MediaApiV2.save({media: $scope.media}, function (response) {
-                toastService.toast("success", "Media sauvegardé !");
-                $location.path("/medias");
+                toastService.toast("success", $translate.instant("medias.medias.mediaSaved"));
+                if($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new"){
+                    $location.path("/medias/"+response._id);
+                }
             }, function (error) {
                 if(error.data){
                     if(error.data.message && error.data.message != ""){
@@ -148,57 +201,37 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
                     toastService.toast("danger", error.code);
                 }else{
                     console.log(error);
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
             });
         };
 
-        $scope.init = function () {
-            MediaApiV2.query({PostBody: {filter: {_id: $routeParams.id}, limit: 99}}, function (response) {
-                $scope.media = response;
-                $scope.selectedDropdownItem = $scope.media.group ? $scope.media.group : '';
 
-                $scope.getGroups()
+        $scope.filterDropdown = function (userInput) {
+            if (userInput !== undefined) {
+                $scope.selectedDropdownItem = userInput;
+            }
+            let params = {};
+            if($scope.selectedDropdownItem){
+                params = {query: $scope.selectedDropdownItem};
+            }
+            MediaApiV2.getGroups(params, function (groups) {
+                $scope.groups = [];
+                $scope.groups = groups;
+            }, function (error){
+                console.log(error);
             });
         };
+        
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+        };
 
-        $scope.getGroups = function () {
-            $scope.itemObjectSelected = function (item) {
-                $scope.selectedDropdownItem = item;
-            };
-
-            $scope.filterDropdown = function (userInput) {
-                if (userInput !== undefined) {
-                    $scope.selectedDropdownItem = userInput;
-                }
-
-                return MediaApiV2.getGroups({query: $scope.selectedDropdownItem}).$promise.then(function (groups) {
-                    $scope.groups = groups
-                    return groups;
-                });
-            };
-
-            $scope.filterDropdown();
-        }
         $scope.isPicture = function(media) {
             if(media.link.match(new RegExp("jpg|jpeg|png|gif|svg", "i"))) {
                 return true
             }
             return false
-        }
-
-        if($routeParams.id !== 'new') {
-            $scope.init();
-        } else {
-            $scope.getGroups();
-            $scope.additionnalButtons = [
-                {
-                    text: 'medias.medias.uploadButton',
-                    onClick: function(){
-                        $scope.addMulti();
-                    }
-                }
-            ];
         }
 
         $scope.addMulti = function (nodeParent) {
@@ -208,18 +241,16 @@ MediasControllers.controller("MediasDetailsCtrl", ["$scope", "$location", "toast
             });
 
             modalInstance.result.then(function (resultOfTheModal) {
-                if(resultOfTheModal == 'cancel'){
-                    $location.path("/medias/new");
-                }else{
-                    $location.path("/medias");
-                }
+                // do nothing
             });
         };
+        
+        setMode($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new");
     }
 ]);
 
-MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media",
-    function ($scope, toastService, $modalInstance, media) {
+MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$modalInstance", "media", "$translate",
+    function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
         $scope.positions = [
             { pos: "center",
@@ -293,7 +324,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                         !($scope.info.alpha >= 0 && $scope.info.alpha <= 1))
                 )
             ) {
-                toastService.toast("warning", "Veuillez saisir toutes les valeurs.");
+                toastService.toast("warning", $translate.instant("medias.modal.enterAllValue"));
             } else {
                 if ($scope.info.background) {
                     if ($scope.info.alpha) {
@@ -306,7 +337,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
                 if ($scope.info.crop) {
                     crop = `-crop-${$scope.info.position}`;
                 }
-                toastService.toast("success", "Lien généré");
+                toastService.toast("success", $translate.instant("medias.modal.linkGenerated"));
                 $scope.link = `${window.location.origin}/images/medias/${size}-${quality}${crop}${background}/${$scope.media._id}/${filename}`;
                 const elem = document.getElementById("copy-link");
                 elem.focus();
@@ -319,7 +350,7 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
             elem.focus();
             elem.select();
             if (document.execCommand('copy')) {
-                toastService.toast("success", "Lien copié");
+                toastService.toast("success", $translate.instant("medias.modal.copiedLink"));
             }
         }
 
@@ -330,22 +361,49 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
 ]);
 
 
-MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance",
-    function ($scope, toastService, $modalInstance) {
+MediasControllers.controller("MediasModalMassNewCtrl", ["$scope", "toastService", "$modalInstance", "$translate",
+    function ($scope, toastService, $modalInstance, $translate) {
         $scope.local = {
             insertDBMediaUpload: true
         };
         $scope.beforeMediaMass = function () {
-            toastService.toast("info", "Cela peut prendre du temps, merci de patienter ...");
+            toastService.toast("info", $translate.instant("medias.modal.takeTime"));
         };
 
         $scope.uploadedMediaMass = function () {
-            toastService.toast("success", "Ajout en masse effectué.");
+            toastService.toast("success", $translate.instant("medias.modal.massAddDone"));
             $modalInstance.close('ok')
         };
 
         $scope.cancel = function () {
             $modalInstance.close('cancel')
+        };
+    }
+]);
+
+MediasControllers.controller("MediasModalNewCtrl", [
+    "$scope", "$modalInstance", "MediaApiV2", "toastService",
+    function ($scope, $modalInstance, MediaApiV2, toastService) {
+        $scope.media = {
+            link : "",
+            name : "",
+            group: "",
+        };
+
+        $scope.save = function (category) {
+            MediaApiV2.save({media: $scope.media}, function (rep) {
+                $modalInstance.close({create: true, _id: rep._id});
+            }, function(err) {
+                if(err.data.code === "Conflict"){
+                    toastService.toast("danger", err.data.message + " : code already exists");
+                }else{
+                    toastService.toast("danger", err.data.message);
+                }
+            });
+        };
+
+        $scope.cancel = function () {
+            $modalInstance.close({create: false});
         };
     }
 ]);

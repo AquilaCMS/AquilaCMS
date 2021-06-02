@@ -1,7 +1,8 @@
 const ConfigControllers = angular.module("aq.config.controllers", ["ui.bootstrap"]);
 
 ConfigControllers.controller("ImportConfigCtrl", [
-    "$scope", "ProductObj", "NSConstants", "Config", "$http", "SetAttributesV2", "toastService", function ($scope, ProductObj, NSConstants, Config, $http, SetAttributesV2, toastService) {
+    "$scope", "ProductObj", "NSConstants", "Config", "$http", "SetAttributesV2", "toastService", "$translate",
+    function ($scope, ProductObj, NSConstants, Config, $http, SetAttributesV2, toastService, $translate) {
         console.info(">>> ImportConfigCtrl loaded ! <<<");
 
         $scope.productObj = ProductObj;
@@ -59,7 +60,7 @@ ConfigControllers.controller("ImportConfigCtrl", [
             if (category == "arbo") {
                 $http.post("/config/imports/importArbo").then(function () {
                     $scope.isLoading = false;
-                    toastService.toast("success", "Succès");
+                    toastService.toast("success", $translate.instant("global.success"));
                 }, function (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data);
@@ -72,7 +73,7 @@ ConfigControllers.controller("ImportConfigCtrl", [
                     attributes
                 }).$promise.then(function () {
                     $scope.isLoading = false;
-                    toastService.toast("success", "Succès");
+                    toastService.toast("success", $translate.instant("global.success"));
                 }, function (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data);
@@ -83,8 +84,8 @@ ConfigControllers.controller("ImportConfigCtrl", [
 ]);
 
 ConfigControllers.controller("EnvironmentConfigCtrl", [
-    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload",
-    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload) {
+    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$translate",
+    function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload, $translate) {
         $scope.disabledButton = false;
         $scope.countries = [];
         $scope.config = {};
@@ -130,19 +131,19 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                         mailInfo.to = $scope.mail.to;
                         if ($scope.mail.to && $scope.mail.to !== "") {
                             TestMailConfig.sendMailConfig({ mail: mailInfo, values: "Email Test", lang: "en" }, function (res) {
-                                toastService.toast("success", "Mail Test envoyé.");
+                                toastService.toast("success", $translate.instant("config.environment.testMailSend"));
                                 $modalInstance.close();
                             }, function(r){
                                 if(r.data && r.data.stack){
                                     let position = r.data.stack.indexOf(" at ");
                                     toastService.toast("warning", r.data.stack.slice(0,position));
                                 }else{
-                                    toastService.toast("warning", "Une erreur est survenue. Veuillez vérifier les informations de connexion au serveur mail.");
+                                    toastService.toast("warning", $translate.instant("config.environment.errorCheckInfo"));
                                 }
                                 $scope.loading = false;
                             });
                         } else {
-                            toastService.toast("warning", "Veuillez saisir le destinataire.");
+                            toastService.toast("warning", $translate.instant("config.environment.enterRecipient"));
                         }
                     }
 
@@ -208,7 +209,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                     }
                 }, (err) => {
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", "Une erreur est survenue !");
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                     console.error(err);
                 });
             });
@@ -229,13 +230,13 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
 ]);
 
 ConfigControllers.controller("ImportTmpConfigCtrl", [
-    "$scope", "NSConstants", "Config", "$http", "toastService", function ($scope, NSConstants, Config, $http, toastService) {
+    "$scope", "NSConstants", "Config", "$http", "toastService", "$translate", function ($scope, NSConstants, Config, $http, toastService, $translate) {
         $scope.startImport = function () {
             toastService.toast("info", "Import en cours...");
 
             $http.get("/config/imports/importProcess").then(function (response) {
                 if (response !== null) {
-                    toastService.toast("success", "Import terminé");
+                    toastService.toast("success", $translate.instant("config.import.importFinish"));
                 }
             }, function (err) {
                 $scope.isLoading = false;
@@ -246,8 +247,8 @@ ConfigControllers.controller("ImportTmpConfigCtrl", [
 ]);
 
 ConfigControllers.controller("RobotTxtCtrl", [
-    "$scope", "$q", "$routeParams", "$location", "toastService", "$modalInstance", "$http",
-    function ($scope, $q, $routeParams, $location, toastService, $modalInstance, $http) {
+    "$scope", "$q", "$routeParams", "$location", "toastService", "$modalInstance", "$http", "$translate",
+    function ($scope, $q, $routeParams, $location, toastService, $modalInstance, $http, $translate) {
         $scope.robot = {};
 
         $http.get('/robot').then((response) => {
@@ -263,7 +264,7 @@ ConfigControllers.controller("RobotTxtCtrl", [
                 text = "";
             }
             $http.post('/robot', {PostBody: {text}}).then((response) => {
-                toastService.toast("success", "Le fichier robot.txt a été modifié.");
+                toastService.toast("success", $translate.instant("config.import.modifyRobot"));
                 $scope.close();
             });
         };

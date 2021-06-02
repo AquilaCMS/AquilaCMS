@@ -8,7 +8,7 @@
         "PAYMENT_FAILED": "Payment failed",
         "PAID": "Paid",
         "PROCESSING": "Processing",
-        "PROCESSED": "Processed", 
+        "PROCESSED": "Processed",
         "BILLED": "Billed",
         "DELIVERY_PROGRESS": "Delivery in progress",
         "DELIVERY_PARTIAL_PROGRESS": "Partial delivery in progress",
@@ -50,6 +50,7 @@
         "paidTax": "Paid with tax",
         "taxFree": "Paid without tax",
         "colis": "Package",
+        "partial": "Partial",
         "nbPack": "Package number",
         "datePack": "Package date",
         "arts": "Items",
@@ -79,7 +80,7 @@
         "noRet": "No return entered",
         "clientReceipt": "Reception by the customer",
         "relayPoint": "Relay point",
-        "firstname":"Firstname",
+        "firstname": "Firstname",
         "lastname": "LastName",
         "companyName": "Company Name",
         "line1": "Address Line 1",
@@ -89,9 +90,18 @@
         "zipcode": "Zipcode",
         "city": "City",
         "country": "Country",
-        "modifyAddress":"Modify address",
-        "save":"Save",
-        "cancel":"Cancel",
+        "modifyAddress": "Modify address",
+        "save": "Save",
+        "cancel": "Cancel",
+        "invoiceCreated": "Invoice created",
+        "orderAlreadyState": "The order is already in this state!",
+        "removePackage": "Unable to remove the package",
+        "changeStateImpossible": "This change of state is not possible",
+        "addressChanged": "Address changed",
+        "addedParcel": "Correctly added parcel",
+        "returnAdded": "Return correctly added",
+        "paymentInfoAdded": "Correctly added payment information",
+        "errorChangingAddress": "Error when changing address",
         "transactionId": "Transaction ID"
     },
     "list": {
@@ -125,13 +135,13 @@
         },
         "status": "All"
     },
-    "friendlyInfo" : {
-        "order" : "Order number",
-        "date" : "Date",
-        "productNumber" : "Number of products",
-        "status" : "Status"
+    "friendlyInfo": {
+        "order": "Order number",
+        "date": "Date",
+        "productNumber": "Number of products",
+        "status": "Status"
     },
-    "paymentStatus" : {
+    "paymentStatus": {
         "DONE": "Done",
         "TODO": "To do",
         "FAILED": "Failed",
@@ -142,9 +152,15 @@
         "DEBIT": "Refund"
     },
     "paymentMode": {
-        "CB" : "Payment card",
-        "CHEQUE" : "Bank check",
-        "TRANSFER" : "Transfer",
-        "CASH" : "Cash"
+        "CB": "Payment card",
+        "CHEQUE": "Bank check",
+        "TRANSFER": "Transfer",
+        "CASH": "Cash"
+    },
+    "error": {
+        "noReturnDef": "Select a product to return",
+        "refundMode": "Choose the refund method",
+        "noTrackNum": "No tracking number",
+        "emptyPkg": "Empty package"
     }
 }

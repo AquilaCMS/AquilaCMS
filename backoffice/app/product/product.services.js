@@ -120,8 +120,8 @@ ProductServices.service("ProductColumns", function () {
         },
         {
             filter : {
-                component_template : "<a ng-click=\"local.sortType = 'translation.' + defaultLang + '.name'; local.sortReverse = !local.sortReverse; getProducts();\">"
-                    + "<span translate>product.list2.name</span>"
+                component_template : "<a ng-click=\"local.sortType = 'translation.' + defaultLang + '.name'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
+                    + "<span translate>product.list2.name</span><span>({{filterLang}})</span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"
@@ -131,24 +131,24 @@ ProductServices.service("ProductColumns", function () {
         },
         {
             filter : {
-                component_template : "<a ng-click=\"local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts();\">"
+                component_template : "<a ng-click=\"local.sortType = 'price.ati.normal'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.price</span>"
                     + "<span ng-show=\"local.sortType == 'price.ati.normal' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
                     + "<span ng-show=\"local.sortType == 'price.ati.normal' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"
             },
-            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.min_priceSale' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.max_priceSale' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
+            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.min_priceSale' class='form-control' ng-change='getProducts(1)' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.max_priceSale' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
             cell  : {label : "Price :",class: "text-right", component_template: "{{product.price.ati.normal !== undefined && product.price.ati.normal != null ? product.price.ati.normal + ' €' : 'N/A'}}"}
         },
         {
             filter : {
-                component_template : "<a ng-click=\"local.sortType = 'stock.qty'; local.sortReverse = !local.sortReverse; getProducts();\">"
+                component_template : "<a ng-click=\"local.sortType = 'stock.qty'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
                     + "<span translate>product.list2.quantity</span>"
                     + "<span ng-show=\"local.sortType == 'stock.qty' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
                     + "<span ng-show=\"local.sortType == 'stock.qty' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"
             },
-            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.min_qty' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.max_qty' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
+            inter : {component_template: "<div style='width:125px;margin:auto'><input translate translate-attr='{placeholder: \"product.list2.min\"}' ng-model='searchObj.min_qty' class='form-control' ng-change='getProducts(1)' type='number' style='width: 60px;' /> <input translate translate-attr='{placeholder: \"product.list2.max\"}' ng-model='searchObj.max_qty' class='form-control' ng-change='getProducts()' type='number' style='width: 60px;' /></div>"},
             cell  : {label : "Quantity :",class: "text-right", component_template: "{{product.stock.qty !== undefined && product.stock.qty != null ? product.stock.qty : 'N/A'}}"}
         }
     ];

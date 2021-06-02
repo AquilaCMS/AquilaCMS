@@ -5,6 +5,8 @@
     "delExp": "Délai avant expiration des paniers (en heures)",
     "fieldReq": "Ce champ est requis.",
     "delAnn": "Délai avant annulation des commandes en attente de paiement (en heures)",
+    "requestMailPendingCarts": "Temps avant email de relance pour panier en attente (en heures)",
+    "requestMailPendingCartsHelp": "Ne peut pas etre superieur  au delai avant expiration des paniers",
     "gestion": "Gestion du stock",
     "res": "Réservation du stock",
     "cart": "Panier",
@@ -26,5 +28,6 @@
     "valider": "Valider",
     "additionnalFeesTax": "Frais supplémentaires (Tax)",
     "additionnalFeesEt": "Frais supplémentaires (HT)",
+    "order&StockSaved": "Stock & commandes sauvegardée !",
     "automaticBilling": "Facturation automatique (la commande est payée)"
 }

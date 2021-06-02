@@ -38,6 +38,12 @@
             "ati": "Difference prix TTC ",
             "et": "Difference prix HT"
         },
+        "productSaved": "Produit sauvegardé",
+        "errorDeleting": "Une erreur est survenue lors de la suppression.",
+        "errorSaving": "Une erreur est survenue lors de la sauvegarde.",
         "modifierWeight": "Difference de poids (g)"
+    },
+    "msg": {
+        "deleteSelection": "Etes-vous sur de vouloir supprimer la section ?"
     }
 }

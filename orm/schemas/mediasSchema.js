@@ -15,6 +15,8 @@ const MediasSchema = new Schema({
     link      : String,
     group     : {type: String, default: ''},
     extension : {type: String, default: '.jpg'}
+}, {
+    id : false
 });
 
 async function preUpdates(that) {
@@ -22,8 +24,8 @@ async function preUpdates(that) {
         return;
     }
     const query = {name: that.name};
-    if (that.id) {
-        query._id = {$ne: that.id};
+    if (that._id) {
+        query._id = {$ne: that._id};
     }
     if (await mongoose.model('medias').exists(query)) {
         throw NSErrors.CodeExisting;

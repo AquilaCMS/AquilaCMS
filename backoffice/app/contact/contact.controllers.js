@@ -94,8 +94,8 @@ ContactControllers.controller("ContactListCtrl", [
 ]);
 
 ContactControllers.controller("ContactDetailsCtrl", [
-    "$scope", "$routeParams", "Contact", "$rootScope",
-    function ($scope, $routeParams, Contact, $rootScope) {
+    "$scope", "$routeParams", "Contact", "$rootScope", "$translate", "OneContact", "toastService", "$location", 
+    function ($scope, $routeParams, Contact, $rootScope, $translate, OneContact, toastService, $location) {
         $scope.isEditMode = false;
         $scope.contact = {};
         $scope.keys = [];
@@ -109,5 +109,16 @@ ContactControllers.controller("ContactDetailsCtrl", [
             $scope.contact.data.date = moment($scope.contact.createdAt).format('L');
             $scope.keys = Object.keys($scope.contact.data);
         });
+
+        $scope.removeContact = function (_id) {
+            const translation = $translate.instant("contact.detail.confirm");
+            if(confirm(translation)) {
+                OneContact.delete({id: _id}).$promise.then(function () {
+                    $location.path("/contacts");
+                }, function () {
+                    toastService.toast("danger", $translate.instant("contact.errorDeleting"));
+                });
+            }
+        }
     }
 ]);

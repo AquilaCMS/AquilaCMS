@@ -1250,6 +1250,96 @@ const initDBValues = async () => {
 
                 }
             }
+        },
+        {
+            code        : 'pendingCarts',
+            position    : 13,
+            translation : {
+                fr : {
+                    name      : 'Relancer par mail les paniers en attente',
+                    variables : [
+                        {
+                            value       : 'customer.firstname',
+                            description : 'Prénom du client'
+                        },
+                        {
+                            value       : 'customer.lastname',
+                            description : 'Nom du client'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'HT ou TTC'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
+                        }
+                        // {
+                        //     value       : 'startitems',
+                        //     description : 'Insérer avant les informations produits'
+                        // },
+                        // {
+                        //     value       : 'enditems',
+                        //     description : 'Insérer après les informations produits'
+                        // }
+                    ]
+
+                },
+                en : {
+                    name      : 'Send mail to pending carts',
+                    variables : [
+                        {
+                            value       : 'customer.firstname',
+                            description : 'Customer firstname'
+                        },
+                        {
+                            value       : 'customer.lastname',
+                            description : 'Customer lastname'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'ATI or ET'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
+                        }
+                        // {
+                        //     value       : 'startitems',
+                        //     description : 'Insert before products informations'
+                        // },
+                        // {
+                        //     value       : 'enditems',
+                        //     description : 'Insert after products informations'
+                        // }
+                    ]
+
+                }
+            }
         }
     ];
     // Populate mailType in BDD
@@ -1314,7 +1404,7 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
- * Permet de faire un populate des champs spécifiques de chaque item
+ * Allows you to populate specific fields of each item
  * @param {array} items
  */
 const populateItems = async (items) => {

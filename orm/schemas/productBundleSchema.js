@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const helper   = require('../../utils/utils');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
-const NSErrors = require('../../utils/errors/NSErrors');
+const mongoose   = require('mongoose');
+const helper     = require('../../utils/utils');
+const NSErrors   = require('../../utils/errors/NSErrors');
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const ProductBundleSchema = new Schema({
     qty             : {type: Number},
@@ -28,7 +28,6 @@ const ProductBundleSchema = new Schema({
                     et  : {type: Number}
                 },
                 modifier_weight : {type: Number}
-
             }],
             isRequired : Boolean,
             minSelect  : Number,
@@ -43,7 +42,10 @@ const ProductBundleSchema = new Schema({
         label        : String,
         translation  : {}
     }
-}, {discriminatorKey: 'kind'});
+}, {
+    discriminatorKey : 'kind',
+    id               : false
+});
 
 // LATER, calsulate qty and disponibility from child products on retrieving product
 /* ProductBundleSchema.virtual("stock").get(function () {
@@ -90,7 +92,10 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
                 const ServicesProducts = require('../../services/products');
                 // const selectionProduct = await this.model('products').findById(selectionProducts[j]);
                 if (selectionProducts[j].type === 'simple') {
-                    if (!ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity).ordering.orderable || !ServicesProducts.checkProductOrderable(item.stock, null)) throw NSErrors.ProductNotOrderable;
+                    if (
+                        !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity)).ordering.orderable
+                        || !(await ServicesProducts.checkProductOrderable(item.stock, null))
+                    ) throw NSErrors.ProductNotOrderable;
                     await ServicesProducts.updateStock(selectionProducts[j], -item.quantity);
                 }
             }
@@ -103,10 +108,36 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
         unit : {et: this.price.et.normal + modifiers.price.et, ati: this.price.ati.normal + modifiers.price.ati}
     };
     item.type       = 'bundle';
-    item.weight    += modifiers.weight;
-    const _cart     = await this.basicAddToCart(cart, item, user, lang);
+    // the weight of the bundle is 0 -> we need to calculate the total weight with each products
+    // the weight of the bundle isn't 0 -> the admin put the weight so we use it
+    if (item.weight === 0) {
+        item.weight = await calculateWeight(item);
+    }
+    // we change the weight with modifiers
+    item.weight += modifiers.weight;
+    const _cart  = await this.basicAddToCart(cart, item, user, lang);
     return _cart;
 };
+
+async function calculateWeight(item) {
+    if (item) {
+        let weight = 0;
+        if (item.selections) {
+            for (const oneProductOfSelections of item.selections) {
+                if (oneProductOfSelections.products) {
+                    for (const oneProductID of oneProductOfSelections.products) {
+                        const product = await mongoose.model('products').findOne({_id: oneProductID});
+                        if (product.weight) {
+                            weight += product.weight;
+                        }
+                    }
+                }
+            }
+        }
+        return weight;
+    }
+    return 0;
+}
 
 ProductBundleSchema.methods.getBundlePrdsModifiers = async function (selections) {
     const modifiers     = {price: {ati: 0, et: 0}, weight: 0};
@@ -162,7 +193,7 @@ function validateBySection(bundle_section, item) {
         // On vérifie que les produits sélectionnés sont dans la liste des choix
         let i = 0;
         while (i < selection.products.length && bundle_section.products.find(function (product) {
-            return product.id === selection.products[i];
+            return product.id.toString() === selection.products[i];
         }) !== undefined) {
             i++;
         }

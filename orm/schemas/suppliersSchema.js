@@ -24,7 +24,10 @@ const SuppliersSchema = new Schema({
     phone              : String,
     purchasing_manager : String,
     active             : {type: Boolean, default: true}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
     const res = await this.find({name: supplierName});

@@ -25,6 +25,11 @@
         "statusChanged": "Order status changed:",
         "mailContact": "Contact e-mail:",
         "receptRetour": "Sent back product receipted:",
+        "fileSaved": "File saved!",
+        "fileDelete": "File deleted!",
+        "mailUnsaved": "Mail not saved!",
+        "mailSaved": "Mail saved !",
+        "mailDelete": "Mail delete",
         "envoiColis": "Package sending:"
     },
     "list": {
@@ -40,6 +45,8 @@
         "envoie": "Send Test",
         "back": "Back",
         "titre": "Please fill all the fields to test mail.",
+        "testMailSend": "Test mail sent.",
+        "enterRecipient": "Please enter the recipient.",
         "null": "No template exisiting for this mail type."
     }
 }

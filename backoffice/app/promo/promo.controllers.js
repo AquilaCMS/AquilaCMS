@@ -107,18 +107,19 @@ PromoControllers.controller("PromoListCtrl", [
  * Controller de la page contenant le detail d'un Promo
  */
 PromoControllers.controller("PromoDetailCtrl", [
-    "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2",
-    function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2) {
+    "$scope", "$q", "$routeParams", "$modal", "$location", "toastService", "PromosV2", "PromoCheckOrderById", "RulesV2", "PromoClone", "PromoCodeV2", "$translate",
+    function ($scope, $q, $routeParams, $modal, $location, toastService, PromosV2, PromoCheckOrderById, RulesV2, PromoClone, PromoCodeV2, $translate) {
         $scope.promo = {
-            discountType     : null,
-            actif            : false,
-            gifts            : [],
-            codes            : [],
-            dateStart        : null,
-            dateEnd          : null,
-            priority         : 0,
-            applyNextRules   : false,
-            discountValue    : 0
+            discountType         : null,
+            actif                : false,
+            gifts                : [],
+            codes                : [],
+            dateStart            : null,
+            dateEnd              : null,
+            priority             : 0,
+            applyNextRules       : false,
+            discountValue        : 0,
+            discountValueMessage : false
         };
         $scope.rule = {
             conditions : []
@@ -207,10 +208,27 @@ PromoControllers.controller("PromoDetailCtrl", [
             }
         };
 
+        // check the discount value and alert if it is negative
+        $scope.checkDiscount = function (){
+            if($scope.promo.discountType == "FVet" || $scope.promo.discountType == "FVati"){
+                $scope.promo.discountValueMessage = false;
+                if($scope.promo.discountValue < 0 ){
+                    $scope.promo.discountValue = 0;
+                }
+            }else{
+                if($scope.promo.discountValue < 0 ){
+                    $scope.promo.discountValueMessage = true;
+                }else{
+                    $scope.promo.discountValueMessage = false;
+                }
+            }
+        }
+
         // Permet de recupérer une promo en fonction de son id
         $scope.PromoGetById = function () {
             PromosV2.query({PostBody: {filter: {_id: $routeParams.promoId}, structure: '*'}}, function (promo) {
                 $scope.promo = promo;
+                $scope.checkDiscount();
                 let dateStart = $scope.promo.dateStart;
                 let dateEnd = $scope.promo.dateEnd;
                 // on ajoute les heures et minutes au objet timeStart et timeEnd
@@ -439,14 +457,14 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
 
                 Promise.all(actionPromises).then(function (response) {
-                    toastService.toast("success", "Action(s) sauvegardée(s)");
+                    toastService.toast("success", $translate.instant("simple.actionSaved"));
                     $scope.actions = response;
                     // On enregistre les ids des actions dans la promo
                     $scope.promo.actions = response.map(function (action) {
                         return action._id;
                     });
                 }, function (err) {
-                    toastService.toast("danger", "Echec de sauvegarde des règles");
+                    toastService.toast("danger", $translate.instant("simple.errorSavedRules"));
                 });
             }
         }
@@ -459,7 +477,7 @@ PromoControllers.controller("PromoDetailCtrl", [
 
             $scope.form.nsSubmitted = true;
             if ($scope.form.ruleForm.$invalid) {
-                return toastService.toast("danger", "Formulaire des règles incomplet");
+                return toastService.toast("danger", $translate.instant("simple.formRulesIncomplete"));
             }
             while (actionFormChecked === 0 && i < formKeys.length) {
                 if ($scope.form[`actionForm_${  i}`]) {
@@ -471,11 +489,12 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
                 i++;
             }
+            $scope.checkDiscount();
             if (actionFormChecked === -1) {
                 return toastService.toast("danger", `Le formulaire de l'action ${  i  } est incomplet.`);
             }
             if ($scope.form.$invalid || $scope.dateIsValid === false) {
-                return toastService.toast("danger", "Les informations saisies ne sont pas valides.");
+                return toastService.toast("danger", $translate.instant("simple.enterInvalid"));
             }
             // On ajoute les gifts dans promo.gifts en ne gardant que la value des gifts dont la valeur est valide
             processGifts();
@@ -486,12 +505,12 @@ PromoControllers.controller("PromoDetailCtrl", [
                 if ($scope.rule.operand !== undefined && $scope.promo.discountType !== 'QtyB') {
                     // On sauvegarde la régle
                     RulesV2.save($scope.rule, function (response) {
-                        toastService.toast("success", "Règle(s) sauvegardée(s)");
+                        toastService.toast("success", $translate.instant("simple.ruleSaved"));
                         $scope.rule = response;
                         // On enregistre l'id de la régle dans rules_id et de la promo
                         $scope.promo.rules_id = response._id;
                     }, function (err) {
-                        toastService.toast("danger", "Echec de sauvegarde des règles");
+                        toastService.toast("danger", $translate.instant("simple.failSavedRules"));
                     });
                 } else {
                     // Si nous n'avons pas de règle nous enregistrons directement les actions et la promo
@@ -502,7 +521,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                 if (isQuit) {
                     $location.path("/promos");
                 } else {
-                    toastService.toast("success", "Promotion sauvegardée !");
+                    toastService.toast("success", $translate.instant("simple.promoSaved"));
                     $location.path(`/promos/${  response._id}`);
                 }
             }, function (error) {
@@ -516,7 +535,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                     toastService.toast("danger", error.code);
                 }else{
                     console.log(error);
-                    toastService.toast("danger", 'Error');
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                 }
                 console.log(error); //to see it
             });
@@ -529,7 +548,7 @@ PromoControllers.controller("PromoDetailCtrl", [
 
                 Promise.all(actionPromises).then(function () {
                     PromosV2.delete({id: _id, type: 'promo'}, function () {
-                        toastService.toast("success", "Promo supprimé");
+                        toastService.toast("success", $translate.instant("simple.promoDeleted"));
                         $location.path("/promos");
                     });
                 });
@@ -540,7 +559,7 @@ PromoControllers.controller("PromoDetailCtrl", [
             await $scope.save(false);
             PromoClone.clone({_id: $scope.promo._id}, function (response) {
                 if (response) {
-                    toastService.toast("success", "Promotion clonée !");
+                    toastService.toast("success", $translate.instant("simple.promoCloned"));
                     $location.path(`/promos/${  response.clone_id}`);
                 }
             });
@@ -573,8 +592,8 @@ PromoControllers.controller("PromoDetailTypeCtrl", [
 
 PromoControllers.controller("PromoDetailAddCodePromoCtrl",
     [
-        "$scope", "$modalInstance", "PromosV2","toastService",
-        function ($scope, $modalInstance, PromosV2, toastService) {
+        "$scope", "$modalInstance", "PromosV2","toastService", "$translate",
+        function ($scope, $modalInstance, PromosV2, toastService, $translate) {
             // Si le codePromo.code existe déjà dans le tableau promo.codes alors on indique a l'utilisateur que le code promo existe déjà
             $scope.checkCodeExists = function () {
                 PromosV2.query({PostBody: {filter: {"codes.code": $scope.codePromo.code}, structure: '*'}}, function (promo) {
@@ -607,7 +626,7 @@ PromoControllers.controller("PromoDetailAddCodePromoCtrl",
                     return;
                 }
                 if (!checkNumber($scope.codePromo.limit_total) || !checkNumber($scope.codePromo.limit_client)){
-                    toastService.toast("danger", "Quantité maximale et Utilisation max par client doivent être des nombres ou '*'");
+                    toastService.toast("danger", $translate.instant("simple.errorQteMaxEnter"));
                     return;
                 }
                 $modalInstance.close($scope.codePromo);

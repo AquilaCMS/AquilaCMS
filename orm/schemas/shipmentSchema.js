@@ -47,7 +47,10 @@ const ShipmentSchema = new Schema({
     forAllPos                : {type: Boolean, default: false},
     component_template       : String,
     component_template_front : String
-}, {discriminatorKey: 'type'});
+}, {
+    discriminatorKey : 'type',
+    id               : false
+});
 
 async function preUpdates(that) {
     await utilsDatabase.checkCode('shipments', that._id, that.code);
