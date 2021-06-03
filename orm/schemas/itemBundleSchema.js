@@ -13,7 +13,24 @@ const {ObjectId} = Schema.Types;
 const ItemBundle = new Schema({
     selections : [{
         bundle_section_ref : {type: String, required: true},
-        products           : [{type: ObjectId, ref: 'products'}]
+        products           : [
+            {
+                id: {type: ObjectId, ref: 'products'},
+                name         : String,
+                code         : String,
+                image        : String,
+                description1 : {
+                    title : String,
+                    text  : String
+                },
+                description2 : {
+                    title : String,
+                    text  : String
+                },
+                canonical          : String,
+                kind: String
+            }
+        ]
     }],
     bundle_sections : [
         {
