@@ -11,6 +11,7 @@ const {encryption} = require('../../utils');
 
 const Schema = mongoose.Schema;
 
+/* eslint-disable array-element-newline */
 const ConfigurationSchema = new Schema({
     name    : String,
     licence : {
@@ -108,6 +109,7 @@ const ConfigurationSchema = new Schema({
 }, {
     id : false
 });
+/* eslint-enable array-element-newline */
 
 ConfigurationSchema.post('updateOne', async function () {
     const update = this.getUpdate().$set;
@@ -122,7 +124,7 @@ ConfigurationSchema.post('updateOne', async function () {
 });
 
 ConfigurationSchema.post('findOne', async function (doc) {
-    if (doc.environment && doc.environment.mailPass) {
+    if (doc && doc.environment && doc.environment.mailPass) {
         try {
             doc.environment.mailPass = encryption.decipher(doc.environment.mailPass);
         // eslint-disable-next-line no-empty

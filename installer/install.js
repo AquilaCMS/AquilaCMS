@@ -35,7 +35,8 @@ const firstLaunch = async (req, install) => {
  */
 const testdb = async (req) => {
     try {
-        await require('../utils/database').testdb(req.body.data);
+        const utilsDatabase = require('../utils/database');
+        return utilsDatabase.testdb(req.body.data);
     } catch (err) {
         throw new Error('Cannot connect to MongoDB');
     }
@@ -231,7 +232,8 @@ const createDefaultCountries = async () => {
             code : 'FR',
             name : 'France',
             type : 'country'
-        }, {
+        },
+        {
             code : 'UK',
             name : 'United Kingdom',
             type : 'country'

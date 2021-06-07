@@ -219,7 +219,11 @@
                     testDBLoader.style.display         = 'none';
                     testDBButton.style.display         = 'block';
                     toastContain.style.backgroundColor = "red";
-                    toastContain.MaterialSnackbar.showSnackbar({message: response.responseText});
+                    if(response.responseText){
+                        toastContain.MaterialSnackbar.showSnackbar({message: response.responseText});
+                    } else {
+                        toastContain.MaterialSnackbar.showSnackbar({message: "An error has occurred"});
+                    }
                     console.error(response, status, error);
                 }
             });
