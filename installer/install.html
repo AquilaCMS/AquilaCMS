@@ -198,7 +198,7 @@
             const partValue = fieldValue.split("//");
             if(partValue[1]){
                 const secondPart = partValue[1].split("/");
-                if(secondPart[1] == "") {
+                if(secondPart[1] && secondPart[1] === "") {
                     toastContain.style.backgroundColor = "orange";
                     toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database"});
                     return;
