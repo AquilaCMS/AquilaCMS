@@ -8,9 +8,21 @@ ClientControllers.controller("ClientCtrl", [
         $scope.page = 1;
         $scope.nbItemsPerPage = 10;
         $scope.maxSize = 5;
-        $scope.filter = {};
+        $scope.filter = {
+            "company": "",
+            "email": "",
+            "firstname": "",
+            "lastname": "",
+            "min_createdAt":null
+        };
         $scope.valeurTri = -1;
         $scope.tri = {createdAt : -1}
+        if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
+            const pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+            for (const key in pageAdmin.search) {
+                $scope.filter[key] = pageAdmin.search[key];
+            }
+        }
         
         function getFilter(){
             let filter = {};
@@ -45,6 +57,17 @@ ClientControllers.controller("ClientCtrl", [
             return filter;
         }
         $scope.sortSearch = function(name, pageNumber){
+            const search = {};
+            let pageAdmin = {};
+            if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
+                pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+            }
+            for (const key in $scope.filter) {
+                if ($scope.filter[key] != "" && $scope.filter[key] != null){
+                    search[key] = $scope.filter[key];
+                }
+            }
+            window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: pageNumber, search }));
             if($scope.valeurTri == 1){
                 $scope.valeurTri = -1;
             }else{
@@ -74,7 +97,6 @@ ClientControllers.controller("ClientCtrl", [
 
 
         $scope.onClientsPageChange = function (page) {
-
             const search = $scope.query;
             let pageAdmin = { location: "clients", page: 1 };
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
