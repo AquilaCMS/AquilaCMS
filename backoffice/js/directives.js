@@ -322,6 +322,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.selected = false;
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
+                                $scope.search = '';
 
                                 $scope.selectShortcode = function(shortCode){
                                     $scope.selected = true;
@@ -356,8 +357,24 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $modalInstance.close({ string });
                                 }
 
+                                $scope.sortShortCodes = function(string){
+                                    for (const i in $scope.shortcodes) {
+                                        if (string === '') {
+                                            $scope.shortcodes[i].sort = true;
+                                        }else{
+                                            if ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase())){
+                                                $scope.shortcodes[i].sort = true;
+                                            }else{
+                                                $scope.shortcodes[i].sort = false;
+                                            }
+                                        }
+                                    }
+                                    
+                                }
+
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
+                                    $scope.sortShortCodes($scope.search);
                                 }, function errorCallback(response) {
                                     console.log(response);
                                 });
