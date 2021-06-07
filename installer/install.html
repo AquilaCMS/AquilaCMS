@@ -194,11 +194,15 @@
             let toastContain = document.getElementById("toast-container");
 
             const fieldValue = document.getElementById("databaseAdd").value.replace(/\s/g, "");
-            if(fieldValue === "mongodb://localhost:27017/")
-            {
-                toastContain.style.backgroundColor = "red";
-                toastContain.MaterialSnackbar.showSnackbar({message: "Connection string needs database name"});
-                return;
+
+            const partValue = fieldValue.split("//");
+            if(partValue[1]){
+                const secondPart = partValue[1].split("/");
+                if(secondPart[1] == "") {
+                    toastContain.style.backgroundColor = "orange";
+                    toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database"});
+                    return;
+                }
             }
 
             testDBLoader.style.display = 'block';
