@@ -77,6 +77,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         $scope.languages = languages.datas;
                     });
                 }
+                const oldLang = angular.copy(lang);
 
                 if (lang) {
                     $scope.lang = angular.copy(lang);
@@ -88,6 +89,12 @@ TranslationControllers.controller('LanguageEditCtrl',
                 else $scope.lang = {defaultLanguage: false, visible: false};
 
                 $scope.save = function (lang) {
+                    if(typeof oldLang !== "undefined" && oldLang !== null) {
+                        if(oldLang.defaultLanguage !== lang.defaultLanguage){
+                            toastService.toast("warning", $translate.instant("translation.toast.defaultLangChang"));
+                            toastService.toast("warning", $translate.instant("translation.toast.needActions"));
+                        }
+                    }
                     LanguagesApiV2.save({lang}, function () {
                         var event = new CustomEvent("getLanguages", {});
                         window.dispatchEvent(event);
