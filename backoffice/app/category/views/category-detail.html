@@ -150,7 +150,7 @@
                         <tr>
                             <td translate>category.detail.headerImg</td>
                             <td>
-                                <img ng-show="category.img" class="boxShadow" src="{{getImage(category)}}" alt="" />
+                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" />
 
                                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
                                    images="category.image" showalt="true" after-function="close(category)"></ns-upload-files>
