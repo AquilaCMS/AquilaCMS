@@ -13,7 +13,6 @@
         "baseURL": "Base URL (ex : http://example.com/)",
         "prefixeURL": "Back-office URL Prefix (admin by default)",
         "picsPath": "Medias path",
-        "billsPath": "Bills paths",
         "prixTTC": "ATI Price (deprecated)",
         "stats": "Monitoring and statistics",
         "ggAnal": "Google Analytics",

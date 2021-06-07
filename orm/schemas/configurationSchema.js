@@ -31,7 +31,6 @@ const ConfigurationSchema = new Schema({
         currentTheme      : {type: String, required: true},
         demoMode          : {type: Boolean, default: true},
         exchangeFilesPath : {type: String},
-        invoicePath       : {type: String},
         mailHost          : {type: String},
         mailPass          : {type: String},
         mailPort          : {type: Number},
