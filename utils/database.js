@@ -37,6 +37,7 @@ const connect = async () => {
 };
 
 const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
+    mongoose.connection.close(); // need to reset the connection mongo for every try
     mongoose.connect(uriDatabase, {
         useNewUrlParser    : true,
         useFindAndModify   : false,
@@ -46,7 +47,7 @@ const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
         if (typeof error === 'undefined' || error === null) {
             resolve(true);
         } else {
-            reject(new Error(`Unable to connect to" ${uriDatabase}`));
+            reject(new Error(`Unable to connect to" ${uriDatabase}, ${error.toString()}`));
         }
     });
 });
