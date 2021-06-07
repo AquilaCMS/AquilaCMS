@@ -24,12 +24,21 @@ const connect = async () => {
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
         connection = true;
-        await mongoose.connect(global.envFile.db, {
-            useNewUrlParser    : true,
-            useFindAndModify   : false,
-            useCreateIndex     : true,
-            useUnifiedTopology : true
+        const checkConnect = async () => new Promise((resolve, reject) => {
+            mongoose.connect(global.envFile.db, {
+                useNewUrlParser    : true,
+                useFindAndModify   : false,
+                useCreateIndex     : true,
+                useUnifiedTopology : true
+            }, (error) => {
+                if (typeof error === 'undefined' || error === null) {
+                    resolve(true);
+                } else {
+                    reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
+                }
+            });
         });
+        await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
 
