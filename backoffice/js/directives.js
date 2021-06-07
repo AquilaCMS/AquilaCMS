@@ -269,7 +269,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     }else{
                         const modalInstance = $modal.open({
                             backdrop: 'static',
-                            keyboard: false,
                             templateUrl: 'views/modals/add-mailvar-tinymce.html',
                             controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
                                 function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
@@ -313,7 +312,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
+                        closeByEscape: true,
                         templateUrl: 'views/modals/add-shortcode-tinymce.html',
                         controller: ['$scope', '$modalInstance', '$http', '$rootScope',
                             function ($scope, $modalInstance, $http, $rootScope) {
@@ -397,7 +396,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addImage = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-image-tinymce.html',
                         controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
                             function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
@@ -514,7 +512,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addLink = function (textSelected, lang) {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-link-tinymce.html',
                         controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
                             function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
