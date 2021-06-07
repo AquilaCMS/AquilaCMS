@@ -62,6 +62,9 @@
                 "allowArrowFunctions": true
             }
         ],
+        "parserOptions": {
+            "ecmaVersion": 2020
+        },
         "import/newline-after-import": "off",
         "import/no-dynamic-require": "off",
         "import/no-extraneous-dependencies": "off",
