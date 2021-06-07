@@ -269,7 +269,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     }else{
                         const modalInstance = $modal.open({
                             backdrop: 'static',
-                            keyboard: false,
                             templateUrl: 'views/modals/add-mailvar-tinymce.html',
                             controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
                                 function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
@@ -313,7 +312,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
+                        closeByEscape: true,
                         templateUrl: 'views/modals/add-shortcode-tinymce.html',
                         controller: ['$scope', '$modalInstance', '$http', '$rootScope',
                             function ($scope, $modalInstance, $http, $rootScope) {
@@ -322,6 +321,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.selected = false;
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
+                                $scope.search = '';
 
                                 $scope.selectShortcode = function(shortCode){
                                     $scope.selected = true;
@@ -356,8 +356,20 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $modalInstance.close({ string });
                                 }
 
+                                $scope.sortShortCodes = function(string){
+                                    for (const i in $scope.shortcodes) {
+                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase()))) {
+                                            $scope.shortcodes[i].sort = true;
+                                        }else{
+                                            $scope.shortcodes[i].sort = false;
+                                        }
+                                    }
+                                    
+                                }
+
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
+                                    $scope.sortShortCodes($scope.search);
                                 }, function errorCallback(response) {
                                     console.log(response);
                                 });
@@ -384,7 +396,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addImage = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-image-tinymce.html',
                         controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
                             function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
@@ -501,7 +512,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addLink = function (textSelected, lang) {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-link-tinymce.html',
                         controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
                             function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
