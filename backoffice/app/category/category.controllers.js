@@ -33,6 +33,19 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             return ;
         }
 
+        $scope.deleteImg = function () {
+            $scope.category.img = null;
+            $scope.category.alt = null;
+            CategoryV2.save($scope.category, function (res) {
+                toastService.toast("success", $translate.instant("category.list.pictureDelete"));
+            });
+        }
+
+        $scope.close = function (cat) {
+            toastService.toast("success", $translate.instant('gallery.item.updated'));
+            $scope.getCategory(cat);
+        };
+
         $scope.return = function () {
             if ($scope.isSelected === true) {
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
@@ -701,19 +714,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             return arayOfCat;
         }
 
-        $scope.deleteImg = function() {
-            $scope.category.img = null;
-            $scope.category.alt = null;
-            CategoryV2.save($scope.category, function (res) {
-                toastService.toast("success", $translate.instant("category.list.pictureDelete"));
-            });
-        }
-
-
-        $scope.close = function (cat) {
-            toastService.toast("success", $translate.instant('gallery.item.updated'));
-            $scope.getCategory(cat);
-        };
+        
 
         $scope.listChildren = function (cat) {
             if(typeof cat.collapsed === "undefined"){
