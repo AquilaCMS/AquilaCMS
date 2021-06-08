@@ -195,12 +195,12 @@
 
             const fieldValue = document.getElementById("databaseAdd").value.replace(/\s/g, "");
 
-            const partValue = fieldValue.split("//");
+            const partValue = fieldValue.split("://");
             if(typeof partValue[1]  !== "undefined"){
                 const secondPart = partValue[1].split("/");
-                if(typeof secondPart[1] !== "undefined" && secondPart[1] === "") {
-                    toastContain.style.backgroundColor = "orange";
-                    toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database"});
+                if((typeof secondPart[1] !== "undefined" && secondPart[1] === "") || typeof secondPart[1] === "undefined") {
+                    toastContain.style.backgroundColor = "darkorange";
+                    toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database, example : 'mongodb://localhost:27017/database'"});
                     return;
                 }
             }
