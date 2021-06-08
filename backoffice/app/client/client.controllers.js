@@ -13,14 +13,26 @@ ClientControllers.controller("ClientCtrl", [
             "email": "",
             "firstname": "",
             "lastname": "",
-            "min_createdAt":null
+            "min_createdAt":null,
         };
-        $scope.valeurTri = -1;
-        $scope.tri = {createdAt : -1}
+
         if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
             const pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
             for (const key in pageAdmin.search) {
-                $scope.filter[key] = pageAdmin.search[key];
+                if(key !== "tri"){
+                    $scope.filter[key] = pageAdmin.search[key];
+                }
+            }
+            if(pageAdmin.page){
+                $scope.page = pageAdmin.page;
+            }
+            if (pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
+                $scope.tri = {};
+                $scope.valeurTri = pageAdmin.search.tri.value;
+                $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
+            }else{
+                $scope.valeurTri = -1;
+                $scope.tri = { createdAt: -1 }
             }
         }
         
@@ -54,20 +66,31 @@ ClientControllers.controller("ClientCtrl", [
                 }
             }
             filter["isAdmin"] = false;
+            setPageAdmin();
             return filter;
         }
-        $scope.sortSearch = function(name, pageNumber){
+
+        function setPageAdmin(){
             const search = {};
             let pageAdmin = {};
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
                 pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
             }
             for (const key in $scope.filter) {
-                if ($scope.filter[key] != "" && $scope.filter[key] != null){
+                if ($scope.filter[key] != "" && $scope.filter[key] != null) {
                     search[key] = $scope.filter[key];
                 }
             }
-            window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: pageNumber, search }));
+            if ($scope.tri) {
+                search.tri = {};
+                search.tri.field = Object.keys($scope.tri)[0];
+                search.tri.value = $scope.valeurTri;
+                
+            }
+            window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: $scope.page, search }));
+        }
+
+        $scope.sortSearch = function(name, pageNumber){
             if($scope.valeurTri == 1){
                 $scope.valeurTri = -1;
             }else{
@@ -97,7 +120,6 @@ ClientControllers.controller("ClientCtrl", [
 
 
         $scope.onClientsPageChange = function (page) {
-            const search = $scope.query;
             let pageAdmin = { location: "clients", page: 1 };
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
                 pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
@@ -112,7 +134,6 @@ ClientControllers.controller("ClientCtrl", [
                     $scope.query = pageAdmin.search;
                 }
             } else {
-                window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page, search }));
                 $scope.page = page;
                 $scope.currentClientsPage = page;
                 window.scrollTo(0, 0);
@@ -137,7 +158,7 @@ ClientControllers.controller("ClientCtrl", [
         };
 
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
-            $scope.onClientsPageChange();
+            $scope.onClientsPageChange($scope.page);
         }, 100);
 
         $scope.goToClientDetails = function (clientId) {
