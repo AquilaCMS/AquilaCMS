@@ -9,12 +9,14 @@
 const ServiceSuppliers            = require('../services/suppliers');
 const {authentication, adminAuth} = require('../middleware/authentication');
 
+/* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/suppliers', listSuppliers);
-    app.post('/v2/supplier', getSupplier);
+    app.post('/v2/suppliers', authentication, adminAuth, listSuppliers);
+    app.post('/v2/supplier', authentication, adminAuth, getSupplier);
     app.put('/v2/supplier', authentication, adminAuth, saveSupplier);
     app.delete('/v2/supplier/:id', authentication, adminAuth, deleteSupplier);
 };
+/* eslint-enable no-use-before-define */
 
 const listSuppliers = async (req, res, next) => {
     try {
