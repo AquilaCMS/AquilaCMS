@@ -39,13 +39,15 @@ ProductSimpleSchema.methods.updateData = async function (data) {
         et  : data.price.et.special || data.price.et.normal,
         ati : data.price.ati.special || data.price.ati.normal
     };
-    for (const attribute of data.attributes) {
-        for (const lang of Object.keys(attribute.translation)) {
-            const translationValues     = attribute.translation[lang];
-            attribute.translation[lang] = {
-                value : translationValues.value,
-                name  : translationValues.name
-            };
+    if (data.attributes) {
+        for (const attribute of data.attributes) {
+            for (const lang of Object.keys(attribute.translation)) {
+                const translationValues     = attribute.translation[lang];
+                attribute.translation[lang] = {
+                    value : translationValues.value,
+                    name  : translationValues.name
+                };
+            }
         }
     }
 
