@@ -59,7 +59,10 @@ MailControllers.controller("MailListCtrl", [
 
         $scope.getMailTypeDesc = function(type){
             if ($scope.mailTypes && $scope.adminLang){
-                type = $scope.mailTypes.find(x => x.code === type).translation[$scope.adminLang].name;
+                const currentType = $scope.mailTypes.find(x => x.code === type);
+                if(currentType) {
+                    type = currentType.translation[$scope.adminLang].name;
+                }
             }
             return type;
         }
