@@ -305,6 +305,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         if (!_cart) {
             throw NSErrors.CartInactive;
         }
+        aquilaEvents.emit('cartToOrder', _cart);
         lang = servicesLanguages.getDefaultLang(lang);
         // We validate the basket data
         const result = validateForCheckout(_cart);
