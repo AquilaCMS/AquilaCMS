@@ -234,7 +234,7 @@ const createDefaultCountries = async () => {
             type : 'country'
         },
         {
-            code : 'UK',
+            code : 'GB',
             name : 'United Kingdom',
             type : 'country'
         }]);

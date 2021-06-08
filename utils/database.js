@@ -23,7 +23,7 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        connection = true;
+        connection         = true;
         const checkConnect = async () => new Promise((resolve, reject) => {
             mongoose.connect(global.envFile.db, {
                 useNewUrlParser    : true,
