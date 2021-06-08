@@ -196,9 +196,9 @@
             const fieldValue = document.getElementById("databaseAdd").value.replace(/\s/g, "");
 
             const partValue = fieldValue.split("//");
-            if(partValue[1]){
+            if(typeof partValue[1]  !== "undefined"){
                 const secondPart = partValue[1].split("/");
-                if(secondPart[1] && secondPart[1] === "") {
+                if(typeof secondPart[1] !== "undefined" && secondPart[1] === "") {
                     toastContain.style.backgroundColor = "orange";
                     toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database"});
                     return;
