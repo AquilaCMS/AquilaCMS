@@ -1,75 +1,18 @@
 {
-    "/api/v2/territories": {
+    "/api/v2/suppliers": {
         "post": {
             "deprecated": false,
-            "security": [],
-            "responses": {
-                "200": {
-                    "description": "list of territories",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PostBody"
-                            }
-                        }
-                    }
-                }
-            },
-            "parameters": [],
-            "tags": [
-                "Territory"
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/PostBody"
-                        },
-                        "examples": {
-                            "example1": {
-                                "summary": "POST - get territories (regex by code)",
-                                "description": "POST - get territories (regex by code)",
-                                "value": {
-                                    "PostBody": {
-                                        "filter": {
-                                            "code": {
-                                                "$regex": "lol",
-                                                "$options": "i"
-                                            }
-                                        },
-                                        "structure": "*",
-                                        "limit": 99
-                                    }
-                                }
-                            },
-                            "example2": {
-                                "summary": "POST - get territories (sort by name)",
-                                "description": "POST - get territories (sort by name)",
-                                "value": {
-                                    "PostBody": {
-                                        "filter": {},
-                                        "limit": 99,
-                                        "sort": {
-                                            "name": 1
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+            "security": [
+                {
+                    "admin_authorization": []
                 },
-                "description": "PostBody",
-                "required": false
-            }
-        }
-    },
-    "/api/v2/territory": {
-        "post": {
-            "deprecated": false,
-            "security": [],
+                {
+                    "user_authorization": []
+                }
+            ],
             "responses": {
                 "200": {
-                    "description": "Get a territory",
+                    "description": "list of suppliers",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -78,7 +21,7 @@
                                     "datas": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/territoriesSchema"
+                                            "$ref": "#/components/schemas/suppliersSchema"
                                         }
                                     },
                                     "count": {
@@ -92,7 +35,87 @@
             },
             "parameters": [],
             "tags": [
-                "Territory"
+                "Suppliers"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get suppliers",
+                                "description": "Get suppliers",
+                                "value": {
+                                    "lang": "en",
+                                    "PostBody": {
+                                        "limit": 99
+                                    }
+                                }
+                            },
+                            "example2": {
+                                "summary": "POST - Get suppliers (filter with regex on name)",
+                                "description": "POST - Get suppliers (filter with regex on name)",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "name": {
+                                                "$regex": "name_of_",
+                                                "$options": "i"
+                                            }
+                                        },
+                                        "structure": "*",
+                                        "limit": 99
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/supplier": {
+        "post": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "One supplier",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostBody",
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/suppliersSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Suppliers"
             ],
             "requestBody": {
                 "content": {
@@ -116,56 +139,36 @@
                     "user_authorization": []
                 }
             ],
-            "responses": {},
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/suppliersSchema"
+                            }
+                        }
+                    }
+                }
+            },
             "parameters": [],
             "tags": [
-                "Territory"
+                "Suppliers"
             ],
             "requestBody": {
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#/components/schemas/TerritorySchema"
+                            "$ref": "#/components/schemas/suppliersSchema"
                         }
                     }
                 },
-                "description": "territory",
+                "description": "Create or save a supplier",
                 "required": false
             }
         }
     },
-    "/api/v2/territory/{id}": {
-        "post": {
-            "deprecated": false,
-            "security": [],
-            "responses": {},
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "description": "Territory id",
-                    "required": true,
-                    "deprecated": false,
-                    "schema": {
-                        "type": "string"
-                    }
-                }
-            ],
-            "tags": [
-                "Territory"
-            ],
-            "requestBody": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/PostBody"
-                        }
-                    }
-                },
-                "description": "PostBody",
-                "required": false
-            }
-        },
+    "/api/v2/supplier/{id}": {
         "delete": {
             "deprecated": false,
             "security": [
@@ -181,7 +184,7 @@
                 {
                     "name": "id",
                     "in": "path",
-                    "description": "territory id",
+                    "description": "suppliers id",
                     "required": true,
                     "deprecated": false,
                     "schema": {
@@ -190,18 +193,7 @@
                 }
             ],
             "tags": [
-                "Territory"
-            ]
-        }
-    },
-    "/api/territory/countries": {
-        "get": {
-            "deprecated": false,
-            "security": [],
-            "responses": {},
-            "parameters": [],
-            "tags": [
-                "Territory"
+                "Suppliers"
             ]
         }
     }
