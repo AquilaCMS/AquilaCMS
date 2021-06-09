@@ -992,7 +992,7 @@ CategoryControllers.controller("NsCategoryListController", [
             });
         }
         
-        $scope.catDisabled = function (node){
+        $scope.catIsDisabled = function (node){
             if(typeof $scope.categoryIsDisabled !== "undefined" && $scope.categoryIsDisabled !== null){
                 return $scope.categoryIsDisabled(node);
             } else {
