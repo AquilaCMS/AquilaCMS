@@ -112,14 +112,17 @@
                     <span editable-text="order.addresses.billing.country" onbeforesave="updateOrder('addresses.billing.country', $data)">{{ order.addresses.billing.country || '&nbsp;' }}</span>
                 </div>
                 <div ng-hide="editableMode" class="box-content textInBox">
-                    {{order.addresses.billing.firstname}}&nbsp;{{order.addresses.billing.lastname}}<br />
-                    {{order.addresses.billing.companyName}}<br />
-                    {{order.addresses.billing.line1}}<br />
-                    {{order.addresses.billing.line2}}<br />
-                    {{order.addresses.billing.phone}}<br />
-                    {{order.addresses.billing.phone_mobile}}<br />
-                    {{order.addresses.billing.zipcode}}&nbsp;{{order.addresses.billing.city}}<br />
-                    {{order.addresses.billing.country}}
+                    <span translate>{{"order.detail.civility."+ order.addresses.billing.civility.toString()}}</span><br />
+                    <span>
+                        {{order.addresses.billing.firstname}}&nbsp;{{order.addresses.billing.lastname}}<br />
+                        {{order.addresses.billing.companyName}}<br />
+                        {{order.addresses.billing.line1}}<br />
+                        {{order.addresses.billing.line2}}<br />
+                        {{order.addresses.billing.phone}}<br />
+                        {{order.addresses.billing.phone_mobile}}<br />
+                        {{order.addresses.billing.zipcode}}&nbsp;{{order.addresses.billing.city}}<br />
+                        {{order.addresses.billing.country}}
+                    </span>
                 </div>
             </div>
         </div>
@@ -151,13 +154,16 @@
                 </div>
                 <div ng-hide="editableMode" class="box-content textInBox">
                     <div ng-show="order.orderReceipt.method === 'delivery'">
-                        {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
-                        {{order.addresses.delivery.line1}}<br />
-                        {{order.addresses.delivery.line2}}<br />
-                        {{order.addresses.delivery.phone}}<br />
-                        {{order.addresses.delivery.phone_mobile}}<br />
-                        {{order.addresses.delivery.zipcode}}&nbsp;{{order.addresses.delivery.city}}<br />
-                        {{order.addresses.delivery.country}}
+                        <span translate>{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
+                        <span>
+                            {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
+                            {{order.addresses.delivery.line1}}<br />
+                            {{order.addresses.delivery.line2}}<br />
+                            {{order.addresses.delivery.phone}}<br />
+                            {{order.addresses.delivery.phone_mobile}}<br />
+                            {{order.addresses.delivery.zipcode}}&nbsp;{{order.addresses.delivery.city}}<br />
+                            {{order.addresses.delivery.country}}
+                        </span>
                     </div>
                     <div ng-show="order.orderReceipt.method === 'withdrawal' && order.point_of_sale">
                         <strong translate>order.detail.relayPoint</strong><br />
