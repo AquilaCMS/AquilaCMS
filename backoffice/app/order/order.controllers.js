@@ -137,7 +137,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 for (var j = 0; j < section.products.length; j++) {
                     var productSection = section.products[j];
                     // we choose the correct bundle
-                    const correctBundle = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                    const correctBundle = item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
                     // we choose the correct product in the correct bundle
                     const productOfBundle = correctBundle.products.find((product) => product.id === productSection.id);
                     var text = "";
@@ -158,7 +158,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         }
                         text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
                     }
-                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${text}</li>`;
+                    displayHtml += `<li key="${j}">${productSection.name} ${text}</li>`;
                 }
             }
             return displayHtml;
@@ -170,7 +170,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 return lang.defaultLanguage;
             }).code;
 
-            Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
+            Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*'}, function (response)
             {
                 $scope.order = response.datas[0];
                 $scope.status = $scope.order.status;
