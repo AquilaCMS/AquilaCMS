@@ -69,6 +69,7 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productVirtual",
     "aq.newsletter",
     "aq.system",
+    "aq.invoices"
 ]);
 
 //================================================
@@ -220,14 +221,6 @@ adminCatagenApp.config([
              loggedin: checkLoggedin
              }
              })*/
-            .when("/invoices", {
-                templateUrl: "views/invoices-list.html",
-                controller: "InvoicesController",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess('invoices')
-                }
-            })
             .otherwise({
                 redirectTo: "/"
             });
