@@ -517,6 +517,9 @@ OrderControllers.controller("OrderDetailCtrl", [
             }, function (response) {
                 $scope.order = response
                 $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+            }, function (error) {
+                toastService.toast("danger", $translate.instant("global.standardError"));
+                console.error(error);
             });
         }
 
