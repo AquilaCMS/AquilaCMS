@@ -1,0 +1,316 @@
+{
+    "/api/v2/trademarks": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "list of trademarks",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/trademarksSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Get trademarks (filter by regex 'lol')",
+                                    "description": "Get trademarks (filter by regex 'lol')",
+                                    "value": {
+                                        "datas": [
+                                            {
+                                                "active": true,
+                                                "_id": "604760c429c5343fe02b1f16",
+                                                "name": "lol",
+                                                "createdAt": "2021-03-09T11:49:24.309Z",
+                                                "updatedAt": "2021-03-09T11:50:05.746Z",
+                                                "code": "azeazeazeazeaz",
+                                                "__v": 0
+                                            }
+                                        ],
+                                        "count": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Trademarks"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get trademarks",
+                                "description": "Get trademarks",
+                                "value": {
+                                    "lang": "en",
+                                    "PostBody": {
+                                        "limit": 99
+                                    }
+                                }
+                            },
+                            "example2": {
+                                "summary": "POST - Get trademarks (filter by regex 'lol')",
+                                "description": "POST - Get trademarks (filter by regex 'lol')",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "name": {
+                                                "$regex": "lol",
+                                                "$options": "i"
+                                            }
+                                        },
+                                        "structure": "*",
+                                        "limit": 99
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/trademark": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {
+                "200": {
+                    "description": "One trademark",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostBody",
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/trademarksSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Get one trademark",
+                                    "description": "Get one trademark",
+                                    "value": {
+                                        "active": true,
+                                        "_id": "60bf4a23e04cbe04d0559247",
+                                        "name": "name_of_trademark",
+                                        "createdAt": "2021-06-08T10:44:51.355Z",
+                                        "updatedAt": "2021-06-08T10:44:51.355Z",
+                                        "code": "code_of_trademark",
+                                        "__v": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Trademarks"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Create trademark",
+                                "description": "Create trademark",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "code": "code_of_trademark"
+                                        },
+                                        "limit": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/trademarksSchema"
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Create trademark",
+                                    "description": "Create trademark",
+                                    "value": {
+                                        "active": true,
+                                        "_id": "60bf4a23e04cbe04d0559247",
+                                        "name": "name_of_trademark",
+                                        "createdAt": "2021-06-08T10:44:51.355Z",
+                                        "updatedAt": "2021-06-08T10:44:51.355Z",
+                                        "code": "code_of_trademark",
+                                        "__v": 0
+                                    }
+                                },
+                                "example2": {
+                                    "summary": "Save a trademark",
+                                    "description": "Save a trademark",
+                                    "value": {
+                                        "active": true,
+                                        "_id": "60bf4a23e04cbe04d0559247",
+                                        "name": "my_new_trademark_name",
+                                        "createdAt": "2021-06-08T10:44:51.355Z",
+                                        "updatedAt": "2021-06-08T10:44:58.259Z",
+                                        "code": "code_of_trademark",
+                                        "__v": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Trademarks"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/trademarksSchema"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "PUT - Create trademark",
+                                "description": "PUT - Create trademark",
+                                "value": {
+                                    "name": "name_of_trademark",
+                                    "_id": ""
+                                }
+                            },
+                            "example2": {
+                                "summary": "PUT - Save a trademark",
+                                "description": "PUT - Save a trademark",
+                                "value": {
+                                    "active": true,
+                                    "_id": "60bf4a23e04cbe04d0559247",
+                                    "name": "my_new_trademark_name",
+                                    "createdAt": "2021-06-08T10:44:51.355Z",
+                                    "updatedAt": "2021-06-08T10:44:51.355Z",
+                                    "code": "code_of_trademark"
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "Create or save a trademark",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/trademark/{id}": {
+        "post": {
+            "deprecated": false,
+            "security": [],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "Trademark id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Trademarks"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "delete": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "trademark id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Trademarks"
+            ]
+        }
+    }
+}
