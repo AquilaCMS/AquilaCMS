@@ -175,21 +175,20 @@ OrderControllers.controller("OrderDetailCtrl", [
                 $scope.order = response.datas[0];
                 $scope.status = $scope.order.status;
                 if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
-                    key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                     $scope.orderStatus.splice(key, 1);
                 }
-                Object.keys($scope.order.addresses).forEach(function (key)
-                {
-                    ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[key].isoCountryCode}}}, function (response)
-                    {
-                        // On récupére le nom du pays
-                        $scope.order.addresses[key].country = response.name;
-                    }, function (error)
-                    {
-                        console.error("Impossible de récupérer le pays des clients", error);
-                        // si une erreur se produit on met le code iso du pays dans country
-                        $scope.order.addresses[key].country = $scope.order.addresses[key].isoCountryCode;
-                    });
+                Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
+                    if(typeof $scope.order.addresses[typeNameAdress].country === "undefined" || $scope.order.addresses[typeNameAdress].country === null) {
+                        ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[typeNameAdress].isoCountryCode}}}, function (response) {
+                            // On récupére le nom du pays
+                            $scope.order.addresses[typeNameAdress].country = response.translation[$scope.defaultLang].name;
+                        }, function (error) {
+                            console.error("Impossible de récupérer le pays des clients", error);
+                            // si une erreur se produit on met le code iso du pays dans country
+                            $scope.order.addresses[typeNameAdress].country = $scope.order.addresses[typeNameAdress].isoCountryCode;
+                        });
+                    }
                 });
             }, function (error)
             {
@@ -389,7 +388,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.status = $scope.order.status;
                         });
                         if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', 'FINISHED']).includes($scope.order.status)) {
-                            key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                             $scope.orderStatus.splice(key, 1);
                         }
                         $scope.editStatus = false;
