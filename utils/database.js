@@ -511,6 +511,10 @@ const initDBValues = async () => {
                             description : 'Nom'
                         },
                         {
+                            value       : 'order.customer.mobilePhone',
+                            description : 'Phone'
+                        },
+                        {
                             value       : 'order.customer.company',
                             description : 'Nom de l\'entreprise'
                         },
@@ -607,6 +611,10 @@ const initDBValues = async () => {
                         {
                             value       : 'order.customer.lastname',
                             description : 'Lastname'
+                        },
+                        {
+                            value       : 'order.customer.mobilePhone',
+                            description : 'Phone'
                         },
                         {
                             value       : 'order.customer.company',
