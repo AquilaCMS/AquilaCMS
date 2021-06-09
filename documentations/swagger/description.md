@@ -1,24 +1,41 @@
+# Informations
+
+This documentation is available on `/api-docs`
+
+Others documentations are available :
+
+- [https://doc.aquila-cms.com/](https://doc.aquila-cms.com/)
+- [Our dedicated page](https://www.aquila-cms.com/resources-documentation)
+- [Our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ)
+
 ## PostBody usage
+
 Most of the time, there are no GET routes to get items. You must use a POST route with a single parameter call <code>PostBody</code>.
 Here's how to use it.
-### Structure
+
+## Structure
+
 Here is the structure of a PostBody object :
 
-    {
-        "lang" : "fr",
-        "PostBody" : {
-            "limit" : 10,
-            "filter" : {
-                "field1" : "filter_value",
-                "field2" : "other_filter_value",
-            },
-            structure" : {
-                "field1" : 1,
-                "field3" : 0,
-            }
+```json
+{
+    "lang" : "fr",
+    "PostBody" : {
+        "limit" : 10,
+        "filter" : {
+            "field1" : "filter_value",
+            "field2" : "other_filter_value",
+        },
+        "structure" : {
+            "field1" : 1,
+            "field3" : 0,
         }
     }
-#### Explain ####
+}
+```
+
+### Explain
+
 <code>PostBody.limit</code> : Number of items eturned. The default value is 1
 
 <code>PostBody.filter</code> : Allows you to filter the datas. It's an object based on the mongodb's $filter(aggregation) :  <https://docs.mongodb.com/manual/reference/operator/aggregation/filter/>
@@ -32,21 +49,24 @@ Here is the structure of a PostBody object :
 <code>PostBody.sort</code> : sort. It's an object based on the mongodb's sort : <https://docs.mongodb.com/manual/reference/method/cursor.sort/>
 
 <code>PostBody.page</code> : page. The default value is null
+
 ### Returned Data
+
 Most APIs return an object including an array of the requested object :
 
-    {
-        "datas": [{
-            "_id": "5ba2015b49ceac42b4a16865",
-            "field1": "value1",
-            "field2": {
-                "field21": "value21",
-                "field22": "value22"
-            }
-        }],
-        "count": 1
-    }
-
+```json
+{
+    "datas": [{
+        "_id": "5ba2015b49ceac42b4a16865",
+        "field1": "value1",
+        "field2": {
+            "field21": "value21",
+            "field22": "value22"
+        }
+    }],
+    "count": 1
+}
+```
 
 When the route can returns items, they are included in array named <code>datas</code>. The <code>count</code> fields indicates the total number of items matching this equest (ie for pagination).
 
