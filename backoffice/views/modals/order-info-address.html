@@ -12,7 +12,10 @@
                         <div class="col-sm-12" style="margin:10px 0">
                             <label class="col-sm-3 control-label" translate>order.detail.civility</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control ng-pristine ng-touched" ng-model="order.addresses[type].civility">
+                                <select class="form-control" type="text" value="{{order.addresses[type].civility}}" ng-model="order.addresses[type].civility">
+                                    <option value="0" translate>order.detail.civility.0</option>
+                                    <option value="1" translate>order.detail.civility.1</option>
+                                </select>
                             </div>
                         </div>
                     </div>

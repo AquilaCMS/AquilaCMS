@@ -89,6 +89,11 @@
         "phone_mobile": "Téléphone Mobile",
         "zipcode": "Code Postal",
         "city": "Ville",
+        "civility": {
+            "text": "Civilité",
+            "0": "Monsieur",
+            "1": "Madame"
+        },
         "country": "Pays",
         "modifyAddress": "Modifier l'adresse",
         "save": "Sauvegarder",

@@ -89,6 +89,11 @@
         "phone_mobile": "Mobile Phone",
         "zipcode": "Zipcode",
         "city": "City",
+        "civility": {
+            "text": "Civility",
+            "0": "Mr.",
+            "1": "Mrs."
+        },
         "country": "Country",
         "modifyAddress": "Modify address",
         "save": "Save",
