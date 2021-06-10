@@ -23,33 +23,48 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        connection = true;
-        await mongoose.connect(global.envFile.db, {
-            useNewUrlParser    : true,
-            useFindAndModify   : false,
-            useCreateIndex     : true,
-            useUnifiedTopology : true
+        connection         = true;
+        const checkConnect = async () => new Promise((resolve, reject) => {
+            mongoose.connect(global.envFile.db, {
+                useNewUrlParser    : true,
+                useFindAndModify   : false,
+                useCreateIndex     : true,
+                useUnifiedTopology : true
+            }, (error) => {
+                if (typeof error === 'undefined' || error === null) {
+                    resolve(true);
+                } else {
+                    reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
+                }
+            });
         });
+        await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
 
     return mongoose;
 };
 
-const testdb = async (uri_database) => {
-    const mongoose = require('mongoose');
-    await mongoose.connect(uri_database, {
+const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
+    mongoose.connection.close(); // need to reset the connection mongo for every try
+    mongoose.connect(uriDatabase, {
         useNewUrlParser    : true,
         useFindAndModify   : false,
         useCreateIndex     : false,
         useUnifiedTopology : true
+    }, (error) => {
+        if (typeof error === 'undefined' || error === null) {
+            resolve(true);
+        } else {
+            reject(new Error(`Unable to connect to" ${uriDatabase}, ${error.toString()}`));
+        }
     });
-};
+});
 
 /**
  * check if the database is a replicaSet, if we can use transactions
  */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars, arrow-body-style */
 const checkIfReplicaSet = async () => {
     return new Promise(async (resolve, reject) => {
         const conn = mongoose.connection;
@@ -1394,7 +1409,7 @@ const initDBValues = async () => {
 const applyMigrationIfNeeded = async () => {
     try {
         const {migrationScripts} = require('./migration');
-        const config             =  await mongoose.connection
+        const config             = await mongoose.connection
             .collection('configurations')
             .findOne();
         if (config && config.environment) {
