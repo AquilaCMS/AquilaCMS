@@ -188,7 +188,7 @@ const addItem = async (req) => {
         req.body.item.name = _product.translation[_lang.code].name;
     }
     req.body.item.code  = _product.code;
-    req.body.item.image = `/images/products/196x173/${require('../utils/medias').getProductImageId(_product)}/${_product.code}.jpg`;
+    req.body.item.image = require('../utils/medias').getProductImageId(_product);
     const idGift        = mongoose.Types.ObjectId();
     if (req.body.item.parent) {
         req.body.item._id = idGift;
@@ -239,7 +239,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }

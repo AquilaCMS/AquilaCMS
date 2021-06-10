@@ -104,7 +104,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                     <td>
                                                                                                                         <div className="product-small">
                                                                                                                             <div className="product__image">
-                                                                                                                                <img src={item.image || imgDefault} alt={imgAlt} />
+                                                                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg` || imgDefault} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
                                                                                                                                 <h6>{item ? item.name : 'NO NAME'} x {item.quantity}</h6>
