@@ -175,16 +175,6 @@ adminCatagenServices.factory("Mailer", [
     }
 ]);
 
-adminCatagenServices.factory("Invoice", [
-    "$resource", function ($resource)
-    {
-        return $resource("v2/bills/:action/:id", {}, {
-            query: {method: "POST", params: {}},
-            orderToBill: {method: "POST", params: {action: 'fromOrder'}}
-        });
-    }
-]);
-
 adminCatagenServices.factory("Territory", [
     "$resource", function ($resource)
     {
@@ -377,8 +367,3 @@ adminCatagenServices.factory("ConfirmDeleteModal", [
         };
     }
 ]);
-
-adminCatagenServices.service("InvoiceColumns", function ()
-{
-    return [];
-});
