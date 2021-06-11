@@ -20,6 +20,15 @@ ConfigRoutes.config(['$routeProvider', function ($routeProvider) {
               checkAccess: checkAccess('config'),
             }
         })
+        .when('/config/storefront', {
+          name: 'storefront',
+          controller: 'StorefrontConfigCtrl',
+          templateUrl: 'app/config/views/storefront.config.html',
+          resolve: {
+            loggedin: checkLoggedin,
+            checkAccess: checkAccess('config'),
+          }
+      })
         // Page avec un simple bouton qui appelle la route (temporaire cb)
         .when('/import', {
             name: 'importTmp',

@@ -55,6 +55,8 @@
         "demoMode": "Demo mode",
         "siteName": "Website name",
         "favicon": "Favicon link",
+        "defaultImage": "Default image",
+        "defaultImageTips": "When the image does not exist, display this image instead",
         "billsPattern": "Billing pattern code",
         "billsVariables": "Available variables : {year} for the current year and {numAuto} for an autoincremented number. Example : MYSITE_{year}_{numAuto}",
         "testMailSend": "Test mail sent.",
@@ -82,7 +84,8 @@
             "active": "Activate",
             "cert": "certificate",
             "key": "private key"
-        }
+        },
+        "titleStoreFront": "Storefront settings"
     },
     "import": {
         "t1": "Products imports",

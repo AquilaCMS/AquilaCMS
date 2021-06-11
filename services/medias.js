@@ -601,6 +601,66 @@ const deleteFileAndCacheFile = async (link, type) => {
     }
 };
 
+const getImageStream = async (req, res) => {
+    const type    = req.url.split('/')[2];
+    let quality;
+    const option  = {};
+    const options = req.url.split('/')[3];
+
+    if (options.includes('crop')) {
+        if (options.split('-crop')[0].split('-').length > 1) {
+            quality = options.split('-')[1];
+        } else {
+            quality = 80;
+        }
+        for (let i = options.split('-').length; options.split('-')[i - 1] !== 'crop'; i--) {
+            if (option.position) {
+                option.position += `${options.split('-')[i - 1]} `;
+            } else {
+                option.position = `${options.split('-')[i - 1]} `;
+            }
+        }
+
+        if (!option.position) {
+            option.position = 'center';
+        } else {
+            option.position = option.position.slice(0, -1);
+        }
+    } else {
+        if (options.split('-').length > 2) {
+            quality           = options.split('-')[1];
+            option.background = options.split('-')[2];
+        } else if (options.split('-').length > 1) {
+            if (options.split('-')[1].includes(',')) {
+                option.background = options.split('-')[1];
+            } else {
+                quality = options.split('-')[1];
+            }
+        }
+    }
+
+    const size      = req.url.split('/')[3].split('-')[0];
+    const _id       = req.url.split('/')[4];
+    const extension = path.extname(req.url).replace('.', '');
+    if (type && size && extension && _id) {
+        let imagePath = '';
+
+        try {
+            // TODO : rename "downloadImage" ?
+            imagePath = await downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
+        } catch (e) {
+            console.log(NSErrors.MediaNotFound); // TODO : améliorer ce console ?
+            imagePath = 'c:/_dev/AquilaCMS/uploads/cache/products/p/0/p000009_5d444c54ede1945f66028732_516x403_80_.jpg'; // 'TODO : Récupérer le path de "l'image par defaut" configuré. Si rien de configuré, on renvoi "vide" comme today'
+            // TODO : voir pour le mettre dans la dimension demandé !?
+            res.status(404);
+            // next(NSErrors.MediaNotFound);
+        }
+        res.set('Content-Type', `image/${extension}`);
+        // TODO : fs ou fsp ?!
+        fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
+    }
+};
+
 module.exports = {
     downloadAllDocuments,
     uploadAllMedias,
@@ -611,5 +671,6 @@ module.exports = {
     getMedia,
     saveMedia,
     removeMedia,
-    getMediasGroups
+    getMediasGroups,
+    getImageStream
 };

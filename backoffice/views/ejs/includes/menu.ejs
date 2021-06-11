@@ -332,12 +332,12 @@
                         <span translate>menu.modesPaiement</span>
                     </a>
                 </li>
-                <li ng-if="!(accessList.includes('list'))">
-                    <a href="#/list" class="menuClick">
+                <li ng-if="!(accessList.includes('config'))">
+                    <a href="#/config/storefront" class="menuClick">
                         <span class="icon">
-                            <i class="fa fa-shield fa-lg i-style"></i>
+                            <i class="fa fa-desktop fa-lg i-style"></i>
                         </span>
-                        <span translate>menu.admin</span>
+                        <span translate>menu.frontSetting</span>
                     </a>
                 </li>
             </ul>
@@ -429,6 +429,14 @@
                             <i class="fa fa-medkit  fa-lg i-style"></i>
                         </span>
                         <span translate>menu.update</span>
+                    </a>
+                </li>
+                <li ng-if="!(accessList.includes('list'))">
+                    <a href="#/list" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-shield fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.admin</span>
                     </a>
                 </li>
             </ul>
