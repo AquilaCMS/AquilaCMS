@@ -207,7 +207,11 @@ const addItem = async (req) => {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
     }
     await _newCart.save();
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: _newCart}};
+    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
+    if (shouldUpdateCart) {
+        cart = await Cart.findOne({_id: cart._id});
+    }
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
 const updateQty = async (req) => {
@@ -269,7 +273,7 @@ const updateQty = async (req) => {
     // Event called by the modules to retrieve the modifications in the cart
     const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
     if (shouldUpdateCart) {
-        cart = await Cart.findOne({_id: cart._id});
+        cart = await Cart.findOne({_id: _newCart._id});
     }
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
