@@ -132,7 +132,7 @@ const saveEnvConfig = async (body) => {
         if (
             oldConfig.environment.appUrl !== environment.appUrl
             || oldConfig.environment.adminPrefix !== environment.adminPrefix
-            || oldConfig.environment.contentSecurityPolicy.values !== environment.contentSecurityPolicy.values
+            || oldConfig.environment.contentSecurityPolicy.values.length !== environment.contentSecurityPolicy.values.length
             || oldConfig.environment.contentSecurityPolicy.active !== environment.contentSecurityPolicy.active
         ) {
             body.needRestart = true;
