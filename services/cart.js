@@ -146,6 +146,10 @@ const deleteCartItem = async (cartId, itemId) => {
 
     ServicePromo.calculDiscount(cart);
     await cart.save();
+    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
+    if (shouldUpdateCart) {
+        cart = await Cart.findOne({_id: cart._id});
+    }
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
@@ -209,7 +213,7 @@ const addItem = async (req) => {
     await _newCart.save();
     const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
     if (shouldUpdateCart) {
-        cart = await Cart.findOne({_id: cart._id});
+        cart = await Cart.findOne({_id: _newCart._id});
     }
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
