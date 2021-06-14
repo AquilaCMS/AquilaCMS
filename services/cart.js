@@ -207,7 +207,7 @@ const addItem = async (req) => {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
     }
     await _newCart.save();
-    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
+    return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart: _newCart}};
 };
 
 const updateQty = async (req) => {
