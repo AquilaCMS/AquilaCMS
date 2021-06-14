@@ -6,9 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose = require('mongoose');
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const mongoose      = require('mongoose');
+const NSErrors      = require('../../utils/errors/NSErrors');
+const utilsDatabase = require('../../utils/database');
+const Schema        = mongoose.Schema;
+const {ObjectId}    = Schema.Types;
 
 const PromoSchema = new Schema(
     {
@@ -35,9 +37,38 @@ const PromoSchema = new Schema(
         applyNextRules : {type: Boolean, default: false}, // true : applique les autres promos, false : applique uniquement une seule promo
         actions        : [{type: ObjectId, default: [], ref: 'rules'}]
     },
-    {timestamps: true}
+    {
+        timestamps : true,
+        id         : false
+    }
 );
 PromoSchema.index({dateStart: 1, dateEnd: 1, actif: 1, type: 1});
 PromoSchema.index({isQuantityBreak: 1, actif: 1, type: 1});
+
+PromoSchema.statics.checkCode = async function (that) {
+    if (!that.name) {
+        return;
+    }
+    const query = {name: that.name};
+    if (that._id) {
+        query._id = {$ne: that._id};
+    }
+    if (await mongoose.model('promo').exists(query)) {
+        throw NSErrors.CodeExisting;
+    }
+};
+
+PromoSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PromoSchema);
+});
+
+PromoSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PromoSchema);
+});
+
+PromoSchema.pre('save', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PromoSchema);
+    next();
+});
 
 module.exports = PromoSchema;

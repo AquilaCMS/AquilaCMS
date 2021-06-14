@@ -19,8 +19,8 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         $scope.getGallery(); //get gallery list for the first time
     }
 ]).controller("GalleryDetailCtrl", [
-    "$rootScope", "$scope", "$routeParams", "$location", "GalleryService", "GalleryItemService", "toastService", "$modal",
-    function ($rootScope, $scope, $routeParams, $location, GalleryService, GalleryItemService, toastService, $modal) {
+    "$rootScope", "$scope", "$routeParams", "$location", "GalleryService", "GalleryItemService", "toastService", "$modal", "$translate",
+    function ($rootScope, $scope, $routeParams, $location, GalleryService, GalleryItemService, toastService, $modal, $translate) {
 
         $scope.isEditMode = false;
         $scope.disableSave = true;
@@ -113,7 +113,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         function saveGallery(quit) {
             GalleryService.save($scope.gallery, function (res) {
                 if ($scope.isEditMode) {
-                    toastService.toast("success", "Sauvegarde effectuée");
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                 }
                 else {
                     $location.path("/component/gallery/" + res._id);
@@ -127,7 +127,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
                     if(err.data && err.data.message){
                         toastService.toast("danger", err.data.message);
                     }else{
-                        toastService.toast("danger", "Echec de la sauvegarde");
+                        toastService.toast("danger", $translate.instant("gallery.list.failSave"));
                     }
                 });
         }
@@ -138,7 +138,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
                     saveGallery(quit);
                 }, function (err) {
                         console.error(err);
-                        toastService.toast("danger", "Echec de la sauvegarde");
+                        toastService.toast("danger", $translate.instant("gallery.list.failSave"));
                     });
             }
             else {
@@ -149,11 +149,11 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         $scope.delete = function () {
             if (confirm("Êtes-vous sûr de vouloir supprimer cette gallerie ?")) {
                 GalleryService.delete({ id: $scope.gallery._id }, function () {
-                    toastService.toast("success", "Suppression effectuée");
+                    toastService.toast("success", $translate.instant("gallery.list.deleteDone"));
                     $location.path("/component/gallery");
                 }, function (err) {
                         console.error(err);
-                        toastService.toast("danger", "Echec de la suppression");
+                        toastService.toast("danger", $translate.instant("gallery.list.failDelete"));
                     });
             }
         };

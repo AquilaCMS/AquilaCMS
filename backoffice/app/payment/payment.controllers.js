@@ -1,7 +1,8 @@
 const PaymentControllers = angular.module("aq.payment.controllers", []);
 
 PaymentControllers.controller("PaymentListCtrl", [
-    "$scope", "$modal", "$filter", "Payment", "NSConstants", "$http", function ($scope, $modal, $filter, Payment, NSConstants, $http) {
+    "$scope", "$modal", "$filter", "Payment", "NSConstants", "$http", "Orders", "$location", "toastService", "$translate",
+    function ($scope, $modal, $filter, Payment, NSConstants, $http, Orders, $location, toastService, $translate) {
         $scope.paymentStatus = NSConstants.paymentStatus;
         $scope.listPayment = [];
         $scope.currentPage = 1;
@@ -15,6 +16,7 @@ PaymentControllers.controller("PaymentListCtrl", [
         $scope.queryOrderStatus = {statusTodo: false, statusDone: false, statusCanceled: false, statusFailed: false};
         $scope.queryOrderType = {typeCredit: false, typeDebit: false};
         $scope.exportDates = {}
+        $scope.showLoader = true;
 
         $scope.getPayments = function (page) {
 
@@ -67,6 +69,7 @@ PaymentControllers.controller("PaymentListCtrl", [
             }
 
             Payment.query({PostBody: {filter, structure: {payment: 1}, sort, page, limit: $scope.nbItemsPerPage}}, function (data) {
+                $scope.showLoader = false;
                 const _orders = data.datas;
                 $scope.totalItems = data.count;
                 $scope.listPayment = [];
@@ -94,12 +97,31 @@ PaymentControllers.controller("PaymentListCtrl", [
                     }
 
                 }
+            }, function(error) {
+                console.error("Can't get data");
+                console.error(error);
             });
         };
 
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
             $scope.getPayments();
         }, 100);
+
+        $scope.goToOrder = function(number){
+            Orders.get({
+                PostBody: {
+                    filter: {
+                        number: number
+                    }
+                },
+                limit: 1
+            }, function (response) {
+                $location.path(`/orders/${response._id}`);
+            }, function(error) {
+                toastService.toast("danger", $translate.instant("global.standardError"));
+                console.error(error);
+            });
+        };
 
     }
 ]);

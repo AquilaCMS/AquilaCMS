@@ -14,6 +14,7 @@ OrderControllers.controller("OrderListCtrl", [
         $scope.filter = {};
         $scope.sort = {type: "createdAt", reverse: true};
         $scope.export = ExportCollectionCSV;
+        $scope.showLoader = true;
 
         $scope.getOrders = function (page)
         {
@@ -67,10 +68,13 @@ OrderControllers.controller("OrderListCtrl", [
                     filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]].toString(), $options: "i"};
                 }
             }
-            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort}}, function (response)
-            {
+            Orders.list({PostBody: {filter: filter, limit: $scope.nbItemsPerPage, page: page, sort: sort}}, function (response) {
+                $scope.showLoader = false;
                 $scope.orders = response.datas;
                 $scope.totalItems = response.count;
+            }, function(error) {
+                console.error("Can't get data");
+                console.error(error);
             });
         };
 
@@ -106,8 +110,8 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate',
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate)
     {
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
@@ -126,23 +130,35 @@ OrderControllers.controller("OrderDetailCtrl", [
             var displayHtml = '';
             for (var i = 0; i < item.selections.length; i++) {
                 var section = item.selections[i];
+                if(!section.products.length){
+                    //because sometimes it's a object (with api/v2/order/delpkg, and maybe others)
+                    section.products = [section.products];
+                }
                 for (var j = 0; j < section.products.length; j++) {
                     var productSection = section.products[j];
-                    const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
-                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${`${
-                        (bundleSection &&
-                        bundleSection.products.find((product) => product.id === productSection.id) &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] &&
-                        bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati']) ?
-                        // HT
-                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'] > 0 ? '(ET: +' : '(') +
-                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['et'].toFixed(2) + '€ /ATI: ' +
-                            // prix TTC
-                            (bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'] > 0 ? '+' : '') +
-                            bundleSection.products.find((product) => product.id === productSection.id).modifier_price['ati'].toFixed(2) + '€)'
-                        : ''
-                    }`}</li>`
+                    // we choose the correct bundle
+                    const correctBundle = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                    // we choose the correct product in the correct bundle
+                    const productOfBundle = correctBundle.products.find((product) => product.id === productSection.id);
+                    var text = "";
+                    if(productOfBundle && productOfBundle.modifier_price && productOfBundle.modifier_price['et'] && productOfBundle.modifier_price['ati']){
+                        //put the HT text
+                        if(productOfBundle.modifier_price['et'] > 0){
+                            text += '(ET: +';
+                        }else{
+                            text += '(';
+                        }
+                        text += `${productOfBundle.modifier_price['et'].toFixed(2)} €)`;
+                        //put the TTC text
+                        text+= '/ATI: '
+                        if(productOfBundle.modifier_price['ati'] > 0){
+                            text += '+';
+                        }else{
+                            text += '';
+                        }
+                        text += `${productOfBundle.modifier_price['ati'].toFixed(2)} €)`;
+                    }
+                    displayHtml += `<li key="${j}">${productSection.translation[$scope.defaultLang].name} ${text}</li>`;
                 }
             }
             return displayHtml;
@@ -159,21 +175,20 @@ OrderControllers.controller("OrderDetailCtrl", [
                 $scope.order = response.datas[0];
                 $scope.status = $scope.order.status;
                 if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
-                    key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                     $scope.orderStatus.splice(key, 1);
                 }
-                Object.keys($scope.order.addresses).forEach(function (key)
-                {
-                    ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[key].isoCountryCode}}}, function (response)
-                    {
-                        // On récupére le nom du pays
-                        $scope.order.addresses[key].country = response.name;
-                    }, function (error)
-                    {
-                        console.error("Impossible de récupérer le pays des clients", error);
-                        // si une erreur se produit on met le code iso du pays dans country
-                        $scope.order.addresses[key].country = $scope.order.addresses[key].isoCountryCode;
-                    });
+                Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
+                    if(typeof $scope.order.addresses[typeNameAdress].country === "undefined" || $scope.order.addresses[typeNameAdress].country === null) {
+                        ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[typeNameAdress].isoCountryCode}}}, function (response) {
+                            // On récupére le nom du pays
+                            $scope.order.addresses[typeNameAdress].country = response.translation[$scope.defaultLang].name;
+                        }, function (error) {
+                            console.error("Impossible de récupérer le pays des clients", error);
+                            // si une erreur se produit on met le code iso du pays dans country
+                            $scope.order.addresses[typeNameAdress].country = $scope.order.addresses[typeNameAdress].isoCountryCode;
+                        });
+                    }
                 });
             }, function (error)
             {
@@ -307,7 +322,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         {
             let query = Invoice.orderToBill({idOrder: $scope.order._id});
             query.$promise.then(function (response) {
-                toastService.toast('success', 'Facture créée')
+                toastService.toast('success', $translate.instant("order.detail.invoiceCreated"))
                 $scope.init()
             }).catch(function (err) {
                 toastService.toast('danger', err.data.message);
@@ -350,7 +365,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             if(field === "status")
             {
                 if(data === $scope.order.status){
-                    toastService.toast("danger", "La commande est déjà dans cet état !");
+                    toastService.toast("danger", $translate.instant("order.detail.orderAlreadyState"));
                 }else if(data == "PAID"){
                     $scope.editStatus = false;
                     $scope.addInfoPayment("PAID");
@@ -373,7 +388,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.status = $scope.order.status;
                         });
                         if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', 'FINISHED']).includes($scope.order.status)) {
-                            key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                             $scope.orderStatus.splice(key, 1);
                         }
                         $scope.editStatus = false;
@@ -382,7 +397,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if(err.data.message)
                         {
-                            toastService.toast("danger", "Ce changement d'état n'est pas possible");
+                            toastService.toast("danger", $translate.instant("order.detail.changeStateImpossible"));
                             d.reject(err.data.message);
                         }
                         else
@@ -443,7 +458,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             }, function (err)
             {
                 console.error(err.data);
-                toastService.toast("danger", "Impossible de supprimer le colis");
+                toastService.toast("danger", $translate.instant("order.detail.removePackage"));
             });
         };
 
@@ -458,7 +473,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if($scope.order.delivery.package[j].products[k].product_id === ($scope.order.items[i].id._id || $scope.order.items[i].id))
                         {
-                            qty += $scope.order.delivery.package[j].products[k].qty_shipped;
+                            if($scope.order.delivery.package[j].products[k].qty_shipped){
+                                qty += $scope.order.delivery.package[j].products[k].qty_shipped;
+                            }
                         }
                     }
                 }
@@ -477,7 +494,9 @@ OrderControllers.controller("OrderDetailCtrl", [
                     {
                         if($scope.order.rma[j].products[k].product_id === $scope.order.items[i].id._id)
                         {
-                            qty += $scope.order.rma[j].products[k].qty_returned;
+                            if($scope.order.rma[j].products[k].qty_returned){
+                                qty += $scope.order.rma[j].products[k].qty_returned;
+                            }
                         }
                     }
                 }
@@ -498,15 +517,19 @@ OrderControllers.controller("OrderDetailCtrl", [
             }, function (response) {
                 $scope.order = response
                 $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+            }, function (error) {
+                toastService.toast("danger", $translate.instant("global.standardError"));
+                console.error(error);
             });
         }
 
-        $scope.addPackage = function (type)
-        {
+        $scope.addPackage = function (type) {
             $modal.open({
-                templateUrl: "views/modals/order-packages.html",
-                controller: "PackagesNewCtrl",
-                windowClass: "modal-large",
+                templateUrl : "views/modals/order-packages.html",
+                controller  : "PackagesNewCtrl",
+                windowClass : "modal-large",
+                backdrop    : 'static',
+                keyboard    : false,
                 resolve: {
                     genericTools: function () {
                         return {
@@ -529,9 +552,11 @@ OrderControllers.controller("OrderDetailCtrl", [
         $scope.returnItem = function ()
         {
             $modal.open({
-                templateUrl: "views/modals/order-rma.html",
-                controller: "RMANewCtrl",
-                windowClass: "modal-large",
+                templateUrl : "views/modals/order-rma.html",
+                controller  : "RMANewCtrl",
+                windowClass : "modal-large",
+                backdrop    : 'static',
+                keyboard    : false,
                 resolve: {
                     genericTools: function ()
                     {
@@ -604,8 +629,8 @@ OrderControllers.controller("OrderDetailCtrl", [
 ]);
 
 OrderControllers.controller("InfoAddressCtrl", [
-    "$scope", "$modalInstance", "item", "Order", "Orders", "$rootScope", "toastService","TerritoryCountries",
-    function ($scope, $modalInstance, item, Order, Orders, $rootScope, toastService, TerritoryCountries) {
+    "$scope", "$modalInstance", "item", "Order", "Orders", "$rootScope", "toastService","TerritoryCountries", "$translate",
+    function ($scope, $modalInstance, item, Order, Orders, $rootScope, toastService, TerritoryCountries, $translate) {
         $scope.type = angular.copy(item.type);
         $scope.order = angular.copy(item.order);
 
@@ -638,11 +663,11 @@ OrderControllers.controller("InfoAddressCtrl", [
             $scope.order.addresses[$scope.type].country = countryName.translation[$scope.defaultLang].name;
             Orders.save({order:$scope.order}, function(response){
                 if(response.nModified === 1){
-                    toastService.toast("success", "Adresse changée");
+                    toastService.toast("success", $translate.instant("order.detail.addressChanged"));
                     $modalInstance.close(3);
                     // $scope.order = Order.get({ orderId: $scope.order._id });
                 }else{
-                    toastService.toast("danger", "Erreur lors du changement d'adresse");
+                    toastService.toast("danger", $translate.instant("order.detail.errorChangingAddress"));
                 }
             });
         };
@@ -668,17 +693,71 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools","type",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type)
-    {
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate) {
+        $scope.typePopUp = "new"; // useful for plugin, they can have one controller and one html for the send and return
         $scope.order = angular.copy(item);
+        // the Hook for package module
+        // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
+        const codeShipment = $scope.order.delivery.code;
+        $scope.packagePluginHook = [];
+        let onePlugin = [];
+        if(OrderPackageInPopupHook.length > 0){
+            onePlugin = OrderPackageInPopupHook.filter((element) => {
+                if(element.default && element.default == true){
+                    return true;
+                }
+                if(element.code_shipment && element.code_shipment == codeShipment){
+                    return true;
+                }
+            });
+        }
+        if(typeof onePlugin !== "undefined"){
+            $scope.packagePluginHook = onePlugin;
+        }
+        //utils function acces them with $scope.$parent.$parent.utils;
+        $scope.utils = {
+            order: item,
+            type: type,
+            genericTools: genericTools
+        };
+        $scope.error = {
+            text: ""
+        };
+        $scope.disabledAddButton = false;
+        $scope.loadingAdd = false;
+        $scope.partial = false;
+        
+        $scope.changeToPartial = function(){
+            $scope.partial = true
+        }
+
+        $scope.loadImgShipment = function(name, code){
+            $scope.shipmentName = name;
+            Shipment.detail({
+                PostBody: {
+                    filter : {
+                        code: code
+                    },
+                    structure: '*',
+                }
+            },function(response){
+                if(response.url_logo){
+                    $scope.url_logo = response.url_logo;
+                }
+            },function(error){
+                //not found ?
+            });
+        }
+
+        $scope.loadImgShipment($scope.order.delivery.name, $scope.order.delivery.code);
+
         $scope.pkg = {tracking: "", products: []};
         if (type != undefined && type === "DELIVERY_PARTIAL_PROGRESS"){
             $scope.partial = true;
         }
 
-        $scope.defaultLang = $rootScope.languages.find(function (lang)
-        {
+        $scope.defaultLang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
         }).code;
 
@@ -710,76 +789,124 @@ OrderControllers.controller("PackagesNewCtrl", [
 
         $scope.pkg.products.reverse();
 
-        $scope.setQty = function (index)
-        {
-            $scope.pkg.products[index].qty_delivered = $scope.order.items[index].quantity < $scope.pkg.products[index].qty_shipped ? 0 :
-                $scope.order.items[index].quantity - $scope.pkg.products[index].qty_shipped;
+        $scope.setQty = function (index) {
+            if($scope.order.items[index].quantity < $scope.pkg.products[index].qty_shipped){
+                $scope.pkg.products[index].qty_delivered = 0;
+            }else{
+                $scope.pkg.products[index].qty_delivered = $scope.order.items[index].quantity - $scope.pkg.products[index].qty_shipped;
+            }
         };
 
-        $scope.sendPackage = function ()
-        {
-            var buttonAdd = angular.element(document.getElementById('buttonAdd'));
-            buttonAdd.attr('disabled',"true");
+        $scope.sendPackage = function () {
+            $scope.disabledAddButton = true;
+            $scope.loadingAdd = true; // we separate disabledButton and loadingAdd, ike this, a module can use it :)
 
             var pkg = angular.copy($scope.pkg);
             pkg.status = "full";
-            $scope.error = "";
+            $scope.error.text = "";
 
-            for(var i = pkg.products.length - 1; i >= 0; i--)
-            {
-                if($scope.order.items[i].quantity !== pkg.products[i].qty_delivered)
-                {
-                    pkg.status = "partial";
-                }
-
-                if(pkg.products[i].qty_delivered === 0)
-                {
-                    pkg.products.splice(i, 1);
-                }
-                else
-                {
-                    pkg.products[i].qty_shipped = pkg.products[i].qty_delivered;
-                }
-            }
-
-            if(pkg.products.length > 0)
-            {
-                Orders.addPkg({order: $scope.order._id, package: pkg}, function ()
-                {
-                    toastService.toast("success", "Colis correctement ajouté");
-                    $modalInstance.close();
-                }, function (err)
-                {
-                    toastService.toast("danger", "Une erreur est survenue !");
-                    if(err.data && err.data.translations)
-                    {
-                        toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+            let nbProducts = pkg.products.length;
+            for(var count = 0; count < nbProducts; count++) {
+                if(pkg.products[count]){
+                    if(typeof pkg.products[count].qty_delivered === "undefined"){
+                        pkg.products[count].qty_delivered = 0;
                     }
-                    $modalInstance.close();
-                });
+                    if($scope.order.items[count].quantity !== pkg.products[count].qty_delivered) {
+                        pkg.status = "partial";
+                    }
+                    if(pkg.products[count].qty_delivered === 0) {
+                        pkg.products.splice(count, 1);
+                        count = count - 1;
+                    } else {
+                        pkg.products[count].qty_shipped = pkg.products[count].qty_delivered;
+                    }
+                }else{
+                    break;
+                }
             }
-            else
-            {
-                buttonAdd.removeAttr('disabled');
-                $scope.error = "Colis vide";
+
+            if(pkg.products.length > 0) {
+                if(pkg.tracking != ""){
+                    Orders.addPkg({order: $scope.order._id, package: pkg}, function () {
+                        toastService.toast("success", $translate.instant("order.detail.addedParcel"));
+                        $scope.disabledAddButton = false;
+                        $scope.loadingAdd = false;
+                        $scope.close();
+                    }, function (err) {
+                        $scope.disabledAddButton = false;
+                        $scope.loadingAdd = false;
+                        if(err.data && err.data.translations) {
+                            toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                        }else if (err.data.message) {
+                            toastService.toast('danger', err.data.message);
+                        }else{
+                            toastService.toast("danger", $translate.instant("global.standardError"));
+                        }
+                        $scope.close();
+                    });
+                }else{
+                    $scope.disabledAddButton = false;
+                    $scope.loadingAdd = false;
+                    $scope.error.text = "order.error.noTrackNum";
+                }
+            } else {
+                $scope.disabledAddButton = false;
+                $scope.loadingAdd = false;
+                $scope.error.text = "order.error.emptyPkg";
                 $scope.partial = true;
             }
         };
 
-        $scope.cancel = function ()
-        {
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+
+        $scope.close = function(){
+            $modalInstance.close();
+        }
     }
 ]);
 
 OrderControllers.controller("RMANewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2)
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "ConfigV2", "orderReturnHook", "$translate", 
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, ConfigV2, orderReturnHook, $translate)
     {
+        $scope.typePopUp = "rma"; // useful for plugin, they can have only one controller and one html for the send and return
+        // variable
         $scope.order = angular.copy(item);
         $scope.return = {mode: "", comment: "", in_stock: true, sendMail: true, refund: 0, tax: 0, products: []};
         $scope.taxerate = [];
+        
+        /* 
+            Hook for the return (rma) PopUp
+            note if you want your module by default in the popUp, you can add the parameters 
+            {
+                "default:": true
+            }
+            in the hook
+        */
+        const codeShipment = $scope.order.delivery.code;
+        $scope.packagePluginHook = [];
+        let onePlugin = [];
+        if(orderReturnHook.length > 0){
+            onePlugin = orderReturnHook.filter((element) => {
+                if(element.default && element.default == true){
+                    return true;
+                }
+                if(element.code_shipment && element.code_shipment == codeShipment){
+                    return true;
+                }
+            });
+        }
+        if(typeof onePlugin !== "undefined"){
+            $scope.packagePluginHook = onePlugin;
+        }
+
+        $scope.error = {
+            text: ""
+        };
+        $scope.disabledButton = false;
+        $scope.loadingAdd = false; // we separate disabledButton and loadingAdd, ike this, a module can use it :)
 
         $scope.defaultLang = $rootScope.languages.find(function (lang)
         {
@@ -802,6 +929,7 @@ OrderControllers.controller("RMANewCtrl", [
                     product_code: $scope.order.items[i].code,
                     qty_returned: qty_returned,
                     qty_shipped: qty_shipped,
+                    qty_returning: 0, //default value
                     qty_delivered: $scope.order.items[i].quantity < qty_shipped ? 0 : $scope.order.items[i].quantity - qty_shipped
                 }
 
@@ -819,84 +947,116 @@ OrderControllers.controller("RMANewCtrl", [
 
         $scope.return.products.reverse();
 
-        $scope.setQty = function (index)
-        {
+        $scope.setQty = function (index) {
             $scope.return.refund = 0;
-
-            if(index !== undefined)
-            {
-                $scope.return.products[index].qty_returning = $scope.order.items[index].quantity < $scope.return.products[index].qty_returned ? 0 :
-                    $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+            // if index, the function calculate the returning qty
+            if(typeof index !== "undefined") {                
+                if($scope.order.items[index].quantity <= $scope.return.products[index].qty_returned) {
+                    if($scope.return.products[index].qty_shipped > $scope.return.products[index].qty_returned){
+                        $scope.return.products[index].qty_returning = $scope.return.products[index].qty_shipped - $scope.return.products[index].qty_returned;
+                    }else{
+                        $scope.return.products[index].qty_returning = 0;
+                    }
+                }else{
+                    $scope.return.products[index].qty_returning = $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+                }
             }
-
-            for(var i = 0; i < $scope.return.products.length; i++)
-            {
-                if($scope.return.products[i].qty_returning > 0)
-                {
-                    $scope.return.refund += ($scope.order.items[i].price.special !== undefined && $scope.order.items[i].price.special.ati !== undefined ?
-                        $scope.order.items[i].price.special.ati : $scope.order.items[i].price.unit.ati) * $scope.return.products[i].qty_returning;
+            // we calculate the refund value
+            const lengthProducts = $scope.return.products.length;
+            for(var i = 0; i < lengthProducts; i++) {
+                if(!$scope.return.products[i].qty_returned) {
+                    // we put a start value of 0 or the API will be unhappy :( 
+                    $scope.return.products[i].qty_returned = 0;
+                }
+                if($scope.return.products[i].qty_returning > 0) {
+                    if((typeof $scope.order.items[i].price.special !== "undefined") && (typeof $scope.order.items[i].price.special.ati !== "undefined")) {
+                        $scope.return.refund += $scope.order.items[i].price.special.ati * $scope.return.products[i].qty_returning;
+                    }else{
+                        $scope.return.refund += $scope.order.items[i].price.unit.ati * $scope.return.products[i].qty_returning;
+                    }
                 }
             }
         };
 
         $scope.setQty();
 
-        $scope.cancelItem = function ()
-        {
+        $scope.cancelItem = function () {
+            $scope.disabledButton = true; // no spam click
+            $scope.loadingAdd = true;
             var returnData = angular.copy($scope.return);
-            $scope.error = "";
-
-            if(returnData.refund === 0)
-            {
+            $scope.error.text = "";
+            
+            if(returnData.refund === 0) {
                 returnData.mode = "";
-            }
-
-            for(var i = returnData.products.length - 1; i >= 0; i--)
-            {
-                if(returnData.products[i].qty_returning === 0)
-                {
-                    returnData.products.splice(i, 1);
-                }
-                else
-                {
-                    returnData.products[i].qty_returned = returnData.products[i].qty_returning;
+            }else{
+                // it need a refund mode
+                if(!returnData.mode || returnData.mode == ""){
+                    $scope.error.text = "order.error.refundMode";
+                    $scope.disabledButton = false;
+                    $scope.loadingAdd = false;
+                    return
                 }
             }
 
-            if(returnData.products.length > 0)
-            {
-                Orders.rma({order: $scope.order._id, return: returnData}, function ()
-                {
-                    toastService.toast("success", "Retour correctement ajouté");
-                    $modalInstance.close();
-                }, function (err)
-                {
-                    toastService.toast("danger", "Une erreur est survenue !");
-                    if(err.data && err.data.translations)
-                    {
-                        toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+            let nbProducts = returnData.products.length;
+            for(let count = 0; count < nbProducts; count++) {
+                if(returnData.products[count]){
+                    if(typeof returnData.products[count].qty_returning === "undefined"){
+                        returnData.products[count].qty_returning = 0;
                     }
-                    $modalInstance.close();
-                });
+                    if(returnData.products[count].qty_returning === 0){
+                        returnData.products.splice(count, 1);
+                        count = count - 1;
+                    } else {
+                        returnData.products[count].qty_returned = returnData.products[count].qty_returning;
+                    }
+                }else{
+                    break;
+                }
             }
-            else
-            {
-                $scope.error = "Aucun retour définit";
+
+            if(returnData.products.length > 0) {
+                Orders.rma({order: $scope.order._id, return: returnData}, function () {
+                    toastService.toast("success", $translate.instant("order.detail.returnAdded"));
+                    $scope.disabledButton = false;
+                    $scope.loadingAdd = false;
+                    $scope.close();
+                }, function (err) {
+                    $scope.disabledButton = false;
+                    $scope.loadingAdd = false;
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                    if(err.data){
+                        if(err.data.translations) {
+                            toastService.toast("danger", err.data.translations[$scope.defaultLang]);
+                        }else if(err.data.message) {
+                            toastService.toast("danger", err.data.message);
+                        }
+                    }
+                    $scope.close();
+                });
+            } else {
+                $scope.disabledButton = false;
+                $scope.loadingAdd = false;
+                $scope.error.text = "order.error.noReturnDef";
             }
         };
 
-        $scope.cancel = function ()
-        {
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+        $scope.close = function() {
+            $modalInstance.close();
+        }
     }
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService",
-    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService) {
+    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService", "$translate",
+    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService, $translate) {
         $scope.order = angular.copy(item);
-
+        $scope.error = {
+            text: ""
+        };
         $scope.return = {
             comment: "",
             mode: "",
@@ -942,22 +1102,27 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
 
         $scope.return.products.reverse();
 
-        $scope.setQty = function (index)
-        {
+        $scope.setQty = function (index) {
             $scope.return.refund = 0;
 
-            if(index !== undefined)
-            {
-                $scope.return.products[index].qty_returning = $scope.order.items[index].quantity < $scope.return.products[index].qty_returned ? 0 :
-                    $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+            if(typeof index !== "undefined") {
+                if($scope.order.items[index].quantity < $scope.return.products[index].qty_returned){
+                    $scope.return.products[index].qty_returning = 0;
+                }else{
+                    $scope.return.products[index].qty_returning = $scope.order.items[index].quantity - $scope.return.products[index].qty_returned;
+                }
             }
 
-            for(var i = 0; i < $scope.return.products.length; i++)
-            {
-                if($scope.return.products[i].qty_returning > 0)
-                {
-                    $scope.return.refund += ($scope.order.items[i].price.special !== undefined && $scope.order.items[i].price.special.ati !== undefined ?
-                        $scope.order.items[i].price.special.ati : $scope.order.items[i].price.unit.ati) * $scope.return.products[i].qty_returning;
+            for(var i = 0; i < $scope.return.products.length; i++) {
+                if(typeof $scope.return.products[i].qty_returning === "undefined"){
+                    $scope.return.products[i].qty_returning = 0;
+                }
+                if($scope.return.products[i].qty_returning > 0) {
+                    if((typeof $scope.order.items[i].price.special !== "undefined") && (typeof $scope.order.items[i].price.special.ati !== "undefined") ){
+                        $scope.return.refund = $scope.order.items[i].price.special.ati * $scope.return.products[i].qty_returning;
+                    }else{
+                        $scope.return.refund = $scope.order.items[i].price.unit.ati * $scope.return.products[i].qty_returning;
+                    }
                 }
             }
         };
@@ -965,25 +1130,30 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
         $scope.validateInfoPayment = function ()
         {
             var returnData = angular.copy($scope.return);
-            $scope.error = "";
+            $scope.error.text = "";
 
             delete returnData.sendMail;
             Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
             {
-                toastService.toast("success", "Information de paiement correctement ajoutée");
-                $modalInstance.close();
+                toastService.toast("success", $translate.instant("order.detail.paymentInfoAdded"));
+                $scope.close();
             }, function (err)
             {
-                toastService.toast("danger", "Une erreur est survenue !");
+                toastService.toast("danger", $translate.instant("global.standardError"));
                 if(err.data && err.data.translations)
                 {
                     toastService.toast("danger", err.data.translations[$scope.defaultLang]);
                 }
-                $modalInstance.close();
+                $scope.close();
             });
         };
 
         $scope.cancel = function ()
+        {
+            $modalInstance.dismiss("cancel");
+        };
+
+        $scope.close = function ()
         {
             $modalInstance.dismiss("cancel");
         };

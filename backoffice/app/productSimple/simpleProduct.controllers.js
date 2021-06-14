@@ -3,7 +3,7 @@ const SimpleProductControllers = angular.module("aq.simpleProduct.controllers", 
 
 SimpleProductControllers.controller("SimpleProductCtrl", [
     "$scope", "$filter", "$location", "$modal", "ProductService", "AttributesV2", "$routeParams", "toastService", "CategoryV2",
-    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs",
+    "ImportedProductImage", "$http", "ProductsV2", "LanguagesApi", "$translate", "SetAttributesV2", "ProductsTabs", 
     function ($scope, $filter, $location, $modal, ProductService, AttributesV2, $routeParams, toastService, CategoryV2, ImportedProductImage, $http, ProductsV2, LanguagesApi, $translate, SetAttributesV2, ProductsTabs) {
         $scope.isEditMode = false;
         $scope.disableSave = false;
@@ -46,7 +46,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                             }
                         });
                     } else {
-                        toastService.toast('danger', 'Impossible de générer l\'URL de test car pas de canonical')
+                        toastService.toast('danger', $translate.instant("simple.impossibleGeneratedURL"))
                         const event = new CustomEvent('displayCanonicalModal');
                         window.dispatchEvent(event);
                     }
@@ -75,7 +75,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                 $scope.product = product;
 
                 genAttributes();
-                getCategories();
                 
                 if ($scope.product.images && $scope.product.images.length > 0 && ImportedProductImage.component_template !== "") {
                     for (let i = 0; i < $scope.product.images.length; i++) {
@@ -128,10 +127,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                         const newPrd = {...$scope.product, code: newCode};
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
-                            toastService.toast("success", "Produit dupliqué !");
+                            toastService.toast("success", $translate.instant("simple.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", "Le code existe déjà");
+                            toastService.toast("danger", $translate.instant("simple.codeExists"));
                         });
                     }
                 },
@@ -177,6 +176,32 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             $scope.lang = lang;
         };
 
+        function checkForm(fieldsToCheck){
+            let text = "";
+            for(let oneField of fieldsToCheck){
+                const elt = document.querySelector(`label[for="${oneField}"]`);
+                const translationToCheck = ["name"];  // TODO : you may need to add string here (also in bundleProduct)
+                if(translationToCheck.includes(oneField)){
+                    for(let oneLang of $scope.languages){
+                        if($scope.product.translation && $scope.product.translation[oneLang.code] && $scope.product.translation[oneLang.code][oneField] && $scope.product.translation[oneLang.code][oneField] != ""){
+                        //good
+                        }else{
+                            text += `name (${oneLang.name}), `;
+                        }
+                    }
+                }else{
+                    if (elt) {
+                        if(elt.control && elt.control.value == ""){
+                            if(elt.innerText){
+                                text += `${elt.innerText}, `;
+                            }
+                        }
+                    }
+                }
+            }
+            return text;
+        }
+
         $scope.saveProduct = function (product, isQuit) {
             if ($scope.nsUploadFiles.isSelected) {
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
@@ -186,24 +211,22 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
             // Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;
 
+            let strInvalidFields = "";
             if ($scope.form.$invalid) {
-                let strInvalidFields = "";
                 if ($scope.form.$error && $scope.form.$error.required) {
                     $scope.form.$error.required.forEach((requiredField, index) => {
-                        const elt = document.querySelector(`label[for="${requiredField.$name}"]`);
-                        if (index === 0) {
-                            strInvalidFields = ": ";
-                        }
-                        if (elt && elt.innerText) {
-                            if ($scope.form.$error.required.length - 1 === index) {
-                                strInvalidFields += `${elt.innerText}`;
-                            } else {
-                                strInvalidFields += `${elt.innerText}, `;
-                            }
-                        }
+                        strInvalidFields += checkForm([requiredField.$name]);
                     });
                 }
-                toastService.toast("danger", `Les informations saisies ne sont pas valides${strInvalidFields}`);
+            }else{
+                strInvalidFields = checkForm(["code", "name"]);
+            }
+            //we remove ", "
+            if(strInvalidFields.substring(strInvalidFields.length-2, strInvalidFields.length) == ", "){
+                strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
+            }
+            if(strInvalidFields != ""){
+                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
                 return;
             }
 
@@ -236,7 +259,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
                     if (isQuit) {
                         $location.path("/products");
                     } else {
-                        toastService.toast("success", "Produit sauvegardé !");
+                        toastService.toast("success", $translate.instant("simple.productSaved"));
                         if ($scope.isEditMode) {
                             $scope.disableSave = false;
                             savedPrd.set_attributes = $scope.product.set_attributes;
@@ -263,10 +286,10 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.removeProduct = function (_id) {
             if (confirm("Etes-vous sûr de vouloir supprimer ce produit ?")) {
                 ProductsV2.delete({id: _id}, function () {
-                    toastService.toast("success", "Suppression éffectuée");
+                    toastService.toast("success", $translate.instant("simple.deleteDone"));
                     $location.path("/products");
                 }, function () {
-                    toastService.toast("danger", "Une erreur est survenue lors de la suppression.");
+                    toastService.toast("danger", $translate.instant("simple.errorDelete"));
                 });
             }
         };
@@ -275,15 +298,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         $scope.cancel = function () {
             $location.path("/products");
         };
-
-        $scope.getCategoriesLink = function (){
-            if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink){
-                    $scope.categoriesLink = categoriesLink.datas;
-                });
-            }
-        };
-
 
         $scope.momentDate = function (date) {
             if (date === null) {
@@ -298,90 +312,6 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
 
 
 
-        /*----------------------------------------------------------------- Catory tab -------------------------------------------------------------------*/
-
-        $scope.selectNode = function(node){
-            //we get the actual productsList
-            var tab = node.productsList;
-            const productID = $scope.product._id;
-            let count = 0;
-            const lenTab = tab.length;
-            for(let oneObject of tab){
-                if(oneObject.id == productID){
-                    if(count > -1) {
-                        tab.splice(count, 1);
-                    }
-                    break;
-                }else{
-                    count++;
-                }
-            }
-            if(count == lenTab) {
-                tab.push({id: productID, checked: true});
-            }
-            //we save
-            CategoryV2.save({_id: node._id, productsList: tab}, function () {
-
-            });
-        };
-
-        function getCategories() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
-            {
-                $scope.categories = response.datas;
-                //we expand all the categories
-                $scope.expandAll();
-            });
-        }
-        
-        $scope.catDisabled = function (node){
-            let final = false;
-            if(node.action == "page"){
-                final = true;
-            }else{
-                for(let oneChild of node.productsList){
-                    if(oneChild.id == $scope.product._id){
-                        final = !oneChild.checked;
-                        break;
-                    }
-                }
-            }
-            return final;
-        };
-
-        $scope.catCheck = function (node){
-            let final = false;
-            for(let oneChild of node.productsList){
-                if(oneChild.id == $scope.product._id){
-                    final = true;
-                    break;
-                }
-            }
-            return final;
-        };
-
-        $scope.expandAll = function(){
-            for(let oneCat of $scope.categories){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                    oneCat.nodes = response.datas;
-                    $scope.$broadcast('angular-ui-tree:expand-all');
-                    for(let oneNode of oneCat.nodes){
-                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                            oneNode.nodes = response.datas;
-                            $scope.$broadcast('angular-ui-tree:expand-all');
-                        });
-                    }
-                });
-            }
-            //or use the $scope.listChildren()
-        }
-
-        $scope.listChildren = function (cat, scope) {
-            CategoryV2.list({PostBody: {filter: {_id: {$in: cat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, limit: 99}}, function (response) {
-                cat.nodes = response.datas;
-                scope.toggle();
-            });
-        };
 
     }
 ]);

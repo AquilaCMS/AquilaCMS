@@ -13,6 +13,7 @@
         "html": "HTML",
         "variables": "Vars",
         "result": "Result",
+        "pageSaved": "Page saved!",
         "noVars": "No vars"
     },
     "list": {

@@ -49,6 +49,39 @@ OrderServices.service("OrderColumns", function ()
     return [];
 });
 
+/*
+    Use if you want to replace the button and the function "addPackage()"
+*/
 OrderServices.service("OrderPackagePopup", function () {
+    return [];
+});
+
+/*
+    Used for Shipement in the modal
+    Array of object like :
+    {
+        component_template: DIRECTIVE_TAG,
+        code_shipment: SHIPMENT_NAME,
+        default: true
+    }
+    note that the default true is optional
+    it can be useful in you want to use a "multi-shipment" module :)
+*/
+OrderServices.service("OrderPackageInPopupHook", function () {
+    return [];
+});
+
+/*
+    Used to add things in the return modal also named RAM or 'views/modals/order-rma.html'
+    Array of object like :
+    {
+        component_template: DIRECTIVE_TAG,
+        code_shipment: SHIPMENT_NAME,
+        default: true
+    }
+    note that the default true is optional
+    it can be useful in you want to use a "multi-shipment" module :)
+*/
+OrderServices.service("orderReturnHook", function () {
     return [];
 });

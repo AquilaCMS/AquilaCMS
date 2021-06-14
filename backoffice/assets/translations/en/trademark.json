@@ -8,6 +8,9 @@
         "state": "State",
         "code": "Code",
         "active": "Active",
+        "markSaved": "Saved brand",
+        "nameValue": "Enter a value for the name",
+        "enterValue": "Enter a value",
         "creaDate": "Creation date"
     },
     "new": {

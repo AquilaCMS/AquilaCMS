@@ -6,6 +6,8 @@
         "createAttr": "CRÉER ATTRIBUT",
         "type": "Type",
         "addQuestion": "Ajouter une question",
+        "saveDone": "Sauvegarde effectuée",
+        "attributeNotExist": "Cet attribut n'existe pas",
         "descriptionQuestion": "Critères pour lesquels un client pourra noter le produit, exemple: Rapport qualité/prix, Fluidité du produit... ",
         "tab": {
             "setAttr": "Groupe d'attributes",
@@ -25,6 +27,8 @@
         "ph2": "Nom",
         "code": "Code",
         "nom": "Nom",
+        "saveDone": "Sauvegarde effectuée",
+        "error": "Erreur",
         "save": "Enregistrer"
     }
 }

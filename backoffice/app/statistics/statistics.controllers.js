@@ -89,10 +89,10 @@ angular.module("aq.statistics.controllers", []).value("googleChartApiConfig", {
                         linkElement.dispatchEvent(clickEvent);
                     }
                     catch(err) {
-                        toastService.toast("danger", "Une erreur s'est produite lors de la génération du fichier .csv");
+                        toastService.toast("danger", $translate.instant("stats.csvError"));
                     }
                 } else {
-                    toastService.toast("danger", "Pas d'informations a exporter");
+                    toastService.toast("danger", $translate.instant("stats.nothingExport"));
                 }
             });
             $scope.obj.loading = false;

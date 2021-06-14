@@ -47,22 +47,25 @@ const ShipmentSchema = new Schema({
     forAllPos                : {type: Boolean, default: false},
     component_template       : String,
     component_template_front : String
-}, {discriminatorKey: 'type'});
-
-async function preUpdates(that) {
-    await utilsDatabase.checkCode('shipments', that._id, that.code);
-}
-
-ShipmentSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+}, {
+    discriminatorKey : 'type',
+    id               : false
 });
 
-ShipmentSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+ShipmentSchema.statics.checkCode = async function (that) {
+    await utilsDatabase.checkCode('shipments', that._id, that.code);
+};
+
+ShipmentSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, ShipmentSchema);
+});
+
+ShipmentSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, ShipmentSchema);
 });
 
 ShipmentSchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, ShipmentSchema);
     next();
 });
 

@@ -4,6 +4,12 @@
     display: flex;
 }
 
+.linkToSmthg {
+    text-decoration:underline;
+    color:blue;
+    cursor:pointer;
+}
+
 .searchBarTerm{
     width: 100%;
     height: 32px;
@@ -146,7 +152,7 @@ h3, .h3
 
 .image-frame img
 {
-    height: 120px;
+    width: 120px;
 }
 
 .dropdown-menu
@@ -287,14 +293,16 @@ table.ns-table-grey td
 
     .fsbox
     {
-        margin-top: 60px;
+        margin-top: -30px;
         margin-bottom: 0px !important;
         position: fixed;
         width: calc(100% - 250px);
+        transition: width .3s;
     }
 
     .fsboxM
     {
+        margin-top: -30px;
         width: calc(100% - 55px);
     }
 
@@ -321,8 +329,11 @@ table.ns-table-grey td
 
     .boxTop > .box-content
     {
+        right: 0px;
         padding: 45px;
-        padding-top: 150px;
+        margin-top: 90px;
+        background-color: #dfe6ee;
+        transition: width .3s;
     }
 
     .boxTop > .box-header

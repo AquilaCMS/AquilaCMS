@@ -19,7 +19,7 @@ const utils         = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const aquilaEvents  = require('../../utils/aquilaEvents');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 const defaultVAT    = 20;
 
 const CartSchema = new Schema({
@@ -92,7 +92,11 @@ const CartSchema = new Schema({
         method : {type: String, enum: ['delivery', 'withdrawal'], default: 'delivery'},
         date   : Date
     }
-}, {usePushEach: true, timestamps: true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 CartSchema.set('toJSON', {virtuals: true});
 CartSchema.set('toObject', {virtuals: true});
@@ -212,11 +216,16 @@ CartSchema.pre('save', function (next) {
     next();
 });
 
+/**
+ * @this mongoose.Query
+ * @param {mongoose.Document} doc
+ * @param {mongoose.HookNextFunction} next
+ */
 CartSchema.post('save', async function (doc, next) {
     if (doc.wasNew) {
         aquilaEvents.emit('aqNewCart', doc, next);
     } else {
-        await updateCarts(this._update, doc._id, next);
+        await updateCarts(this, doc._id, next);
     }
     next();
 });

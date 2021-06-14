@@ -31,7 +31,6 @@
                     "currentTheme"      : {"type": "string"},
                     "demoMode"          : {"type": "boolean", "default": true},
                     "exchangeFilesPath" : {"type": "string"},
-                    "invoicePath"       : {"type": "string"},
                     "mailHost"          : {"type": "string"},
                     "mailPass"          : {"type": "string"},
                     "mailPort"          : {"type": "number"},
@@ -71,6 +70,7 @@
                 "properties": {
                     "cartExpireTimeout"         : {"type": "number"},
                     "pendingOrderCancelTimeout" : {"type": "number"},
+                    "requestMailPendingCarts"   : {"type": "number" },
                     "bookingStock"              : {"type": "string", "enum": ["commande", "panier", "none", "payment"]},
                     "labels"                    : {
                         "type": "array",

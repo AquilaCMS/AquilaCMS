@@ -70,13 +70,14 @@ TranslationControllers.controller('LanguagesCtrl',
 ]);
 
 TranslationControllers.controller('LanguageEditCtrl',
-        ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService',
-            function ($scope, LanguagesApiV2, $modalInstance, lang, toastService) {
+        ['$scope', 'LanguagesApiV2', '$modalInstance', 'lang', 'toastService', '$translate',
+            function ($scope, LanguagesApiV2, $modalInstance, lang, toastService, $translate) {
                 function getLanguages() {
                     LanguagesApiV2.list({}, {PostBody: {filter: {}, limit: 99}},function (languages) {
                         $scope.languages = languages.datas;
                     });
                 }
+                const oldLang = angular.copy(lang);
 
                 if (lang) {
                     $scope.lang = angular.copy(lang);
@@ -88,6 +89,12 @@ TranslationControllers.controller('LanguageEditCtrl',
                 else $scope.lang = {defaultLanguage: false, visible: false};
 
                 $scope.save = function (lang) {
+                    if(typeof oldLang !== "undefined" && oldLang !== null) {
+                        if(oldLang.defaultLanguage !== lang.defaultLanguage){
+                            toastService.toast("warning", $translate.instant("translation.toast.defaultLangChang"));
+                            toastService.toast("warning", $translate.instant("translation.toast.needActions"));
+                        }
+                    }
                     LanguagesApiV2.save({lang}, function () {
                         var event = new CustomEvent("getLanguages", {});
                         window.dispatchEvent(event);
@@ -96,7 +103,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         if(err.data.message){
                             toastService.toast("danger", err.data.message);
                         }else if(err.code === "Conflict" || err.data.code === "Conflict"){
-                            toastService.toast("danger", "Already exist");
+                            toastService.toast("danger", $translate.instant("translation.alreadyExist"));
                         }else{
                             toastService.toast("danger", err.data);
                         }

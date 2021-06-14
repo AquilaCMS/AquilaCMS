@@ -38,6 +38,12 @@
             "ati": "ATI price diff",
             "et": "ET price diff"
         },
+        "productSaved": "Saved product",
+        "errorDeleting": "An error occurred while deleting.",
+        "errorSaving": "An error occurred while saving.",
         "modifierWeight": "Weight diff (gram)"
+    },
+    "msg": {
+        "deleteSelection": "Are you sure you want to delete the section ?"
     }
 }

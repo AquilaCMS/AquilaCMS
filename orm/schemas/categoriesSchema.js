@@ -11,7 +11,8 @@ const utils            = require('../../utils/utils');
 const translationUtils = require('../../utils/translation');
 const utilsDatabase    = require('../../utils/database');
 const Schema           = mongoose.Schema;
-const ObjectId         = Schema.ObjectId;
+const aquilaEvents     = require('../../utils/aquilaEvents');
+const {ObjectId}       = Schema.Types;
 
 const CategoriesSchema = new Schema({
     code         : {type: String, required: true, unique: true},
@@ -48,8 +49,11 @@ const CategoriesSchema = new Schema({
     },
     translation      : {},
     canonical_weight : {type: Number, default: 0}
-}, {usePushEach : true,
-    timestamps  : true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 /* translation:
  slug: requis, unique entre les categories, pas entre ses langues
@@ -89,8 +93,11 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
                 if (updateQuery) {
                     self.translation[translationKeys[i]] = Object.assign(self.translation[translationKeys[i]], lang);
                 }
-                if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, translation: {slug: lang.slug}}) > 0) {
-                    errors.push('slug déjà existant');
+                if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                    lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                    if (await mongoose.model('categories').countDocuments({_id: {$ne: self._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                        errors.push('slug déjà existant');
+                    }
                 }
                 errors = errors.concat(translationUtils.checkCustomFields(lang, `translation.${translationKeys[i]}`, [
                     {key: 'slug'}, {key: 'pageSlug'}, {key: 'name'}, {key: 'extraLib'}, {key: 'extraText'}, {key: 'extraText2'}, {key: 'extraText3'}
@@ -105,25 +112,28 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
     return errors;
 };
 
-async function preUpdates(that) {
+CategoriesSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('categories', that._id, that.code);
+};
+
+CategoriesSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'categories');
-}
+};
 
 CategoriesSchema.pre('updateOne', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, CategoriesSchema);
+    await utilsDatabase.preUpdates(this, next, CategoriesSchema);
 });
 
 CategoriesSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, CategoriesSchema);
+    await utilsDatabase.preUpdates(this, next, CategoriesSchema);
 });
 
 CategoriesSchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, CategoriesSchema);
     const errors = await CategoriesSchema.statics.translationValidation(undefined, this);
     next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
 });
+
+aquilaEvents.emit('categoriesSchemaInit', CategoriesSchema);
 
 module.exports = CategoriesSchema;

@@ -1,8 +1,6 @@
 {
     "t1": "Languages",
-
     "ph1": "Position",
-
     "addLang": "Add a language",
     "modLang": "Modify a language",
     "code": "Code",
@@ -18,11 +16,14 @@
     "visible": "Visible on website",
     "cancel": "Cancel",
     "valider": "Submit",
-
     "defLang": "Default language",
     "status": "Status",
     "act": "Actions",
     "delete": "Delete",
-
-    "saveFirst": "You must save the language first before adding a picture"
+    "alreadyExist": "Already exist",
+    "saveFirst": "You must save the language first before adding a picture",
+    "toast": {
+        "defaultLangChang": "The default lang has been changed",
+        "needActions": "You need to rebuild the theme and restart the server to fully implement the change"
+    }
 }

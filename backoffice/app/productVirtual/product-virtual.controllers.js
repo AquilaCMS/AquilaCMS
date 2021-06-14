@@ -1,7 +1,7 @@
 const ProductVirtualController = angular.module('aq.productVirtual.controllers', []);
 
-ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location', '$controller', 'toastService', 'ProductsV2', 'CategoryV2', '$routeParams', '$filter', 'SetAttributesV2','AttributesV2', '$modal',
-    function ($scope, $location, $controller, toastService, ProductsV2, CategoryV2, $routeParams, $filter, SetAttributesV2, AttributesV2, $modal) {
+ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location', '$controller', 'toastService', 'ProductsV2', 'CategoryV2', '$routeParams', '$filter', 'SetAttributesV2','AttributesV2', '$modal', '$translate',
+    function ($scope, $location, $controller, toastService, ProductsV2, CategoryV2, $routeParams, $filter, SetAttributesV2, AttributesV2, $modal, $translate) {
         angular.extend(this, $controller('SimpleProductCtrl', {$scope: $scope}));
         $scope.nsUploadFiles = {
             isSelected: false
@@ -31,13 +31,6 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
             });
         };
         
-        $scope.getCategoriesLink = function () {
-            if($scope.product._id) {
-                CategoryV2.list({PostBody: {filter: {'productsList.id': $scope.product._id}, limit: 99, structure: {active: 1, translation: 1}}}, function (categoriesLink) {
-                    $scope.categoriesLink = categoriesLink.datas;
-                });  
-            }
-        };
 
         $scope.additionnalButtons = [
             {
@@ -107,10 +100,10 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
                         delete newPrd._id;
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
-                            toastService.toast("success", "Produit dupliqué !");
+                            toastService.toast("success", $translate.instant("simple.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", "Le code existe déjà");
+                            toastService.toast("danger", $translate.instant("simple.codeExists"));
                         });
                     }
                 },

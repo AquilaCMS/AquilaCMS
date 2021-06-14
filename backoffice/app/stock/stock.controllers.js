@@ -1,14 +1,25 @@
 angular.module("aq.stock.controllers", []).controller("StockCtrl", [
-    "$scope", "$location", "toastService", "ConfigV2", "$modal",
-    function ($scope, $location, toastService, ConfigV2, $modal) {
+    "$scope", "$location", "toastService", "ConfigV2", "$modal", "$translate",
+    function ($scope, $location, toastService, ConfigV2, $modal, $translate) {
         $scope.stock = {
             cartExpireTimeout: 48,
             pendingOrderCancelTimeout: 48,
+            requestMailPendingCarts: 24,
             bookingStock: "panier",
             labels: {}
         };
         $scope.disableEdit = false;
         $scope.taxerate = []
+
+        $scope.pendingCartCheck = function(){
+            if ($scope.stock.cartExpireTimeout <= $scope.stock.requestMailPendingCarts){
+                if ($scope.stock.cartExpireTimeout === 0){
+                    $scope.stock.requestMailPendingCarts = 0;
+                }else{
+                    $scope.stock.requestMailPendingCarts = $scope.stock.cartExpireTimeout -1;
+                }
+            }
+        }
 
         $scope.fixAdditionnalFees = function () {
             if (
@@ -87,7 +98,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
             var stock = $scope.stock;
 
             ConfigV2.save({stockOrder: stock, taxerate: $scope.taxerate}, function () {
-                toastService.toast("success", "Stock & commandes sauvegardée !");
+                toastService.toast("success", $translate.instant("stock.order&StockSaved"));
                 if (quit) $location.path("/");
             }, function (err) {
                 toastService.toast("danger", err.data);

@@ -52,10 +52,6 @@
                     }
                 }
             },
-            "presentInLastImport" : {
-                "type": "boolean",
-                "description": "true if product is still present in last import, set visible to false"
-            },
             "specific"            : {
                 "type": "object",
                 "properties": {

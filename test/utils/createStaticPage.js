@@ -1,13 +1,14 @@
 const faker     = require('faker');
 const {Statics} = require('../../orm/models');
 
-const createStaticPage = (params = {code: null, content: null, title: null}) => {
-    const {code, content, title} = params;
-    const staticPage             = new Statics();
-    staticPage.type              = 'page';
-    staticPage.group             = null;
-    staticPage.code              = code || faker.lorem.slug();
-    staticPage.translation       = {
+const createStaticPage = (params = {code: null, content: null, title: null, active: false}) => {
+    const {code, content, title, active} = params;
+    const staticPage                     = new Statics();
+    staticPage.type                      = 'page';
+    staticPage.group                     = null;
+    staticPage.code                      = code || faker.lorem.slug();
+    staticPage.active                    = active || true;
+    staticPage.translation               = {
         fr : {
             variables : [],
             html      : '',
@@ -18,4 +19,11 @@ const createStaticPage = (params = {code: null, content: null, title: null}) => 
     return staticPage.save();
 };
 
-module.exports = createStaticPage;
+const deleteAllStaticPage = async () => {
+    await Statics.deleteMany({});
+};
+
+module.exports = {
+    createStaticPage,
+    deleteAllStaticPage
+};

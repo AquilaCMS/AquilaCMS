@@ -10,7 +10,7 @@ const mongoose      = require('mongoose');
 const aquilaEvents  = require('../../utils/aquilaEvents');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 
 const AttributesSchema = new Schema({
     code  : {type: String, required: true, unique: true},
@@ -28,6 +28,8 @@ const AttributesSchema = new Schema({
     usedInRules    : {type: Boolean, default: true},
     usedInFilters  : {type: Boolean, default: false},
     translation    : {}
+}, {
+    id : false
 });
 
 AttributesSchema.statics.translationValidation = async function (self) {
@@ -63,6 +65,10 @@ AttributesSchema.statics.translationValidation = async function (self) {
     return errors;
 };
 
+AttributesSchema.statics.checkCode = async function (data) {
+    await utilsDatabase.checkCode('attributes', data._id, data.code);
+};
+
 /**
  * Si un attribut est supprimé alors il faut reporter ces modifications dans les categories.filters.attributes et supprimer du tableau categories.filters.attributes
  * l'objet correspondant a l'attribut supprimé
@@ -78,34 +84,35 @@ AttributesSchema.post('remove', async function (doc, next) {
     }
 });
 
-async function preUpdates(that) {
-    await utilsDatabase.checkCode('attributes', that._id, that.code);
-}
-
 AttributesSchema.pre('updateOne', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 AttributesSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 /**
  * Lorsqu'un attribut est modifié alors on reporte la modification dans categorie.filters.attributes qui est un tableau d'attribut
+ * @deprecated seem like it's not used, because the service setAttribute handle all modifications
  */
 AttributesSchema.post('updateOne', async function ({next}) {
+    console.warn("If you see that, AttributesSchema.post('updateOne') is not deprecated. Please remove this message");
     try {
         const attribute = await this.findOne(this.getQuery());
         if (attribute) {
-            const filters      = {
-                'filters.attributes.$.position'    : attribute.position,
-                'filters.attributes.$.type'        : attribute.type,
-                'filters.attributes.$.translation' : attribute.translation
-            };
             const {Categories} = require('../models');
-            await Categories.updateMany({'filters.attributes._id': attribute._id}, {$set: filters}, {new: true, runValidators: true});
+            await Categories.updateMany({}, {
+                $set : {
+                    'filters.attributes.$[attribute].position'    : attribute.position,
+                    'filters.attributes.$[attribute].type'        : attribute.type,
+                    'filters.attributes.$[attribute].translation' : attribute.translation
+                }
+            }, {
+                arrayFilters  : [{'attribute._id': attribute._id}],
+                new           : true,
+                runValidators : true
+            });
         }
     } catch (err) {
         return next(err);
@@ -113,9 +120,7 @@ AttributesSchema.post('updateOne', async function ({next}) {
 });
 
 AttributesSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    const errors = await AttributesSchema.statics.translationValidation(this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await utilsDatabase.preUpdates(this, next, AttributesSchema);
 });
 
 aquilaEvents.emit('attributesSchemaInit', AttributesSchema);

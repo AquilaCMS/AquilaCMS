@@ -12,6 +12,7 @@
         "save": "Enregistrer"
     },
     "detail": {
+        "title": "Categorie",
         "t1": "3 caractères minimum",
         "ph1": "Nom",
         "action": "Action",
@@ -64,12 +65,20 @@
         "addSelect": "Ajouter la sélection ",
         "addAll": "Tout ajouter ",
         "supprSelect": " Supprimer la sélection",
-        "supprAll": " Tout supprimer"
+        "supprAll": " Tout supprimer",
+        "positionSaved": "Position sauvegardé",
+        "categorySaved": "Catégorie sauvegardée",
+        "incompleteRules": "Formulaire des règles incomplet",
+        "ruleSaved": "Règle(s) sauvegardée(s)",
+        "noNewRule": "Pas de règles créées",
+        "inORout": "Dans la catégorie"
     },
-
     "list": {
         "t1": "Catégories",
         "noCatCreated": "Aucune catégorie n'a encore été créée.",
+        "occurErrorAPI": "Une erreur est survenue lors d'une requete API",
+        "pictureDelete": "Image supprimée",
+        "errorCategoryMove": "Une erreur est survenue lors du déplacement de la catégorie",
         "back": "Retour"
     }
 }

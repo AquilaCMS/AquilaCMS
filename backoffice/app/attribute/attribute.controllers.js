@@ -79,8 +79,8 @@ AttributeControllers.controller("AttributeListCtrl", [
 ]);
 
 AttributeControllers.controller("AttributeDetailCtrl", [
-    "$scope", "$rootScope", "$location", "$routeParams", "AttributesV2", "SetAttributesV2", "toastService", "AttributesFields",
-    function ($scope, $rootScope, $location, $routeParams, AttributesV2, SetAttributesV2, toastService, AttributesFields) {
+    "$scope", "$rootScope", "$location", "$routeParams", "AttributesV2", "SetAttributesV2", "toastService", "AttributesFields", "$translate",
+    function ($scope, $rootScope, $location, $routeParams, AttributesV2, SetAttributesV2, toastService, AttributesFields, $translate) {
         $scope.fields = AttributesFields;
         $scope.local = {valuesList: []};
         $scope.selectedSet = "";
@@ -136,7 +136,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.getAttr = function () {
             $scope.attribute = AttributesV2.query({PostBody: {filter: {code: $routeParams.attributeCode, _type: $scope._type}, structure: '*'}}, function (obj) {
                 if (obj.code === undefined) {
-                    toastService.toast("danger", "Cet attribut n'existe pas");
+                    toastService.toast("danger", $translate.instant("attribute.detail.attributeNotExist"));
                     $location.path(`/${$scope._type}/attributes`);
                 }
 
@@ -256,7 +256,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                 data._type = $scope._type;
                  AttributesV2.save(data, function (res) {
                     if (res._id) {
-                        toastService.toast("success", "Sauvegarde effectuée");
+                        toastService.toast("success", $translate.instant("attribute.detail.saveDone"));
                         if (isQuit) {
                             if($routeParams.code) {
                                 return $location.path(`/${$scope._type}/setAttributes/${$routeParams.code}`);
@@ -268,7 +268,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                             return $location.path(`/${$scope._type}/attributes/${res.code}`);
                         }
                     } else {
-                        toastService.toast("danger", "Une erreur est survenue");
+                        toastService.toast("danger", $translate.instant("attribute.detail.errorOccurred"));
                         console.error(res);
                     }
                 }, function(error){
@@ -279,7 +279,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                     }else if(error && error.code != ""){
                         toastService.toast("danger", error.code);
                     }else{
-                        toastService.toast("danger", 'Error');
+                        toastService.toast("danger", $translate.instant("attribute.detail.error"));
                     }
                 });
             }
@@ -288,7 +288,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.removeAttribute = function (attr) {
             if (confirm("Etes-vous sûr de vouloir supprimer cet attribut ?")) {
                 AttributesV2.delete({id: attr._id}, function () {
-                    toastService.toast("success", "Attribut supprimé");
+                    toastService.toast("success", $translate.instant("attribute.detail.deleteAttribute"));
                     $location.path(`/${$scope._type}/attributes`);
                 }, function (err) {
                     toastService.toast("danger", err.data);

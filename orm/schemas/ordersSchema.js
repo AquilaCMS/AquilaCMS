@@ -14,9 +14,10 @@ const ItemSchema        = require('./itemSchema');
 const ItemSimpleSchema  = require('./itemSimpleSchema');
 const ItemBundleSchema  = require('./itemBundleSchema');
 const ItemVirtualSchema = require('./itemVirtualSchema');
+const AddressSchema     = require('./addressSchema');
 
-const Schema   = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const Schema     = mongoose.Schema;
+const {ObjectId} = Schema.Types;
 
 const DeliveryPackageSchema = new Schema({
     date     : {type: Date, default: Date.now},
@@ -141,33 +142,8 @@ const OrdersSchema = new Schema({
         }
     ],
     addresses : {
-        delivery : {
-            firstname         : String,
-            lastname          : String,
-            companyName       : String,
-            phone             : String,
-            phone_mobile      : String,
-            line1             : String,
-            line2             : String,
-            zipcode           : String,
-            city              : String,
-            isoCountryCode    : String,
-            country           : String,
-            complementaryInfo : String
-        },
-        billing : {
-            firstname      : String,
-            lastname       : String,
-            companyName    : String,
-            phone          : String,
-            phone_mobile   : String,
-            line1          : String,
-            line2          : String,
-            zipcode        : String,
-            city           : String,
-            isoCountryCode : String,
-            country        : String
-        }
+        delivery : AddressSchema,
+        billing  : AddressSchema
     },
     delivery : {
         method : {type: ObjectId, ref: 'shipments'},
@@ -234,8 +210,11 @@ const OrdersSchema = new Schema({
         et  : {type: Number, default: 0},
         tax : {type: Number, default: 0}
     }
-}, {usePushEach : true,
-    timestamps  : true});
+}, {
+    usePushEach : true,
+    timestamps  : true,
+    id          : false
+});
 
 OrdersSchema.set('toJSON', {virtuals: true});
 OrdersSchema.set('toObject', {virtuals: true});

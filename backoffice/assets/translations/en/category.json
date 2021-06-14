@@ -12,9 +12,10 @@
         "save": "Save"
     },
     "detail": {
+        "title": "Category",
         "t1": "minimum 3 characters",
         "ph1": "Name",
-        "action":"Action",
+        "action": "Action",
         "delete": "Delete",
         "save2": "Save",
         "general": "General",
@@ -63,12 +64,20 @@
         "addSelect": "Add selection ",
         "addAll": "Add all ",
         "supprSelect": " Delete selection",
-        "supprAll": " Delete all"
+        "supprAll": " Delete all",
+        "positionSaved": "Saved position",
+        "categorySaved": "Saved category",
+        "incompleteRules": "Rules form incomplete",
+        "ruleSaved": "Saved rule(s)",
+        "noNewRule": "No rules created",
+        "inORout": "In the category"
     },
-
     "list": {
         "t1": "Categories",
         "noCatCreated": "No category has been created.",
+        "occurErrorAPI": "An error occurred during an API request",
+        "pictureDelete": "Deleted image",
+        "errorCategoryMove": "An error occurred while moving the category",
         "back": "Back"
     }
 }

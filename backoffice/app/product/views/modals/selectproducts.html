@@ -4,13 +4,13 @@
     </ol>
     <div style="text-align: right">
         <button class="btn btn-default" ng-click="cancel()" translate>product.select.cancel</button>
-        <button class="btn btn-success" ng-click="validate(selectedProducts)" style="margin-left: 5px" translate>product.select.valider</button>
+        <button class="btn btn-success" ng-click="validate()" style="margin-left: 5px" translate>product.select.valider</button>
     </div>
 </div>
 <div class="modal-body">
-    <ns-products-list on-select="selectProduct" query-filter="queryFilter"></ns-products-list>
+    <ns-products-list selected-products="selectedProducts" query-filter="queryFilter"></ns-products-list>
 </div>
 <div class="modal-footer">
     <button class="btn btn-default" ng-click="cancel()" translate>product.select.cancel</button>
-    <button class="btn btn-success" ng-click="validate(selectedProducts)" translate>product.select.valider</button>
+    <button class="btn btn-success" ng-click="validate()" translate>product.select.valider</button>
 </div>

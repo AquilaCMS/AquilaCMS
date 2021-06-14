@@ -7,5 +7,10 @@
     "maintenance": "Maintenance",
     "authorizedIPs": "IP autorisées (séparées par ';')",
     "maj":"Mise à jour",
-    "automatic": "Activer la maintenance automatiquement après une mise à jour"
+    "configurationSaved": "Configuration saved!",
+    "errorArise": "An error has occurred !",
+    "majSucceded": "Update succeded :)",
+    "majFailed": "Update failed :(",
+    "checkMajFailed": "Unable to verify update",
+    "automatic": "Activer la maintenance automatiquement durant une mise à jour"
 }

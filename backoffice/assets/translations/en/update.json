@@ -7,5 +7,10 @@
     "authorizedIPs": "Authorized IPs (separated by ';')",
     "maintenance": "Maintenance",
     "maj":"Upgrade",
-    "automatic":"Activate maintenance automatically after an update"
+    "configurationSaved": "Configuration saved!",
+    "errorArise": "An error has occurred !",
+    "majSucceded": "Update succeded :)",
+    "majFailed": "Update failed :(",
+    "checkMajFailed": "Unable to verify update",
+    "automatic":"Activate maintenance automatically during an update"
 }

@@ -10,14 +10,14 @@
 const {Shortcodes} = require('../orm/models');
 
 /*
- * Retourne les shortcodes
+ * Get shortcodes
  */
 exports.getShortcodes = async function () {
     return Shortcodes.find({});
 };
 
 /*
- * Instancie la collection au lancement du serveur
+ * Instantiates the collection when the server is started
  */
 exports.initDBValues = async () => {
     const shortcodes = [

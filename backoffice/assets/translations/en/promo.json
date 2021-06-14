@@ -70,7 +70,18 @@
         "dispo": "Available",
         "lim": "Limit / Person",
         "priority": "Priority",
-        "applyNextRules": "Apply lower priority discount"
+        "applyNextRules": "Apply lower priority discount",
+        "actionSaved": "Saved action (s)",
+        "errorSavedRules": "Failed to save rules",
+        "formRulesIncomplete": "Rules form incomplete",
+        "enterInvalid": "The information entered is not valid.",
+        "ruleSaved": "Saved rule(s)",
+        "failSavedRules": "Failed to save rules",
+        "promoSaved": "Promotion saved!",
+        "promoDeleted": "Promo deleted",
+        "promoCloned": "Cloned promotion!",
+        "errorQteMaxEnter": "Maximum quantity and Max usage per customer must be numbers or '*'",
+        "msgDiscount": "The discount is negative ! The price will increase !"
     },
     "list": {
         "t1": "Discounts",

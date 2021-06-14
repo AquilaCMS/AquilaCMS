@@ -3,7 +3,7 @@
         <div class="row">
             <div class="pull-right" style="width:45%">
                 <div class="searchBar dataTables_filter">
-                    <input type="text" class="searchBarTerm" placeholder="Search..." group="search" ng-model="search" name="q" id="q" value="" placeholder="{{'cmsBlocks.list.search' | translate}}">
+                    <input type="text" class="searchBarTerm" group="search" ng-model="search" name="q" id="q" value="" placeholder="{{'cmsBlocks.list.search' | translate}}">
                     <button type="submit" class="searchBarButton">
                       <i class="fa fa-search"></i>
                    </button>
@@ -16,7 +16,7 @@
                 <li ng-show="search !== ''" class="{{search !== '' ? 'active' : ''}}" ><a data-toggle="tab" href="#search" target="_self" translate>cmsBlocks.list.search</a></li>
             </ul>
         </div>
-        <div ng-show="search === '' && currentTab === group" ng-repeat="group in groups | filterListGeneral:group" class="tab-content">
+        <div ng-show="search === '' && currentTab === group" ng-repeat="group in groups | filterListGeneral:group">
             <table class="shortTable table table-bordered table-hover">
                 <thead>
                     <tr>

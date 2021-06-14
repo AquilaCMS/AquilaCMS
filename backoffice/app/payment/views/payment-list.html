@@ -1,107 +1,111 @@
 <ns-box data-title="payment.list.t1" title-icon="fa fa-credit-card fa-lg">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper" role="grid">
-
-        <table class="mediumTable table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-            <thead>
-                <tr role="row" class="pointer">
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending"
-                        aria-label="Username: activate to sort column descending">
-                        <a ng-click="sort.type = 'number'; sort.reverse = !sort.reverse; getPayments(1);">
-                            <span translate>payment.list.order</span>
-                            <span ng-show="sort.type == 'number' && !sort.reverse" class="ico-chevron-down"></span>
-                            <span ng-show="sort.type == 'number' && sort.reverse" class="ico-chevron-up"></span>
-                        </a>
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
-                        <a ng-click="sort.type = 'customer.email'; sort.reverse = !sort.reverse; getPayments(1);">
-                            <span translate>payment.list.customer</span>
-                            <span ng-show="sort.type == 'customer.email' && !sort.reverse" class="ico-chevron-down"></span>
-                            <span ng-show="sort.type == 'customer.email' && sort.reverse" class="ico-chevron-up"></span>
-                        </a>
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
-                        <a ng-click="sort.type = 'payment.operationDate'; sort.reverse = !sort.reverse; getPayments(1);">
-                            <span translate>payment.list.date</span>
-                            <span ng-show="sort.type == 'payment.operationDate' && !sort.reverse" class="ico-chevron-down"></span>
-                            <span ng-show="sort.type == 'payment.operationDate' && sort.reverse" class="ico-chevron-up"></span>
-                        </a>
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
-                        <a ng-click="sort.type = 'payment.status'; sort.reverse = !sort.reverse; getPayments(1);">
-                            <span translate>payment.list.status</span>
-                            <span ng-show="sort.type == 'payment.status' && !sort.reverse" class="ico-chevron-down"></span>
-                            <span ng-show="sort.type == 'payment.status' && sort.reverse" class="ico-chevron-up"></span>
-                        </a>
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
-                        <a ng-click="sort.type = 'payment.type'; sort.reverse = !sort.reverse; getPayments(1);">
-                            <span translate>payment.list.type</span>
-                            <span ng-show="sort.type == 'payment.type' && !sort.reverse" class="ico-chevron-down"></span>
-                            <span ng-show="sort.type == 'payment.type' && sort.reverse" class="ico-chevron-up"></span>
-                        </a>
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
-                        <a ng-click="sort.type = 'payment.amount'; sort.reverse = !sort.reverse; getPayments(1);">
-                            <span translate>payment.list.prixTTC</span>
-                            <span ng-show="sort.type == 'payment.amount' && !sort.reverse" class="ico-chevron-down"></span>
-                            <span ng-show="sort.type == 'payment.amount' && sort.reverse" class="ico-chevron-up"></span>
-                        </a>
-                    </th>
-                </tr>
-                <tr role="row">
-                    <th style="text-align: center">
-                        <input ng-change="getPayments(1)" ng-model="filter.number" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='payment.list.nb'
-                               class="form-control" />
-                    </th>
-                    <th style="text-align: center">
-                        <input class="form-control" ng-model="filter['customer.email']" ng-model-options="{debounce: 500}" ng-change="getPayments(1)" translate
-                               translate-attr-placeholder='payment.list.mail' />
-                    </th>
-                    <th style="text-align: center">
-                        <ns-datepicker name="min_operationDate" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter['min_payment.operationDate']"
-                                       ng-change="getPayments(1)"></ns-datepicker>
-                        <ns-datepicker name="max_operationDate" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter['max_payment.operationDate']"
-                                       ng-change="getPayments(1)"></ns-datepicker>
-                    </th>
-                    <th style="text-align: center">
-                        <select ng-model="filter['payment.status']" ng-change="getPayments(1)" class="form-control" ng-options="status.name as status.displayName for status in paymentStatus">
-                            <option value="" translate>payment.list2.status</option>
-                        </select>
-                    </th>
-                    <th style="text-align: center">
-                        <select ng-model="filter['payment.type']" ng-change="getPayments(1)" class="form-control">
-                            <option value="" translate>payment.list2.status</option>
-                            <option value="DEBIT">DEBIT</option>
-                            <option value="CREDIT">CREDIT</option>
-                        </select>
-                    </th>
-                    <th style="text-align: center">
-                        <div style="display: inline-block; width: 45%; vertical-align: middle;">
-                            <input type="number" ng-model="filter['min_amount']" class="form-control" ng-change="getPayments(1)" translate
-                                   translate-attr-placeholder='payment.list2.priceTotal.min' />
-                        </div>
-                        <div style="display: inline-block; width: 45%; vertical-align: middle;">
-                            <input type="number" ng-model="filter['max_amount']" class="form-control" ng-change="getPayments(1)" translate
-                                   translate-attr-placeholder='payment.list2.priceTotal.max' />
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody role="alert" aria-live="polite" aria-relevant="all">
-                <tr  ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="order in listPayment">
-                    <td data-label="Code :">{{order.number}}</td>
-                    <td data-label="Client :">{{order.customer.email}}</td>
-                    <td data-label="Date :">{{order.operationDate | date:'dd/MM/yyyy HH:mm'}}</td>
-                    <td data-label="Statut :">
-                        <ns-status-label type="paymentStatus" status="order.status"></ns-status-label>
-                    </td>
-                    <td data-label="Type :">
-                        <ns-status-label type="paymentType" status="order.type"></ns-status-label>
-                    </td>
-                    <td class="text-right" data-label="Prix TTC :">{{order.amount | number:2}}<span ng-show="order.amount !== undefined"> €</span></td>
-                </tr>
-            </tbody>
-        </table>
+        <div style="overflow-x: auto;overflow-y: hidden;">
+            <table style="margin-bottom:0px" class="mediumTable table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                <thead>
+                    <tr role="row" class="pointer">
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;" aria-sort="ascending"
+                            aria-label="Username: activate to sort column descending">
+                            <a ng-click="sort.type = 'number'; sort.reverse = !sort.reverse; getPayments(1);">
+                                <span translate>payment.list.order</span>
+                                <span ng-show="sort.type == 'number' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'number' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'customer.email'; sort.reverse = !sort.reverse; getPayments(1);">
+                                <span translate>payment.list.customer</span>
+                                <span ng-show="sort.type == 'customer.email' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'customer.email' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'payment.operationDate'; sort.reverse = !sort.reverse; getPayments(1);">
+                                <span translate>payment.list.date</span>
+                                <span ng-show="sort.type == 'payment.operationDate' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'payment.operationDate' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'payment.status'; sort.reverse = !sort.reverse; getPayments(1);">
+                                <span translate>payment.list.status</span>
+                                <span ng-show="sort.type == 'payment.status' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'payment.status' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'payment.type'; sort.reverse = !sort.reverse; getPayments(1);">
+                                <span translate>payment.list.type</span>
+                                <span ng-show="sort.type == 'payment.type' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'payment.type' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
+                            <a ng-click="sort.type = 'payment.amount'; sort.reverse = !sort.reverse; getPayments(1);">
+                                <span translate>payment.list.prixTTC</span>
+                                <span ng-show="sort.type == 'payment.amount' && !sort.reverse" class="ico-chevron-down"></span>
+                                <span ng-show="sort.type == 'payment.amount' && sort.reverse" class="ico-chevron-up"></span>
+                            </a>
+                        </th>
+                    </tr>
+                    <tr role="row">
+                        <th style="text-align: center">
+                            <input ng-change="getPayments(1)" ng-model="filter.number" ng-model-options="{debounce: 500}" translate translate-attr-placeholder='payment.list.nb'
+                                class="form-control" />
+                        </th>
+                        <th style="text-align: center">
+                            <input class="form-control" ng-model="filter['customer.email']" ng-model-options="{debounce: 500}" ng-change="getPayments(1)" translate
+                                translate-attr-placeholder='payment.list.mail' />
+                        </th>
+                        <th style="text-align: center">
+                            <ns-datepicker name="min_operationDate" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter['min_payment.operationDate']"
+                                        ng-change="getPayments(1)"></ns-datepicker>
+                            <ns-datepicker name="max_operationDate" class="fullDatepicker form-datepicker" style="display: inline-block; width: 110px;" ng-model="filter['max_payment.operationDate']"
+                                        ng-change="getPayments(1)"></ns-datepicker>
+                        </th>
+                        <th style="text-align: center">
+                            <select ng-model="filter['payment.status']" ng-change="getPayments(1)" class="form-control" ng-options="status.name as status.displayName for status in paymentStatus">
+                                <option value="" translate>payment.list2.status</option>
+                            </select>
+                        </th>
+                        <th style="text-align: center">
+                            <select ng-model="filter['payment.type']" ng-change="getPayments(1)" class="form-control">
+                                <option value="" translate>payment.list2.status</option>
+                                <option value="DEBIT">DEBIT</option>
+                                <option value="CREDIT">CREDIT</option>
+                            </select>
+                        </th>
+                        <th style="text-align: center">
+                            <div style="display: inline-block; width: 45%; vertical-align: middle;">
+                                <input type="number" ng-model="filter['min_amount']" class="form-control" ng-change="getPayments(1)" translate
+                                    translate-attr-placeholder='payment.list2.priceTotal.min' />
+                            </div>
+                            <div style="display: inline-block; width: 45%; vertical-align: middle;">
+                                <input type="number" ng-model="filter['max_amount']" class="form-control" ng-change="getPayments(1)" translate
+                                    translate-attr-placeholder='payment.list2.priceTotal.max' />
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody ng-hide="showLoader" role="alert" aria-live="polite" aria-relevant="all">
+                    <tr  ng-class-odd="'odd'" ng-class-even="'even'"  ng-repeat="order in listPayment">
+                        <td data-label="Code :" ng-click="goToOrder(order.number)" ><span class="linkToSmthg">{{order.number}}</span></td>
+                        <td data-label="Client :">{{order.customer.email}}</td>
+                        <td data-label="Date :">{{order.operationDate | date:'dd/MM/yyyy HH:mm'}}</td>
+                        <td data-label="Statut :">
+                            <ns-status-label type="paymentStatus" status="order.status"></ns-status-label>
+                        </td>
+                        <td data-label="Type :">
+                            <ns-status-label type="paymentType" status="order.type"></ns-status-label>
+                        </td>
+                        <td class="text-right" data-label="Prix TTC :">{{order.amount | number:2}}<span ng-show="order.amount !== undefined"> €</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-show="showLoader" style="text-align: center;">
+                <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+            </div>
+        </div>
         <pagination total-items="totalItems" page="currentPage" on-select-page="getPayments(page)" items-per-page="nbItemsPerPage" max-size="maxSize" boundary-links="true" rotate="false"></pagination>
     </div>
 </ns-box>

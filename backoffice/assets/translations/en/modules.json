@@ -17,12 +17,20 @@
     "api": "API",
     "theme": "THEME",
     "info": "Informations",
-    "modalReadMe" : {
-        "title":"README.md of the module",
-        "close":"Close"
+    "errorUnknown": "An unknown error has occurred",
+    "addModule": "Module added update in progress, please wait!",
+    "activateModule": "Module added! To use it, just activate it",
+    "errorActiveModule": "Problem adding the module",
+    "restartFail": "Automatic restart failed. Please Restart manually",
+    "modalReadMe": {
+        "title": "README.md of the module",
+        "close": "Close"
     },
     "new": {
         "createNewModule": "Add a new Plugin",
         "cancel": "Cancel"
+    },
+    "toast": {
+        "errGetPlugins": "Can't get the list of plugins"
     }
 }

@@ -26,22 +26,25 @@ const GallerySchema = new Schema({
         order     : {type: Number, default: 0},
         extension : {type: String, default: '.jpg'}
     }]
-}, {timestamps: true});
-
-async function preUpdates(that) {
-    await utilsDatabase.checkCode('gallery', that._id, that.code);
-}
-
-GallerySchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+}, {
+    timestamps : true,
+    id         : false
 });
 
-GallerySchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+GallerySchema.statics.checkCode = async function (that) {
+    await utilsDatabase.checkCode('gallery', that._id, that.code);
+};
+
+GallerySchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
+});
+
+GallerySchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
 });
 
 GallerySchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
     next();
 });
 

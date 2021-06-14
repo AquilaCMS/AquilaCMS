@@ -16,4 +16,13 @@ angular.module("aq.modules.services", ["ngResource"]).factory("ModulesService", 
             md: {method: "POST", params: {id: "@id", action: "md"}}
         })
     }
-]);
+]).factory("ModuleServiceV2", [
+    "$resource", function ($resource) {
+        return $resource("v2/modules/:id/:action", {}, {
+            check     : {method: "GET", params: {id: "check"}},
+            toggle    : {method: "POST", params: {id: "toggle"}, isArray: true},
+            getMd     : {method: "POST", params: {id: "md"}},
+            getModules: {method: "POST"}
+        })
+    }
+])

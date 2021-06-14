@@ -8,7 +8,7 @@
 
 const mongoose      = require('mongoose');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 const utilsDatabase = require('../../utils/database');
 
 const TerritorySchema = new Schema({
@@ -17,26 +17,28 @@ const TerritorySchema = new Schema({
     type        : {type: String, enum: ['country', 'district', 'department', 'city']},
     taxeFree    : Boolean,
     children    : [{type: ObjectId, ref: 'territory'}]
+}, {
+    id : false
 });
 
 TerritorySchema.index({code: 1, name: 1}, {unique: true});
 TerritorySchema.index({name: 1, type: 1});
 TerritorySchema.index({code: 1, type: 1});
 
-async function preUpdates(next, that) {
+TerritorySchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('territory', that._id, that.code);
-}
+};
 
 TerritorySchema.pre('save', async function (next) {
-    await preUpdates(next, this);
+    await utilsDatabase.preUpdates(this, next, TerritorySchema);
 });
 
 TerritorySchema.pre('updateOne', async function (next) {
-    await preUpdates(next, this._update.$set ? this._update.$set : this._update);
+    await utilsDatabase.preUpdates(this, next, TerritorySchema);
 });
 
 TerritorySchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(next, this._update.$set ? this._update.$set : this._update);
+    await utilsDatabase.preUpdates(this, next, TerritorySchema);
 });
 
 module.exports = TerritorySchema;

@@ -1,9 +1,9 @@
-<ns-box data-title="medias.medias.t1" title-icon="fa fa-file-image-o fa-lg" new-href="#/medias/new">
+<ns-box data-title="medias.medias.t1" title-icon="fa fa-file-image-o fa-lg" new-click="addMedia()">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
         <div class="row">
             <div class="pull-right" style="width:45%">
                 <div class="searchBar dataTables_filter">
-                    <input type="text" class="searchBarTerm" placeholder="Search..." ng-change="onPageChange(1)" ng-model="local.search" group="search" name="q" id="q" value="" placeholder="{{'static.list.search' | translate}}">
+                    <input type="text" class="searchBarTerm" ng-change="onPageChange(1)" ng-model="local.search" group="search" name="q" id="q" value="" placeholder="{{'static.list.search' | translate}}">
                     <button type="submit" class="searchBarButton">
                       <i class="fa fa-search"></i>
                    </button>
@@ -17,88 +17,90 @@
             </ul>
         </div>
         <div ng-show="local.search === '' && currentTab === group" class="tab-content" ng-repeat="group in groups | filterListGeneral">
-            <table class="shortTable table table-striped table-bordered bootstrap-datatable datatable dataTable"
-                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-                <thead>
-                <tr role="row" class="pointer">
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
-                            medias.medias.nom
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
-                            medias.medias.lien
-                    </th>
-                    <th role="columnheader" style="width: 20%" translate>
-                            medias.medias.miniature
-                    </th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
-                <tr ng-class-odd="'odd'" ng-class-even="'even'"
-                    ng-repeat="media in list" ng-click="mediaDetails(media)">
-                    <td data-label="Code :" class="  sorting_1">
-                        {{media.name}}
-                    </td>
-                    <td data-label="Lien :" class="  sorting_1">
-                        {{config.appUrl}}{{media.link}}&nbsp;
-                    </td>
-                    <td data-label="Miniature :">
-                        <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
-                        <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
-                    </td>
-                    <td style="width:280px;">
-                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="isPicture(media)">{{"medias.medias.cpLien" | translate}}</button>
-                        <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
-                            <i class="ico-trash"></i>
-                            <span class="text" translate>medias.medias.delete</span>
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="tableWrapperOverflow">
+                <table class="shortTable table table-striped table-bordered bootstrap-datatable datatable dataTable" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                        <tr role="row" class="pointer">
+                            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                                    medias.medias.nom
+                            </th>
+                            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                                    medias.medias.lien
+                            </th>
+                            <th role="columnheader" style="width: 20%" translate>
+                                    medias.medias.miniature
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        <tr ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="media in list" ng-click="mediaDetails(media)" style="cursor: pointer;">
+                            <td data-label="Code :" class="  sorting_1">
+                                {{media.name}}
+                            </td>
+                            <td data-label="Lien :" class="  sorting_1">
+                                {{config.appUrl}}{{media.link}}&nbsp;
+                            </td>
+                            <td data-label="Miniature :">
+                                <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                                <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
+                            </td>
+                            <td style="width:280px;">
+                                <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="isPicture(media)">{{"medias.medias.cpLien" | translate}}</button>
+                                <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
+                                    <i class="ico-trash"></i>
+                                    <span class="text" translate>medias.medias.delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <pagination total-items="totalMedias" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
                 max-size="maxSize" boundary-links="true" rotate="false"></pagination>
         </div>
         <div ng-show="local.search !== ''" class="tab-content">
-            <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
-                   id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
-                <thead>
-                <tr role="row" class="pointer">
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
-                            medias.medias.nom
-                    </th>
-                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
-                            medias.medias.lien
-                    </th>
-                    <th role="columnheader" style="width: 20%" translate>
-                            medias.medias.miniature
-                    </th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody role="alert" aria-live="polite" aria-relevant="all">
-                <tr ng-class-odd="'odd'" ng-class-even="'even'"
-                    ng-repeat="media in list" ng-click="mediaDetails(media)">
-                    <td class="  sorting_1">
-                        {{media.name}}
-                    </td>
-                    <td class="sorting_1">
-                        {{config.appUrl}}{{media.link}}&nbsp;
-                    </td>
-                    <td>
-                        <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
-                        <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
-                    </td>
-                    <td style="width:280px;">
-                        <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="isPicture(media)">{{"medias.medias.cpLien" | translate}}</button>
-                        <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
-                            <i class="ico-trash"></i>
-                            <span class="text" translate>medias.medias.delete</span>
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div style="overflow-x: auto;overflow-y: hidden;">
+                <table class="table table-striped table-bordered bootstrap-datatable datatable dataTable"
+                    id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                    <thead>
+                    <tr role="row" class="pointer">
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                                medias.medias.nom
+                        </th>
+                        <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" translate>
+                                medias.medias.lien
+                        </th>
+                        <th role="columnheader" style="width: 20%" translate>
+                                medias.medias.miniature
+                        </th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody role="alert" aria-live="polite" aria-relevant="all">
+                    <tr ng-class-odd="'odd'" ng-class-even="'even'"
+                        ng-repeat="media in list" ng-click="mediaDetails(media)">
+                        <td class="  sorting_1">
+                            {{media.name}}
+                        </td>
+                        <td class="sorting_1">
+                            {{config.appUrl}}{{media.link}}&nbsp;
+                        </td>
+                        <td>
+                            <img ng-if="isPicture(media)" ng-src="/images/medias/200x100-50/{{media._id}}/{{media.link.split('/')[media.link.split('/').length - 1]}}" height="80" width="120" />
+                            <i style="color: black;" ng-if="!isPicture(media)" class="fa fa-file-text fa-lg i-style"></i>
+                        </td>
+                        <td style="width:280px;">
+                            <button class="btn btn-blue btn-with-icon" ng-click="copyLink($index, $event)" ng-if="isPicture(media)">{{"medias.medias.cpLien" | translate}}</button>
+                            <button ng-click="remove(media, $event)" class="btn btn-red btn-with-icon" style="float: right;">
+                                <i class="ico-trash"></i>
+                                <span class="text" translate>medias.medias.delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
             <pagination total-items="totalMedias" page="page" on-select-page="onPageChange(page)" items-per-page="nbItemsPerPage"
                 max-size="maxSize" boundary-links="true" rotate="false"></pagination>
         </div>

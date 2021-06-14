@@ -9,32 +9,34 @@
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
+const {ObjectId}    = Schema.Types;
 
 const PictosSchema = new Schema({
-    _id           : {type: Schema.ObjectId, auto: true},
+    _id           : {type: ObjectId, auto: true},
     code          : {type: String, required: true, unique: true},
     filename      : {type: String},
     title         : {type: String},
     location      : {type: String}, // Lieux d'affichage du picto sur l'image du produit...
     enabled       : {type: Boolean, default: false},
     usedInFilters : {type: Boolean, default: false}
+}, {
+    id : false
 });
 
-async function preUpdates(that) {
+PictosSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('pictos', that._id, that.code);
-}
+};
 
-PictosSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+PictosSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
-PictosSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+PictosSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
 PictosSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, PictosSchema);
 });
 
 module.exports = PictosSchema;

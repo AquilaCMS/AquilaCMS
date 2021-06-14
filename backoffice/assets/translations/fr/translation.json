@@ -1,8 +1,6 @@
 {
     "t1": "Langues",
-
     "ph1": "Position",
-
     "addLang": "Ajouter une langue",
     "modLang": "Modifier une langue",
     "code": "Code",
@@ -18,11 +16,14 @@
     "visible": "Visible sur le site",
     "cancel": "Annuler",
     "valider": "Valider",
-
     "defLang": "Langue par défaut",
     "status": "Statut",
     "act": "Actions",
     "delete": "Supprimer",
-
-    "saveFirst": "Vous devez d'abord enregistrer la langue avant d'ajouter une image"
+    "alreadyExist": "Existe déjà",
+    "saveFirst": "Vous devez d'abord enregistrer la langue avant d'ajouter une image",
+    "toast": {
+        "defaultLangChang": "La langue par défault à été changé",
+        "needActions": "Vous devez re-builder le thème et redémarrer le serveur pour appliquer totalement le changement"
+    }
 }

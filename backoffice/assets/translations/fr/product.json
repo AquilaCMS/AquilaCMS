@@ -4,7 +4,7 @@
         "cancel": "Annuler",
         "valider": "Valider"
     },
-    "button":{
+    "button": {
         "dup": "Dupliquer"
     },
     "cross-selling": {
@@ -29,24 +29,26 @@
         "jeuOpt": "Jeu d'options",
         "selectJeuOpt": "Sélectionner le jeu d'options",
         "actif": "Actif",
-        "actifVisible": "Actif & Visible",
         "visible": "Visible",
+        "actifVisible": "Actif & Visible",
         "titleDescLg": "Titre description longue",
         "descLg": "Description longue",
         "titleDescCt": "Titre description courte",
-        "descCt": "Description courte",
         "metaDesc": "Meta description",
+        "descCt": "Description courte",
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs",
         "preview": "Aperçu",
-        "coherenceTitle":"Cohérence du produit"
+        "finished": "Terminé",
+        "errorCategorization": "Erreur lors de la categorisation",
+        "coherenceTitle": "Cohérence du produit"
     },
-    "modal":{
+    "modal": {
         "activeProduct": "Activer un produit",
         "close": "Fermer",
         "help": "Ce produit n'est pas activable car il ne possède pas de 'canonical' (URL unique).</br>Pour se faire, vous devez : </br></br><span ng-if='!cat'>- <a target='_blank' href='{{admin}}#/categories'>Ajouter ce produit à une catégorie</a> ou <a target='_blank' href='{{admin}}#/jobs'>générer une catégorisation</a></br></br></span><span>- <a target='_blank' href='{{admin}}#/jobs'>Générer la 'canonicalisation'</a></span>",
         "runCanonicalisation": "- Lancer \"Catégorisation\" puis \"Canonicalisation\"",
-        "coherenceTitle":"Voici les problèmes de ce produit :"
+        "coherenceTitle": "Voici les problèmes de ce produit :"
     },
     "marketing": {
         "fournisseur": "Fournisseur",
@@ -90,7 +92,8 @@
         "alt": "Balise Alt",
         "pos": "Position",
         "img": "Image Principale",
-        "url": "URL"
+        "url": "URL",
+        "noPics": "Il n'y a pas d'images dans ce produit, l'image par défaut sera donc affiché dans le thème"
     },
     "list": {
         "ph1": "Nom",
@@ -124,9 +127,10 @@
         "noVisible": "Non visible",
         "creation_date": "Date de création",
         "reset_filters": "Réinitialiser les filtres",
-        "edit":"Éditer",
-        "action":"Action"
-    }, 
+        "edit": "Éditer",
+        "action": "Action",
+        "productNumber": "Nombre de produits"
+    },
     "virtual": {
         "clientEmail": "Email client",
         "lastDownload": "Dernier telechargement",
@@ -134,5 +138,8 @@
         "countDownloads": "Nombre de fois telechargé",
         "downloadHistory": "Téléchargement",
         "email": "Email"
+    },
+    "toast": {
+        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
     }
 }

@@ -1,3 +1,21 @@
 {
-    "saveMessage": "Paramètres sauvegardés"
+    "saveMessage": "Paramètres sauvegardés",
+    "visible": "Visible",
+    "nonVisible": "Non visible",
+    "yes": "Oui",
+    "no": "Non",
+    "standardError": "Une erreur s'est produite",
+    "success": "Succès",
+    "accessForbidden": "Accès interdit !",
+    "saveDone": "Sauvegarde effectuée",
+    "error": "Erreur",
+    "apiError": "Erreur API",
+    "deleteDone": "Suppression effectuée",
+    "deleteAdmin": "Admin supprimé!",
+    "emailType": "Veuillez sélectionner un type de mail",
+    "infoSaved": "Informations sauvegardées !",
+    "emailSent": "Un email a été envoyé à cette adresse.",
+    "carrierDeleted": "Transporteur supprimé",
+    "carrierSaved": "Transporteur sauvegardé",
+    "invalidMail": "L'email n'est pas valide"
 }

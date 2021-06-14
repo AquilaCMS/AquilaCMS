@@ -35,8 +35,8 @@ const generateFilters = async (res, lang = '') => {
             attributes.push(filter.id_attribut.toString());
         }
         let productsList = res.datas;
-        // Si productsList n'existe pas ou que products.id n'est pas populate on va populate l'objet
-        // productsList[i].id est soit un id soit un Products si ce n'est pas un Products on le populate
+        // If productsList does not exist or that products.id is not populate we will populate the object
+        // productsList[i].id is an id or a Products : if it's not a Products we populate it
         if (!productsList || (productsList.length && typeof productsList[0] !== 'object')) {
             const category = await Categories.findById(res._id).populate({
                 path  : 'productsList.id',
@@ -46,8 +46,7 @@ const generateFilters = async (res, lang = '') => {
         }
         for (let i = 0; i < productsList.length; ++i) {
             let prd;
-            // products peut être soit un objet de type Product soit
-            // un objet de type category.productList contenant l'id du produit populate par le produit
+            // products can be an object of type Product or an object of type category.productList containing the id of the product populated by the product
             if (productsList[i].attributes !== undefined || (productsList[i].id != null && productsList[i].id.attributes !== undefined)) {
                 if (productsList[i].id != null && productsList[i].id.attributes !== undefined) {
                     prd = productsList[i].id;
@@ -90,9 +89,9 @@ const generateFilters = async (res, lang = '') => {
                 }
             }
         }
-        // Si emptyValues alors on supprime les labels des filtres
+        // If emptyValues then we remove the labels of the filters
         let emptyValues = true;
-        // On tri le tableau (distinct et sort)
+        // Sort the array (distinct and sort)
         for (const key in values) {
             if (!values.hasOwnProperty(key)) continue;
             emptyValues        = false;
@@ -109,7 +108,7 @@ const generateFilters = async (res, lang = '') => {
                 }
             });
             values[key] = tValuesValid;
-            // Si le filtre a moins de deux on ne l'affichera pas leur valeur
+            // If the filter has less than two we will not display the values
             if (values[key].length < 2) {
                 delete values[key];
                 const idx = res.filters.attributes.findIndex((attrLabel) => attrLabel.id === key);
@@ -214,8 +213,8 @@ const getCategoryChild = async (code, childConds, user = null) => {
         };
     }
 
-    // TODO P5 gérer récurisvité du populate (actuellement que 3 niveaux)
-    // le populate dans le pre ne fonctionne pas
+    // TODO P5 Manage populate recursion (currently only 3 levels)
+    // the populate in the pre does not work
     return Categories.findOne(queryCondition)
         .select({productsList: 0, ...projectionOptions})
         .populate({
@@ -244,45 +243,53 @@ const execRules = async () => {
 };
 
 /**
- * Permet de mettre à jour les canonical de tous les produits
+ * Allows you to update the canonicals of all products
  */
 const execCanonical = async () => {
     try {
-        // Toutes les catégorie actives
-        const categories             = await Categories.find({active: true}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
+        // All active categories
+        const categories             = await Categories.find({active: true, action: 'catalog'}).sort({canonical_weight: 'desc'}); // le poid le plus lourd d'abord
         const products_canonicalised = [];
         const languages              = await ServiceLanguages.getLanguages({filter: {status: 'visible'}, limit: 100});
         const tabLang                = languages.datas.map((_lang) => _lang.code);
 
-        // Pour chaque catégorie
+        // For each category
         for (let iCat = 0; iCat < categories.length; iCat++) {
             const current_category = categories[iCat];
 
-            // Construire le slug complet : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
+            // Build the complete slug : [{"fr" : "fr/parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
             const current_category_slugs = await getCompleteSlugs(current_category._id, tabLang);
 
-            // Pour chaque produit de cette catégorie
+            // For each product in this category
             const cat_with_products = await current_category.populate({path: 'productsList.id'}).execPopulate();
             for (let iProduct = 0; iProduct < cat_with_products.productsList.length; iProduct++) {
                 const product = cat_with_products.productsList[iProduct].id;
 
-                // Construction du slug
+                // Construction of the slug
                 let bForceForOtherLang = false;
                 for (let iLang = 0; iLang < tabLang.length; iLang++) {
                     const currentLang = tabLang[iLang];
-                    if (product && (bForceForOtherLang || products_canonicalised.indexOf(product._id.toString()) === -1) && typeof product.translation[currentLang] !== 'undefined' && typeof product.translation[currentLang].slug !== 'undefined') { // Le produit existe et on l'a pas déjà traité pour cette langue
+                    if (
+                        product
+                        && (
+                            bForceForOtherLang
+                            || products_canonicalised.indexOf(product._id.toString()) === -1
+                        )
+                        && typeof product.translation[currentLang] !== 'undefined'
+                        && typeof product.translation[currentLang].slug !== 'undefined'
+                    ) { // Le produit existe et on l'a pas déjà traité pour cette langue
                         await Products.updateOne(
                             {_id: product._id},
                             {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`}}
                         );
                         products_canonicalised.push(product._id.toString());
-                        bForceForOtherLang = true; // On est passé une fois, on passe pour les autres langues
+                        bForceForOtherLang = true; // We passed once, we pass for other languages
                     }
                 }
             }
         }
 
-        // Mettre le canonical à vide pour tous les produits non traité
+        // Set the canonical to empty for all untreated products
         const productsNotCanonicalised      = await Products.find({_id: {$nin: products_canonicalised}});
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
@@ -302,35 +309,35 @@ const execCanonical = async () => {
 };
 
 /**
- * Construit le slug d'une catégorie par rapport à ses parents
- * @param {guid} categorie_id id de la categorie
- * @param {guid} tabLang Tableau des langues
+ * Built a category slug from his parents
+ * @param {guid} categorie_id category id
+ * @param {guid} tabLang Language table
  */
 const getCompleteSlugs = async (categorie_id, tabLang) => {
-    // /!\ Le slug de la langue par défaut ne contient pas le préfix de lang : en/parent1/parent2 vs /parent1/parent2
+    // /!\ Default language slug does not contain lang prefix : en/parent1/parent2 vs /parent1/parent2
     const current_category_slugs = []; // [{"fr" : "parent1/parent2/"}, {"en": "en/ancestor1/ancestor2/"}]
-    // Pour la catégorie courante
+    // For the current category
     const current_category = await Categories.findOne({_id: categorie_id});
     const lang             = ServiceLanguages.getDefaultLang();
 
     if (typeof current_category !== 'undefined') {
-        // On ajoute la catégorie courante à la liste des catégories à parcourrir
+        // Add the current category to the list of categories to browse
         const categoriesToBrowse = current_category.ancestors;
         categoriesToBrowse.push(categorie_id);
 
-        // Pour chaque "grand parent"
+        // For each "grandparent"
         for (let iCat = 0; iCat < categoriesToBrowse.length; iCat++) {
             const parent_category_id = categoriesToBrowse[iCat];
             const parent_category    = await Categories.findOne({_id: parent_category_id});
 
-            // On l'ajoute au slug
-            if (typeof parent_category !== 'undefined' && parent_category.active) { // Généralement la racine n'est pas prise, donc elle doit etre désactivée
-                // Pour chacune des langues
+            // We add it to the slug
+            if (typeof parent_category !== 'undefined' && parent_category.active) { // Usually the root is not taken, so it must be deactivated
+                // For each of the languages
                 for (let iLang = 0; iLang < tabLang.length; iLang++) {
                     const currentLang = tabLang[iLang];
                     if (typeof parent_category.translation[currentLang] !== 'undefined') {
-                        if (typeof current_category_slugs[currentLang] === 'undefined') { // 1ere fois
-                            current_category_slugs[currentLang] = (lang === currentLang) ? '' : `/${currentLang}`; // On commence par le "/lang" sauf pour la langue par défaut !
+                        if (typeof current_category_slugs[currentLang] === 'undefined') { // 1st time
+                            current_category_slugs[currentLang] = (lang === currentLang) ? '' : `/${currentLang}`; // We start with the "/lang" except for the default language!
                         }
                         current_category_slugs[currentLang] = `${current_category_slugs[currentLang]}/${parent_category.translation[currentLang].slug}`;
                     }
@@ -345,26 +352,25 @@ const getCompleteSlugs = async (categorie_id, tabLang) => {
 const applyTranslatedAttribs = async (PostBody) => {
     try {
         // const res = {n: 0, nModified: 0, ok: 0};
-        // On récupere ts les produits
+        // Get all products
         let _categories = [];
         if (PostBody === undefined || PostBody === {}) {
             _categories = await Categories.find({});
         } else {
             _categories = [await queryBuilder.findOne(PostBody)];
         }
-        // On récupere ts les attributs
+        // Get all attributes
         const _attribs = await Attributes.find({});
 
-        // On boucle sur les produits
         for (let i = 0; i < _categories.length; i++) {
             if (_categories[i].filters && _categories[i].filters.attributes !== undefined) {
-                // On boucle sur les attributs du produit [i]
+                // Loop the product's attributes [i]
                 for (let j = 0; j < _categories[i].filters.attributes.length; j++) {
-                    // On recupere l'attribut original correspondant a l'attribut [j] du produit [i]
+                    // Get the original attribute corresponding to the attribute [j] of the product [i]
                     const attrib = _attribs.find((attrib) => attrib._id.toString() === _categories[i].filters.attributes[j].id_attribut);
 
                     if (attrib && attrib.translation) {
-                        // On boucle sur chaque langue dans laquelle l'attribut original est traduit
+                        // Loop on each language in which the original attribute is translated
                         for (let k = 0; k < Object.keys(attrib.translation).length; k++) {
                             const lang = Object.keys(attrib.translation)[k];
                             if (_categories[i].filters.attributes[j].translation[lang] === undefined) {
@@ -384,7 +390,7 @@ const applyTranslatedAttribs = async (PostBody) => {
     }
 };
 
-// On supprime les enfants récursivement
+// Delete the children recursively
 async function removeChildren(menu) {
     for (const childId of menu.children) {
         const removedChild = await Categories.findOneAndRemove({_id: childId});

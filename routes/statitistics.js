@@ -46,7 +46,7 @@ async function getGlobaleStats(req, res, next) {
 }
 
 /**
- * Nombre de panier abandonné
+ * Number of abandoned cart
  */
 async function getCanceledCart(req, res, next) {
     try {
@@ -59,7 +59,7 @@ async function getCanceledCart(req, res, next) {
 }
 
 /**
- * Chiffre d'affaire globale
+ * Global turnover
  */
 async function getCag(req, res, next) {
     try {
@@ -72,7 +72,7 @@ async function getCag(req, res, next) {
 }
 
 /**
- * Chiffre d'affaire par produit
+ * Turnover by product
  */
 async function getCapp(req, res, next) {
     try {
@@ -85,7 +85,7 @@ async function getCapp(req, res, next) {
 }
 
 /**
- * Nombre de commande
+ * Number of orders
  */
 async function getNbOrder(req, res, next) {
     try {

@@ -11,12 +11,13 @@ const mongoose          = require('mongoose');
 const PasswordValidator = require('password-validator');
 const AddressSchema     = require('./addressSchema');
 const aquilaEvents      = require('../../utils/aquilaEvents');
-const Schema            = mongoose.Schema;
-const ObjectId          = Schema.ObjectId;
 const NSErrors          = require('../../utils/errors/NSErrors');
+const Schema            = mongoose.Schema;
+const {ObjectId}        = Schema.Types;
 
 /**
  * @see https://www.nayuki.io/page/random-password-generator-javascript
+ * @returns {string}
  */
 const generateUserPassword = () => {
     const CHARACTER_SETS = [
@@ -38,7 +39,11 @@ const generateUserPassword = () => {
     return result;
 };
 
-// Returns a random integer in the range [0, n) using a variety of methods.
+/**
+ * Returns a random integer in the range [0, n) using a variety of methods.
+ * @param {number} n
+ * @returns {number}
+ */
 const randomInt = (n) => {
     const x = Math.floor(Math.random() * n);
     if (x < 0 || x >= n) throw new Error('Arithmetic exception');
@@ -106,15 +111,12 @@ const UserSchema = new Schema({
     isAdmin              : {type: Boolean, default: false},
     price                : String,
     taxDisplay           : {type: Boolean, default: true},
-    payementChoice       : String,
     isActive             : {type: Boolean, default: true},
     isActiveAccount      : {type: Boolean, default: false},
     activateAccountToken : {type: String, unique: true, sparse: true},
     resetPassToken       : {type: String, unique: true, sparse: true},
     birthDate            : Date,
-    presentInLastImport  : {type: Boolean},
     accessList           : [{type: String}],
-    details              : {},
     type                 : String,
     preferredLanguage    : String,
     set_attributes       : {type: ObjectId, ref: 'setAttributes', index: true},
@@ -130,7 +132,10 @@ const UserSchema = new Schema({
             position    : {type: Number, default: 1}
         }
     ]
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 UserSchema.index({email: 1});
 
@@ -145,7 +150,7 @@ UserSchema.methods.hashPassword = async function () {
 };
 
 UserSchema.post('validate', async function () {
-    if (this.isNew) {
+    if (this.isNew || this.needHash) {
         await this.hashPassword();
     }
 });

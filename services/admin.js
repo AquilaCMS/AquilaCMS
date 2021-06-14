@@ -26,6 +26,7 @@ const insertAdminInformation = async (dataInformation) => {
 /**
  * @description Get all adminInformation
  */
+/* eslint-disable-next-line arrow-body-style */
 const getAdminInformation = async () => {
     return AdminInformation.find({deleted: false}).sort({date: -1});
 };
@@ -52,7 +53,7 @@ const welcome = async () => {
                 },
                 fr : {
                     title : 'Aquila',
-                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/fr/ressources-documentation">aquila-cms.com</a>.'
+                    text  : 'Bienvenue sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/fr/ressources-documentation">aquila-cms.com</a>.'
                 }
             }
         });
@@ -60,8 +61,8 @@ const welcome = async () => {
 };
 
 /**
- * Controle cohérence (tout sauf produit) | TODO : to fix
- * @returns {object}  Informations sur les incohérences
+ * Consistency check (everything except product) | TODO: to fix
+ * @returns {object}  Information on inconsistencies
  */
 const controlAllDatas = async () => {
     try {
@@ -74,32 +75,32 @@ const controlAllDatas = async () => {
         // Categories
         const categories = await Categories.find({});
         for (const category of categories) {
-            // Control du code
+            // Code control
             if (typeof category.code === 'undefined' || category.code === '') {
                 returnErrors += `<b>Category ${category._id}</b> : Code undefined<br/>`;
                 continue;
             }
 
-            // Control par langue
+            // Language control
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
                 const currentLang = tabLang[iLang];
 
-                // Control de translation
+                // Translation control
                 if (typeof category.translation === 'undefined' || typeof category.translation[currentLang] === 'undefined') {
                     returnErrors += `<b>Category ${category.code}</b> : Language (${currentLang}) undefined<br/>`;
                     continue;
                 }
 
-                // Control du nom
+                // Name control
                 if (typeof category.translation[currentLang].name === 'undefined' || category.translation[currentLang].name === '') {
                     returnErrors += `<b>Category ${category.code}</b> : Name undefined (${currentLang})<br/>`;
                 }
 
-                // Control du slug
+                // Slug control
                 if (typeof category.translation[currentLang].slug === 'undefined' || category.translation[currentLang].slug === '') {
                     returnErrors += `<b>Category ${category.code}</b> : Slug undefined (${currentLang})<br/>`;
                 }
-            } // End Control par langue
+            }
 
             // Detect duplicated
             if (utils.detectDuplicateInArray(category.children) && !fixChildrenDuplicated) {
@@ -107,7 +108,7 @@ const controlAllDatas = async () => {
                 returnWarning        += `<b>Category ${category.code}</b> contain duplicated children<br/>`;
             }
 
-            // Verification des children (existe et valide)
+            // Verify children (exists and valid)
             for (const child of category.children) {
                 // Est ce que ce child existe bien ?
                 const logs    = await existAndValid(child, category, returnErrors, returnWarning, 'child');
@@ -115,16 +116,16 @@ const controlAllDatas = async () => {
                 returnWarning = logs.returnWarning;
             }
 
-            // Verification des ancestor (existe et valide)
+            // Verify ancestors (exists and valid)
             for (const ancestor of category.ancestors) {
-            // Est ce que ce ancestor existe bien ?
+            // Does this ancestor really exist?
                 const logs    = await existAndValid(ancestor, category, returnErrors, returnWarning, 'ancestor');
                 returnErrors  = logs.returnErrors;
                 returnWarning = logs.returnWarning;
             }
         }
 
-        // Affichage du résumé
+        // Summary display
         if (returnErrors.length !== 0) returnErrors = `<br/>Errors :<br/>${returnErrors}`;
         if (returnWarning.length !== 0) returnWarning = `<br/>Warning :<br/>${returnWarning}`;
         if (returnErrors.length === 0 && returnWarning.length === 0) returnErrors = 'All datas are fine';
@@ -146,7 +147,7 @@ const existAndValid = async (element, category, returnErrors, returnWarning, typ
     if (!thisChild) {
         returnErrors += `<b>Category ${category.code}</b> : No ${type} '${element}' existing<br/>`;
     } else {
-        // L'enfant existe, voir si le parent y est bien écrit
+        // The child exists, see if the parent is well written there
         let isValid = false;
         for (let i = 0; i <= thisChild.ancestors.length; i++) {
             if (thisChild.ancestors[i] && thisChild.ancestors[i].toString() === category._id.toString()) {

@@ -1,37 +1,35 @@
 <ns-box data-title="category.list.t1" title-icon="fa fa-list-ul fa-lg" new-click="addCategory()">
-    <ns-translation ng-model="lang" class="pull-right" ng-hide="editCat"></ns-translation>
+    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
     <div class="row">
         <style>
-            .cleanBorder{
+            .cleanBorder {
                 border-top-right-radius: 4px;
                 border-top-left-radius: 4px;
             }
         </style>
-        <div class="col-lg-10" ng-hide="editCat" style="margin-top:50px">
+        <div class="col-lg-10" style="margin-top:50px">
             <!-- Nested node template -->
             <script type="text/ng-template" id="nodes_renderer.html" ui-tree="treeOptions">
                 <div ui-tree-handle class="tree-node tree-node-content cleanBorder">
-                    <a class="btn btn-blue" ng-if="node.children.length > 0" ng-click="listChildren(node, this)" data-nodrag>
-                        <span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span>
+                    <a class="btn btn-blue" ng-if="node.children.length > 0" ng-click="listChildren(node)" data-nodrag>
+                        <span class="glyphicon" ng-class="{'glyphicon-chevron-right': node.collapsed, 'glyphicon-chevron-down': !node.collapsed}"></span>
                     </a>
                     <a class="pull-right btn btn-primary btn-xs" style="height: 21px;margin-top: 5px;" ng-click="addCategory(node)" data-nodrag>
                         <span class="glyphicon glyphicon-plus"></span>
                     </a>
                     <span class="tree-node-title" ng-class="{'tree-leaf': node.children.length == 0}" ng-click="editCategory(node)">{{node.translation[lang].name && node.translation[lang].name !== "" ? node.translation[lang].name : (node.code + " (code)")}}</span>
                 </div>
-                <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+                <ol ui-tree-nodes="" ng-if="node.children.length > 0" ng-model="node.nodes" ng-class="{'hidden': node.collapsed}">
                     <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'" class="cleanBorder"></li>
                 </ol>
             </script>
+            <!-- end of template -->
             <div ui-tree="treeOptions" ng-if="categories.length > 0" data-drag-delay="300" class="cleanBorder">
                 <ol ui-tree-nodes="" ng-model="categories" id="tree-root">
                     <li ng-repeat="node in categories" ui-tree-node ng-include="'nodes_renderer.html'"></li>
                 </ol>
             </div>
             <div ng-if="categories.length == 0" translate>category.list.noCatCreated</div>
-        </div>
-        <div class="col-lg-12" ng-if="editCat">
-            <ng-include src="'app/category/views/category-detail.html'"></ng-include>
         </div>
     </div>
 </ns-box>

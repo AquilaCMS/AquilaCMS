@@ -43,13 +43,13 @@ module.exports = function (app) {
 const logout = (req, res) => {
     res.clearCookie('jwt');
     res.removeHeader('x-auth-token');
-    res.status(200).end();
+    res.status(204).end();
 };
 
 const logoutAdmin = (req, res, next) => {
     try {
         req.logOut();
-        return res.status(200).end();
+        return res.status(204).end();
     } catch (err) {
         next(err);
     }

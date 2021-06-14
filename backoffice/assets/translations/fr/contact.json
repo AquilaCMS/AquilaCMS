@@ -1,9 +1,12 @@
 {
     "detail": {
         "datas": "Données",
-        "t1": "Contact"
+        "t1": "Contact",
+        "confirm": "Etes-vous sur de vouloir supprimer ce contact ?"
     },
     "list": {
         "t1": "Contacts"
-    }
+    },
+    "noContact": "Aucune demande de contact",
+    "errorDeleting": "Une erreur est survenue lors de la suppression."
 }

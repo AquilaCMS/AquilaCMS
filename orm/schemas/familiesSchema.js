@@ -10,7 +10,7 @@ const mongoose      = require('mongoose');
 const helper        = require('../../utils/utils');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
-const ObjectId      = Schema.ObjectId;
+const {ObjectId}    = Schema.Types;
 
 const FamiliesSchema = new Schema({
     code      : {type: String, required: true, unique: true},
@@ -21,12 +21,15 @@ const FamiliesSchema = new Schema({
     parent    : {type: ObjectId, ref: 'families'}, // Servira dans un futur plus ou moins proche
     children  : [{type: ObjectId, ref: 'families'}],
     details   : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 // FamiliesSchema.plugin(autoIncrement.plugin, { model: 'families', field: 'id' });
 
 FamiliesSchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, FamiliesSchema);
     if (!this.slug) this.slug = `${helper.slugify(this.name)}-${this.code}`;
     return next();
 });
@@ -87,16 +90,16 @@ FamiliesSchema.statics.removeMenuFromUniverse = async function (familyCode, slug
     }
 };
 
-async function preUpdates(that) {
+FamiliesSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('families', that._id, that.code);
-}
+};
 
-FamiliesSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+FamiliesSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
 
-FamiliesSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+FamiliesSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, FamiliesSchema);
 });
 
 module.exports = FamiliesSchema;

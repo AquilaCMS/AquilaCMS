@@ -21,15 +21,20 @@ adminCatagenControllers.controller("wrapperCtrl", [
                 var lang = languages.datas.find(_lang => _lang.defaultLanguage).code
 
                 moment.locale(lang);
-                $rootScope.adminLang = lang;
-                $translate.use(lang);
-                $translate.preferredLanguage(lang);
-                $translate.fallbackLanguage(lang);
+                if(localStorage.getItem('adminLang')) {
+                    $rootScope.adminLang = localStorage.getItem('adminLang');
+                } else {
+                    $rootScope.adminLang = lang;
+                }
+                $translate.use($rootScope.adminLang);
+                $translate.preferredLanguage($rootScope.adminLang);
+                $translate.fallbackLanguage($rootScope.adminLang);
             });
         }
 
         $scope.adminLangChange = function (lang)
         {
+            localStorage.setItem('adminLang', lang);
             $rootScope.adminLang = lang;
             moment.locale(lang);
             $translate.use(lang);
@@ -200,7 +205,7 @@ adminCatagenControllers.controller("AdminCtrl", [
     }
 ]);
 adminCatagenControllers.controller("AdminDeleteCtrl", [
-    "$scope", "$modalInstance", "client", "ClientV2", "toastService", function ($scope, $modalInstance, client, ClientV2, toastService)
+    "$scope", "$modalInstance", "client", "ClientV2", "toastService", "$translate", function ($scope, $modalInstance, client, ClientV2, toastService, $translate)
     {
         $scope.ok = function ()
         {
@@ -209,11 +214,11 @@ adminCatagenControllers.controller("AdminDeleteCtrl", [
             {
                 if(msg.status)
                 {
-                    toastService.toast("success", "Admin Deleted!");
+                    toastService.toast("success", $translate.instant("global.deleteAdmin"));
                     $modalInstance.close(msg.status);
                 } else {
                     $modalInstance.close();
-                    toastService.toast("danger", "Error!");
+                    toastService.toast("danger", $translate.instant("global.error"));
                 }
             });
 
@@ -228,7 +233,7 @@ adminCatagenControllers.controller("AdminDeleteCtrl", [
 ]);
 
 adminCatagenControllers.controller("AdminNewCtrl", [
-    "$scope", "AdminNew", "$location", "toastService", "ClientV2", function ($scope, AdminNew, $location, toastService, ClientV2)
+    "$scope", "AdminNew", "$location", "toastService", "ClientV2", "$translate", function ($scope, AdminNew, $location, toastService, ClientV2, $translate)
     {
         $scope.user = {accessList: []};
         $scope.accessList = [
@@ -308,7 +313,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
             var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             if(user.email === "" || user.email === undefined || !re.test(user.email))
             {
-                toastService.toast("danger", "L'email n'est pas valide");
+                toastService.toast("danger", $translate.instant("global.invalidMail"));
                 return;
             }
 
@@ -319,7 +324,7 @@ adminCatagenControllers.controller("AdminNewCtrl", [
                 {
                     if(msg.user)
                     {
-                        toastService.toast("success", "Informations sauvegardées !");
+                        toastService.toast("success", $translate.instant("global.infoSaved"));
                         $location.path('/list/detail/' + msg.user.id);
                     }
                     else
@@ -337,8 +342,8 @@ adminCatagenControllers.controller("AdminNewCtrl", [
 ]);
 
 adminCatagenControllers.controller("AdminDetailCtrl", [
-    "$scope", "ClientUpdate", "ClientV2", "$location", "$routeParams", "toastService", "$rootScope",
-    function ($scope, ClientUpdate, ClientV2, $location, $routeParams, toastService, $rootScope)
+    "$scope", "ClientUpdate", "ClientV2", "$location", "$routeParams", "toastService", "$rootScope", "$translate",
+    function ($scope, ClientUpdate, ClientV2, $location, $routeParams, toastService, $rootScope, $translate)
     {
         ClientV2.query({PostBody: {filter: {_id: $routeParams.id}, limit: 1, structure: '*'}}, function (client)
         {
@@ -430,7 +435,7 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             if($scope.user.email === "" || $scope.user.email === undefined || !re.test($scope.user.email))
             {
-                toastService.toast("danger", "L'email n'est pas valide");
+                toastService.toast("danger", $translate.instant("global.invalidMail"));
                 return;
             }
 
@@ -440,7 +445,7 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
                 console.log($scope.user)
                 ClientV2.save({type: 'user'}, $scope.user, function (response)
                 {
-                    toastService.toast("success", "Informations sauvegardées !");
+                    toastService.toast("success", $translate.instant("global.infoSaved"));
                     if(quit) {
                         $location.path("/list")
                     }
@@ -464,14 +469,14 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
             var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             if(email === "" || email === undefined || !re.test(email))
             {
-                toastService.toast("danger", "L'email n'est pas valide");
+                toastService.toast("danger", $translate.instant("global.invalidMail"));
                 return;
             }
 
             ClientV2.resetpassword({email, lang: $scope.user.preferredLanguage || $rootScope.adminLang})
                 .success(function (request)
                 {
-                    toastService.toast("success", "Un email a été envoyé à cette adresse.");
+                    toastService.toast("success", $translate.instant("global.emailSent"));
                 })
                 .error(function (request)
                 {
@@ -485,7 +490,7 @@ adminCatagenControllers.controller("AdminDetailCtrl", [
 
 // carrier
 adminCatagenControllers.controller("CarrierListCtrl", [
-    "$scope", "Carrier", "toastService", function ($scope, Carrier, toastService)
+    "$scope", "Carrier", "toastService", "$translate", function ($scope, Carrier, toastService, $translate)
     {
         $scope.carriers = Carrier.query();
 
@@ -496,7 +501,7 @@ adminCatagenControllers.controller("CarrierListCtrl", [
                 Carrier.remove({carrierId: carrier._id}, function ()
                 {
                     $scope.carriers.splice($scope.carriers.indexOf(carrier), 1);
-                    toastService.toast("success", "Transporteur supprimé");
+                    toastService.toast("success", $translate.instant("global.carrierDeleted"));
                 });
             }
         };
@@ -504,7 +509,7 @@ adminCatagenControllers.controller("CarrierListCtrl", [
 ]);
 
 adminCatagenControllers.controller("CarrierNewCtrl", [
-    "$scope", "$location", "Carrier", "toastService", function ($scope, $location, Carrier, toastService)
+    "$scope", "$location", "Carrier", "toastService", "$translate", function ($scope, $location, Carrier, toastService, $translate)
     {
 
         $scope.master = {
@@ -522,12 +527,12 @@ adminCatagenControllers.controller("CarrierNewCtrl", [
             {
                 if(msg.status)
                 {
-                    toastService.toast("success", "Transporteur sauvegardé");
+                    toastService.toast("success", $translate.instant("global.carrierSaved"));
                     $location.path("/carriers");
                 }
                 else
                 {
-                    toastService.toast("danger", "Erreur !");
+                    toastService.toast("danger", $translate.instant("global.error"));
                 }
             });
         };
@@ -732,179 +737,6 @@ adminCatagenControllers.controller("ExportsCtrl", [
             "year-format": "'yyyy'", "starting-day": 1
         };
 
-    }
-]);
-
-adminCatagenControllers.controller("InvoicesController", [
-    "$scope", "$modal", "$filter", "Invoice", "InvoiceColumns", "$http", "$translate", '$rootScope', "toastService", '$location', "ExportCollectionCSV", function ($scope, $modal, $filter, Invoice, InvoiceColumns, $http, $translate, $rootScope, toastService, $location, ExportCollectionCSV)
-    {
-        $scope.columns = InvoiceColumns;
-        $scope.currentPage = 1;
-        $scope.page = 1;
-        $scope.totalItems = 0;
-        $scope.nbItemsPerPage = 12;
-        $scope.maxSize = 10;
-        $scope.filter = {};
-        $scope.sort = {type: "createdAt", reverse: true};
-        $scope.disabledButton = false;
-
-        function init()
-        {
-            $scope.sortType = "createdAt"; // set the default sort type
-            $scope.sortReverse = true;  // set the default sort order
-        }
-
-        init();
-        $scope.dateOptions = {
-            "year-format": "'yyyy'", "starting-day": 1
-        };
-
-        $scope.generatePDF = function(invoice) {
-            $scope.disabledButton = true;
-            $http({
-                method: 'POST',
-                url: 'v2/bills/generatePDF',
-                data: {
-                    PostBody : {
-                        structure: {"__v": 0},
-                        filter : {_id: invoice._id}
-                    }
-                },
-                headers: {'Content-Type': 'application/json'},
-            }).success(function (data, status, headers) {
-                $http({
-                    method : 'POST',
-                    url    : 'v2/bills/generatePDF',
-                    data   : {
-                        PostBody : {
-                            structure : {"__v": 0},
-                            filter    : {_id: invoice._id}
-                        }
-                    },
-                    headers      : {'Content-Type': 'application/json'},
-                    responseType : 'blob'
-                }).success(function (data, status, headers) {
-                    headers = headers();
-
-                    let filename    = 'facture.pdf';
-                    let contentType = headers['content-type'];
-
-                    let linkElement = document.createElement('a');
-                    try {
-                        let blob = new Blob([data], {type: contentType});
-                        let url  = window.URL.createObjectURL(blob);
-
-                        linkElement.setAttribute('href', url);
-                        linkElement.setAttribute("download", filename);
-
-                        let clickEvent = new MouseEvent("click", {
-                            "view"       : window,
-                            "bubbles"    : true,
-                            "cancelable" : false
-                        });
-                        $scope.disabledButton = false;
-                        linkElement.dispatchEvent(clickEvent);
-                    } catch (ex) {
-                        console.error(ex);
-                    }
-                })
-            }).error(function (data) {
-                $scope.disabledButton = false;
-                toastService.toast('danger', data.translations[$rootScope.adminLang]);
-            });
-        };
-
-        $scope.goToOrder = function (invoice) {
-            $location.path('/orders/' + invoice.order_id._id)
-        }
-
-        $scope.getInvoices = function (page)
-        {
-            var sort = {};
-            sort[$scope.sort.type] = $scope.sort.reverse ? -1 : 1;
-            $scope.currentPage = page;
-
-            if ($scope.filter.order_id && $scope.filter.order_id.number === "" ){
-                delete $scope.filter.order_id;
-            }
-
-            const search = $scope.filter;
-            let pageAdmin = { location: "invoices", page: 1 };
-            if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
-                pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
-            }
-
-            if (pageAdmin.search && pageAdmin.search.order_id && pageAdmin.search.order_id.number === "") {
-                delete pageAdmin.search.order_id;
-            }
-
-            if (page === undefined && pageAdmin.location === "invoices") {
-                const pageSaved = pageAdmin.page;
-                $scope.page = pageSaved;
-                $scope.currentPage = pageSaved;
-                page = pageAdmin.page;
-
-                if (pageAdmin.search !== undefined && pageAdmin.search !== null) {
-                    $scope.filter = pageAdmin.search;
-                }
-            } else {
-                window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "invoices", page, search }));
-                $scope.page = page;
-                $scope.currentPage = page;
-                window.scrollTo(0, 0);
-            }
-
-            let filter = {};
-            const filterKeys = Object.keys($scope.filter);
-            for (let i = 0, leni = filterKeys.length; i < leni; i++) {
-                if($scope.filter[filterKeys[i]] === null){
-                    break;
-                }
-                if (filterKeys[i].includes("amount")) {
-                    const key = filterKeys[i].split("_");
-                    const value = $scope.filter[filterKeys[i]];
-                    filter["payment.0.amount"] = {}
-                    filter["payment.0.amount"][key[0] === "min" ? "$gte" : "$lte"] = Number(value);
-                } else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
-                    const key = filterKeys[i].split("_");
-                    const value = $scope.filter[filterKeys[i]];
-
-                    if (filter[key[1]] === undefined) {
-                        filter[key[1]] = {};
-                    }
-                    filter[key[1]][key[0] === "min" ? "$gte" : "$lte"] = key[1].toLowerCase().includes("date") ? value.toISOString() : value;
-                } else if(filterKeys[i].includes("avoir")) {
-                    if($scope.filter.avoir == "true"){
-                        filter["avoir"] = true;
-                    }else if($scope.filter.avoir == "false"){
-                        filter["avoir"] = false;
-                    }
-                } else {
-                    if (typeof ($scope.filter[filterKeys[i]]) === 'object'){
-                        filter[filterKeys[i] + ".number"] = { $regex: $scope.filter[filterKeys[i]].number, $options: "i" };
-                    }else{
-                        filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
-                    }
-                }
-            }
-
-
-            Invoice.query({ PostBody: {filter,limit: $scope.nbItemsPerPage, page, populate: ['order_id']}}, function (invoicesList)
-            {
-                $scope.invoices = invoicesList.datas.map(function (invoice) {
-
-                    invoice.type = (invoice.avoir ? "invoices-list.avoir" : "invoices-list.facture")
-                    return invoice
-                });
-                $scope.totalItems = invoicesList.count;
-            });
-        };
-
-        setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
-            $scope.getInvoices();
-        }, 100);
-
-        $scope.export = ExportCollectionCSV;
     }
 ]);
 

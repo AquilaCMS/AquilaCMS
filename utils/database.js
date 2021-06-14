@@ -23,33 +23,48 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        connection = true;
-        await mongoose.connect(global.envFile.db, {
-            useNewUrlParser    : true,
-            useFindAndModify   : false,
-            useCreateIndex     : true,
-            useUnifiedTopology : true
+        connection         = true;
+        const checkConnect = async () => new Promise((resolve, reject) => {
+            mongoose.connect(global.envFile.db, {
+                useNewUrlParser    : true,
+                useFindAndModify   : false,
+                useCreateIndex     : true,
+                useUnifiedTopology : true
+            }, (error) => {
+                if (typeof error === 'undefined' || error === null) {
+                    resolve(true);
+                } else {
+                    reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
+                }
+            });
         });
+        await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
 
     return mongoose;
 };
 
-const testdb = async (uri_database) => {
-    const mongoose = require('mongoose');
-    await mongoose.connect(uri_database, {
+const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
+    mongoose.connection.close(); // need to reset the connection mongo for every try
+    mongoose.connect(uriDatabase, {
         useNewUrlParser    : true,
         useFindAndModify   : false,
         useCreateIndex     : false,
         useUnifiedTopology : true
+    }, (error) => {
+        if (typeof error === 'undefined' || error === null) {
+            resolve(true);
+        } else {
+            reject(new Error(`Unable to connect to" ${uriDatabase}, ${error.toString()}`));
+        }
     });
-};
+});
 
 /**
  * check if the database is a replicaSet, if we can use transactions
  */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars, arrow-body-style */
 const checkIfReplicaSet = async () => {
     return new Promise(async (resolve, reject) => {
         const conn = mongoose.connection;
@@ -511,6 +526,10 @@ const initDBValues = async () => {
                             description : 'Nom'
                         },
                         {
+                            value       : 'order.customer.mobilePhone',
+                            description : 'Phone'
+                        },
+                        {
                             value       : 'order.customer.company',
                             description : 'Nom de l\'entreprise'
                         },
@@ -607,6 +626,10 @@ const initDBValues = async () => {
                         {
                             value       : 'order.customer.lastname',
                             description : 'Lastname'
+                        },
+                        {
+                            value       : 'order.customer.mobilePhone',
+                            description : 'Phone'
                         },
                         {
                             value       : 'order.customer.company',
@@ -1250,6 +1273,96 @@ const initDBValues = async () => {
 
                 }
             }
+        },
+        {
+            code        : 'pendingCarts',
+            position    : 13,
+            translation : {
+                fr : {
+                    name      : 'Relancer par mail les paniers en attente',
+                    variables : [
+                        {
+                            value       : 'customer.firstname',
+                            description : 'Prénom du client'
+                        },
+                        {
+                            value       : 'customer.lastname',
+                            description : 'Nom du client'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'HT ou TTC'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
+                        }
+                        // {
+                        //     value       : 'startitems',
+                        //     description : 'Insérer avant les informations produits'
+                        // },
+                        // {
+                        //     value       : 'enditems',
+                        //     description : 'Insérer après les informations produits'
+                        // }
+                    ]
+
+                },
+                en : {
+                    name      : 'Send mail to pending carts',
+                    variables : [
+                        {
+                            value       : 'customer.firstname',
+                            description : 'Customer firstname'
+                        },
+                        {
+                            value       : 'customer.lastname',
+                            description : 'Customer lastname'
+                        },
+                        {
+                            value       : 'taxdisplay',
+                            description : 'ATI or ET'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
+                        }
+                        // {
+                        //     value       : 'startitems',
+                        //     description : 'Insert before products informations'
+                        // },
+                        // {
+                        //     value       : 'enditems',
+                        //     description : 'Insert after products informations'
+                        // }
+                    ]
+
+                }
+            }
         }
     ];
     // Populate mailType in BDD
@@ -1296,7 +1409,7 @@ const initDBValues = async () => {
 const applyMigrationIfNeeded = async () => {
     try {
         const {migrationScripts} = require('./migration');
-        const config             =  await mongoose.connection
+        const config             = await mongoose.connection
             .collection('configurations')
             .findOne();
         if (config && config.environment) {
@@ -1314,8 +1427,8 @@ const applyMigrationIfNeeded = async () => {
 };
 
 /**
- * Permet de faire un populate des champs spécifiques de chaque item
- * @param {array} items
+ * Allows you to populate specific fields of each item
+ * @param {any[]} items
  */
 const populateItems = async (items) => {
     for (const item of items) {
@@ -1325,17 +1438,40 @@ const populateItems = async (items) => {
 
 /**
  * called during pre hooks for `findOneAndUpdate` and/or `updateOne`
- * @param {mongoose.Query<any>} that query to check
+ * @param {mongoose.Query|mongoose.Model} that query to check
  * @param {mongoose.HookNextFunction} next hooks function
- * @param {mongoose.Schema<any>} model schema needed to be check for translation validation
+ * @param {mongoose.Schema} schema schema needed to be check for translation validation
  * @return {mongoose.HookNextFunction} HookNextFunction
  */
-const preUpdates = async (that, next, model) => {
-    if (that.getUpdate() && (that.getUpdate()._id || (that.getUpdate().$set && that.getUpdate().$set._id))) {
-        const errors = await model.statics.translationValidation(that.getUpdate().$set || that.getUpdate(), that);
-        return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+const preUpdates = async (that, next, schema) => {
+    try {
+        let data = that;
+        if (that instanceof mongoose.Query) {
+            data = that.getUpdate();
+        }
+        if (data) {
+            const elem = (typeof data.$set !== 'function' && data.$set) || data;
+            const {
+                checkCode,
+                checkSlugExist,
+                translationValidation
+            } = schema.statics;
+            let errors = [];
+            if (typeof translationValidation === 'function' && elem._id) {
+                errors = await translationValidation(elem, that);
+            }
+            if (typeof checkCode === 'function') {
+                await checkCode(elem);
+            }
+            if (typeof checkSlugExist === 'function') {
+                await checkSlugExist(elem);
+            }
+            return next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+        }
+        return next();
+    } catch (error) {
+        return next(error);
     }
-    return next();
 };
 
 module.exports = {

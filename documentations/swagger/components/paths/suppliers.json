@@ -1,0 +1,200 @@
+{
+    "/api/v2/suppliers": {
+        "post": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "list of suppliers",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/suppliersSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Suppliers"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        },
+                        "examples": {
+                            "example1": {
+                                "summary": "Get suppliers",
+                                "description": "Get suppliers",
+                                "value": {
+                                    "lang": "en",
+                                    "PostBody": {
+                                        "limit": 99
+                                    }
+                                }
+                            },
+                            "example2": {
+                                "summary": "POST - Get suppliers (filter with regex on name)",
+                                "description": "POST - Get suppliers (filter with regex on name)",
+                                "value": {
+                                    "PostBody": {
+                                        "filter": {
+                                            "name": {
+                                                "$regex": "name_of_",
+                                                "$options": "i"
+                                            }
+                                        },
+                                        "structure": "*",
+                                        "limit": 99
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/supplier": {
+        "post": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "One supplier",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostBody",
+                                "description": "",
+                                "properties": {
+                                    "datas": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/suppliersSchema"
+                                        }
+                                    },
+                                    "count": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Suppliers"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostBody"
+                        }
+                    }
+                },
+                "description": "PostBody",
+                "required": false
+            }
+        },
+        "put": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/suppliersSchema"
+                            }
+                        }
+                    }
+                }
+            },
+            "parameters": [],
+            "tags": [
+                "Suppliers"
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/suppliersSchema"
+                        }
+                    }
+                },
+                "description": "Create or save a supplier",
+                "required": false
+            }
+        }
+    },
+    "/api/v2/supplier/{id}": {
+        "delete": {
+            "deprecated": false,
+            "security": [
+                {
+                    "admin_authorization": []
+                },
+                {
+                    "user_authorization": []
+                }
+            ],
+            "responses": {},
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "suppliers id",
+                    "required": true,
+                    "deprecated": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "tags": [
+                "Suppliers"
+            ]
+        }
+    }
+}

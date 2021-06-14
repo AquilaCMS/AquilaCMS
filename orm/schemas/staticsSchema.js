@@ -19,7 +19,10 @@ const StaticsSchema = new Schema({
     group       : {type: String, default: ''},
     // index        : {type: Boolean, default: true},
     translation : {}
-}, {timestamps: true});
+}, {
+    timestamps : true,
+    id         : false
+});
 
 /* translation:
  title
@@ -52,7 +55,10 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
                 return errors;
             }
             if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
-                errors.push('slug déjà existant');
+                updateQuery.translation[lang.code].slug = updateQuery.translation[lang.code].title ? `${utils.slugify(updateQuery.translation[lang.code].title)}_${Date.now()}` : `${updateQuery.code}_${Date.now()}`;
+                if (await mongoose.model('statics').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${lang.code}.slug`]: updateQuery.translation[lang.code].slug}) > 0) {
+                    errors.push('slug déjà existant');
+                }
             }
             errors = errors.concat(checkCustomFields(lang, 'translation.lationKeys[i]}', [
                 {key: 'slug'}, {key: 'content'}, {key: 'title'}, {key: 'metaDesc'}
@@ -89,25 +95,24 @@ StaticsSchema.statics.translationValidation = async function (updateQuery, self)
     return errors;
 };
 
-async function preUpdates(that) {
+StaticsSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('statics', that._id, that.code);
+};
+
+StaticsSchema.statics.checkSlugExist = async function (that) {
     await utilsDatabase.checkSlugExist(that, 'statics');
-}
+};
 
 StaticsSchema.pre('updateOne', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
     await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 StaticsSchema.pre('findOneAndUpdate', async function (next) {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
-    utilsDatabase.preUpdates(this, next, StaticsSchema);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 StaticsSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    const errors = await StaticsSchema.statics.translationValidation(undefined, this);
-    next(errors.length > 0 ? new Error(errors.join('\n')) : undefined);
+    await utilsDatabase.preUpdates(this, next, StaticsSchema);
 });
 
 module.exports = StaticsSchema;

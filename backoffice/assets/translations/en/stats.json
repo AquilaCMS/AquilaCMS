@@ -29,5 +29,7 @@
     "caHT" : "Turnover excluding tax",
     "caTTC" : "Turnover including tax",
     "customer" : "Customer",
+    "csvError": "An error occurred while generating the .csv file",
+    "nothingExport": "No information to export",
     "CAnet" : "Net turnover"
 }

@@ -75,6 +75,7 @@ log
 !/backoffice/app/family/
 !/backoffice/app/gallery/
 !/backoffice/app/home/
+!/backoffice/app/invoices/
 !/backoffice/app/job/
 !/backoffice/app/mail/
 !/backoffice/app/medias/

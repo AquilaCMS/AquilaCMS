@@ -79,23 +79,24 @@ const SliderSchema = new Schema({
     swipe : {
         ...boolDefault(true)
     }
+}, {
+    id : false
 });
 
-async function preUpdates(that) {
+SliderSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('slider', that._id, that.code);
-}
+};
 
-SliderSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+SliderSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, SliderSchema);
 });
 
-SliderSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+SliderSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, SliderSchema);
 });
 
 SliderSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, SliderSchema);
 });
 
 module.exports = SliderSchema;

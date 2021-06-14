@@ -9,11 +9,11 @@
 const {spawn, exec} = require('child_process');
 
 /**
- * @description Lance une commande sur le path défini
+ * @description Launch a command on the defined path
  * @param {string} cde Command to execute.
  * @param {string} path Path of the command.
  */
-exports.execCmd = async function (cde, path) {
+exports.execCmd = async function (cde, path = global.appRoot) {
     console.log(`%scommand : ${cde} (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         exec(cde, {cwd: path, maxBuffer: 1024 * 500}, (err, stdout, stderr) => {
@@ -28,12 +28,12 @@ exports.execCmd = async function (cde, path) {
 };
 
 /**
- * @description Lance une commande shell sur le path défini
+ * @description Launch a shell command on the defined path
  * @param {string} cde Command to execute.
  * @param {array} param parameter of the cde.
  * @param {string} path Path of the command.
  */
-exports.execSh = async function (cde, param = [], path) {
+exports.execSh = async function (cde, param = [], path = global.appRoot) {
     console.log(`%scommand : ${cde} with param : [${param}] (Path : ${path})%s`, '\x1b[33m', '\x1b[0m');
     return new Promise((resolve, reject) => {
         let cmd;
@@ -78,7 +78,7 @@ exports.restart = function () {
             // Start a script on the current folder
             pm2.restart('server.js', function (err) {
                 if (err) {
-                    // Il n'y a pas PM2 d'installé, on ne leve pas d'erreur explicite (reject)
+                    // There is no PM2 installed, we do not raise an explicit error (reject)
                     if (err.message === 'process or namespace not found') {
                         console.error('Please restart manually');
                         return resolve('ManualRestart');

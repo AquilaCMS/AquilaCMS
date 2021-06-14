@@ -5,8 +5,8 @@
     "desc": "Description",
     "ver": "Version",
     "actif": "Actif ?",
-    "activate":"Activé",
-    "deactivate":"Désactivé",
+    "activate": "Activé",
+    "deactivate": "Désactivé",
     "actions": "ACTIONS",
     "config": "Configurer",
     "delete": "Supprimer",
@@ -17,12 +17,20 @@
     "api": "API",
     "theme": "THEME",
     "info": "Informations",
-    "modalReadMe" : {
-        "title":"README.md du module",
-        "close":"Fermer"
+    "errorUnknown": "Une erreur inconnue s'est produite",
+    "addModule": "Module ajouté update en cours, veuillez patientez !",
+    "activateModule": "Module ajouté ! Pour l'utiliser, il suffit de l'activer",
+    "errorActiveModule": "Problème à l'ajout du module",
+    "restartFail": "Le restart automatique a échoué veuillez redémarrer manuellement",
+    "modalReadMe": {
+        "title": "README.md du module",
+        "close": "Fermer"
     },
     "new": {
         "createNewModule": "Ajouter un nouveau module",
         "cancel": "Annuler"
+    },
+    "toast": {
+        "errGetPlugins": "Impossible de récupérer la liste des modules"
     }
 }

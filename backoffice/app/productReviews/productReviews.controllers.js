@@ -90,8 +90,8 @@ ProductReviewsControllers.controller("ProductReviewListCtrl", [
  * Controller de la page contenant le detail d'un Promo
  */
 PromoControllers.controller('ProductReviewDetailCtrl', [
-              '$scope', '$q', '$routeParams', '$location', 'toastService', 'ProductReviewService', 'ProductReviewById',
-    function ($scope, $q, $routeParams, $location, toastService, ProductReviewService, ProductReviewById) {
+              '$scope', '$q', '$routeParams', '$location', 'toastService', 'ProductReviewService', 'ProductReviewById', '$translate',
+    function ($scope, $q, $routeParams, $location, toastService, ProductReviewService, ProductReviewById, $translate) {
         $scope.local = {
             product: null,
             review: null,
@@ -125,7 +125,7 @@ PromoControllers.controller('ProductReviewDetailCtrl', [
             deferred.promise.then(function (response) {
                 if (isQuit) $location.path("/reviews");
                 else {
-                    toastService.toast("success", 'Avis sauvegardée !');
+                    toastService.toast("success", $translate.instant("productReviews.detail.noticeSaved"));
                     $location.path("/reviews/" + $scope.local.review._id);
                 }
             }, function (err) {
@@ -138,7 +138,7 @@ PromoControllers.controller('ProductReviewDetailCtrl', [
             if(confirm("Êtes-vous sûr de vouloir supprimer cet avis produit ?"))
             {
                 ProductReviewService.delete({id:$scope.local.product._id, option:_id}, function (response) {
-                    toastService.toast("success", "Promo supprimée");
+                    toastService.toast("success", $translate.instant("productReviews.detail.promoDelete"));
                     $location.path("/reviews");
                 }, function (err) {
                     toastService.toast("danger", err.data.translations.fr);

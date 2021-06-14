@@ -205,8 +205,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
-            "$scope","$rootScope", "$filter", "$modal","$http","toastService",
-            function ($scope, $rootScope, $filter, $modal, $http, toastService) {
+            "$scope","$rootScope", "$filter", "$modal","$http","toastService","$translate",
+            function ($scope, $rootScope, $filter, $modal, $http, toastService, $translate) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
@@ -222,11 +222,12 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                         forced_root_block: false,
                         relative_urls: false,
                         selector: '#editor',
-                        plugins: 'code, fullscreen, preview, link, autosave',
+                        plugins: 'code, fullscreen, preview, link, autosave, codeeditor',
                         valid_elements: "*[*]",
                         content_style : $rootScope.content_style,
-                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | code',
+                        toolbar: 'undo redo | bold italic underline forecolor fontsizeselect removeformat | alignleft aligncenter alignright | link customLink | ' + toolbarOption +' | customAddImg | fullscreen preview | codeeditor',
                         fontsize_formats: '8px 10px 12px 14px 16px, 20px',
+                        codeeditor_font_size: 14,
                         menubar: false,
                         statusbar: false,
                         setup: function (editor) {
@@ -264,11 +265,10 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
 
                 $scope.addMailVar = function (code) {
                     if (code === 'none') {
-                        toastService.toast('danger', "Veuillez sélectionner un type de mail");
+                        toastService.toast('danger', $translate.instant("global.emailType"));
                     }else{
                         const modalInstance = $modal.open({
                             backdrop: 'static',
-                            keyboard: false,
                             templateUrl: 'views/modals/add-mailvar-tinymce.html',
                             controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
                                 function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
@@ -312,7 +312,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
+                        closeByEscape: true,
                         templateUrl: 'views/modals/add-shortcode-tinymce.html',
                         controller: ['$scope', '$modalInstance', '$http', '$rootScope',
                             function ($scope, $modalInstance, $http, $rootScope) {
@@ -321,6 +321,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.selected = false;
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
+                                $scope.search = '';
 
                                 $scope.selectShortcode = function(shortCode){
                                     $scope.selected = true;
@@ -355,8 +356,20 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $modalInstance.close({ string });
                                 }
 
+                                $scope.sortShortCodes = function(string){
+                                    for (const i in $scope.shortcodes) {
+                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase()))) {
+                                            $scope.shortcodes[i].sort = true;
+                                        }else{
+                                            $scope.shortcodes[i].sort = false;
+                                        }
+                                    }
+                                    
+                                }
+
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
+                                    $scope.sortShortCodes($scope.search);
                                 }, function errorCallback(response) {
                                     console.log(response);
                                 });
@@ -383,7 +396,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addImage = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-image-tinymce.html',
                         controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
                             function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
@@ -500,7 +512,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addLink = function (textSelected, lang) {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-link-tinymce.html',
                         controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
                             function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
@@ -1020,7 +1031,8 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
         templateUrl: "views/templates/nsStatusLabel.html",
         scope: {
             type: "@",
-            status: "="
+            status: "=",
+            name: "@"
         },
         controller: [
             "$scope",
@@ -1050,7 +1062,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "DELIVERY_PROGRESS";
                     $scope.statusObj.isYellow =
                         $scope.status === "PAYMENT_RECEIPT_PENDING";
-                    $scope.statusObj.name = $filter("orderStatus")($scope.status, $rootScope.adminLang);
+                    $scope.statusObj.name = $filter("orderStatus")($scope.status);
                 }
                 else if($scope.type === "paymentStatus")
                 {
@@ -1069,7 +1081,7 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                         $scope.status === "CREDIT";
                     $scope.statusObj.isDanger =
                         $scope.status === "DEBIT";
-                    $scope.statusObj.name = $scope.status;
+                    $scope.statusObj.name = $filter("paymentType")($scope.status);
                 }
                 else if($scope.type === "picto")
                 {
@@ -1077,16 +1089,37 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
                 }
                 else if ($scope.type === "category") {
                     $scope.statusObj.isSuccess = $scope.status === true;
                     $scope.statusObj.isWarning = false;
                     $scope.statusObj.isDanger = $scope.status === false;
                     $scope.statusObj.name = $scope.status
-                        ? "Visible"
-                        : "Non visible";
+                        ? "global.visible"
+                        : "global.nonVisible";
+                }else if($scope.type === "custom"){
+                    // the name is the translation
+                    if($scope.name){
+                        $scope.statusObj.name = $scope.name;
+                    }
+                    $scope.statusObj.isSuccess = true; // default
+                    $scope.statusObj.isWarning = false;
+                    $scope.statusObj.isDanger = false;
+                    switch($scope.status){
+                        case "success":
+                            /*its is the default*/
+                            break;
+                        case "warning":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isWarning = true;
+                            break;
+                        case "danger":
+                            $scope.statusObj.isSuccess = false;
+                            $scope.statusObj.isDanger = true;
+                            break;
+                    }
                 }
             }
         ]
@@ -1803,10 +1836,11 @@ adminCatagenDirectives.directive("nsRule", [
                                 }
                             );
                         }
-
-                        for(var i = 0; i < $scope.rule.conditions.length; i++)
-                        {
-                            $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                        if($scope.rule.conditions){
+                            const conditionsLength = $scope.rule.conditions.length;
+                            for(var i = 0; i < conditionsLength; i++) {
+                                $scope.select($scope.rule.conditions[i].target, i, $scope.rule.conditions[i], true);
+                            }
                         }
                     });
                 };

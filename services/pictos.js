@@ -51,8 +51,11 @@ const createPicto = async (picto) => {
 };
 
 const deletePicto = async (id) => {
-    const result = await Pictos.findOneAndRemove({_id: id});
-    const rule   = await ServiceRules.queryRule({filter: {owner_id: id}});
+    const result = await Pictos.findOneAndRemove({_id: id._id});
+    if (!result) {
+        throw NSErrors.PictoNotFound;
+    }
+    const rule = await ServiceRules.queryRule({filter: {owner_id: id}});
     if (rule) {
         await ServiceRules.deleteRule(rule._id);
     }

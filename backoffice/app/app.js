@@ -69,6 +69,7 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productVirtual",
     "aq.newsletter",
     "aq.system",
+    "aq.invoices"
 ]);
 
 //================================================
@@ -106,8 +107,8 @@ var checkLoggedin = function ($q, $http, $location, $rootScope, $window, $timeou
 
 var checkAccess = function (route) {
     return [
-        "$q", "$timeout", "$http", "$location", "$rootScope", "$window", "toastService",
-        function ($q, $timeout, $http, $location, $rootScope, $window, toastService)
+        "$q", "$timeout", "$http", "$location", "$rootScope", "$window", "toastService", "$translate",
+        function ($q, $timeout, $http, $location, $rootScope, $window, toastService, $translate)
         {
             var deferred = $q.defer();
             $http.get("v2/auth/isauthenticated").then(function (resp)
@@ -125,7 +126,7 @@ var checkAccess = function (route) {
                     $timeout(function ()
                     {
                         deferred.reject();
-                        toastService.toast("danger", "Accès interdit !");
+                        toastService.toast("danger", $translate.instant("global.accessForbidden"));
                         $location.path("/");
                     }, 0);
                 }
@@ -220,14 +221,6 @@ adminCatagenApp.config([
              loggedin: checkLoggedin
              }
              })*/
-            .when("/invoices", {
-                templateUrl: "views/invoices-list.html",
-                controller: "InvoicesController",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess('invoices')
-                }
-            })
             .otherwise({
                 redirectTo: "/"
             });

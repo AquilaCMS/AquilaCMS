@@ -1,8 +1,8 @@
 
 const UpdateControllers = angular.module('aq.update.controllers', []);
 
-UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService', 'updateFactory','ConfigV2',
-    function ($scope, $http, toastService, updateFactory, ConfigV2) {
+UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService', 'updateFactory','ConfigV2', '$translate',
+    function ($scope, $http, toastService, updateFactory, ConfigV2, $translate) {
 
         $scope.tab = "maj";
         $scope.disableSave = true;
@@ -27,9 +27,9 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
 
         $scope.validate = function (tab) {
             ConfigV2.save({ environment: $scope.config.environment }).$promise.then(function () {
-                toastService.toast("success", "Configuration sauvegardée !");
+                toastService.toast("success", $translate.instant("update.configurationSaved"));
             }, function (err) {
-                toastService.toast("danger", "Une erreur est survenue !");
+                toastService.toast("danger", $translate.instant("update.errorArise"));
                 console.error(err);
             });
         };
@@ -49,10 +49,10 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
                 $scope.local.showLoading     = false;
                 $scope.local.verifyingUpdate = false;
                 $scope.local.needUpdate      = false;
-                toastService.toast('success', 'Update succeded :)');
+                toastService.toast('success', $translate.instant("update.majSucceded"));
             }, (err) => {
                 $scope.local.showLoading     = false;
-                toastService.toast('danger', "Update failed :(");
+                toastService.toast('danger', $translate.instant("update.majFailed"));
                 console.error(err);
             });
 
@@ -64,7 +64,7 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             $scope.local.currentVersion  = response.data.version;
             $scope.local.onlineVersion      = response.data.onlineVersion;
         }, (err) => {
-            toastService.toast('danger', 'Impossible de verifier la mise à jour');
+            toastService.toast('danger', $translate.instant("update.checkMajFailed"));
         });
     }]
 );
