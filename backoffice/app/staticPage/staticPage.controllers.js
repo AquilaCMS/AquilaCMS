@@ -148,7 +148,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             data.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save(data).$promise.then(function (response) {
-                toastService.toast("success", $translate.instant("global.savedDone"));
+                toastService.toast("success", $translate.instant("global.saveDone"));
                 if (isQuit) {
                     return $location.path("/staticPage");
                 }
