@@ -643,6 +643,7 @@ const getImageStream = async (req, res) => {
     const _id       = req.url.split('/')[4];
     const extension = path.extname(req.url).replace('.', '');
     if (type && size && extension && _id) {
+        res.set('Content-Type', `image/${extension}`);
         let imagePath = '';
 
         try {
@@ -650,12 +651,17 @@ const getImageStream = async (req, res) => {
             imagePath = await downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
         } catch (e) {
             console.log(NSErrors.MediaNotFound); // TODO : améliorer ce console ?
-            imagePath = 'c:/_dev/AquilaCMS/uploads/cache/products/p/0/p000009_5d444c54ede1945f66028732_516x403_80_.jpg'; // 'TODO : Récupérer le path de "l'image par defaut" configuré. Si rien de configuré, on renvoi "vide" comme today'
-            // TODO : voir pour le mettre dans la dimension demandé !?
             res.status(404);
+            imagePath = global.envConfig.environment.defaultImage || '';
+            if(imagePath && imagePath.startsWith('http')) {
+                require('https').get(imagePath, (stream) => {
+                    stream.pipe(res);
+                });
+                return;
+            }
+            // TODO : voir pour le mettre dans la dimension demandé !?
             // next(NSErrors.MediaNotFound);
         }
-        res.set('Content-Type', `image/${extension}`);
         // TODO : fs ou fsp ?!
         fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
     }
