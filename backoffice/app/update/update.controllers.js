@@ -6,6 +6,20 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
 
         $scope.tab = "maj";
         $scope.disableSave = true;
+        $scope.git = {
+            exist:false,
+            updateChanges:{},
+            showChanges : false
+        };
+
+        $http.get('/v2/checkGithub').then((response) => {
+            if(response.data.exist){
+                $scope.git.exist = true;
+            }
+        }, (err) => {
+            toastService.toast("danger", "Une erreur est survenue !");
+        });
+
 
         $scope.onTabSelect = function (tabId) {
             if (tabId == "maj") {
@@ -34,6 +48,18 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             });
         };
 
+        $scope.validateGitUpdate = function(changes){
+            $scope.local.showLoading = true;
+            $http.post('/v2/updateGithub', {changes}).then((response) => {
+                    $scope.git.showChanges = true;
+                    toastService.toast('success', 'Update succeded :)');
+            }, (err) => {
+                $scope.local.showLoading = false;
+                toastService.toast('danger', "Update failed :(");
+                console.error(err);
+            });
+        };
+
         $scope.local = {
             showLoading:false,
             verifyingUpdate:true,
@@ -42,9 +68,33 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             onlineVersion:"loading..."
         }
 
+
+        $scope.local.updateGithub = function () {
+            $scope.local.showLoading = true;
+            $http.get('/v2/checkChanges').then((response) => {
+                if (response.data.type == "git") {
+                    $scope.local.showLoading = false;
+                    $scope.local.verifyingUpdate = false;
+                    $scope.local.needUpdate = false;
+                    $scope.git.updateChanges = {
+                        deletedFiles: response.data.deleted.deleteFiles,
+                        deletedFolders: response.data.deleted.deleteFolders,
+                        addFiles: response.data.add.addFiles,
+                        addFolders: response.data.add.addFolders,
+                    };
+                    $scope.git.showChanges = true;
+                    // toastService.toast('success', 'Update succeded :)');
+                }
+            }, (err) => {
+                $scope.local.showLoading = false;
+                toastService.toast('danger', "Update failed :(");
+                console.error(err);
+            });
+
+        };
+
         $scope.local.update = function() {
             $scope.local.showLoading = true;
-
             $http.get('/v2/update').then((response) => {
                 $scope.local.showLoading     = false;
                 $scope.local.verifyingUpdate = false;
