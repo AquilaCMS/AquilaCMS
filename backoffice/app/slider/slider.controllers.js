@@ -128,7 +128,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
             {
                 if($scope.isEditMode)
                 {
-                    toastService.toast("success", $translate.instant("global.savedDone"));
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                 }
                 else
                 {
