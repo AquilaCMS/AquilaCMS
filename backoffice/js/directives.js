@@ -201,7 +201,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         scope: {
             text: "=",
             lang: "=",
-            mail: "="
+            mail: "=",
+            shortcode: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
@@ -210,6 +211,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
+                    }
+                    if($scope.shortcode === false){
+                        toolbarOption = "";
                     }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },

@@ -3,6 +3,7 @@
         "t1": "Server Settings",
         "t2": "Warning!",
         "prefixURL": "Warning ! Modify this field restart the application, the old URL will no longer be accessible !",
+        "mailUserMsg": " ! You must allow the 'Allow less secure applications' <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>here</a> to use Gmail !",
         "test": "Test",
         "restart": "Restart",
         "sendMail": "Send",

@@ -93,7 +93,7 @@ const postConfiguratorDatas = async (req) => {
             console.log('Installer : end default db installation');
         }
 
-        await createDynamicLangFile(datas.language);
+        await require('../services/languages').createDynamicLangFile();
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -211,15 +211,6 @@ const createDefaultLanguage = async (language) => {
     } catch (err) {
         console.error('Language cannot be created');
     }
-};
-
-/**
- * Create language in file "config/dynamic_langs.js"
- * @param {string} language Language to create
- */
-const createDynamicLangFile = async (language) => {
-    const contentFile = `module.exports = [{code: '${language}', defaultLanguage: true}];`;
-    await fs.writeFile('./config/dynamic_langs.js', contentFile);
 };
 
 /**

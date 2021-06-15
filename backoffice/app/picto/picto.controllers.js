@@ -193,7 +193,7 @@ PictoControllers.controller('PictoNewCtrl', [
             }
 
             PictoApi.save({}, $scope.picto, function (response) {
-                toastService.toast('success', $translate.instant("global.savedDone"));
+                toastService.toast('success', $translate.instant("global.saveDone"));
                 if (back) {
                     $location.url('/picto');
                 } else {
