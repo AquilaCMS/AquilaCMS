@@ -470,3 +470,15 @@ ProductDirectives.directive("nsProductCategories", function () {
         controller  : 'nsProductCategories'
     };
 });
+
+ProductDirectives.directive("nsProductOptions", function () {
+    return {
+        restrict : "E",
+        scope    : {
+            product     : "=",
+            lang        : "="
+        },
+        templateUrl : "app/product/views/templates/nsProductOptions.html",
+        controller  : 'nsProductOptions'
+    };
+});

@@ -3,7 +3,7 @@ var optionsSetRoutes = angular.module('aq.optionsSet.routes', ['ngRoute']);
 optionsSetRoutes.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider
-            .when('/optionsSet/optionsSet', {
+            .when('/optionsSet', {
                 templateUrl: 'app/optionsSet/views/optionsSet-list.html',
                 controller: 'OptionsSetListCtrl',
                 resolve: {

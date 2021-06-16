@@ -1,0 +1,12 @@
+{
+    "list": {
+        "t1": "Options sets",
+        "attrClasses": "Sorted options",
+        "code": "Code",
+        "nom": "Name",
+        "type": "Type",
+        "attrOrph": "Unbinded options",
+        "jeuxAttrib": "Attribute sets",
+        "afficher": "Display"
+    }
+}

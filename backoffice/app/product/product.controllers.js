@@ -409,3 +409,22 @@ ProductControllers.controller("nsProductCategories", [
         };
     }
 ]);
+
+ProductControllers.controller("nsProductOptions", [
+    "$scope", "$filter", "OptionsSetServices",
+    function ($scope, $filter, OptionsSetServices) {
+
+        // we list optionsSet
+        OptionsSetServices.list({}, function(response){
+            $scope.optionsSet = response.datas;
+        }, function(error){
+            console.log(error);
+        });
+
+        $scope.actualOptionsSet = {};
+        if($scope.product && $scope.product.options) {
+            $scope.actualOptionsSet = $scope.product.options;
+        }
+        $scope.lang;
+    }
+]);

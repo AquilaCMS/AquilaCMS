@@ -1,0 +1,12 @@
+{
+    "list": {
+        "t1": "Jeux d'options",
+        "attrClasses": "Options classés",
+        "code": "Code",
+        "nom": "Nom",
+        "type": "Type",
+        "attrOrph": "Options orphelines",
+        "jeuxAttrib": "Jeux d'attributs",
+        "afficher": "Afficher"
+    }
+}
