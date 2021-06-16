@@ -78,9 +78,21 @@
                     </a>
                 </div>
                 <div class="box-content textInBox">
-                    {{order.customer.fullname}}<br />
-                    {{order.customer.phone}}<br />
-                    {{order.customer.email}}
+                    <div ng-show="customer === null">
+                        <span style="font-weight: bold;color:red" translate>order.detail.messageUserDeleted</span>
+                        <br />
+                        <br />
+                    </div>
+                    <span>{{order.customer.fullname}}</span><br />
+                    {{order.customer.phone}}</span><br />
+                    <span>{{order.customer.email}}</span>
+                    <div ng-show="customer !== null && order.customer.email !== customer.email">
+                        <br />
+                        <span>(</span>
+                        <span translate>order.detail.messageEmail</span>:
+                        <span style="font-weight: bold;">{{customer.email}}</span>
+                        <span>)</span>
+                    </div>
                     <div ng-if="order.comment">
                         <br/><br/>
                         <b translate>order.detail.comments</b> : {{order.comment}}

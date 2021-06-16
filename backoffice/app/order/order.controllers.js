@@ -110,9 +110,10 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2)
     {
+        $scope.customer = {};
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
@@ -173,6 +174,19 @@ OrderControllers.controller("OrderDetailCtrl", [
             Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
             {
                 $scope.order = response.datas[0];
+                if($scope.order && $scope.order.customer.id){
+                    // we get the client informations to check to email and to check is user exists
+                    ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
+                        if(typeof responseUserRequest.PostBody !== "undefined") {
+                            // if there are a PostBody, there is not content
+                            $scope.customer = null;
+                        } else {
+                            $scope.customer = responseUserRequest;
+                        }
+                    }, function(error){
+                        console.log(error);
+                    });
+                }
                 $scope.status = $scope.order.status;
                 if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
                     const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");

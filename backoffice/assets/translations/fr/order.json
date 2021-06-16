@@ -71,6 +71,8 @@
         "creeLe": "Créé le",
         "date": "Date",
         "mode": "Mode",
+        "messageEmail": "Le mail actuel est",
+        "messageUserDeleted": "Ce client semble être supprimé",
         "montant": "Montant",
         "retour": "Retour",
         "art": "Article",

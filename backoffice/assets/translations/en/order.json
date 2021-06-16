@@ -71,6 +71,8 @@
         "creeLe": "Created on",
         "date": "Date",
         "mode": "Mode",
+        "messageEmail": "The actual mail is",
+        "messageUserDeleted": "This client appears to be deleted",
         "montant": "Price",
         "retour": "Return",
         "art": "Item",
