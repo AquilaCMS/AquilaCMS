@@ -142,8 +142,8 @@ const uploadAllDocuments = async (reqFile) => {
  * @param {string} extension - file extension (ex: 'png', 'jpeg', 'jpg')
  * @param {number} quality the quality of the result image - default 80
  */
-// const downloadImage = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
-const downloadImage = async (type, _id, size, extension, quality = 80, options = {}) => {
+// const getImagePathCache = async (type, _id, size, extension, quality = 80, background = '255,255,255,1') => {
+const getImagePathCache = async (type, _id, size, extension, quality = 80, options = {}) => {
     const sharpOptions = {};
 
     if (options.position) {
@@ -256,47 +256,53 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
     await fsp.mkdir(cacheFolder, {recursive: true});
 
     // if the requested image is already cached, it is returned direct
-    if (fsp.existsSync(filePathCache)) {
+    if (await fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
-    if (await utilsMedias.existsFile(relativePath)) {
-        if (size === 'max' || size === 'MAX') {
-            await utilsModules.modulesLoadFunctions('downloadFile', {
-                key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
-                outPath : filePathCache
-            }, () => {
-                fsp.copyFileSync(filePath, filePathCache);
-            });
-        } else {
-        // otherwise, we recover the original image, we resize it, we compress it and we return it
-        // resize
-            filePath = await utilsModules.modulesLoadFunctions('getFile', {
-                key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
-            }, () => {
-                return filePath;
-            });
+    if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
+        filePath = global.envConfig.environment.defaultImage;
+    }
+    if (size === 'max' || size === 'MAX') {
+        await utilsModules.modulesLoadFunctions('downloadFile', {
+            key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
+            outPath : filePathCache
+        }, () => {
+            fsp.copyFileSync(filePath, filePathCache);
+        });
+    } else {
+    // otherwise, we recover the original image, we resize it, we compress it and we return it
+    // resize
+        filePath = await utilsModules.modulesLoadFunctions('getFile', {
+            key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
+        }, () => {
+            return filePath;
+        });
+
+        try {
+            sharpOptions.width  = Number(size.split('x')[0]);
+            sharpOptions.height = Number(size.split('x')[1]);
+            await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
+        } catch (exc) {
+            console.error('Image not resized : Sharp may not be installed', exc);
 
             try {
-                sharpOptions.width  = Number(size.split('x')[0]);
-                sharpOptions.height = Number(size.split('x')[1]);
-                await require('sharp')(filePath).resize(sharpOptions).toFile(filePathCache);
-            } catch (exc) {
-                console.error('Image not resized : Sharp may not be installed');
-
                 // Take the original file size
                 await utilsModules.modulesLoadFunctions('downloadFile', {
                     key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
                     outPath : filePathCache
-                }, () => {
-                    fsp.copyFileSync(filePath, filePathCache);
+                }, async () => {
+                    await fsp.copyFileSync(filePath, filePathCache);
                 });
+            } catch(err) {
+                console.error('defaultImage not found')
+                return "/"
             }
+
         }
-        // compress
-        filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
-        return filePathCache;
     }
-    throw NSErrors.MediaNotFound;
+    // compress
+    filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
+    return filePathCache;
 };
 
 const uploadFiles = async (body, files) => {
@@ -647,23 +653,26 @@ const getImageStream = async (req, res) => {
         let imagePath = '';
 
         try {
-            // TODO : rename "downloadImage" ?
-            imagePath = await downloadImage(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
+            // TODO : rename "getImagePathCache" ?
+            imagePath = await getImagePathCache(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
         } catch (e) {
             console.log(NSErrors.MediaNotFound); // TODO : améliorer ce console ?
-            res.status(404);
-            imagePath = global.envConfig.environment.defaultImage || '';
+            /*res.status(404);
             if(imagePath && imagePath.startsWith('http')) {
                 require('https').get(imagePath, (stream) => {
                     stream.pipe(res);
                 });
                 return;
             }
-            // TODO : voir pour le mettre dans la dimension demandé !?
-            // next(NSErrors.MediaNotFound);
+            // TODO : voir pour le mettre dans la dimension demandé !?*/
+            //next(NSErrors.MediaNotFound);
         }
-        // TODO : fs ou fsp ?!
-        fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
+        if(await fsp.existsSync(imagePath) && !(await fsp.lstatSync(imagePath).isDirectory())) {
+            fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
+        } else {
+            res.status(404)
+            res.end()
+        }
     }
 };
 
@@ -671,7 +680,7 @@ module.exports = {
     downloadAllDocuments,
     uploadAllMedias,
     uploadAllDocuments,
-    downloadImage,
+    getImagePathCache,
     uploadFiles,
     listMedias,
     getMedia,
