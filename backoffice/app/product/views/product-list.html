@@ -7,13 +7,6 @@
         </div>
         <div class="box-content">
             <form name="form" class="form-horizontal collapse" id="filter">
-                <div class="row settings">
-                    <div style="width: 100%;" class="col-sm-6">
-                        <select ng-if="langs[1] !== undefined" name="filterLang" class="form-control" id="filterLang" ng-model="filterLang" style="max-width: 200px; margin-left:5%; margin-bottom: 30px;">
-                            <option value="{{lang.code}}" ng-repeat="lang in langs track by $index">{{lang.name}}</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="form-group col-sm-6" ng-repeat="attrib in attribs">
                         <label for="" class="col-sm-4 control-label">{{attrib.translation[filterLang].name}}</label>
@@ -35,6 +28,17 @@
             <div class="col-lg-12" style="height: 45px;">
                 <br>
                 <br>
+                <div>
+                    <label for="" class="control-label">
+                        <span translate>product.list2.searchLang</span>
+                        <span>:</span>
+                    </label>
+                    <select ng-if="langs[1] !== undefined" name="filterLang" class="form-control" id="filterLang" ng-change="selectNewLang(this)" ng-model="filterLang" style="max-width: 200px;">
+                        <option value="{{lang.code}}" ng-repeat="lang in langs track by $index">{{lang.name}}</option>
+                    </select>
+                    <br />
+                    <br />
+                </div>
                 <i class="fa fa-download pull-right" aria-hidden="true" title="Export" ng-click="export('products')" style="cursor: pointer" ></i>
                 <p>
                     <span translate>product.list2.productNumber</span>

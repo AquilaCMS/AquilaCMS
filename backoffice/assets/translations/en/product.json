@@ -129,7 +129,8 @@
         "reset_filters": "Reinit filters",
         "edit": "Edit",
         "action": "Action",
-        "productNumber": "Number of products"
+        "productNumber": "Number of products",
+        "searchLang": "Search language"
     },
     "virtual": {
         "clientEmail": "Email client",

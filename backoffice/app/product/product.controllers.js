@@ -84,6 +84,12 @@ ProductControllers.controller("ProductListCtrl", [
             });
         };
 
+        $scope.selectNewLang = function (event){
+            if(event && event.filterLang) {
+                $scope.filterLang = event.filterLang;
+            }
+        }
+
         $scope.getProducts = function (page) {
             $scope.showLoader = true;
             const search = $scope.searchObj;
