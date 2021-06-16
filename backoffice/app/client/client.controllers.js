@@ -26,7 +26,7 @@ ClientControllers.controller("ClientCtrl", [
             if(pageAdmin.page){
                 $scope.page = pageAdmin.page;
             }
-            if (pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
+            if (pageAdmin.search && pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
                 $scope.tri = {};
                 $scope.valeurTri = pageAdmin.search.tri.value;
                 $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
