@@ -52,6 +52,7 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             $scope.local.showLoading = true;
             $http.post('/v2/updateGithub', {changes}).then((response) => {
                     $scope.git.showChanges = true;
+                    $scope.needUpdate = false;
                     toastService.toast('success', 'Update succeded :)');
             }, (err) => {
                 $scope.local.showLoading = false;
@@ -75,7 +76,6 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
                 if (response.data.type == "git") {
                     $scope.local.showLoading = false;
                     $scope.local.verifyingUpdate = false;
-                    $scope.local.needUpdate = false;
                     $scope.git.updateChanges = {
                         deletedFiles: response.data.deleted.deleteFiles,
                         deletedFolders: response.data.deleted.deleteFolders,
@@ -83,7 +83,6 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
                         addFolders: response.data.add.addFolders,
                     };
                     $scope.git.showChanges = true;
-                    // toastService.toast('success', 'Update succeded :)');
                 }
             }, (err) => {
                 $scope.local.showLoading = false;

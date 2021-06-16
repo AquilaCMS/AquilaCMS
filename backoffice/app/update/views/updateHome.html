@@ -67,16 +67,14 @@
 
             </ns-buttons>
         </form>
-                    
-        
-        <div ng-if="git.exist">
+        <div ng-if="git.exist && local.needUpdate">
             <button nf-if="git.exist" class="btn btn-success" ng-click="local.updateGithub()">Mettre à jour avec Github</button>
             <div ng-if="git.showChanges" style="margin-top:20px">
                 <span style="color:red;font-weight: bold;">Veuillez vérifier les informations ci-dessous avant de valider : </span>
                 <div class="changes">
                     <span style="color:red;font-weight: bold;">Ces dossiers vont être supprimés : </span>
                     <ul ng-if="git.updateChanges.deletedFolders.length > 0">
-                        <li ng-repeat="folder in git.updateChanges.c">{{folder}}</li>
+                        <li ng-repeat="folder in git.updateChanges.deletedFolders">{{folder}}</li>
                     </ul>
                     <div ng-if="git.updateChanges.deletedFolders.length === 0">
                         Pas de dossiers à supprimer

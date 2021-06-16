@@ -9,6 +9,7 @@
 const axios                    = require('axios');
 const AdmZip                   = require('adm-zip');
 const path                     = require('path');
+const parse                    = require('parse-gitignore');
 const fsp                      = require('../utils/fsp');
 const packageManager           = require('../utils/packageManager');
 const {isProd}                 = require('../utils/server');
@@ -45,6 +46,7 @@ const verifyingUpdate = async () => {
 };
 
 async function checkChanges() {
+    const urlAquila = path.resolve('');
     // eslint-disable-next-line prefer-const
     let gitIgnoreFiles = ['.git', '.github', 'env.json']; // to ignore
     // eslint-disable-next-line prefer-const
@@ -53,6 +55,14 @@ async function checkChanges() {
     modules.forEach((element) => {
         gitIgnoreFolders.push(element.name);
     });
+
+    // const gitIgnore = parse(fsp.readFileSync(`${urlAquila}\\.gitignore`));
+    // gitIgnore.forEach((name) => {
+    //     if (!name.includes('*')) {
+    //         console.log(name);
+    //     }
+    // });
+
     // eslint-disable-next-line prefer-const
     let deleteFolders = [];
     // eslint-disable-next-line prefer-const
@@ -62,7 +72,6 @@ async function checkChanges() {
     // eslint-disable-next-line prefer-const
     let addFiles = [];
     // eslint-disable-next-line prefer-const
-    let urlAquila = path.resolve('');
 
     const checkDeletedFiles = async (path, name = '') => {
         if (gitIgnoreFolders.includes(name) || gitIgnoreFiles.includes(name)) {
@@ -121,7 +130,8 @@ async function checkChanges() {
 
     try {
         if (!fsp.existsSync(newAquilaVersion, {recursive: true})) {
-            await packageManager.execCmd(`git clone https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
+            await packageManager.execCmd(`git clone --single-branch --branch updateAquila https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
+            // await packageManager.execCmd(`git clone https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
         }
         await checkDeletedFiles(path.resolve(''), '');
         await checkAddFiles(`${path.resolve('')}\\newAquilaVersion`, '');
@@ -247,7 +257,9 @@ const setMaintenance = async (isInMaintenance) =>  {
 };
 
 const checkGithub = async () => {
-    const git = {};
+    const git = {
+        exist : false
+    };
     if (fsp.existsSync(path.resolve('./.git'), {recursive: true})) {
         git.exist = true;
     }
