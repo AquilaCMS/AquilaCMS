@@ -33,6 +33,19 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             return ;
         }
 
+        $scope.deleteImg = function () {
+            $scope.category.img = null;
+            $scope.category.alt = null;
+            CategoryV2.save($scope.category, function (res) {
+                toastService.toast("success", $translate.instant("category.list.pictureDelete"));
+            });
+        }
+
+        $scope.close = function (cat) {
+            toastService.toast("success", $translate.instant('gallery.item.updated'));
+            $scope.getCategory(cat);
+        };
+
         $scope.return = function () {
             if ($scope.isSelected === true) {
                 let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
@@ -375,7 +388,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 oneProduct.id = oneProduct.id._id;
             }
             CategoryV2.save(newCat, function (res) {
-                toastService.toast("success", $translate.instant("global.positionSaved"));
+                toastService.toast("success", $translate.instant("category.detail.positionSaved"));
                 if($scope.formMenu) {
                     $scope.formMenu.$setPristine();
                 }
@@ -460,7 +473,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             CategoryV2.save(newCat, function (res) {
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
-                toastService.toast("success", $translate.instant("global.categorySaved"));
+                toastService.toast("success", $translate.instant("category.detail.categorySaved"));
 
                 if($scope.formMenu)
                 {
@@ -479,15 +492,15 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.save = function (isQuit) {
             if(this.formMenu && this.formMenu.ruleForm && this.formMenu.ruleForm.$invalid) {
-                toastService.toast("danger", $translate.instant("global.incompleteRules"));
+                toastService.toast("danger", $translate.instant("category.detail.incompleteRules"));
                 return;
             }
             if ($scope.rule.operand !== undefined) {
                 RulesV2.save($scope.rule, function (response){
-                        toastService.toast("success",$translate.instant("global.ruleSaved"));
+                        toastService.toast("success",$translate.instant("category.detail.ruleSaved"));
                         saveCategory();
                     }, function (err) {
-                        toastService.toast("danger", $translate.instant("global.noNewRule"));
+                        toastService.toast("danger", $translate.instant("category.detail.noNewRule"));
                         saveCategory();
                     }
                 );
@@ -693,7 +706,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     Promise.all(promiseArray).then(function () {
                         deferred.resolve();
                     }, function (err) {
-                        toastService.toast("danger", $translate.instant("global.occurErrorAPI"));
+                        toastService.toast("danger", $translate.instant("category.list.occurErrorAPI"));
                         deferred.reject();
                     });
                 }
@@ -701,19 +714,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             return arayOfCat;
         }
 
-        $scope.deleteImg = function() {
-            $scope.category.img = null;
-            $scope.category.alt = null;
-            CategoryV2.save($scope.category, function (res) {
-                toastService.toast("success", $translate.instant("global.pictureDelete"));
-            });
-        }
-
-
-        $scope.close = function (cat) {
-            toastService.toast("success", $translate.instant('gallery.item.updated'));
-            $scope.getCategory(cat);
-        };
+        
 
         $scope.listChildren = function (cat) {
             if(typeof cat.collapsed === "undefined"){
@@ -900,7 +901,7 @@ CategoryControllers.controller("CategoryListCtrl", [
                     deferred.resolve();
                     $scope.$broadcast('angular-ui-tree:expand-all');
                 }, function (err) {
-                    toastService.toast("danger", $translate.instant("global.errorCategoryMove"));
+                    toastService.toast("danger", $translate.instant("category.list.errorCategoryMove"));
                     deferred.reject();
                 });
 
@@ -969,5 +970,86 @@ CategoryControllers.controller("CategoryNewCtrl", [
         $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+    }
+]);
+
+/*
+    Controller for the NscategoryList directives
+*/
+CategoryControllers.controller("NsCategoryListController", [
+    "$scope", "CategoryV2", "$rootScope",
+    function ($scope, CategoryV2, $rootScope) {
+        
+        $scope.lang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+        }).code;
+
+        $scope.getCategories = function() {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                $scope.categories = response.datas;
+                //we expand all the categories
+                $scope.expandAll();
+            });
+        }
+        
+        $scope.catIsDisabled = function (node){
+            if(typeof $scope.categoryIsDisabled !== "undefined" && $scope.categoryIsDisabled !== null){
+                return $scope.categoryIsDisabled(node);
+            } else {
+                console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryDisabled'");
+            }
+        };
+
+        $scope.catOnClick = function (node){
+            if(typeof $scope.categoryOnClick !== "undefined" && $scope.categoryOnClick !== null){
+                return $scope.categoryOnClick(node);
+            } else {
+                //console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryOnClick'");
+            }
+        };
+
+        $scope.catIsChecked = function (node){
+            if(typeof $scope.categoryIsChecked !== "undefined" && $scope.categoryIsChecked !== null){
+                return $scope.categoryIsChecked(node);
+            } else {
+                //console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryClick'");
+            }
+        };
+
+        $scope.expandOneCat = function (oneCat) {
+            if (typeof oneCat.children === "undefined") {
+                oneCat.children = [];
+            }
+            if (oneCat.children.length > 0) {
+                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 99 } }, function (response) {
+                    oneCat.nodes = response.datas || [];
+                    for (let oneNode of oneCat.nodes) {
+                        $scope.expandOneCat(oneNode);
+                    }
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                });
+            } else {
+                oneCat.nodes = [];
+            }
+        }
+
+        $scope.expandAll = function () {
+            for (let oneCat of $scope.categories) {
+                $scope.expandOneCat(oneCat)
+            }
+        }
+
+        $scope.listChildren = function (cat, scope) {
+            for(let oneNode of cat.nodes){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                    oneNode.nodes = response.datas;
+                });
+            }
+            scope.toggle();
+        };
+
+
+        
+        $scope.getCategories();
     }
 ]);

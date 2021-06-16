@@ -26,6 +26,7 @@ const insertAdminInformation = async (dataInformation) => {
 /**
  * @description Get all adminInformation
  */
+/* eslint-disable-next-line arrow-body-style */
 const getAdminInformation = async () => {
     return AdminInformation.find({deleted: false}).sort({date: -1});
 };
@@ -52,7 +53,7 @@ const welcome = async () => {
                 },
                 fr : {
                     title : 'Aquila',
-                    text  : 'Bienvenu sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/fr/ressources-documentation">aquila-cms.com</a>.'
+                    text  : 'Bienvenue sur Aquila. Vous trouverez ici les informations nécessaires au bon fonctionnement d\'Aquila. Pour plus d\'informations sur le fonctionnement de cette partie d\'administration, vous pouvez consulter la documentation sur le site d\'<a href="https://www.aquila-cms.com/fr/ressources-documentation">aquila-cms.com</a>.'
                 }
             }
         });

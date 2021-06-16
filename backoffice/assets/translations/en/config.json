@@ -3,6 +3,7 @@
         "t1": "Server Settings",
         "t2": "Warning!",
         "prefixURL": "Warning ! Modify this field restart the application, the old URL will no longer be accessible !",
+        "mailUserMsg": " ! You must allow the 'Allow less secure applications' <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>here</a> to use Gmail !",
         "test": "Test",
         "restart": "Restart",
         "sendMail": "Send",
@@ -13,7 +14,6 @@
         "baseURL": "Base URL (ex : http://example.com/)",
         "prefixeURL": "Back-office URL Prefix (admin by default)",
         "picsPath": "Medias path",
-        "billsPath": "Bills paths",
         "prixTTC": "ATI Price (deprecated)",
         "stats": "Monitoring and statistics",
         "ggAnal": "Google Analytics",
@@ -57,6 +57,9 @@
         "favicon": "Favicon link",
         "billsPattern": "Billing pattern code",
         "billsVariables": "Available variables : {year} for the current year and {numAuto} for an autoincremented number. Example : MYSITE_{year}_{numAuto}",
+        "testMailSend": "Test mail sent.",
+        "errorCheckInfo": "An error has occurred. Please check the connection information to the mail server.",
+        "enterRecipient": "Please enter the recipient.",
         "menu": {
             "general": "General",
             "path": "Path & folder",
@@ -83,6 +86,8 @@
     },
     "import": {
         "t1": "Products imports",
+        "importFinish": "Import completed",
+        "modifyRobot": "The robot.txt file has been modified.",
         "import": "Import"
     },
     "auth": {
@@ -91,6 +96,6 @@
         "callbackURL": "Callback URL (full)"
     },
     "path": {
-        "mediaHelper": "Leave empty to have the default folder (/uploads/medias). For a specific folder, an absolute path is required"
+        "mediaHelper": "Leave empty to have the default folder (/uploads). For a specific folder, a relative path is required"
     }
 }

@@ -43,7 +43,13 @@ describe('Statics', () => {
             const staticPage = await createStaticPage();
             const res        = await chai.request(app)
                 .post('/api/v2/static/')
-                .send({PostBody: {filter: {_id: staticPage._id}, limit: 99}});
+                .send({PostBody : {
+                    filter : {
+                        _id : staticPage._id
+                    },
+                    limit : 99
+                }
+                });
             expect(res).to.have.status(200);
             expect(res.body.title).be.equals(staticPage.translation.fr.title);
         });
@@ -90,7 +96,12 @@ describe('Statics', () => {
             const res  = await chai.request(app)
                 .put('/api/v2/static')
                 .set('authorization', credentials.token)
-                .send({type: 'page', group: null, translation: {fr: {variables: [], html: '', content: '', title: ''}}, code});
+                .send({
+                    type        : 'page',
+                    group       : null,
+                    translation : {fr: {variables: [], html: '', content: '', title: ''}},
+                    code
+                });
             expect(res).to.have.status(200);
         });
         it('Try creating a staticPage with code that already exists', async () => {
@@ -99,14 +110,24 @@ describe('Statics', () => {
             const res = await chai.request(app)
                 .put('/api/v2/static')
                 .set('authorization', credentials.token)
-                .send({type: 'page', group: null, translation: {fr: {variables: [], html: '', content: '', title: ''}}, code});
+                .send({
+                    type        : 'page',
+                    group       : null,
+                    translation : {fr: {variables: [], html: '', content: '', title: ''}},
+                    code
+                });
             expect(res.body.code).to.be.equal('CodeExisting');
         });
         it('Try creating a staticPage but fail (no authentication)', async () => {
             const code = faker.lorem.slug();
             const res  = await chai.request(app)
                 .put('/api/v2/static')
-                .send({type: 'page', group: null, translation: {fr: {variables: [], html: '', content: '', title: ''}}, code});
+                .send({
+                    type        : 'page',
+                    group       : null,
+                    translation : {fr: {variables: [], html: '', content: '', title: ''}},
+                    code
+                });
             expect(res).to.have.status(401);
             expect(res.body).have.property('code');
             expect(res.body.code).to.be.equal('Unauthorized');

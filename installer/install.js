@@ -35,7 +35,8 @@ const firstLaunch = async (req, install) => {
  */
 const testdb = async (req) => {
     try {
-        await require('../utils/database').testdb(req.body.data);
+        const utilsDatabase = require('../utils/database');
+        return utilsDatabase.testdb(req.body.data);
     } catch (err) {
         throw new Error('Cannot connect to MongoDB');
     }
@@ -44,12 +45,13 @@ const testdb = async (req) => {
 // Only for installation purpose, will be inaccessible after first installation
 const handleInstaller = async (middlewareServer, middlewarePassport, server, passport, express) => {
     console.log('-= Start installation =-');
+    global.installMode = true;
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
     require('../routes/install')(installRouter);
     server.use('/', installRouter, (req, res, next) => {
-        if (req.originalUrl !== '/') {
+        if (req.originalUrl !== '/' && req.originalUrl !== '/favicon.ico') {
             return res.status(301).redirect('/');
         }
         return next();
@@ -91,7 +93,7 @@ const postConfiguratorDatas = async (req) => {
             console.log('Installer : end default db installation');
         }
 
-        await createDynamicLangFile(datas.language);
+        await require('../services/languages').createDynamicLangFile();
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -212,15 +214,6 @@ const createDefaultLanguage = async (language) => {
 };
 
 /**
- * Create language in file "config/dynamic_langs.js"
- * @param {string} language Language to create
- */
-const createDynamicLangFile = async (language) => {
-    const contentFile = `module.exports = [{code: '${language}', defaultLanguage: true}];`;
-    await fs.writeFile('./config/dynamic_langs.js', contentFile);
-};
-
-/**
  * Create default countries
  */
 const createDefaultCountries = async () => {
@@ -230,8 +223,9 @@ const createDefaultCountries = async () => {
             code : 'FR',
             name : 'France',
             type : 'country'
-        }, {
-            code : 'UK',
+        },
+        {
+            code : 'GB',
             name : 'United Kingdom',
             type : 'country'
         }]);

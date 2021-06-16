@@ -71,6 +71,8 @@
         "creeLe": "Created on",
         "date": "Date",
         "mode": "Mode",
+        "messageEmail": "The actual mail is",
+        "messageUserDeleted": "This client appears to be deleted",
         "montant": "Price",
         "retour": "Return",
         "art": "Item",
@@ -89,10 +91,24 @@
         "phone_mobile": "Mobile Phone",
         "zipcode": "Zipcode",
         "city": "City",
+        "civility": {
+            "text": "Civility",
+            "0": "Mr.",
+            "1": "Mrs."
+        },
         "country": "Country",
         "modifyAddress": "Modify address",
         "save": "Save",
         "cancel": "Cancel",
+        "invoiceCreated": "Invoice created",
+        "orderAlreadyState": "The order is already in this state!",
+        "removePackage": "Unable to remove the package",
+        "changeStateImpossible": "This change of state is not possible",
+        "addressChanged": "Address changed",
+        "addedParcel": "Correctly added parcel",
+        "returnAdded": "Return correctly added",
+        "paymentInfoAdded": "Correctly added payment information",
+        "errorChangingAddress": "Error when changing address",
         "transactionId": "Transaction ID"
     },
     "list": {

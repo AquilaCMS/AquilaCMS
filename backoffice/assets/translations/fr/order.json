@@ -71,6 +71,8 @@
         "creeLe": "Créé le",
         "date": "Date",
         "mode": "Mode",
+        "messageEmail": "Le mail actuel est",
+        "messageUserDeleted": "Ce client semble être supprimé",
         "montant": "Montant",
         "retour": "Retour",
         "art": "Article",
@@ -89,10 +91,24 @@
         "phone_mobile": "Téléphone Mobile",
         "zipcode": "Code Postal",
         "city": "Ville",
+        "civility": {
+            "text": "Civilité",
+            "0": "Monsieur",
+            "1": "Madame"
+        },
         "country": "Pays",
         "modifyAddress": "Modifier l'adresse",
         "save": "Sauvegarder",
         "cancel": "Annuler",
+        "invoiceCreated": "Facture créée",
+        "orderAlreadyState": "La commande est déjà dans cet état !",
+        "removePackage": "Impossible de supprimer le colis",
+        "changeStateImpossible": "Ce changement d'état n'est pas possible",
+        "addressChanged": "Adresse changée",
+        "addedParcel": "Colis correctement ajouté",
+        "returnAdded": "Retour correctement ajouté",
+        "paymentInfoAdded": "Information de paiement correctement ajoutée",
+        "errorChangingAddress": "Erreur lors du changement d'adresse",
         "transactionId": "ID de la transaction"
     },
     "list": {

@@ -370,7 +370,7 @@ const uploadFiles = async (body, files) => {
     case 'product': {
         const image = {
             default  : body.default,
-            position : 0,
+            position : body.position ? body.position : false,
             alt      : body.alt,
             name     : name + extension,
             title    : name,

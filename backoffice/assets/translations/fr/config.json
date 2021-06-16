@@ -3,6 +3,7 @@
         "t1": "Paramètres serveur",
         "t2": "Attention !",
         "prefixURL": "Attention ! Modifier ce champ redemarrera l'application, l'ancienne URL ne sera plus accessible !",
+        "mailUserMsg": " ! Vous devez autoriser le paramètre 'Autoriser les applications moins sécurisées' <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>ici</a> pour utiliser Gmail !",
         "sendMail": "Envoyer",
         "sendMailTest": "Envoyer un Email de Test",
         "test": "Tester",
@@ -57,6 +58,9 @@
         "favicon": "Lien du favicon",
         "billsPattern": "Schéma des codes de facturation",
         "billsVariables": "Variables disponibles : {year} pour l'année en cours et {numAuto} pour un numéro auto incrémenté. Exemple : MONSITE_{year}_{numAuto}",
+        "testMailSend": "Mail test envoyé.",
+        "errorCheckInfo": "Une erreur est survenue. Veuillez vérifier les informations de connexion au serveur mail.",
+        "enterRecipient": "Veuillez saisir le destinataire.",
         "menu": {
             "general": "Général",
             "path": "Dossier",
@@ -83,6 +87,8 @@
     },
     "import": {
         "t1": "Imports des produits",
+        "importFinish": "Import terminé",
+        "modifyRobot": "Le fichier robot.txt a été modifié.",
         "import": "Importer"
     },
     "auth": {
@@ -91,6 +97,6 @@
         "callbackURL": "URL de retour (complète)"
     },
     "path": {
-        "mediaHelper": "Laisser vide pour avoir le dossier par defaut (/uploads/medias). Pour un dossier specifique, un chemin absolue est necessaire"
+        "mediaHelper": "Laisser vide pour avoir le dossier par defaut (/uploads). Pour un dossier specifique, un chemin relatif est necessaire"
     }
 }

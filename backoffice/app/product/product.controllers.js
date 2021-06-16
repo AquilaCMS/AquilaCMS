@@ -237,7 +237,7 @@ ProductControllers.controller("ProductListCtrl", [
             return lang.defaultLanguage;
         }).code;
         $scope.langs = $rootScope.languages;
-        $scope.filterLang = $rootScope.languages[0].code;
+        $scope.filterLang = $scope.defaultLang;
 
         $scope.getProducts();
         $scope.getAttributesClassed();
@@ -267,6 +267,17 @@ ProductControllers.controller("nsProductGeneral", [
     function ($scope, $filter, HookProductInfo, SetAttributesV2, AttributesV2, $modal, ProductsV2, $translate) {
         $scope.productTypeName = $filter("nsProductTypeName")($scope.productType);
         $scope.hookInfo = HookProductInfo;
+
+        $scope.loadNewAttrs = async function () {
+            AttributesV2.list({ PostBody: { filter: { set_attributes: $scope.product.set_attributes, _type: 'users' }, structure: '*', limit: 99 } }, function ({ datas }) {
+                $scope.product.attributes = datas.map(function (attr) {
+                    attr.id = attr._id;
+                    delete attr._id;
+                    return attr;
+                });
+            });
+        };
+
         SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
             $scope.setAttributes = datas;
 
@@ -303,7 +314,7 @@ ProductControllers.controller("nsProductGeneral", [
                     $scope.runCanonicalisation = async function () {
                         ExecRules.exec({type: "category"}, function (result) {
                             CategoryV2.canonical({}, {}, function () {
-                                toastService.toast('success', $translate.instant("global.finished"))
+                                toastService.toast('success', $translate.instant("product.general.finished"))
                                 ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
                                     $scope.product = response;
                                     $scope.product.active = true;
@@ -314,7 +325,7 @@ ProductControllers.controller("nsProductGeneral", [
                             })
                         }, function (error) {
                             console.log(error)
-                            toastService.toast('danger', $translate.instant("global.errorCategorization"))
+                            toastService.toast('danger', $translate.instant("product.general.errorCategorization"))
                         })
                     }
                 },
@@ -360,15 +371,6 @@ ProductControllers.controller("nsProductCategories", [
 
             });
         };
-
-        $scope.getCategories = function() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
-            {
-                $scope.categories = response.datas;
-                //we expand all the categories
-                $scope.expandAll();
-            });
-        }
         
         $scope.catDisabled = function (node){
             let final = false;
@@ -399,34 +401,5 @@ ProductControllers.controller("nsProductCategories", [
             }
             return final;
         };
-
-        $scope.expandAll = function(){
-            for(let oneCat of $scope.categories){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneCat.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                    oneCat.nodes = response.datas;
-                    $scope.$broadcast('angular-ui-tree:expand-all');
-                    for(let oneNode of oneCat.nodes){
-                        CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                            oneNode.nodes = response.datas;
-                            $scope.$broadcast('angular-ui-tree:expand-all');
-                        });
-                    }
-                });
-            }
-            //or use the $scope.listChildren()
-        }
-
-        $scope.listChildren = function (cat, scope) {
-            for(let oneNode of cat.nodes){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                    oneNode.nodes = response.datas;
-                });
-            }
-            scope.toggle();
-        };
-
-
-        
-        $scope.getCategories();
     }
 ]);

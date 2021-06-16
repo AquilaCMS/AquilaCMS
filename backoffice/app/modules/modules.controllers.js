@@ -215,7 +215,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             $scope.showLoading = true;
             $http.get('/restart').catch(function(error) {
                 console.error(error);
-                toastService.toast("danger", $translate.instant("global.restartFail"));
+                toastService.toast("danger", $translate.instant("modules.restartFail"));
             });
             if (active && !deleteBool) {
                 $scope.message = `Activation du module ${nomModule} en cours, merci de patienter ...`;
@@ -298,11 +298,11 @@ ModulesControllers.controller("PluginsNewCtrl", [
                 }
             }, function (response) {
                 if (module.active) {
-                    toastService.toast('success', $translate.instant("global.addModule"));
+                    toastService.toast('success', $translate.instant("modules.addModule"));
                     toggleActive(module._id, module.name, true);
                 } else {
                     $scope.showModuleLoading = false;
-                    toastService.toast('success', $translate.instant("global.activateModule"));
+                    toastService.toast('success', $translate.instant("modules.activateModule"));
                 }
                 $scope.modules = response.datas;
                 $scope.close("save");
@@ -315,7 +315,7 @@ ModulesControllers.controller("PluginsNewCtrl", [
         $scope.uploadError = function () {
             $scope.getDatas();
             $scope.showModuleLoading = false;
-            toastService.toast('danger', $translate.instant("global.errorActiveModule"));
+            toastService.toast('danger', $translate.instant("modules.errorActiveModule"));
             $scope.close();
         };
 

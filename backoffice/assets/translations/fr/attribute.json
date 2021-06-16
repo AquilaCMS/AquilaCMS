@@ -32,6 +32,11 @@
         "addValeur": "Ajouter une valeur",
         "color": "Couleur",
         "visible": "Visible dans la fiche produit",
+        "attributeNotExist": "Cet attribut n'existe pas",
+        "saveDone": "Sauvegarde effectuée",
+        "errorOccurred": "Une erreur est survenue",
+        "error": "Erreur",
+        "deleteAttribute": "Attribut supprimé",
         "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"
     },
 

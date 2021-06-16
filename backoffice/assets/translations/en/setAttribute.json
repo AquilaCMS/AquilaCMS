@@ -6,6 +6,8 @@
         "createAttr": "CREATE ATTRIBUTE",
         "type": "Type",
         "addQuestion": "Add question",
+        "saveDone": "Backup performed",
+        "attributeNotExist": "This attribute does not exist",
         "descriptionQuestion": "Criteria where a customer will be able to rate the product, exemple: Price-quality relationship, Product's fluidity... ",
         "tab": {
             "setAttr": "Set attributes",
@@ -25,6 +27,8 @@
         "ph2": "Name",
         "code": "Code",
         "nom": "Name",
+        "error": "Error", 
+        "saveDone": "Backup performed",
         "save": "Save"
     }
 }

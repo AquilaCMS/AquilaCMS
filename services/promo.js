@@ -18,7 +18,7 @@ const {
 }                          = require('../orm/models');
 const ServiceRules = require('./rules');
 const QueryBuilder = require('../utils/QueryBuilder');
-const promoUtils   = require('../utils/promo.js');
+const promoUtils   = require('../utils/promo');
 const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];

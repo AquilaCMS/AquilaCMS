@@ -14,15 +14,23 @@
     },
     "overrides": [
         {
-            "files": ["*.test.js", "*.spec.js"],
+            "files": [
+                "*.test.js",
+                "*.spec.js"
+            ],
             "rules": {
                 "no-unused-expressions": "off",
                 "chai-friendly/no-unused-expressions": "error"
             }
         }
     ],
+    "parserOptions": {
+        "ecmaVersion": 2020
+    },
     "rules": {
-        "align-assignments/align-assignments": ["error"],
+        "align-assignments/align-assignments": [
+            "error"
+        ],
         "arrow-body-style": "off",
         "linebreak-style": 0,
         "global-require": "off",
@@ -67,8 +75,8 @@
         "import/no-extraneous-dependencies": "off",
         "no-async-promise-executor": "off",
         "no-prototype-builtins": "off",
-        "no-bitwise":"off",
-        "no-mixed-operators":"off",
+        "no-bitwise": "off",
+        "no-mixed-operators": "off",
         "no-duplicate-imports": "error",
         "no-eval": "off",
         "no-underscore-dangle": "off",
@@ -85,19 +93,31 @@
         "no-return-assign": "off",
         "no-loop-func": "off",
         "no-case-declarations": "off",
-        "no-nested-ternary":"warn",
+        "no-nested-ternary": "warn",
         "max-classes-per-file": "off",
-        "comma-dangle": ["error", "never"],
+        "comma-dangle": [
+            "error",
+            "never"
+        ],
         "camelcase": "off",
         "eol-last": "off",
         "consistent-return": "off",
         "object-curly-newline": "off",
-        "quotes": [2, "single", { "avoidEscape": true }],
+        "quotes": [
+            2,
+            "single",
+            {
+                "avoidEscape": true
+            }
+        ],
         "prefer-promise-reject-errors": "off",
         "prefer-arrow-callback": "off",
         "newline-per-chained-call": "off",
         "block-spacing": "off",
         "space-in-parens": "off",
-        "object-curly-spacing": ["error", "never"]
+        "object-curly-spacing": [
+            "error",
+            "never"
+        ]
     }
 }

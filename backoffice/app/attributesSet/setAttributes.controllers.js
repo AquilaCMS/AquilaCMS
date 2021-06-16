@@ -40,7 +40,7 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
             SetAttributesV2.save(data, function (msg) {
                 if(msg.status)
                 {
-                    toastService.toast("success", $translate.instant("global.saveDone"));
+                    toastService.toast("success", $translate.instant("setAttribute.new.saveDone"));
                     if(isQuit)
                     {
                         $location.path(`/${$scope.type}/setAttributes`);
@@ -58,7 +58,7 @@ SetAttributesControllers.controller("SetAttributesNewCtrl", [
                 }else if(error && error.code != ""){
                     toastService.toast("danger", error.code);
                 }else{
-                    toastService.toast("danger", $translate.instant("global.error"));
+                    toastService.toast("danger", $translate.instant("setAttribute.new.error"));
                 }
             });
         };
@@ -76,7 +76,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
             $scope.tabActive = "setAttributes";
             if(obj.code === undefined)
             {
-                toastService.toast("warning", $translate.instant("global.attributNotExist"));
+                toastService.toast("warning", $translate.instant("setAttribute.detail.attributNotExist"));
                 $location.path(`/${$scope.type}/setAttributes`);
             }
             if(!angular.isDefined($scope.setAttribute.code))
@@ -145,7 +145,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
                 console.log(msg)
                 if(msg.status)
                 {
-                    toastService.toast("success", $translate.instant("global.saveDone"));
+                    toastService.toast("success", $translate.instant("setAttribute.detail.saveDone"));
                     if(isQuit)
                     {
                         $location.path(`/${$scope.type}/setAttributes`);

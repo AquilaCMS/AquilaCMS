@@ -66,11 +66,19 @@
         "addAll": "Tout ajouter ",
         "supprSelect": " Supprimer la sélection",
         "supprAll": " Tout supprimer",
+        "positionSaved": "Position sauvegardé",
+        "categorySaved": "Catégorie sauvegardée",
+        "incompleteRules": "Formulaire des règles incomplet",
+        "ruleSaved": "Règle(s) sauvegardée(s)",
+        "noNewRule": "Pas de règles créées",
         "inORout": "Dans la catégorie"
     },
     "list": {
         "t1": "Catégories",
         "noCatCreated": "Aucune catégorie n'a encore été créée.",
+        "occurErrorAPI": "Une erreur est survenue lors d'une requete API",
+        "pictureDelete": "Image supprimée",
+        "errorCategoryMove": "Une erreur est survenue lors du déplacement de la catégorie",
         "back": "Retour"
     }
 }

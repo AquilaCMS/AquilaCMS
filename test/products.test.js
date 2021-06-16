@@ -24,7 +24,13 @@ describe('Products', () => {
             const res     = await chai.request(app)
                 .post('/api/v2/products')
                 .set('authorization', credentials.token)
-                .send({PostBody: {filter: {_id: product._id}, populate: ['set_attributes', 'associated_prds'], limit: 99}});
+                .send({
+                    PostBody : {
+                        filter   : {_id: product._id},
+                        populate : ['set_attributes', 'associated_prds'],
+                        limit    : 99
+                    }
+                });
             expect(res).to.have.status(200);
             expect(res.body.datas[0].translation.fr.name).be.equals(product.translation.fr.name);
         });
@@ -32,11 +38,19 @@ describe('Products', () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .post('/api/v2/products')
-                .send({PostBody: {filter: {_id: product._id}, populate: ['set_attributes', 'associated_prds'], limit: 99}});
+                .send({
+                    PostBody : {
+                        filter   : {_id: product._id},
+                        populate : ['set_attributes', 'associated_prds'],
+                        limit    : 99
+                    }
+                });
             expect(res).to.have.status(200);
-            expect(res.body.datas[0].name).be.equals(product.translation.fr.name);
-            expect(res.body.datas[0].slug.fr).be.equals(product.translation.fr.slug);
+            expect(res.body.datas).to.be.an('array').and.to.be.not.empty;
+            expect(res.body.datas[0].name).to.be.equals(product.translation.fr.name);
+            expect(res.body.datas[0].slug.fr).to.be.equals(product.translation.fr.slug);
         });
+
         it('Should create a product and get it with a (wrong) ID', async () => {
             await createProduct();
             const res = await chai.request(app)
@@ -54,7 +68,13 @@ describe('Products', () => {
             const res     = await chai.request(app)
                 .post('/api/v2/product')
                 .set('authorization', credentials.token)
-                .send({PostBody: {filter: {code: product.code}, populate: ['set_attributes', 'associated_prds'], structure: '*'}});
+                .send({
+                    PostBody : {
+                        filter    : {code: product.code},
+                        populate  : ['set_attributes', 'associated_prds'],
+                        structure : '*'
+                    }
+                });
             expect(res).to.have.status(200);
             expect(res.body.translation.fr.name).be.equals(product.translation.fr.name);
         });
@@ -62,7 +82,13 @@ describe('Products', () => {
             const product = await createProduct();
             const res     = await chai.request(app)
                 .post('/api/v2/product')
-                .send({PostBody: {filter: {code: product.code}, populate: ['set_attributes', 'associated_prds'], structure: '*'}});
+                .send({
+                    PostBody : {
+                        filter    : {code: product.code},
+                        populate  : ['set_attributes', 'associated_prds'],
+                        structure : '*'
+                    }
+                });
             expect(res).to.have.status(200);
             expect(res.body.name).be.equals(product.translation.fr.name);
         });
@@ -71,7 +97,13 @@ describe('Products', () => {
             const res = await chai.request(app)
                 .post('/api/v2/product/')
                 .set('authorization', credentials.token)
-                .send({PostBody: {filter: {_id: '111111111111111111111111'}, populate: ['set_attributes', 'associated_prds'], structure: '*'}});
+                .send({
+                    PostBody : {
+                        filter    : {_id: '111111111111111111111111'},
+                        populate  : ['set_attributes', 'associated_prds'],
+                        structure : '*'
+                    }
+                });
             expect(res).to.have.status(200);
             expect(res.body).to.be.equal(null);
         });
@@ -137,7 +169,11 @@ describe('Products', () => {
             const product2 = await chai.request(app)
                 .put('/api/v2/product')
                 .set('authorization', credentials.token)
-                .send({code: code2, translation: {fr: {name: name2}}, associated_prds: [product1.body._id]});
+                .send({
+                    code            : code2,
+                    translation     : {fr: {name: name2}},
+                    associated_prds : [product1.body._id]
+                });
             expect(product2.body.code).to.be.equal(code2);
             expect(product2.body.translation.fr.name).to.be.equal(name2);
             expect(product2.body).have.property('associated_prds');

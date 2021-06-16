@@ -56,8 +56,8 @@ module.exports = {
         en : 'Contact not found'
     },
     Conflict : {
-        fr : 'Conflit',
-        en : 'Conflict'
+        fr : 'Le code existe déjà',
+        en : 'Code already exists'
     },
     UserAlreadyExist : {
         fr : 'Mauvaises informations d\'identification ou utilisateur déjà existant',

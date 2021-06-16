@@ -148,7 +148,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             data.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save(data).$promise.then(function (response) {
-                toastService.toast("success", $translate.instant("global.savedDone"));
+                toastService.toast("success", $translate.instant("global.saveDone"));
                 if (isQuit) {
                     return $location.path("/staticPage");
                 }
@@ -185,14 +185,18 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
         ]
 
-        StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
-            $scope.static = staticPage;
-            $scope.local.url = staticPage.code;
-            $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
-            if($scope.static && !$scope.static.translation[$scope.lang].html) {
-                $scope.static.translation[$scope.lang].html = $scope.static.translation[$scope.lang].content
-            }
-        });
+        $scope.getStaticPage = function(){
+            StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
+                $scope.static = staticPage;
+                $scope.local.url = staticPage.code;
+                $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
+                if($scope.static && !$scope.static.translation[$scope.lang].html) {
+                    $scope.static.translation[$scope.lang].html = $scope.static.translation[$scope.lang].content
+                }
+            });
+        }
+
+        $scope.getStaticPage();
 
         $scope.selectTab = function(tab){
             $scope.selectedTab.active = tab;
@@ -274,6 +278,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             $scope.generateContent();
             StaticV2.save($scope.static, function () {
                 toastService.toast("success", $translate.instant("global.pageSaved"));
+                $scope.getStaticPage();
                 if (isQuit) {
                     $location.path("/staticPage");
                 }

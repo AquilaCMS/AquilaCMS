@@ -115,7 +115,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         };
 
         $scope.close = function() {
-            toastService.toast("success", $translate.instant("global.addDone"));
+            toastService.toast("success", $translate.instant("slider.detail.addDone"));
         };
 
         $scope.save = function (quit)
@@ -128,7 +128,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
             {
                 if($scope.isEditMode)
                 {
-                    toastService.toast("success", $translate.instant("global.savedDone"));
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                 }
                 else
                 {
@@ -162,7 +162,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
                 }, function (err)
                 {
                     console.error(err);
-                    toastService.toast("danger", $translate.instant("global.errorDelete"));
+                    toastService.toast("danger", $translate.instant("slider.list.errorDelete"));
                 });
             }
         };

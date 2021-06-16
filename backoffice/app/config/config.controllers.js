@@ -108,7 +108,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
 
         $scope.$watch("config.environment.mailUser", function (newValue, oldValue) {
             if (newValue !== undefined && newValue.indexOf("gmail") > -1) {
-                $scope.messageMail = " ! Vous devez autoriser le paramètre \"Autoriser les applications moins sécurisées\" <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>ici</a> pour utiliser Gmail !";
+                $scope.messageMail = $translate.instant("config.environment.mailUserMsg");
                 $scope.messageMail = $sce.trustAsHtml($scope.messageMail);
             } else {
                 $scope.messageMail = "";
@@ -131,19 +131,19 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                         mailInfo.to = $scope.mail.to;
                         if ($scope.mail.to && $scope.mail.to !== "") {
                             TestMailConfig.sendMailConfig({ mail: mailInfo, values: "Email Test", lang: "en" }, function (res) {
-                                toastService.toast("success", $translate.instant("global.testMailSend"));
+                                toastService.toast("success", $translate.instant("config.environment.testMailSend"));
                                 $modalInstance.close();
                             }, function(r){
                                 if(r.data && r.data.stack){
                                     let position = r.data.stack.indexOf(" at ");
                                     toastService.toast("warning", r.data.stack.slice(0,position));
                                 }else{
-                                    toastService.toast("warning", $translate.instant("global.errorCheckInfo"));
+                                    toastService.toast("warning", $translate.instant("config.environment.errorCheckInfo"));
                                 }
                                 $scope.loading = false;
                             });
                         } else {
-                            toastService.toast("warning", $translate.instant("global.enterRecipient"));
+                            toastService.toast("warning", $translate.instant("config.environment.enterRecipient"));
                         }
                     }
 
@@ -236,7 +236,7 @@ ConfigControllers.controller("ImportTmpConfigCtrl", [
 
             $http.get("/config/imports/importProcess").then(function (response) {
                 if (response !== null) {
-                    toastService.toast("success", $translate.instant("global.importFinish"));
+                    toastService.toast("success", $translate.instant("config.import.importFinish"));
                 }
             }, function (err) {
                 $scope.isLoading = false;
@@ -264,7 +264,7 @@ ConfigControllers.controller("RobotTxtCtrl", [
                 text = "";
             }
             $http.post('/robot', {PostBody: {text}}).then((response) => {
-                toastService.toast("success", $translate.instant("global.modifyRobot"));
+                toastService.toast("success", $translate.instant("config.import.modifyRobot"));
                 $scope.close();
             });
         };

@@ -2,6 +2,9 @@
     "list": {
         "t1": "Galerie",
         "code": "Code",
+        "failDelete": "Echec de la suppression",
+        "failSave": "Echec de la sauvegarde",
+        "deleteDone": "Suppression effectuée",
         "img": "Images"
     },
     "detail": {

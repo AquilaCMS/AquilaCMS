@@ -65,11 +65,19 @@
         "addAll": "Add all ",
         "supprSelect": " Delete selection",
         "supprAll": " Delete all",
+        "positionSaved": "Saved position",
+        "categorySaved": "Saved category",
+        "incompleteRules": "Rules form incomplete",
+        "ruleSaved": "Saved rule(s)",
+        "noNewRule": "No rules created",
         "inORout": "In the category"
     },
     "list": {
         "t1": "Categories",
         "noCatCreated": "No category has been created.",
+        "occurErrorAPI": "An error occurred during an API request",
+        "pictureDelete": "Deleted image",
+        "errorCategoryMove": "An error occurred while moving the category",
         "back": "Back"
     }
 }

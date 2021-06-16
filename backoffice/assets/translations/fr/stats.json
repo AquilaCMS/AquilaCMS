@@ -29,5 +29,7 @@
     "caHT" : "CA HT",
     "caTTC" : "CA TTC",
     "customer" : "Client",
+    "csvError": "Une erreur s'est produite lors de la génération du fichier .csv",
+    "nothingExport": "Pas d'informations a exporter",
     "CAnet" : "CA Net"
 }

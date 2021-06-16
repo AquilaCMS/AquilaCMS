@@ -150,11 +150,11 @@
                         <tr>
                             <td translate>category.detail.headerImg</td>
                             <td>
-                                <img ng-show="category.img" class="boxShadow" src="{{getImage(category)}}" alt="" />
+                                <img ng-show="category.img" class="boxShadow" ng-src="{{getImage(category)}}" alt="" />
 
                                 <ns-upload-files is-selected="nsUploadFiles.isSelected" accepttype="image/*" multiple="false" type="category" id="category._id" entity="item"
                                    images="category.image" showalt="true" after-function="close(category)"></ns-upload-files>
-                                <button ng-show="category.img" type="button" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
+                                <button ng-show="category.img" class="btn btn-default btn-block" ng-click="deleteImg()" translate>
                                     category.detail.delete
                                 </button>
                             </td>
@@ -169,7 +169,7 @@
                                 category.detail.textSupp1
                             </td>
                             <td>
-                                <ns-tinymce lang="lang" text="category.translation[lang].extraText"></ns-tinymce>
+                                <ns-tinymce shortcode="false" lang="lang" text="category.translation[lang].extraText"></ns-tinymce>
                                 <br />
                             </td>
                         </tr>
@@ -178,7 +178,7 @@
                                 category.detail.textSupp2
                             </td>
                             <td>
-                            <ns-tinymce lang="lang" text="category.translation[lang].extraText2"></ns-tinymce>
+                            <ns-tinymce shortcode="false" lang="lang" text="category.translation[lang].extraText2"></ns-tinymce>
                             </td>
                         </tr>
                         <tr id="text3">
@@ -186,7 +186,7 @@
                                 category.detail.textSupp3
                             </td>
                             <td>
-                                <ns-tinymce lang="lang" text="category.translation[lang].extraText3"></ns-tinymce>
+                                <ns-tinymce shortcode="false" lang="lang" text="category.translation[lang].extraText3"></ns-tinymce>
                             </td>
                         </tr>
                     </tbody>

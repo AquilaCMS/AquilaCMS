@@ -39,6 +39,8 @@
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs",
         "preview": "Aperçu",
+        "finished": "Terminé",
+        "errorCategorization": "Erreur lors de la categorisation",
         "coherenceTitle": "Cohérence du produit"
     },
     "modal": {
@@ -111,7 +113,7 @@
         "t1": "Produits",
         "ph1": "Code",
         "code": "Code",
-        "name": "Nom (fr)",
+        "name": "Nom",
         "picture": "Image",
         "price": "Prix base TTC",
         "quantity": "Quantité",

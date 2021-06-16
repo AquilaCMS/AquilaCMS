@@ -38,6 +38,11 @@
             "dlAllDocumentTitle": "Documents ",
             "dlAllDocumentInfo": "* Download only this documents : products, medias/galleries/slider, documents",
             "uploadAllDocument": "Upload documents *",
+            "restartProgress": "Restart in progress ...",
+            "changeVersion": "Nextjs version changed",
+            "addDoc": "Addition of documents made",
+            "takeTime": "It may take a while, please wait ...",
+            "errorOccurred": "An error has occurred",
             "uploadAllDocumentInfo": "* Only .zip is accepted, and must contain good folders (available in download). No entry in the database."
         }
     }
