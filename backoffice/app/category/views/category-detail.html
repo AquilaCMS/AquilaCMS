@@ -1,6 +1,6 @@
 <ns-box data-title="category.detail.title" title-icon="fa fa-list-ul fa-lg">
     <form name="form" novalidate ng-submit="save()">
-        <ns-buttons is-edit-mode="isEditMode" return-path="/categories" form="form" remove="removeMenu()" save-and-quit="save(true)" disable-save="disableSave" return-path="/picto">
+        <ns-buttons is-edit-mode="isEditMode" return-path="/categories" form="form" remove="removeMenu()" save-and-quit="save(true)" disable-save="disableSave">
         <ns-translation ng-model="lang" class="pull-right" style="margin-top: 50px;float:right"></ns-translation>
 
         <h3>{{category.translation[lang].name}} ({{category.code}})</h3>
