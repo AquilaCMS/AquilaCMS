@@ -8,8 +8,8 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
         $scope.disableSave = true;
         $scope.git = {
             exist:false,
-            updateChanges:{},
-            showChanges : false
+            status:"",
+            error:false
         };
 
         $http.get('/v2/checkGithub').then((response) => {
@@ -70,20 +70,28 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
         }
 
 
-        $scope.local.updateGithub = function () {
+        $scope.local.getChanges = function () {
             $scope.local.showLoading = true;
             $http.get('/v2/checkChanges').then((response) => {
-                if (response.data.type == "git") {
-                    $scope.local.showLoading = false;
-                    $scope.local.verifyingUpdate = false;
-                    $scope.git.updateChanges = {
-                        deletedFiles: response.data.deleted.deleteFiles,
-                        deletedFolders: response.data.deleted.deleteFolders,
-                        addFiles: response.data.add.addFiles,
-                        addFolders: response.data.add.addFolders,
-                    };
-                    $scope.git.showChanges = true;
+                $scope.local.showLoading = false;
+                if(response.data.type === 'error'){
+                    $scope.git.error = true;
+                    $scope.git.status = response.data.message;
+                }else{
+                    $scope.git.status = response.data.message;
                 }
+
+                // if (response.data.type == "git") {
+                //     $scope.local.showLoading = false;
+                //     $scope.local.verifyingUpdate = false;
+                //     $scope.git.updateChanges = {
+                //         deletedFiles: response.data.deleted.deleteFiles,
+                //         deletedFolders: response.data.deleted.deleteFolders,
+                //         addFiles: response.data.add.addFiles,
+                //         addFolders: response.data.add.addFolders,
+                //     };
+                //     $scope.git.showChanges = true;
+                // }
             }, (err) => {
                 $scope.local.showLoading = false;
                 toastService.toast('danger', "Update failed :(");

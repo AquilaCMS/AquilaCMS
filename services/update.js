@@ -46,116 +46,124 @@ const verifyingUpdate = async () => {
 };
 
 async function checkChanges() {
-    const urlAquila = path.resolve('');
-    // eslint-disable-next-line prefer-const
-    let gitIgnoreFiles = ['.git', '.github', 'env.json']; // to ignore
-    // eslint-disable-next-line prefer-const
-    let gitIgnoreFolders = ['.git', '.github', '.vscode', 'node_modules', 'uploads', 'newAquilaVersion', 'modules', '.next']; // to ignore
-    const modules        = await Modules.find({active: true});
-    modules.forEach((element) => {
-        gitIgnoreFolders.push(element.name);
-    });
+    const status = await packageManager.execCmd('git status');
+    console.log(status);
+    if (status.stderr !== '') {
+        return {type: 'error', message: status.stderr};
+    }
+    return {message: status.stdout};
 
-    // const gitIgnore = parse(fsp.readFileSync(`${urlAquila}\\.gitignore`));
-    // gitIgnore.forEach((name) => {
-    //     if (!name.includes('*')) {
-    //         console.log(name);
-    //     }
+    // const urlAquila = path.resolve('');
+    // // eslint-disable-next-line prefer-const
+    // let gitIgnoreFiles = ['.git', '.github', 'env.json']; // to ignore
+    // // eslint-disable-next-line prefer-const
+    // let gitIgnoreFolders = ['.git', '.github', '.vscode', 'node_modules', 'uploads', 'newAquilaVersion', 'modules', '.next']; // to ignore
+    // const modules        = await Modules.find({active: true});
+    // modules.forEach((element) => {
+    //     gitIgnoreFolders.push(element.name);
     // });
 
-    // eslint-disable-next-line prefer-const
-    let deleteFolders = [];
-    // eslint-disable-next-line prefer-const
-    let deleteFiles = [];
-    // eslint-disable-next-line prefer-const
-    let addFolders = [];
-    // eslint-disable-next-line prefer-const
-    let addFiles = [];
-    // eslint-disable-next-line prefer-const
+    // // const gitIgnore = parse(fsp.readFileSync(`${urlAquila}\\.gitignore`));
+    // // gitIgnore.forEach((name) => {
+    // //     if (!name.includes('*')) {
+    // //         console.log(name);
+    // //     }
+    // // });
 
-    const checkDeletedFiles = async (path, name = '') => {
-        if (gitIgnoreFolders.includes(name) || gitIgnoreFiles.includes(name)) {
-            return;
-        }
-        if (name !== '') {
-            path += `\\${name}`;
-        }
-        let copyPath = '';
-        if (name !== '') {
-            copyPath = path.replace(urlAquila, `${urlAquila}\\newAquilaVersion`);
-        } else {
-            copyPath = `${path}\\newAquilaVersion`;
-        }
-        if ((await fsp.lstat(path)).isDirectory()) {
-            if (!fsp.existsSync(copyPath, {recursive: true})) {
-                // await fsp.rmdirSync(path, {recursive: true});
-                deleteFolders.push(path);
-                return;
-            }
-            const files = await fsp.readdir(path);
-            for (const file of files) {
-                await checkDeletedFiles(path, file);
-            }
-        } else if (!fsp.existsSync(copyPath, {recursive: true})) {
-            // await fsp.unlink(path);
-            deleteFiles.push(path);
-        }
-    };
+    // // eslint-disable-next-line prefer-const
+    // let deleteFolders = [];
+    // // eslint-disable-next-line prefer-const
+    // let deleteFiles = [];
+    // // eslint-disable-next-line prefer-const
+    // let addFolders = [];
+    // // eslint-disable-next-line prefer-const
+    // let addFiles = [];
+    // // eslint-disable-next-line prefer-const
 
-    const checkAddFiles = async (path, name = '') => {
-        if (name !== '') {
-            path += `\\${name}`;
-        }
-        const copyPath = path.replace('\\newAquilaVersion', '');
+    // const checkDeletedFiles = async (path, name = '') => {
+    //     if (gitIgnoreFolders.includes(name) || gitIgnoreFiles.includes(name)) {
+    //         return;
+    //     }
+    //     if (name !== '') {
+    //         path += `\\${name}`;
+    //     }
+    //     let copyPath = '';
+    //     if (name !== '') {
+    //         copyPath = path.replace(urlAquila, `${urlAquila}\\newAquilaVersion`);
+    //     } else {
+    //         copyPath = `${path}\\newAquilaVersion`;
+    //     }
+    //     if ((await fsp.lstat(path)).isDirectory()) {
+    //         if (!fsp.existsSync(copyPath, {recursive: true})) {
+    //             // await fsp.rmdirSync(path, {recursive: true});
+    //             deleteFolders.push(path);
+    //             return;
+    //         }
+    //         const files = await fsp.readdir(path);
+    //         for (const file of files) {
+    //             await checkDeletedFiles(path, file);
+    //         }
+    //     } else if (!fsp.existsSync(copyPath, {recursive: true})) {
+    //         // await fsp.unlink(path);
+    //         deleteFiles.push(path);
+    //     }
+    // };
 
-        if (gitIgnoreFolders.includes(name) || gitIgnoreFiles.includes(name)) {
-            return;
-        }
+    // const checkAddFiles = async (path, name = '') => {
+    //     if (name !== '') {
+    //         path += `\\${name}`;
+    //     }
+    //     const copyPath = path.replace('\\newAquilaVersion', '');
 
-        if ((await fsp.lstat(path)).isDirectory()) {
-            if (!fsp.existsSync(copyPath, {recursive: true})) {
-                // await fsp.rmdirSync(path, {recursive: true});
-                addFolders.push(copyPath);
-                return;
-            }
-            const files = await fsp.readdir(path);
-            for (const file of files) {
-                await checkAddFiles(path, file);
-            }
-        } else if (!fsp.existsSync(copyPath, {recursive: true})) {
-            // await fsp.unlink(path);
-            addFiles.push(copyPath);
-        }
-    };
+    //     if (gitIgnoreFolders.includes(name) || gitIgnoreFiles.includes(name)) {
+    //         return;
+    //     }
 
-    try {
-        if (!fsp.existsSync(newAquilaVersion, {recursive: true})) {
-            await packageManager.execCmd(`git clone --single-branch --branch updateAquila https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
-            // await packageManager.execCmd(`git clone https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
-        }
-        await checkDeletedFiles(path.resolve(''), '');
-        await checkAddFiles(`${path.resolve('')}\\newAquilaVersion`, '');
-        return {type: 'git', deleted: {deleteFolders, deleteFiles}, add: {addFolders, addFiles}};
-    } catch (error) {
-        console.log(error);
-    }
+    //     if ((await fsp.lstat(path)).isDirectory()) {
+    //         if (!fsp.existsSync(copyPath, {recursive: true})) {
+    //             // await fsp.rmdirSync(path, {recursive: true});
+    //             addFolders.push(copyPath);
+    //             return;
+    //         }
+    //         const files = await fsp.readdir(path);
+    //         for (const file of files) {
+    //             await checkAddFiles(path, file);
+    //         }
+    //     } else if (!fsp.existsSync(copyPath, {recursive: true})) {
+    //         // await fsp.unlink(path);
+    //         addFiles.push(copyPath);
+    //     }
+    // };
+
+    // try {
+    //     if (!fsp.existsSync(newAquilaVersion, {recursive: true})) {
+    //         await packageManager.execCmd(`git clone --single-branch --branch updateAquila https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
+    //         // await packageManager.execCmd(`git clone https://github.com/AquilaCMS/AquilaCMS.git ${newAquilaVersion}`);
+    //     }
+    //     await checkDeletedFiles(path.resolve(''), '');
+    //     await checkAddFiles(`${path.resolve('')}\\newAquilaVersion`, '');
+    //     return {type: 'git', deleted: {deleteFolders, deleteFiles}, add: {addFolders, addFiles}};
+    // } catch (error) {
+    //     console.log(error);
+    // }
 }
 
 const updateGithub = async (body) => {
     await setMaintenance(true);
-    const deletedFiles   = body.changes.deletedFiles;
-    const deletedFolders = body.changes.deletedFolders;
+    // const deletedFiles   = body.changes.deletedFiles;
+    // const deletedFolders = body.changes.deletedFolders;
     try {
-        const pull = await packageManager.execCmd('git pull');
+        const reset = await packageManager.execCmd('git reset --hard');
+        const pull  = await packageManager.execCmd('git pull');
         if (pull) {
-            for (const path of deletedFiles) {
-                await fsp.unlink(path);
-            }
-            for (const path of deletedFolders) {
-                await fsp.rmdirSync(path, {recursive: true});
-            }
+            // for (const path of deletedFiles) {
+            //     await fsp.unlink(path);
+            // }
+            // for (const path of deletedFolders) {
+            //     await fsp.rmdirSync(path, {recursive: true});
+            // }
         }
-        await fsp.rmdirSync('.\\newAquilaVersion', {recursive: true});
+        // await fsp.rmdirSync('.\\newAquilaVersion', {recursive: true});
         await setMaintenance(false);
         console.log('Aquila is updated !');
         // Reboot
