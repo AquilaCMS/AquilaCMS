@@ -153,8 +153,9 @@ const updateGithub = async (body) => {
     // const deletedFiles   = body.changes.deletedFiles;
     // const deletedFolders = body.changes.deletedFolders;
     try {
-        const reset = await packageManager.execCmd('git clean -fd');
-        const pull  = await packageManager.execCmd('git pull');
+        await packageManager.execCmd('git reset --hard');
+        await packageManager.execCmd('git clean -fd');
+        const pull = await packageManager.execCmd('git pull');
         if (pull) {
             // for (const path of deletedFiles) {
             //     await fsp.unlink(path);
