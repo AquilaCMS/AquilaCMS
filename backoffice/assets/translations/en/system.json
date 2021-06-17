@@ -12,7 +12,8 @@
             "contentPolicy": {
                 "title": "ContentPolicy",
                 "delAndAdd": "Delete/add",
-                "value": "Value"
+                "value": "Value",
+                "confirm":"You are going to activate a strict security policy that can lead to malfunctions on your site. To access external content, you must list all authorized domains"
             }
         },
         "nextjs":{
