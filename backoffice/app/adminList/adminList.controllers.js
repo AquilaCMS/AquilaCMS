@@ -126,7 +126,7 @@ AdminListControllers.controller("AdminDeleteCtrl", [
     function ($scope, $modalInstance, client, ClientV2, toastService, $translate) {
         $scope.ok = function () {
 
-            ClientV2.deleteAdmin({ id: client }, function (msg) {
+            ClientV2.delete({type: 'user', id: client}, function (msg) {
                 if (msg.status) {
                     toastService.toast("success", $translate.instant("global.deleteAdmin"));
                     $modalInstance.close(msg.status);
