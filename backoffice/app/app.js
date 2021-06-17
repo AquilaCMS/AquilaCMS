@@ -69,7 +69,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productVirtual",
     "aq.newsletter",
     "aq.system",
-    "aq.invoices"
+    "aq.invoices",
+    "aq.adminList"
 ]);
 
 //================================================
@@ -193,30 +194,7 @@ adminCatagenApp.config([
                     loggedin: checkLoggedin
                 }
             })
-            .when("/list", {
-                templateUrl: "views/admin-list.html",
-                controller: "AdminCtrl",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess("admin")
-                }
-            })
-            .when("/list/new", {
-                templateUrl: "views/admin-list-new.html",
-                controller: "AdminNewCtrl",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess("admin")
-                }
-            })
-            .when("/list/detail/:id", {
-                templateUrl: "views/admin-list-detail.html",
-                controller: "AdminDetailCtrl",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess("admin")
-                }
-            }) /*.when('/account/:id', {
+             /*.when('/account/:id', {
              resolve: {
              loggedin: checkLoggedin
              }
