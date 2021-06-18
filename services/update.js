@@ -9,7 +9,6 @@
 const axios                    = require('axios');
 const AdmZip                   = require('adm-zip');
 const path                     = require('path');
-const parse                    = require('parse-gitignore');
 const fsp                      = require('../utils/fsp');
 const packageManager           = require('../utils/packageManager');
 const {isProd}                 = require('../utils/server');

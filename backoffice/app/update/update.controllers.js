@@ -40,6 +40,7 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
         });
 
         $scope.validate = function (tab) {
+            if (tab == "maintenance")
             ConfigV2.save({ environment: $scope.config.environment }).$promise.then(function () {
                 toastService.toast("success", $translate.instant("update.configurationSaved"));
             }, function (err) {
