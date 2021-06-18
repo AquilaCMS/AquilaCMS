@@ -293,11 +293,10 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
                 }, async () => {
                     await fsp.copyFileSync(filePath, filePathCache);
                 });
-            } catch(err) {
-                console.error('defaultImage not found')
-                return "/"
+            } catch (err) {
+                console.error('defaultImage not found');
+                return '/';
             }
-
         }
     }
     // compress
@@ -657,21 +656,21 @@ const getImageStream = async (req, res) => {
             imagePath = await getImagePathCache(type, _id, size, extension, quality ? Number(quality) : undefined, option || undefined );
         } catch (e) {
             console.log(NSErrors.MediaNotFound); // TODO : améliorer ce console ?
-            /*res.status(404);
+            res.status(404);
+            /* res.status(404);
             if(imagePath && imagePath.startsWith('http')) {
                 require('https').get(imagePath, (stream) => {
                     stream.pipe(res);
                 });
                 return;
             }
-            // TODO : voir pour le mettre dans la dimension demandé !?*/
-            //next(NSErrors.MediaNotFound);
+            // TODO : voir pour le mettre dans la dimension demandé !? */
+            // next(NSErrors.MediaNotFound);
         }
-        if(await fsp.existsSync(imagePath) && !(await fsp.lstatSync(imagePath).isDirectory())) {
+        if (await fsp.existsSync(imagePath) && !(await fsp.lstatSync(imagePath).isDirectory())) {
             fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
         } else {
-            res.status(404)
-            res.end()
+            res.end();
         }
     }
 };
