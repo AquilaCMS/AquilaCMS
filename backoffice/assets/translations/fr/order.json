@@ -103,6 +103,7 @@
         "invoiceCreated": "Facture créée",
         "orderAlreadyState": "La commande est déjà dans cet état !",
         "removePackage": "Impossible de supprimer le colis",
+        "removedPackage": "Le colis à été supprimé",
         "changeStateImpossible": "Ce changement d'état n'est pas possible",
         "addressChanged": "Adresse changée",
         "addedParcel": "Colis correctement ajouté",

@@ -469,6 +469,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             Orders.delPkg({order: $scope.order._id, package: pkg}, function (res)
             {
                 $scope.order = res;
+                toastService.toast("success", $translate.instant("order.detail.removedPackage"));
             }, function (err)
             {
                 console.error(err.data);
