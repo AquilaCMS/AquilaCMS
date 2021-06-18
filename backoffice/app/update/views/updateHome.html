@@ -43,6 +43,22 @@
                             <div ng-show="local.showLoading" id="overlayModule">
                                 <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
                             </div>
+                            <div ng-if="git.exist && local.needUpdate">
+                                <button nf-if="git.exist" class="btn btn-success" ng-click="local.getChanges()">Mettre à jour avec Github</button>
+                                <div ng-if="git.error && git.status !== ''">
+                                    <div>
+                                        <pre>{{git.status}}</pre>
+                                    </div>
+                                </div>
+                                <div ng-if="!git.error && git.status !== ''">
+                                    <div>
+                                        <pre>{{git.status}}</pre>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-success" ng-click="validateGitUpdate(git.updateChanges)">Valider</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div id="maintenance" class="tab-pane fade in active" ng-if="tab === 'maintenance'">
@@ -66,22 +82,7 @@
 
             </ns-buttons>
         </form>
-        <div ng-if="git.exist && local.needUpdate">
-            <button nf-if="git.exist" class="btn btn-success" ng-click="local.getChanges()">Mettre à jour avec Github</button>
-            <div ng-if="git.error && git.status !== ''">
-                <div>
-                    <pre>{{git.status}}</pre>
-                </div>
-            </div>
-            <div ng-if="!git.error && git.status !== ''">
-                <div>
-                    <pre>{{git.status}}</pre>
-                </div>
-                <div>
-                    <button class="btn btn-success" ng-click="validateGitUpdate(git.updateChanges)">Valider</button>
-                </div>
-            </div>
-        </div>
+        
 
         <div ng-show="showLoading">
             <h3>Redémarrage d'Aquila en cours ...</h3>
