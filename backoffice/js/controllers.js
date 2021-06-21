@@ -139,7 +139,7 @@ adminCatagenControllers.controller("CarrierListCtrl", [
                 Carrier.remove({carrierId: carrier._id}, function ()
                 {
                     $scope.carriers.splice($scope.carriers.indexOf(carrier), 1);
-                    toastService.toast("success", $translate.instant("global.carrierDeleted"));
+                    toastService.toast("success", $translate.instant("carrier.carrierDeleted"));
                 });
             }
         };
@@ -165,7 +165,7 @@ adminCatagenControllers.controller("CarrierNewCtrl", [
             {
                 if(msg.status)
                 {
-                    toastService.toast("success", $translate.instant("global.carrierSaved"));
+                    toastService.toast("success", $translate.instant("carrier.carrierSaved"));
                     $location.path("/carriers");
                 }
                 else

@@ -115,7 +115,9 @@ const useHelmet = async (server) => {
                 'img-src'     : [`'self' ${contentSecurityPolicyString}`, 'data:'],
                 'script-src'  : contentSecurityPolicyValues,
                 'frame-src'   : [`'self' ${contentSecurityPolicyString}`],
-                'connect-src' : [`'self' ${contentSecurityPolicyString}`]
+                'connect-src' : [`'self' ${contentSecurityPolicyString}`],
+                'worker-src'  : ['\'self\'', 'blob:'] // fix pour tinymce
+
             },
             // reportOnly ignore the CSP error, but report it
             reportOnly : false

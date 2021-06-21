@@ -15,8 +15,6 @@
     "emailType": "Veuillez sélectionner un type de mail",
     "infoSaved": "Informations sauvegardées !",
     "emailSent": "Un email a été envoyé à cette adresse.",
-    "carrierDeleted": "Transporteur supprimé",
-    "carrierSaved": "Transporteur sauvegardé",
     "invalidMail": "L'email n'est pas valide",
     "cancel": "Annuler",
     "save": "Sauvergarder"
