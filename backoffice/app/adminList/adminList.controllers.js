@@ -126,7 +126,7 @@ AdminListControllers.controller("AdminDeleteCtrl", [
     function ($scope, $modalInstance, client, ClientV2, toastService, $translate) {
         $scope.ok = function () {
 
-            ClientV2.delete({type: 'user', id: client}, function (msg) {
+            ClientV2.delete({ type: 'user', id: client }, function (msg) {
                 if (msg.status) {
                     toastService.toast("success", $translate.instant("global.deleteAdmin"));
                     $modalInstance.close(msg.status);
@@ -178,7 +178,7 @@ AdminListControllers.controller("AdminNewCtrl", [
                 ClientV2.save(user, function (msg) {
                     if (msg.user) {
                         toastService.toast("success", $translate.instant("global.infoSaved"));
-                        $location.path('/list/detail/' + msg.user.id);
+                        $location.path('/list/detail/' + msg.user._id);
                     }
                     else {
                         console.error("Error!");
