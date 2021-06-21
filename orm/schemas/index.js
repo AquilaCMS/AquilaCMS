@@ -29,6 +29,8 @@ const ModulesSchema               = require('./modulesSchema');
 const NewsSchema                  = require('./newsSchema');
 const NewsPreviewSchema           = require('./newsPreviewSchema');
 const NewslettersSchema           = require('./newslettersSchema');
+const OptionsSchema               = require('./optionsSchema');
+const OptionsSetSchema            = require('./optionsSetSchema');
 const OrdersSchema                = require('./ordersSchema');
 const PaymentMethodsSchema        = require('./paymentMethodsSchema');
 const PictosSchema                = require('./pictosSchema');
@@ -81,6 +83,8 @@ module.exports = {
     NewsSchema,
     NewsPreviewSchema,
     NewslettersSchema,
+    OptionsSchema,
+    OptionsSetSchema,
     OrdersSchema,
     PaymentMethodsSchema,
     PictosSchema,

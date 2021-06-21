@@ -7,7 +7,7 @@ OptionsSetControllers.controller("OptionsSetListCtrl", [
         $scope.sortReverse = false;  // set the default sort order
 
         $scope.getData = function () {
-            OptionsSetServices.list({}, function (response) {
+            OptionsSetServices.list({ PostBody: { limit: 10, page: 1 } }, function (response) {
                 $scope.optionsSet = response.datas;
             });
         }
