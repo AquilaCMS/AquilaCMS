@@ -1,4 +1,4 @@
-<ns-box data-title="optionsSet.list.t1" title-icon="fa fa-align-justify fa-lg" new-href="#/{{type}}/optionsSets/new">
+<ns-box data-title="optionsSet.list.t1" title-icon="fa fa-align-justify fa-lg" new-click="createNew()">
     <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid">
 
         <table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
@@ -29,10 +29,10 @@
                 infinite-scroll-distance="1" infinite-scroll-immediate-check="true"
                 infinite-scroll-disabled='scroller.busy'>
                 <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
-                    ng-click="goTooptionsSetsDetails(optionsSet.code)"
-                    ng-repeat="optionsSet in optionsSets | orderBy:sortType:sortReverse">
-                    <td data-label="Code :" class="sorting_1">{{optionsSet.code}}</td>
-                    <td data-label="Nom :" class="sorting_1">{{optionsSet.name}}</td>
+                    ng-click="gotToDetail(oneOptionsSet.code)"
+                    ng-repeat="oneOptionsSet in optionsSet | orderBy:sortType:sortReverse">
+                    <td data-label="Code :" class="sorting_1">{{oneOptionsSet.code}}</td>
+                    <td data-label="Nom :" class="sorting_1">{{oneOptionsSet.name[lang]}}</td>
                     <!--<td class=" ">
                         <a href="#/optionsSets/{{optionsSet.code}}" class="btn btn-blue btn-with-icon">
                             <i class="ico-magnifier-primary"></i>

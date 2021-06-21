@@ -8,5 +8,16 @@
         "attrOrph": "Unbinded options",
         "jeuxAttrib": "Attribute sets",
         "afficher": "Display"
+    },
+    "detail": {
+        "code": "Code",
+        "name": "Name"
+    },
+    "new": {
+        "code": "Code",
+        "name": "Name",
+        "save": "Save",
+        "cancel": "Cancel",
+        "title": "Create an option set"
     }
 }

@@ -8,5 +8,16 @@
         "attrOrph": "Options orphelines",
         "jeuxAttrib": "Jeux d'attributs",
         "afficher": "Afficher"
+    },
+    "detail": {
+        "code": "Code",
+        "name": "Nom"
+    },
+    "new": {
+        "code": "Code",
+        "name": "Nom",
+        "save": "Sauvegarder",
+        "cancel": "Annuler",
+        "title": "Créer un jeu d'option"
     }
 }

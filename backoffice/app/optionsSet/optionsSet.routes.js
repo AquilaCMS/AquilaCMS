@@ -11,7 +11,7 @@ optionsSetRoutes.config(['$routeProvider',
                     checkAccess: checkAccess('optionsSet'),
                 }
             })
-            .when('/optionsSet/:codeOptionsSet', {
+            .when('/optionsSet/:code', {
                 templateUrl: 'app/optionsSet/views/optionsSet-detail.html',
                 controller: 'OptionsSetDetailCtrl',
                 resolve: {

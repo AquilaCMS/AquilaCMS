@@ -12,7 +12,6 @@ const Schema        = mongoose.Schema;
 
 const SetAttributesSchema = new Schema({
     code : {type: String, required: true, unique: true},
-    name : {type: String, required: true},
     type : {
         type : String,
         enum : ['text', 'number', 'list', 'radio', 'color', 'date', 'productList']

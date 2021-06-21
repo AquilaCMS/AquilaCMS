@@ -9,12 +9,6 @@
 const name              = 'optionsSet';
 const ServiceOptionsSet = require(`../services/${name}`);
 
-module.exports = function (app) {
-    app.post(`/v2/${name}/list`, listOptionsSet);
-    app.post(`/v2/${name}/get`, getOptionsSet);
-    app.post(`/v2/${name}/set`, setOptionsSet);
-};
-
 async function listOptionsSet(req, res, next) {
     try {
         const result = await ServiceOptionsSet.listOptionsSet(req.body.PostBody);
@@ -35,9 +29,15 @@ async function getOptionsSet(req, res, next) {
 
 async function setOptionsSet(req, res, next) {
     try {
-        const result = await ServiceOptionsSet.setOptionsSet(req.body.PostBody);
+        const result = await ServiceOptionsSet.setOptionsSet(req.body);
         return res.json(result);
     } catch (error) {
         return next(error);
     }
 }
+
+module.exports = function (app) {
+    app.post(`/v2/${name}/list`, listOptionsSet);
+    app.post(`/v2/${name}/get`, getOptionsSet);
+    app.post(`/v2/${name}/set`, setOptionsSet);
+};

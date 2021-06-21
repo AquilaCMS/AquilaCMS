@@ -8,6 +8,7 @@
 
 const QueryBuilder     = require('../utils/QueryBuilder');
 const {OptionsSet}     = require('../orm/models');
+const NSErrors         = require('../utils/errors/NSErrors');
 const restrictedFields = [];
 const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(OptionsSet, restrictedFields, defaultFields);
@@ -19,11 +20,20 @@ const listOptionsSet = async function (PostBody) {
 };
 
 const getOptionsSet = async function (PostBody) {
+    if (typeof PostBody === 'undefined' || PostBody === null) {
+        throw NSErrors.UnprocessableEntity;
+    }
     return queryBuilder.findOne(PostBody);
 };
 
-const setOptionsSet = async function (PostBody) {
-    return queryBuilder.findOne(PostBody);
+const setOptionsSet = async function (optionsSet) {
+    if (typeof optionsSet === 'undefined' || optionsSet === null) {
+        throw NSErrors.UnprocessableEntity;
+    }
+    if (typeof optionsSet._id !== 'undefined') {
+        return OptionsSet.findOneAndUpdate({_id: optionsSet._id}, optionsSet);
+    }
+    return OptionsSet.create(optionsSet);
 };
 
 module.exports = {
