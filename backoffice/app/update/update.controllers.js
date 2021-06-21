@@ -6,6 +6,20 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
 
         $scope.tab = "maj";
         $scope.disableSave = true;
+        $scope.git = {
+            exist:false,
+            status:"",
+            error:false
+        };
+
+        $http.get('/v2/checkGithub').then((response) => {
+            if(response.data.exist){
+                $scope.git.exist = true;
+            }
+        }, (err) => {
+            toastService.toast("danger", "Une erreur est survenue !");
+        });
+
 
         $scope.onTabSelect = function (tabId) {
             if (tabId == "maj") {
@@ -26,10 +40,24 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
         });
 
         $scope.validate = function (tab) {
+            if (tab == "maintenance")
             ConfigV2.save({ environment: $scope.config.environment }).$promise.then(function () {
                 toastService.toast("success", $translate.instant("update.configurationSaved"));
             }, function (err) {
                 toastService.toast("danger", $translate.instant("update.errorArise"));
+                console.error(err);
+            });
+        };
+
+        $scope.validateGitUpdate = function(changes){
+            $scope.local.showLoading = true;
+            $http.post('/v2/updateGithub', {changes}).then((response) => {
+                    $scope.git.showChanges = true;
+                    $scope.needUpdate = false;
+                    toastService.toast('success', 'Update succeded :)');
+            }, (err) => {
+                $scope.local.showLoading = false;
+                toastService.toast('danger', "Update failed :(");
                 console.error(err);
             });
         };
@@ -42,9 +70,27 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
             onlineVersion:"loading..."
         }
 
+
+        $scope.local.getChanges = function () {
+            $scope.local.showLoading = true;
+            $http.get('/v2/checkChanges').then((response) => {
+                $scope.local.showLoading = false;
+                if(response.data.type === 'error'){
+                    $scope.git.error = true;
+                    $scope.git.status = response.data.message;
+                }else{
+                    $scope.git.status = response.data.message;
+                }
+            }, (err) => {
+                $scope.local.showLoading = false;
+                toastService.toast('danger', "Update failed :(");
+                console.error(err);
+            });
+
+        };
+
         $scope.local.update = function() {
             $scope.local.showLoading = true;
-
             $http.get('/v2/update').then((response) => {
                 $scope.local.showLoading     = false;
                 $scope.local.verifyingUpdate = false;

@@ -466,14 +466,15 @@ OrderControllers.controller("OrderDetailCtrl", [
 
         $scope.delPkg = function (pkg)
         {
-            Orders.delPkg({order: $scope.order._id, package: pkg}, function (res)
-            {
-                $scope.order = res;
-            }, function (err)
-            {
-                console.error(err.data);
-                toastService.toast("danger", $translate.instant("order.detail.removePackage"));
-            });
+            if (confirm("Etes-vous sûr de vouloir supprimer ce colis ?")) {
+                Orders.delPkg({ order: $scope.order._id, package: pkg }, function (res) {
+                    $scope.order = res;
+                    toastService.toast("success", $translate.instant("order.detail.removedPackage"));
+                }, function (err) {
+                    console.error(err.data);
+                    toastService.toast("danger", $translate.instant("order.detail.removePackage"));
+                });
+            }
         };
 
         function getQtyShipped(i)

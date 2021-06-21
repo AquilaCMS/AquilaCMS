@@ -43,6 +43,30 @@ const verifyingUpdate = async () => {
     };
 };
 
+async function checkChanges() {
+    const status = await packageManager.execCmd('git status');
+    console.log(status);
+    if (status.stderr !== '') {
+        return {type: 'error', message: status.stderr};
+    }
+    return {message: status.stdout};
+}
+
+const updateGithub = async () => {
+    await setMaintenance(true);
+    try {
+        await packageManager.execCmd('git reset --hard');
+        await packageManager.execCmd('git clean -fd');
+        await packageManager.execCmd('git pull');
+        await setMaintenance(false);
+        console.log('Aquila is updated !');
+        return packageManager.restart();
+    } catch (error) {
+        console.error(error);
+        return error;
+    }
+};
+
 const update = async () => {
     console.log('Update Aquila...');
 
@@ -133,8 +157,21 @@ const setMaintenance = async (isInMaintenance) =>  {
     }
 };
 
+const checkGithub = async () => {
+    const git = {
+        exist : false
+    };
+    if (fsp.existsSync(path.resolve('./.git'), {recursive: true})) {
+        git.exist = true;
+    }
+    return git;
+};
+
 module.exports = {
     verifyingUpdate,
     update,
-    setMaintenance
+    setMaintenance,
+    checkGithub,
+    updateGithub,
+    checkChanges
 };

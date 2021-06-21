@@ -509,10 +509,11 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             if(typeof isQuit !== "undefined" && isQuit){
                 $scope.editCat = false;
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
+                $location.path('/categories');
                 //don't work
+                // if (!$scope.$$phase) {
+                //     $scope.$apply();
+                // }
             }
         };
 

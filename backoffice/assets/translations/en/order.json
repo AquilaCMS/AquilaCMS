@@ -103,6 +103,7 @@
         "invoiceCreated": "Invoice created",
         "orderAlreadyState": "The order is already in this state!",
         "removePackage": "Unable to remove the package",
+        "removedPackage": "Package removed",
         "changeStateImpossible": "This change of state is not possible",
         "addressChanged": "Address changed",
         "addedParcel": "Correctly added parcel",

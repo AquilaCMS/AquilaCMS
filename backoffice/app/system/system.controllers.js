@@ -16,6 +16,20 @@ SystemControllers.controller("systemGeneralController", [
             newPolicy: ""
         };
 
+        $scope.nsswitch = false;
+
+        $scope.switchCsp = function(value){
+            $scope.nsswitch = !$scope.nsswitch;
+            if (value){
+                // if (confirm($translate.instant("system.environment.security.contentPolicy.confirm"))) {
+                if (confirm("Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés")) {
+                    $scope.system.environment.contentSecurityPolicy.active = "true";
+                }else{
+                    $scope.system.environment.contentSecurityPolicy.active = "false";
+                }
+            }
+        }
+
         $scope.removePolicy = function(value){
             const index = $scope.contentPolicy.content.indexOf(value);
             if (index > -1) {
