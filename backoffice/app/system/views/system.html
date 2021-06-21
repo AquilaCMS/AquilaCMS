@@ -1,5 +1,9 @@
 <ns-box data-title="system.environment.t1" title-icon="fa fa-server fa-lg">
-    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" role="form">
+
+    <div ng-show="showLoading">
+        <h1 translate>system.environment.other.restartProgress</h1>
+    </div>
+    <form ng-show='!showLoading' name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)"role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
