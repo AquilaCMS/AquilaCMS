@@ -17,5 +17,7 @@
     "emailSent": "An email has been sent to this address.",
     "carrierDeleted": "Carrier deleted",
     "carrierSaved": "Saved carrier",
-    "invalidMail": "Email is not valid"
+    "invalidMail": "Email is not valid",
+    "cancel": "Cancel",
+    "save": "Save"
 }

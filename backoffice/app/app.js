@@ -56,7 +56,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.stock",
     "aq.territories",
     "aq.contact",
-
     /* composant Aquila */
     //"aq.crossSelling",
     "aq.gallery",
@@ -71,7 +70,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.system",
     "aq.invoices",
     "aq.optionsSet",
-    "aq.adminList"
+    "aq.adminList",
+    "aq.options"
 ]);
 
 //================================================
@@ -206,11 +206,12 @@ adminCatagenApp.config([
     }
 ]);
 
+// here is the list for translations files
 var namespaces = [
     "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules",
     "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
     "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system",
-    "optionsSet"
+    "optionsSet", "options"
 ];
 adminCatagenApp
     .factory("customLoader", [
