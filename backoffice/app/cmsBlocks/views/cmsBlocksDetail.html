@@ -7,13 +7,15 @@
                     save-and-quit="save(true)"
                     disable-save="disableSave"
                     form="form">
+            <div class="col-sm-12">
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
+            <br><br>
             <div class="form-group">
-                <div class="col-sm-12">
-                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-                </div>
+                
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.code</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-10">
                         <input type="text" name="code" class="form-control" ng-model="cmsBlock.code" required />
                         <div ng-messages="form.id.$error" role="alert">
                             <div ng-message="required" ng-show="form.id.$dirty" translate>cmsBlocks.detail.champRequis</div>
@@ -25,7 +27,7 @@
             <div class="form-group">
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.desc</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-10">
                         <input type="text" name="description" class="form-control" ng-model="cmsBlock.translation[lang].description"/>
                     </div>
                 </div>
@@ -33,7 +35,7 @@
             <div class="form-group">
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.group</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-10">
                         <input-dropdown input-name="group" input-class-name="form-control"
                             filter-list-method="filterDropdown(userInput)" selected-item="selectedDropdownItem"
                             default-dropdown-items="groups" allow-custom-input="true"
