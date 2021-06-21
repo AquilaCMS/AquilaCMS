@@ -420,6 +420,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
 
     const datas = {
         '{{taxdisplay}}'                 : global.translate.common[taxDisplay][lang],
+        '{{discount}}'                   : global.translate.common.discount[lang],
         '{{order.customer.company}}'     : order.customer.company.name,
         '{{order.customer.fullname}}'    : order.customer.id.fullname,
         '{{order.customer.name}}'        : order.customer.id.fullname,
@@ -492,6 +493,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     }
     const mailDatas = {
         '{{taxdisplay}}'                : global.translate.common[taxDisplay][lang],
+        '{{discount}}'                  : global.translate.common.discount[lang],
         '{{payment.instruction}}'       : '',
         '{{order.customer.company}}'    : order.customer.company.name,
         '{{order.customer.firstname}}'  : order.customer.id.firstname,
