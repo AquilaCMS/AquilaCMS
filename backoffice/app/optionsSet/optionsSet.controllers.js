@@ -67,8 +67,8 @@ OptionsSetControllers.controller("OptionsSetNewCtrl", [
 
 
 OptionsSetControllers.controller("OptionsSetDetailCtrl", [
-    "$scope", "$location", "$rootScope", "$routeParams", "OptionsSetServices",
-    function ($scope, $location, $rootScope, $routeParams, OptionsSetServices) {
+    "$scope", "$location", "$rootScope", "$routeParams", "OptionsSetServices", "$modal",
+    function ($scope, $location, $rootScope, $routeParams, OptionsSetServices, $modal) {
 
         $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
 
@@ -85,8 +85,6 @@ OptionsSetControllers.controller("OptionsSetDetailCtrl", [
         }
 
         $scope.save = function (quit) {
-
-
             if (quit) {
                 $location.path(`/optionsSet/`);
             }
@@ -96,7 +94,37 @@ OptionsSetControllers.controller("OptionsSetDetailCtrl", [
 
         }
 
+        $scope.createOptions = function () {
+            var modalInstance = $modal.open({
+                templateUrl: "app/options/views/options-new-modal.html",
+                controller: 'nsNewOptionsController',
+                windowClass: "modal-large",
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
+                    lang: function () {
+                        return $scope.lang;
+                    },
+                }
+            });
+
+            modalInstance.result.then(function (isCreated) {
+                debugger
+                isCreated;
+            });
+        }
+
         $scope.getOptionsSet(); // we get the options
+    }
+]);
+
+OptionsSetControllers.controller("OptionsSetNewOptions", [
+    "$scope", "$location", "$rootScope", "$routeParams", "OptionsSetServices", "$modalInstance",
+    function ($scope, $location, $rootScope, $routeParams, OptionsSetServices, $modalInstance) {
+
+        $scope.close = function (val) {
+            $modalInstance.close(val);
+        }
     }
 ]);
 

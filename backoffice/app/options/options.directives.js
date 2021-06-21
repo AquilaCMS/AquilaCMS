@@ -4,7 +4,7 @@ OptionsDirectives.directive("nsNewOptions", function () {
     return {
         restrict: "E",
         scope: false,
-        templateUrl: "app/options/views/options-new.html",
+        templateUrl: "app/options/views/options-new-modal.html",
         controller: 'nsNewOptionsController'
     };
 });

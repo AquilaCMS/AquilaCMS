@@ -1,0 +1,9 @@
+<ns-box data-title="{{isEditMode ? 'attribute.detail.t1' : 'attribute.detail.t2'}}"
+    title-icon="fa fa-align-center fa-lg" close-href="#/{{_type}}/attributes">
+    <form name="form" class="form-horizontal" role="form" ng-submit="save(attribute)">
+        <ns-buttons ng-show="backUrl" is-edit-mode="isEditMode" remove="removeAttribute(attribute)"
+            save-and-quit="save(attribute, true)" disable-save="disableSave" return-path="/{{backUrl}}" form="form">
+
+        </ns-buttons>
+    </form>
+</ns-box>

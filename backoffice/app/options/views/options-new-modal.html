@@ -1,10 +1,81 @@
 <div class="modal-header">
-    <h3 translate>gallery.item.addMedia</h3>
+    <h3 style="margin-bottom: 0px" translate>options.new.createOptions</h3>
 </div>
 <div class="modal-body">
-    <ns-new-options></ns-new-options>
+    <div class="row">
+        <div class="form-group">
+            <label for="code" class="col-sm-3 control-label" translate>attribute.detail.code</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="code" translate
+                    translate-attr-placeholder='attribute.detail.ph1' ng-model="attribute.code" ng-disabled="isEditMode"
+                    required>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label for="name" class="col-sm-3 control-label" translate>attribute.detail.nom</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="name" ng-model="attribute.translation[lang].name" required>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label for="type" class="col-sm-3 control-label" translate>attribute.detail.type</label>
+            <div class="col-sm-6">
+                <select class="form-control" name="type" id="type" ng-model="attribute.type" ng-disabled="isEditMode"
+                    ng-selected="attribute.type" required>
+                    <option value="" translate>options.detail.choixTypeAttribut</option>
+                    <option value="textfield" translate>options.detail.champTexte</option>
+                    <option value="textarea" translate>options.detail.zoneTexte</option>
+                    <option value="date" translate>options.detail.date</option>
+                    <option value="bool" translate>options.detail.booleen</option>
+                    <option value="list" translate>options.detail.listeDeroulante</option>
+                    <option value="multiselect" translate>options.detail.selectionMultiple</option>
+                    <option value="interval" translate>options.detail.intervalle</option>
+                    <option value="image" translate>options.detail.image</option>
+                    <option value="video" translate>options.detail.video</option>
+                    <option value="doc/pdf" translate>options.detail.fichierPDF</option>
+                    <option value="number" translate>options.detail.nombre</option>
+                    <option ng-show="_type === 'products'" value="color" translate>options.detail.color</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label for="param" class="col-sm-3 control-label" translate>attribute.detail.valeurDefaut</label>
+            <div class="col-sm-6">
+                <ns-switch name="default_value" ng-model="attribute.default_value"></ns-switch>
+            </div>
+        </div>
+        <br />
+        <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect'" class="form-group">
+            <label for="type" class="col-sm-3 control-label" translate>attribute.detail.valeurs</label>
+            <div class="col-sm-6">
+                <div class="row form-group" ng-repeat="value in attribute.translation[lang].values track by $index">
+                    <div class="col-sm-6">
+                        <input class="form-control" type="text" ng-model="attribute.translation[lang].values[$index]">
+                    </div>
+
+                    <div class="col-sm-2">
+                        <button type="button"
+                            style="background: #e34925; color: #ffffff; font-weight: bold; font-size: 21px; border: 0; padding: 4px 9px; line-height: 100%; vertical-align: middle;"
+                            ng-click="removeValue($index)">-
+                        </button>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <button class="btn btn-default" type="button" ng-click="addValue()"
+                            translate>attribute.detail.addValeur</button>
+                        <label ng-show="valuesError" class="btn"
+                            style="cursor: default; color: #ff0000;">{{valuesError}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-default" ng-click="cancel($event)" translate>gallery.item.cancel</button>
-    <button type="submit" class="btn btn-success" ng-disabled="form.$invalid" translate>gallery.item.save</button>
+    <button class="btn btn-default" ng-click="cancel()" translate>global.cancel</button>
+    <button class="btn btn-success" ng-click="save()" ng-disabled="form.$invalid" translate>global.save</button>
 </div>

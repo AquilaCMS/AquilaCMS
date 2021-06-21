@@ -1,1 +1,18 @@
-{}
+{
+    "new": {
+        "createOptions": "Créer une nouvelle option",
+        "choixTypeoption": "Choose this option's type",
+        "champTexte": "Text field",
+        "zoneTexte": "Text zone",
+        "date": "Date",
+        "boolean": "Boolean (yes/no)",
+        "listeDeroulante": "Drop-down list",
+        "selectionMultiple": "Multiple selection",
+        "intervalle": "Interval",
+        "image": "Image",
+        "video": "Video",
+        "fichierPDF": "PDF File",
+        "nombre": "Number",
+        "color": "Color"
+    }
+}

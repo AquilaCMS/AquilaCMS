@@ -1,1 +1,18 @@
-{}
+{
+    "new": {
+        "createOptions": "Create a new option",
+        "choixTypeoption": "Choisissez le type de cet option",
+        "champTexte": "Champ texte",
+        "zoneTexte": "Zone de texte",
+        "date": "Date",
+        "boolean": "Booléen (oui/non)",
+        "listeDeroulante": "Liste déroulante",
+        "selectionMultiple": "Sélection multiple",
+        "intervalle": "Intervalle",
+        "image": "Image",
+        "video": "Vidéo",
+        "fichierPDF": "Fichier PDF",
+        "nombre": "Nombre",
+        "color": "Couleur"
+    }
+}
