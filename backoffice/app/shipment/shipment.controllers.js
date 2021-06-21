@@ -289,9 +289,7 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
 
         $scope.removeShipment = function (shipment) {
             if (confirm('Etes-vous sûr de vouloir supprimer cet élément ?')) {
-                Shipment.delete({id: shipment._id}, function () {
-                    $scope.shipments.splice($scope.shipments.indexOf(shipment), 1);
-                });
+                Shipment.delete({id: shipment._id});
                 toastService.toast("success", $translate.instant("global.deleteDone"));
                 $location.path("/shipments");
             }
