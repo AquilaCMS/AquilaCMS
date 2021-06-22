@@ -22,5 +22,9 @@ module.exports = {
     delivery : {
         fr : 'Livraison à domicile',
         en : 'Home delivery'
+    },
+    discount : {
+        fr : 'Remise',
+        en : 'Discount'
     }
 };

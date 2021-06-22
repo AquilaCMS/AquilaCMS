@@ -51,7 +51,7 @@ TerritoriesControllers.controller("TerritoriesCtrl", ["$scope", "TerritoriesApi"
 		$scope.getTerritories();
 
 		$scope.remove = function (id) {
-			if(confirm("Etes-vous sûr de vouloir supprimer ce territoire ?"))
+			if (confirm($translate.instant("confirm.deleteTerritory")))
 			{
 				TerritoriesApi.remove({terr: 'territory', action: id}, function (response) {
 					toastService.toast("success", $translate.instant("territories.detail.territoryDelete"));
@@ -92,7 +92,7 @@ TerritoriesControllers.controller("TerritoriesDetailCtrl", ["$scope","$routePara
 		}
 
 		$scope.remove = function (id) {
-			if (confirm("Etes-vous sûr de vouloir supprimer ce territoire ?")) {
+			if (confirm($translate.instant("confirm.deleteTerritory"))) {
 				TerritoriesApi.remove({ terr: 'territory', action: id }, function (response) {
 					toastService.toast("success", $translate.instant("territories.detail.territoryDelete"));
 					$location.path("/territories");

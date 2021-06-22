@@ -180,7 +180,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
     }
 
     $scope.remove = function (idModule, nameModule, state) {
-        var check = window.confirm('Êtes-vous sur de vouloir supprimer ce module ?');
+        var check = window.confirm($translate.instant("confirm.deleteModule"));
         if (check) {
             $scope.showModuleLoading = true;
             $http.delete(`/v2/modules/${idModule}`).then(function (response) {
@@ -215,7 +215,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
             $scope.showLoading = true;
             $http.get('/restart').catch(function(error) {
                 console.error(error);
-                toastService.toast("danger", $translate.instant("module.restartFail"));
+                toastService.toast("danger", $translate.instant("modules.restartFail"));
             });
             if (active && !deleteBool) {
                 $scope.message = `Activation du module ${nomModule} en cours, merci de patienter ...`;

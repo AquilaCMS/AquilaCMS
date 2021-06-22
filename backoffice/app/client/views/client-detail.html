@@ -385,9 +385,8 @@
                                     <span ng-if="orders.length == 0 && carts.length == 0" translate>client.detail.noOrder</span>
                                     <div ng-if="orders.length > 0">
                                         <table class="table table-bordered">
-                                            <tr ng-repeat="cart in carts | orderBy:'-updatedAt'"
-                                            ">
-                                            <td><a href="#/cart/{{cart._id}}"><span translate>client.detail.cart</span>#{{cart._id}}</a></td>
+                                            <tr ng-repeat="cart in carts | orderBy:'-updatedAt'">
+                                            <td><a href="#/cart/{{cart._id}}"><span class="linkToSmthg" translate>client.detail.cart</span><span class="linkToSmthg">#{{cart._id}}</span></a></td>
                                             <td>{{cart.priceTotal.ati | number: 2}} &euro;</td>
                                             <td>
                                                 <span class="label label-warning" style="background-color:brown" translate>client.detail.cart</span>
@@ -398,7 +397,7 @@
                                                 <td colspan="4"></td>
                                             </tr>
                                             <tr ng-repeat="order in orders | orderBy:'-createdAt'">
-                                                <td><a href="#/orders/{{order._id}}"><span translate>client.detail.commande</span>#{{order.number}}</a></td>
+                                                <td><a href="#/orders/{{order._id}}"><span class="linkToSmthg" translate>client.detail.commande</span><span class="linkToSmthg">#{{order.number}}</span></a></td>
                                                 <td>{{order.priceTotal.ati| number: 2}} &euro;</td>
                                                 <td>
                                                     <ns-status-label type="order" status="order.status"></ns-status-label>

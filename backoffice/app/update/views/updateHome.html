@@ -1,3 +1,9 @@
+<style>
+    .changes{
+        margin:10px 0px;
+    }
+</style>
+
 <ns-box data-title="update.t1" title-icon="fa fa-medkit fa-lg">
 
         <form name="form" ng-submit="validate(tab)" ng-show="!showLoading" role="form">
@@ -24,7 +30,7 @@
                                         <span style="font-size: 12px">({{local.onlineVersion}})</span>
                                     </div>
                                     <br />
-                                    <a download class="btn btn-success" ng-click="local.update()" translate>
+                                    <a download ng-if="!git.exist" class="btn btn-success" ng-click="local.update()" translate>
                                         update.download
                                     </a>
                                 </div>
@@ -36,6 +42,22 @@
 
                             <div ng-show="local.showLoading" id="overlayModule">
                                 <div class="fa fa-spinner fa-spin" style="font-size: 70px;"></div>
+                            </div>
+                            <div ng-if="git.exist && local.needUpdate">
+                                <button nf-if="git.exist" class="btn btn-success" ng-click="local.getChanges()">Mettre à jour avec Github</button>
+                                <div ng-if="git.error && git.status !== ''">
+                                    <div>
+                                        <pre>{{git.status}}</pre>
+                                    </div>
+                                </div>
+                                <div ng-if="!git.error && git.status !== ''">
+                                    <div>
+                                        <pre>{{git.status}}</pre>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-success" ng-click="validateGitUpdate(git.updateChanges)">Valider</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -60,6 +82,8 @@
 
             </ns-buttons>
         </form>
+        
+
         <div ng-show="showLoading">
             <h3>Redémarrage d'Aquila en cours ...</h3>
             <h4>Le back-office sera accessible à partir de cette adresse (vous allez être redirigé) :<br /> <i><a

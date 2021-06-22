@@ -1,5 +1,6 @@
 branches:
   only:
+  - master
   - preprod
   
 language: node_js
@@ -15,10 +16,18 @@ before_script:
   - node ./scripts/setupTestEnv.js
   - docker build -t aquilacms/aquilacms .
   - docker pull mongo
-
 script:
   - docker network create aquila
   - docker run -d --name mongo -p 27017:27017 --network=aquila mongo
   - docker exec -i mongo sh -c 'mongorestore --archive --drop' < ./test/data/test/archive
   - docker run -d --name aquilacms -p 127.0.0.1:3050:3050/tcp --network=aquila aquilacms/aquilacms
   - docker exec -i -e PORT=3051 aquilacms npm run test
+
+after_success:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $WEBHOOK_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_URL

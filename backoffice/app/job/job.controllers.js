@@ -161,7 +161,7 @@ JobControllers.controller('JobDetailCtrl', ['$scope', '$rootScope','$sce', '$q',
 
         //Suppression d'un job
         $scope.remove = function (_id) {
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche planifiée ?")) {
+            if (confirm($translate.instant("confirm.deleteCron"))) {
                 if ($scope.job.data.flag == "system") {
                     return toastService.toast("danger", $translate.instant("job.detail.errorDeleteCron"));
                 }

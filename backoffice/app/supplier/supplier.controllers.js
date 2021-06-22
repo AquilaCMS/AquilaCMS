@@ -144,7 +144,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
         };
 
         $scope.remove = function (_id) {
-            if(confirm("Etes-vous sûr de vouloir supprimer ce fournisseur ?"))
+            if (confirm($translate.instant("confirm.deleteSupplier")))
             {
                 SuppliersV2.delete({id: _id}, function () {
                     $location.path("/suppliers");

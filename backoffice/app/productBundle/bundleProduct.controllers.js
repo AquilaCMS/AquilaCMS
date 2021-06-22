@@ -281,7 +281,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         $scope.saveProduct = function (product, isQuit)
         {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             var attrsErrors = false;
@@ -406,7 +406,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
 
         $scope.removeProduct = function (_id)
         {
-            if(confirm("Etes-vous sûr de vouloir supprimer ce produit ?"))
+            if (confirm($translate.instant("confirm.deleteProduct")))
             {
                 ProductsV2.delete({id: _id}).$promise.then(function ()
                 {

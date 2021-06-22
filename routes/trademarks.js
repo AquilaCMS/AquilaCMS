@@ -9,6 +9,7 @@
 const {authentication, adminAuth} = require('../middleware/authentication');
 const trademarkServices           = require('../services/trademarks');
 
+/* eslint-disable no-use-before-define */
 module.exports = function (app) {
     app.post('/v2/trademarks', getTrademarks);
     app.post('/v2/trademark', getTrademark);
@@ -16,6 +17,7 @@ module.exports = function (app) {
     app.put('/v2/trademark', authentication, adminAuth, setTrademark);
     app.delete('/v2/trademark/:id', authentication, adminAuth, deleteTrademark);
 };
+/* eslint-enable no-use-before-define */
 
 /**
  * Function returning a trademark listing

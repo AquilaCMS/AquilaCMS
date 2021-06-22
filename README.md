@@ -1,4 +1,4 @@
-# AquilaCMS ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e711424ea4744515a340c517a8329df9)](https://www.codacy.com/gh/AquilaCMS/AquilaCMS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
+# AquilaCMS ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e711424ea4744515a340c517a8329df9)](https://www.codacy.com/gh/AquilaCMS/AquilaCMS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=preprod)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 
 The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce solution.
 
@@ -18,7 +18,7 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 
 To install the latest AquilaCMS, you need :
 
-- `node.js 12.19.0+` (tested in v12.22.1)
+- `node.js 14+` (tested in v12.17.0)
 - `mongoDB 4.2.5+`
 - `yarn 1.22.4+` package manager
 
@@ -65,7 +65,8 @@ docker run --name mongo -p 27017:27017 --network=aquila mongo
 docker run -p 127.0.0.1:3010:3010/tcp --network=aquila --name aquila aquilacms/aquilacms
 ```
 
-> N.B. : You can just launch the AquilaCMS image without creating a network if you don't want to connect to a MongoDB launched via Docker
+> - You can just launch the AquilaCMS image without creating a network if you don't want to connect to a MongoDB launched via Docker
+> - if you change the port of the docker container, remember to use the correct `PORT` env variable.
 
 At the first launch, there is an installation page. It allows you to create an `env.json` file in the config folder.
 
@@ -110,7 +111,7 @@ Find some documentation on :
 - [https://aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs), the swagger documentation
 - On a local Aquila at **`/api-docs`**
 
-YOu can also check some tutorials on :
+You can also check some tutorials on :
 
 - [Our dedicated page](https://www.aquila-cms.com/resources-documentation)
 - [Our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ)

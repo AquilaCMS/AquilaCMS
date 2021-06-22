@@ -29,6 +29,7 @@
                 "send_mail_verif": "Send verification email from my account",
                 "lastname": "Last name",
                 "firstname": "First name",
+                "birthDate": "Birthday",
                 "company": "Enterprise",
                 "validate": "Validate",
                 "preferredLanguage": "Preferred language"

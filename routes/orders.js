@@ -254,12 +254,12 @@ async function payOrder(req, res, next) {
         if (!method) {
             return next(NSErrors.PaymentModeNotAvailable);
         }
-        await Orders.findOneAndUpdate({
+
+        await orderService.paymentSuccess({
             number        : req.params.orderNumber,
             status        : 'PAYMENT_PENDING',
             'customer.id' : req.info._id
-        },
-        {
+        }, {
             $set : {
                 status  : 'PAYMENT_RECEIPT_PENDING',
                 payment : [createPayment(order, method)]
@@ -270,23 +270,7 @@ async function payOrder(req, res, next) {
             await Cart.deleteOne({_id: order.cartId});
         }
 
-        order.payment = [createPayment(order, method)];
-
-        await order.save();
-
-        try {
-            // We send the default language to the company
-            await ServiceMail.sendMailOrderToCompany(order._id);
-        } catch (err) {
-            console.error('payOrder sendMailOrderToCompany ->', err);
-        }
-        try {
-            await ServiceMail.sendMailOrderToClient(order._id, lang);
-        } catch (err) {
-            console.error('payOrder sendMailOrderToClient ->', err);
-        }
-
-        return res.json(order);
+        return res.json(await Orders.findOne({_id: order._id}));
     } catch (err) {
         return next(err);
     }

@@ -135,7 +135,8 @@ class AquilaApp extends App {
                                 type: 1,
                                 addresses: 1,
                                 delivery_address: 1,
-                                billing_address: 1
+                                billing_address: 1,
+                                birthDate: 1
                             }
                         };
                         user = await getUser(user._id, PostBody, bundle.ctx);

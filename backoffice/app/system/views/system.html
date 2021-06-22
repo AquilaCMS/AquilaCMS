@@ -1,5 +1,9 @@
 <ns-box data-title="system.environment.t1" title-icon="fa fa-server fa-lg">
-    <form name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)" role="form">
+
+    <div ng-show="showLoading">
+        <h1 translate>system.environment.other.restartProgress</h1>
+    </div>
+    <form ng-show='!showLoading' name="form" ng-submit="validate(tab.fields, tab.id, local.setAttrCode, attributes)"role="form">
         <ns-buttons hide-save-and-quit="true" disable-save="disableSave" return-path="/" form="form">
             <div class="scrollmenu">
                 <ul class="nav nav-tabs">
@@ -13,8 +17,11 @@
                 <div id="security" class="tab-pane fade in active">
                     <div>
                         <h3 translate>system.environment.security.contentPolicy.title</h3>
-                        <div class="form-group">
-                            <ns-switch ng-model="system.environment.contentSecurityPolicy.active" yes-value="Oui" no-value="Non" name="contentPolicyActive"></ns-switch>
+                        <div ng-if="nsswitch" class="form-group">
+                            <ns-switch ng-model="system.environment.contentSecurityPolicy.active" yes-value="Oui" no-value="Non" name="contentPolicyActive" ng-change="switchCsp(system.environment.contentSecurityPolicy.active)" ></ns-switch>
+                        </div>
+                        <div ng-if="!nsswitch" class="form-group">
+                            <ns-switch ng-model="system.environment.contentSecurityPolicy.active" yes-value="Oui" no-value="Non" name="contentPolicyActive" ng-change="switchCsp(system.environment.contentSecurityPolicy.active)" ></ns-switch>
                         </div>
                         <div class="form-group">
                             <table class="table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable">
@@ -131,7 +138,7 @@
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.logTitle</label>
-                        <textarea rows="8" class="form-control" ng-model="log.log" readonly></textarea>
+                        <textarea rows="20" class="form-control" ng-model="log.log" readonly style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.errorFileTitle</label>
@@ -139,7 +146,7 @@
                     </div>
                     <div class="form-group">
                         <label translate>system.environment.log.errorTitle</label><br/>
-                        <textarea rows="8" class="form-control" ng-change="zaer" ng-model="log.error" readonly></textarea>
+                        <textarea rows="20" class="form-control" ng-change="zaer" ng-model="log.error" readonly style="font-size: 10px;line-height: 13px;"></textarea>
                     </div>
                 </div>
                 <!--other div here-->

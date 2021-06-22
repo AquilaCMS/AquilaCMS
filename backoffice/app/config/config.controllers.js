@@ -108,7 +108,7 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
 
         $scope.$watch("config.environment.mailUser", function (newValue, oldValue) {
             if (newValue !== undefined && newValue.indexOf("gmail") > -1) {
-                $scope.messageMail = " ! Vous devez autoriser le paramètre \"Autoriser les applications moins sécurisées\" <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>ici</a> pour utiliser Gmail !";
+                $scope.messageMail = $translate.instant("config.environment.mailUserMsg");
                 $scope.messageMail = $sce.trustAsHtml($scope.messageMail);
             } else {
                 $scope.messageMail = "";

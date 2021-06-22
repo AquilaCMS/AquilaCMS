@@ -33,15 +33,28 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             return ;
         }
 
+        $scope.deleteImg = function () {
+            $scope.category.img = null;
+            $scope.category.alt = null;
+            CategoryV2.save($scope.category, function (res) {
+                toastService.toast("success", $translate.instant("category.list.pictureDelete"));
+            });
+        }
+
+        $scope.close = function (cat) {
+            toastService.toast("success", $translate.instant('gallery.item.updated'));
+            $scope.getCategory(cat);
+        };
+
         $scope.return = function () {
             if ($scope.isSelected === true) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             if ($scope.form.$dirty) {
                 if (
                     confirm(
-                        "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
+                        $translate.instant("confirm.changesNotSaved")
                     )
                 ) {
                     $location.path($scope.returnPath);
@@ -496,15 +509,16 @@ CategoryControllers.controller("CategoryDetailCtrl", [
             }
             if(typeof isQuit !== "undefined" && isQuit){
                 $scope.editCat = false;
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
+                $location.path('/categories');
                 //don't work
+                // if (!$scope.$$phase) {
+                //     $scope.$apply();
+                // }
             }
         };
 
         $scope.removeMenu = function () {
-            if(confirm("Etes-vous sûr de vouloir supprimer cette catégorie et tous ses enfants ?"))
+            if (confirm($translate.instant("confirm.deleteCategory")))
             {
                 CategoryV2.delete({ id: $scope.category._id }).$promise.then(
                     function ()
@@ -701,19 +715,7 @@ CategoryControllers.controller("CategoryListCtrl", [
             return arayOfCat;
         }
 
-        $scope.deleteImg = function() {
-            $scope.category.img = null;
-            $scope.category.alt = null;
-            CategoryV2.save($scope.category, function (res) {
-                toastService.toast("success", $translate.instant("category.list.pictureDelete"));
-            });
-        }
-
-
-        $scope.close = function (cat) {
-            toastService.toast("success", $translate.instant('gallery.item.updated'));
-            $scope.getCategory(cat);
-        };
+        
 
         $scope.listChildren = function (cat) {
             if(typeof cat.collapsed === "undefined"){
@@ -969,5 +971,86 @@ CategoryControllers.controller("CategoryNewCtrl", [
         $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
+    }
+]);
+
+/*
+    Controller for the NscategoryList directives
+*/
+CategoryControllers.controller("NsCategoryListController", [
+    "$scope", "CategoryV2", "$rootScope",
+    function ($scope, CategoryV2, $rootScope) {
+        
+        $scope.lang = $rootScope.languages.find(function (lang) {
+            return lang.defaultLanguage;
+        }).code;
+
+        $scope.getCategories = function() {
+            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                $scope.categories = response.datas;
+                //we expand all the categories
+                $scope.expandAll();
+            });
+        }
+        
+        $scope.catIsDisabled = function (node){
+            if(typeof $scope.categoryIsDisabled !== "undefined" && $scope.categoryIsDisabled !== null){
+                return $scope.categoryIsDisabled(node);
+            } else {
+                console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryDisabled'");
+            }
+        };
+
+        $scope.catOnClick = function (node){
+            if(typeof $scope.categoryOnClick !== "undefined" && $scope.categoryOnClick !== null){
+                return $scope.categoryOnClick(node);
+            } else {
+                //console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryOnClick'");
+            }
+        };
+
+        $scope.catIsChecked = function (node){
+            if(typeof $scope.categoryIsChecked !== "undefined" && $scope.categoryIsChecked !== null){
+                return $scope.categoryIsChecked(node);
+            } else {
+                //console.log("NsCategoryList : Helper -> There aren't callBack Function for 'categoryClick'");
+            }
+        };
+
+        $scope.expandOneCat = function (oneCat) {
+            if (typeof oneCat.children === "undefined") {
+                oneCat.children = [];
+            }
+            if (oneCat.children.length > 0) {
+                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 99 } }, function (response) {
+                    oneCat.nodes = response.datas || [];
+                    for (let oneNode of oneCat.nodes) {
+                        $scope.expandOneCat(oneNode);
+                    }
+                    $scope.$broadcast('angular-ui-tree:expand-all');
+                });
+            } else {
+                oneCat.nodes = [];
+            }
+        }
+
+        $scope.expandAll = function () {
+            for (let oneCat of $scope.categories) {
+                $scope.expandOneCat(oneCat)
+            }
+        }
+
+        $scope.listChildren = function (cat, scope) {
+            for(let oneNode of cat.nodes){
+                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
+                    oneNode.nodes = response.datas;
+                });
+            }
+            scope.toggle();
+        };
+
+
+        
+        $scope.getCategories();
     }
 ]);

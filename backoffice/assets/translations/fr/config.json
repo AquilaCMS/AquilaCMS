@@ -3,6 +3,7 @@
         "t1": "Paramètres serveur",
         "t2": "Attention !",
         "prefixURL": "Attention ! Modifier ce champ redemarrera l'application, l'ancienne URL ne sera plus accessible !",
+        "mailUserMsg": " ! Vous devez autoriser le paramètre 'Autoriser les applications moins sécurisées' <a style='color: #2a6496;' target='_blank' href='https://www.google.com/settings/security/lesssecureapps'>ici</a> pour utiliser Gmail !",
         "sendMail": "Envoyer",
         "sendMailTest": "Envoyer un Email de Test",
         "test": "Tester",

@@ -81,7 +81,9 @@ const manageExceptionsRoutes = async (req, res, next) => {
             }
         }
     } else {
-        require('../services/stats').addUserVisitReq(req);
+        if (!global.installMode) {
+            require('../services/stats').addUserVisitReq(req);
+        }
 
         // We add the port to req so that it is available in the req of the getInitialProps of next
         req.port = global.port;

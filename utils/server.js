@@ -154,7 +154,8 @@ const controlNodeVersion = async () => {
 const logVersion = async () => {
     console.log(`%s@@ Mongoose version : ${mongoose.version}%s`, '\x1b[32m', '\x1b[0m');
     console.log(`%s@@ NodeJS version : ${process.version}%s`, '\x1b[32m', '\x1b[0m');
-    console.log(`%s@@ Environment : ${getEnv('AQUILA_ENV')}%s`, '\x1b[32m', '\x1b[0m');
+    console.log(`%s@@ NODE_ENV : ${getEnv('NODE_ENV')}%s`, '\x1b[32m', '\x1b[0m');
+    console.log(`%s@@ AQUILA_ENV : ${getEnv('AQUILA_ENV')}%s`, '\x1b[32m', '\x1b[0m');
     if (global.envFile.db) {
         console.log(`%s@@ Database : ${global.envFile.db}%s`, '\x1b[32m', '\x1b[0m');
     }

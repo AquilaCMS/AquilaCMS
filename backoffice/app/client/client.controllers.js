@@ -8,9 +8,33 @@ ClientControllers.controller("ClientCtrl", [
         $scope.page = 1;
         $scope.nbItemsPerPage = 10;
         $scope.maxSize = 5;
-        $scope.filter = {};
-        $scope.valeurTri = -1;
-        $scope.tri = {createdAt : -1}
+        $scope.filter = {
+            "company": "",
+            "email": "",
+            "firstname": "",
+            "lastname": "",
+            "min_createdAt":null,
+        };
+
+        if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
+            const pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+            for (const key in pageAdmin.search) {
+                if(key !== "tri"){
+                    $scope.filter[key] = pageAdmin.search[key];
+                }
+            }
+            if(pageAdmin.page){
+                $scope.page = pageAdmin.page;
+            }
+            if (pageAdmin.search && pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
+                $scope.tri = {};
+                $scope.valeurTri = pageAdmin.search.tri.value;
+                $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
+            }else{
+                $scope.valeurTri = -1;
+                $scope.tri = { createdAt: -1 }
+            }
+        }
         
         function getFilter(){
             let filter = {};
@@ -42,8 +66,30 @@ ClientControllers.controller("ClientCtrl", [
                 }
             }
             filter["isAdmin"] = false;
+            setPageAdmin();
             return filter;
         }
+
+        function setPageAdmin(){
+            const search = {};
+            let pageAdmin = {};
+            if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
+                pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
+            }
+            for (const key in $scope.filter) {
+                if ($scope.filter[key] != "" && $scope.filter[key] != null) {
+                    search[key] = $scope.filter[key];
+                }
+            }
+            if ($scope.tri) {
+                search.tri = {};
+                search.tri.field = Object.keys($scope.tri)[0];
+                search.tri.value = $scope.valeurTri;
+                
+            }
+            window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page: $scope.page, search }));
+        }
+
         $scope.sortSearch = function(name, pageNumber){
             if($scope.valeurTri == 1){
                 $scope.valeurTri = -1;
@@ -74,8 +120,6 @@ ClientControllers.controller("ClientCtrl", [
 
 
         $scope.onClientsPageChange = function (page) {
-
-            const search = $scope.query;
             let pageAdmin = { location: "clients", page: 1 };
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
                 pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
@@ -90,7 +134,6 @@ ClientControllers.controller("ClientCtrl", [
                     $scope.query = pageAdmin.search;
                 }
             } else {
-                window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "clients", page, search }));
                 $scope.page = page;
                 $scope.currentClientsPage = page;
                 window.scrollTo(0, 0);
@@ -115,7 +158,7 @@ ClientControllers.controller("ClientCtrl", [
         };
 
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
-            $scope.onClientsPageChange();
+            $scope.onClientsPageChange($scope.page);
         }, 100);
 
         $scope.goToClientDetails = function (clientId) {
@@ -371,7 +414,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         };
 
         $scope.remove = function () {
-            if (confirm("Etes-vous sûr de vouloir supprimer ce client ? Ses commandes seront également supprimées !")) {
+            if (confirm($translate.instant("confirm.deleteCustomer"))) {
                 ClientV2.delete({type: 'user', id: $scope.client._id}, function (response) {
                     toastService.toast("success", $translate.instant("client.detail.customerDeleted"));
                     $location.path("/clients");

@@ -1,7 +1,6 @@
 const i18next = require('i18next');
 const moment = require('moment');
 const XHR = require('i18next-xhr-backend');
-const langs = require('../../config/dynamic_langs');
 const loadAssets = require('./lib/loadAssets');
 
 const options = {
@@ -53,6 +52,13 @@ const getInitialProps =  (req, namespaces) => {
     namespaces = namespaces.concat(['common']);
     req.i18n.toJSON = () => null; // do not serialize i18next instance and send to client
 
+    let langs = [];
+    try {
+        langs = require('../../config/dynamic_langs');
+    } catch(ee) {
+        langs = [{code: 'en', defaultLanguage: true}] ;
+        console.error('/config/dynamic_langs is missing ! Rerun installer or manage language in backoffice.');
+    }
     let lang = langs.find((element) => element.defaultLanguage === true).code;
     const regex = new RegExp(`^/(${Object.keys(loadAssets.assets).join('|')})/?`, 'i');
     const selLang = req.path.match(regex);
