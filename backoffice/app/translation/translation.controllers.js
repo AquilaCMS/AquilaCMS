@@ -1,9 +1,8 @@
 var TranslationControllers = angular.module('aq.translation.controllers', []);
 
 TranslationControllers.controller('LanguagesCtrl',
-    ['$scope', 'LanguagesApiV2', '$modal', 'toastService',
-    function ($scope, LanguagesApiV2, $modal, toastService) {
-        //console.log('test')
+    ['$scope', 'LanguagesApiV2', '$modal', 'toastService','$translate',
+        function ($scope, LanguagesApiV2, $modal, toastService, $translate) {
         $scope.filter = {};
 
         $scope.getLanguages = function() {

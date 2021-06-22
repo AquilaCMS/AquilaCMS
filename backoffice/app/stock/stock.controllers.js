@@ -106,7 +106,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         };
     }
 ]).controller("StockLabelCtrl", [
-    "$scope", "$modalInstance", "label", "$rootScope", function ($scope, $modalInstance, label, $rootScope)
+    "$scope", "$modalInstance", "label", "$rootScope", "$translate", function ($scope, $modalInstance, label, $rootScope, $translate)
     {
         $scope.isEditMode = false;
         $scope.label = {code: "", translation: {}};
@@ -140,7 +140,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         };
     }
 ]).controller("StockTvaCtrl", [
-    "$scope", "$modalInstance", "tva", function ($scope, $modalInstance, tva) {
+    "$scope", "$modalInstance", "tva", "$translate", function ($scope, $modalInstance, tva, $translate) {
         $scope.isEditMode = false;
         $scope.tva = {};
 

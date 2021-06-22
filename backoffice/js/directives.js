@@ -622,7 +622,8 @@ adminCatagenDirectives.directive("nsReturnButton", function ()
         controller: [
             "$scope",
             "$location",
-            function ($scope, $location)
+            "$translate",
+            function ($scope, $location, $translate)
             {
                 $scope.return = function ()
                 {
@@ -1203,7 +1204,8 @@ adminCatagenDirectives
     .controller("nsDataTableCtrl", [
         "$scope",
         "$filter",
-        function ($scope, $filter)
+        "$translate",
+        function ($scope, $filter, $translate)
         {
             $scope.sort = {
                 type: $scope.config.columns[0].field,
