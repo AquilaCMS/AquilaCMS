@@ -84,6 +84,12 @@ ProductControllers.controller("ProductListCtrl", [
             });
         };
 
+        $scope.selectNewLang = function (event){
+            if(event && event.filterLang) {
+                $scope.filterLang = event.filterLang;
+            }
+        }
+
         $scope.getProducts = function (page) {
             $scope.showLoader = true;
             const search = $scope.searchObj;
@@ -104,13 +110,16 @@ ProductControllers.controller("ProductListCtrl", [
 
                 if(pageAdmin.search !== undefined && pageAdmin.search !== null) {
                     $scope.searchObj.translation = pageAdmin.search.translation;
+                    if (pageAdmin.search.active){
+                        $scope.searchObj.active = pageAdmin.search.active;
+                    }
+                    if (pageAdmin.search._visible) {
+                        $scope.searchObj._visible = pageAdmin.search._visible;
+                    }
                 }
-                if (pageAdmin.filters !== undefined && pageAdmin.filters !== null) {
-                    $scope.filtersAttribs = pageAdmin.filters;
+                if(pageAdmin.filter !== undefined && pageAdmin.filter !== null) {
+                    $scope.filter = pageAdmin.filter;
                 }
-                // if(pageAdmin.filter !== undefined && pageAdmin.filter !== null) {
-                //     $scope.filter = pageAdmin.filter;
-                // }
             } else {
                 window.localStorage.setItem("pageAdmin", JSON.stringify({location: "products", page, search, filter}));
                 $scope.page = page;
@@ -371,15 +380,6 @@ ProductControllers.controller("nsProductCategories", [
 
             });
         };
-
-        $scope.getCategories = function() {
-            CategoryV2.list({PostBody: {filter: {['ancestors.0']: {$exists: false}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response)
-            {
-                $scope.categories = response.datas;
-                //we expand all the categories
-                $scope.expandAll();
-            });
-        }
         
         $scope.catDisabled = function (node){
             let final = false;
@@ -410,42 +410,5 @@ ProductControllers.controller("nsProductCategories", [
             }
             return final;
         };
-
-        $scope.expandOneCat = function (oneCat) {
-            if (typeof oneCat.children === "undefined") {
-                oneCat.children = [];
-            }
-            if (oneCat.children.length > 0) {
-                CategoryV2.list({ PostBody: { filter: { _id: { $in: oneCat.children.map((child) => child._id) } }, populate: ["children"], sort: { displayOrder: 1 }, structure: '*', limit: 99 } }, function (response) {
-                    oneCat.nodes = response.datas || [];
-                    for (let oneNode of oneCat.nodes) {
-                        $scope.expandOneCat(oneNode);
-                    }
-                    $scope.$broadcast('angular-ui-tree:expand-all');
-                });
-            } else {
-                oneCat.nodes = [];
-            }
-        }
-
-
-        $scope.expandAll = function () {
-            for (let oneCat of $scope.categories) {
-                $scope.expandOneCat(oneCat)
-            }
-        }
-
-        $scope.listChildren = function (cat, scope) {
-            for(let oneNode of cat.nodes){
-                CategoryV2.list({PostBody: {filter: {_id: {$in: oneNode.children.map((child) => child._id)}}, populate: ["children"], sort: {displayOrder: 1}, structure: '*', limit: 99}}, function (response) {
-                    oneNode.nodes = response.datas;
-                });
-            }
-            scope.toggle();
-        };
-
-
-        
-        $scope.getCategories();
     }
 ]);

@@ -543,7 +543,7 @@ PromoControllers.controller("PromoDetailCtrl", [
 
         // Suppression d'une promo
         $scope.remove = function (_id) {
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette promotion ?")) {
+            if (confirm($translate.instant("confirm.deletePromotion"))) {
                 let actionPromises = [];
 
                 Promise.all(actionPromises).then(function () {

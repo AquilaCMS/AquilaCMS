@@ -45,7 +45,7 @@ TrademarkControllers.controller('TrademarkDetailCtrl', ['$scope', '$location', '
     };
     
     $scope.removeTrademark = function(trademark){
-        if(confirm("Voulez-vous supprimer cette marque ?")){
+        if (confirm($translate.instant("confirm.deleteTrademark"))){
             $location.path("/trademarks");
             toastService.toast("success", $translate.instant("global.deleteDone"));
             return TrademarksV2.delete({id: trademark._id}).$promise;

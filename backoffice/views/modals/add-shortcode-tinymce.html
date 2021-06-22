@@ -42,12 +42,20 @@
         tinymce.modal.addShortcode
     </div>
     <div class="modal-body">
+        <div class="row" style="    margin: 0 20px 20px 20px;">
+            <div class="pull-right" style="width:30%">
+                <div class="dataTables_filter">
+                    <input group="search" ng-model="search" ng-change="sortShortCodes(search)" class="searchBarTerm" name="q"
+                        id="q" value="" placeholder="{{'static.list.search' | translate}}" style="border:1px solid #9DBFAF;border-radius:5px;" >
+                </div>
+            </div>
+        </div>
         <div class="row" style="overflow:scroll;overflow-x: hidden;padding:10px 20px;box-shadow: 0px 0px 10px 3px gray;margin:0 20px; height: 70vh;">
         <!-- <div class="row" style="overflow:scroll; height:400px;overflow-x: hidden;padding:10px 20px;box-shadow: 0 7px 7px -2px gray;"> -->
             <div ng-if="!selected">
                
                 <div ng-repeat="shortcode in shortcodes | orderBy:'-weight'">
-                    <div class="col-md-4 shortcode" style="padding:10px;" ng-click="selectShortcode(shortcode)">
+                    <div class="col-md-4 shortcode" style="padding:10px;" ng-click="selectShortcode(shortcode)" ng-show="shortcode.sort">
                         <div style="border:2px solid black;border-radius:8px;padding:10px;height:170px">
                             <label>{{shortcode.translation[lang].name}}</label>
                             <pre><{{shortcode.tag}}/></pre>

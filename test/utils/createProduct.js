@@ -2,7 +2,7 @@ const faker      = require('faker');
 const {Products} = require('../../orm/models');
 
 const createProduct = (params = {code: null, name: null}) => {
-    const {code, name}      = params;
+    const {code, name, ati} = params;
     const product           = new Products();
     product.active          = true;
     product.associated_prds = [];
@@ -19,7 +19,7 @@ const createProduct = (params = {code: null, name: null}) => {
             normal : 0
         },
         ati : {
-            normal : 0
+            normal : ati || 0
         },
         tax : 0
     };

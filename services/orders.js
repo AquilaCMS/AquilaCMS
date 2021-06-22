@@ -14,7 +14,8 @@ const {
     Products,
     PaymentMethods,
     Territory,
-    Bills
+    Bills,
+    Promo
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const aquilaEvents     = require('../utils/aquilaEvents');
@@ -155,6 +156,30 @@ const paymentSuccess = async (query, updateObject) => {
                         }
                     }
                 }
+            }
+        }
+        // If the order has a discount of type "promo code"
+        if (_order.promos && _order.promos.length && _order.promos[0].promoCodeId) {
+            try {
+            // then we increase the number of uses of this promo
+                await Promo.updateOne({}, {
+                    $inc : {'codes.$[code].used': 1}
+                }, {
+                    arrayFilters : [{'code._id': _order.promos[0].promoCodeId}]
+                });
+                // then we must also update the number of unique users who have used this "promo code"
+                const result = await Orders.distinct('customer.id', {
+                    'promos.promoCodeId' : _order.promos[0].promoCodeId
+                });
+                await Promo.updateOne({}, {
+                    $set : {'codes.$[code].client_used': result.length}
+                }, {
+                    arrayFilters : [{'code._id': _order.promos[0].promoCodeId}]
+                });
+            // TODO P6 : Decrease the stock of the product offered
+            // if (_cart.promos[0].gifts.length)
+            } catch (err) {
+                console.error(err);
             }
         }
         aquilaEvents.emit('aqPaymentReturn', _order._id);

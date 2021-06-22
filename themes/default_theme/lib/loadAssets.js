@@ -3,10 +3,16 @@
  */
 
 const { assets, mergeRecursive } = require('aqlrc');
-const langs = require('../../../config/dynamic_langs');
 
 const namespaces = ['account', 'addresses', 'cart', 'category', 'delivery', 'common', 'login', 'payment', 'product-card', 'product', 'resetpass', 'static', 'success'];
 
+let langs = [];
+try {
+    langs = require('../../../config/dynamic_langs');
+} catch(ee) {
+    langs = [{code: 'en', defaultLanguage: true}];
+    console.error('/config/dynamic_langs is missing ! Rerun installer or manage language in backoffice.');
+}
 const theme_assets = {};
 langs.map((l) => {
     theme_assets[l.code] = {};

@@ -106,7 +106,7 @@ const translateList = async () => {
 };
 
 /**
- * Create languages in file "config/dynamic_langs.js"
+ *
  */
 async function getTranslatePath(lang) {
     return `./themes/${global.envConfig.environment.currentTheme}/assets/i18n/${lang}`;

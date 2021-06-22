@@ -12,7 +12,8 @@
             "contentPolicy": {
                 "title": "Politique de contenu",
                 "delAndAdd": "Supprimer/ajouter",
-                "value": "Valeur"
+                "value": "Valeur",
+                "confirm":"Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés"
             }
         },
         "nextjs":{

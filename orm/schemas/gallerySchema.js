@@ -31,20 +31,20 @@ const GallerySchema = new Schema({
     id         : false
 });
 
-async function preUpdates(that) {
+GallerySchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('gallery', that._id, that.code);
-}
+};
 
-GallerySchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+GallerySchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
 });
 
-GallerySchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+GallerySchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
 });
 
 GallerySchema.pre('save', async function (next) {
-    await preUpdates(this);
+    await utilsDatabase.preUpdates(this, next, GallerySchema);
     next();
 });
 

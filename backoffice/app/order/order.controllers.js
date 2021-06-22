@@ -110,9 +110,10 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2)
     {
+        $scope.customer = {};
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
@@ -173,23 +174,35 @@ OrderControllers.controller("OrderDetailCtrl", [
             Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
             {
                 $scope.order = response.datas[0];
+                if($scope.order && $scope.order.customer.id){
+                    // we get the client informations to check to email and to check is user exists
+                    ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
+                        if(typeof responseUserRequest.PostBody !== "undefined") {
+                            // if there are a PostBody, there is not content
+                            $scope.customer = null;
+                        } else {
+                            $scope.customer = responseUserRequest;
+                        }
+                    }, function(error){
+                        console.log(error);
+                    });
+                }
                 $scope.status = $scope.order.status;
                 if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
-                    key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                     $scope.orderStatus.splice(key, 1);
                 }
-                Object.keys($scope.order.addresses).forEach(function (key)
-                {
-                    ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[key].isoCountryCode}}}, function (response)
-                    {
-                        // On récupére le nom du pays
-                        $scope.order.addresses[key].country = response.name;
-                    }, function (error)
-                    {
-                        console.error("Impossible de récupérer le pays des clients", error);
-                        // si une erreur se produit on met le code iso du pays dans country
-                        $scope.order.addresses[key].country = $scope.order.addresses[key].isoCountryCode;
-                    });
+                Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
+                    if(typeof $scope.order.addresses[typeNameAdress].country === "undefined" || $scope.order.addresses[typeNameAdress].country === null) {
+                        ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[typeNameAdress].isoCountryCode}}}, function (response) {
+                            // On récupére le nom du pays
+                            $scope.order.addresses[typeNameAdress].country = response.translation[$scope.defaultLang].name;
+                        }, function (error) {
+                            console.error("Impossible de récupérer le pays des clients", error);
+                            // si une erreur se produit on met le code iso du pays dans country
+                            $scope.order.addresses[typeNameAdress].country = $scope.order.addresses[typeNameAdress].isoCountryCode;
+                        });
+                    }
                 });
             }, function (error)
             {
@@ -389,7 +402,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.status = $scope.order.status;
                         });
                         if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', 'FINISHED']).includes($scope.order.status)) {
-                            key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
                             $scope.orderStatus.splice(key, 1);
                         }
                         $scope.editStatus = false;
@@ -453,14 +466,15 @@ OrderControllers.controller("OrderDetailCtrl", [
 
         $scope.delPkg = function (pkg)
         {
-            Orders.delPkg({order: $scope.order._id, package: pkg}, function (res)
-            {
-                $scope.order = res;
-            }, function (err)
-            {
-                console.error(err.data);
-                toastService.toast("danger", $translate.instant("order.detail.removePackage"));
-            });
+            if (confirm($translate.instant("confirm.deletePackageOrder"))) {
+                Orders.delPkg({ order: $scope.order._id, package: pkg }, function (res) {
+                    $scope.order = res;
+                    toastService.toast("success", $translate.instant("order.detail.removedPackage"));
+                }, function (err) {
+                    console.error(err.data);
+                    toastService.toast("danger", $translate.instant("order.detail.removePackage"));
+                });
+            }
         };
 
         function getQtyShipped(i)
@@ -518,6 +532,9 @@ OrderControllers.controller("OrderDetailCtrl", [
             }, function (response) {
                 $scope.order = response
                 $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+            }, function (error) {
+                toastService.toast("danger", $translate.instant("global.standardError"));
+                console.error(error);
             });
         }
 

@@ -4,6 +4,12 @@
     display: flex;
 }
 
+.linkToSmthg {
+    text-decoration:underline;
+    color:blue;
+    cursor:pointer;
+}
+
 .searchBarTerm{
     width: 100%;
     height: 32px;

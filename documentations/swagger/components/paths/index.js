@@ -13,7 +13,9 @@ const shipments   = require('./shipments.json');
 const news        = require('./news.json');
 const statics     = require('./statics.json');
 const statistics  = require('./statistics.json');
+const suppliers   = require('./suppliers.json');
 const territories = require('./territories.json');
+const trademarks  = require('./trademarks.json');
 const themeConfig = require('./themeConfig.json');
 const users       = require('./users.json');
 
@@ -33,7 +35,9 @@ module.exports = {
     ...shipments,
     ...statics,
     ...statistics,
+    ...suppliers,
     ...territories,
+    ...trademarks,
     ...themeConfig,
     ...users
 };

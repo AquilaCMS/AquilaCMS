@@ -188,7 +188,7 @@ const deleteCategory = async (id) => {
 
 const getCategoryChild = async (code, childConds, user = null) => {
     const queryCondition = {
-        ancestors : {$size: 0},
+        // ancestors : {$size: 0},
         code
     };
 

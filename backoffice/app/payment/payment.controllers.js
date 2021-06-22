@@ -1,7 +1,8 @@
 const PaymentControllers = angular.module("aq.payment.controllers", []);
 
 PaymentControllers.controller("PaymentListCtrl", [
-    "$scope", "$modal", "$filter", "Payment", "NSConstants", "$http", function ($scope, $modal, $filter, Payment, NSConstants, $http) {
+    "$scope", "$modal", "$filter", "Payment", "NSConstants", "$http", "Orders", "$location", "toastService", "$translate",
+    function ($scope, $modal, $filter, Payment, NSConstants, $http, Orders, $location, toastService, $translate) {
         $scope.paymentStatus = NSConstants.paymentStatus;
         $scope.listPayment = [];
         $scope.currentPage = 1;
@@ -105,6 +106,22 @@ PaymentControllers.controller("PaymentListCtrl", [
         setTimeout(function () { //Obligé de timer sinon la requete s'effectue deux fois à cause du on-select-page du html
             $scope.getPayments();
         }, 100);
+
+        $scope.goToOrder = function(number){
+            Orders.get({
+                PostBody: {
+                    filter: {
+                        number: number
+                    }
+                },
+                limit: 1
+            }, function (response) {
+                $location.path(`/orders/${response._id}`);
+            }, function(error) {
+                toastService.toast("danger", $translate.instant("global.standardError"));
+                console.error(error);
+            });
+        };
 
     }
 ]);

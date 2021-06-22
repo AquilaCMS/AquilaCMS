@@ -40,21 +40,20 @@ SuppliersSchema.statics.insertIfNotExists = async function (supplierName, cb) {
     }
 };
 
-async function preUpdates(that) {
+SuppliersSchema.statics.checkCode = async function (that) {
     await utilsDatabase.checkCode('suppliers', that._id, that.code);
-}
+};
 
-SuppliersSchema.pre('updateOne', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+SuppliersSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this, next, SuppliersSchema);
 });
 
-SuppliersSchema.pre('findOneAndUpdate', async function () {
-    await preUpdates(this._update.$set ? this._update.$set : this._update);
+SuppliersSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this, next, SuppliersSchema);
 });
 
 SuppliersSchema.pre('save', async function (next) {
-    await preUpdates(this);
-    next();
+    await utilsDatabase.preUpdates(this, next, SuppliersSchema);
 });
 
 module.exports = SuppliersSchema;
