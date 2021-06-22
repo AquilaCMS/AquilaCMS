@@ -161,7 +161,7 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
         };
 
         $scope.delete = function () {
-            if (confirm("Êtes-vous sûr de vouloir supprimer ce bloc CMS ?")) {
+            if (confirm($translate.instant("confirm.deleteBlockCms"))) {
                 CmsBlocksApi.delete({code: $scope.cmsBlock.code}, function (response) {
                     toastService.toast("success", $translate.instant("cmsBlocks.detail.blocDeleted"));
                     $location.path("/cmsBlocks");

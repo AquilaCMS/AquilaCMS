@@ -292,7 +292,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         });
 
         $scope.removePage = function (staticPage) {
-            if (confirm("Etes-vous sûr de vouloir supprimer cette page ?")) {
+            if (confirm($translate.instant("confirm.deletePage"))) {
                 StaticV2.delete({id: $scope.static._id}, function(msg) {
                     if (msg.status) {
                         $scope.statics.splice($scope.statics.indexOf(staticPage), 1);

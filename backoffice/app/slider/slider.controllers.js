@@ -121,7 +121,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
         $scope.save = function (quit)
         {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             SliderService.save($scope.slider, function (res)
@@ -154,7 +154,7 @@ angular.module("aq.slider.controllers", []).controller("SliderListCtrl", [
 
         $scope.delete = function ()
         {
-            if(confirm("Êtes-vous sûr de vouloir supprimer ce carousel ?")){
+            if (confirm($translate.instant("confirm.deleteCarousel"))){
                 SliderService.delete({id: $scope.slider._id}, function ()
                 {
                     toastService.toast("success", $translate.instant("global.deleteDone"));

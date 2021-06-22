@@ -48,13 +48,13 @@ CategoryControllers.controller("CategoryDetailCtrl", [
 
         $scope.return = function () {
             if ($scope.isSelected === true) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             if ($scope.form.$dirty) {
                 if (
                     confirm(
-                        "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
+                        $translate.instant("confirm.changesNotSaved")
                     )
                 ) {
                     $location.path($scope.returnPath);
@@ -518,7 +518,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
         };
 
         $scope.removeMenu = function () {
-            if(confirm("Etes-vous sûr de vouloir supprimer cette catégorie et tous ses enfants ?"))
+            if (confirm($translate.instant("confirm.deleteCategory")))
             {
                 CategoryV2.delete({ id: $scope.category._id }).$promise.then(
                     function ()

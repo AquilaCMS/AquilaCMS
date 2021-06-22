@@ -204,7 +204,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
 
         $scope.saveProduct = function (product, isQuit) {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             let attrsErrors = false;
@@ -284,7 +284,7 @@ SimpleProductControllers.controller("SimpleProductCtrl", [
         };
 
         $scope.removeProduct = function (_id) {
-            if (confirm("Etes-vous sûr de vouloir supprimer ce produit ?")) {
+            if (confirm($translate.instant("confirm.deleteProduct"))) {
                 ProductsV2.delete({id: _id}, function () {
                     toastService.toast("success", $translate.instant("simple.deleteDone"));
                     $location.path("/products");
