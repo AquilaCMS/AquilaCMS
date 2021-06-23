@@ -10,6 +10,7 @@ const AdmZip       = require('adm-zip');
 const moment       = require('moment');
 const path         = require('path');
 const mongoose     = require('mongoose');
+const ObjectID     = require('mongodb').ObjectID;
 const {
     Medias,
     Products,
@@ -185,83 +186,91 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     } else {
         fileNameOption = '';
     }
-    switch (type) {
-    // if a product image is requested
-    case 'products':
-        const product = await Products.findOne({'images._id': _id});
-        imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
-        // we get the name of the file
-        fileName      = path.basename(imageObj.url);
-        relativePath  = imageObj.url;
-        filePath      = path.join(_path, imageObj.url);
-        fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
-        filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
-        await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
-        break;
-        // if a media is requested
-    case 'medias':
-        imageObj      = await Medias.findOne({_id});
-        fileName      = path.basename(imageObj.link, `.${extension}`);
-        relativePath  = imageObj.link;
-        filePath      = path.join(_path, imageObj.link);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
-        filePathCache = path.join(cacheFolder, 'medias', fileName);
-        await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
-        break;
-    case 'slider':
-    case 'gallery':
-        const obj     = await mongoose.model(type).findOne({'items._id': _id});
-        imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
-        fileName      = path.basename(imageObj.src, `.${extension}`);
-        relativePath  = imageObj.src;
-        filePath      = path.resolve(_path, imageObj.src);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
-        filePathCache = path.resolve(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    case 'blog':
-        const blog    = await mongoose.model('news').findOne({_id});
-        fileName      = path.basename(blog.img, `.${extension}`);
-        relativePath  = blog.img;
-        filePath      = path.join(_path, blog.img);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
-        filePathCache = path.join(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    case 'category':
-        const category = await mongoose.model('categories').findOne({_id});
-        fileName       = path.basename(category.img, `.${extension}`);
-        relativePath   = category.img;
-        filePath       = path.join(_path, category.img);
-        fileName       = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
-        filePathCache  = path.join(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    case 'picto':
-        const picto   = await mongoose.model('pictos').findOne({_id});
-        fileName      = path.basename(picto.filename, path.extname(picto.filename));
-        relativePath  = path.join('medias/picto', picto.filename);
-        filePath      = path.join(_path, 'medias/picto', picto.filename);
-        fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
-        filePathCache = path.join(cacheFolder, type, fileName);
-        await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
-        break;
-    default:
-        return null;
+    try {
+        console.log('IS INVALIDE', !ObjectID.isValid(_id));
+        if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
+        switch (type) {
+        // if a product image is requested
+        case 'products':
+            const product = await Products.findOne({'images._id': _id});
+            imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
+            // we get the name of the file
+            fileName      = path.basename(imageObj.url);
+            relativePath  = imageObj.url;
+            filePath      = path.join(_path, imageObj.url);
+            fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
+            filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
+            await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
+            break;
+            // if a media is requested
+        case 'medias':
+            imageObj      = await Medias.findOne({_id});
+            fileName      = path.basename(imageObj.link, `.${extension}`);
+            relativePath  = imageObj.link;
+            filePath      = path.join(_path, imageObj.link);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            filePathCache = path.join(cacheFolder, 'medias', fileName);
+            await fsp.mkdir(path.join(cacheFolder, 'medias'), {recursive: true});
+            break;
+        case 'slider':
+        case 'gallery':
+            const obj     = await mongoose.model(type).findOne({'items._id': _id});
+            imageObj      = obj.items.find((item) => item._id.toString() === _id.toString());
+            fileName      = path.basename(imageObj.src, `.${extension}`);
+            relativePath  = imageObj.src;
+            filePath      = path.resolve(_path, imageObj.src);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            filePathCache = path.resolve(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        case 'blog':
+            const blog    = await mongoose.model('news').findOne({_id});
+            fileName      = path.basename(blog.img, `.${extension}`);
+            relativePath  = blog.img;
+            filePath      = path.join(_path, blog.img);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            filePathCache = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        case 'category':
+            const category = await mongoose.model('categories').findOne({_id});
+            fileName       = path.basename(category.img, `.${extension}`);
+            relativePath   = category.img;
+            filePath       = path.join(_path, category.img);
+            fileName       = `${fileName}_${size}_${quality}_${fileNameOption}.${extension}`;
+            filePathCache  = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        case 'picto':
+            const picto   = await mongoose.model('pictos').findOne({_id});
+            fileName      = path.basename(picto.filename, path.extname(picto.filename));
+            relativePath  = path.join('medias/picto', picto.filename);
+            filePath      = path.join(_path, 'medias/picto', picto.filename);
+            fileName      = `${fileName}_${size}_${quality}_${fileNameOption}${path.extname(picto.filename)}`;
+            filePathCache = path.join(cacheFolder, type, fileName);
+            await fsp.mkdir(path.join(cacheFolder, type), {recursive: true});
+            break;
+        default:
+            return null;
+        }
+
+        // global aux sections
+        // ./global aux sections
+        // if the cache folder does not exist, we create it
+        await fsp.mkdir(cacheFolder, {recursive: true});
+    } catch (err) {
+        filePath      = global.envConfig.environment.defaultImage; // global.envConfig.environment.defaultImage;
+        filePathCache = path.join(cacheFolder, type, `default_cache_${size}.${path.extname(filePath)}`);
     }
 
-    // global aux sections
-    // ./global aux sections
-    // if the cache folder does not exist, we create it
-    await fsp.mkdir(cacheFolder, {recursive: true});
-
     // if the requested image is already cached, it is returned direct
-    if (await fsp.existsSync(filePathCache)) {
+    if (filePathCache && await fsp.existsSync(filePathCache)) {
         return filePathCache;
     }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
         filePath = global.envConfig.environment.defaultImage;
     }
+    console.log(filePath);
     if (size === 'max' || size === 'MAX') {
         await utilsModules.modulesLoadFunctions('downloadFile', {
             key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
