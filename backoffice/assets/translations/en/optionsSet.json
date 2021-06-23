@@ -11,7 +11,9 @@
     },
     "detail": {
         "code": "Code",
-        "name": "Name"
+        "name": "Name",
+        "addOptions": "Add an option",
+        "createOptions": "Create an options"
     },
     "new": {
         "code": "Code",

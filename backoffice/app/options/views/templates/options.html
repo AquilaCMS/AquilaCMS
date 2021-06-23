@@ -1,0 +1,124 @@
+<div class="form-group flowRoot">
+    <label for="code" class="col-sm-3 control-label" translate>attribute.detail.code</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" id="code" translate translate-attr-placeholder='attribute.detail.ph1'
+            ng-model="options.code" ng-disabled="isEditMode" required>
+    </div>
+</div>
+<div class="form-group flowRoot">
+    <label for="name" class="col-sm-3 control-label" translate>attribute.detail.nom</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" id="name" ng-model="options.name[lang]" required>
+    </div>
+</div>
+<div class="form-group flowRoot">
+    <label for="type" class="col-sm-3 control-label" translate>options.type</label>
+    <div class="col-sm-6">
+        <select class="form-control" name="type" id="type" ng-model="options.type" ng-disabled="isEditMode"
+            ng-selected="options.type" required>
+            <option value="" translate>options.choice.choixTypeAttribut</option>
+            <option value="textfield" translate>options.choice.champTexte</option>
+            <!--<option value="textarea" translate>options.choice.zoneTexte</option>-->
+            <option value="date" translate>options.choice.date</option>
+            <option value="bool" translate>options.choice.boolean</option>
+            <option value="list" translate>options.choice.listeDeroulante</option>
+            <option value="multiselect" translate>options.choice.selectionMultiple</option>
+            <option value="interval" translate>options.choice.intervalle</option>
+            <!--<option value="image" translate>options.choice.image</option>-->
+            <!--<option value="video" translate>options.choice.video</option>-->
+            <!--<option value="doc/pdf" translate>options.choice.fichierPDF</option>-->
+            <option value="number" translate>options.choice.nombre</option>
+            <option ng-show="_type === 'products'" value="color" translate>options.choice.color</option>
+        </select>
+    </div>
+</div>
+<style>
+    .blockValue {
+        border: 1px solid black;
+        display: flow-root;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .flowRoot {
+        display: flow-root;
+    }
+
+    .autoWidth {
+        width: auto;
+    }
+</style>
+<ns-translation ng-model="lang" style="float: right;"></ns-translation>
+<div ng-show="options.type === 'list' || options.type === 'multiselect'" class="form-group flowRoot">
+    <label for="type" class="col-sm-3 control-label" translate>options.values.list</label>
+    <div class="col-sm-10" style="float: none;margin: auto;">
+        <div class="row form-group">
+            <div class="col-sm-12">
+                <button class="btn btn-default" type="button" ng-click="addValue()" translate>options.addValue</button>
+                <label ng-show="valuesError" class="btn"
+                    style="cursor: default; color: #ff0000;">{{valuesError}}</label>
+            </div>
+        </div>
+        <div class="row form-group" ng-repeat="oneValue in options.values track by $index">
+            <div class="form-group blockValue col-sm-12">
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-2 control-label" translate>options.values.name</label>
+                    <input class="form-control col-sm-8 autoWidth" type="text" ng-model="oneValue.name[lang]">
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-2 control-label" translate>options.values.isDefault</label>
+                    <div class="col-sm-8">
+                        <ns-switch ng-model="options.values[$index].mandatory"></ns-switch>
+                    </div>
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-2 control-label" translate>options.values.minLen</label>
+                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.minLen">
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-2 control-label" translate>options.values.maxLen</label>
+                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.maxLen">
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-2 control-label" translate>options.values.price</label>
+                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.price">
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-2 control-label" translate>options.values.weight</label>
+                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.weight">
+                </div>
+                <div class="col-sm-2">
+                    <button type="button"
+                        style="background: #e34925; color: #ffffff; font-weight: bold; font-size: 21px; border: 0; padding: 4px 9px; line-height: 100%; vertical-align: middle;"
+                        ng-click="removeValue($index)">-
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="options.type === 'textfield'" class="form-group flowRoot">
+    <label for="type" class="col-sm-3 control-label" translate>options.values.list</label>
+    <div class="col-sm-10" style="float: none;margin: auto;">
+        <div class="form-group blockValue col-sm-12">
+            <div class="form-group col-sm-10 flowRoot">
+                <label for="param" class="col-sm-2 control-label" translate>options.values.name</label>
+                <input class="form-control col-sm-8" type="text" ng-model="options.values[0].name[lang]">
+            </div>
+            <div class="form-group col-sm-10 flowRoot">
+                <label for="param" class="col-sm-2 control-label" translate>options.values.price</label>
+                <input class="form-control col-sm-8" type="number" ng-model="options.values[0].modifier.price">
+            </div>
+            <div class="form-group col-sm-10 flowRoot">
+                <label for="param" class="col-sm-2 control-label" translate>options.values.weight</label>
+                <input class="form-control col-sm-8" type="number" ng-model="options.values[0].modifier.weight">
+            </div>
+            <div class="form-group col-sm-10 flowRoot">
+                <label for="param" class="col-sm-2 control-label" translate>options.values.isDefault</label>
+                <div class="col-sm-8">
+                    <ns-switch ng-model="options.values[0].mandatory"></ns-switch>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

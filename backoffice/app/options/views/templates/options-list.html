@@ -1,0 +1,89 @@
+.<table class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+    id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+    <thead>
+        <tr role="row" class="pointer">
+            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                style="width: 200px;" translate>
+                attribute.list.code
+            </th>
+            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                style="width: 200px;">
+                <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
+                    attribute.list.nom
+                    <span ng-show="sortType == 'name' && !sortReverse" class="ico-chevron-down"></span>
+                    <span ng-show="sortType == 'name' && sortReverse" class="ico-chevron-up"></span>
+                </a>
+            </th>
+            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                style="width: 200px;" translate>
+                attribute.list.type
+            </th>
+            <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+                style="width: 200px;" translate>
+                attribute.list.jeuxAttrib
+            </th>
+            <!--<th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1"
+        style="width: 200px;">
+        Actions
+    </th>-->
+        </tr>
+        <tr role="row">
+            <th>
+                <input type="text" ng-change="getAttributesClassed()" ng-model="filter.code"
+                    ng-model-options="{debounce: 500}" translate translate-attr-placeholder='attribute.list.code'
+                    class="form-control">
+            </th>
+            <th>
+                <input type="text" ng-change="getAttributesClassed()" ng-model="filter.name"
+                    ng-model-options="{debounce: 500}" translate translate-attr-placeholder='attribute.list.nom'
+                    class="form-control">
+            </th>
+            <th>
+                <select ng-model="filter.type" ng-change="getAttributesClassed()" class="form-control" type="boolean">
+                    <option value="" selected>Indifferent</option>
+                    <option value="textfield" translate>attribute.detail.champTexte</option>
+                    <option value="textarea" translate>attribute.detail.zoneTexte</option>
+                    <option value="date" translate>attribute.detail.date</option>
+                    <option value="bool" translate>attribute.detail.booleen</option>
+                    <option value="list" translate>attribute.detail.listeDeroulante</option>
+                    <option value="multiselect" translate>attribute.detail.selectionMultiple</option>
+                    <option value="interval" translate>attribute.detail.intervalle</option>
+                    <option value="image" translate>attribute.detail.image</option>
+                    <option value="video" translate>attribute.detail.video</option>
+                    <option value="doc/pdf" translate>attribute.detail.fichierPDF</option>
+                    <option value="number" translate>attribute.detail.nombre</option>
+                </select>
+            </th>
+        </tr>
+    </thead>
+    <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()"
+        infinite-scroll-distance="1" infinite-scroll-immediate-check="true" infinite-scroll-disabled='scroller.busy'>
+        <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
+            ng-repeat="oneOptionsSet in optionsSetList | orderBy:sortType:sortReverse">
+            <td data-label="Code :" ng-click="goToOptionsDetails(oneOptionsSet.code)" class="sorting_1">
+                {{oneOptionsSet.code}}</td>
+            <td data-label="Nom :" ng-click="goToOptionsDetails(oneOptionsSet.code)" class="sorting_1">
+                {{oneOptionsSet.name[lang]}}</td>
+            <td data-label="Type :" ng-click="goToOptionsDetails(oneOptionsSet.code)" class="sorting_1">
+                {{oneOptionsSet.type}}</td>
+            <td data-label="Jeux d'attributs :" class=" ">
+                <button popover-ns type="button" class="btn btn-default" data-toggle="popover" data-placement="right"
+                    data-html="true" title="Jeux d'Attributs (à trad)"
+                    data-content='<table class="table table-condensed"><tbody><tr ng-repeat="setAtt in attribute.set_attributes"><td ng-bind="setAtt.name"></td></tr></tbody></table>'
+                    translate>
+                    attribute.list.afficher
+                </button>
+            </td>
+            <!--<td class=" ">
+        <a href="#/attributes/{{attribute.code}}" class="btn btn-blue btn-with-icon">
+            <i class="ico-magnifier-primary"></i>
+            <span class="text">Modifier</span>
+        </a>
+        <a ng-click="removeAttribute(attribute)" class="btn btn-red btn-with-icon">
+            <i class="ico-trash"></i>
+            <span class="text">Supprimer</span>
+        </a>
+    </td>-->
+        </tr>
+    </tbody>
+</table>

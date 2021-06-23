@@ -96,8 +96,8 @@ OptionsSetControllers.controller("OptionsSetDetailCtrl", [
 
         $scope.createOptions = function () {
             var modalInstance = $modal.open({
-                templateUrl: "app/options/views/options-new-modal.html",
-                controller: 'nsNewOptionsController',
+                templateUrl: "app/options/views/modals/options-new.html",
+                controller: 'nsNewOptionsControllerModal',
                 windowClass: "modal-large",
                 backdrop: 'static',
                 keyboard: false,
@@ -114,17 +114,27 @@ OptionsSetControllers.controller("OptionsSetDetailCtrl", [
             });
         }
 
+        $scope.addOptions = function () {
+            var modalInstance = $modal.open({
+                templateUrl: "app/options/views/modals/options-list.html",
+                controller: 'nsListOptionsControllerModal',
+                windowClass: "modal-large",
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
+                    lang: function () {
+                        return $scope.lang;
+                    },
+                }
+            });
+
+            modalInstance.result.then(function (isCreated) {
+
+            });
+        }
+
         $scope.getOptionsSet(); // we get the options
     }
 ]);
 
-OptionsSetControllers.controller("OptionsSetNewOptions", [
-    "$scope", "$location", "$rootScope", "$routeParams", "OptionsSetServices", "$modalInstance",
-    function ($scope, $location, $rootScope, $routeParams, OptionsSetServices, $modalInstance) {
-
-        $scope.close = function (val) {
-            $modalInstance.close(val);
-        }
-    }
-]);
 

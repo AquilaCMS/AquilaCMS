@@ -110,6 +110,14 @@
                         <span translate>menu.optionsSet</span>
                     </a>
                 </li>
+                <li ng-if="!(accessList.includes('options'))">
+                    <a href="#/options" class="menuClick">
+                        <span class="icon">
+                            <i class="fa fa-sliders fa-lg i-style"></i>
+                        </span>
+                        <span translate>menu.options</span>
+                    </a>
+                </li>
                 <li ng-if="!(accessList.includes('attributes'))">
                     <a href="#/products/setAttributes" class="menuClick">
                         <span class="icon">

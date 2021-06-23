@@ -14,7 +14,7 @@ const SetAttributesSchema = new Schema({
     code : {type: String, required: true, unique: true},
     type : {
         type : String,
-        enum : ['text', 'number', 'list', 'radio', 'color', 'date', 'productList']
+        enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'productList']
     },
     values : [{
         value   : {},

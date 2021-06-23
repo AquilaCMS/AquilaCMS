@@ -1,18 +1,35 @@
 {
     "new": {
-        "createOptions": "Créer une nouvelle option",
-        "choixTypeoption": "Choose this option's type",
-        "champTexte": "Text field",
-        "zoneTexte": "Text zone",
+        "createOptions": "Créer une nouvelle option"
+    },
+    "list": {
+        "t1": "Liste des options",
+        "addOptions": "Ajouter une option"
+    },
+    "choice": {
+        "choixTypeoption": "Choisissez le type de cet option",
+        "champTexte": "Champ texte",
+        "zoneTexte": "Zone de texte",
         "date": "Date",
-        "boolean": "Boolean (yes/no)",
-        "listeDeroulante": "Drop-down list",
-        "selectionMultiple": "Multiple selection",
-        "intervalle": "Interval",
+        "boolean": "Booléen (oui/non)",
+        "listeDeroulante": "Liste déroulante",
+        "selectionMultiple": "Sélection multiple",
+        "intervalle": "Intervalle",
         "image": "Image",
-        "video": "Video",
-        "fichierPDF": "PDF File",
-        "nombre": "Number",
-        "color": "Color"
+        "video": "Vidéo",
+        "fichierPDF": "Fichier PDF",
+        "nombre": "Nombre",
+        "color": "Couleur"
+    },
+    "addValue": "Ajouter une valeur",
+    "type": "Type",
+    "values": {
+        "isDefault": "Valeur par défault",
+        "name": "Nom",
+        "list": "Liste des valeurs",
+        "weight": "Poid supplémentaire",
+        "price": "prix supplémentaire",
+        "minLen": "Longueur minimum",
+        "maxLen": "Longueur maximum"
     }
 }
