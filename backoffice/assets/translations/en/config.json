@@ -56,7 +56,7 @@
         "siteName": "Website name",
         "favicon": "Favicon link",
         "defaultImage": "Default image",
-        "defaultImageTips": "When the image does not exist, display this image instead",
+        "defaultImageTips": "When the image does not exist, display this image instead. Only disk path are allowed (no URL)",
         "billsPattern": "Billing pattern code",
         "billsVariables": "Available variables : {year} for the current year and {numAuto} for an autoincremented number. Example : MYSITE_{year}_{numAuto}",
         "testMailSend": "Test mail sent.",
