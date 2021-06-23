@@ -187,7 +187,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         fileNameOption = '';
     }
     try {
-        console.log('IS INVALIDE', !ObjectID.isValid(_id));
         if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
         switch (type) {
         // if a product image is requested
@@ -270,7 +269,6 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
         filePath = global.envConfig.environment.defaultImage;
     }
-    console.log(filePath);
     if (size === 'max' || size === 'MAX') {
         await utilsModules.modulesLoadFunctions('downloadFile', {
             key     : filePath.substr(_path.length + 1).replace(/\\/g, '/'),
