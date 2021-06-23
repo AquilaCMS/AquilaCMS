@@ -106,7 +106,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         };
     }
 ]).controller("StockLabelCtrl", [
-    "$scope", "$modalInstance", "label", "$rootScope", function ($scope, $modalInstance, label, $rootScope)
+    "$scope", "$modalInstance", "label", "$rootScope", "$translate", function ($scope, $modalInstance, label, $rootScope, $translate)
     {
         $scope.isEditMode = false;
         $scope.label = {code: "", translation: {}};
@@ -133,14 +133,14 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         };
 
         $scope.delete = function (event) {
-            if (confirm('Si vous supprimez ce libellé de disponibilité, vous devrez ensuite modifier les items qui les impliquent. Etes-vous sûr de vouloir le supprimer ?')) {
+            if (confirm($translate.instant("confirm.deleteLibelleStock"))) {
                 event.preventDefault();
                 $modalInstance.close();
             }
         };
     }
 ]).controller("StockTvaCtrl", [
-    "$scope", "$modalInstance", "tva", function ($scope, $modalInstance, tva) {
+    "$scope", "$modalInstance", "tva", "$translate", function ($scope, $modalInstance, tva, $translate) {
         $scope.isEditMode = false;
         $scope.tva = {};
 
@@ -160,7 +160,7 @@ angular.module("aq.stock.controllers", []).controller("StockCtrl", [
         };
 
         $scope.delete = function (event) {
-            if (confirm('Si vous supprimez cette TVA, vous devrez ensuite modifier les items qui impliquent cette TVA. Etes-vous sûr de vouloir la supprimer ?')) {
+            if (confirm($translate.instant("confirm.deleteTva"))) {
                 event.preventDefault();
                 $modalInstance.close();
             }

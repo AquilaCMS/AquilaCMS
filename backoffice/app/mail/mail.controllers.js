@@ -162,7 +162,7 @@ MailControllers.controller("MailDetailCtrl", [
         //Ajout ou update d'un mail
         $scope.save = function (isQuit) {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             $scope.form.nsSubmitted = true;
@@ -228,7 +228,7 @@ MailControllers.controller("MailDetailCtrl", [
 
         //Suppression d'un mail
         $scope.remove = function (_id) {
-            if(confirm("Êtes-vous sûr de vouloir supprimer ce mail ?"))
+            if (confirm($translate.instant("confirm.deleteMail")))
             {
                 MailRemove.remove({_id: _id}, function () {
                     toastService.toast("success", $translate.instant("mail.detail.mailDelete"));

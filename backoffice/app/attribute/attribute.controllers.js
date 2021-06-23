@@ -279,7 +279,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         };
 
         $scope.removeAttribute = function (attr) {
-            if (confirm("Etes-vous sûr de vouloir supprimer cet attribut ?")) {
+            if (confirm($translate.instant("confirm.removeAttribute"))) {
                 AttributesV2.delete({id: attr._id}, function () {
                     toastService.toast("success", $translate.instant("attribute.detail.deleteAttribute"));
                     $location.path(`/${$scope._type}/attributes`);

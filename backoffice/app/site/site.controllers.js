@@ -67,7 +67,7 @@ SiteControllers.controller("ArticlesSiteCtrl", [
         };
 
         $scope.remove = function (articles) {
-            if(confirm("Etes-vous sûr de vouloir supprimer cet article ?")) {
+            if (confirm($translate.instant("confirm.deletArticle"))) {
                 ArticlesV2.delete({id: articles._id, type: 'new'}, function () {
                     toastService.toast("success", $translate.instant("site.articles.itemDelete"));
                     $route.reload();
@@ -207,7 +207,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
          */
         $scope.removeImage = function (articles)
         {
-            if(confirm("Êtes-vous sûr de vouloir supprimer cette image ?"))
+            if (confirm($translate.instant("confirm.deleteImage")))
             {
                 $scope.articles.img = "";
                 SiteDeleteImage.deleteImage({_id: articles._id}, function (response)
@@ -221,7 +221,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         {
             if(!angular.equals($scope.copy, $scope.articles))
             {
-                var confirmReturn = confirm("Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir revenir à la liste des articles ?");
+                var confirmReturn = confirm($translate.instant("confirm.changesNotSaved"));
                 if(confirmReturn == true)
                 {
                     $location.path("/site/articles");
@@ -236,7 +236,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
         $scope.save = function (isQuit)
         {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             //Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
@@ -292,7 +292,7 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
 
         $scope.remove = function ()
         {
-            if(confirm("Etes-vous sûr de vouloir supprimer cet article ?"))
+            if (confirm($translate.instant("confirm.deletArticle")))
             {
                 ArticlesV2.delete({id: $scope.articles._id, type: 'new'}, function ()
                 {

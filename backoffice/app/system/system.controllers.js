@@ -4,7 +4,7 @@ SystemControllers.controller("systemGeneralController", [
     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
-
+        $scope.showModuleLoading = false;
         $scope.log = {
             log: "",
             error: ""
@@ -21,8 +21,7 @@ SystemControllers.controller("systemGeneralController", [
         $scope.switchCsp = function(value){
             $scope.nsswitch = !$scope.nsswitch;
             if (value){
-                // if (confirm($translate.instant("system.environment.security.contentPolicy.confirm"))) {
-                if (confirm("Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés")) {
+                if (confirm($translate.instant("confirm.activateCSP"))) {
                     $scope.system.environment.contentSecurityPolicy.active = "true";
                 }else{
                     $scope.system.environment.contentSecurityPolicy.active = "false";
@@ -106,8 +105,6 @@ SystemControllers.controller("systemGeneralController", [
                 System.changeNextVersionRoute({nextVersion}, function(response){
                     toastService.toast("success", $translate.instant("system.other.restartProgress"));
                     $scope.showThemeLoading = false;
-                    $scope.showLoading = true;
-                    $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                     $http.get("/restart");
                     $interval(() => {
                         $http.get("/serverIsUp").then(() => {
@@ -210,6 +207,7 @@ SystemControllers.controller("systemGeneralController", [
 
 
         $scope.validate = function () {
+            $scope.showModuleLoading = true;
             if (!$scope.system.environment.adminPrefix) {
                 $scope.system.environment.adminPrefix = "admin";
             }
@@ -248,18 +246,26 @@ SystemControllers.controller("systemGeneralController", [
                 }).then((response) => {
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
+                        $scope.showThemeLoading = false;
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
-                                location.href = $scope.urlRedirect;
-                                window.location = $scope.urlRedirect;
+                                if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
+                                    $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
+                                    location.href = $scope.urlRedirect;
+                                    window.location = $scope.urlRedirect;
+                                } else {
+                                    window.location.reload();
+                                }
                             })
                         }, 10000);
-                    }
-                    if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
-                        $scope.showThemeLoading = false;
-                        $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
-                    } else {
-                        window.location.reload();
+                    }else{
+                        if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
+                            $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
+                            location.href = $scope.urlRedirect;
+                            window.location = $scope.urlRedirect;
+                        } else {
+                            window.location.reload();
+                        }
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;

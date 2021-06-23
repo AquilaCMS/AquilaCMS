@@ -44,7 +44,7 @@ const verifyingUpdate = async () => {
 };
 
 async function checkChanges() {
-    const status = await packageManager.execCmd('git status');
+    const status = await packageManager.execCmd('git status -uno');
     console.log(status);
     if (status.stderr !== '') {
         return {type: 'error', message: status.stderr};

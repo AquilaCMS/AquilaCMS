@@ -433,30 +433,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         }
 
         const createdOrder = await Orders.create(newOrder);
-        // If the order has a discount of type "promo code"
-        if (createdOrder.promos && createdOrder.promos.length && createdOrder.promos[0].promoCodeId) {
-            try {
-            // then we increase the number of uses of this promo
-                await Promo.updateOne({}, {
-                    $inc : {'codes.$[code].used': 1}
-                }, {
-                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
-                });
-                // then we must also update the number of unique users who have used this "promo code"
-                const result = await Orders.distinct('customer.id', {
-                    'promos.promoCodeId' : createdOrder.promos[0].promoCodeId
-                });
-                await Promo.updateOne({}, {
-                    $set : {'codes.$[code].client_used': result.length}
-                }, {
-                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
-                });
-            // TODO P6 : Decrease the stock of the product offered
-            // if (_cart.promos[0].gifts.length)
-            } catch (err) {
-                console.error(err);
-            }
-        }
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {

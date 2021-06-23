@@ -134,7 +134,7 @@ adminCatagenControllers.controller("CarrierListCtrl", [
 
         $scope.removeCarrier = function (carrier)
         {
-            if(confirm("Etes-vous sûr de vouloir supprimer cet élément ?"))
+            if (confirm($translate.instant("confirm.deleteShipment")))
             {
                 Carrier.remove({carrierId: carrier._id}, function ()
                 {

@@ -75,7 +75,7 @@ ThemesController.controller("ThemesCtrl", [
         }
 
         $scope.packageInstall = function () {
-            if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
+            if (confirm($translate.instant("confirm.installPackageWarning"))) {
                 $scope.isLoading = true;
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
@@ -96,7 +96,7 @@ ThemesController.controller("ThemesCtrl", [
 
 
         $scope.packageBuild = function () {
-            if (confirm("Attention, vous allez effectuer une action qui entraînera éventuellement une interruption du site. Êtes vous sur de vouloir continuer ?")) {
+            if (confirm($translate.instant("confirm.buildPackageWarning"))) {
                 $scope.isLoading = true;
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
@@ -128,7 +128,7 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.removeTheme = async function () {
-            if (confirm("Etes vous sur de vouloir supprimer ce theme ?")) {
+            if (confirm($translate.instant("confirm.deleteTheme"))) {
                 Themes.delete({ themeName: $scope.config.environment.currentTheme }, function(response){
                     toastService.toast("success", $translate.instant("themes.deleteTheme"));
                     $scope.LoadAllThemes();
@@ -152,7 +152,7 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.copyThemeDatas = async function () {
-            if (confirm("Êtes vous sur de vouloir installer les données du thème ? ")) {
+            if (confirm($translate.instant("confirm.installTheme"))) {
                 Themes.copyData({
                     themeName: $scope.config.environment.currentTheme,
                     override: $scope.theme.themeDataOverride,
@@ -198,7 +198,7 @@ ThemesController.controller("ThemesCtrl", [
                 ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
                     $scope.showThemeLoading = true;
                     if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
-                        if (confirm("Êtes vous sur de vouloir changer de thème ?")) {
+                        if (confirm($translate.instant("confirm.changeTheme"))) {
                             Themes.save({ environment: $scope.config.environment }, function () {
                                 if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
                                     $scope.showThemeLoading = false;

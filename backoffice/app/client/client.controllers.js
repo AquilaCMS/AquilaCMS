@@ -414,7 +414,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         };
 
         $scope.remove = function () {
-            if (confirm("Etes-vous sûr de vouloir supprimer ce client ? Ses commandes ne seront pas supprimées !")) {
+            if (confirm($translate.instant("confirm.deleteCustomer"))) {
                 ClientV2.delete({type: 'user', id: $scope.client._id}, function (response) {
                     toastService.toast("success", $translate.instant("client.detail.customerDeleted"));
                     $location.path("/clients");

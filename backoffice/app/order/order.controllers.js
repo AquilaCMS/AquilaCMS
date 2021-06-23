@@ -466,7 +466,7 @@ OrderControllers.controller("OrderDetailCtrl", [
 
         $scope.delPkg = function (pkg)
         {
-            if (confirm("Etes-vous sûr de vouloir supprimer ce colis ?")) {
+            if (confirm($translate.instant("confirm.deletePackageOrder"))) {
                 Orders.delPkg({ order: $scope.order._id, package: pkg }, function (res) {
                     $scope.order = res;
                     toastService.toast("success", $translate.instant("order.detail.removedPackage"));

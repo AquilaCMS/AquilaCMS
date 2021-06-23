@@ -159,7 +159,7 @@ SetAttributesControllers.controller("SetAttributesDetailCtrl", [
         };
 
         $scope.remove = function (_id) {
-            if(confirm("Êtes-vous sur de vouloir supprimer ce jeu d'attributs ?"))
+            if (confirm($translate.instant("confirm.removeSetAttribute")))
             {
                 SetAttributesV2.delete({id: _id}, function () {
                     $location.path(`/${$scope.type}/setAttributes`);
