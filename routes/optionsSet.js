@@ -6,8 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const name              = 'optionsSet';
-const ServiceOptionsSet = require(`../services/${name}`);
+const name                        = 'optionsSet';
+const ServiceOptionsSet           = require(`../services/${name}`);
+const {authentication, adminAuth} = require('../middleware/authentication');
 
 async function listOptionsSet(req, res, next) {
     try {
@@ -36,8 +37,18 @@ async function setOptionsSet(req, res, next) {
     }
 }
 
+async function deleteOptionsSet(req, res, next) {
+    try {
+        const result = await ServiceOptionsSet.deleteOptionsSet(req.params.id);
+        return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
 module.exports = function (app) {
-    app.post(`/v2/${name}/list`, listOptionsSet);
-    app.post(`/v2/${name}/get`, getOptionsSet);
-    app.post(`/v2/${name}/set`, setOptionsSet);
+    app.post(`/v2/${name}/list`, listOptionsSet);  // not protected for now (if we want to access it for filter in front)
+    app.post(`/v2/${name}/get`, authentication, adminAuth,  getOptionsSet);
+    app.post(`/v2/${name}/set`, authentication, adminAuth,  setOptionsSet);
+    app.delete(`/v2/${name}/:id`, authentication, adminAuth,  deleteOptionsSet);
 };

@@ -5,7 +5,8 @@ OptionsServices.service("OptionsServices", [
         return $resource("v2/:route/:action", {}, {
             list: { method: "POST", params: { route: "options", action: "list" } },
             get: { method: "POST", params: { route: "options", action: "get" } },
-            set: { method: "POST", params: { route: "options", action: "set" } }
+            set: { method: "POST", params: { route: "options", action: "set" } },
+            delete: { method: "DELETE", params: { route: "options" } }
         });
     }
 ]);

@@ -1,4 +1,4 @@
-<ns-box data-title="setAttribute.detail.t1" title-icon="fa fa-align-justify fa-lg" close-href="#/optionsSet">
+<ns-box data-title="optionsSet.detail.t1" title-icon="fa fa-align-justify fa-lg" close-href="#/optionsSet">
     <!--'{{ setAttribute.code }}'-->
     <form name="form" class="form-horizontal" role="form">
         <ns-buttons is-edit-mode="true" save-and-quit="save(true)" save="save()" disable-save="disableSave"
@@ -42,7 +42,7 @@
                                     <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
                                         colspan="1" style="width: 200px;" aria-sort="ascending">
                                         <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
-                                            optionsSet.detail.nom
+                                            optionsSet.detail.name
                                             <span ng-show="sortType == 'name' && !sortReverse"
                                                 class="ico-chevron-down"></span>
                                             <span ng-show="sortType == 'name' && sortReverse"
@@ -51,7 +51,11 @@
                                     </th>
                                     <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
                                         colspan="1" style="width: 200px;" aria-sort="ascending" translate>
-                                        setAttribute.detail.type
+                                        optionsSet.detail.type
+                                    </th>
+                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 200px;" aria-sort="ascending" translate>
+                                        optionsSet.detail.delete
                                     </th>
                                 </tr>
                             </thead>
@@ -60,17 +64,16 @@
                                 infinite-scroll-disabled='scroller.busy'>
                                 <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
                                     ng-click="goToAttributeDetails(attribute.code,setAttribute.code)"
-                                    ng-repeat="attribute in att | orderBy:sortType:sortReverse">
-                                    <td data-label="Code :" class="sorting_1">{{attribute.code}}</td>
-                                    <td data-label="Nom :" class="sorting_1">{{attribute.translation[defaultLang].name}}
+                                    ng-repeat="oneOptions in optionsSet.options | orderBy:sortType:sortReverse">
+                                    <td data-label="Code :" class="sorting_1">{{oneOptions.code}}</td>
+                                    <td data-label="Nom :" class="sorting_1">{{oneOptions.name[lang]}}
                                     </td>
-                                    <td data-label="Type :" class="sorting_1">{{attribute.type}}</td>
-                                    <!--<td class=" ">
-                                                <a href="#/attributes/{{attribute.code}}" class="btn btn-blue btn-with-icon">
-                                                    <i class="ico-magnifier-primary"></i>
-                                                    <span class="text">Modifier</span>
-                                                </a>
-                                            </td>-->
+                                    <td data-label="Type :" class="sorting_1">{{oneOptions.type}}</td>
+                                    <td data-label="Type :" class="sorting_1">
+                                        <button type="button" class="smallButtonDelete"
+                                            ng-click="removeOptions(oneOptions.code)">-
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

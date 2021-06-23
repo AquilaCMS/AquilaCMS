@@ -36,8 +36,16 @@ const setOptionsSet = async function (optionsSet) {
     return OptionsSet.create(optionsSet);
 };
 
+const deleteOptionsSet = async function (_id) {
+    if (typeof _id === 'undefined' || _id === null) {
+        throw NSErrors.UnprocessableEntity;
+    }
+    return OptionsSet.deleteOne({_id});
+};
+
 module.exports = {
     listOptionsSet,
     getOptionsSet,
-    setOptionsSet
+    setOptionsSet,
+    deleteOptionsSet
 };

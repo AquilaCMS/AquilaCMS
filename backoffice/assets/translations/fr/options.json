@@ -1,10 +1,15 @@
 {
+    "detail": {
+        "t1": "Détails de l'option"
+    },
     "new": {
         "createOptions": "Créer une nouvelle option"
     },
     "list": {
         "t1": "Liste des options",
-        "addOptions": "Ajouter une option"
+        "addOptions": "Ajouter une option",
+        "optionsTitle": "Options créés",
+        "loadOptionsSet": "Afficher"
     },
     "choice": {
         "choixTypeoption": "Choisissez le type de cet option",

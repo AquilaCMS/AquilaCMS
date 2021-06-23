@@ -4,7 +4,7 @@ ProductControllers.controller("ProductBeforeCreateCtrl", [
     "$scope", "NSConstants", "$location", function ($scope, NSConstants, $location) {
         $scope.productTypes = NSConstants.productTypes;
         $scope.settings = {
-            productType : $scope.productTypes[0].code
+            productType: $scope.productTypes[0].code
         };
 
         $scope.validate = function (settings) {
@@ -24,7 +24,7 @@ ProductControllers.controller("SelectProductsCtrl", [
         $scope.selectedProducts = productSelected || [];
 
         $scope.validate = function () {
-            for(let oneProduct of $scope.selectedProducts){
+            for (let oneProduct of $scope.selectedProducts) {
                 delete oneProduct._selected;
                 delete oneProduct.style;
             }
@@ -52,7 +52,7 @@ ProductControllers.controller("ProductListCtrl", [
         $scope.maxSize = 10;
         $scope.searchObj = {};
         $scope.filter = {};
-        $scope.local = {sortType: "code", sortReverse: false};
+        $scope.local = { sortType: "code", sortReverse: false };
         $scope.productTypes = NSConstants.productTypes;
         $scope.export = ExportCollectionCSV;
         $scope.attribs = [];
@@ -71,21 +71,21 @@ ProductControllers.controller("ProductListCtrl", [
             }
         };
         $scope.collapse = function () {
-            if(document.getElementById('collapseIcon').className === "ico-arrow-down"){
+            if (document.getElementById('collapseIcon').className === "ico-arrow-down") {
                 document.getElementById('collapseIcon').className = "ico-arrow-up";
-            }else {
+            } else {
                 document.getElementById('collapseIcon').className = "ico-arrow-down";
             }
         };
 
         $scope.getAttributesClassed = function () {
-            AttributesV2.list({PostBody: {filter: {_type: 'products'}, limit: 99}}, function ({datas}) {
+            AttributesV2.list({ PostBody: { filter: { _type: 'products' }, limit: 99 } }, function ({ datas }) {
                 $scope.attribs = datas;
             });
         };
 
-        $scope.selectNewLang = function (event){
-            if(event && event.filterLang) {
+        $scope.selectNewLang = function (event) {
+            if (event && event.filterLang) {
                 $scope.filterLang = event.filterLang;
             }
         }
@@ -94,13 +94,13 @@ ProductControllers.controller("ProductListCtrl", [
             $scope.showLoader = true;
             const search = $scope.searchObj;
             const filter = $scope.filter;
-            let pageAdmin = {location: "products", page: 1};
+            let pageAdmin = { location: "products", page: 1 };
             if (window.localStorage.getItem("pageAdmin") !== undefined && window.localStorage.getItem("pageAdmin") !== null) {
-                try{
+                try {
                     pageAdmin = JSON.parse(window.localStorage.getItem("pageAdmin"));
-                }catch(e){
+                } catch (e) {
                     // if JSON.parse() fail => the page doesn't load
-                    pageAdmin = {location: "products", page: 1};
+                    pageAdmin = { location: "products", page: 1 };
                 }
             }
             if (page === undefined && pageAdmin.location === "products") {
@@ -108,26 +108,26 @@ ProductControllers.controller("ProductListCtrl", [
                 $scope.page = pageSaved;
                 $scope.currentPage = pageSaved;
 
-                if(pageAdmin.search !== undefined && pageAdmin.search !== null) {
+                if (pageAdmin.search !== undefined && pageAdmin.search !== null) {
                     $scope.searchObj.translation = pageAdmin.search.translation;
-                    if (pageAdmin.search.active){
+                    if (pageAdmin.search.active) {
                         $scope.searchObj.active = pageAdmin.search.active;
                     }
                     if (pageAdmin.search._visible) {
                         $scope.searchObj._visible = pageAdmin.search._visible;
                     }
                 }
-                if(pageAdmin.filter !== undefined && pageAdmin.filter !== null) {
+                if (pageAdmin.filter !== undefined && pageAdmin.filter !== null) {
                     $scope.filter = pageAdmin.filter;
                 }
             } else {
-                window.localStorage.setItem("pageAdmin", JSON.stringify({location: "products", page, search, filter}));
+                window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "products", page, search, filter }));
                 $scope.page = page;
                 $scope.currentPage = page;
                 window.scrollTo(0, 0);
             }
 
-            const params = {page: $scope.page, limit: $scope.nbItemsPerPage};
+            const params = { page: $scope.page, limit: $scope.nbItemsPerPage };
 
             cleanEmptyProperties($scope.filter);
             cleanEmptyProperties($scope.searchObj);
@@ -139,20 +139,20 @@ ProductControllers.controller("ProductListCtrl", [
                     if (filterKeys[i] === "end_marketing" || filterKeys[i] === "end_availability") {
                         var now = new Date($scope.filter[filterKeys[i]]);
                         params.filter[filterKeys[i]] = {
-                            $lt : Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+                            $lt: Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
                                 now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds())
                         };
                     } else if (filterKeys[i] === "start_marketing" || filterKeys[i] === "start_availability") {
                         var now = new Date($scope.filter[filterKeys[i]]);
                         params.filter[filterKeys[i]] = {
-                            $gt : Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds())
+                            $gt: Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds())
                         };
                     } else if (filterKeys[i] === "images") {
-                        params.filter["images.url"] = {$regex: $scope.filter[filterKeys[i]], $options: "i"};
+                        params.filter["images.url"] = { $regex: $scope.filter[filterKeys[i]], $options: "i" };
                     } else if (filterKeys[i] === "createdAt") {
-                        params.filter.createdAt = {$gte: moment(new Date($scope.filter[filterKeys[i]])), $lt: moment(new Date($scope.filter[filterKeys[i]])).add(1, 'd')};
+                        params.filter.createdAt = { $gte: moment(new Date($scope.filter[filterKeys[i]])), $lt: moment(new Date($scope.filter[filterKeys[i]])).add(1, 'd') };
                     } else {
-                        params.filter[filterKeys[i]] = {$regex: $scope.filter[filterKeys[i]], $options: "i"};
+                        params.filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]], $options: "i" };
                     }
                 }
             }
@@ -165,9 +165,9 @@ ProductControllers.controller("ProductListCtrl", [
                     const value = $scope.filtersAttribs[Object.keys($scope.filtersAttribs)[i]];
                     filters[code] = value;
                     if (value === 'true' || value === 'false') {
-                        params.filter.$and.push({attributes: {$elemMatch: {code, [`translation.${$scope.filterLang}.value`]: value === 'true'}}});
+                        params.filter.$and.push({ attributes: { $elemMatch: { code, [`translation.${$scope.filterLang}.value`]: value === 'true' } } });
                     } else {
-                        params.filter.$and.push({attributes: {$elemMatch: {code, [`translation.${$scope.filterLang}.value`]: {$regex: value, $options: "i"}}}});
+                        params.filter.$and.push({ attributes: { $elemMatch: { code, [`translation.${$scope.filterLang}.value`]: { $regex: value, $options: "i" } } } });
                     }
                 }
                 window.localStorage.setItem("pageAdmin", JSON.stringify({ location: "products", page, search, filters }));
@@ -179,27 +179,27 @@ ProductControllers.controller("ProductListCtrl", [
                 const filterLength = filterKeys.length;
                 let newFilter = {};
                 for (var i = 0; i < filterLength; i++) {
-                    if(filterKeys[i] == "translation"){
+                    if (filterKeys[i] == "translation") {
                         newFilter[`translation.${$scope.filterLang}.name`] = { $regex: $scope.searchObj.translation.name, $options: "i" };
-                    }else if(filterKeys[i] == "active" || filterKeys[i] == "_visible"){
+                    } else if (filterKeys[i] == "active" || filterKeys[i] == "_visible") {
                         newFilter[filterKeys[i]] = $scope.searchObj[filterKeys[i]] == "true" ? true : false;
-                    }else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
+                    } else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
                         const key = filterKeys[i].split("_");
                         const value = $scope.searchObj[filterKeys[i]];
                         if (key[1] == "priceSale") {
-                            if(typeof newFilter['price.ati.normal'] === "undefined"){
+                            if (typeof newFilter['price.ati.normal'] === "undefined") {
                                 newFilter['price.ati.normal'] = {}
                             }
                             newFilter['price.ati.normal'][key[0] === "min" ? "$gte" : "$lte"] = value;
-                        }else if(key[1] == "qty"){
-                            if(typeof newFilter["stock.qty"] === "undefined"){
+                        } else if (key[1] == "qty") {
+                            if (typeof newFilter["stock.qty"] === "undefined") {
                                 newFilter["stock.qty"] = {}
                             }
                             newFilter['stock.qty'][key[0] === "min" ? "$gte" : "$lte"] = value;
                         }
                     }
                 }
-                params.filter = {...params.filter, ...newFilter};
+                params.filter = { ...params.filter, ...newFilter };
             }
 
             params.sortObj = {};
@@ -225,15 +225,15 @@ ProductControllers.controller("ProductListCtrl", [
                 }
             };
             ProductsV2.list(paramsV2, function (res) {
-                if(res.count > 0 && res.datas.length == 0){
+                if (res.count > 0 && res.datas.length == 0) {
                     //weird so we reload with page 1
                     $scope.getProducts(1);
-                }else{
+                } else {
                     $scope.products = res.datas;
                     $scope.totalItems = res.count;
                     $scope.showLoader = false;
                 }
-            }, function(error){
+            }, function (error) {
                 console.error(error);
             });
         };
@@ -287,7 +287,7 @@ ProductControllers.controller("nsProductGeneral", [
             });
         };
 
-        SetAttributesV2.list({PostBody: {filter: {type: 'products'}, limit: 99}}, function ({datas}) {
+        SetAttributesV2.list({ PostBody: { filter: { type: 'products' }, limit: 99 } }, function ({ datas }) {
             $scope.setAttributes = datas;
 
             if ($scope.product && $scope.product.set_attributes === undefined) {
@@ -302,13 +302,13 @@ ProductControllers.controller("nsProductGeneral", [
         });
 
 
-        $scope.changeActiveVisible = function(product){
+        $scope.changeActiveVisible = function (product) {
             $modal.open({
                 templateUrl: 'app/product/views/modals/canonical.html',
                 controller: function ($scope, $modalInstance, CategoryV2, ConfigV2, toastService, ExecRules, ProductsV2) {
                     $scope.product = product;
                     $scope.adminUrl = "";
-                    ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+                    ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {
                         $scope.config = config
                         $scope.adminUrl = $scope.config.environment.adminPrefix;
                     });
@@ -321,10 +321,10 @@ ProductControllers.controller("nsProductGeneral", [
                         $modalInstance.dismiss('cancel');
                     };
                     $scope.runCanonicalisation = async function () {
-                        ExecRules.exec({type: "category"}, function (result) {
+                        ExecRules.exec({ type: "category" }, function (result) {
                             CategoryV2.canonical({}, {}, function () {
                                 toastService.toast('success', $translate.instant("product.general.finished"))
-                                ProductsV2.query({PostBody: {filter: {_id: $scope.product._id}, structure: '*'}}, function (response) {
+                                ProductsV2.query({ PostBody: { filter: { _id: $scope.product._id }, structure: '*' } }, function (response) {
                                     $scope.product = response;
                                     $scope.product.active = true;
                                     ProductsV2.save({}, $scope.product, function (response) {
@@ -348,7 +348,7 @@ ProductControllers.controller("nsProductGeneral", [
             });
         }
 
-        window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product) )
+        window.addEventListener('displayCanonicalModal', () => $scope.changeActiveVisible($scope.product))
 
     }
 ]);
@@ -356,39 +356,39 @@ ProductControllers.controller("nsProductGeneral", [
 ProductControllers.controller("nsProductCategories", [
     "$scope", "$filter", "CategoryV2",
     function ($scope, $filter, CategoryV2) {
-        $scope.selectNode = function(node){
+        $scope.selectNode = function (node) {
             //we get the actual productsList
             var tab = node.productsList;
             const productID = $scope.product._id;
             let count = 0;
             const lenTab = tab.length;
-            for(let oneObject of tab){
-                if(oneObject.id == productID){
-                    if(count > -1) {
+            for (let oneObject of tab) {
+                if (oneObject.id == productID) {
+                    if (count > -1) {
                         tab.splice(count, 1);
                     }
                     break;
-                }else{
+                } else {
                     count++;
                 }
             }
-            if(count == lenTab) {
-                tab.push({id: productID, checked: true});
+            if (count == lenTab) {
+                tab.push({ id: productID, checked: true });
             }
             //we save
-            CategoryV2.save({_id: node._id, productsList: tab}, function () {
+            CategoryV2.save({ _id: node._id, productsList: tab }, function () {
 
             });
         };
-        
-        $scope.catDisabled = function (node){
+
+        $scope.catDisabled = function (node) {
             let final = false;
-            if(node.action == "page"){
+            if (node.action == "page") {
                 final = true;
-            }else{
-                if(node.productsList){
-                    for(let oneChild of node.productsList){
-                        if(oneChild.id == $scope.product._id){
+            } else {
+                if (node.productsList) {
+                    for (let oneChild of node.productsList) {
+                        if (oneChild.id == $scope.product._id) {
                             final = !oneChild.checked;
                             break;
                         }
@@ -398,11 +398,11 @@ ProductControllers.controller("nsProductCategories", [
             return final;
         };
 
-        $scope.catCheck = function (node){
+        $scope.catCheck = function (node) {
             let final = false;
-            if(node.productsList){
-                for(let oneChild of node.productsList){
-                    if(oneChild.id == $scope.product._id){
+            if (node.productsList) {
+                for (let oneChild of node.productsList) {
+                    if (oneChild.id == $scope.product._id) {
                         final = true;
                         break;
                     }
@@ -414,18 +414,83 @@ ProductControllers.controller("nsProductCategories", [
 ]);
 
 ProductControllers.controller("nsProductOptions", [
-    "$scope", "$filter", "OptionsSetServices",
-    function ($scope, $filter, OptionsSetServices) {
+    "$scope", "$filter", "$location", "OptionsSetServices",
+    function ($scope, $filter, $location, OptionsSetServices) {
+        $scope.limit = 12;
+        $scope.listOptionsSet = [];
+        $scope.optionsSet = {};
+
+        function init(){
+            if($scope.product){
+                if (typeof $scope.product.set_options !== "undefined" && $scope.product.set_options !== null) {
+                    if($scope.product.options === "undefined"){
+                        OptionsSetServices.get({
+                            filter: {
+                                _id: $scope.product.set_options
+                            }
+                        }, function (response) {
+                            $scope.optionsSet = response;
+                        }, function (error) {
+                            console.log(error);
+                        });
+                    }
+                }else{
+                    $scope.product.set_options = "";
+                    $scope.product.options = [];
+                }
+            }else{
+                setTimeout(()=>{
+                    init()
+                }, 100);
+            }
+        }
+
+        init();
+
+        $scope.changeOptionsSet = function () {
+            // we change the optionsSet of the product
+            if($scope.product && typeof $scope.product.set_options !== "undefined"){
+                if($scope.product.set_options !== $scope.optionsSet._id){
+                    // the bind is incorrect, we need to load correct options
+                    OptionsSetServices.get({
+                        PostBody : {
+                            filter : {
+                                _id : $scope.optionsSet._id
+                            },
+                            populate : ['options']
+                        }
+                    }, function (response) {
+                        $scope.optionsSet = response;
+                        $scope.product.set_options = $scope.optionsSet._id;
+                        $scope.product.options = $scope.optionsSet.options;
+                    }, function (error) {
+                        console.log(error);
+                    });
+                }
+            }
+        };
+
+        $scope.goToOptionsSet = function(){
+            if($scope.optionsSet && $scope.optionsSet.code){
+                $location.path(`/optionsSet/${$scope.optionsSet.code}`);
+            }else{
+                $location.path("/optionsSet");
+            }
+        }
 
         // we list optionsSet
-        OptionsSetServices.list({}, function(response){
-            $scope.optionsSet = response.datas;
-        }, function(error){
+        OptionsSetServices.list({
+            PostBody: {
+                limit: $scope.limit,
+            }
+        }, function (response) {
+            $scope.listOptionsSet = response.datas;
+        }, function (error) {
             console.log(error);
         });
 
         $scope.actualOptionsSet = {};
-        if($scope.product && $scope.product.options) {
+        if ($scope.product && $scope.product.options) {
             $scope.actualOptionsSet = $scope.product.options;
         }
         $scope.lang;

@@ -9,22 +9,23 @@
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
+const {ObjectId}    = Schema.Types;
 
 const SetAttributesSchema = new Schema({
     code : {type: String, required: true, unique: true},
+    name : {},
     type : {
         type : String,
         enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'productList']
     },
-    values : [{
-        value   : {},
-        control : {
-            checked   : {type: Boolean, required: true},
-            mandatory : {type: Boolean, required: true},
-            min       : {type: Number},
-            max       : {type: Number}
-        },
-        modifier : {
+    options_set : [{type: ObjectId, ref: 'OptionsSet'}],
+    values      : [{
+        name      : {},
+        checked   : {type: Boolean, required: true},
+        mandatory : {type: Boolean, required: true},
+        min       : {type: Number},
+        max       : {type: Number},
+        modifier  : {
             price : {
                 value     : {type: Number},
                 typePrice : {
@@ -35,7 +36,6 @@ const SetAttributesSchema = new Schema({
             weight : {type: Number}
         }
     }]
-
 }, {
     id : false
 });

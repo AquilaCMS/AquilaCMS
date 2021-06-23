@@ -142,5 +142,11 @@
     },
     "toast": {
         "URLcanonical": "Can't generate URL because canonical is empty"
+    },
+    "optionsSet": {
+        "title": "Options set and product options",
+        "edit": "Edit options set",
+        "optionsSet": "Options set of the product",
+        "void": "No options set"
     }
 }

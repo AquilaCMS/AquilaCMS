@@ -8,6 +8,8 @@
     "success": "Success",
     "accessForbidden": "Access forbidden !",
     "saveDone": "Save performed",
+    "saved": "Saved !",
+    "deleted": "Deleted !",
     "error": "Error",
     "apiError": "API error",
     "deleteDone": "Deletion completed",

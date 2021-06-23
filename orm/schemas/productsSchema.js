@@ -63,6 +63,36 @@ const ProductsSchema = new Schema({
             visible     : {type: Boolean, default: true}
         }
     ], // Module Options
+    set_options : {type: ObjectId, ref: 'optionsSet', index: true},
+    options     : [
+        {
+            id   : {type: ObjectId, ref: 'options', index: true},
+            code : {type: String, required: true, unique: true},
+            name : {},
+            type : {
+                type : String,
+                enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'productList']
+            },
+            options_set : [{type: ObjectId, ref: 'OptionsSet'}],
+            values      : [{
+                name      : {},
+                checked   : {type: Boolean, required: true},
+                mandatory : {type: Boolean, required: true},
+                min       : {type: Number},
+                max       : {type: Number},
+                modifier  : {
+                    price : {
+                        value     : {type: Number},
+                        typePrice : {
+                            type : String,
+                            enum : ['pourcent', 'price']
+                        }
+                    },
+                    weight : {type: Number}
+                }
+            }]
+        }
+    ],
     images : [
         {
             url              : String,

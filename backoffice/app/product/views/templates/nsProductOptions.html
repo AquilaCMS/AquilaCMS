@@ -1,23 +1,26 @@
-<h3 style="display: inline" translate>simple.attrJeu</h3>
+<h3 style="display: inline" translate>product.optionsSet.title</h3>
 <div class="form-group" ng-show="product.code != null">
-    <div class="col-sm-11">
-        <label for="set_attributes" class="col-sm-2 control-label" translate>product.general.jeuAttr</label>
-        <div class="col-sm-6">
-            <select id="set_attributes" name="set_attributes" class="form-control"
-                ng-options="setAttr as setAttr.name for setAttr in setAttributes track by setAttr.code"
-                ng-model="product.set_attributes" ng-change="loadNewAttrs()">
+    <div class="col-sm-11" ng-show="listOptionsSet && listOptionsSet.length > 0">
+        <label for="optionsSet" class="col-sm-2 control-label" translate>product.optionsSet.optionsSet</label>
+        <div class="col-sm-6 flowRoot">
+            <select id="set_attributes" name="optionsSet" class="form-control" ng-model="optionsSet.code"
+                ng-change="changeOptionsSet()">
+                <option ng-repeat="oneOptionsSet in listOptionsSet" value="{{oneOptionsSet.code}}">
+                    {{oneOptionsSet.name[lang]}}
+                    ({{oneOptionsSet.code}})
+                </option>
             </select>
+        </div>
+        <div class="col-sm-6 flowRoot" ng-show="optionsSet && optionsSet.code">
+            <br />
+            <button type="button" class="btn btn-default" ng-click="goToOptionsSet()" translate>
+                product.optionsSet.edit
+            </button>
         </div>
     </div>
 </div>
-<span ng-show="product.code == null" style="color: red;">
-    <br /><br />
-    <span translate>simple.beforeConfig</span>
-</span>
 <div class="form-group" style="margin-top: 20px;" ng-show="product.code != null">
-    <ns-attributes ng-show="product.attributes && product.attributes.length" class="col-sm-11" ng-if="att.type"
-        ng-repeat="att in product.attributes | orderBy: ['position','name']" style="margin-top: 20px;"></ns-attributes>
-    <p ng-show="!product.attributes || !product.attributes.length" class="col-sm-11" style="margin-top: 20px;">
-        <em>Pas d'attributes</em>
+    <p ng-show="!listOptionsSet || listOptionsSet.length == 0" class="col-sm-11" style="margin-top: 20px;">
+        <em translate>product.optionsSet.void</em>
     </p>
 </div>

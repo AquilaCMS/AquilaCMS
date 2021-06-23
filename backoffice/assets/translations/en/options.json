@@ -1,10 +1,15 @@
 {
+    "detail": {
+        "t1": "Option details"
+    },
     "new": {
         "createOptions": "Create a new option"
     },
     "list": {
         "t1": "Options list",
-        "addOptions": "Add add option"
+        "addOptions": "Add add option",
+        "optionsTitle": "Options created",
+        "loadOptionsSet": "Display"
     },
     "choice": {
         "choixTypeoption": "Choose this option's type",

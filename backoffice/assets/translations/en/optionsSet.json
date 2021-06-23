@@ -10,10 +10,14 @@
         "afficher": "Display"
     },
     "detail": {
+        "t1": "Options sets detail",
         "code": "Code",
         "name": "Name",
         "addOptions": "Add an option",
-        "createOptions": "Create an options"
+        "createOptions": "Create an options",
+        "needSave": "Don't forget to save the set !",
+        "type": "Type",
+        "delete": "Delete the options from the set"
     },
     "new": {
         "code": "Code",

@@ -31,13 +31,23 @@ const setOptions = async function (options) {
         throw NSErrors.UnprocessableEntity;
     }
     if (typeof options._id !== 'undefined') {
-        return Options.findOneAndUpdate({_id: options._id}, options);
+        return Options.findOneAndUpdate({_id: options._id}, options, {new: true, runValidators: true});
     }
     return Options.create(options);
+};
+
+const deleteOptions = async function (_id) {
+    if (typeof _id === 'undefined' || _id === null) {
+        throw NSErrors.UnprocessableEntity;
+    }
+    const result = await Options.deleteOne({_id});
+    // need to remove them in optionsSet TODO
+    return result;
 };
 
 module.exports = {
     listOptions,
     getOptions,
-    setOptions
+    setOptions,
+    deleteOptions
 };
