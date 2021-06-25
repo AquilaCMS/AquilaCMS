@@ -275,12 +275,12 @@ const execCanonical = async () => {
                             bForceForOtherLang
                             || products_canonicalised.indexOf(product._id.toString()) === -1
                         )
-                        && typeof product.translation[currentLang] !== 'undefined'
-                        && typeof product.translation[currentLang].slug !== 'undefined'
+                        && typeof product.translation.get(currentLang) !== 'undefined'
+                        && typeof product.translation.get(currentLang).slug !== 'undefined'
                     ) { // Le produit existe et on l'a pas déjà traité pour cette langue
                         await Products.updateOne(
                             {_id: product._id},
-                            {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation[currentLang].slug}`}}
+                            {$set: {[`translation.${currentLang}.canonical`]: `${current_category_slugs[currentLang]}/${product.translation.get(currentLang).slug}`}}
                         );
                         products_canonicalised.push(product._id.toString());
                         bForceForOtherLang = true; // We passed once, we pass for other languages
@@ -294,8 +294,8 @@ const execCanonical = async () => {
         let   productsNotCanonicaliedString = '';
         for (let productNC = 0; productNC < productsNotCanonicalised.length; productNC++) {
             for (let iLang = 0; iLang < tabLang.length; iLang++) {
-                if (typeof productsNotCanonicalised[productNC].translation[tabLang[iLang]] !== 'undefined') {
-                    productsNotCanonicalised[productNC].translation[tabLang[iLang]].canonical = '';
+                if (typeof productsNotCanonicalised[productNC].translation.get(tabLang[iLang]) !== 'undefined') {
+                    productsNotCanonicalised[productNC].translation.get(tabLang[iLang]).canonical = '';
                 }
             }
             await productsNotCanonicalised[productNC].save();
