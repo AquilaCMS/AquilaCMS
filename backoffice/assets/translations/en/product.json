@@ -147,6 +147,7 @@
         "title": "Options set and product options",
         "edit": "Edit options set",
         "optionsSet": "Options set of the product",
-        "void": "No options set"
+        "void": "No options set",
+        "goTo": "Go to options set"
     }
 }

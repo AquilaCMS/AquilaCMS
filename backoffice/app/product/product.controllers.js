@@ -420,10 +420,10 @@ ProductControllers.controller("nsProductOptions", [
         $scope.listOptionsSet = [];
         $scope.optionsSet = {};
 
-        function init(){
-            if($scope.product){
+        function init() {
+            if ($scope.product) {
                 if (typeof $scope.product.set_options !== "undefined" && $scope.product.set_options !== null) {
-                    if($scope.product.options === "undefined"){
+                    if ($scope.product.options === "undefined") {
                         OptionsSetServices.get({
                             filter: {
                                 _id: $scope.product.set_options
@@ -433,13 +433,15 @@ ProductControllers.controller("nsProductOptions", [
                         }, function (error) {
                             console.log(error);
                         });
+                    } else {
+                        $scope.product.options = [];
                     }
-                }else{
+                } else {
                     $scope.product.set_options = "";
                     $scope.product.options = [];
                 }
-            }else{
-                setTimeout(()=>{
+            } else {
+                setTimeout(() => {
                     init()
                 }, 100);
             }
@@ -449,15 +451,15 @@ ProductControllers.controller("nsProductOptions", [
 
         $scope.changeOptionsSet = function () {
             // we change the optionsSet of the product
-            if($scope.product && typeof $scope.product.set_options !== "undefined"){
-                if($scope.product.set_options !== $scope.optionsSet._id){
+            if ($scope.product && typeof $scope.product.set_options !== "undefined") {
+                if ($scope.product.set_options !== $scope.optionsSet._id) {
                     // the bind is incorrect, we need to load correct options
                     OptionsSetServices.get({
-                        PostBody : {
-                            filter : {
-                                _id : $scope.optionsSet._id
+                        PostBody: {
+                            filter: {
+                                _id: $scope.optionsSet._id
                             },
-                            populate : ['options']
+                            populate: ['options']
                         }
                     }, function (response) {
                         $scope.optionsSet = response;
@@ -470,10 +472,10 @@ ProductControllers.controller("nsProductOptions", [
             }
         };
 
-        $scope.goToOptionsSet = function(){
-            if($scope.optionsSet && $scope.optionsSet.code){
+        $scope.goToOptionsSet = function () {
+            if ($scope.optionsSet && $scope.optionsSet.code) {
                 $location.path(`/optionsSet/${$scope.optionsSet.code}`);
-            }else{
+            } else {
                 $location.path("/optionsSet");
             }
         }

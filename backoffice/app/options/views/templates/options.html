@@ -12,22 +12,29 @@
     </div>
 </div>
 <div class="form-group flowRoot">
+    <label for="name" class="col-sm-3 control-label" translate>options.detail.mandatory</label>
+    <div class="col-sm-6">
+        <ns-switch name="{{$index}}" ng-model="options.mandatory">
+        </ns-switch>
+    </div>
+</div>
+<div class="form-group flowRoot">
     <label for="type" class="col-sm-3 control-label" translate>options.type</label>
     <div class="col-sm-6">
         <select class="form-control" name="type" id="type" ng-model="options.type" ng-disabled="isEditMode"
-            ng-selected="options.type" required>
-            <option value="" translate>options.choice.choixTypeAttribut</option>
+            ng-selected="options.type" ng-change="changeOptionsType()" required>
             <option value="textfield" translate>options.choice.champTexte</option>
-            <!--<option value="textarea" translate>options.choice.zoneTexte</option>-->
-            <option value="date" translate>options.choice.date</option>
-            <option value="bool" translate>options.choice.boolean</option>
+            <option value="number" translate>options.choice.nombre</option>
             <option value="list" translate>options.choice.listeDeroulante</option>
-            <option value="multiselect" translate>options.choice.selectionMultiple</option>
-            <option value="interval" translate>options.choice.intervalle</option>
+            <option value="checkbox" translate>options.choice.checkbox</option>
+            <option value="radio" translate>options.choice.radio</option>
+            <!--<option value="bool" translate>options.choice.boolean</option>-->
+            <!--<option value="interval" translate>options.choice.intervalle</option>-->
+            <!--<option value="textarea" translate>options.choice.zoneTexte</option>-->
+            <!--<option value="date" translate>options.choice.date</option>-->
             <!--<option value="image" translate>options.choice.image</option>-->
             <!--<option value="video" translate>options.choice.video</option>-->
             <!--<option value="doc/pdf" translate>options.choice.fichierPDF</option>-->
-            <option value="number" translate>options.choice.nombre</option>
             <option ng-show="_type === 'products'" value="color" translate>options.choice.color</option>
         </select>
     </div>
@@ -35,7 +42,7 @@
 <style>
     .blockValue {
         border: 1px solid black;
-        display: flow-root;
+        display: inline-block;
         padding: 10px;
         border-radius: 5px;
     }
@@ -44,79 +51,104 @@
         display: flow-root;
     }
 
+    .displayTable {
+        display: inline-table;
+    }
+
     .autoWidth {
-        width: auto;
+        width: auto !important;
+    }
+
+    .opacity {
+        opacity: 0.5;
+    }
+
+    .deplacementButton {
+        background: black;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 21px;
+        border: 0;
+        padding: 6px;
+        line-height: 100%;
+        vertical-align: middle;
+        margin: 10px;
+    }
+
+    .deplacementButton:hover {
+        cursor: move;
     }
 </style>
 <ns-translation ng-model="lang" style="float: right;"></ns-translation>
-<div ng-show="options.type === 'list' || options.type === 'multiselect'" class="form-group flowRoot">
+<div class="form-group flowRoot">
     <label for="type" class="col-sm-3 control-label" translate>options.values.list</label>
     <div class="col-sm-10" style="float: none;margin: auto;">
-        <div class="row form-group">
+        <div class="row form-group"
+            ng-if="options.type === 'list' || options.type === 'radio' || options.type === 'checkbox'">
             <div class="col-sm-12">
                 <button class="btn btn-default" type="button" ng-click="addValue()" translate>options.addValue</button>
                 <label ng-show="valuesError" class="btn"
                     style="cursor: default; color: #ff0000;">{{valuesError}}</label>
             </div>
         </div>
-        <div class="row form-group" ng-repeat="oneValue in options.values track by $index">
-            <div class="form-group blockValue col-sm-12">
-                <div class="form-group col-sm-10 flowRoot">
-                    <label for="param" class="col-sm-2 control-label" translate>options.values.name</label>
-                    <input class="form-control col-sm-8 autoWidth" type="text" ng-model="oneValue.name[lang]">
-                </div>
-                <div class="form-group col-sm-10 flowRoot">
-                    <label for="param" class="col-sm-2 control-label" translate>options.values.isDefault</label>
-                    <div class="col-sm-8">
-                        <ns-switch ng-model="options.values[$index].mandatory"></ns-switch>
-                    </div>
-                </div>
-                <div class="form-group col-sm-10 flowRoot">
-                    <label for="param" class="col-sm-2 control-label" translate>options.values.minLen</label>
-                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.minLen">
-                </div>
-                <div class="form-group col-sm-10 flowRoot">
-                    <label for="param" class="col-sm-2 control-label" translate>options.values.maxLen</label>
-                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.maxLen">
-                </div>
-                <div class="form-group col-sm-10 flowRoot">
-                    <label for="param" class="col-sm-2 control-label" translate>options.values.price</label>
-                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.price">
-                </div>
-                <div class="form-group col-sm-10 flowRoot">
-                    <label for="param" class="col-sm-2 control-label" translate>options.values.weight</label>
-                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.weight">
-                </div>
-                <div class="col-sm-2">
-                    <button type="button"
-                        style="background: #e34925; color: #ffffff; font-weight: bold; font-size: 21px; border: 0; padding: 4px 9px; line-height: 100%; vertical-align: middle;"
-                        ng-click="removeValue($index)">-
+        <div class="row form-group" ng-repeat="oneValue in options.values">
+            <div class="form-group blockValue col-sm-12" style="margin: 10px; padding:0px"
+                ondragenter="angular.element(this).scope().switchElement(this, 'in')"
+                ondragleave="angular.element(this).scope().switchElement(this, 'out')"
+                ondragstart="angular.element(this).scope().draggingStart(this)"
+                ondragend="angular.element(this).scope().draggingEnd(this)" draggable="true" ns-drag="oneValue"
+                ns-drop="oneValue">
+                <input style="visibility: hidden;" value={{$index}} />
+                <div class="col-sm-2" style="float: right;">
+                    <button type="button" class="deplacementButton" ng-click="removeValue($index)">
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div ng-show="options.type === 'textfield'" class="form-group flowRoot">
-    <label for="type" class="col-sm-3 control-label" translate>options.values.list</label>
-    <div class="col-sm-10" style="float: none;margin: auto;">
-        <div class="form-group blockValue col-sm-12">
-            <div class="form-group col-sm-10 flowRoot">
-                <label for="param" class="col-sm-2 control-label" translate>options.values.name</label>
-                <input class="form-control col-sm-8" type="text" ng-model="options.values[0].name[lang]">
-            </div>
-            <div class="form-group col-sm-10 flowRoot">
-                <label for="param" class="col-sm-2 control-label" translate>options.values.price</label>
-                <input class="form-control col-sm-8" type="number" ng-model="options.values[0].modifier.price">
-            </div>
-            <div class="form-group col-sm-10 flowRoot">
-                <label for="param" class="col-sm-2 control-label" translate>options.values.weight</label>
-                <input class="form-control col-sm-8" type="number" ng-model="options.values[0].modifier.weight">
-            </div>
-            <div class="form-group col-sm-10 flowRoot">
-                <label for="param" class="col-sm-2 control-label" translate>options.values.isDefault</label>
-                <div class="col-sm-8">
-                    <ns-switch ng-model="options.values[0].mandatory"></ns-switch>
+                <div class=" form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-3 control-label" translate>options.values.name</label>
+                    <input class="form-control col-sm-8 autoWidth" type="text" ng-model="oneValue.name[lang]">
+                </div>
+                <div class="form-group col-sm-10 flowRoot"
+                    ng-if="options.type === 'list' || options.type === 'radio' || options.type === 'checkbox'">
+                    <label for="param" class="col-sm-3 control-label" translate>options.values.isDefault</label>
+                    <div class="col-sm-8">
+                        <ns-switch name="{{$index}}" ng-change="checkedIsChanged($index)"
+                            ng-model="oneValue.control.checked">
+                        </ns-switch>
+                    </div>
+                </div>
+                <div class="form-group col-sm-10 flowRoot" ng-if="options.type == 'textfield'">
+                    <label for="param" class="col-sm-3 control-label displayTable"
+                        translate>options.values.minLen</label>
+                    <input class="form-control col-sm-8 autoWidth" min="0" type="number"
+                        ng-model="oneValue.control.min">
+                </div>
+                <div class="form-group col-sm-10 flowRoot" ng-if="options.type == 'textfield'">
+                    <label for="param" class="col-sm-3 control-label displayTable"
+                        translate>options.values.maxLen</label>
+                    <input class="form-control col-sm-8 autoWidth" min="0" type="number"
+                        ng-model="oneValue.control.max">
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-3 control-label displayTable"
+                        translate>options.values.price</label>
+                    <input class="form-control col-sm-8 autoWidth" type="number"
+                        ng-model="oneValue.modifier.price.value">
+                    <label for="param" class="col-sm-2 control-label displayTable"
+                        translate>options.values.typePrice</label>
+                    <select class="form-control col-sm-8 autoWidth" ng-model="oneValue.modifier.price.typePrice">
+                        <option value="pourcent" translate>options.values.typePriceChoice.pourcent</option>
+                        <option value="price" translate>options.values.typePriceChoice.price</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-10 flowRoot">
+                    <label for="param" class="col-sm-3 control-label displayTable"
+                        translate>options.values.weight</label>
+                    <input class="form-control col-sm-8 autoWidth" type="number" ng-model="oneValue.modifier.weight">
+                </div>
+                <div class="col-sm-2" style="float: right;"
+                    ng-if="options.type === 'list' || options.type === 'radio' || options.type === 'checkbox'">
+                    <button type="button" class="smallButtonDelete" ng-click="removeValue($index)">-
+                    </button>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 {
     "detail": {
-        "t1": "Option details"
+        "t1": "Option details",
+        "mandatory": "Obligatoire"
     },
     "new": {
         "createOptions": "Create a new option"
@@ -12,7 +13,7 @@
         "loadOptionsSet": "Display"
     },
     "choice": {
-        "choixTypeoption": "Choose this option's type",
+        "choixTypeOption": "Choose this option's type",
         "champTexte": "Text field",
         "zoneTexte": "Text zone",
         "date": "Date",
@@ -24,7 +25,8 @@
         "video": "Video",
         "fichierPDF": "PDF File",
         "nombre": "Number",
-        "color": "Color"
+        "color": "Color",
+        "checkbox": "Checkbox"
     },
     "addValue": "Add a value",
     "type": "Type",
@@ -34,7 +36,12 @@
         "list": "List of values",
         "weight": "Weight modifier",
         "price": "Price modifier",
+        "typePrice": "Type of the modifier",
         "minLen": "Minimum length",
-        "maxLen": "Maximum length"
+        "maxLen": "Maximum length",
+        "typePriceChoice": {
+            "pourcent": "Pourcent",
+            "price": "Prix"
+        }
     }
 }

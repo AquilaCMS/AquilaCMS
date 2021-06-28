@@ -1,6 +1,7 @@
 {
     "detail": {
-        "t1": "Détails de l'option"
+        "t1": "Détails de l'option",
+        "mandatory": "Obligatoire"
     },
     "new": {
         "createOptions": "Créer une nouvelle option"
@@ -24,7 +25,8 @@
         "video": "Vidéo",
         "fichierPDF": "Fichier PDF",
         "nombre": "Nombre",
-        "color": "Couleur"
+        "color": "Couleur",
+        "checkbox": "Case à cocher"
     },
     "addValue": "Ajouter une valeur",
     "type": "Type",
@@ -34,7 +36,12 @@
         "list": "Liste des valeurs",
         "weight": "Poid supplémentaire",
         "price": "prix supplémentaire",
+        "typePrice": "Type de prix",
         "minLen": "Longueur minimum",
-        "maxLen": "Longueur maximum"
+        "maxLen": "Longueur maximum",
+        "typePriceChoice": {
+            "pourcent": "Pourcentage",
+            "price": "Prix"
+        }
     }
 }

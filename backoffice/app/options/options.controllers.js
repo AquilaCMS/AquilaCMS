@@ -3,17 +3,17 @@ const OptionsControllers = angular.module('aq.options.controllers', []);
 OptionsControllers.controller('OptionsListCtrl', [
     '$scope', '$rootScope', '$location', '$modal', 'OptionsServices', '$translate', 'toastService',
     function ($scope, $rootScope, $location, $modal, OptionsServices, $translate, toastService) {
-        $scope.limit            = 12;
-        $scope.optionsList      = {};
+        $scope.limit = 12;
+        $scope.optionsList = {};
         $scope.optionsList.data = [];
-        $scope.lang                = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
+        $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
 
         $scope.addOptions = function () {
             const modalInstance = $modal.open({
-                templateUrl : 'app/options/views/modals/options-new.html',
-                controller  : 'nsNewOptionsControllerModal',
-                windowClass : 'modal-large',
-                resolve     : {
+                templateUrl: 'app/options/views/modals/options-new.html',
+                controller: 'nsNewOptionsControllerModal',
+                windowClass: 'modal-large',
+                resolve: {
                     lang() {
                         return $scope.lang;
                     }
@@ -31,8 +31,8 @@ OptionsControllers.controller('OptionsListCtrl', [
 
         $scope.getList = function () {
             OptionsServices.list({
-                PostBody : {
-                    limit : $scope.limit
+                PostBody: {
+                    limit: $scope.limit
                 }
             }, function (response) {
                 $scope.optionsList.data = response.datas;
@@ -46,13 +46,13 @@ OptionsControllers.controller('OptionsListCtrl', [
 OptionsControllers.controller('OptionsDetailCtrl', [
     '$scope', '$rootScope', '$location', '$routeParams', 'OptionsServices', 'toastService', '$translate',
     function ($scope, $rootScope, $location, $routeParams, OptionsServices, toastService, $translate) {
-        $scope.isNew   = false;
+        $scope.isNew = false;
         $scope.options = {
-            data : {
-                code : $routeParams.code
+            data: {
+                code: $routeParams.code
             }
         };
-        $scope.save    = function (isQuit) {
+        $scope.save = function (isQuit) {
             OptionsServices.set($scope.options.data, function (response) {
                 $scope.options.data = response;
                 toastService.toast('success', $translate.instant('global.saved'));
@@ -68,8 +68,8 @@ OptionsControllers.controller('OptionsDetailCtrl', [
             });
         };
 
-        $scope.remove = function(){
-            OptionsServices.delete({action: $scope.options.data._id}, function (response) {
+        $scope.remove = function () {
+            OptionsServices.delete({ action: $scope.options.data._id }, function (response) {
                 toastService.toast('success', $translate.instant('global.deleted'));
                 $location.path('/options');
             }, function (error) {
@@ -90,9 +90,9 @@ OptionsControllers.controller('nsNewOptionsController', [
 
         if ($scope.isNew !== true) {
             OptionsServices.get({
-                PostBody : {
-                    filter : {
-                        code : $scope.options.code
+                PostBody: {
+                    filter: {
+                        code: $scope.options.code
                     }
                 }
             }, function (response) {
@@ -107,14 +107,65 @@ OptionsControllers.controller('nsNewOptionsController', [
                 $scope.options.values = [];
             }
             $scope.options.values.push({
-                name      : {},
-                mandatory : false,
-                modifier  : {
-                    price  : 0,
-                    weight : 0
+                name: {},
+                control: {
+                    mandatory: true,
+                    checked: true,
+                    min: 10,
+                    max: 0
+                },
+                modifier: {
+                    price: 0,
+                    priceType: "",
+                    weight: 0
                 }
             });
         };
+
+        $scope.checkedIsChanged = function (index) {
+            const actualType = $scope.options.type;
+            const temp = $scope.options.values[index].control.checked;
+            if (actualType === 'list' || actualType === 'radio') {
+                for (let oneValue of $scope.options.values) {
+                    oneValue.control.checked = false;
+                }
+                $scope.options.values[index].control.checked = temp;
+            }
+        }
+
+        $scope.changeOptionsType = function () {
+            if (typeof $scope.options.values === 'undefined') {
+                $scope.options.values = [];
+            }
+            const actualType = $scope.options.type;
+            if (actualType !== 'list' && actualType !== 'radio' && actualType !== 'checkbox') {
+                let temp = null
+                if (typeof $scope.options.values[0] !== "undefined" || $scope.options.values[0] === null) {
+                    temp = $scope.options.values[0];
+                }
+                $scope.options.values = [];
+                if (temp) {
+                    $scope.options.values.push(temp);
+                } else {
+                    $scope.options.values.push({
+                        name: {},
+                        control: {
+                            mandatory: true,
+                            checked: false,
+                            min: 10,
+                            max: 0
+                        },
+                        modifier: {
+                            price: {
+                                value: 0,
+                                typePrice: "price",
+                            },
+                            weight: 0
+                        }
+                    });
+                }
+            }
+        }
 
         $scope.removeValue = function ($index) {
             if (typeof $scope.options.values === 'undefined') {
@@ -125,6 +176,49 @@ OptionsControllers.controller('nsNewOptionsController', [
                 $scope.options.values.splice(index, 1);
             }
         };
+
+        var elementOver;
+        var elementStart;
+        var inOther;
+
+        $scope.draggingEnd = function (element, event) {
+            elementStart.className = elementStart.className.replace(" opacity", "");
+            elementOver.className = elementOver.className.replace(' fakeDrop', '');
+            //On switch car on est dans une autre
+            const indexStart = parseInt(elementStart.childNodes[1].value);
+            const indexEnd = parseInt(elementOver.childNodes[1].value);
+            if (indexStart != indexEnd) {
+                //deplacement
+                let arrayTempOfValues = [];
+                angular.copy($scope.options.values, arrayTempOfValues);
+                const tempStart = arrayTempOfValues[indexStart];
+                const tempEnd = arrayTempOfValues[indexEnd];
+                arrayTempOfValues[indexStart] = tempEnd;
+                arrayTempOfValues[indexEnd] = tempStart;
+                $scope.options.values = [];
+                $scope.options.values = arrayTempOfValues;
+                console.log($scope.options.values[0].name, $scope.options.values[1].name);
+                $scope.$apply();
+            }
+        };
+
+        $scope.draggingStart = function (element) {
+            elementStart = element
+            if (element.className.includes(" opacity")) {
+                element.className = element.className.replace(" opacity", "");
+            } else {
+                element.className += " opacity";
+            }
+        };
+
+        $scope.switchElement = function (element, where) {
+            elementOver = element;
+            if (where == 'in') {
+                element.className += ' fakeDrop';
+            } else if (where == 'out') {
+                element.className = element.className.replace(' fakeDrop', '');
+            }
+        };
     }
 ]);
 
@@ -133,16 +227,16 @@ OptionsControllers.controller('nsNewOptionsControllerModal', [
     function ($scope, $rootScope, $location, $modalInstance, OptionsServices, toastService, $translate) {
         $scope.isNew = true;
 
-        $scope.cancel       = function (val) {
+        $scope.cancel = function (val) {
             $modalInstance.close(val);
         };
-        $scope.options      = {};
+        $scope.options = {};
         $scope.options.data = {
-            code      : '',
-            name      : {},
-            type      : 'textfield', // default
-            mandatory : true,
-            values    : []
+            code: '',
+            name: {},
+            type: 'textfield', // default
+            mandatory: true,
+            values: []
         };
 
         $scope.save = function (val) {
@@ -162,7 +256,7 @@ OptionsControllers.controller('nsNewOptionsControllerModal', [
 ]);
 
 OptionsControllers.controller('nsListOptionsController', [
-    '$scope', '$rootScope', '$location', 'OptionsServices', 'toastService', '$translate', "OptionsSetServices", 
+    '$scope', '$rootScope', '$location', 'OptionsServices', 'toastService', '$translate', "OptionsSetServices",
     function ($scope, $rootScope, $location, OptionsServices, toastService, $translate, OptionsSetServices) {
         // controller of list
         if (typeof $scope.optionsList === 'undefined') {
@@ -181,16 +275,18 @@ OptionsControllers.controller('nsListOptionsController', [
             }
         };
 
-        $scope.loadOptionsSet = function(code){
-            const index = $scope.optionsList.findIndex((element)=>element.code == code);
-            if(index > -1){
+        $scope.loadOptionsSet = function (code) {
+            const index = $scope.optionsList.findIndex((element) => element.code == code);
+            if (index > -1) {
                 const id = $scope.optionsList[index]._id;
-                OptionsSetServices.list({PostBody :{
-                    limit: $scope.limit,
-                    filter: {
-                        options : id
+                OptionsSetServices.list({
+                    PostBody: {
+                        limit: $scope.limit,
+                        filter: {
+                            options: id
+                        }
                     }
-                }}, function(response){
+                }, function (response) {
                     $scope.optionsList[index].optionsSet = response.datas;
                 }, function (error) {
                     if (error && error.data && error.data.message) {
@@ -205,8 +301,8 @@ OptionsControllers.controller('nsListOptionsController', [
 
         $scope.getList = function () {
             OptionsServices.list({
-                PostBody : {
-                    limit : $scope.limit
+                PostBody: {
+                    limit: $scope.limit
                 }
             }, function (response) {
                 $scope.optionsList = response.datas;
@@ -223,11 +319,11 @@ OptionsControllers.controller('nsListOptionsControllerModal', [
     '$scope', '$rootScope', '$location', '$modalInstance',
     function ($scope, $rootScope, $location, $modalInstance) {
         $scope.optionsList = {
-            data : []
+            data: []
         };
 
         $scope.onClick = function (code) {
-            const index          = $scope.optionsList.data.findIndex((element) => element.code == code);
+            const index = $scope.optionsList.data.findIndex((element) => element.code == code);
             const correctOptions = $scope.optionsList.data[index];
             $scope.save(correctOptions);
         };
@@ -235,7 +331,7 @@ OptionsControllers.controller('nsListOptionsControllerModal', [
         $scope.cancel = function () {
             $modalInstance.close(false);
         };
-        $scope.save   = function (val) {
+        $scope.save = function (val) {
             $modalInstance.close(val);
         };
     }
