@@ -9,23 +9,24 @@
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
-const {ObjectId}    = Schema.Types;
 
 const SetAttributesSchema = new Schema({
-    code : {type: String, required: true, unique: true},
-    name : {},
-    type : {
+    code      : {type: String, required: true, unique: true},
+    name      : {},
+    mandatory : {type: Boolean, required: true},
+    type      : {
         type : String,
-        enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'productList']
+        enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'checkbox', 'productList']
     },
-    options_set : [{type: ObjectId, ref: 'OptionsSet'}],
-    values      : [{
-        name      : {},
-        checked   : {type: Boolean, required: true},
-        mandatory : {type: Boolean, required: true},
-        min       : {type: Number},
-        max       : {type: Number},
-        modifier  : {
+    values : [{
+        name    : {},
+        control : {
+            checked   : {type: Boolean},
+            mandatory : {type: Boolean},
+            min       : {type: Number},
+            max       : {type: Number}
+        },
+        modifier : {
             price : {
                 value     : {type: Number},
                 typePrice : {

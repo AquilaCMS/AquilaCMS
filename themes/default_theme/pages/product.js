@@ -107,6 +107,31 @@ class PageProduct extends NSPageProduct {
             });
         }
 
+        let options = [{}];
+        if (product.options) {
+            options = product.options;
+        }
+
+        function renderOptions(element) {
+
+            if (element.type == "checkbox") {
+                return <input type="text" />
+            } else if (element.type == "number") {
+                return <input type="number" />
+            } else if (element.type == "textfield") {
+                return (<input type="text" />)
+            } else if (element.type == "checkbox") {
+                return (<div>test</div>)
+            } else if (element.type == "list") {
+                return (<select>
+                    {element.values.map((elementValue) => {
+                        if (elementValue.name && elementValue.name[lang]) {
+                            return (<option>{elementValue.name[lang]}</option>)
+                        }
+                    })}
+                </select>)
+            }
+        }
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
@@ -246,6 +271,17 @@ class PageProduct extends NSPageProduct {
                                             <div dangerouslySetInnerHTML={{ __html: product.description2.text }} />
                                         )
                                     }
+                                    <div className="product-options" style={{ textAlign: "right" }}>
+                                        {options.map((element) => {
+                                            return (
+                                                <>
+                                                    <div>{element.name[lang]}</div>
+                                                    {element.mandatory == true ? <span>(obligatoire)</span> : <span>(optionnal)</span>}
+                                                    {renderOptions(element)}
+                                                </>
+                                            )
+                                        })}
+                                    </div>
                                     <div className="product-actions">
                                         <div className="product-stock hidden-xs">
                                             <NSProductStock stock={product.stock} />
@@ -608,31 +644,31 @@ class PageProduct extends NSPageProduct {
                                     </form>
                                 </div>
                             ) : (
-                                    <>
-                                        <h3 className="popup__title">{t('product:productAdded')} :</h3>
-                                        <div className="popup__body">
-                                            <div className="product-simple">
-                                                <figure className="product__image">
-                                                    <img src={imgDefault} alt={imgAlt} width="256" height="197" />
-                                                </figure>
+                                <>
+                                    <h3 className="popup__title">{t('product:productAdded')} :</h3>
+                                    <div className="popup__body">
+                                        <div className="product-simple">
+                                            <figure className="product__image">
+                                                <img src={imgDefault} alt={imgAlt} width="256" height="197" />
+                                            </figure>
 
-                                                <h4 className="product__title">{this.state.selectedQty} x {product.name}</h4>
+                                            <h4 className="product__title">{this.state.selectedQty} x {product.name}</h4>
 
-                                                <div className="product__actions">
-                                                    <button type="button" className="btn btn--with-icon btn--red" onClick={this.onCloseModal}>
-                                                        {t('product:continueShopping')}
-                                                    </button>
+                                            <div className="product__actions">
+                                                <button type="button" className="btn btn--with-icon btn--red" onClick={this.onCloseModal}>
+                                                    {t('product:continueShopping')}
+                                                </button>
 
-                                                    <Link route="cart" params={{ lang: routerLang }}>
-                                                        <a className="btn btn--with-icon btn--red">
-                                                            {t('product:viewCart')}
-                                                        </a>
-                                                    </Link>
-                                                </div>
+                                                <Link route="cart" params={{ lang: routerLang }}>
+                                                    <a className="btn btn--with-icon btn--red">
+                                                        {t('product:viewCart')}
+                                                    </a>
+                                                </Link>
                                             </div>
                                         </div>
-                                    </>
-                                )
+                                    </div>
+                                </>
+                            )
                         }
                     </ModalR>
                     <ModalR open={openComment} onClose={this.onCloseModalComment} delay={0} center>
@@ -722,7 +758,7 @@ class PageProduct extends NSPageProduct {
                         </div>
                     </ModalR>
                 </Layout>
-            </NSContext.Provider>
+            </NSContext.Provider >
         );
     }
 }
