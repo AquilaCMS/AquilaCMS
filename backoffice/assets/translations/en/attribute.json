@@ -37,7 +37,8 @@
         "errorOccurred": "An error has occurred",
         "error": "Error", 
         "deleteAttribute": "Attribute deleted",
-        "infoDispoFiltres": "Allows an attribute selection category to be visible in filters"
+        "infoDispoFiltres": "Allows an attribute selection category to be visible in filters",
+        "allowDeclinaison": "Use as products variant"
     },
 
     "list": {

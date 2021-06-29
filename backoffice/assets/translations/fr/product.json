@@ -142,5 +142,12 @@
     },
     "toast": {
         "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
+    },
+    "declinaisons": {
+        "title1": "Déclinaisons utilisés",
+        "title2": "Liste des déclinaisons",
+        "code": "Code",
+        "name": "Nom",
+        "typeDisplay": "Type d'affichage"
     }
 }

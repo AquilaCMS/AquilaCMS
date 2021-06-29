@@ -89,6 +89,12 @@
                     <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>
                 </div>
             </div>
+            <div class="form-group" ng-show="_type === 'products'">
+                <label class="col-sm-3 control-label" translate>attribute.detail.allowDeclinaison</label>
+                <div class="col-sm-6">
+                    <ns-switch name="isVariantable" ng-model="attribute.isVariantable"></ns-switch>
+                </div>
+            </div>
             <div ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
             <div ng-show="attribute.type === 'list' || attribute.type === 'multiselect'" class="form-group">
                 <label for="type" class="col-sm-3 control-label" translate>attribute.detail.valeurs</label>

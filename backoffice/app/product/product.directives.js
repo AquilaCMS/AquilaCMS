@@ -179,6 +179,20 @@ ProductDirectives.directive("nsProductGeneral", function () {
         controller  : 'nsProductGeneral'
     };
 });
+
+ProductDirectives.directive("nsProductDeclinaisons", function () {
+    return {
+        restrict : "E",
+        scope    : {
+            product     : "=", lang        : "=", isEditMode  : "=", form        : "="
+        },
+        templateUrl : "app/product/views/templates/nsProductDeclinaisons.html",
+        controller  : ['$scope', function($scope) {
+            console.log($scope.product)
+            $scope.declinaisons = []
+        }]
+    };
+});
 // product: Objet contenant les informations du produits
 // form: Formulaire
 // init: permet d'initialiser les valeurs (dans ce cas lorsque le produit est bien entierement chargé, on peut charger les données du fournisseur de cet article)

@@ -6,19 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose      = require('mongoose');
-const fs            = require('../../utils/fsp');
-const aquilaEvents  = require('../../utils/aquilaEvents');
-const NSErrors      = require('../../utils/errors/NSErrors');
-const utils         = require('../../utils/utils');
+const mongoose                 = require('mongoose');
+const fs                       = require('../../utils/fsp');
+const aquilaEvents             = require('../../utils/aquilaEvents');
+const NSErrors                 = require('../../utils/errors/NSErrors');
+const utils                    = require('../../utils/utils');
+const ProductDeclinaisonSchema = require('./productDeclinaison');
 const {
     checkCustomFields,
     checkTranslations
 } = require('../../utils/translation');
-const utilsDatabase = require('../../utils/database');
+const utilsDatabase            = require('../../utils/database');
 
-const Schema     = mongoose.Schema;
-const {ObjectId} = Schema.Types;
+const Schema          = mongoose.Schema;
+const {Map, ObjectId} = Schema.Types;
 
 const ProductsSchema = new Schema({
     code               : {type: String, required: true, unique: true},
@@ -116,6 +117,10 @@ const ProductsSchema = new Schema({
     },
     stats : {
         views : {type: Number, default: 0}
+    },
+    declinaisons : {
+        type : Map,
+        of   : ProductDeclinaisonSchema
     }
 }, {
     discriminatorKey : 'kind',
