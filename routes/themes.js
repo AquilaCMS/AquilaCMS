@@ -6,13 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path = require('path');
-const { authentication, adminAuth } = require('../middleware/authentication');
-const themesServices = require('../services/themes');
-const serviceThemeConfig = require('../services/themeConfig');
-const ServiceConfig = require('../services/config');
-const packageManager = require('../utils/packageManager');
-const serverUtils = require('../utils/server');
+const {authentication, adminAuth} = require('../middleware/authentication');
+const themesServices              = require('../services/themes');
+const serviceThemeConfig          = require('../services/themeConfig');
+const ServiceConfig               = require('../services/config');
+const packageManager              = require('../utils/packageManager');
 
 module.exports = function (app) {
     app.get('/v2/themes', authentication, adminAuth, listTheme);
@@ -35,7 +33,7 @@ async function save(req, res, next) {
     req.setTimeout(300000);
     try {
         const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme);
-        res.send({ data: sauvegarde });
+        res.send({data: sauvegarde});
     } catch (err) {
         next(err);
     }
@@ -47,7 +45,7 @@ async function save(req, res, next) {
 async function listTheme(req, res, next) {
     try {
         const allTheme = await themesServices.listTheme();
-        res.send({ data: allTheme });
+        res.send({data: allTheme});
     } catch (err) {
         return next(err);
     }
@@ -59,7 +57,7 @@ async function listTheme(req, res, next) {
 async function getCustomCss(req, res, next) {
     try {
         const customCss = await themesServices.getCustomCss(req.params.cssName);
-        return res.send({ data: customCss });
+        return res.send({data: customCss});
     } catch (err) {
         return next(err);
     }
@@ -137,7 +135,7 @@ const copyDatas = async (req, res, next) => {
 async function packageInstall(req, res, next) {
     req.setTimeout(300000);
     try {
-        let themeName = "";
+        let themeName       = '';
         let devDependencies = false;
         if (req && req.body) {
             if (req.body.devDependencies) {
@@ -164,10 +162,10 @@ async function buildTheme(req, res, next) {
         if (!themPath || themPath === '') {
             themPath = themesServices.getThemePath();
         }
-        themPath = themPath.replace('./themes/', '');
+        themPath   = themPath.replace('./themes/', '');
         const data = await themesServices.buildTheme(themPath);
         res.send(data);
-        packageManager.restart()
+        packageManager.restart();
     } catch (error) {
         return next(error);
     }
@@ -176,21 +174,21 @@ async function buildTheme(req, res, next) {
 async function getThemeInformations(req, res, next) {
     try {
         const themeConf = await serviceThemeConfig.getThemeConfig({
-            filter: {},
-            structure: {},
-            limit: 99
+            filter    : {},
+            structure : {},
+            limit     : 99
         });
-        const config = (await ServiceConfig.getConfig({
-            structure: {
-                _id: 0,
-                'environment.adminPrefix': 1,
-                'environment.appUrl': 1,
-                'environment.currentTheme': 1
+        const config    = (await ServiceConfig.getConfig({
+            structure : {
+                _id                        : 0,
+                'environment.adminPrefix'  : 1,
+                'environment.appUrl'       : 1,
+                'environment.currentTheme' : 1
             }
         }, req.info));
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({ themeConf, configEnvironment: config, listTheme, listFiles });
+        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
     } catch (error) {
         return next(error);
     }

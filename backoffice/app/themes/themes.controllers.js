@@ -208,14 +208,17 @@ ThemesController.controller("ThemesCtrl", [
                             });
                         }
                     }
+                }, function(err){
+                    console.log(err);
                 });
             } else {
                 ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
                     $scope.showThemeLoading = true;
                     if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
                         if (confirm($translate.instant("confirm.changeTheme"))) {
-                            Themes.save({ environment: $scope.config.environment }, function () {
+                            Themes.save({ environment: $scope.config.environment }, function (response) {
                                 if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
+                                    toastService.toast("success", $translate.instant("global.success"));
                                     $scope.showThemeLoading = false;
                                     $scope.showLoading = true;
                                     $scope.progressValue = 0;

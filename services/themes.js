@@ -10,10 +10,9 @@ const mongoose                     = require('mongoose');
 const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
-const packageManager               = require('../utils/packageManager');
 const NSErrors                     = require('../utils/errors/NSErrors');
+const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
-const {isProd}                     = require('../utils/server');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
 
@@ -34,23 +33,22 @@ const changeTheme = async (selectedTheme) => {
 
     // If the theme has changed
     if (oldConfig.environment.currentTheme !== selectedTheme) {
-        console.log(`Setup selected theme: ${selectedTheme}...`);
+        console.log(`Setup selected theme: ${selectedTheme}`);
         try {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
-
             await require('./modules').setFrontModules(selectedTheme);
             await setConfigTheme(selectedTheme);
             await installDependencies(selectedTheme);
             await buildTheme(selectedTheme);
-
             await updateService.setMaintenance(false);
         } catch (err) {
             console.error(err);
+            throw NSErrors.SameTheme;
         }
-    } else {
-        throw NSErrors.SameTheme;
+        return {sucess: true};
     }
+    throw NSErrors.SameTheme;
 };
 
 /**
@@ -146,8 +144,7 @@ async function removeConfigTheme(theme) {
  */
 const installDependencies = async (theme) => {
     console.log('Installing new theme\'s dependencies...');
-    const cmdTheme = `./themes/${theme}`;
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, cmdTheme);
+    return themesUtils.yarnInstall(theme, true);
 };
 
 /**
@@ -383,15 +380,15 @@ async function buildTheme(theme) {
         if (themeType === 'next') {
             returnValues = await nextBuild(pathToTheme);
         } else {
-            returnValues = await packageManager.execCmd('yarn run build', path.join(pathToTheme, '/'));
+            returnValues = await themesUtils.yarnBuild(theme);
         }
         return {
-            msg : "OK",
-            result: returnValues
+            msg    : 'OK',
+            result : returnValues
         };
     } catch (err) {
         return {
-            msg : "KO",
+            msg   : 'KO',
             error : err
         };
     }
@@ -421,25 +418,20 @@ const listTheme = async () => {
     return allTheme;
 };
 
-const installTheme = async (themeName = "", devDependencies = false) => {
+const installTheme = async (themeName = '', devDependencies = false) => {
     try {
-        const linkToTheme = path.join(global.appRoot, "themes", themeName);
-        let command = `yarn install --production=true`;
-        if(devDependencies == true){
-            command = `yarn install --production=false`;
-        }
-        const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+        const returnValues = await themesUtils.yarnInstall(themeName, devDependencies);
         return {
-            msg : "OK",
-            result: returnValues
+            msg    : 'OK',
+            result : returnValues
         };
     } catch (err) {
         return {
-            msg : "KO",
+            msg   : 'KO',
             error : err
         };
     }
-}
+};
 
 module.exports = {
     changeTheme,

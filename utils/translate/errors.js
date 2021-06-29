@@ -523,6 +523,10 @@ module.exports = {
         fr : 'Ce theme est le thème courant',
         en : 'This theme is the current theme'
     },
+    ThemeInstallation : {
+        fr : "Erreur lors de l'installation du thème",
+        en : 'Error during theme installation'
+    },
     ModuleNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du module ne corespondent pas',
         en : 'The name of the theme, name of the module\'s folder or zip do not match'

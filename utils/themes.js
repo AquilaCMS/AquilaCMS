@@ -19,16 +19,15 @@ const themeCompile = async (theme, type, newIsProd) => {
     try {
         theme                      = theme || global.envConfig.environment.currentTheme;
         const pathToTheme          = path.join(global.appRoot, 'themes', theme);
-        const pathToTheme2          = path.join(pathToTheme, '/');
         let installDevDependencies = !isProd;
         if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
             installDevDependencies = true; // we force overriding
         }
-        await packageManager.execCmd(`yarn install ${installDevDependencies ? "--production=false": "--production=true"}`, pathToTheme2);
+        await yarnInstall(theme, installDevDependencies);
         if (typeof type === 'undefined' || type === null || type === 'next') {
             await nextBuild(pathToTheme);
         } else {
-            await packageManager.execCmd(`yarn run build`, pathToTheme2);
+            await yarnBuild(theme);
         }
     } catch (err) {
         console.error(err);
@@ -57,7 +56,31 @@ const loadTheme = async () => {
     return {i18nInstance, ns};
 };
 
+/**
+ * Do a yarn install
+ */
+const yarnInstall = async (themeName = '', devDependencies = false) => {
+    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+    let command       = 'yarn install --production=true';
+    if (devDependencies === true) {
+        command = 'yarn install --production=false';
+    }
+    const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+    return returnValues;
+};
+
+/**
+ * Do a yarn run build
+ */
+const yarnBuild = async (themeName = '') => {
+    const linkToTheme  = path.join(global.appRoot, 'themes', themeName);
+    const returnValues = await packageManager.execCmd('yarn run build', path.join(linkToTheme, '/'));
+    return returnValues;
+};
+
 module.exports = {
     themeCompile,
-    loadTheme
+    loadTheme,
+    yarnInstall,
+    yarnBuild
 };
