@@ -74,17 +74,26 @@ ThemesController.controller("ThemesCtrl", [
             }
         }
 
-        $scope.packageInstall = function () {
+        $scope.packageInstall = function (devDependencies) {
             if (confirm($translate.instant("confirm.installPackageWarning"))) {
                 $scope.isLoading = true;
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
-                Themes.packageInstall({ themeName: $scope.config.environment.currentTheme }, function (response) {
+                Themes.packageInstall({
+                    themeName: $scope.config.environment.currentTheme,
+                    devDependencies : devDependencies
+                }, function (response) {
+                    if(response && response.result){
+                        console.log(response.result);
+                    }
                     toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                 }, function (err) {
+                    if(err && err.error){
+                        console.log(error);
+                    }
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
@@ -101,11 +110,17 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 Themes.packageBuild({ themeName: $scope.config.environment.currentTheme }, function (response) {
+                    if(response && response.result){
+                        console.log(response.result);
+                    }
                     toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                 }, function (err) {
+                    if(err && err.error){
+                        console.log(error);
+                    }
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
@@ -265,7 +280,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
                 $scope.themeConfig.selected = response.themeConf.name;
-
+                $scope.themeConfig.config = JSON.stringify(response.themeConf.config, null, 4);
                 if (response.configEnvironment && response.themeConf.config.translation) {
                     $scope.languages.forEach(element  => {
                         $scope.themeConfig.variables[element.code] = response.themeConf.config.translation[element.code].values;

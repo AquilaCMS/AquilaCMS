@@ -6,26 +6,26 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                        = require('path');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const themesServices              = require('../services/themes');
-const serviceThemeConfig          = require('../services/themeConfig');
-const ServiceConfig               = require('../services/config');
-const packageManager              = require('../utils/packageManager');
-const serverUtils                 = require('../utils/server');
+const path = require('path');
+const { authentication, adminAuth } = require('../middleware/authentication');
+const themesServices = require('../services/themes');
+const serviceThemeConfig = require('../services/themeConfig');
+const ServiceConfig = require('../services/config');
+const packageManager = require('../utils/packageManager');
+const serverUtils = require('../utils/server');
 
 module.exports = function (app) {
-    app.get('/v2/themes',                  authentication, adminAuth, listTheme);
-    app.post('/v2/themes/upload',          authentication, adminAuth, uploadTheme);
-    app.post('/v2/themes/delete',          authentication, adminAuth, deleteTheme);
-    app.post('/v2/themes/copyDatas',       authentication, adminAuth, copyDatas);
-    app.get('/v2/themes/css/:cssName',     authentication, adminAuth, getCustomCss);
-    app.post('/v2/themes/css/:cssName',    authentication, adminAuth, postCustomCss);
-    app.get('/v2/themes/css',              authentication, adminAuth, getAllCssComponentName);
-    app.post('/v2/themes/save',            authentication, adminAuth, save);
+    app.get('/v2/themes', authentication, adminAuth, listTheme);
+    app.post('/v2/themes/upload', authentication, adminAuth, uploadTheme);
+    app.post('/v2/themes/delete', authentication, adminAuth, deleteTheme);
+    app.post('/v2/themes/copyDatas', authentication, adminAuth, copyDatas);
+    app.get('/v2/themes/css/:cssName', authentication, adminAuth, getCustomCss);
+    app.post('/v2/themes/css/:cssName', authentication, adminAuth, postCustomCss);
+    app.get('/v2/themes/css', authentication, adminAuth, getAllCssComponentName);
+    app.post('/v2/themes/save', authentication, adminAuth, save);
     app.post('/v2/themes/package/install', authentication, adminAuth, packageInstall);
-    app.post('/v2/themes/package/build',   authentication, adminAuth, buildTheme);
-    app.get('/v2/themes/informations',     authentication, adminAuth, getThemeInformations);
+    app.post('/v2/themes/package/build', authentication, adminAuth, buildTheme);
+    app.get('/v2/themes/informations', authentication, adminAuth, getThemeInformations);
 };
 
 /**
@@ -35,7 +35,7 @@ async function save(req, res, next) {
     req.setTimeout(300000);
     try {
         const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme);
-        res.send({data: sauvegarde});
+        res.send({ data: sauvegarde });
     } catch (err) {
         next(err);
     }
@@ -47,7 +47,7 @@ async function save(req, res, next) {
 async function listTheme(req, res, next) {
     try {
         const allTheme = await themesServices.listTheme();
-        res.send({data: allTheme});
+        res.send({ data: allTheme });
     } catch (err) {
         return next(err);
     }
@@ -59,7 +59,7 @@ async function listTheme(req, res, next) {
 async function getCustomCss(req, res, next) {
     try {
         const customCss = await themesServices.getCustomCss(req.params.cssName);
-        return res.send({data: customCss});
+        return res.send({ data: customCss });
     } catch (err) {
         return next(err);
     }
@@ -124,7 +124,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames,  req.body.otherParams);
+        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames, req.body.otherParams);
         return res.end();
     } catch (error) {
         return next(error);
@@ -135,16 +135,20 @@ const copyDatas = async (req, res, next) => {
  * @description Run a 'yarn install' command on the defined theme
  */
 async function packageInstall(req, res, next) {
+    req.setTimeout(300000);
     try {
-        let themPath = req.body.themeName;
-        if (!themPath || themPath === '' || themPath === './themes/') {
-            themPath = `./themes/${themesServices.getThemePath()}`;
+        let themeName = "";
+        let devDependencies = false;
+        if (req && req.body) {
+            if (req.body.devDependencies) {
+                devDependencies = true;
+            }
+            if (req.body.themeName) {
+                themeName = req.body.themeName;
+            }
         }
-        await packageManager.execCmd(
-            `yarn install${serverUtils.isProd ? ' --prod' : ''}`,
-            path.resolve(`./themes/${themPath}`)
-        );
-        return res.json();
+        const data = await themesServices.installTheme(themeName, devDependencies);
+        return res.send(data);
     } catch (error) {
         return next(error);
     }
@@ -161,8 +165,9 @@ async function buildTheme(req, res, next) {
             themPath = themesServices.getThemePath();
         }
         themPath = themPath.replace('./themes/', '');
-        await themesServices.buildTheme(themPath);
-        res.send(packageManager.restart());
+        const data = await themesServices.buildTheme(themPath);
+        res.send(data);
+        packageManager.restart()
     } catch (error) {
         return next(error);
     }
@@ -171,21 +176,21 @@ async function buildTheme(req, res, next) {
 async function getThemeInformations(req, res, next) {
     try {
         const themeConf = await serviceThemeConfig.getThemeConfig({
-            filter    : {},
-            structure : {},
-            limit     : 99
+            filter: {},
+            structure: {},
+            limit: 99
         });
-        const config    = (await ServiceConfig.getConfig({
-            structure : {
-                _id                        : 0,
-                'environment.adminPrefix'  : 1,
-                'environment.appUrl'       : 1,
-                'environment.currentTheme' : 1
+        const config = (await ServiceConfig.getConfig({
+            structure: {
+                _id: 0,
+                'environment.adminPrefix': 1,
+                'environment.appUrl': 1,
+                'environment.currentTheme': 1
             }
         }, req.info));
         const listTheme = await themesServices.listTheme();
         const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
+        res.send({ themeConf, configEnvironment: config, listTheme, listFiles });
     } catch (error) {
         return next(error);
     }

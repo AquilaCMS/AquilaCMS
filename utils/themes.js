@@ -15,18 +15,24 @@ const {isProd}       = require('./server');
 /**
  * Compile the current theme
  */
-const themeCompile = async (theme, type) => {
+const themeCompile = async (theme, type, newIsProd) => {
     try {
-        theme = theme || global.envConfig.environment.currentTheme;
-        theme = path.resolve(global.appRoot, 'themes', theme);
-        await packageManager.execCmd(`yarn install ${isProd ? ' --prod' : ''}`, `${theme}`);
+        theme                      = theme || global.envConfig.environment.currentTheme;
+        const pathToTheme          = path.join(global.appRoot, 'themes', theme);
+        const pathToTheme2          = path.join(pathToTheme, '/');
+        let installDevDependencies = !isProd;
+        if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
+            installDevDependencies = true; // we force overriding
+        }
+        await packageManager.execCmd(`yarn install ${installDevDependencies ? "--production=false": "--production=true"}`, pathToTheme2);
         if (typeof type === 'undefined' || type === null || type === 'next') {
-            await nextBuild(theme);
+            await nextBuild(pathToTheme);
         } else {
-            await packageManager.execCmd('yarn run build', theme);
+            await packageManager.execCmd(`yarn run build`, pathToTheme2);
         }
     } catch (err) {
         console.error(err);
+        throw new Error(err);
     }
 };
 

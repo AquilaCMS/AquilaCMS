@@ -368,24 +368,32 @@ function getThemePath() {
  * @param {String} theme
  */
 async function buildTheme(theme) {
-    const themeConfig = await ThemeConfig.findOne({name: theme});
-    let config;
-    if (typeof themeConfig !== 'undefined' && themeConfig !== null && typeof themeConfig.config !== 'undefined' ) {
-        config = themeConfig.config;
-    }
-    let themeType = 'next';
-    if (typeof config !== 'undefined' && typeof config.type !== 'undefined') {
-        themeType = config.type;
-    }
-    const pathToTheme = path.resolve(global.appRoot, 'themes', theme);
-    if (themeType === 'next') {
-        await nextBuild(pathToTheme);
-    } else {
-        try {
-            await packageManager.execCmd('yarn run build', pathToTheme);
-        } catch (err) {
-            // nothing
+    try {
+        const themeConfig = await ThemeConfig.findOne({name: theme});
+        let config;
+        if (typeof themeConfig !== 'undefined' && themeConfig !== null && typeof themeConfig.config !== 'undefined' ) {
+            config = themeConfig.config;
         }
+        let themeType = 'next';
+        if (typeof config !== 'undefined' && typeof config.type !== 'undefined') {
+            themeType = config.type;
+        }
+        const pathToTheme = path.resolve(global.appRoot, 'themes', theme);
+        let returnValues;
+        if (themeType === 'next') {
+            returnValues = await nextBuild(pathToTheme);
+        } else {
+            returnValues = await packageManager.execCmd('yarn run build', path.join(pathToTheme, '/'));
+        }
+        return {
+            msg : "OK",
+            result: returnValues
+        };
+    } catch (err) {
+        return {
+            msg : "KO",
+            error : err
+        };
     }
 }
 
@@ -413,6 +421,26 @@ const listTheme = async () => {
     return allTheme;
 };
 
+const installTheme = async (themeName = "", devDependencies = false) => {
+    try {
+        const linkToTheme = path.join(global.appRoot, "themes", themeName);
+        let command = `yarn install --production=true`;
+        if(devDependencies == true){
+            command = `yarn install --production=false`;
+        }
+        const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+        return {
+            msg : "OK",
+            result: returnValues
+        };
+    } catch (err) {
+        return {
+            msg : "KO",
+            error : err
+        };
+    }
+}
+
 module.exports = {
     changeTheme,
     setConfigTheme,
@@ -427,5 +455,6 @@ module.exports = {
     getThemePath,
     loadTranslation,
     listTheme,
-    getDemoDatasFilesName
+    getDemoDatasFilesName,
+    installTheme
 };

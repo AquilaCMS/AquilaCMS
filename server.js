@@ -93,8 +93,12 @@ const initFrontFramework = async (themeFolder) => {
     } catch (err) {
         // if error, we do nothing, we use default
     }
-    if (dev) {
-        await utilsThemes.themeCompile(null, type);
+    if (dev || (themeConfig && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true)) {
+        let overrideIsProd = false;
+        if (themeConfig && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true) {
+            overrideIsProd = true;
+        }
+        await utilsThemes.themeCompile(null, type, overrideIsProd);
     }
     if (type === 'next') {
         const app = next({dev, dir: themeFolder});
