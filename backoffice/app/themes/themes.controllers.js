@@ -224,9 +224,13 @@ ThemesController.controller("ThemesCtrl", [
                                 }
                                 $scope.showThemeLoading = false;
                             }, function (err) {
-                                $scope.showThemeLoading = false;
-                                toastService.toast("danger", $translate.instant("global.standardError"));
                                 console.error(err);
+                                $scope.showThemeLoading = false;
+                                if(err && err.data && err.data.message){
+                                    toastService.toast("danger", err.data.message);
+                                }else{
+                                    toastService.toast("danger", $translate.instant("global.standardError"));
+                                }
                             });
                         } else {
                             $scope.showThemeLoading = false;

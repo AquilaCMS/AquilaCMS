@@ -519,6 +519,10 @@ module.exports = {
         fr : 'Version du theme Aquila non satisfaite',
         en : 'Aquila theme version not satisfied'
     },
+    SameTheme : {
+        fr : 'Ce theme est le thème courant',
+        en : 'This theme is the current theme'
+    },
     ModuleNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du module ne corespondent pas',
         en : 'The name of the theme, name of the module\'s folder or zip do not match'
