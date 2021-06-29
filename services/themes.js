@@ -368,7 +368,25 @@ function getThemePath() {
  * @param {String} theme
  */
 async function buildTheme(theme) {
-    await nextBuild(path.resolve(global.appRoot, 'themes', theme));
+    const themeConfig = await ThemeConfig.findOne({name: theme});
+    let config;
+    if (typeof themeConfig !== 'undefined' && themeConfig !== null && typeof themeConfig.config !== 'undefined' ) {
+        config = themeConfig.config;
+    }
+    let themeType = 'next';
+    if (typeof config !== 'undefined' && typeof config.type !== 'undefined') {
+        themeType = config.type;
+    }
+    const pathToTheme = path.resolve(global.appRoot, 'themes', theme);
+    if (themeType === 'next') {
+        await nextBuild(pathToTheme);
+    } else {
+        try {
+            await packageManager.execCmd('yarn run build', pathToTheme);
+        } catch (err) {
+            // nothing
+        }
+    }
 }
 
 const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware, ns) => {

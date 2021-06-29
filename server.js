@@ -80,29 +80,57 @@ const setEnvConfig = async () => {
 };
 
 const initFrontFramework = async (themeFolder) => {
-    if (dev) await utilsThemes.themeCompile();
+    let type = 'next'; // default type
+    let themeConfig;
+    try {
+        const {ThemeConfig} = require('./orm/models');
+        if (typeof ThemeConfig !== 'undefined' && ThemeConfig !== null) {
+            themeConfig = await ThemeConfig.findOne(global.envConfig.environment.currentTheme ? {name: global.envConfig.environment.currentTheme} : {});
+            if (typeof themeConfig !== 'undefined' && typeof themeConfig.config !== 'undefined' && typeof themeConfig.config.type !== 'undefined') {
+                type = themeConfig.config.type;
+            }
+        }
+    } catch (err) {
+        // if error, we do nothing, we use default
+    }
+    if (dev) {
+        await utilsThemes.themeCompile(null, type);
+    }
+    if (type === 'next') {
+        const app = next({dev, dir: themeFolder});
+        let handler;
+        if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
+            const routes = require(path.join(themeFolder, 'routes'));
+            handler      = routes.getRequestHandler(app);
+        } else {
+            handler = app.getRequestHandler();
+        }
+        const {i18nInstance, ns} = await utilsThemes.loadTheme();
 
-    const app = next({dev, dir: themeFolder});
-    let handler;
-    if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
-        const routes = require(path.join(themeFolder, 'routes'));
-        handler      = routes.getRequestHandler(app);
+        if (i18nInstance) {
+            await translation.initI18n(i18nInstance, ns);
+            server.use(i18nextMiddleware.handle(i18nInstance));
+            server.use('/locales', express.static(path.join(themeFolder, 'assets/i18n')));
+        }
+
+        console.log('next build start...');
+        await app.prepare();
+        console.log('next build finish');
+
+        server.use('/', middlewareServer.maintenance, handler);
     } else {
-        handler = app.getRequestHandler();
+        // not a next theme
+        if (global.envConfig.environment.currentTheme) {
+            const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
+            if (fs.existsSync(pathToTheme)) {
+                let pathToPages = pathToTheme;
+                if (typeof themeConfig.config.expose !== 'undefined') {
+                    pathToPages = path.join(pathToTheme, themeConfig.config.expose);
+                }
+                server.use('/', express.static(pathToPages));
+            }
+        }
     }
-    const {i18nInstance, ns} = await utilsThemes.loadTheme();
-
-    if (i18nInstance) {
-        await translation.initI18n(i18nInstance, ns);
-        server.use(i18nextMiddleware.handle(i18nInstance));
-        server.use('/locales', express.static(path.join(themeFolder, 'assets/i18n')));
-    }
-
-    console.log('next build start...');
-    await app.prepare();
-    console.log('next build finish');
-
-    server.use('/', middlewareServer.maintenance, handler);
 };
 
 const initServer = async () => {

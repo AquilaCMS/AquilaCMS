@@ -15,12 +15,16 @@ const {isProd}       = require('./server');
 /**
  * Compile the current theme
  */
-const themeCompile = async (theme) => {
+const themeCompile = async (theme, type) => {
     try {
         theme = theme || global.envConfig.environment.currentTheme;
         theme = path.resolve(global.appRoot, 'themes', theme);
         await packageManager.execCmd(`yarn install ${isProd ? ' --prod' : ''}`, `${theme}`);
-        await nextBuild(theme);
+        if (typeof type === 'undefined' || type === null || type === 'next') {
+            await nextBuild(theme);
+        } else {
+            await packageManager.execCmd('yarn run build', theme);
+        }
     } catch (err) {
         console.error(err);
     }
