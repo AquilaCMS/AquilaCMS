@@ -110,10 +110,12 @@ const initFrontFramework = async () => {
             if (fs.existsSync(pathToInit)) {
                 const initFileOfConfig = require(pathToInit);
                 handler                = await initFileOfConfig.start(server);
+                if (typeof handler !== 'undefined' && handler !== null) {
+                    server.use('/', handler);
+                }
             }
-            server.use('/', handler);
         } catch (errorInit) {
-            console.error('Erreur loading handler of the theme');
+            console.error('Error loading handler of the theme');
             throw '';
         }
     } else if (type === 'static') {
