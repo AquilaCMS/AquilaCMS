@@ -512,12 +512,9 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // We look for the number of orders the customer has placed with a promo code,
     // if the number of orders with this code is >= the promo.codes.limit_client (The number of times a customer can use this code)
     // then he won't be able to use the promo code again
-    if (user) {
-        const orderWithCode = await Orders.find({'customer.id': user._id, 'promos.promoCodeId': newCode[0]._id});
-        if (newCode[0].limit_client !== null && (orderWithCode.length === newCode[0].limit_client || orderWithCode.length >= newCode[0].limit_client)) {
-            await removePromoFromCart(cart);
-            throw NSErrors.PromoCodePromoLimitClientMax;
-        }
+    if (newCode[0].limit_client !== null && newCode[0].client_used >= newCode[0].limit_client) {
+        await removePromoFromCart(cart);
+        throw NSErrors.PromoCodePromoLimitClientMax;
     }
     // -----------------------------------------------------------------------------
     // ----------------------- Apply rules of this discount ------------------------
