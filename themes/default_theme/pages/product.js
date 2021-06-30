@@ -107,21 +107,39 @@ class PageProduct extends NSPageProduct {
             });
         }
 
-        let options = [{}];
+        let options = [];
         if (product.options) {
             options = product.options;
         }
 
         function renderOptions(element) {
-
             if (element.type == "checkbox") {
-                return <input type="text" />
+                return (element.values.map((elementValue) => {
+                    if (elementValue.name && elementValue.name[lang]) {
+                        return <>
+                            <label>{elementValue.name[lang]}</label>
+                            <input type="checkbox" />
+                        </>
+                    }
+                }));
             } else if (element.type == "number") {
-                return <input type="number" />
+                return (element.values.map((elementValue) => {
+                    if (elementValue.name && elementValue.name[lang]) {
+                        return <>
+                            <label>{elementValue.name[lang]}</label>
+                            <input type="number" />
+                        </>
+                    }
+                }));
             } else if (element.type == "textfield") {
-                return (<input type="text" />)
-            } else if (element.type == "checkbox") {
-                return (<div>test</div>)
+                return (element.values.map((elementValue) => {
+                    if (elementValue.name && elementValue.name[lang]) {
+                        return <>
+                            <label>{elementValue.name[lang]}</label>
+                            <input type="text" />
+                        </>
+                    }
+                }));
             } else if (element.type == "list") {
                 return (<select>
                     {element.values.map((elementValue) => {
@@ -275,8 +293,8 @@ class PageProduct extends NSPageProduct {
                                         {options.map((element) => {
                                             return (
                                                 <>
-                                                    <div>{element.name[lang]}</div>
-                                                    {element.mandatory == true ? <span>(obligatoire)</span> : <span>(optionnal)</span>}
+                                                    <div>{element.name[lang]}{element.mandatory == true ? <span>(obligatoire)</span> : <span>(optionnal)</span>}</div>
+
                                                     {renderOptions(element)}
                                                 </>
                                             )
