@@ -168,10 +168,10 @@ ShipmentControllers.controller('ShipmentDetailCtrl', ['$scope', '$http', '$locat
                         prices: tabPrice
                     });
                 }else{
-                    toastService.toast("warning", $translate.instant("simple.contryAlreadySelected"));
+                    toastService.toast("warning", $translate.instant("shipment.detail.contryAlreadySelected"));
                 }
             }else{
-                toastService.toast("warning", $translate.instant("simple.selectContry"));
+                toastService.toast("warning", $translate.instant("shipment.detail.selectContry"));
             }
         };
 
