@@ -132,6 +132,7 @@ class NSErrors {
     static get ModuleMainFolder() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleMainFolder' ); }
     static get ModuleInfoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleInfoNotFound'); }
     static get ThemePackageNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemePackageNotFound'); }
+    static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }

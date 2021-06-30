@@ -34,7 +34,7 @@ const changeTheme = async (selectedTheme) => {
 
     // If the theme has changed
     if (oldConfig.environment.currentTheme !== selectedTheme) {
-        console.log('Setup selected theme...');
+        console.log(`Setup selected theme: ${selectedTheme}...`);
         try {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
@@ -48,6 +48,8 @@ const changeTheme = async (selectedTheme) => {
         } catch (err) {
             console.error(err);
         }
+    } else {
+        throw NSErrors.SameTheme;
     }
 };
 

@@ -252,6 +252,8 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                                 }
                             }
                             require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
+                        } else {
+                            process.stdout.write(`- ${mod.name} \x1b[33m (can't access to initAfter.js or no initAfter.js)`);
                         }
                         resolve();
                     } catch (err) {
