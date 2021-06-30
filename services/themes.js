@@ -368,7 +368,18 @@ function getThemePath() {
  * @param {String} theme
  */
 async function buildTheme(theme) {
-    await nextBuild(path.resolve(global.appRoot, 'themes', theme));
+    try {
+        const returnValues = await nextBuild(path.resolve(global.appRoot, 'themes', theme));
+        return {
+            msg    : 'OK',
+            result : returnValues
+        };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
 }
 
 const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware, ns) => {
@@ -395,6 +406,26 @@ const listTheme = async () => {
     return allTheme;
 };
 
+const installTheme = async (themeName = '', devDependencies = false) => {
+    try {
+        const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+        let command       = 'yarn install --production=true';
+        if (devDependencies === true) {
+            command = 'yarn install --production=false';
+        }
+        const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+        return {
+            msg    : 'OK',
+            result : returnValues
+        };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
+};
+
 module.exports = {
     changeTheme,
     setConfigTheme,
@@ -409,5 +440,6 @@ module.exports = {
     getThemePath,
     loadTranslation,
     listTheme,
-    getDemoDatasFilesName
+    getDemoDatasFilesName,
+    installTheme
 };
