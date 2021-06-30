@@ -7,7 +7,6 @@
  */
 
 const mongoose                     = require('mongoose');
-const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
 const NSErrors                     = require('../utils/errors/NSErrors');
@@ -366,22 +365,7 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        const themeConfig = await ThemeConfig.findOne({name: theme});
-        let config;
-        if (typeof themeConfig !== 'undefined' && themeConfig !== null && typeof themeConfig.config !== 'undefined' ) {
-            config = themeConfig.config;
-        }
-        let themeType = 'next';
-        if (typeof config !== 'undefined' && typeof config.type !== 'undefined') {
-            themeType = config.type;
-        }
-        const pathToTheme = path.resolve(global.appRoot, 'themes', theme);
-        let returnValues;
-        if (themeType === 'next') {
-            returnValues = await nextBuild(pathToTheme);
-        } else {
-            returnValues = await themesUtils.yarnBuild(theme);
-        }
+        const returnValues = await themesUtils.yarnBuildCustom(theme);
         return {
             msg    : 'OK',
             result : returnValues

@@ -7,53 +7,26 @@
  */
 
 const path           = require('path');
-const nextBuild      = require('next/dist/build').default;
+const fs             = require('fs');
 const packageManager = require('./packageManager');
-const modulesUtils   = require('./modules');
 const {isProd}       = require('./server');
 
 /**
  * Compile the current theme
  */
-const themeCompile = async (theme, type, newIsProd) => {
+const themeCompile = async (pathToInit, type, newIsProd) => {
     try {
-        theme                      = theme || global.envConfig.environment.currentTheme;
-        const pathToTheme          = path.join(global.appRoot, 'themes', theme);
+        const theme                = global.envConfig.environment.currentTheme;
         let installDevDependencies = !isProd;
         if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
             installDevDependencies = true; // we force overriding
         }
         await yarnInstall(theme, installDevDependencies);
-        if (typeof type === 'undefined' || type === null || type === 'next') {
-            await nextBuild(pathToTheme);
-        } else {
-            await yarnBuild(theme);
-        }
+        await yarnBuildCustom(theme);
     } catch (err) {
         console.error(err);
         throw new Error(err);
     }
-};
-
-/**
- * Set current theme at startup from envFile.currentTheme
- */
-const loadTheme = async () => {
-    await modulesUtils.createListModuleFile();
-    await modulesUtils.displayListModule();
-
-    // Language with i18n
-    let i18nInstance = null;
-    let ns           = null;
-    try {
-        const oI18n  = require(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n'));
-        i18nInstance = oI18n.i18nInstance;
-        ns           = oI18n.ns;
-    } catch (error) {
-        console.error(error);
-    }
-
-    return {i18nInstance, ns};
 };
 
 /**
@@ -72,15 +45,34 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
 /**
  * Do a yarn run build
  */
+const yarnBuildCustom = async (themeName = '') => {
+    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+    const pathToInit  = path.join(linkToTheme, 'themeInit.js');
+    let returnValues;
+    if (fs.existsSync(pathToInit)) {
+        const initFileOfConfig = require(pathToInit);
+        if (typeof initFileOfConfig.build === 'function') {
+            returnValues = await initFileOfConfig.build();
+        } else {
+            returnValues = await yarnBuild(themeName);
+        }
+    } else {
+        returnValues = await yarnBuild(themeName);
+    }
+    return returnValues;
+};
+
+/**
+ * Do a yarn run build
+ */
 const yarnBuild = async (themeName = '') => {
     const linkToTheme  = path.join(global.appRoot, 'themes', themeName);
     const returnValues = await packageManager.execCmd('yarn run build', path.join(linkToTheme, '/'));
     return returnValues;
 };
-
 module.exports = {
     themeCompile,
-    loadTheme,
+    yarnBuildCustom,
     yarnInstall,
     yarnBuild
 };

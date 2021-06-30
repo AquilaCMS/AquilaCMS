@@ -7,24 +7,21 @@
  */
 
 require('dotenv').config();
-const express           = require('express');
-const passport          = require('passport');
-const path              = require('path');
-const next              = require('next').default;
-const i18nextMiddleware = require('i18next-http-middleware');
-global.envPath          = null;
-global.envFile          = null;
-global.appRoot          = path.resolve(__dirname);
-global.port             = Number(process.env.PORT || 3010);
-global.defaultLang      = '';
-global.moduleExtend     = {};
-global.translate        = require('./utils/translate');
-const utils             = require('./utils/utils');
-const fs                = require('./utils/fsp');
-const translation       = require('./utils/translation');
-const serverUtils       = require('./utils/server');
-const utilsModules      = require('./utils/modules');
-const utilsThemes       = require('./utils/themes');
+const express       = require('express');
+const passport      = require('passport');
+const path          = require('path');
+global.envPath      = null;
+global.envFile      = null;
+global.appRoot      = path.resolve(__dirname);
+global.port         = Number(process.env.PORT || 3010);
+global.defaultLang  = '';
+global.moduleExtend = {};
+global.translate    = require('./utils/translate');
+const utils         = require('./utils/utils');
+const fs            = require('./utils/fsp');
+const serverUtils   = require('./utils/server');
+const utilsModules  = require('./utils/modules');
+const utilsThemes   = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -79,8 +76,8 @@ const setEnvConfig = async () => {
     global.envConfig = configuration.toObject();
 };
 
-const initFrontFramework = async (themeFolder) => {
-    let type = 'next'; // default type
+const initFrontFramework = async () => {
+    let type = 'custom'; // default type
     let themeConfig;
     try {
         const {ThemeConfig} = require('./orm/models');
@@ -93,47 +90,43 @@ const initFrontFramework = async (themeFolder) => {
     } catch (err) {
         // if error, we do nothing, we use default
     }
+    const themeName   = global.envConfig.environment.currentTheme;
+    const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, '/');
+    const pathToInit  = path.join(pathToTheme, 'themeInit.js');
+
     if (dev || (themeConfig && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true)) {
         let overrideIsProd = false;
         if (themeConfig && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true) {
             overrideIsProd = true;
         }
-        await utilsThemes.themeCompile(null, type, overrideIsProd);
+        await utilsThemes.yarnInstall(themeName, overrideIsProd);
+        await utilsThemes.yarnBuildCustom(themeName);
     }
-    if (type === 'next') {
-        const app = next({dev, dir: themeFolder});
+    server.use('/', middlewareServer.maintenance);
+
+    if (type === 'custom') {
         let handler;
-        if (fs.existsSync(path.join(themeFolder, 'routes.js'))) {
-            const routes = require(path.join(themeFolder, 'routes'));
-            handler      = routes.getRequestHandler(app);
-        } else {
-            handler = app.getRequestHandler();
-        }
-        const {i18nInstance, ns} = await utilsThemes.loadTheme();
-
-        if (i18nInstance) {
-            await translation.initI18n(i18nInstance, ns);
-            server.use(i18nextMiddleware.handle(i18nInstance));
-            server.use('/locales', express.static(path.join(themeFolder, 'assets/i18n')));
-        }
-
-        console.log('next build start...');
-        await app.prepare();
-        console.log('next build finish');
-
-        server.use('/', middlewareServer.maintenance, handler);
-    } else {
-        // not a next theme
-        if (global.envConfig.environment.currentTheme) {
-            const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme);
-            if (fs.existsSync(pathToTheme)) {
-                let pathToPages = pathToTheme;
-                if (typeof themeConfig.config.expose !== 'undefined') {
-                    pathToPages = path.join(pathToTheme, themeConfig.config.expose);
-                }
-                server.use('/', express.static(pathToPages));
+        try {
+            if (fs.existsSync(pathToInit)) {
+                const initFileOfConfig = require(pathToInit);
+                handler                = await initFileOfConfig.start(server);
             }
+            server.use('/', handler);
+        } catch (errorInit) {
+            console.error('Erreur loading handler of the theme');
+            throw '';
         }
+    } else if (type === 'static') {
+        // static type
+        if (fs.existsSync(pathToTheme)) {
+            let pathToPages = pathToTheme;
+            if (typeof themeConfig.config.expose !== 'undefined') {
+                pathToPages = path.join(pathToTheme, themeConfig.config.expose);
+            }
+            server.use('/', express.static(pathToPages));
+        }
+    } else {
+        console.error('Error with the theme');
     }
 };
 
@@ -160,7 +153,7 @@ const initServer = async () => {
         if (compile) {
             console.log('devMode detected, no compilation');
         } else {
-            await initFrontFramework(themeFolder);
+            await initFrontFramework();
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation
