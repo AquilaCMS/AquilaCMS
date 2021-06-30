@@ -103,7 +103,7 @@ SystemControllers.controller("systemGeneralController", [
             if (nextVersion !== $scope.next) {
                 $scope.showThemeLoading = true;
                 System.changeNextVersionRoute({nextVersion}, function(response){
-                    toastService.toast("success", $translate.instant("system.other.restartProgress"));
+                    toastService.toast("success", $translate.instant("system.environment.other.restartProgress"));
                     $scope.showThemeLoading = false;
                     $http.get("/restart");
                     $interval(() => {
@@ -117,14 +117,14 @@ SystemControllers.controller("systemGeneralController", [
                     toastService.toast("danger", error.message);
                 });
             } else {
-                toastService.toast("danger", $translate.instant("system.other.changeVersion"));
+                toastService.toast("danger", $translate.instant("system.environment.other.changeVersion"));
             }
         };
 
         // Permet de télécharger l'ensemble des documents du serveur au format zip
 
         $scope.downloadDocuments = function () {
-            toastService.toast("info", $translate.instant("system.other.takeTime"));
+            toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
             $scope.disabledButton = true;
 
             $http({
@@ -139,15 +139,15 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.beforeDocument = function () {
-            toastService.toast("info", $translate.instant("system.other.takeTime"));
+            toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
         };
 
         $scope.uploadedDocument = function () {
-            toastService.toast("success", $translate.instant("system.other.addDoc"));
+            toastService.toast("success", $translate.instant("system.environment.other.addDoc"));
         };
 
         $scope.dumpDatabase = function () {
-            toastService.toast("info", $translate.instant("system.other.takeTime"));
+            toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
             $scope.disabledButton = true;
             $http({
                 method       : "POST",
@@ -269,7 +269,7 @@ SystemControllers.controller("systemGeneralController", [
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", $translate.instant("system.other.errorOccurred"));
+                    toastService.toast("danger", $translate.instant("system.environment.other.errorOccurred"));
                     console.error(err);
                 });
             });

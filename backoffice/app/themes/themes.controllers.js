@@ -100,7 +100,6 @@ ThemesController.controller("ThemesCtrl", [
                     toastService.toast("danger", $translate.instant("global.error"));
                 });
             }
-
         };
 
 
@@ -283,7 +282,11 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
                 $scope.themeConfig.selected = response.themeConf.name;
-                $scope.themeConfig.config = JSON.stringify(response.themeConf.config, null, 4);
+                try{
+                    $scope.themeConfig.config = JSON.stringify(response.themeConf.config, null, 4);
+                }catch(err){
+                    $scope.themeConfig.config = "";
+                }
                 if (response.configEnvironment && response.themeConf.config.translation) {
                     $scope.languages.forEach(element  => {
                         $scope.themeConfig.variables[element.code] = response.themeConf.config.translation[element.code].values;
