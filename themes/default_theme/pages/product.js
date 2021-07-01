@@ -76,7 +76,6 @@ class PageProduct extends NSPageProduct {
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
-
         // Pictos
         const pictos = [];
         if (product.pictos) {
@@ -108,7 +107,7 @@ class PageProduct extends NSPageProduct {
         }
 
         let options = [];
-        if (product.options) {
+        if (product && product.options) {
             options = product.options;
         }
 
@@ -141,15 +140,16 @@ class PageProduct extends NSPageProduct {
                     }
                 }));
             } else if (element.type == "list") {
-                return (<select>
+                return (<select onClick={changeOptions(elementValue.code)}>
                     {element.values.map((elementValue) => {
                         if (elementValue.name && elementValue.name[lang]) {
-                            return (<option>{elementValue.name[lang]}</option>)
+                            return (<option value={elementValue.name[lang]}>{elementValue.name[lang]}</option>)
                         }
                     })}
                 </select>)
             }
         }
+
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
