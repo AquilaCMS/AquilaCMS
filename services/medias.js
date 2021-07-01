@@ -482,10 +482,10 @@ const uploadFiles = async (body, files) => {
                 _id : body._id
             }, {
                 $set : {
-                    'items.$[item].src'  : target_path_full,
-                    'items.$[item].name' : item.name,
-                    'items.$[item].text' : item.text,
-                    extension            : path.extname(target_path_full)
+                    'items.$[item].src'       : target_path_full,
+                    'items.$[item].name'      : item.name,
+                    'items.$[item].text'      : item.text,
+                    'items.$[item].extension' : path.extname(target_path_full)
                 }
             }, {
                 arrayFilters : [{'item._id': body.entity._id}]
