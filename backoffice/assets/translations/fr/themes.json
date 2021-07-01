@@ -31,5 +31,8 @@
     "copyThemeDataDone": "Données du thème copiées avec succès.",
     "varSaved": "Variables sauvegardées.",
     "addedTheme": "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner",
-    "themeDelete": "Supprimer le thème"
+    "themeDelete": "Supprimer le thème",
+    "configThemeVar": "Configuration actuelle",
+    "themeInstallAllDependencies": "Installer les dépendances et les dépendances de développement de ce thème",
+    "themeActions": "Actions du thème"
 }

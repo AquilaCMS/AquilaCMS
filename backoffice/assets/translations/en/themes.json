@@ -31,5 +31,8 @@
     "copyThemeDataDone": "Theme data successfully copied.",
     "varSaved": "Saved variables.",
     "addedTheme": "Theme added! To use it, just select it",
-    "themeDelete": "Delete the theme"
+    "themeDelete": "Delete the theme",
+    "configThemeVar": "Actual configuration",
+    "themeInstallAllDependencies": "Install dependencies and devDependencies of the theme",
+    "themeActions": "Themes actions"
 }

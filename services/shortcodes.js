@@ -771,6 +771,11 @@ exports.initDBValues = async () => {
                             ]
                         },
                         {
+                            props       : 'col',
+                            description : 'Largeur (valeur de 1 à 12)',
+                            type        : 'text'
+                        },
+                        {
                             props       : 'type',
                             description : 'Type de valeur à saisir',
                             type        : 'list',
@@ -829,6 +834,11 @@ exports.initDBValues = async () => {
                                     value       : 'false'
                                 }
                             ]
+                        },
+                        {
+                            props       : 'col',
+                            description : 'Width (value from 1 to 12)',
+                            type        : 'text'
                         },
                         {
                             props       : 'type',
