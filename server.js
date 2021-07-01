@@ -115,6 +115,7 @@ const initFrontFramework = async () => {
                 }
             }
         } catch (errorInit) {
+            console.error(errorInit);
             console.error('Error loading handler of the theme');
             throw '';
         }

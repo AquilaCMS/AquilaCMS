@@ -14,15 +14,15 @@ const {isProd}       = require('./server');
 /**
  * Compile the current theme
  */
-const themeCompile = async (pathToInit, type, newIsProd) => {
+const themeCompile = async (theme, newIsProd) => {
     try {
-        const theme                = global.envConfig.environment.currentTheme;
+        const themeName            = theme || global.envConfig.environment.currentTheme;
         let installDevDependencies = !isProd;
         if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
             installDevDependencies = true; // we force overriding
         }
-        await yarnInstall(theme, installDevDependencies);
-        await yarnBuildCustom(theme);
+        await yarnInstall(themeName, installDevDependencies);
+        await yarnBuildCustom(themeName);
     } catch (err) {
         console.error(err);
         throw new Error(err);
