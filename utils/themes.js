@@ -50,10 +50,14 @@ const yarnBuildCustom = async (themeName = '') => {
     const pathToInit  = path.join(linkToTheme, 'themeInit.js');
     let returnValues;
     if (fs.existsSync(pathToInit)) {
+        const process = require('process');
+        process.chdir(linkToTheme); // protect require of the frontFrameWork
         const initFileOfConfig = require(pathToInit);
         if (typeof initFileOfConfig.build === 'function') {
             returnValues = await initFileOfConfig.build();
+            process.chdir(global.appRoot);
         } else {
+            process.chdir(global.appRoot);
             returnValues = await yarnBuild(themeName);
         }
     } else {
@@ -70,9 +74,44 @@ const yarnBuild = async (themeName = '') => {
     const returnValues = await packageManager.execCmd('yarn run build', path.join(linkToTheme, '/'));
     return returnValues;
 };
+
+/**
+ * @description setConfigTheme
+ * @param theme : String Theme selectionné
+ */
+const setConfigTheme = async (theme) => {
+    const {ThemeConfig} = require('../orm/models');
+    try {
+        const linkToThemeConfig = path.join(global.appRoot, 'themes', theme, '/', 'themeConfig.json');
+        if (fs.existsSync(linkToThemeConfig)) {
+            const configFile = require(linkToThemeConfig);
+            const oldConfig  = await ThemeConfig.findOne({name: theme});
+            if (oldConfig) {
+                const mergedConfig = {...configFile, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
+                await ThemeConfig.updateOne({
+                    name : theme
+                }, {
+                    $set : {
+                        name   : theme,
+                        config : mergedConfig
+                    }
+                });
+                return mergedConfig;
+            }
+            await ThemeConfig.create({
+                name   : theme,
+                config : configFile
+            });
+            return configFile;
+        }
+    } catch (err) {
+        // nothing
+    }
+};
 module.exports = {
     themeCompile,
     yarnBuildCustom,
     yarnInstall,
-    yarnBuild
+    yarnBuild,
+    setConfigTheme
 };

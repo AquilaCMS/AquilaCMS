@@ -77,26 +77,29 @@ const setEnvConfig = async () => {
 };
 
 const initFrontFramework = async () => {
-    let type = 'custom'; // default type
+    let type          = 'custom'; // default type
     let themeConfig;
+    const themeName   = global.envConfig.environment.currentTheme;
+    const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, '/');
+    const pathToInit  = path.join(pathToTheme, 'themeInit.js');
     try {
         const {ThemeConfig} = require('./orm/models');
         if (typeof ThemeConfig !== 'undefined' && ThemeConfig !== null) {
-            themeConfig = await ThemeConfig.findOne(global.envConfig.environment.currentTheme ? {name: global.envConfig.environment.currentTheme} : {});
-            if (typeof themeConfig !== 'undefined' && typeof themeConfig.config !== 'undefined' && typeof themeConfig.config.type !== 'undefined') {
-                type = themeConfig.config.type;
+            themeConfig = await ThemeConfig.findOne({name: themeName});
+            if (typeof themeConfig === 'undefined' || themeConfig === null) {
+                themeConfig = await utilsThemes.setConfigTheme(themeName);
             }
         }
     } catch (err) {
         // if error, we do nothing, we use default
     }
-    const themeName   = global.envConfig.environment.currentTheme;
-    const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, '/');
-    const pathToInit  = path.join(pathToTheme, 'themeInit.js');
+    if (typeof themeConfig !== 'undefined' && typeof themeConfig.config !== 'undefined' && typeof themeConfig.config.type !== 'undefined') {
+        type = themeConfig.config.type;
+    }
 
-    if (dev || (themeConfig && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true)) {
+    if (dev || (themeConfig && typeof themeConfig.config !== 'undefined' && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true)) {
         let overrideIsProd = false;
-        if (themeConfig && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true) {
+        if (themeConfig && typeof themeConfig.config.needDevDependencies !== 'undefined' && themeConfig.config.needDevDependencies === true) {
             overrideIsProd = true;
         }
         await utilsThemes.yarnInstall(themeName, overrideIsProd);
@@ -108,8 +111,11 @@ const initFrontFramework = async () => {
         let handler;
         try {
             if (fs.existsSync(pathToInit)) {
+                const process = require('process');
+                process.chdir(pathToTheme); // protect require of the frontFrameWork
                 const initFileOfConfig = require(pathToInit);
                 handler                = await initFileOfConfig.start(server);
+                process.chdir(global.appRoot);
                 if (typeof handler !== 'undefined' && handler !== null) {
                     server.use('/', handler);
                 }

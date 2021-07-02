@@ -9,7 +9,7 @@ const modulesUtils = require('../../utils/modules');
 const serverUtils = require('../../utils/server')
 const dev = !serverUtils.isProd;
 
-const themeName = "default_theme";
+const themeName = path.basename(__dirname);
 const pathToTheme = path.join(global.appRoot, "themes", themeName, "/");
 
 

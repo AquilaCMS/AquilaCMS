@@ -33,19 +33,29 @@ const changeTheme = async (selectedTheme) => {
     // If the theme has changed
     if (oldConfig.environment.currentTheme !== selectedTheme) {
         console.log(`Setup selected theme: ${selectedTheme}`);
+        const returnObject = {
+            message : '',
+            success : true
+        };
         try {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
             await require('./modules').setFrontModules(selectedTheme);
             await setConfigTheme(selectedTheme);
             await installDependencies(selectedTheme);
-            await buildTheme(selectedTheme);
+            const buildRes = await buildTheme(selectedTheme);
+            if (buildRes.msg === 'KO') {
+                returnObject.message = 'Theme build fail';
+                returnObject.success = false;
+            }
             await updateService.setMaintenance(false);
         } catch (err) {
             console.error(err);
-            throw NSErrors.SameTheme;
+            returnObject.message = err;
+            returnObject.success = false;
+            return returnObject;
         }
-        return {sucess: true};
+        return returnObject;
     }
     throw NSErrors.SameTheme;
 };
@@ -108,20 +118,7 @@ const uploadTheme = async (originalname, filepath) => {
  */
 const setConfigTheme = async (theme) => {
     console.log('Setting configuration for the theme...');
-    try {
-        const data      = await fs.readFile(`./themes/${theme}/themeConfig.json`);
-        const info      = data.toString();
-        const config    = JSON.parse(info);
-        const oldConfig = await ThemeConfig.findOne({name: theme});
-        if (oldConfig) {
-            const mergedConfig = {...config, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
-            await ThemeConfig.updateOne({name: theme}, {$set: {name: theme, config: mergedConfig}});
-        } else {
-            await ThemeConfig.create({name: theme, config});
-        }
-    } catch (err) {
-        // nothing
-    }
+    await themesUtils.setConfigTheme(theme);
 };
 
 /**
@@ -143,7 +140,7 @@ async function removeConfigTheme(theme) {
  */
 const installDependencies = async (theme) => {
     console.log('Installing new theme\'s dependencies...');
-    return themesUtils.yarnInstall(theme, true);
+    return themesUtils.yarnInstall(theme, false);
 };
 
 /**
