@@ -23,9 +23,15 @@ const itemsSchema = new Schema({
         ],
         default : 'PROCESSING'
     },
-    name               : String,
-    code               : String,
-    image              : String,
+    name    : String,
+    code    : String,
+    image   : String,
+    options : [{
+        code     : {type: String},
+        type     : {type: String},
+        modifier : {},
+        values   : [{type: String}]
+    }],
     parent             : {type: ObjectId, ref: 'products'},
     children           : [{type: ObjectId, ref: 'products'}],
     quantity           : {type: Number, required: true},

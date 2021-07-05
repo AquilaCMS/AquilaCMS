@@ -105,7 +105,8 @@
                 </div>
                 <div class=" form-group col-sm-10 flowRoot">
                     <label for="param" class="col-sm-3 control-label" translate>options.values.name</label>
-                    <input class="form-control col-sm-8 autoWidth" type="text" ng-model="oneValue.name[lang]">
+                    <input class="form-control col-sm-8 autoWidth" type="text"
+                        ng-change="verifName(oneValue.name[lang])" ng-model="oneValue.name[lang]">
                 </div>
                 <div class="form-group col-sm-10 flowRoot"
                     ng-if="options.type === 'list' || options.type === 'radio' || options.type === 'checkbox'">

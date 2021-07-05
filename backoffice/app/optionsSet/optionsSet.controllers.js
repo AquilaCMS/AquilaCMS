@@ -3,12 +3,12 @@ const OptionsSetControllers = angular.module('aq.optionsSet.controllers', []);
 OptionsSetControllers.controller('OptionsSetListCtrl', [
     '$scope', '$location', '$rootScope', 'OptionsSetServices', '$modal',
     function ($scope, $location, $rootScope, OptionsSetServices, $modal) {
-        $scope.sortType    = 'name'; // set the default sort type
+        $scope.sortType = 'name'; // set the default sort type
         $scope.sortReverse = false;  // set the default sort order
-        $scope.lang        = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
+        $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
 
         $scope.getData = function () {
-            OptionsSetServices.list({PostBody: {limit: 10, page: 1}}, function (response) {
+            OptionsSetServices.list({ PostBody: { limit: 10, page: 1 } }, function (response) {
                 $scope.optionsSet = response.datas;
             });
         };
@@ -19,12 +19,12 @@ OptionsSetControllers.controller('OptionsSetListCtrl', [
 
         $scope.createNew = function () {
             const modalInstance = $modal.open({
-                templateUrl : 'app/optionsSet/views/modals/optionsSet-new.html',
-                controller  : 'OptionsSetNewCtrl'
+                templateUrl: 'app/optionsSet/views/modals/optionsSet-new.html',
+                controller: 'OptionsSetNewCtrl'
             });
 
             modalInstance.result.then(function (returnedValue) {
-                
+
             });
         };
 
@@ -38,8 +38,8 @@ OptionsSetControllers.controller('OptionsSetNewCtrl', [
         $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
 
         $scope.optionsSet = {
-            name : {},
-            code : ''
+            name: {},
+            code: ''
         };
 
         $scope.save = function () {
@@ -71,11 +71,11 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
         $scope.getOptionsSet = function () {
             // we populate the result !
             OptionsSetServices.get({
-                PostBody : {
-                    filter : {
-                        code : $routeParams.code
+                PostBody: {
+                    filter: {
+                        code: $routeParams.code
                     },
-                    populate : ['options']
+                    populate: ['options']
                 }
             }, function (response) {
                 $scope.optionsSet = response;
@@ -93,8 +93,8 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
             const correctArrayOptions = $scope.optionsSet.options.map((element) => {
                 return element._id;
             });
-            const correctObject       = angular.copy($scope.optionsSet);
-            correctObject.options     = correctArrayOptions;
+            const correctObject = angular.copy($scope.optionsSet);
+            correctObject.options = correctArrayOptions;
 
             // we sent the object
             OptionsSetServices.set(correctObject, function (response) {
@@ -108,7 +108,7 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
         };
 
         $scope.remove = function () {
-            OptionsSetServices.delete({action: $scope.optionsSet._id}, function (response) {
+            OptionsSetServices.delete({ action: $scope.optionsSet._id }, function (response) {
                 toastService.toast('success', $translate.instant('global.deleted'));
                 $location.path('/optionsSet');
             }, function (error) {
@@ -120,12 +120,12 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
             });
         };
 
-        $scope.removeOptions = function(code){
-            if(typeof $scope.optionsSet.options === "undefined"){
+        $scope.removeOptions = function (code) {
+            if (typeof $scope.optionsSet.options === "undefined") {
                 $scope.optionsSet.options = [];
             }
-            const index = $scope.optionsSet.options.findIndex((element)=>element.code == code);
-            if(index > -1){
+            const index = $scope.optionsSet.options.findIndex((element) => element.code == code);
+            if (index > -1) {
                 $scope.optionsSet.options.splice(index, 1);
                 toastService.toast('warning', $translate.instant('optionsSet.detail.needSave'));
             }
@@ -133,12 +133,12 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
 
         $scope.createOptions = function () {
             const modalInstance = $modal.open({
-                templateUrl : 'app/options/views/modals/options-new.html',
-                controller  : 'nsNewOptionsControllerModal',
-                windowClass : 'modal-large',
-                backdrop    : 'static',
-                keyboard    : false,
-                resolve     : {
+                templateUrl: 'app/options/views/modals/options-new.html',
+                controller: 'nsNewOptionsControllerModal',
+                windowClass: 'modal-large',
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
                     lang() {
                         return $scope.lang;
                     }
@@ -160,12 +160,12 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
 
         $scope.addOptions = function () {
             const modalInstance = $modal.open({
-                templateUrl : 'app/options/views/modals/options-list.html',
-                controller  : 'nsListOptionsControllerModal',
-                windowClass : 'modal-large',
-                backdrop    : 'static',
-                keyboard    : false,
-                resolve     : {
+                templateUrl: 'app/options/views/modals/options-list.html',
+                controller: 'nsListOptionsControllerModal',
+                windowClass: 'modal-large',
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
                     lang() {
                         return $scope.lang;
                     }
@@ -184,6 +184,10 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
                 }
             });
         };
+
+        $scope.gotToOptionsDetail = function (code) {
+            $location.path(`/options/details/${code}`);
+        }
 
         $scope.getOptionsSet(); // we get the options
     }

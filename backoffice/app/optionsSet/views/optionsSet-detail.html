@@ -63,10 +63,10 @@
                                 infinite-scroll-distance="1" infinite-scroll-immediate-check="true"
                                 infinite-scroll-disabled='scroller.busy'>
                                 <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
-                                    ng-click="goToAttributeDetails(attribute.code,setAttribute.code)"
+                                    ng-click="gotToOptionsDetail(oneOptions.code)"
                                     ng-repeat="oneOptions in optionsSet.options | orderBy:sortType:sortReverse">
-                                    <td data-label="Code :" class="sorting_1">{{oneOptions.code}}</td>
-                                    <td data-label="Nom :" class="sorting_1">{{oneOptions.name[lang]}}
+                                    <td data-label="Code :" class="linkToSmthg sorting_1">{{oneOptions.code}}</td>
+                                    <td data-label="Nom :" class="linkToSmthg sorting_1">{{oneOptions.name[lang]}}
                                     </td>
                                     <td data-label="Type :" class="sorting_1">{{oneOptions.type}}</td>
                                     <td data-label="Type :" class="sorting_1">

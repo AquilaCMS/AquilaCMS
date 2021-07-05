@@ -433,13 +433,12 @@ ProductControllers.controller("nsProductOptions", [
                         }, function (error) {
                             console.log(error);
                         });
-                    } else {
-                        $scope.product.options = [];
                     }
                 } else {
                     $scope.product.set_options = "";
                     $scope.product.options = [];
                 }
+                getOptionsSet();
             } else {
                 setTimeout(() => {
                     init()
@@ -479,21 +478,18 @@ ProductControllers.controller("nsProductOptions", [
                 $location.path("/optionsSet");
             }
         }
-
-        // we list optionsSet
-        OptionsSetServices.list({
-            PostBody: {
-                limit: $scope.limit,
-            }
-        }, function (response) {
-            $scope.listOptionsSet = response.datas;
-        }, function (error) {
-            console.log(error);
-        });
-
-        $scope.actualOptionsSet = {};
-        if ($scope.product && $scope.product.options) {
-            $scope.actualOptionsSet = $scope.product.options;
+        function getOptionsSet() {
+            // we list optionsSet
+            OptionsSetServices.list({
+                PostBody: {
+                    limit: $scope.limit,
+                }
+            }, function (response) {
+                $scope.optionsSet = response.datas.find((element) => element._id == $scope.product.set_options);
+                $scope.listOptionsSet = response.datas;
+            }, function (error) {
+                console.log(error);
+            });
         }
         $scope.lang;
     }

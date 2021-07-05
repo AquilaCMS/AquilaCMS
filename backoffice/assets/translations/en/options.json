@@ -1,7 +1,8 @@
 {
     "detail": {
         "t1": "Option details",
-        "mandatory": "Obligatoire"
+        "mandatory": "mandatory",
+        "sameName": "Same name"
     },
     "new": {
         "createOptions": "Create a new option"

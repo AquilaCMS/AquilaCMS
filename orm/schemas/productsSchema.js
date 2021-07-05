@@ -66,21 +66,23 @@ const ProductsSchema = new Schema({
     set_options : {type: ObjectId, ref: 'optionsSet', index: true},
     options     : [
         {
-            id   : {type: ObjectId, ref: 'options', index: true},
-            code : {type: String, required: true, unique: true},
-            name : {},
-            type : {
+            id        : {type: ObjectId, ref: 'options', index: true},
+            code      : {type: String, required: true, unique: true},
+            mandatory : {type: Boolean},
+            name      : {},
+            type      : {
                 type : String,
                 enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'productList']
             },
-            options_set : [{type: ObjectId, ref: 'OptionsSet'}],
-            values      : [{
-                name      : {},
-                checked   : {type: Boolean, required: true},
-                mandatory : {type: Boolean, required: true},
-                min       : {type: Number},
-                max       : {type: Number},
-                modifier  : {
+            values : [{
+                name    : {},
+                control : {
+                    checked   : {type: Boolean},
+                    mandatory : {type: Boolean},
+                    min       : {type: Number},
+                    max       : {type: Number}
+                },
+                modifier : {
                     price : {
                         value     : {type: Number},
                         typePrice : {

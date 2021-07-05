@@ -12,7 +12,6 @@ const {
     Cart,
     Orders,
     Products,
-    Promo,
     Languages,
     Configuration
 }                       = require('../orm/models');
@@ -180,11 +179,44 @@ const addItem = async (req) => {
             ) {
                 continue;
             } else {
-                req.body.item._id       = cart.items[index]._id.toString();
-                req.body.item.quantity += cart.items[index].quantity;
-                delete req.body.item.id;
-                delete req.body.item.weight;
-                return updateQty(req);
+                let isANewProduct = false;
+                /* eslint-disable no-labels */
+                if (req.body.item.options && cart.items[index].options) {
+                    // check if same options
+                    if (req.body.item.options.length  === cart.items[index].options.length) {
+                        loopCheckOptions:
+                        for (const oneOptions of req.body.item.options) {
+                            const index = cart.items[index].options.findIndex((element) => element.code === oneOptions.code);
+                            if (index === -1) {
+                                isANewProduct = true;
+                                break;
+                            } else {
+                                if (cart.items[index].options[index].values.length === oneOptions.values.length) {
+                                    for (const oneOptionsValue of cart.items[index].options[index]) {
+                                        if (oneOptions.values.includes(oneOptionsValue)) {
+                                            continue;
+                                        } else {
+                                            isANewProduct = true;
+                                            break loopCheckOptions;
+                                        }
+                                    }
+                                } else {
+                                    isANewProduct = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                /* eslint-enable no-labels */
+                if (isANewProduct === false) {
+                    req.body.item._id       = cart.items[index]._id.toString();
+                    req.body.item.quantity += cart.items[index].quantity;
+
+                    delete req.body.item.id;
+                    delete req.body.item.weight;
+                    return updateQty(req);
+                }
             }
         }
     }
@@ -198,8 +230,13 @@ const addItem = async (req) => {
         req.body.item._id = idGift;
     }
 
-    const item = {...req.body.item, weight: _product.weight, price: _product.price};
+    const item = {...req.body.item, weight: _product.weight, price: _product.price, options: req.body.options};
     if (_product.type !== 'virtual') item.stock = _product.stock;
+    if (typeof req.body.item.options !== 'undefined' && req.body.item.options !== null) {
+        // we set options in the cart !
+        // we check options
+        // add to item
+    }
     const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400

@@ -29,6 +29,86 @@ import Error from './_error';
  */
 
 class PageProduct extends NSPageProduct {
+    changeOneOptions = (optionsCode, event) => {
+        const optionsValue = event.target.value;
+        let { options } = this.state;
+        if (!options) {
+            options = [];
+        }
+        const { product } = this.state;
+        const base = product.options;
+
+        const index = options.findIndex((element) => {
+            return element.code === optionsCode
+        });
+        if (index > -1) {
+            console.log(product.options);
+            if (base.type === "checkbox") {
+                options[index].values.push(optionsValue);
+            } else {
+                options[index].values = [optionsValue];
+            }
+        } else {
+            options.push({
+                code: optionsCode,
+                values: [optionsValue]
+            });
+        }
+        console.log("CHANGEOPTIONS", options);
+        this.setState({
+            options,
+        });
+    }
+
+    renderOptions = (element) => {
+        const { lang } = this.props;
+        if (element.type == "checkbox") {
+            return (element.values.map((elementValue, index) => {
+                if (elementValue.name && elementValue.name[lang]) {
+                    return <>
+                        <label key={index}>{elementValue.name[lang]}</label>
+                        <input key={index} type="checkbox" />
+                    </>
+                }
+            }));
+        } else if (element.type == "number") {
+            return (element.values.map((elementValue, index) => {
+                if (elementValue.name && elementValue.name[lang]) {
+                    return <>
+                        <label key={index}>{elementValue.name[lang]}</label>
+                        <input key={index} type="number" />
+                    </>
+                }
+            }));
+        } else if (element.type == "textfield") {
+            return (element.values.map((elementValue, index) => {
+                if (elementValue.name && elementValue.name[lang]) {
+                    return <>
+                        <label key={index}>{elementValue.name[lang]}</label>
+                        <input key={index} type="text" />
+                    </>
+                }
+            }));
+        } else if (element.type == "list") {
+            return (
+                <select value={element.values.find((elementValue) => {
+                    if (elementValue && element.control) {
+                        return elementValue.control.mandatory === true
+                    }
+                    return false;
+                })} onChange={(event) => { this.changeOneOptions(element.code, event) }}>
+                    {
+                        element.values.map((elementValue, index) => {
+                            if (elementValue.name && elementValue.name[lang]) {
+                                return (<option key={index} value={elementValue.name[lang]}>{elementValue.name[lang]}</option>)
+                            }
+                        })
+                    }
+                </select >
+            )
+        }
+    }
+
     render = () => {
         const {
             appurl,
@@ -111,44 +191,8 @@ class PageProduct extends NSPageProduct {
             options = product.options;
         }
 
-        function renderOptions(element) {
-            if (element.type == "checkbox") {
-                return (element.values.map((elementValue) => {
-                    if (elementValue.name && elementValue.name[lang]) {
-                        return <>
-                            <label>{elementValue.name[lang]}</label>
-                            <input type="checkbox" />
-                        </>
-                    }
-                }));
-            } else if (element.type == "number") {
-                return (element.values.map((elementValue) => {
-                    if (elementValue.name && elementValue.name[lang]) {
-                        return <>
-                            <label>{elementValue.name[lang]}</label>
-                            <input type="number" />
-                        </>
-                    }
-                }));
-            } else if (element.type == "textfield") {
-                return (element.values.map((elementValue) => {
-                    if (elementValue.name && elementValue.name[lang]) {
-                        return <>
-                            <label>{elementValue.name[lang]}</label>
-                            <input type="text" />
-                        </>
-                    }
-                }));
-            } else if (element.type == "list") {
-                return (<select onClick={changeOptions(elementValue.code)}>
-                    {element.values.map((elementValue) => {
-                        if (elementValue.name && elementValue.name[lang]) {
-                            return (<option value={elementValue.name[lang]}>{elementValue.name[lang]}</option>)
-                        }
-                    })}
-                </select>)
-            }
-        }
+
+
 
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -293,9 +337,9 @@ class PageProduct extends NSPageProduct {
                                         {options.map((element) => {
                                             return (
                                                 <>
-                                                    <div>{element.name[lang]}{element.mandatory == true ? <span>(obligatoire)</span> : <span>(optionnal)</span>}</div>
+                                                    <div>{element.name[lang]}{element.mandatory == true ? <span> ({t('product:mandatory')})</span> : <span> ({t('product:optional')})</span>}</div>
 
-                                                    {renderOptions(element)}
+                                                    {this.renderOptions(element)}
                                                 </>
                                             )
                                         })}

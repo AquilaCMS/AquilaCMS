@@ -88,7 +88,7 @@ OptionsControllers.controller('nsNewOptionsController', [
     function ($scope, $rootScope, $location, OptionsServices, $translate, toastService) {
         $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
 
-        if ($scope.isNew !== true) {
+        if ($scope.$parent.$parent.$parent.isNew !== true) {
             OptionsServices.get({
                 PostBody: {
                     filter: {
@@ -100,6 +100,38 @@ OptionsControllers.controller('nsNewOptionsController', [
             }, function (error) {
                 toastService.toast('danger', $translate.instant('global.standardError'));
             });
+        }
+
+        $scope.verifName = function (name) {
+            if ($scope.options.values) {
+                let count = 0;
+                for (const oneName of $scope.options.values) {
+                    if (oneName.name[$scope.lang] === name) {
+                        count++
+                    }
+                }
+                if (count > 1) {
+                    toastService.toast('danger', $translate.instant('options.detail.sameName'));
+                    return -1;
+                }
+            }
+        };
+
+        $scope.options.save = function () {
+            if (!$scope.options.values || $scope.options.values.lenght > 0) {
+                toastService.toast('danger', $translate.instant('options.detail.errorNoValues'));
+                return -1;
+            }
+            if (typeof $scope.name[$scope.lang] === "undefined" || $scope.name[lang] === "") {
+                toastService.toast('danger', $translate.instant('options.detail.errorNoName'));
+                return -1;
+            }
+            for (const oneOptions of $scope.options.values) {
+                let res = $scope.verifName(oneOptions.name);
+                if (res === -1) {
+                    return -1;
+                }
+            }
         }
 
         $scope.addValue = function () {
@@ -240,6 +272,10 @@ OptionsControllers.controller('nsNewOptionsControllerModal', [
         };
 
         $scope.save = function (val) {
+            let res = $scope.options.data.save();
+            if (res == -1) {
+                return;
+            }
             OptionsServices.set($scope.options.data, function (response) {
                 toastService.toast('success', $translate.instant('global.saved'));
                 $modalInstance.close(response);
