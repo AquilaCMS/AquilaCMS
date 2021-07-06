@@ -49,10 +49,10 @@ CartControllers.controller("CartListCtrl", [
                     filter["payment.0.amount"] = {}
                     filter["payment.0.amount"][key[0] === "min" ? "$gte" : "$lte"] = value;
                 } else if (filterKeys[i].includes("min_") || filterKeys[i].includes("max_")) {
-                    if (!filter["priceTotal.ati"]){
+                    if (!filter["priceTotal.ati"]) {
                         filter["priceTotal.ati"] = {};
                     }
-                    if (filterKeys[i] === 'min_priceTotal'){
+                    if (filterKeys[i] === 'min_priceTotal') {
                         filter["priceTotal.ati"]["$gte"] = $scope.filter[filterKeys[i]];
                         break
                     }
@@ -73,7 +73,7 @@ CartControllers.controller("CartListCtrl", [
                     } else if (filterKeys[i] === 'priceTotal') {
                         filter["priceTotal.ati"] = { $regex: $scope.filter[filterKeys[i]].ati, $options: "i" };
                     } else {
-                    filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
+                        filter[filterKeys[i]] = { $regex: $scope.filter[filterKeys[i]].toString(), $options: "i" };
                     }
                 }
             }
@@ -89,11 +89,11 @@ CartControllers.controller("CartListCtrl", [
                         updatedAt: 1
                     }
                 }
-            },function (response) {
+            }, function (response) {
                 $scope.showLoader = false;
                 $scope.carts = response.datas;
                 $scope.totalItems = response.count;
-            }, function(error) {
+            }, function (error) {
                 console.error("Can't get data");
                 console.error(error);
             });
@@ -124,7 +124,7 @@ CartControllers.controller("CartListCtrl", [
 
 CartControllers.controller("CartListDetails", [
     "$scope", "Carts", "$location", "$routeParams", function ($scope, Carts, $location, $routeParams) {
-
+        $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
         $scope.cart = {};
 
         $scope.getCart = function (page) {

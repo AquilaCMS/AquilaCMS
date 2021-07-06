@@ -28,6 +28,7 @@ const itemsSchema = new Schema({
     image   : String,
     options : [{
         code     : {type: String},
+        name     : {},
         type     : {type: String},
         modifier : {},
         values   : [{type: String}]

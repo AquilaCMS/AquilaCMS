@@ -230,6 +230,9 @@
                                             <span style="font-size: 18px">{{item.name}}</span>
                                             <span ng-show="item.parent"> - {{getParentItem(item.parent)}}</span>
                                         </div>
+                                        <div ng-if="item.options && item.options.length > 0" translate>order.detail.options
+                                            <p ng-repeat="oneOptions in item.options">{{oneOptions.name[defaultLang]}}:{{oneOptions.values.toString()}}</p>
+                                        </div>
                                         <!--<div ng-if="item.atts.length > 0">Attributs : <p ng-repeat="(key, attr) in item.atts[0]">{{key}} : {{attr}}</p></div>-->
                                         <div ng-if="item.opts.length > 0" translate>order.detail.opt
                                             <p ng-repeat="opt in item.opts">{{opt[0]}}</p>

@@ -98,7 +98,7 @@ OptionsControllers.controller('nsNewOptionsController', [
     '$scope', '$rootScope', '$location', 'OptionsServices', '$translate', 'toastService',
     function ($scope, $rootScope, $location, OptionsServices, $translate, toastService) {
         $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
-
+        $scope.languages = $rootScope.languages;
         if ($scope.$parent.$parent.$parent.isNew !== true) {
             OptionsServices.get({
                 PostBody: {
