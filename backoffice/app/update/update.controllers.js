@@ -17,7 +17,7 @@ UpdateControllers.controller('UpdateHomeCtrl', ['$scope', '$http', 'toastService
                 $scope.git.exist = true;
             }
         }, (err) => {
-            toastService.toast("danger", "Une erreur est survenue !");
+            toastService.toast("danger", $translate.instant("global.standardError"));
         });
 
 
