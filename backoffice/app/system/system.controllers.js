@@ -243,6 +243,7 @@ SystemControllers.controller("systemGeneralController", [
                         ...$scope.system
                     }
                 }).then((response) => {
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
                         $scope.showThemeLoading = false;
@@ -258,12 +259,11 @@ SystemControllers.controller("systemGeneralController", [
                             })
                         }, 10000);
                     } else {
+                        $scope.showThemeLoading = false;
                         if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
                             $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                             location.href = $scope.urlRedirect;
                             window.location = $scope.urlRedirect;
-                        } else {
-                            window.location.reload();
                         }
                     }
                 }, function (err) {
