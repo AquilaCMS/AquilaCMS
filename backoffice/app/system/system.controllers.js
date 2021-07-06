@@ -156,6 +156,8 @@ SystemControllers.controller("systemGeneralController", [
             }).success(function (data, status, headers) {
                 downloadBlob(data, status, headers, '.gz', 'database');
             }).error(function (data) {
+                $scope.disabledButton = false;
+                toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(data);
             });
         };
