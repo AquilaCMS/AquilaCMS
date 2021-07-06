@@ -52,7 +52,18 @@ OptionsControllers.controller('OptionsDetailCtrl', [
                 code: $routeParams.code
             }
         };
+
+        $scope.saveFunction = null;
+
         $scope.save = function (isQuit) {
+            let res;
+            if ($scope.saveFunction == null) {
+                res = $scope.saveFunction = $scope.options.data.save
+            }
+            res = $scope.saveFunction($scope.options.data);
+            if (res < 0) {
+                return
+            }
             OptionsServices.set($scope.options.data, function (response) {
                 $scope.options.data = response;
                 toastService.toast('success', $translate.instant('global.saved'));
@@ -97,6 +108,7 @@ OptionsControllers.controller('nsNewOptionsController', [
                 }
             }, function (response) {
                 $scope.options = response;
+                $scope.options.save = $scope.save;
             }, function (error) {
                 toastService.toast('danger', $translate.instant('global.standardError'));
             });
@@ -117,22 +129,36 @@ OptionsControllers.controller('nsNewOptionsController', [
             }
         };
 
-        $scope.options.save = function () {
-            if (!$scope.options.values || $scope.options.values.lenght > 0) {
+        $scope.save = function (options) {
+            if (typeof options.code === "undefined" || options.code === "") {
+                toastService.toast('danger', $translate.instant('options.detail.errorNoCode'));
+                return -1;
+            }
+            if (typeof options.values === "undefined" || options.values.lenght === 0) {
                 toastService.toast('danger', $translate.instant('options.detail.errorNoValues'));
                 return -1;
             }
-            if (typeof $scope.name[$scope.lang] === "undefined" || $scope.name[lang] === "") {
+            if (typeof options.name[$scope.lang] === "undefined" || options.name[$scope.lang] === "") {
                 toastService.toast('danger', $translate.instant('options.detail.errorNoName'));
                 return -1;
             }
-            for (const oneOptions of $scope.options.values) {
-                let res = $scope.verifName(oneOptions.name);
+            if (typeof options.type === "undefined" || options.type === "") {
+                toastService.toast('danger', $translate.instant('options.detail.errorNoType'));
+                return -1;
+            }
+            for (const oneOptions of options.values) {
+                if (typeof oneOptions.name === "undefined" || typeof oneOptions.name[$scope.lang] === "undefined" || oneOptions.name[$scope.lang] === "") {
+                    toastService.toast('danger', $translate.instant('options.detail.errorNoValueName'));
+                    return -2;
+                }
+                let res = $scope.verifName(oneOptions.name[$scope.lang]);
                 if (res === -1) {
                     return -1;
                 }
             }
         }
+
+        $scope.options.save = $scope.save;
 
         $scope.addValue = function () {
             if (typeof $scope.options.values === 'undefined') {
@@ -143,8 +169,8 @@ OptionsControllers.controller('nsNewOptionsController', [
                 control: {
                     mandatory: true,
                     checked: true,
-                    min: 10,
-                    max: 0
+                    min: 0,
+                    max: 10
                 },
                 modifier: {
                     price: 0,
@@ -266,14 +292,14 @@ OptionsControllers.controller('nsNewOptionsControllerModal', [
         $scope.options.data = {
             code: '',
             name: {},
-            type: 'textfield', // default
+            type: '', // default
             mandatory: true,
             values: []
         };
 
         $scope.save = function (val) {
-            let res = $scope.options.data.save();
-            if (res == -1) {
+            let res = $scope.options.data.save($scope.options.data);
+            if (res < 0) {
                 return;
             }
             OptionsServices.set($scope.options.data, function (response) {

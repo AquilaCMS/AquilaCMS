@@ -2,7 +2,12 @@
     "detail": {
         "t1": "Option details",
         "mandatory": "mandatory",
-        "sameName": "Same name"
+        "sameName": "Same name",
+        "errorNoValues": "The option needs a value",
+        "errorNoName": "The options needs a name",
+        "errorNoValueName": "The value needs a name",
+        "errorNoCode": "The options needs a code",
+        "errorNoType": "The options needs a type"
     },
     "new": {
         "createOptions": "Create a new option"

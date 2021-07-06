@@ -2,7 +2,12 @@
     "detail": {
         "t1": "Détails de l'option",
         "mandatory": "Obligatoire",
-        "sameName": "Même nom"
+        "sameName": "Même nom",
+        "errorNoValues": "L'option doit avoir une valeur",
+        "errorNoName": "L'option doit avoir un nom",
+        "errorNoValueName": "La valeur doit avoir un nom",
+        "errorNoCode": "L'option doit avoir un code",
+        "errorNoType": "L'option doit avoir un type"
     },
     "new": {
         "createOptions": "Créer une nouvelle option"
