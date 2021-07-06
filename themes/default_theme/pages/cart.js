@@ -85,7 +85,7 @@ class PageCart extends NSPageCart {
                                                                         );
                                                                     }
                                                                 }
-                                                                let imgDefault = imgDefaultBase64;
+                                                                let imgDefault = `/images/products/260x200/0/${item.slug}.jpg`;
                                                                 let imgAlt     = 'illustration produit';
                                                                 
                                                                 return (

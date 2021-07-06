@@ -187,7 +187,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         fileNameOption = '';
     }
     try {
-        if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
+        //if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
         switch (type) {
         // if a product image is requested
         case 'products':
@@ -259,7 +259,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         await fsp.mkdir(cacheFolder, {recursive: true});
     } catch (err) {
         filePath      = global.envConfig.environment.defaultImage; // global.envConfig.environment.defaultImage;
-        filePathCache = path.join(cacheFolder, type, `default_cache_${size}.${path.extname(filePath)}`);
+        filePathCache = path.join(cacheFolder, 'default_image_cache_' + size + path.extname(global.envConfig.environment.defaultImage));
     }
 
     // if the requested image is already cached, it is returned direct
@@ -267,7 +267,8 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         return filePathCache;
     }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
-        filePath = global.envConfig.environment.defaultImage;
+        filePath      = global.envConfig.environment.defaultImage;
+        filePathCache = path.join(cacheFolder, 'default_image_cache_' + size + path.extname(global.envConfig.environment.defaultImage));
     }
     if (size === 'max' || size === 'MAX') {
         await utilsModules.modulesLoadFunctions('downloadFile', {
@@ -654,7 +655,7 @@ const getImageStream = async (req, res) => {
     const size      = req.url.split('/')[3].split('-')[0];
     const _id       = req.url.split('/')[4];
     const extension = path.extname(req.url).replace('.', '');
-    if (type && size && extension && _id) {
+    if (type && size && extension) {
         res.set('Content-Type', `image/${extension}`);
         let imagePath = '';
 
@@ -664,20 +665,14 @@ const getImageStream = async (req, res) => {
         } catch (e) {
             console.log(NSErrors.MediaNotFound); // TODO : améliorer ce console ?
             res.status(404);
-            /* res.status(404);
-            if(imagePath && imagePath.startsWith('http')) {
-                require('https').get(imagePath, (stream) => {
-                    stream.pipe(res);
-                });
-                return;
-            }
             // TODO : voir pour le mettre dans la dimension demandé !? */
             // next(NSErrors.MediaNotFound);
         }
+        if (imagePath.includes('default_image_cache')) {
+            res.status(404);
+        }
         if (await fsp.existsSync(imagePath) && !(await fsp.lstatSync(imagePath).isDirectory())) {
             fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
-        } else {
-            res.end();
         }
     }
 };
