@@ -3,14 +3,15 @@
     "needupdate": "Une mise à jour est disponible",
     "noupdate": "Aucune mise à jour n'est disponible",
     "download": "Télécharger",
-    "verifying" : "Vérification d'une mise à jour...",
+    "verifying": "Vérification d'une mise à jour...",
     "maintenance": "Maintenance",
     "authorizedIPs": "IP autorisées (séparées par ';')",
-    "maj":"Mise à jour",
-    "configurationSaved": "Configuration saved!",
-    "errorArise": "An error has occurred !",
-    "majSucceded": "Update succeded :)",
-    "majFailed": "Update failed :(",
-    "checkMajFailed": "Unable to verify update",
-    "automatic": "Activer la maintenance automatiquement durant une mise à jour"
+    "maj": "Mise à jour",
+    "configurationSaved": "Configuration sauvegardée !",
+    "errorArise": "Une erreur s'est produite !",
+    "majSucceded": "Mise à jour réussi :)",
+    "majFailed": "Mise à jour échoué :(",
+    "checkMajFailed": "Impossible de vérifier les mises à jour",
+    "automatic": "Activer la maintenance automatiquement durant une mise à jour",
+    "validate": "Faire la mise à jour"
 }
