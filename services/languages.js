@@ -7,6 +7,7 @@
  */
 
 const fs           = require('../utils/fsp');
+const path         = require('path');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -119,8 +120,9 @@ const createDynamicLangFile = async () => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
+
     // Create file
-    await fs.writeFile('./config/dynamic_langs.js', contentFile, (err) => {
+    await fs.writeFile(path.join(global.envConfig.environment.currentTheme , '/dynamic_langs.js'), contentFile, (err) => {
         if (err) {
             throw "Error writing file 'dynamic_langs.js'";
         }
