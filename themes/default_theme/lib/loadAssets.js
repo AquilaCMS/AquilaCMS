@@ -8,10 +8,10 @@ const namespaces = ['account', 'addresses', 'cart', 'category', 'delivery', 'com
 
 let langs = [];
 try {
-    langs = require('../../../config/dynamic_langs');
+    langs = require('../dynamic_langs');
 } catch(ee) {
     langs = [{code: 'en', defaultLanguage: true}];
-    console.error('/config/dynamic_langs is missing ! Rerun installer or manage language in backoffice.');
+    console.error('dynamic_langs is missing ! Rerun installer or manage language in backoffice.');
 }
 const theme_assets = {};
 langs.map((l) => {

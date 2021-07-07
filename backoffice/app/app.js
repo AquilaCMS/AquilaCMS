@@ -245,20 +245,20 @@ adminCatagenApp
                     let i = 0;
                     angular.forEach(translationArray, function (element)
                     {
-                        $http.get(element.url).then(function (nsTranslation)
-                        {
+                        $http.get(element.url).then(function (nsTranslation) {
                             translation[element.name] = nsTranslation.data;
-
-                            if(i === translationArray.length-1)
-                            {
+                            if(i === translationArray.length-1) {
                                 deferred.resolve(translation);
                             }
                             i++;
-                        }).catch(function (err)
-                        {
-                            deferred.reject(err);
+                        }).catch(function (err) {
+                            console.error(`Error loading : "${element.name}" at "${element.url}"`);
+                            i++;
+                            // if we defer, that breaks the translation
+                            // deferred.reject(err);
                         });
                     });
+
                 }).catch(function (err)
                 {
                     deferred.reject(err);
