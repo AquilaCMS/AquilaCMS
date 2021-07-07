@@ -140,14 +140,14 @@ class PageCart extends NSPageCart {
                                                                                                     item.selections.map((section) => (
                                                                                                         section.products.map((productSection, indexSel) => (
                                                                                                             <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
-                                                                                                                        '+' :
-                                                                                                                        '') +
-                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
-                                                                                                                    ''
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                                (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
+                                                                                                                    '+' :
+                                                                                                                    '') +
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
+                                                                                                                ''
                                                                                                                 }`}</li>
                                                                                                         ))
                                                                                                     ))
@@ -159,10 +159,12 @@ class PageCart extends NSPageCart {
                                                                                 {
                                                                                     item.options && item.options.length > 0 && (
                                                                                         <div className="menu-product">
-                                                                                            <ul>
+                                                                                            {t('cart:page.cart.options')}
+                                                                                            <ul style={{ marginBottom: "10px" }}>
                                                                                                 {
-                                                                                                    item.options.map((oneOptions) => (
-                                                                                                        console.log(oneOptions)
+                                                                                                    item.options.map((oneOptions) => {
+                                                                                                        console.log(oneOptions);
+                                                                                                        return (<li key={oneOptions.code}>{oneOptions.name ? oneOptions.name[lang] : oneOptions.code} : {oneOptions.values.map(element => element).toString()}</li>)
                                                                                                         // section.products.map((productSection, indexSel) => (
                                                                                                         // <li key={indexSel}>{productSection.name} {`${
                                                                                                         //     (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
@@ -172,11 +174,11 @@ class PageCart extends NSPageCart {
                                                                                                         //         (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
                                                                                                         //         '+' :
                                                                                                         //         '') +
-                                                                                                        //     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' : 
+                                                                                                        //     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
                                                                                                         //     ''
                                                                                                         // }`}</li>
                                                                                                         // ))
-                                                                                                    ))
+                                                                                                    })
                                                                                                 }
                                                                                             </ul>
                                                                                         </div>
@@ -400,7 +402,7 @@ class PageCart extends NSPageCart {
                         </div>
                     </div>
                 </Layout>
-            </NSContext.Provider>
+            </NSContext.Provider >
         );
     }
 }

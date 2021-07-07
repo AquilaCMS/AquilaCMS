@@ -165,34 +165,34 @@ const addItem = async (req) => {
     const _lang = await Languages.findOne({defaultLanguage: true});
     if (cart.items && cart.items.length) {
         // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
-        const indexes = cart.items.toObject()
+        const indexes     = cart.items.toObject()
             .map((val, index) => ({val, index}))
             .filter(({val}) => val.id._id.toString() === _product._id.toString())
             .map(({index}) => index);
+        let isANewProduct = false;
+        /* eslint-disable no-labels */
+        loopOfIndex:
         for (const index of indexes) {
             if (
                 cart.items[index].type === 'bundle'
                 && JSON.stringify(cart.items[index].selections.toObject().map((elem) => {
                     return {bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]};
                 })) !== JSON.stringify(req.body.item.selections)
-            // eslint-disable-next-line no-empty
             ) {
                 continue;
             } else {
-                let isANewProduct = false;
-                /* eslint-disable no-labels */
                 if (req.body.item.options && cart.items[index].options) {
                     // check if same options
-                    if (req.body.item.options.length  === cart.items[index].options.length) {
+                    if (req.body.item.options.length === cart.items[index].options.length) {
                         loopCheckOptions:
                         for (const oneOptions of req.body.item.options) {
-                            const index = cart.items[index].options.findIndex((element) => element.code === oneOptions.code);
-                            if (index === -1) {
+                            const indexOptions = cart.items[index].options.findIndex((element) => element.code === oneOptions.code);
+                            if (indexOptions === -1) {
                                 isANewProduct = true;
                                 break;
                             } else {
-                                if (cart.items[index].options[index].values.length === oneOptions.values.length) {
-                                    for (const oneOptionsValue of cart.items[index].options[index]) {
+                                if (cart.items[index].options[indexOptions].values.length === oneOptions.values.length) {
+                                    for (const oneOptionsValue of cart.items[index].options[indexOptions].values) {
                                         if (oneOptions.values.includes(oneOptionsValue)) {
                                             continue;
                                         } else {
@@ -200,24 +200,31 @@ const addItem = async (req) => {
                                             break loopCheckOptions;
                                         }
                                     }
+                                    isANewProduct = index;
+                                    break loopOfIndex;
                                 } else {
                                     isANewProduct = true;
                                     break;
                                 }
                             }
                         }
+                    } else {
+                        isANewProduct = true;
                     }
+                } else {
+                    isANewProduct = true;
+                    break;
                 }
                 /* eslint-enable no-labels */
-                if (isANewProduct === false) {
-                    req.body.item._id       = cart.items[index]._id.toString();
-                    req.body.item.quantity += cart.items[index].quantity;
-
-                    delete req.body.item.id;
-                    delete req.body.item.weight;
-                    return updateQty(req);
-                }
             }
+        }
+        if (typeof isANewProduct === 'number') {
+            req.body.item._id       = cart.items[isANewProduct]._id.toString();
+            req.body.item.quantity += cart.items[isANewProduct].quantity;
+
+            delete req.body.item.id;
+            delete req.body.item.weight;
+            return updateQty(req);
         }
     }
     if (_product.translation[_lang.code]) {
@@ -230,12 +237,15 @@ const addItem = async (req) => {
         req.body.item._id = idGift;
     }
 
-    const item = {...req.body.item, weight: _product.weight, price: _product.price, options: req.body.options};
-    if (_product.type !== 'virtual') item.stock = _product.stock;
     if (typeof req.body.item.options !== 'undefined' && req.body.item.options !== null) {
         // we set options in the cart !
         // we check options
         // add to item
+        // add code, add name, add modifier, add control
+    }
+    const item = {...req.body.item, weight: _product.weight, price: _product.price, options: req.body.item.options};
+    if (_product.type !== 'virtual') {
+        item.stock = _product.stock;
     }
     const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
