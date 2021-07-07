@@ -35,6 +35,7 @@ const loadDynamicRoutes = (app, adminFront) => {
         if (file === 'admin.js') {
             require(`./${file}`)(app, adminFront);
         } else {
+            delete require.cache[require.resolve(`./${file}`)]; // remove file from cache !! this is an important line :D
             require(`./${file}`)(app);
         }
     });

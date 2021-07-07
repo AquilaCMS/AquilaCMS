@@ -25,6 +25,7 @@ const translation       = require('./utils/translation');
 const serverUtils       = require('./utils/server');
 const utilsModules      = require('./utils/modules');
 const utilsThemes       = require('./utils/themes');
+const NSErrors          = require('./utils/errors/NSErrors');
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -80,7 +81,7 @@ const setEnvConfig = async () => {
 };
 
 const initFrontFramework = async (themeFolder) => {
-    if (dev) await utilsThemes.themeCompile();
+    // if (dev) await utilsThemes.themeCompile();
 
     const app = next({dev, dir: themeFolder});
     let handler;
@@ -130,6 +131,28 @@ const initServer = async () => {
         } else {
             await initFrontFramework(themeFolder);
         }
+        /*
+        - Need to be only in dev mode (not done)
+        - need to deplace api route befor nextjs routes (not done)
+        */
+        const reloadRouter = express.Router();
+        reloadRouter.route('/reloadAPI').get(async (req, res) => {
+            if (server._router.stack[23].regexp.toString().includes('api')) {
+                // Remove the matched middleware
+                server._router.stack.splice(23, 1);
+                server._router.stack.splice(23, 1);
+            } else {
+                server._router.stack.pop();
+                server._router.stack.pop();
+            }
+            const apiRouter        = express.Router();
+            const adminFrontRouter = express.Router();
+            server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
+            delete require.cache[require.resolve('./routes')];
+            require('./routes').loadDynamicRoutes(apiRouter, adminFrontRouter);
+            return res.json('ok');
+        });
+        server.use('/api', reloadRouter);
     } else {
         // Only for installation purpose, will be inaccessible after first installation
         require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
