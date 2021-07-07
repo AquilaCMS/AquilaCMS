@@ -1,1 +1,0 @@
-module.exports = [{ defaultLanguage: true, code: 'fr' },{ defaultLanguage: false, code: 'en' }];
