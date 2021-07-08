@@ -335,6 +335,18 @@ module.exports = {
         fr : 'Impossible de trouver le type de mail en base de données',
         en : 'Cannot find this type of mail in database'
     },
+    MailTypeUpdateNoCodeError : {
+        fr : 'Impossible de mettre le code du type de mail à "noCode"',
+        en : 'Cannot update email type code to "noCode"'
+    },
+    MailTypeCreateError : {
+        fr : 'Impossible de créer le type de mail',
+        en : 'Cannot create this email type'
+    },
+    MailTypeCodeAlreadyExists : {
+        fr : 'Le code de ce type de mail existe déjà',
+        en : 'The code of this email type already exists'
+    },
     StatusUpdateError : {
         fr : 'Ce changement de statut est impossible.',
         en : 'Impossible to update status.'
