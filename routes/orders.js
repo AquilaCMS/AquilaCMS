@@ -8,8 +8,6 @@
 
 const {Cart, Orders, PaymentMethods} = require('../orm/models');
 const orderService                   = require('../services/orders');
-const ServiceMail                    = require('../services/mail');
-const ServiceLanguages               = require('../services/languages');
 const ServiceOrder                   = require('../services/orders');
 const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
@@ -238,7 +236,6 @@ async function cancelOrderRequest(req, res, next) {
  * @deprecated
  */
 async function payOrder(req, res, next) {
-    const lang  = ServiceLanguages.getDefaultLang(req.params.lang);
     const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
     if (!order) {
         return next(NSErrors.OrderNotFound);

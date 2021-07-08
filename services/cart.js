@@ -12,7 +12,6 @@ const {
     Cart,
     Orders,
     Products,
-    Promo,
     Languages,
     Configuration
 }                       = require('../orm/models');

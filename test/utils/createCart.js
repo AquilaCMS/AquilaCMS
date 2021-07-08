@@ -3,9 +3,9 @@ const {Cart} = require('../../orm/models');
 
 const createCart = (params) => {
     const {items, cartId} = params;
-    const cart          = new Cart();
-    cart.cartId         = cartId || null;
-    cart.items          = items || {};
+    const cart            = new Cart();
+    cart.cartId           = cartId || null;
+    cart.items            = items || {};
     return cart.save();
 };
 
