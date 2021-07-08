@@ -9,8 +9,29 @@
 const mongoose      = require('mongoose');
 const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
+const OptionsValue  = new Schema({
+    name    : {},
+    values  : {type: String},
+    control : {
+        default : {type: Boolean},
+        min     : {type: Number},
+        max     : {type: Number}
+    },
+    modifier : {
+        price : {
+            value     : {type: Number},
+            typePrice : {
+                type : String,
+                enum : ['pourcent', 'price']
+            }
+        },
+        weight : {type: Number}
+    }
+}, {
+    id : false
+});
 
-const SetAttributesSchema = new Schema({
+const OptionsSchema = new Schema({
     code      : {type: String, required: true, unique: true},
     name      : {},
     mandatory : {type: Boolean, required: true},
@@ -18,43 +39,25 @@ const SetAttributesSchema = new Schema({
         type : String,
         enum : ['textfield', 'bool', 'number', 'list', 'radio', 'color', 'date', 'checkbox', 'productList']
     },
-    values : [{
-        name    : {},
-        control : {
-            checked   : {type: Boolean},
-            mandatory : {type: Boolean},
-            min       : {type: Number},
-            max       : {type: Number}
-        },
-        modifier : {
-            price : {
-                value     : {type: Number},
-                typePrice : {
-                    type : String,
-                    enum : ['pourcent', 'price']
-                }
-            },
-            weight : {type: Number}
-        }
-    }]
+    values : [OptionsValue]
 }, {
     id : false
 });
 
-SetAttributesSchema.statics.checkCode = async function (that) {
-    await utilsDatabase.checkCode('setAttributes', that._id, that.code);
+OptionsSchema.statics.checkCode = async function (that) {
+    await utilsDatabase.checkCode('options', that._id, that.code);
 };
 
-SetAttributesSchema.pre('updateOne', async function (next) {
-    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
+OptionsSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, OptionsSchema);
 });
 
-SetAttributesSchema.pre('findOneAndUpdate', async function (next) {
-    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
+OptionsSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, OptionsSchema);
 });
 
-SetAttributesSchema.pre('save', async function (next) {
-    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
+OptionsSchema.pre('save', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, OptionsSchema);
 });
 
-module.exports = SetAttributesSchema;
+module.exports = OptionsSchema;

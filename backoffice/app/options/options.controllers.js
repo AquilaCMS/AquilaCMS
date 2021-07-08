@@ -182,12 +182,12 @@ OptionsControllers.controller('nsNewOptionsController', [
 
         $scope.checkedIsChanged = function (index) {
             const actualType = $scope.options.type;
-            const temp = $scope.options.values[index].control.checked;
+            const temp = $scope.options.values[index].control.default;
             if (actualType === 'list' || actualType === 'radio') {
                 for (let oneValue of $scope.options.values) {
-                    oneValue.control.checked = false;
+                    oneValue.control.default = false;
                 }
-                $scope.options.values[index].control.checked = temp;
+                $scope.options.values[index].control.default = temp;
             }
         }
 
@@ -208,8 +208,7 @@ OptionsControllers.controller('nsNewOptionsController', [
                     $scope.options.values.push({
                         name: {},
                         control: {
-                            mandatory: true,
-                            checked: false,
+                            default: false,
                             min: 10,
                             max: 0
                         },

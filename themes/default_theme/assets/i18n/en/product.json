@@ -45,5 +45,6 @@
     "review_successfully_sent": "Your comment has been successfully sent and will be displayed after validation",
     "choose_option": "You must select an option of this product to order it",
     "mandatory": "Mandatory",
-    "optional": "Optional"
+    "optional": "Optional",
+    "mandatoryOptionsNotSelected": "One mandatory option as no value !"
 }

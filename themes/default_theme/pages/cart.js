@@ -164,7 +164,7 @@ class PageCart extends NSPageCart {
                                                                                                 {
                                                                                                     item.options.map((oneOptions) => {
                                                                                                         console.log(oneOptions);
-                                                                                                        return (<li key={oneOptions.code}>{oneOptions.name ? oneOptions.name[lang] : oneOptions.code} : {oneOptions.values.map(element => element).toString()}</li>)
+                                                                                                        return (<li key={oneOptions.code}>{oneOptions.name ? oneOptions.name[lang] : oneOptions.code} : {oneOptions.values.map(element => element.value).toString()}</li>)
                                                                                                         // section.products.map((productSection, indexSel) => (
                                                                                                         // <li key={indexSel}>{productSection.name} {`${
                                                                                                         //     (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&

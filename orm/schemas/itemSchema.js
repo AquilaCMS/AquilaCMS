@@ -6,10 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const mongoose     = require('mongoose');
-const aquilaEvents = require('../../utils/aquilaEvents');
-const Schema       = mongoose.Schema;
-const {ObjectId}   = Schema.Types;
+const mongoose      = require('mongoose');
+const aquilaEvents  = require('../../utils/aquilaEvents');
+const Schema        = mongoose.Schema;
+const {ObjectId}    = Schema.Types;
+const OptionsSchema = require('./optionsSchema');
 
 const itemsSchema = new Schema({
     id     : {type: ObjectId, ref: 'products', required: true},
@@ -23,16 +24,10 @@ const itemsSchema = new Schema({
         ],
         default : 'PROCESSING'
     },
-    name    : String,
-    code    : String,
-    image   : String,
-    options : [{
-        code     : {type: String},
-        name     : {},
-        type     : {type: String},
-        modifier : {},
-        values   : [{type: String}]
-    }],
+    name               : String,
+    code               : String,
+    image              : String,
+    options            : [OptionsSchema],
     parent             : {type: ObjectId, ref: 'products'},
     children           : [{type: ObjectId, ref: 'products'}],
     quantity           : {type: Number, required: true},

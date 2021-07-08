@@ -11,7 +11,7 @@ const utilsDatabase = require('../../utils/database');
 const Schema        = mongoose.Schema;
 const {ObjectId}    = Schema.Types;
 
-const SetAttributesSchema = new Schema({
+const OptionsSetSchema = new Schema({
     code    : {type: String, required: true, unique: true},
     name    : {}, // we have translation for name
     options : [{type: ObjectId, ref: 'options'}]
@@ -19,20 +19,20 @@ const SetAttributesSchema = new Schema({
     id : false
 });
 
-SetAttributesSchema.statics.checkCode = async function (that) {
-    await utilsDatabase.checkCode('setAttributes', that._id, that.code);
+OptionsSetSchema.statics.checkCode = async function (that) {
+    await utilsDatabase.checkCode('optionsSet', that._id, that.code);
 };
 
-SetAttributesSchema.pre('updateOne', async function (next) {
-    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
+OptionsSetSchema.pre('updateOne', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, OptionsSetSchema);
 });
 
-SetAttributesSchema.pre('findOneAndUpdate', async function (next) {
-    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
+OptionsSetSchema.pre('findOneAndUpdate', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, OptionsSetSchema);
 });
 
-SetAttributesSchema.pre('save', async function (next) {
-    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, SetAttributesSchema);
+OptionsSetSchema.pre('save', async function (next) {
+    await utilsDatabase.preUpdates(this.$getAllSubdocs, next, OptionsSetSchema);
 });
 
-module.exports = SetAttributesSchema;
+module.exports = OptionsSetSchema;

@@ -14,6 +14,7 @@ import {
     NSProductCardList,
     NSProductStock,
     imgDefaultBase64,
+    NSToast,
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
@@ -30,6 +31,7 @@ import Error from './_error';
 
 class PageProduct extends NSPageProduct {
     changeOneOptions = (optionsCode, event) => {
+        const { lang } = this.props;
         const optionsValue = event.target.value;
         let { options } = this.state;
         if (!options) {
@@ -41,23 +43,123 @@ class PageProduct extends NSPageProduct {
         const index = options.findIndex((element) => {
             return element.code === optionsCode
         });
+        let id;
+        const optionsType = product.options.find(element => element.code == optionsCode).type;
+        if (optionsType === "textfield" || optionsType === "number") {
+            id = product.options.find(element => element.code == optionsCode).values[0]._id;
+        } else {
+            id = product.options.find(element => element.code == optionsCode).values.find(oneValue => oneValue.name[lang] == optionsValue)._id;
+        }
         if (index > -1) {
-            console.log(product.options);
-            if (base.type === "checkbox") {
-                options[index].values.push(optionsValue);
+            if (optionsType == "checkbox") {
+                const indexOfValue = options[index].values.findIndex(element => element._id == id);
+                if (indexOfValue > -1) {
+                    options[index].values[indexOfValue] = {
+                        _id: id,
+                        values: optionsValue
+                    };
+                } else {
+                    options[index].values.push({
+                        _id: id,
+                        values: optionsValue
+                    });
+                }
             } else {
-                options[index].values = [optionsValue];
+                // only one value
+                options[index].values = [{
+                    _id: id,
+                    values: optionsValue
+                }];
             }
         } else {
             options.push({
                 code: optionsCode,
-                values: [optionsValue]
+                values: [{
+                    _id: id,
+                    values: optionsValue
+                }]
             });
         }
-        console.log("CHANGEOPTIONS", options);
         this.setState({
             options,
         });
+    };
+
+    verifOptions = (options) => {
+        const { product } = this.state;
+        for (const oneOptions of product.options) {
+            const indexOfOptions = options.findIndex((element) => {
+                return element.code == oneOptions.code;
+            });
+            if (indexOfOptions > -1) {
+                // the options is in the product
+                if (oneOptions.mandatory === true && typeof options[indexOfOptions].values !== "undefined" && options[indexOfOptions].values.length > 0) {
+                    // there is an options
+                    // we need to check the oneOptions.control for values
+                }
+            } else {
+                // the options isn't in the product
+                // we check if it's mandatory
+                if (oneOptions.mandatory) {
+                    NSToast.warn('product:mandatoryOptionsNotSelected');
+                    // the options is mandatory but not selected /!\ error
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    preAddToCart = () => {
+        // check options
+        const { lang } = this.props;
+        const { product } = this.state;
+        if (product && product.options) {
+            // there is options in the product
+            let { options } = this.state;
+            if (typeof options === "undefined") {
+                // we add mandatory options
+                options = []
+                for (const oneOptions of product.options) {
+                    if (oneOptions && oneOptions.mandatory === true) {
+                        const newnValues = oneOptions.values.filter((element) => {
+                            if (element.default === true) {
+                                return true;
+                            }
+                            return false;
+                        }).map((element) => {
+                            if (oneOptions.type === "textfield") {
+                                return {
+                                    _id: element._id,
+                                    control: element.control,
+                                    modifier: element.modifier,
+                                    values: ""
+                                }
+                            } else {
+                                return {
+                                    _id: element._id,
+                                    control: element.control,
+                                    modifier: element.modifier,
+                                    values: element.name[lang]
+                                }
+                            }
+                        });
+                        options.push({
+                            ...oneOptions, ...newnValues
+                        });
+                    }
+                }
+            }
+            this.setState({
+                options,
+            });
+            const res = this.verifOptions(options);
+            if (res === true) {
+                this.addToCart();
+            }
+        } else {
+            return;
+        }
     }
 
     renderOptions = (element) => {
@@ -66,8 +168,8 @@ class PageProduct extends NSPageProduct {
             return (element.values.map((elementValue, index) => {
                 if (elementValue.name && elementValue.name[lang]) {
                     return <>
-                        <label key={index}>{elementValue.name[lang]}</label>
-                        <input key={index} type="checkbox" />
+                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <input key={elementValue._id + index} type="checkbox" />
                     </>
                 }
             }));
@@ -75,8 +177,8 @@ class PageProduct extends NSPageProduct {
             return (element.values.map((elementValue, index) => {
                 if (elementValue.name && elementValue.name[lang]) {
                     return <>
-                        <label key={index}>{elementValue.name[lang]}</label>
-                        <input key={index} type="number" />
+                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="number" />
                     </>
                 }
             }));
@@ -84,8 +186,8 @@ class PageProduct extends NSPageProduct {
             return (element.values.map((elementValue, index) => {
                 if (elementValue.name && elementValue.name[lang]) {
                     return <>
-                        <label key={index}>{elementValue.name[lang]}</label>
-                        <input key={index} type="text" />
+                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="text" />
                     </>
                 }
             }));
@@ -100,7 +202,7 @@ class PageProduct extends NSPageProduct {
                     {
                         element.values.map((elementValue, index) => {
                             if (elementValue.name && elementValue.name[lang]) {
-                                return (<option key={index} value={elementValue.name[lang]}>{elementValue.name[lang]}</option>)
+                                return (<option key={elementValue._id} value={elementValue.name[lang]}>{elementValue.name[lang]}</option>)
                             }
                         })
                     }
@@ -317,7 +419,7 @@ class PageProduct extends NSPageProduct {
                                             )
                                         }
 
-                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.preAddToCart)} aria-label={t('product:ajoutPanier')}>
                                             <i className="ico-shopping-cart-white" />
                                             <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
                                         </button>
@@ -409,7 +511,7 @@ class PageProduct extends NSPageProduct {
                                             {
                                                 (!product.stock || (product.stock && product.stock.status !== 'epu'))
                                                 && (
-                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.preAddToCart)} aria-label={t('product:ajoutPanier')}>
                                                         <i className="ico-shopping-cart-white" />
                                                         <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
                                                     </button>
@@ -698,7 +800,7 @@ class PageProduct extends NSPageProduct {
                                             </div>
                                         </div>
                                         <div className="form-footer">
-                                            <button type="button" className="btn btn--red btn-cart" onClick={this.addToCart} aria-label={t('product:ajoutPanier')}>
+                                            <button type="button" className="btn btn--red btn-cart" onClick={this.preAddToCart} aria-label={t('product:ajoutPanier')}>
                                                 <i className="ico-shopping-cart-white" />
                                                 <span>{t('ajoutPanier')}</span>
                                             </button>

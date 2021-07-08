@@ -181,7 +181,7 @@ const addItem = async (req) => {
             ) {
                 continue;
             } else {
-                if (req.body.item.options && cart.items[index].options) {
+                if (typeof req.body.item.options !== 'undefined' && typeof cart.items[index].options !== 'undefined') {
                     // check if same options
                     if (req.body.item.options.length === cart.items[index].options.length) {
                         loopCheckOptions:
@@ -212,8 +212,13 @@ const addItem = async (req) => {
                         isANewProduct = true;
                     }
                 } else {
-                    isANewProduct = true;
-                    break;
+                    if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') {
+                        isANewProduct = index;
+                        break;
+                    } else  if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) {
+                        isANewProduct = index;
+                        break;
+                    }
                 }
                 /* eslint-enable no-labels */
             }
@@ -242,6 +247,53 @@ const addItem = async (req) => {
         // we check options
         // add to item
         // add code, add name, add modifier, add control
+        for (const oneOptionsInReq of req.body.item.options) {
+            const optionInProduct     = _product.options.find(((oneOptions) => oneOptions.code === oneOptionsInReq.code));
+            oneOptionsInReq.mandatory = optionInProduct.mandatory;
+            oneOptionsInReq.type      = optionInProduct.type;
+            if (oneOptionsInReq.values.length > 1 &&  optionInProduct.type !== 'checkbox') {
+                // only checkbox has multiple values
+                throw NSErrors.optionsInvalid;
+            }
+            for (const oneValue of oneOptionsInReq.values) {
+                const valueInProduct = optionInProduct.values.find((element) => element._id.toString() === oneValue._id);
+                if (typeof valueInProduct === 'undefined') {
+                    throw NSErrors.optionsInvalid;
+                }
+                oneValue.control  = valueInProduct.control;
+                oneValue.modifier = valueInProduct.modifier;
+                if (optionInProduct.type === 'textfield' || optionInProduct.type === 'number') {
+                    const valueToCheck = oneValue.values[0];
+                    if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck.length && valueToCheck.length < oneValue.control.max) {
+                        continue;
+                    } else if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck && valueToCheck < oneValue.control.max) {
+                        continue;
+                    } else {
+                        throw NSErrors.optionsInvalid;
+                    }
+                } else if (optionInProduct.type === 'checkbox') {
+                    // multiple value are accepted
+                } else {
+                    const valueToCheck = oneValue.values[0];
+                    let checked        = true;
+                    /* eslint-disable no-labels */
+                    loopOfValue:
+                    for (const oneValue of optionInProduct.values) {
+                        for (const oneLang in oneValue.name) {
+                            if (valueToCheck === oneValue.name[oneLang]) {
+                                checked = true;
+                                break loopOfValue;
+                            }
+                        }
+                    }
+                    /* eslint-enable no-labels */
+                    if (checked !== true) {
+                        throw NSErrors.optionsInvalid;
+                    }
+                }
+            }
+        }
+        // req.body.item.options.mandatory =
     }
     const item = {...req.body.item, weight: _product.weight, price: _product.price, options: req.body.item.options};
     if (_product.type !== 'virtual') {
