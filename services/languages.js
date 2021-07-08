@@ -122,9 +122,9 @@ const createDynamicLangFile = async () => {
 
 
     // Create file
-    await fs.writeFile(path.join(global.envConfig.environment.currentTheme , '/dynamic_langs.js'), contentFile, (err) => {
+    await fs.writeFile(path.join("themes", global.envConfig.environment.currentTheme , 'dynamic_langs.js'), contentFile, (err) => {
         if (err) {
-            throw "Error writing file 'dynamic_langs.js'";
+            throw "Error writing file 'dynamic_langs.js' at path " + path.join("themes", global.envConfig.environment.currentTheme);
         }
     });
 };

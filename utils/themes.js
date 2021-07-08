@@ -40,6 +40,7 @@ const themeCompile = async (theme, type, newIsProd) => {
  */
 const loadTheme = async () => {
     await modulesUtils.createListModuleFile();
+    await require('../services/languages').createDynamicLangFile();
     await modulesUtils.displayListModule();
 
     // Language with i18n
