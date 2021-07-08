@@ -86,12 +86,14 @@ class NSErrors {
     static get JobNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'JobNotFound'); }
     static get JobNotSupportedRequestMethod() { return this.makeErrorAlias(NSErrors.NotFound, 'JobNotSupportedRequestMethod'); }
     static get MailCreateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailCreateError'); }
+    static get MailTypeCreateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeCreateError'); }
     static get MailFieldHtmlNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailFieldHtmlNotFound'); }
     static get MailFieldSubjectNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailFieldSubjectNotFound'); }
     static get MailNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailNotFound'); }
     static get MailTypeCannotDeleteNoType() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeCannotDeleteNoType'); }
     static get MailTypeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeNotFound'); }
     static get MailTypeUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeUpdateError'); }
+    static get MailTypeUpdateNoCodeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeUpdateNoCodeError'); }
     static get MailUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateError'); }
     static get MailUpdateNoTypeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateNoTypeError'); }
     static get MediaNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotFound'); }
@@ -141,6 +143,7 @@ class NSErrors {
     static get InvoiceAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'InvoiceAlreadyExists'); }
     static get LoginSubscribeEmailExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'LoginSubscribeEmailExisting'); }
     static get MailCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailCodeAlreadyExists'); }
+    static get MailTypeCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailTypeCodeAlreadyExists'); }
     static get ProductCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductCodeExisting'); }
     static get FamilyCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'FamilyCodeExisting'); }
     static get CodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'CodeExisting'); }
