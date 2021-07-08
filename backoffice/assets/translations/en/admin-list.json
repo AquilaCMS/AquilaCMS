@@ -72,5 +72,6 @@
     "confVente": " Configuration > Sale",
     "actions": "Actions",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "editHtml": "Edit HTML"
 }

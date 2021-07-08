@@ -114,6 +114,7 @@ var checkAccess = function (route) {
             var deferred = $q.defer();
             $http.get("v2/auth/isauthenticated").then(function (resp)
             {
+                $rootScope.userInfo = {...$rootScope.userInfo, ...resp.data.user};
                 if(resp.data.user.accessList.indexOf(route) === -1 ||
                     resp.data.user.accessList === undefined)
                 {
