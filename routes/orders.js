@@ -105,8 +105,8 @@ async function getOrderById(req, res, next) {
  */
 async function rma(req, res, next) {
     try {
-        await orderService.rma(req.body.order, req.body.return);
-        res.end();
+        const order = await orderService.rma(req.body.order, req.body.return);
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -120,8 +120,8 @@ async function rma(req, res, next) {
  */
 async function infoPayment(req, res, next) {
     try {
-        await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
-        res.end();
+        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
+        res.json(order);
     } catch (err) {
         return next(err);
     }

@@ -347,7 +347,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             return 'order.status.' + status;
         }
         $scope.test = "order.detail.cancel";
-        $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+        $scope.orderStatus = ([...NSConstants.orderStatus.translation[$rootScope.adminLang]]).reverse();
 
         $scope.getStatus = function(status){
             if(status !== undefined){
@@ -391,7 +391,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == "RETURNED") {
+                } else if (data == "RETURNED" || data == "CANCELED") {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
@@ -531,7 +531,6 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
-                $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
@@ -1170,7 +1169,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
 
         $scope.close = function ()
         {
-            $modalInstance.dismiss("cancel");
+            $modalInstance.close("cancel");
         };
     }
 ]);
