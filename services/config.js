@@ -126,13 +126,32 @@ const saveEnvFile = async (body, files) => {
 };
 
 const saveEnvConfig = async (body) => {
-    const oldConfig                 = await Configuration.findOne({});
+    const oldConfig = await Configuration.findOne({});
+    if (typeof body.environment.contentSecurityPolicy !== 'undefined') {
+        const tempValueActive = body.environment.contentSecurityPolicy.active;
+        if (typeof tempValueActive !== 'undefined' && typeof tempValueActive  !== 'undefined' ) {
+            if (typeof tempValueActive === 'string') {
+                if (tempValueActive === 'false') {
+                    body.environment.contentSecurityPolicy.active = false;
+                } else if (tempValueActive === 'true') {
+                    body.environment.contentSecurityPolicy.active = true;
+                }
+            }
+        }
+        if (typeof body.environment.contentSecurityPolicy.values === 'undefined') {
+            body.environment.contentSecurityPolicy.values = [];
+        }
+    }
     const {environment, stockOrder} = body;
     if (environment) {
+        // compare two array
+        const array2 = oldConfig.environment.contentSecurityPolicy.values.slice().sort();
+        const array1 = environment.contentSecurityPolicy.values.slice().sort();
+        const isSame = array1.length === array2.length && array1.every((value, index) =>  value === array2[index]);
         if (
             oldConfig.environment.appUrl !== environment.appUrl
             || oldConfig.environment.adminPrefix !== environment.adminPrefix
-            || oldConfig.environment.contentSecurityPolicy.values.length !== environment.contentSecurityPolicy.values.length
+            || isSame === false
             || oldConfig.environment.contentSecurityPolicy.active !== environment.contentSecurityPolicy.active
         ) {
             body.needRestart = true;

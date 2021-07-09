@@ -8,8 +8,6 @@
 
 const {Cart, Orders, PaymentMethods} = require('../orm/models');
 const orderService                   = require('../services/orders');
-const ServiceMail                    = require('../services/mail');
-const ServiceLanguages               = require('../services/languages');
 const ServiceOrder                   = require('../services/orders');
 const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
@@ -107,8 +105,8 @@ async function getOrderById(req, res, next) {
  */
 async function rma(req, res, next) {
     try {
-        await orderService.rma(req.body.order, req.body.return);
-        res.end();
+        const order = await orderService.rma(req.body.order, req.body.return);
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -122,8 +120,8 @@ async function rma(req, res, next) {
  */
 async function infoPayment(req, res, next) {
     try {
-        await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
-        res.end();
+        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -238,7 +236,6 @@ async function cancelOrderRequest(req, res, next) {
  * @deprecated
  */
 async function payOrder(req, res, next) {
-    const lang  = ServiceLanguages.getDefaultLang(req.params.lang);
     const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
     if (!order) {
         return next(NSErrors.OrderNotFound);

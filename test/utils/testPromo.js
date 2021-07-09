@@ -6,9 +6,9 @@ const {createProduct, deleteAllProducts} = require('./createProduct');
 
 const testPromo = async (app, params) => {
     const {dateStart, dateEnd, productValue, promoValue} = params;
-    const start = typeof dateStart !== 'undefined' ? dateStart : moment().subtract(2, 'days').toISOString();
-    const end = typeof dateEnd !== 'undefined' ? dateEnd : moment().add(2, 'days').toISOString();
-    const codepromo = 'codepromo';
+    const start                                          = typeof dateStart !== 'undefined' ? dateStart : moment().subtract(2, 'days').toISOString();
+    const end                                            = typeof dateEnd !== 'undefined' ? dateEnd : moment().add(2, 'days').toISOString();
+    const codepromo                                      = 'codepromo';
     // we create the promo
     await createPromo({
         dateStart     : start,
@@ -16,7 +16,7 @@ const testPromo = async (app, params) => {
         actif         : true,
         discountType  : 'Aati',
         discountValue : promoValue || 5,
-        codepromo     : codepromo
+        codepromo
     });
     // we create the product
     const prd = await createProduct({ati: productValue || 15});
@@ -44,7 +44,7 @@ const testPromo = async (app, params) => {
             }
         ]
     });
-    const resPrd2  = await chai.request(app)
+    const resPrd2 = await chai.request(app)
         .get(`/api/v2/promo/check/code/${codepromo}/${resCart._id}`);
     return resPrd2.body.priceTotal.ati;
 };

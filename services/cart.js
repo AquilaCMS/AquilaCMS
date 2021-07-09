@@ -12,7 +12,6 @@ const {
     Cart,
     Orders,
     Products,
-    Promo,
     Languages,
     Configuration
 }                       = require('../orm/models');
@@ -146,10 +145,8 @@ const deleteCartItem = async (cartId, itemId) => {
 
     ServicePromo.calculDiscount(cart);
     await cart.save();
-    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
-    if (shouldUpdateCart) {
-        cart = await Cart.findOne({_id: cart._id});
-    }
+    aquilaEvents.emit('aqReturnCart');
+    cart = await Cart.findOne({_id: cart._id});
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
@@ -221,10 +218,8 @@ const addItem = async (req) => {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
     }
     await _newCart.save();
-    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
-    if (shouldUpdateCart) {
-        cart = await Cart.findOne({_id: _newCart._id});
-    }
+    aquilaEvents.emit('aqReturnCart');
+    cart = await Cart.findOne({_id: _newCart._id});
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -285,10 +280,8 @@ const updateQty = async (req) => {
     cart = await ServicePromo.checkForApplyPromo(req.info, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
-    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
-    if (shouldUpdateCart) {
-        cart = await Cart.findOne({_id: cart._id});
-    }
+    aquilaEvents.emit('aqReturnCart');
+    cart = await Cart.findOne({_id: cart._id});
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 

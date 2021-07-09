@@ -62,7 +62,6 @@
     "confLiv": " Pays de livraison",
     "confComp": " Composants",
     "confPtsVente": " Points de vente",
-    "catalOpt": " Options",
     "promo": " Codes promo",
     "customer": "Fiche client",
     "reset": "Réinitialiser",
@@ -73,5 +72,7 @@
     "confVente": " Configuration > Vente",
     "actions": "Actions",
     "edit": "Modifier",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+
+    "editHtml": "Editer de l'HTML"
 }

@@ -2,7 +2,17 @@ const faker   = require('faker');
 const {Promo} = require('../../orm/models');
 
 const createPromo = (params = {name: null, desc: null}) => {
-    const {name, desc, dateEnd, dateStart, actif, discountType, discountValue, type, codepromo} = params;
+    const {
+        name,
+        desc,
+        dateEnd,
+        dateStart,
+        actif,
+        discountType,
+        discountValue,
+        type,
+        codepromo
+    } = params;
     const promo          = new Promo();
     promo.actif          = actif || false;
     promo.applyNextRules = false;
