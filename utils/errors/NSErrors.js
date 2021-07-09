@@ -170,6 +170,7 @@ class NSErrors {
     static get TranslateDeleteError() { return this.makeErrorAlias(NSErrors.InternalError, 'TranslateDeleteError'); }
     static get ModuleNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ModuleNameMissmatch'); }
     static get ThemeNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ThemeNameMissmatch'); }
+    static get CommandsMayNotInPath() { return this.makeErrorAlias(NSErrors.InternalError, 'CommandsMayNotInPath'); }
 
     static get ServiceUnavailable() { return new NSError(503, 'ServiceUnavailable'); }
 
