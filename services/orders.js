@@ -372,6 +372,7 @@ const rma = async (orderId, returnData) => {
 
         await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
+    return _order
 };
 
 const infoPayment = async (orderId, returnData, sendMail) => {
@@ -400,6 +401,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
+    return _order
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {

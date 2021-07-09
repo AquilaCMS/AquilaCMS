@@ -415,10 +415,20 @@ const anonymizeUserDatas = async (id) => {
 
 const createConnectionStringMongoose = async (data) => {
     let cmd = '';
-    if (data.options && data.options.replicaSet && data.hosts) {
-        cmd += ` --host "${data.options.replicaSet}/${data.hosts.map((h, i) => `${h}${data.ports[i] ? (`:${data.ports[i]}`) : ''},`)}"`;
-    } else {
-        cmd += ` --host "${data.hosts.map((h, i) => `${h}${data.ports[i] ? (`:${data.ports[i]}`) : ''},`)}"`;
+    if (data.hosts) {
+        // we generate a string
+        const commandLine = `${data.hosts.map((oneHost, i) => {
+            let portOfDB = '';
+            if (data && data.ports && data.ports[i]) {
+                portOfDB = `:${data.ports[i]}`;
+            }
+            return `${oneHost.host}${portOfDB},`;
+        })}`;
+        if (data.options && data.options.replicaSet) {
+            cmd += ` --host "${data.options.replicaSet}/${commandLine}"`;
+        } else {
+            cmd += ` --host "${commandLine}"`;
+        }
     }
     cmd = cmd.replace(',"', '"');
     if (data.options && data.options.ssl) {

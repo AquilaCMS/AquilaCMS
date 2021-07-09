@@ -3,14 +3,15 @@
     "needupdate": "An update is available",
     "noupdate": "No update available",
     "download": "Download",
-    "verifying" : "Verifying update...",
+    "verifying": "Verifying update...",
     "authorizedIPs": "Authorized IPs (separated by ';')",
     "maintenance": "Maintenance",
-    "maj":"Upgrade",
+    "maj": "Upgrade",
     "configurationSaved": "Configuration saved!",
     "errorArise": "An error has occurred !",
     "majSucceded": "Update succeded :)",
     "majFailed": "Update failed :(",
     "checkMajFailed": "Unable to verify update",
-    "automatic":"Activate maintenance automatically during an update"
+    "automatic": "Activate maintenance automatically during an update",
+    "validate": "Do the update"
 }

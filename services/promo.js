@@ -13,9 +13,8 @@ const {
     Rules,
     Languages,
     ProductSimple,
-    Orders,
     Cart
-}                          = require('../orm/models');
+}                  = require('../orm/models');
 const ServiceRules = require('./rules');
 const QueryBuilder = require('../utils/QueryBuilder');
 const promoUtils   = require('../utils/promo');

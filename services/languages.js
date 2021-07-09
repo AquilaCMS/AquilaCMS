@@ -6,6 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const path         = require('path');
 const fs           = require('../utils/fsp');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
@@ -120,9 +121,9 @@ const createDynamicLangFile = async () => {
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
-    await fs.writeFile('./config/dynamic_langs.js', contentFile, (err) => {
+    await fs.writeFile(path.join('themes', global.envConfig.environment.currentTheme, 'dynamic_langs.js'), contentFile, (err) => {
         if (err) {
-            throw "Error writing file 'dynamic_langs.js'";
+            throw `Error writing file "dynamic_langs.js" at path ${path.join('themes', global.envConfig.environment.currentTheme)}`;
         }
     });
 };
