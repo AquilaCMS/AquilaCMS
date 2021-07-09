@@ -480,7 +480,6 @@ ProductControllers.controller("nsProductOptions", [
                     populate: ["options"]
                 }
             }, function (response) {
-                debugger
                 $scope.listOptionsSet = response.datas;
                 angular.copy($scope.listOptionsSet.find((element) => element._id == $scope.product.set_options), $scope.optionsSet);
             }, function (error) {
