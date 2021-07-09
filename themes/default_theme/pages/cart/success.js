@@ -237,7 +237,7 @@ class CartSuccess extends React.Component {
                                                                                         );
                                                                                     }
                                                                                 }
-                                                                                let imgDefault = imgDefaultBase64;
+                                                                                let imgDefault = `/images/products/82x82/0/${item.slug}.jpg`;
                                                                                 let imgAlt = 'illustration produit';
                                                                                 if (item.id.images && item.id.images.length) {
                                                                                     const foundImg = item.id.images.find((img) => img.default);

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    NSPageCart, NSCodePromo, NSContext, NSProductStock, imgDefaultBase64
+    NSPageCart, NSCodePromo, NSContext, NSProductStock
 } from 'aqlrc';
 import Head from 'next/head';
 import { Link, Router } from 'routes';

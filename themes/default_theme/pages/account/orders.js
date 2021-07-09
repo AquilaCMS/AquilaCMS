@@ -5,7 +5,6 @@ import {
     NSPageAccountOrders,
     NSContext,
     NSSidebarAccount,
-    imgDefaultBase64,
     statusColor
 } from 'aqlrc';
 import ModalR from 'react-responsive-modal';

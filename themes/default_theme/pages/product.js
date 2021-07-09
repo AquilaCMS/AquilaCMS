@@ -13,7 +13,6 @@ import {
     NSProductCard,
     NSProductCardList,
     NSProductStock,
-    imgDefaultBase64,
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
