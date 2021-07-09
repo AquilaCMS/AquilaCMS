@@ -449,25 +449,18 @@ ProductControllers.controller("nsProductOptions", [
         init();
 
         $scope.changeOptionsSet = function () {
+            // we change the optionsSet selected
+            angular.copy($scope.listOptionsSet.find((element) => element._id == $scope.optionsSet._id), $scope.optionsSet);
             // we change the optionsSet of the product
-            if ($scope.product && typeof $scope.product.set_options !== "undefined") {
-                if ($scope.product.set_options !== $scope.optionsSet._id) {
-                    // the bind is incorrect, we need to load correct options
-                    OptionsSetServices.get({
-                        PostBody: {
-                            filter: {
-                                _id: $scope.optionsSet._id
-                            },
-                            populate: ['options']
-                        }
-                    }, function (response) {
-                        $scope.optionsSet = response;
-                        $scope.product.set_options = $scope.optionsSet._id;
-                        $scope.product.options = $scope.optionsSet.options;
-                    }, function (error) {
-                        console.log(error);
-                    });
+            if ($scope.product) {
+                if (typeof $scope.product.set_options === "undefined" || $scope.product.set_options === null) {
+                    $scope.product.set_options = "";
                 }
+                $scope.product.set_options = $scope.optionsSet._id;
+                if (typeof $scope.product.options === "undefined" || $scope.product.options === null) {
+                    $scope.product.options = [];
+                }
+                $scope.product.options = $scope.optionsSet.options;
             }
         };
 
@@ -483,10 +476,13 @@ ProductControllers.controller("nsProductOptions", [
             OptionsSetServices.list({
                 PostBody: {
                     limit: $scope.limit,
+                    structure: '*',
+                    populate: ["options"]
                 }
             }, function (response) {
-                $scope.optionsSet = response.datas.find((element) => element._id == $scope.product.set_options);
+                debugger
                 $scope.listOptionsSet = response.datas;
+                angular.copy($scope.listOptionsSet.find((element) => element._id == $scope.product.set_options), $scope.optionsSet);
             }, function (error) {
                 console.log(error);
             });

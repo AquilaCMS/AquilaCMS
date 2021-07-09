@@ -118,35 +118,25 @@ class PageProduct extends NSPageProduct {
             // there is options in the product
             let { options } = this.state;
             if (typeof options === "undefined") {
+                options = [];
+            }
+            if (typeof options === "undefined") {
                 // we add mandatory options
                 options = []
                 for (const oneOptions of product.options) {
                     if (oneOptions && oneOptions.mandatory === true) {
-                        const newnValues = oneOptions.values.filter((element) => {
-                            if (element.default === true) {
-                                return true;
+                        const indexInOptions = options.findIndex(element => element._id === oneOptions._id);
+                        if (index > -1) {
+                            if (typeof options[indexInOptions].values === "undefined"
+                                || options[indexInOptions].values === null
+                                || options[indexInOptions].values.length == 0) {
+                                NSToast.warn('product:mandatoryOptionsNotSelected');
+                                return false;
                             }
+                        } else {
+                            NSToast.warn('product:mandatoryOptionsNotSelected');
                             return false;
-                        }).map((element) => {
-                            if (oneOptions.type === "textfield") {
-                                return {
-                                    _id: element._id,
-                                    control: element.control,
-                                    modifier: element.modifier,
-                                    values: ""
-                                }
-                            } else {
-                                return {
-                                    _id: element._id,
-                                    control: element.control,
-                                    modifier: element.modifier,
-                                    values: element.name[lang]
-                                }
-                            }
-                        });
-                        options.push({
-                            ...oneOptions, ...newnValues
-                        });
+                        }
                     }
                 }
             }
@@ -158,7 +148,7 @@ class PageProduct extends NSPageProduct {
                 this.addToCart();
             }
         } else {
-            return;
+            return false;
         }
     }
 

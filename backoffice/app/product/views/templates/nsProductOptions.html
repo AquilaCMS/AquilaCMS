@@ -3,9 +3,9 @@
     <div class="col-sm-11" ng-show="listOptionsSet && listOptionsSet.length > 0">
         <label for="optionsSet" class="col-sm-2 control-label" translate>product.optionsSet.optionsSet</label>
         <div class="col-sm-6 flowRoot">
-            <select id="set_attributes" name="optionsSet" class="form-control" ng-model="optionsSet.code"
+            <select id="set_attributes" name="optionsSet" class="form-control" ng-model="optionsSet._id"
                 ng-change="changeOptionsSet()">
-                <option ng-repeat="oneOptionsSet in listOptionsSet" value="{{oneOptionsSet.code}}">
+                <option ng-repeat="oneOptionsSet in listOptionsSet" value="{{oneOptionsSet._id}}">
                     {{oneOptionsSet.name[lang]}}
                     ({{oneOptionsSet.code}})
                 </option>
