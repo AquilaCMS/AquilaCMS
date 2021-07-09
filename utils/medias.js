@@ -17,7 +17,7 @@ const fsp                         = require('./fsp');
 const utilsModules                = require('./modules');
 
 const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
-    const filePathOut = pathOut + path.basename(pathIn);
+    const filePathOut = path.join(pathOut, path.basename(pathIn));
     const extension   = path.extname(filename);
     const filePathIn  = pathIn.replace(extension, '');
     if (quality > 100) {

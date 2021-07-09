@@ -310,7 +310,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         }
     }
     // compress
-    filePathCache = await utilsMedias.compressImg(filePathCache, filePathCache.replace(fileName, ''), fileName, quality);
+    filePathCache = await utilsMedias.compressImg(filePathCache, `${path.dirname(filePathCache)}/`, fileName, quality);
     return filePathCache;
 };
 
