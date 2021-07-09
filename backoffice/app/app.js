@@ -138,6 +138,14 @@ var checkAccess = function (route) {
     ];
 };
 
+var delayTimer;
+function input(ele) {
+    clearTimeout(delayTimer);
+    delayTimer = setTimeout(function() {
+       ele.value = parseFloat(ele.value).toFixed(2).toString();
+    }, 800); 
+}
+
 adminCatagenApp.config([
     "$httpProvider", function ($httpProvider)
     {
