@@ -258,8 +258,9 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         // if the cache folder does not exist, we create it
         await fsp.mkdir(cacheFolder, {recursive: true});
     } catch (err) {
+        fileName = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
         filePath      = global.envConfig.environment.defaultImage; // global.envConfig.environment.defaultImage;
-        filePathCache = path.join(cacheFolder, 'default_image_cache_' + size + path.extname(global.envConfig.environment.defaultImage));
+        filePathCache = path.join(cacheFolder, fileName);
     }
 
     // if the requested image is already cached, it is returned direct
@@ -267,8 +268,9 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         return filePathCache;
     }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
+        fileName = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
         filePath      = global.envConfig.environment.defaultImage;
-        filePathCache = path.join(cacheFolder, 'default_image_cache_' + size + path.extname(global.envConfig.environment.defaultImage));
+        filePathCache = path.join(cacheFolder, fileName);
     }
     if (size === 'max' || size === 'MAX') {
         await utilsModules.modulesLoadFunctions('downloadFile', {
@@ -670,6 +672,7 @@ const getImageStream = async (req, res) => {
         }
         if (imagePath.includes('default_image_cache')) {
             res.status(404);
+            res.set('Content-Type', `image/${imagePath.split('.').pop()}`);
         }
         if (await fsp.existsSync(imagePath) && !(await fsp.lstatSync(imagePath).isDirectory())) {
             fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
