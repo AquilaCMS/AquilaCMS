@@ -124,7 +124,7 @@ const initDBValues = async () => {
         Statics
     } = require('../orm/models');
 
-    console.log('Database init in progress...');
+    console.log('Database init : In progress...');
     const langs     = await Languages.find();
     let defaultLang = langs.find((l) => l.defaultLanguage);
     if (!langs.length) {
@@ -1499,6 +1499,7 @@ const initDBValues = async () => {
     for (const paymentMethod of defaultPaymentMethods) {
         await PaymentMethods.findOneAndUpdate({code: paymentMethod.code}, {$setOnInsert: paymentMethod}, {new: true, upsert: true});
     }
+    console.log('Database init : Done\x1b[32m \u2713 \x1b[0m');
 };
 
 const applyMigrationIfNeeded = async () => {
