@@ -165,6 +165,15 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
+        var sortStatus = function (statuses, status) {
+            const currentStatusIndex = statuses.findIndex(s => s.code === status)
+            for(var i = 0; i < currentStatusIndex; i++) {
+                var elem = statuses.shift()
+                statuses.push(elem)
+            }
+            return statuses
+        }
+
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {
@@ -174,6 +183,8 @@ OrderControllers.controller("OrderDetailCtrl", [
             Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
             {
                 $scope.order = response.datas[0];
+                // sort status
+                $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
                 if($scope.order && $scope.order.customer.id){
                     // we get the client informations to check to email and to check is user exists
                     ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
@@ -347,7 +358,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             return 'order.status.' + status;
         }
         $scope.test = "order.detail.cancel";
-        $scope.orderStatus = ([...NSConstants.orderStatus.translation[$rootScope.adminLang]]).reverse();
+        $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]]
 
         $scope.getStatus = function(status){
             if(status !== undefined){
@@ -406,6 +417,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.orderStatus.splice(key, 1);
                         }
                         $scope.editStatus = false;
+                        $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
                         d.resolve();
                     }, function (err)
                     {
@@ -531,6 +543,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
+                $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
