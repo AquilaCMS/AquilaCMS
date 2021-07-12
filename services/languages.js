@@ -119,7 +119,6 @@ async function getTranslatePath(lang) {
 const createDynamicLangFile = async (fromInstaller = true) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
-    console.log("create file")
 
     // Create file
     await fs.writeFile(!fromInstaller ? path.join('themes', global.envConfig.environment.currentTheme, 'dynamic_langs.js') : 'themes/default_theme/dynamic_langs.js', contentFile, (err) => {

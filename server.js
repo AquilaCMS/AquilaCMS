@@ -80,6 +80,9 @@ const setEnvConfig = async () => {
 };
 
 const initFrontFramework = async (themeFolder) => {
+    if(!(await fs.existsSync(path.join(themeFolder, 'dynamic_langs.js')))) {
+        require('./services/languages').createDynamicLangFile()
+    }
     if (dev) await utilsThemes.themeCompile();
 
     const app = next({dev, dir: themeFolder});
