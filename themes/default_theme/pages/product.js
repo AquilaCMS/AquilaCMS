@@ -32,8 +32,11 @@ import Error from './_error';
 class PageProduct extends NSPageProduct {
     constructor(props) {
         super(props);
+        this.state = {
+            ...this.state,
+            price: this.caculateNewPrice()
+        };
         this.setDefaultOptions()
-        this.caculateNewPrice()
     }
 
     changeOneOptions = (optionsCode, event) => {
@@ -80,6 +83,7 @@ class PageProduct extends NSPageProduct {
         } else {
             options.push({
                 code: optionsCode,
+                _id: product.options.find(element => element.code == optionsCode)._id,
                 values: [{
                     _id: id,
                     values: optionsValue
@@ -89,24 +93,39 @@ class PageProduct extends NSPageProduct {
         this.setState({
             options,
         });
+        this.setState({
+            price: this.caculateNewPrice(product, options)
+        });
     };
 
     setDefaultOptions = () => {
 
     }
 
-    caculateNewPrice = () => {
-        const { product, options } = this.state;
-        debugger;
+    caculateNewPrice = (product, options) => {
+        let price = {
+            et: 0,
+            ati: 0
+        };
         if (product && product.type === "simple") {
-            const price = {
-                et: 0,
-                ati: 0
+            const priceET = product.price.et;
+            const priceATI = product.price.ati;
+            price.et = typeof priceET.special !== "undefined" || priceET.special !== null ? priceET.special : priceET.normal;
+            price.ati = typeof priceATI.special !== "undefined" || priceATI.special !== null ? priceATI.special : priceATI.normal;
+            if (options && product && product.options) {
+                for (const oneOptions of options) {
+                    debugger;
+                    for (const oneValue of oneOptions.values) {
+                        debugger;
+                        const valueTemp1 = product.options.find(element => element._id === oneOptions._id);
+                        const valueTemp = product.options.find(element => element._id === oneOptions._id).values.find(element => element._id === oneValue._id);
+                        debugger;
+                    }
+                }
             }
-            this.setState({
-                price
-            })
+            return price;
         }
+        return null;
     }
 
     verifOptions = (options) => {
@@ -255,8 +274,10 @@ class PageProduct extends NSPageProduct {
             product,
             allCommentsDisplayed,
             hideReviewsLanguage,
-            taxDisplay
+            taxDisplay,
+            price
         } = this.state;
+        console.log(price);
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
@@ -497,7 +518,17 @@ class PageProduct extends NSPageProduct {
                                                 }
 
                                                 <strong>
-                                                    <span>{price[taxDisplay]}{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                    <span>
+                                                        {
+                                                            price && price[taxDisplay] > 0 ?
+                                                                price[taxDisplay].toFixed(2)
+                                                                :
+                                                                (product.price[taxDisplay].special && product.price[taxDisplay].special > 0) ?
+                                                                    product.price[taxDisplay].special.toFixed(2)
+                                                                    :
+                                                                    product.price[taxDisplay].normal.toFixed(2)
+                                                        }
+                                                    </span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                                 </strong>
                                             </div>
                                         </div>
