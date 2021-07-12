@@ -2,7 +2,7 @@
     <div class="row position text-right" style="margin-bottom: 25px;padding: 0 10px;">
         <ns-return-button is-selected="isSelected" style="pointer-events:auto;float:left" form="form" return-path="{{returnPath}}" ng-hide="hideReturn"></ns-return-button>
 
-        <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-click="save()"ng-disabled="disableSave" ng-hide="hideSave"><span translate>ns.save</span><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+        <button style="pointer-events:auto" type="submit" class="btn btn-success" ng-click="save()" ng-disabled="disableSave" ng-hide="hideSave"><span translate>ns.save</span><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
         <button style="pointer-events:auto" type="button" class="btn btn-default btn-s&q" ng-click="saveAndQuit()" ng-disabled="disableSave" ng-hide="hideSaveAndQuit" translate>ns.saveQuit</button>
         <button ng-repeat="btn in additionnalButtons" style="pointer-events:auto" type="button" class="btn btn-default" ng-class="btn.class" ng-click="btn.onClick()" ng-style="btn.style"><span translate="{{btn.text}}"></span><span style="display:block;visibility:visible;" bind-html-compile="btn.icon"></span></button>
         <button style="pointer-events:auto" type="button" class="btn btn-danger" ng-click="remove()" ng-if="isEditMode" ng-hide="hideRemove" ><span translate>ns.delete</span><i class="fa fa-trash" aria-hidden="true"></i></button>
