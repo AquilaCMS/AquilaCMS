@@ -417,7 +417,6 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.orderStatus.splice(key, 1);
                         }
                         $scope.editStatus = false;
-                        $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
                         d.resolve();
                     }, function (err)
                     {
@@ -543,7 +542,6 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
-                $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
