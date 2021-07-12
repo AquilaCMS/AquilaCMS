@@ -285,6 +285,7 @@ function createPayment(order, method) {
         operationDate : Date.now(),
         status        : 'TODO',
         mode          : method.code.toUpperCase(),
-        amount        : order.priceTotal.ati
+        amount        : order.priceTotal.ati,
+        isDeferred    : method.isDeferred
     };
 }

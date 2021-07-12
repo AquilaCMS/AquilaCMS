@@ -116,7 +116,7 @@ async function getTranslatePath(lang) {
 /**
  * Create languages in file "config/dynamic_langs.js"
  */
-const createDynamicLangFile = async (fromInstaller = true) => {
+const createDynamicLangFile = async (fromInstaller = false) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
