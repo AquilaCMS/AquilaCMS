@@ -376,6 +376,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Frais supplémentaires'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -477,6 +493,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Additionnal fees'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -1064,6 +1096,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -1161,6 +1209,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
