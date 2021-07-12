@@ -736,24 +736,22 @@ const initDBValues = async () => {
                             description : 'Promotion code'
                         },
                         {
-                            value: 'product.name',
-                            description: 'Product name'
+                            value       : 'product.name',
+                            description : 'Product name'
                         },
                         {
-                            value: 'product.quantity',
-                            description: 'Product quantity'
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
                         },
                         {
-                            value: 'product.unitPrice',
-                            description: 'Product unitary price '
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
                         },
                         {
-                            value: 'product.totalPrice',
-                            description: 'Product total price'
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
-                    ]
-
                 }
             }
         },
