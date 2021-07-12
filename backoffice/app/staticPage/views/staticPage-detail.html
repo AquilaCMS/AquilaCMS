@@ -70,7 +70,7 @@
                     <ul class="nav nav-tabs" >
                         <li class='active' ng-click="generateContent();selectTab('result')"><a data-toggle="tab" href="#result" target="_self" translate>static.detail.result</a></li>
                         <li ng-click="generateVariables();selectTab('variables')"><a data-toggle="tab" href="#variables" target="_self" translate>static.detail.variables</a></li>
-                        <li><a data-toggle="tab" href="#html" target="_self" ng-click="selectTab('html')" translate>static.detail.html</a></li>
+                        <li ng-show="userIsAllowedTo('editHtml')"><a data-toggle="tab" href="#html" target="_self" ng-click="selectTab('html')" translate>static.detail.html</a></li>
                     </ul>
                 </div>
                 <div class="col-sm-2"></div>
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="html" class="tab-pane">
+                    <div id="html" class="tab-pane" ng-show="userIsAllowedTo('editHtml')">
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <ns-tinymce ng-if="selectedTab.active == 'html'" lang="lang" text="static.translation[lang].html"></ns-tinymce>

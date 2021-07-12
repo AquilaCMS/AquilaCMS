@@ -77,44 +77,6 @@ describe('Users', () => {
                     done();
                 });
         });
-
-        it('should change password', (done) => {
-            chai.request(app)
-                .post('/api/v2/user/resetpassword')
-                .send({email: credentials.user.email, change: true, password: 'dm0W3#96OC'})
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res).to.have.status(200);
-                    expect(res.body.message).to.be.equal('Mot de passe réinitialisé.');
-                    done();
-                });
-        });
-
-        it('should return error LoginSubscribePasswordInvalid w/ password "test"', (done) => {
-            chai.request(app)
-                .post('/api/v2/user/resetpassword')
-                .send({email: credentials.user.email, change: true, password: 'test'})
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res).to.have.status(400);
-                    expect(res.body).to.have.property('code');
-                    expect(res.body.code).to.be.equal('LoginSubscribePasswordInvalid');
-                    done();
-                });
-        });
-
-        it('should not find user w/ incorrect mail', (done) => {
-            chai.request(app)
-                .post('/api/v2/user/resetpassword')
-                .send({email: 'rezg', change: true, password: 'test'})
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    expect(res).to.have.status(500);
-                    expect(res.body).to.have.property('message');
-                    expect(res.body.message).to.be.equal('Utilisateur introuvable, impossible de réinitialiser le mot de passe.');
-                    done();
-                });
-        });
     });
 
     describe('POST /api/v2/user/:id', () => {

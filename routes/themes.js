@@ -6,13 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                        = require('path');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const themesServices              = require('../services/themes');
 const serviceThemeConfig          = require('../services/themeConfig');
 const ServiceConfig               = require('../services/config');
 const packageManager              = require('../utils/packageManager');
-const serverUtils                 = require('../utils/server');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  authentication, adminAuth, listTheme);
@@ -135,16 +133,20 @@ const copyDatas = async (req, res, next) => {
  * @description Run a 'yarn install' command on the defined theme
  */
 async function packageInstall(req, res, next) {
+    req.setTimeout(300000);
     try {
-        let themPath = req.body.themeName;
-        if (!themPath || themPath === '' || themPath === './themes/') {
-            themPath = `./themes/${themesServices.getThemePath()}`;
+        let themeName       = '';
+        let devDependencies = false;
+        if (req && req.body) {
+            if (req.body.devDependencies) {
+                devDependencies = true;
+            }
+            if (req.body.themeName) {
+                themeName = req.body.themeName;
+            }
         }
-        await packageManager.execCmd(
-            `yarn install${serverUtils.isProd ? ' --prod' : ''}`,
-            path.resolve(`./themes/${themPath}`)
-        );
-        return res.json();
+        const data = await themesServices.installTheme(themeName, devDependencies);
+        return res.send(data);
     } catch (error) {
         return next(error);
     }
