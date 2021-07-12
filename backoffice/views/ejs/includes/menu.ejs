@@ -59,7 +59,7 @@
         </li>
 
         <li class="parent"
-            ng-show="!(accessList.includes('products')) || !(accessList.includes('categories')) || !(accessList.includes('promos')) || !(accessList.includes('picto')) || !(accessList.includes('attributes')) || !(accessList.includes('trademarks')) || !(accessList.includes('suppliers')) || !(accessList.includes('families'))">
+            ng-show="!(accessList.includes('products')) || !(accessList.includes('categories')) || !(accessList.includes('promos')) || !(accessList.includes('picto')) || !(accessList.includes('attributes')) || !(accessList.includes('trademarks')) || !(accessList.includes('suppliers')) || !(accessList.includes('families')) || !(accessList.includes('optionsSet')) || !(accessList.includes('options'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-database fa-2x i-style"></i>
@@ -303,7 +303,7 @@
         </li>
 
         <li class="parent"
-            ng-show="!(accessList.includes('config')) || !(accessList.includes('stock')) || !(accessList.includes('mails')) || !(accessList.includes('shipments')) || !(accessList.includes('territories')) || !(accessList.includes('languages')) || !(accessList.includes('paymentMethods')) || !(accessList.includes('jobs')) || !(accessList.includes('admin')) || !(accessList.includes('update'))">
+            ng-show="!(accessList.includes('mails')) || !(accessList.includes('shipments')) || !(accessList.includes('territories')) || !(accessList.includes('languages')) || !(accessList.includes('paymentMethods')) || !(accessList.includes('admin'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-wrench fa-2x i-style"></i>
@@ -354,7 +354,7 @@
                         <span translate>menu.modesPaiement</span>
                     </a>
                 </li>
-                <li ng-if="!(accessList.includes('list'))">
+                <li ng-if="!(accessList.includes('admin'))">
                     <a href="#/list" class="menuClick">
                         <span class="icon">
                             <i class="fa fa-shield fa-lg i-style"></i>
@@ -405,7 +405,7 @@
         </li>
 
         <li class="parent"
-            ng-show="!(accessList.includes('environnement')) || !(accessList.includes('stock'))  || !(accessList.includes('jobs'))  || !(accessList.includes('system'))  || !(accessList.includes('update'))">
+            ng-show="!(accessList.includes('stock')) || !(accessList.includes('jobs')) || !(accessList.includes('system')) || !(accessList.includes('update')) || !(accessList.includes('config'))">
             <a href="#">
                 <span class="main-icon">
                     <i class="fa fa-cog fa-2x i-style"></i>

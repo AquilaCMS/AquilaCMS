@@ -195,9 +195,10 @@ const modulesLoadInit = async (server) => {
     const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
     loadedModules  = [..._modules].map((lmod) => {return {...lmod, init: true, valid: false};});
     for (let i = 0; i < loadedModules.length; i++) {
-        if (i === 0) console.log('Required modules :');
+        if (i === 0) {
+            console.log('Required modules :');
+        }
         console.log(`- ${loadedModules[i].name}`);
-        if (i === loadedModules.length - 1) console.log('');
     }
     if (loadedModules.length > 0) {
         console.log('Start init loading modules');
@@ -252,6 +253,8 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                                 }
                             }
                             require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
+                        } else {
+                            process.stdout.write(`- ${mod.name} \x1b[33m (can't access to initAfter.js or no initAfter.js)`);
                         }
                         resolve();
                     } catch (err) {

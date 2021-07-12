@@ -162,19 +162,15 @@ const paymentSuccess = async (query, updateObject) => {
         if (_order.promos && _order.promos.length && _order.promos[0].promoCodeId) {
             try {
             // then we increase the number of uses of this promo
-                await Promo.updateOne({}, {
-                    $inc : {'codes.$[code].used': 1}
-                }, {
-                    arrayFilters : [{'code._id': _order.promos[0].promoCodeId}]
+                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
+                    $inc : {'codes.$.used': 1}
                 });
                 // then we must also update the number of unique users who have used this "promo code"
                 const result = await Orders.distinct('customer.id', {
                     'promos.promoCodeId' : _order.promos[0].promoCodeId
                 });
-                await Promo.updateOne({}, {
-                    $set : {'codes.$[code].client_used': result.length}
-                }, {
-                    arrayFilters : [{'code._id': _order.promos[0].promoCodeId}]
+                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
+                    $set : {'codes.$.client_used': result.length}
                 });
             // TODO P6 : Decrease the stock of the product offered
             // if (_cart.promos[0].gifts.length)
@@ -376,6 +372,7 @@ const rma = async (orderId, returnData) => {
 
         await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
+    return _order;
 };
 
 const infoPayment = async (orderId, returnData, sendMail) => {
@@ -404,6 +401,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
+    return _order;
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {

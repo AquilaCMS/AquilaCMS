@@ -75,6 +75,10 @@ module.exports = {
         fr : 'Erreur interne',
         en : 'Internal error'
     },
+    CommandsMayNotInPath : {
+        fr : "La commande a échouée, cela peut arriver si la commande n'est pas dans la variable d'environnement (PATH)",
+        en : 'The command fails, this can happen if the command is not in the environment variable (PATH)'
+    },
     ServiceUnavailable : {
         fr : 'Le service est actuellement indisponible',
         en : 'Service is currently unavailable'
@@ -339,6 +343,18 @@ module.exports = {
         fr : 'Impossible de trouver le type de mail en base de données',
         en : 'Cannot find this type of mail in database'
     },
+    MailTypeUpdateNoCodeError : {
+        fr : 'Impossible de mettre le code du type de mail à "noCode"',
+        en : 'Cannot update email type code to "noCode"'
+    },
+    MailTypeCreateError : {
+        fr : 'Impossible de créer le type de mail',
+        en : 'Cannot create this email type'
+    },
+    MailTypeCodeAlreadyExists : {
+        fr : 'Le code de ce type de mail existe déjà',
+        en : 'The code of this email type already exists'
+    },
     StatusUpdateError : {
         fr : 'Ce changement de statut est impossible.',
         en : 'Impossible to update status.'
@@ -522,6 +538,10 @@ module.exports = {
     ThemeAquilaVersionNotSatisfied : {
         fr : 'Version du theme Aquila non satisfaite',
         en : 'Aquila theme version not satisfied'
+    },
+    SameTheme : {
+        fr : 'Ce theme est le thème courant',
+        en : 'This theme is the current theme'
     },
     ModuleNameMissmatch : {
         fr : 'Le nom du theme, nom du dossier ou du zip du module ne corespondent pas',
