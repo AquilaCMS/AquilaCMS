@@ -30,6 +30,12 @@ import Error from './_error';
  */
 
 class PageProduct extends NSPageProduct {
+    constructor(props) {
+        super(props);
+        this.setDefaultOptions()
+        this.caculateNewPrice()
+    }
+
     changeOneOptions = (optionsCode, event) => {
         const { lang } = this.props;
         const optionsValue = event.target.value;
@@ -84,6 +90,24 @@ class PageProduct extends NSPageProduct {
             options,
         });
     };
+
+    setDefaultOptions = () => {
+
+    }
+
+    caculateNewPrice = () => {
+        const { product, options } = this.state;
+        debugger;
+        if (product && product.type === "simple") {
+            const price = {
+                et: 0,
+                ati: 0
+            }
+            this.setState({
+                price
+            })
+        }
+    }
 
     verifOptions = (options) => {
         const { product } = this.state;
@@ -473,7 +497,7 @@ class PageProduct extends NSPageProduct {
                                                 }
 
                                                 <strong>
-                                                    <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                    <span>{price[taxDisplay]}{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                                 </strong>
                                             </div>
                                         </div>

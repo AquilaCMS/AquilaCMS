@@ -227,7 +227,6 @@ const addItem = async (req) => {
             .map(({index}) => index);
         let isANewProduct = false;
         /* eslint-disable no-labels */
-        loopOfIndex:
         for (const index of indexes) {
             if (
                 cart.items[index].type === 'bundle'
@@ -239,20 +238,22 @@ const addItem = async (req) => {
             } else {
                 if (typeof req.body.item.options !== 'undefined' && typeof cart.items[index].options !== 'undefined') {
                     // check if same options
-                    if (req.body.item.options.length === cart.items[index].options.length) {
+                    const optionsOfItemInCart = cart.items[index].options;
+                    if (req.body.item.options.length === optionsOfItemInCart.length) {
                         loopCheckOptions:
                         for (const oneOptions of req.body.item.options) {
-                            const indexOptions = cart.items[index].options.findIndex((element) => element.code === oneOptions.code);
+                            const indexOptions = optionsOfItemInCart.findIndex((element) => element.code === oneOptions.code);
                             if (indexOptions === -1) {
                                 isANewProduct = true;
                                 break;
                             } else {
-                                if (cart.items[index].options[indexOptions].values.length === oneOptions.values.length) {
-                                    for (const oneOptionsValue of cart.items[index].options[indexOptions].values) {
+                                if (optionsOfItemInCart[indexOptions].values.length === oneOptions.values.length) {
+                                    for (const oneOptionsValue of optionsOfItemInCart[indexOptions].values) {
                                         const valueAlreadyPresent = oneOptionsValue._id.toString();
                                         const indexInValues       = oneOptions.values.findIndex((element) => element._id === valueAlreadyPresent);
                                         if (indexInValues > -1) {
                                             if (oneOptions.values[indexInValues].values === oneOptionsValue.values) {
+                                                isANewProduct = false;
                                                 continue;
                                             } else {
                                                 isANewProduct = true;
@@ -263,13 +264,16 @@ const addItem = async (req) => {
                                             break loopCheckOptions;
                                         }
                                     }
-                                    isANewProduct = index;
-                                    break loopOfIndex;
+                                    // need to check other options
                                 } else {
                                     isANewProduct = true;
                                     break;
                                 }
                             }
+                        }
+                        if (typeof isANewProduct === 'boolean' && isANewProduct === false) {
+                            isANewProduct = index;
+                            break;
                         }
                     } else {
                         isANewProduct = true;
