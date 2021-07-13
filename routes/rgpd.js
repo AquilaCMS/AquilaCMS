@@ -17,10 +17,10 @@ const appdirname                  = path.dirname(require.main.filename);
 
 module.exports = function (app) {
     app.get('/v2/rgpd/export/:id', authentication, exportData);
-    app.post('/v2/rgpd/copyAndAnonymizeDatabase', authentication, adminAuth, copyAndAnonymizeDatabase);
+    app.post('/v2/rgpd/copyAndAnonymizeDatabase', adminAuth, copyAndAnonymizeDatabase);
     app.delete('/v2/rgpd/deleteUser/:id', authentication, deleteUserDatas);
     app.get('/v2/rgpd/anonymizeUser/:id', authentication, anonymizeUser);
-    app.post('/v2/rgpd/dumpAnonymizedDatabase', authentication, adminAuth, dumpAnonymizedDatabase);
+    app.post('/v2/rgpd/dumpAnonymizedDatabase', adminAuth, dumpAnonymizedDatabase);
 };
 
 /**

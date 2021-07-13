@@ -6,18 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceMail                 = require('../services/mail');
+const {adminAuth} = require('../middleware/authentication');
+const ServiceMail = require('../services/mail');
 
 module.exports = function (app) {
-    app.post('/v2/mails', authentication, adminAuth, getMails);
-    app.get('/v2/mail/:_id', authentication, adminAuth, getMail);
+    app.post('/v2/mails', adminAuth, getMails);
+    app.get('/v2/mail/:_id', adminAuth, getMail);
     app.get('/v2/mail/activation/account/sent/:user_id/:lang?', sendMailActivationAccount);
-    app.put('/v2/mail', authentication, adminAuth, setMail);
-    app.put('/v2/mail/removePdf', authentication, adminAuth, removePdf);
+    app.put('/v2/mail', adminAuth, setMail);
+    app.put('/v2/mail/removePdf', adminAuth, removePdf);
     app.post('/v2/mail/form/:lang?', sendContact);
-    app.delete('/v2/mail/:_id', authentication, adminAuth, deleteMail);
-    app.post('/v2/mail/test', authentication, adminAuth, sendTestEmail);
+    app.delete('/v2/mail/:_id', adminAuth, deleteMail);
+    app.post('/v2/mail/test', adminAuth, sendTestEmail);
     app.post('/v2/mail/error', sendError);
 };
 

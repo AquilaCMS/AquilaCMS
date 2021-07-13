@@ -51,13 +51,9 @@ const getOrders = async (PostBody) => {
     return result;
 };
 
-const getOrder = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getOrder = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const saveOrder = async (order) => {
-    return Orders.updateOne({_id: order._id.toString()}, {$set: order});
-};
+const saveOrder = async (order) => Orders.updateOne({_id: order._id.toString()}, {$set: order});
 
 const getOrderById = async (id, PostBody = null) => {
     let pBody = PostBody;
@@ -111,7 +107,7 @@ const paymentSuccess = async (query, updateObject) => {
 
     try {
         const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
-        const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
+        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
@@ -375,8 +371,8 @@ const rma = async (orderId, returnData) => {
 
 const infoPayment = async (orderId, returnData, sendMail) => {
     const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-    if(paymentMethod.isDeferred) {
-        returnData.isDeferred = paymentMethod.isDeferred
+    if (paymentMethod.isDeferred) {
+        returnData.isDeferred = paymentMethod.isDeferred;
     }
     returnData.operationDate = Date.now();
     await setStatus(orderId, 'PAID');

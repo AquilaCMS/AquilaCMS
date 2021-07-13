@@ -6,12 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const SercivesDownloadHistory     = require('../services/downloadHistory');
-const {authentication, adminAuth} = require('../middleware/authentication');
+const SercivesDownloadHistory = require('../services/downloadHistory');
+const {adminAuth}             = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/downloadHistory', authentication, adminAuth, getHistory);
-    app.put('/v2/downloadHistory', authentication, adminAuth, addToHistory);
+    app.post('/v2/downloadHistory', adminAuth, getHistory);
+    app.put('/v2/downloadHistory', adminAuth, addToHistory);
 };
 
 /**

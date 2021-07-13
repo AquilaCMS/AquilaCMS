@@ -15,17 +15,11 @@ const restrictedFields = ['group'];
 const defaultFields    = ['_id', 'code', 'translation'];
 const queryBuilder     = new QueryBuilder(Statics, restrictedFields, defaultFields);
 
-const getStatics = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getStatics = async (PostBody) => queryBuilder.find(PostBody);
 
-const getStatic = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getStatic = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getStaticById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getStaticById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const setStatic = async (req) => {
     const oldStatic = await getStatic({filter: {code: req.body.code}, structure: '*', limit: 1});
@@ -55,9 +49,7 @@ const setStatic = async (req) => {
     return newStatic;
 };
 
-const createStatic = async (req) => {
-    return Statics.create(req.body);
-};
+const createStatic = async (req) => Statics.create(req.body);
 
 const deleteStatic = async (req) => {
     const statics = await Statics.findOne({_id: req.params.id});

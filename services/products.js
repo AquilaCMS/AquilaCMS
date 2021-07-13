@@ -243,12 +243,10 @@ const duplicateProduct = async (idProduct, newCode) => {
     return doc;
 };
 
-const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
-    return global.cache.get(
-        `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
-        async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
-    );
-};
+const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => global.cache.get(
+    `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
+    async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
+);
 
 /**
  * We get the products contained in a category
@@ -545,9 +543,7 @@ const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => 
     return tProducts;
 };
 
-const getProductById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const calculateFilters = async (req, result) => {
     // We recover the attributes, the last selected attribute and if the value has been checked or not
