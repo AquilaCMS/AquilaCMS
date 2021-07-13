@@ -1,4 +1,4 @@
-const make = require('./makeSwaggerDesc');
+const make       = require('./makeSwaggerDesc');
 const components = require('./components');
 
 const description = make();
@@ -6,11 +6,11 @@ const description = make();
 const swaggerObject = {
     openapi : '3.0.3',
     info    : {
-        version     : '2.0.0',
-        title       : 'Documentation for AquilaCMS\'s API',
-        description : description,
+        version : '2.0.0',
+        title   : 'Documentation for AquilaCMS\'s API',
+        description,
         // termsOfService : 'https://localhost:3010/term',
-        contact     : {
+        contact : {
             email : 'contact@nextsourcia.com'
         },
         license : {

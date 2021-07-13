@@ -19,8 +19,10 @@ module.exports = function (app) {
     app.post('/v2/modules/md',       adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    adminAuth, removeModule);
     app.get('/v2/modules/check',     adminAuth, checkDependencies);
-    app.put('/v2/module/config/:id', adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
-    app.post('/v2/module/setConfig',  adminAuth, setModuleConfig);
+  
+    // Deprecated
+    app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuth, getModuleMd);
+    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
 };
 
 /**
@@ -122,6 +124,9 @@ const removeModule = async (req, res, next) => {
     }
 };
 
+/**
+ * @deprecated
+ */
 const getModuleMd = async (req, res, next) => {
     try {
         const result    = await serviceModule.getModuleMd(req.body);
@@ -133,6 +138,7 @@ const getModuleMd = async (req, res, next) => {
 };
 
 /**
+ * @deprecated
  * Used to update the configuration of the module whose id is passed in parameter
  */
 async function setModuleConfigById(req, res, next) {

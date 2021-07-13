@@ -21,7 +21,9 @@ module.exports = function (app) {
     app.get('/restart', adminAuth, restart);
     app.get('/robot', adminAuth, getRobot);
     app.post('/robot', adminAuth, setRobot);
-    app.get('/config/data', getConfigTheme);
+
+    // Deprecated
+    app.get('/config/data', middlewareServer.deprecatedRoute, getConfigTheme);
 };
 
 /**

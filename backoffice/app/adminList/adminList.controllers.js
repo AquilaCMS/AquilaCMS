@@ -48,8 +48,7 @@ const accessList = [
     { code: "modules", translate: "admin-list.modules" },
 
     { code: "statistics", translate: "admin-list.statistics" },
-
-    { code: "options", translate: "admin-list.catalOpt" }
+    { code: "editHtml", translate: "admin-list.editHtml" },
 ];
 
 AdminListControllers.controller("AdminCtrl", [

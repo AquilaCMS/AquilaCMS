@@ -153,8 +153,8 @@ async function resetpassword(req, res, next) {
         let result;
         if (email && !change) {
             result = await usersServices.generateTokenSendMail(email, req.params.lang || req.body.lang, sendMail);
-        } else if (email && change) {
-            result = await usersServices.changePassword(email, password);
+        /* } else if (email && change) {
+            result = await usersServices.changePassword(email, password); */
         } else if (token) {
             result = await usersServices.resetPassword(token, password);
         } else {
