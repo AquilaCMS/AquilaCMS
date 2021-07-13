@@ -6,14 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceBills                = require('../services/bills');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceAuth                 = require('../services/auth');
+const ServiceBills = require('../services/bills');
+const {adminAuth}  = require('../middleware/authentication');
+const ServiceAuth  = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/bills', getBills);
     app.post('/v2/bills/generatePDF', generatePDF);
-    app.post('/v2/bills/fromOrder', authentication, adminAuth, orderToBill);
+    app.post('/v2/bills/fromOrder', adminAuth, orderToBill);
 };
 
 /**

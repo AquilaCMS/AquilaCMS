@@ -6,17 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServicesRules               = require('../services/rules');
-const NSErrors                    = require('../utils/errors/NSErrors');
+const {adminAuth}   = require('../middleware/authentication');
+const ServicesRules = require('../services/rules');
+const NSErrors      = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/rules', listRules);
     app.post('/v2/rule', queryRule);
-    app.put('/v2/rule', authentication, adminAuth, setRule);
-    app.delete('/v2/rule/:_id', authentication, adminAuth, deleteRule);
-    app.post('/v2/rules/testUser', authentication, adminAuth, testUser);
-    app.post('/v2/rules/execRule', authentication, adminAuth, execRules);
+    app.put('/v2/rule', adminAuth, setRule);
+    app.delete('/v2/rule/:_id', adminAuth, deleteRule);
+    app.post('/v2/rules/testUser', adminAuth, testUser);
+    app.post('/v2/rules/execRule', adminAuth, execRules);
 };
 
 async function listRules(req, res, next) {

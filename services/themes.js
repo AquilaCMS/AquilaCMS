@@ -212,16 +212,12 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
         return data;
     }
     const listOfDemoDatasFiles = await fs.readdir(themeDemoData);
-    const listOfPath           = listOfDemoDatasFiles.map((value) => {
-        return path.join(themeDemoData, value);
-    });
+    const listOfPath           = listOfDemoDatasFiles.map((value) => path.join(themeDemoData, value));
     if (!fileNames && listOfPath) {
         listOfFile = listOfPath;
     } else {
         listOfFile = listOfPath.filter((onePath) => {
-            const index = fileNames.findIndex((elementInFileName) => {
-                return onePath.includes(elementInFileName.name);
-            });
+            const index = fileNames.findIndex((elementInFileName) => onePath.includes(elementInFileName.name));
             return (index > -1 && fileNames[index].value === true);
         });
     }

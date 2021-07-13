@@ -35,9 +35,7 @@ describe('Statics', () => {
                 .set('authorization', credentials.token)
                 .send(staticPage);
             expect(res).to.have.status(200);
-            expect(res.body.url).to.be.a('string').and.satisfy((msg) => {
-                return msg.endsWith(`preview=${staticPage._id}`);
-            });
+            expect(res.body.url).to.be.a('string').and.satisfy((msg) => msg.endsWith(`preview=${staticPage._id}`));
         });
         it('Should create a staticPage and get it with the id - w/o authentication', async () => {
             const staticPage = await createStaticPage();

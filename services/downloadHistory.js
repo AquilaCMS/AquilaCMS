@@ -14,9 +14,7 @@ const restrictedFields = [];
 const defaultFields    = ['user', 'product'];
 const queryBuilder     = new QueryBuilder(DownloadHistory, restrictedFields, defaultFields);
 
-const getHistory = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getHistory = async (PostBody) => queryBuilder.find(PostBody);
 
 const addToHistory = async (user, product) => {
     if (!user || !product) throw NSErrors.InvalidParameters;
