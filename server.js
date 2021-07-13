@@ -96,13 +96,13 @@ const initFrontFramework = async () => {
     } catch (err) {
         // if error, we do nothing, we use default
     }
-    if (typeof themeConfig !== 'undefined' && typeof themeConfig.config !== 'undefined' && typeof themeConfig.config.type !== 'undefined') {
+    if (typeof themeConfig?.config?.type !== 'undefined') {
         type = themeConfig.config.type;
     }
 
-    if (dev || (themeConfig && typeof themeConfig.config !== 'undefined' && typeof themeConfig.config.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true)) {
+    if (typeof themeConfig?.config?.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true) {
         let overrideIsProd = false;
-        if (themeConfig && typeof themeConfig.config.needDevDependencies !== 'undefined' && themeConfig.config.needDevDependencies === true) {
+        if (typeof themeConfig?.config?.needDevDependencies !== 'undefined' && themeConfig.config.needDevDependencies === true) {
             overrideIsProd = true;
         }
         await utilsThemes.yarnInstall(themeName, overrideIsProd);
@@ -132,7 +132,7 @@ const initFrontFramework = async () => {
         // static type
         if (fs.existsSync(pathToTheme)) {
             let pathToPages = pathToTheme;
-            if (typeof themeConfig.config.expose !== 'undefined') {
+            if (typeof themeConfig?.config?.expose !== 'undefined') {
                 pathToPages = path.join(pathToTheme, themeConfig.config.expose);
             }
             server.use('/', express.static(pathToPages));
