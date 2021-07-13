@@ -224,12 +224,13 @@ const addItem = async (req) => {
         for (const index of indexes) {
             let selections;
             if (cart.items[index].type === 'bundle') {
-                selections = cart.items[index].selections.toObject().map((elem) => (
-                    {
+                selections = cart.items[index].selections.toObject().map((elem) => {
+                    const id = elem.products[0]._id.toString();
+                    return {
                         bundle_section_ref : elem.bundle_section_ref,
-                        products           : [elem.products[0]._id.toString()]
-                    }
-                ));
+                        products           : [id]
+                    };
+                });
             }
             if (
                 cart.items[index].type === 'bundle'
