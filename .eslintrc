@@ -83,7 +83,7 @@
         "no-underscore-dangle": "off",
         "no-param-reassign": "off",
         "no-console": "off",
-        "no-use-before-define": "warn",
+        "no-use-before-define": "off",
         "no-plusplus": "off",
         "no-await-in-loop": "off",
         "no-shadow": "off",
