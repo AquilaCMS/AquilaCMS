@@ -18,7 +18,11 @@ import {
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
-import { listModulePage } from 'lib/utils';
+import {
+    listModulePage,
+    getCurrencySymbol,
+    caculateNewPrice
+} from 'lib/utils';
 import CMS from 'components/CMS';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
@@ -34,7 +38,7 @@ class PageProduct extends NSPageProduct {
         super(props);
         this.state = {
             ...this.state,
-            price: this.caculateNewPrice()
+            optionsModifier: caculateNewPrice()
         };
         this.setDefaultOptions()
     }
@@ -94,7 +98,7 @@ class PageProduct extends NSPageProduct {
             options,
         });
         this.setState({
-            price: this.caculateNewPrice(product, options)
+            optionsModifier: caculateNewPrice(product, options)
         });
     };
 
@@ -102,31 +106,7 @@ class PageProduct extends NSPageProduct {
 
     }
 
-    caculateNewPrice = (product, options) => {
-        let price = {
-            et: 0,
-            ati: 0
-        };
-        if (product && product.type === "simple") {
-            const priceET = product.price.et;
-            const priceATI = product.price.ati;
-            price.et = typeof priceET.special !== "undefined" || priceET.special !== null ? priceET.special : priceET.normal;
-            price.ati = typeof priceATI.special !== "undefined" || priceATI.special !== null ? priceATI.special : priceATI.normal;
-            if (options && product && product.options) {
-                for (const oneOptions of options) {
-                    debugger;
-                    for (const oneValue of oneOptions.values) {
-                        debugger;
-                        const valueTemp1 = product.options.find(element => element._id === oneOptions._id);
-                        const valueTemp = product.options.find(element => element._id === oneOptions._id).values.find(element => element._id === oneValue._id);
-                        debugger;
-                    }
-                }
-            }
-            return price;
-        }
-        return null;
-    }
+
 
     verifOptions = (options) => {
         const { product } = this.state;
@@ -264,6 +244,19 @@ class PageProduct extends NSPageProduct {
                 </NSContext.Provider>
             );
         }
+        const currencySymbol = getCurrencySymbol();
+        const calcPrice = (price, modifier) => {
+            let priceFinal;
+            if (price[taxDisplay].special && price[taxDisplay].special > 0) {
+                priceFinal = price[taxDisplay].special
+            } else {
+                priceFinal = price[taxDisplay].normal
+            }
+            if (typeof modifier !== "undefined") {
+                priceFinal += modifier;
+            }
+            return priceFinal.toFixed(2);
+        };
         const {
             openModal,
             openComment,
@@ -275,9 +268,8 @@ class PageProduct extends NSPageProduct {
             allCommentsDisplayed,
             hideReviewsLanguage,
             taxDisplay,
-            price
+            optionsModifier
         } = this.state;
-        console.log(price);
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
@@ -441,10 +433,10 @@ class PageProduct extends NSPageProduct {
                                     <div className="product__actions-mobile visible-xs-block">
                                         <NSProductStock stock={product.stock} />
                                         <div className="product-price">
-                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)} {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
 
                                             <strong>
-                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>{currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                             </strong>
                                         </div>
 
@@ -514,21 +506,15 @@ class PageProduct extends NSPageProduct {
                                             </div>{/* <!-- /.product-reviews --> */}
                                             <div className="product-price hidden-xs">
                                                 {
-                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)} {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
                                                 }
 
                                                 <strong>
                                                     <span>
                                                         {
-                                                            price && price[taxDisplay] > 0 ?
-                                                                price[taxDisplay].toFixed(2)
-                                                                :
-                                                                (product.price[taxDisplay].special && product.price[taxDisplay].special > 0) ?
-                                                                    product.price[taxDisplay].special.toFixed(2)
-                                                                    :
-                                                                    product.price[taxDisplay].normal.toFixed(2)
+                                                            calcPrice(product.price, optionsModifier)
                                                         }
-                                                    </span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                    </span> {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                                 </strong>
                                             </div>
                                         </div>
@@ -841,7 +827,7 @@ class PageProduct extends NSPageProduct {
                                             <NSBundleProduct product={product} />
 
                                             <div className="product-price">
-                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} €</strong>
+                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} {currencySymbol} </strong>
                                             </div>
                                         </div>
                                         <div className="form-footer">

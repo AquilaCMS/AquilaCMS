@@ -84,6 +84,47 @@ async function getModulesHookFunctionsByType(type = 'all') {
     return hooksFunctions;
 }
 
+/**
+ * Return the currency symbol
+ * @returns {string}
+ */
+function getCurrencySymbol() {
+    return "€";
+}
+
+/**
+ * Return the currency symbol
+ * @param {*} product
+ * @param {*} options = options selected by the user
+ * @returns {Float} total modifier
+ */
+function caculateNewPrice(product, options) {
+    let optionsModifier = 0;
+    if (product && product.type === "simple") {
+        if (options && product && product.options) {
+            for (const oneOptions of options) {
+                for (const oneValue of oneOptions.values) {
+                    const valueTemp1 = product.options.find(element => element._id === oneOptions._id);
+                    const valueTemp = valueTemp1.values.find(element => element._id === oneValue._id);
+                    if (typeof valueTemp !== "undefined" && typeof valueTemp.modifier !== "undefined" && typeof valueTemp.modifier.price !== "undefined") {
+                        if (valueTemp.modifier.price.typePrice == "price") {
+                            optionsModifier += valueTemp.modifier.price.value;
+                        } else {
+                            // need to calculate the percent
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return optionsModifier;
+}
+
 export {
-    countProductInCartByCategory, countProductInCartByProduct, listModulePage, getModulesHookFunctionsByType
+    countProductInCartByCategory,
+    countProductInCartByProduct,
+    listModulePage,
+    getModulesHookFunctionsByType,
+    getCurrencySymbol,
+    caculateNewPrice
 };
