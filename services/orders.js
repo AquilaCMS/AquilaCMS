@@ -234,10 +234,14 @@ const cancelOrders = () => {
         });
 };
 
-const rma = async (orderId, returnData) => {
+const rma = async (orderId, returnData, lang) => {
     const upd = {rma: returnData};
 
     if (returnData.refund > 0 && returnData.mode !== '') {
+        const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
+        if (paymentMethod.isDeferred) {
+            returnData.isDeferred = paymentMethod.isDeferred;
+        }
         upd.payment = {
             type          : 'DEBIT',
             status        : 'DONE',
@@ -245,7 +249,8 @@ const rma = async (orderId, returnData) => {
             mode          : returnData.mode,
             transactionId : '',
             amount        : returnData.refund,
-            comment       : returnData.comment
+            comment       : returnData.comment,
+            name          : paymentMethod.translation[lang].name
         };
     }
 
@@ -369,11 +374,12 @@ const rma = async (orderId, returnData) => {
     return _order;
 };
 
-const infoPayment = async (orderId, returnData, sendMail) => {
+const infoPayment = async (orderId, returnData, sendMail, lang) => {
     const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
     if (paymentMethod.isDeferred) {
         returnData.isDeferred = paymentMethod.isDeferred;
     }
+    returnData.name          = paymentMethod.translation[lang].name;
     returnData.operationDate = Date.now();
     await setStatus(orderId, 'PAID');
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});

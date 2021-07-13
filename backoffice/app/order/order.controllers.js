@@ -165,15 +165,6 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
-        var sortStatus = function (statuses, status) {
-            const currentStatusIndex = statuses.findIndex(s => s.code === status)
-            for(var i = 0; i < currentStatusIndex; i++) {
-                var elem = statuses.shift()
-                statuses.push(elem)
-            }
-            return statuses
-        }
-
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {
@@ -184,7 +175,6 @@ OrderControllers.controller("OrderDetailCtrl", [
             {
                 $scope.order = response.datas[0];
                 // sort status
-                $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
                 if($scope.order && $scope.order.customer.id){
                     // we get the client informations to check to email and to check is user exists
                     ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
@@ -1041,7 +1031,7 @@ OrderControllers.controller("RMANewCtrl", [
             }
 
             if(returnData.products.length > 0) {
-                Orders.rma({order: $scope.order._id, return: returnData}, function () {
+                Orders.rma({order: $scope.order._id, return: returnData, lang: $scope.defaultLang}, function () {
                     toastService.toast("success", $translate.instant("order.detail.returnAdded"));
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
@@ -1158,7 +1148,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             $scope.error.text = "";
 
             delete returnData.sendMail;
-            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
+            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail, lang: $scope.defaultLang}, function ()
             {
                 toastService.toast("success", $translate.instant("order.detail.paymentInfoAdded"));
                 $scope.close();
