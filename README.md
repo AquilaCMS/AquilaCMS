@@ -97,12 +97,10 @@ You can define two environment variables inside AquilaCMS.
 If you want, for any reason, to manually build a theme, you can execute this command at the root of AquilaCMS :
 
 ```sh
-npm run build:win --theme=default_theme
+npm run build default_theme
 ```
 
-> - Instead of `build:win` you can use `build:linux`
-> - At the variable `--theme` you need to put the name of the theme folder you want to build.
-
+> - the parameter is the name of the theme folder you want to build
 > ⚠️Warning : on Windows, you must use Powershell
 > Otherwise, you may get an error when using the `npm run build:win` command.
 

@@ -7,53 +7,26 @@
  */
 
 const path           = require('path');
-const nextBuild      = require('next/dist/build').default;
+const fs             = require('fs');
 const packageManager = require('./packageManager');
-const modulesUtils   = require('./modules');
 const {isProd}       = require('./server');
 
 /**
  * Compile the current theme
  */
-const themeCompile = async (theme, type, newIsProd) => {
+const themeCompile = async (theme, newIsProd) => {
     try {
-        theme                      = theme || global.envConfig.environment.currentTheme;
-        const pathToTheme          = path.join(global.appRoot, 'themes', theme);
+        const themeName            = theme || global.envConfig.environment.currentTheme;
         let installDevDependencies = !isProd;
         if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
             installDevDependencies = true; // we force overriding
         }
-        await yarnInstall(theme, installDevDependencies);
-        if (typeof type === 'undefined' || type === null || type === 'next') {
-            await nextBuild(pathToTheme);
-        } else {
-            await yarnBuild(theme);
-        }
+        await yarnInstall(themeName, installDevDependencies);
+        await yarnBuildCustom(themeName);
     } catch (err) {
         console.error(err);
         throw new Error(err);
     }
-};
-
-/**
- * Set current theme at startup from envFile.currentTheme
- */
-const loadTheme = async () => {
-    await modulesUtils.createListModuleFile();
-    await modulesUtils.displayListModule();
-
-    // Language with i18n
-    let i18nInstance = null;
-    let ns           = null;
-    try {
-        const oI18n  = require(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n'));
-        i18nInstance = oI18n.i18nInstance;
-        ns           = oI18n.ns;
-    } catch (error) {
-        console.error(error);
-    }
-
-    return {i18nInstance, ns};
 };
 
 /**
@@ -72,15 +45,73 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
 /**
  * Do a yarn run build
  */
+const yarnBuildCustom = async (themeName = '') => {
+    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+    const pathToInit  = path.join(linkToTheme, 'themeInit.js');
+    let returnValues;
+    if (fs.existsSync(pathToInit)) {
+        const process = require('process');
+        process.chdir(linkToTheme); // protect require of the frontFrameWork
+        const initFileOfConfig = require(pathToInit);
+        if (typeof initFileOfConfig.build === 'function') {
+            returnValues = await initFileOfConfig.build();
+            process.chdir(global.appRoot);
+        } else {
+            process.chdir(global.appRoot);
+            returnValues = await yarnBuild(themeName);
+        }
+    } else {
+        returnValues = await yarnBuild(themeName);
+    }
+    return returnValues;
+};
+
+/**
+ * Do a yarn run build
+ */
 const yarnBuild = async (themeName = '') => {
     const linkToTheme  = path.join(global.appRoot, 'themes', themeName);
     const returnValues = await packageManager.execCmd('yarn run build', path.join(linkToTheme, '/'));
     return returnValues;
 };
 
+/**
+ * @description setConfigTheme
+ * @param theme : String Theme selectionné
+ */
+const setConfigTheme = async (theme) => {
+    const {ThemeConfig} = require('../orm/models');
+    try {
+        const linkToThemeConfig = path.join(global.appRoot, 'themes', theme, '/', 'themeConfig.json');
+        if (fs.existsSync(linkToThemeConfig)) {
+            const configFile = require(linkToThemeConfig);
+            const oldConfig  = await ThemeConfig.findOne({name: theme});
+            if (oldConfig) {
+                const mergedConfig = {...configFile, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
+                await ThemeConfig.updateOne({
+                    name : theme
+                }, {
+                    $set : {
+                        name   : theme,
+                        config : mergedConfig
+                    }
+                });
+                return mergedConfig;
+            }
+            await ThemeConfig.create({
+                name   : theme,
+                config : configFile
+            });
+            return configFile;
+        }
+    } catch (err) {
+        // nothing
+    }
+};
 module.exports = {
     themeCompile,
-    loadTheme,
+    yarnBuildCustom,
     yarnInstall,
-    yarnBuild
+    yarnBuild,
+    setConfigTheme
 };

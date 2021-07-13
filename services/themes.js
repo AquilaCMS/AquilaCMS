@@ -7,13 +7,11 @@
  */
 
 const mongoose                     = require('mongoose');
-const nextBuild                    = require('next/dist/build').default;
 const path                         = require('path');
 const fs                           = require('../utils/fsp');
-const packageManager               = require('../utils/packageManager');
 const NSErrors                     = require('../utils/errors/NSErrors');
+const themesUtils                  = require('../utils/themes');
 const modulesUtils                 = require('../utils/modules');
-const {isProd}                     = require('../utils/server');
 const {Configuration, ThemeConfig} = require('../orm/models');
 const updateService                = require('./update');
 
@@ -34,23 +32,32 @@ const changeTheme = async (selectedTheme) => {
 
     // If the theme has changed
     if (oldConfig.environment.currentTheme !== selectedTheme) {
-        console.log(`Setup selected theme: ${selectedTheme}...`);
+        console.log(`Setup selected theme: ${selectedTheme}`);
+        const returnObject = {
+            message : '',
+            success : true
+        };
         try {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
-
             await require('./modules').setFrontModules(selectedTheme);
             // await setConfigTheme(selectedTheme);
             await installDependencies(selectedTheme);
-            await buildTheme(selectedTheme);
-
+            const buildRes = await buildTheme(selectedTheme);
+            if (buildRes.msg === 'KO') {
+                returnObject.message = 'Theme build fail';
+                returnObject.success = false;
+            }
             await updateService.setMaintenance(false);
         } catch (err) {
             console.error(err);
+            returnObject.message = err;
+            returnObject.success = false;
+            return returnObject;
         }
-    } else {
-        throw NSErrors.SameTheme;
+        return returnObject;
     }
+    throw NSErrors.SameTheme;
 };
 
 /**
@@ -112,20 +119,7 @@ const uploadTheme = async (originalname, filepath) => {
  */
 const setConfigTheme = async (theme) => {
     console.log('Setting configuration for the theme...');
-    try {
-        const data      = await fs.readFile(`./themes/${theme}/themeConfig.json`);
-        const info      = data.toString();
-        const config    = JSON.parse(info);
-        const oldConfig = await ThemeConfig.findOne({name: theme});
-        if (oldConfig) {
-            const mergedConfig = {...config, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
-            await ThemeConfig.updateOne({name: theme}, {$set: {name: theme, config: mergedConfig}});
-        } else {
-            await ThemeConfig.create({name: theme, config});
-        }
-    } catch (err) {
-        // nothing
-    }
+    await themesUtils.setConfigTheme(theme);
 };
 
 /**
@@ -147,8 +141,7 @@ async function removeConfigTheme(theme) {
  */
 const installDependencies = async (theme) => {
     console.log('Installing new theme\'s dependencies...');
-    const cmdTheme = `./themes/${theme}`;
-    await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`, cmdTheme);
+    return themesUtils.yarnInstall(theme, false);
 };
 
 /**
@@ -366,7 +359,7 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        const returnValues = await nextBuild(path.resolve(global.appRoot, 'themes', theme));
+        const returnValues = await themesUtils.yarnBuildCustom(theme);
         return {
             msg    : 'OK',
             result : returnValues
@@ -405,12 +398,7 @@ const listTheme = async () => {
 
 const installTheme = async (themeName = '', devDependencies = false) => {
     try {
-        const linkToTheme = path.join(global.appRoot, 'themes', themeName);
-        let command       = 'yarn install --production=true';
-        if (devDependencies === true) {
-            command = 'yarn install --production=false';
-        }
-        const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+        const returnValues = await themesUtils.yarnInstall(themeName, devDependencies);
         return {
             msg    : 'OK',
             result : returnValues

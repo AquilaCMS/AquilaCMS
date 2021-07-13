@@ -122,7 +122,7 @@ const deleteTheme = async (req, res, next) => {
  */
 const copyDatas = async (req, res, next) => {
     try {
-        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames,  req.body.otherParams);
+        await themesServices.copyDatas(req.body.themeName, req.body.override, req.body.configuration, req.body.fileNames, req.body.otherParams);
         return res.end();
     } catch (error) {
         return next(error);
@@ -162,9 +162,10 @@ async function buildTheme(req, res, next) {
         if (!themPath || themPath === '') {
             themPath = themesServices.getThemePath();
         }
-        themPath = themPath.replace('./themes/', '');
-        await themesServices.buildTheme(themPath);
-        res.send(packageManager.restart());
+        themPath   = themPath.replace('./themes/', '');
+        const data = await themesServices.buildTheme(themPath);
+        res.send(data);
+        packageManager.restart();
     } catch (error) {
         return next(error);
     }
