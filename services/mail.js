@@ -420,6 +420,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
 
     const datas = {
         '{{taxdisplay}}'                 : global.translate.common[taxDisplay][lang],
+        '{{discount}}'                   : global.translate.common.discount[lang],
         '{{order.customer.company}}'     : order.customer.company.name,
         '{{order.customer.fullname}}'    : order.customer.id.fullname,
         '{{order.customer.name}}'        : order.customer.id.fullname,
@@ -453,8 +454,10 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        datas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2);
         datas['{{promo.code}}']     = order.promos[0].code;
+    } else {
+        datas['{{promo.discount}}'] = (0).toFixed(2);
     }
     const htmlBody = await generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
@@ -492,6 +495,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     }
     const mailDatas = {
         '{{taxdisplay}}'                : global.translate.common[taxDisplay][lang],
+        '{{discount}}'                  : global.translate.common.discount[lang],
         '{{payment.instruction}}'       : '',
         '{{order.customer.company}}'    : order.customer.company.name,
         '{{order.customer.firstname}}'  : order.customer.id.firstname,
@@ -519,8 +523,10 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
-        mailDatas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        mailDatas['{{promo.discount}}'] = order.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2);
         mailDatas['{{promo.code}}']     = order.promos[0].code;
+    } else {
+        mailDatas['{{promo.discount}}'] = (0).toFixed(2);
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
@@ -979,8 +985,10 @@ async function sendMailPendingCarts(cart) {
     }
 
     if (cart.promos && cart.promos.length && (cart.promos[0].productsId.length === 0)) {
-        datas['{{promo.discount}}'] = cart.promos[0][`discount${taxDisplay.toUpperCase()}`];
+        datas['{{promo.discount}}'] = cart.promos[0][`discount${taxDisplay.toUpperCase()}`].toFixed(2);
         datas['{{promo.code}}']     = cart.promos[0].code;
+    } else {
+        datas['{{promo.discount}}'] = (0).toFixed(2);
     }
     const htmlBody = generateHTML(content, datas);
     return sendMail({subject, htmlBody, mailTo, mailFrom: from, fromName, pathAttachment});

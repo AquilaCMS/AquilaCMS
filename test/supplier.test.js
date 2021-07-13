@@ -33,7 +33,9 @@ describe('Suppliers', () => {
             const res      = await chai.request(app)
                 .post('/api/v2/supplier')
                 .send({PostBody: {filter: {_id: supplier._id}, limit: 99}});
-            expect(res).to.have.status(200);
+            expect(res).to.have.status(401);
+            expect(res.body).have.property('code');
+            expect(res.body.code).to.be.equal('Unauthorized');
         });
         it('Should create a supplier and get it with the id - w/o the good id', async () => {
             await createSuppliers();

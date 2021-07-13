@@ -135,7 +135,7 @@ PromoControllers.controller('ProductReviewDetailCtrl', [
         };
 
         $scope.removeReviews = function (_id) {
-            if(confirm("Êtes-vous sûr de vouloir supprimer cet avis produit ?"))
+            if (confirm($translate.instant("confirm.deleteReview")))
             {
                 ProductReviewService.delete({id:$scope.local.product._id, option:_id}, function (response) {
                     toastService.toast("success", $translate.instant("productReviews.detail.promoDelete"));

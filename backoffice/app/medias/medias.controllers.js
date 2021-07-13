@@ -66,7 +66,7 @@ MediasControllers.controller("MediasCtrl", ["$scope", "$route", '$modal', "Media
 
         $scope.remove = function (media, event) {
             event.stopPropagation();
-            if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
+            if (confirm($translate.instant("confirm.deleteMedia"))) {
                 MediaApiV2.delete({id: media._id}, function (response) {
                     toastService.toast("success", $translate.instant("medias.medias.deleteMedia"));
                     $route.reload();
@@ -122,7 +122,7 @@ MediasControllers.controller("MediasDetailsCtrl",
         $scope.isEditMode = true;
 
         $scope.remove = function(){
-            if (confirm("Etes-vous sûr de vouloir supprimer ce média ?")) {
+            if (confirm($translate.instant("confirm.deleteMedia"))) {
                 MediaApiV2.delete({id: $scope.media._id}, function (response) {
                     toastService.toast("success", $translate.instant("medias.medias.deleteMedia"));
                     $location.path('/medias');
@@ -181,7 +181,7 @@ MediasControllers.controller("MediasDetailsCtrl",
 
         $scope.save = function () {
             if ($scope.nsUploadFiles.isSelected){
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response){
                     return
                 }

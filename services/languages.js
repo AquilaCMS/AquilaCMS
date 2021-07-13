@@ -6,6 +6,7 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
+const path         = require('path');
 const fs           = require('../utils/fsp');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
@@ -106,7 +107,7 @@ const translateList = async () => {
 };
 
 /**
- * Create languages in file "config/dynamic_langs.js"
+ *
  */
 async function getTranslatePath(lang) {
     return `./themes/${global.envConfig.environment.currentTheme}/assets/i18n/${lang}`;
@@ -115,14 +116,14 @@ async function getTranslatePath(lang) {
 /**
  * Create languages in file "config/dynamic_langs.js"
  */
-const createDynamicLangFile = async () => {
+const createDynamicLangFile = async (fromInstaller = false) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
-    await fs.writeFile('./config/dynamic_langs.js', contentFile, (err) => {
+    await fs.writeFile(!fromInstaller ? path.join('themes', global.envConfig.environment.currentTheme, 'dynamic_langs.js') : 'themes/default_theme/dynamic_langs.js', contentFile, (err) => {
         if (err) {
-            throw "Error writing file 'dynamic_langs.js'";
+            throw 'Error writing file "dynamic_langs.js"';
         }
     });
 };

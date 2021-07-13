@@ -36,7 +36,7 @@
         "infoSaved": "Informations sauvegardées !",
         "savedError": "Une erreur est survenue lors de la sauvegarde.",
         "deleteError": "Une erreur est survenue lors de la suppression.",
-        "emailInvalide":"L'email est invalide."
+        "emailInvalide": "L'email est invalide"
     },
     "list": {
         "t1": "Fournisseurs",
@@ -69,7 +69,7 @@
         "zipCode": "Code Postal",
         "city": "Ville",
         "mail": "Email",
-        "supplierCreated.": "Fournisseur créé.",
+        "supplierCreated": "Fournisseur créé",
         "occurrenceError": "Une erreur interne est survenue.",
         "enterInvalid": "Les informations saisies ne sont pas valides.",
         "phone": "Téléphone"

@@ -86,12 +86,14 @@ class NSErrors {
     static get JobNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'JobNotFound'); }
     static get JobNotSupportedRequestMethod() { return this.makeErrorAlias(NSErrors.NotFound, 'JobNotSupportedRequestMethod'); }
     static get MailCreateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailCreateError'); }
+    static get MailTypeCreateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeCreateError'); }
     static get MailFieldHtmlNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailFieldHtmlNotFound'); }
     static get MailFieldSubjectNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailFieldSubjectNotFound'); }
     static get MailNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailNotFound'); }
     static get MailTypeCannotDeleteNoType() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeCannotDeleteNoType'); }
     static get MailTypeNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeNotFound'); }
     static get MailTypeUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeUpdateError'); }
+    static get MailTypeUpdateNoCodeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailTypeUpdateNoCodeError'); }
     static get MailUpdateError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateError'); }
     static get MailUpdateNoTypeError() { return this.makeErrorAlias(NSErrors.NotFound, 'MailUpdateNoTypeError'); }
     static get MediaNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'MediaNotFound'); }
@@ -132,6 +134,7 @@ class NSErrors {
     static get ModuleMainFolder() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleMainFolder' ); }
     static get ModuleInfoNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ModuleInfoNotFound'); }
     static get ThemePackageNotFound() { return this.makeErrorAlias(NSErrors.NotFound, 'ThemePackageNotFound'); }
+    static get SameTheme() { return this.makeErrorAlias(NSErrors.BadRequest, 'SameTheme'); }
     static get MissingParameters() { return this.makeErrorAlias(NSErrors.NotFound, 'MissingParameters'); }
 
     static get Conflict() { return new NSError(409, 'Conflict'); }
@@ -140,6 +143,7 @@ class NSErrors {
     static get InvoiceAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'InvoiceAlreadyExists'); }
     static get LoginSubscribeEmailExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'LoginSubscribeEmailExisting'); }
     static get MailCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailCodeAlreadyExists'); }
+    static get MailTypeCodeAlreadyExists() { return this.makeErrorAlias(NSErrors.Conflict, 'MailTypeCodeAlreadyExists'); }
     static get ProductCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'ProductCodeExisting'); }
     static get FamilyCodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'FamilyCodeExisting'); }
     static get CodeExisting() { return this.makeErrorAlias(NSErrors.Conflict, 'CodeExisting'); }
@@ -166,6 +170,7 @@ class NSErrors {
     static get TranslateDeleteError() { return this.makeErrorAlias(NSErrors.InternalError, 'TranslateDeleteError'); }
     static get ModuleNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ModuleNameMissmatch'); }
     static get ThemeNameMissmatch() { return this.makeErrorAlias(NSErrors.InternalError, 'ThemeNameMissmatch'); }
+    static get CommandsMayNotInPath() { return this.makeErrorAlias(NSErrors.InternalError, 'CommandsMayNotInPath'); }
 
     static get ServiceUnavailable() { return new NSError(503, 'ServiceUnavailable'); }
 

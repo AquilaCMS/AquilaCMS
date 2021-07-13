@@ -15,7 +15,7 @@
         "FINISHED": "Finished",
         "CANCELED": "Cancelled",
         "ASK_CANCEL": "Cancellation requested by the customer",
-        "RETURNED": "Returned"
+        "RETURNED": "Returned & Refound"
     },
     "detail": {
         "t1": "Order detail",
@@ -71,6 +71,8 @@
         "creeLe": "Created on",
         "date": "Date",
         "mode": "Mode",
+        "messageEmail": "The actual mail is",
+        "messageUserDeleted": "This client appears to be deleted",
         "montant": "Price",
         "retour": "Return",
         "art": "Item",
@@ -101,6 +103,7 @@
         "invoiceCreated": "Invoice created",
         "orderAlreadyState": "The order is already in this state!",
         "removePackage": "Unable to remove the package",
+        "removedPackage": "Package removed",
         "changeStateImpossible": "This change of state is not possible",
         "addressChanged": "Address changed",
         "addedParcel": "Correctly added parcel",

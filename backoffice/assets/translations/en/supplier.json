@@ -69,7 +69,7 @@
         "zipCode": "ZIP Code",
         "city": "City",
         "mail": "E-mail",
-        "supplierCreated.": "Supplier created.",
+        "supplierCreated": "Supplier created",
         "occurrenceError": "An internal error has occurred.",
         "enterInvalid": "The information entered is not valid.",
         "phone": "Telephone"

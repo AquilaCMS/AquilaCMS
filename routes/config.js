@@ -6,22 +6,25 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                        = require('path');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {extendTimeOut}             = require('../middleware/server');
-const serviceConfig               = require('../services/config');
-const packageManager              = require('../utils/packageManager');
-const NSErrors                    = require('../utils/errors/NSErrors');
-const fs                          = require('../utils/fsp');
-const {getUploadDirectory}        = require('../utils/server');
+const path                 = require('path');
+const {middlewareServer}   = require('../middleware');
+const {adminAuth}          = require('../middleware/authentication');
+const {extendTimeOut}      = require('../middleware/server');
+const serviceConfig        = require('../services/config');
+const packageManager       = require('../utils/packageManager');
+const NSErrors             = require('../utils/errors/NSErrors');
+const fs                   = require('../utils/fsp');
+const {getUploadDirectory} = require('../utils/server');
 
 module.exports = function (app) {
-    app.put('/v2/config', authentication, adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
+    app.put('/v2/config', adminAuth, extendTimeOut, saveEnvFile, saveEnvConfig);
     app.post('/v2/config', getConfig);
-    app.get('/restart', authentication, adminAuth, restart);
-    app.get('/robot', authentication, adminAuth, getRobot);
-    app.post('/robot', authentication, adminAuth, setRobot);
-    app.get('/config/data', getConfigTheme);
+    app.get('/restart', adminAuth, restart);
+    app.get('/robot', adminAuth, getRobot);
+    app.post('/robot', adminAuth, setRobot);
+
+    // Deprecated
+    app.get('/config/data', middlewareServer.deprecatedRoute, getConfigTheme);
 };
 
 /**

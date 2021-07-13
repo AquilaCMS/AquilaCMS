@@ -148,7 +148,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             data.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save(data).$promise.then(function (response) {
-                toastService.toast("success", $translate.instant("global.savedDone"));
+                toastService.toast("success", $translate.instant("global.saveDone"));
                 if (isQuit) {
                     return $location.path("/staticPage");
                 }
@@ -277,7 +277,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             $scope.static.group = $scope.selectedDropdownItem === "" ? null : $scope.selectedDropdownItem;
             $scope.generateContent();
             StaticV2.save($scope.static, function () {
-                toastService.toast("success", $translate.instant("global.pageSaved"));
+                toastService.toast("success", $translate.instant("global.saveDone"));
                 $scope.getStaticPage();
                 if (isQuit) {
                     $location.path("/staticPage");
@@ -292,7 +292,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
         });
 
         $scope.removePage = function (staticPage) {
-            if (confirm("Etes-vous sûr de vouloir supprimer cette page ?")) {
+            if (confirm($translate.instant("confirm.deletePage"))) {
                 StaticV2.delete({id: $scope.static._id}, function(msg) {
                     if (msg.status) {
                         $scope.statics.splice($scope.statics.indexOf(staticPage), 1);
@@ -326,5 +326,13 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
             return tagText;
         };
+
+        $scope.userIsAllowedTo = function (route) {
+            if($rootScope.userInfo.accessList.indexOf(route) === -1 || $rootScope.userInfo.accessList === undefined) {
+                return true
+            } else {
+                return false
+            }
+        }
     }
 ]);

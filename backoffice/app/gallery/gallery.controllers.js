@@ -147,7 +147,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         };
 
         $scope.delete = function () {
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette gallerie ?")) {
+            if (confirm($translate.instant("confirm.deleteGallery"))) {
                 GalleryService.delete({ id: $scope.gallery._id }, function () {
                     toastService.toast("success", $translate.instant("gallery.list.deleteDone"));
                     $location.path("/component/gallery");

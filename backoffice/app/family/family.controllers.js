@@ -59,8 +59,8 @@ FamilyControllers.controller('FamilyEditCtrl', ['$scope', '$modalInstance', '$fi
         };
     }]);
 
-FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '$http', '$q', 'FamilyV2', 'CategoryV2', 'childrenfamily',
-    function ($scope, $modal, $filter, $http, $q, FamilyV2, CategoryV2, childrenfamily)     {
+FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '$http', '$q', 'FamilyV2', 'CategoryV2', 'childrenfamily','$translate',
+    function ($scope, $modal, $filter, $http, $q, FamilyV2, CategoryV2, childrenfamily, $translate)     {
         $scope.universes = [];
 
         FamilyV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function({datas}) {
@@ -239,7 +239,7 @@ FamilyControllers.controller('FamilyListCtrl', ['$scope', '$modal', '$filter', '
         };
 
         $scope.removeFamily = function (familyId) {
-            if (confirm("Etes-vous sûr de vouloir supprimer cette famille et tous ses enfants ?")) {
+            if (confirm($translate.instant("confirm.deleteFamily"))) {
                 FamilyV2.delete({id: familyId, type: 'family'}, function () {
                     updateMenu();
                 });

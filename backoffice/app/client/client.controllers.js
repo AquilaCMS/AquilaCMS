@@ -26,7 +26,7 @@ ClientControllers.controller("ClientCtrl", [
             if(pageAdmin.page){
                 $scope.page = pageAdmin.page;
             }
-            if (pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
+            if (pageAdmin.search && pageAdmin.search.tri && pageAdmin.search.tri.field && pageAdmin.search.tri.value){
                 $scope.tri = {};
                 $scope.valeurTri = pageAdmin.search.tri.value;
                 $scope.tri[pageAdmin.search.tri.field] = pageAdmin.search.tri.value;
@@ -414,7 +414,7 @@ ClientControllers.controller("ClientDetailCtrl", [
         };
 
         $scope.remove = function () {
-            if (confirm("Etes-vous sûr de vouloir supprimer ce client ? Ses commandes seront également supprimées !")) {
+            if (confirm($translate.instant("confirm.deleteCustomer"))) {
                 ClientV2.delete({type: 'user', id: $scope.client._id}, function (response) {
                     toastService.toast("success", $translate.instant("client.detail.customerDeleted"));
                     $location.path("/clients");

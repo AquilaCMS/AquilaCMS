@@ -14,7 +14,8 @@ const {
     Products,
     PaymentMethods,
     Territory,
-    Bills
+    Bills,
+    Promo
 }                      = require('../orm/models');
 const QueryBuilder     = require('../utils/QueryBuilder');
 const aquilaEvents     = require('../utils/aquilaEvents');
@@ -109,24 +110,24 @@ const paymentSuccess = async (query, updateObject) => {
     console.log('service order paymentSuccess()');
 
     try {
-        const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
+        const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
+        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
-        const paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
         // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {
             await setStatus(_order._id, 'PAID');
-            try {
-                await ServiceMail.sendMailOrderToCompany(_order._id);
-            } catch (e) {
-                console.error(e);
-            }
-            try {
-                await ServiceMail.sendMailOrderToClient(_order._id);
-            } catch (e) {
-                console.error(e);
-            }
+        }
+        try {
+            await ServiceMail.sendMailOrderToClient(_order._id);
+        } catch (e) {
+            console.error(e);
+        }
+        try {
+            await ServiceMail.sendMailOrderToCompany(_order._id);
+        } catch (e) {
+            console.error(e);
         }
         // We check that the products of the basket are well orderable
         const {bookingStock} = global.envConfig.stockOrder;
@@ -157,12 +158,30 @@ const paymentSuccess = async (query, updateObject) => {
                 }
             }
         }
+        // If the order has a discount of type "promo code"
+        if (_order.promos && _order.promos.length && _order.promos[0].promoCodeId) {
+            try {
+            // then we increase the number of uses of this promo
+                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
+                    $inc : {'codes.$.used': 1}
+                });
+                // then we must also update the number of unique users who have used this "promo code"
+                const result = await Orders.distinct('customer.id', {
+                    'promos.promoCodeId' : _order.promos[0].promoCodeId
+                });
+                await Promo.updateOne({'codes._id': _order.promos[0].promoCodeId}, {
+                    $set : {'codes.$.client_used': result.length}
+                });
+            // TODO P6 : Decrease the stock of the product offered
+            // if (_cart.promos[0].gifts.length)
+            } catch (err) {
+                console.error(err);
+            }
+        }
         aquilaEvents.emit('aqPaymentReturn', _order._id);
         return _order;
     } catch (err) {
-        console.error('La commande est introuvable:');
-        console.error('query:', JSON.stringify(query, null, 4));
-        console.error('err: ', err);
+        console.error('La commande est introuvable:', err);
         throw err;
     }
 };
@@ -351,9 +370,14 @@ const rma = async (orderId, returnData) => {
 
         await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
+    return _order;
 };
 
 const infoPayment = async (orderId, returnData, sendMail) => {
+    const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
+    if (paymentMethod.isDeferred) {
+        returnData.isDeferred = paymentMethod.isDeferred;
+    }
     returnData.operationDate = Date.now();
     await setStatus(orderId, 'PAID');
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
@@ -379,6 +403,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
+    return _order;
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {

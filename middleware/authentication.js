@@ -51,7 +51,14 @@ const authentication = async (req, res, next) => {
  * @param {Function} next
  */
 const adminAuth = async (req, res, next) => {
-    if (!req.info || !!req.info.isAdmin === false) {
+    try {
+        if (!req.info) throw NSErrors.Unauthorized;
+    } catch (err) {
+        res.clearCookie('jwt');
+        return next(err);
+    }
+
+    if (!!req.info.isAdmin === false) {
         return next(NSErrors.Unauthorized);
     }
     next();

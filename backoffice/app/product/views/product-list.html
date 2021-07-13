@@ -1,19 +1,23 @@
 <ns-box data-title="product.list2.t1" title-icon="fa fa-cubes fa-lg" new-href="#/products/new/settings">
-
+    <div class="pull-right" style="display:flex">
+        <label for="filterLang" class="control-label">
+            <span translate>product.list2.searchLang</span>
+            <span>:</span>
+        </label>
+        <select ng-if="langs[1] !== undefined" name="filterLang" class="form-control" id="filterLang" ng-change="selectNewLang(this)" ng-model="filterLang" style="max-width: 200px;">
+            <option value="{{lang.code}}" ng-repeat="lang in langs track by $index">{{lang.name}}</option>
+        </select>
+    </div>
+    <br/>
+    <br/>
+    <br/>
     <div class="box subbox" ng-show="attribs.length > 0" style="padding: 0 0 0;">
-        <div class="box-header" data-toggle="collapse" ng-click="collapse()" data-target="#filter" style="cursor:pointer;">
+        <div class="box-header" data-toggle="collapse" ng-click="collapse()" data-target="#filter" style="margin-bottom:0px;cursor:pointer;">
             <h2>Recherche avancée</h2>
             <i style="float : right;width: 30px; height: 15px; margin: 12px;" id=collapseIcon class="ico-arrow-down" ></i>
         </div>
         <div class="box-content">
-            <form name="form" class="form-horizontal collapse" id="filter">
-                <div class="row settings">
-                    <div style="width: 100%;" class="col-sm-6">
-                        <select ng-if="langs[1] !== undefined" name="filterLang" class="form-control" id="filterLang" ng-model="filterLang" style="max-width: 200px; margin-left:5%; margin-bottom: 30px;">
-                            <option value="{{lang.code}}" ng-repeat="lang in langs track by $index">{{lang.name}}</option>
-                        </select>
-                    </div>
-                </div>
+            <form name="form" ng-submit="getProducts(1)" style="padding:15px 0px" class="form-horizontal collapse" id="filter">
                 <div class="row">
                     <div class="form-group col-sm-6" ng-repeat="attrib in attribs">
                         <label for="" class="col-sm-4 control-label">{{attrib.translation[filterLang].name}}</label>
@@ -22,11 +26,10 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <button type="button" style="margin-right: 5%;" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
-                <button class="btn btn-default" style="margin-left: 5%;" tpe="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button> 
+                <br />
+                <button type="submit" style="margin-right: 5%;" ng-click="getProducts(1)" class="btn btn-default pull-right">Valider</button>
+                <button class="btn btn-default" style="margin-left: 5%;" type="button" ng-click="resetFilters()" translate>product.list2.reset_filters</button> 
             </form>
-            <br>
         </div>
     </div>
 

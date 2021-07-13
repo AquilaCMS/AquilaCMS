@@ -110,9 +110,10 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate',
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2)
     {
+        $scope.customer = {};
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
@@ -164,6 +165,15 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
+        var sortStatus = function (statuses, status) {
+            const currentStatusIndex = statuses.findIndex(s => s.code === status)
+            for(var i = 0; i < currentStatusIndex; i++) {
+                var elem = statuses.shift()
+                statuses.push(elem)
+            }
+            return statuses
+        }
+
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {
@@ -173,6 +183,21 @@ OrderControllers.controller("OrderDetailCtrl", [
             Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
             {
                 $scope.order = response.datas[0];
+                // sort status
+                $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
+                if($scope.order && $scope.order.customer.id){
+                    // we get the client informations to check to email and to check is user exists
+                    ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
+                        if(typeof responseUserRequest.PostBody !== "undefined") {
+                            // if there are a PostBody, there is not content
+                            $scope.customer = null;
+                        } else {
+                            $scope.customer = responseUserRequest;
+                        }
+                    }, function(error){
+                        console.log(error);
+                    });
+                }
                 $scope.status = $scope.order.status;
                 if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
                     const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
@@ -333,7 +358,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             return 'order.status.' + status;
         }
         $scope.test = "order.detail.cancel";
-        $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+        $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]]
 
         $scope.getStatus = function(status){
             if(status !== undefined){
@@ -377,7 +402,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == "RETURNED") {
+                } else if (data == "RETURNED" || data == "CANCELED") {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
@@ -452,14 +477,15 @@ OrderControllers.controller("OrderDetailCtrl", [
 
         $scope.delPkg = function (pkg)
         {
-            Orders.delPkg({order: $scope.order._id, package: pkg}, function (res)
-            {
-                $scope.order = res;
-            }, function (err)
-            {
-                console.error(err.data);
-                toastService.toast("danger", $translate.instant("order.detail.removePackage"));
-            });
+            if (confirm($translate.instant("confirm.deletePackageOrder"))) {
+                Orders.delPkg({ order: $scope.order._id, package: pkg }, function (res) {
+                    $scope.order = res;
+                    toastService.toast("success", $translate.instant("order.detail.removedPackage"));
+                }, function (err) {
+                    console.error(err.data);
+                    toastService.toast("danger", $translate.instant("order.detail.removePackage"));
+                });
+            }
         };
 
         function getQtyShipped(i)
@@ -516,7 +542,6 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
-                $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
@@ -1155,7 +1180,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
 
         $scope.close = function ()
         {
-            $modalInstance.dismiss("cancel");
+            $modalInstance.close("cancel");
         };
     }
 ]);

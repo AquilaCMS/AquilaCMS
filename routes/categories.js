@@ -6,20 +6,20 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {securityForceActif}        = require('../middleware/security');
-const {filterCategories}          = require('../middleware/categories');
-const ServiceCategory             = require('../services/categories');
-const ServiceRules                = require('../services/rules');
+const {adminAuth}          = require('../middleware/authentication');
+const {securityForceActif} = require('../middleware/security');
+const {filterCategories}   = require('../middleware/categories');
+const ServiceCategory      = require('../services/categories');
+const ServiceRules         = require('../services/rules');
 
 module.exports = function (app) {
     app.post('/v2/categories', securityForceActif(['active']), filterCategories, getCategories);
     app.post('/v2/category', securityForceActif(['active']), filterCategories, getCategory);
-    app.post('/v2/category/execRules', authentication, adminAuth, execRules);
-    app.post('/v2/category/canonical', authentication, adminAuth, execCanonical);
+    app.post('/v2/category/execRules', adminAuth, execRules);
+    app.post('/v2/category/canonical', adminAuth, execCanonical);
     app.post('/v2/category/applyTranslatedAttribs', applyTranslatedAttribs);
-    app.put('/v2/category', authentication, adminAuth, setCategory);
-    app.delete('/v2/category/:id', authentication, adminAuth, deleteCategory);
+    app.put('/v2/category', adminAuth, setCategory);
+    app.delete('/v2/category/:id', adminAuth, deleteCategory);
 };
 
 /**

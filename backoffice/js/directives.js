@@ -201,7 +201,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         scope: {
             text: "=",
             lang: "=",
-            mail: "="
+            mail: "=",
+            shortcode: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
@@ -210,6 +211,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
+                    }
+                    if($scope.shortcode === false){
+                        toolbarOption = "";
                     }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
@@ -618,20 +622,19 @@ adminCatagenDirectives.directive("nsReturnButton", function ()
         controller: [
             "$scope",
             "$location",
-            function ($scope, $location)
+            "$translate",
+            function ($scope, $location, $translate)
             {
                 $scope.return = function ()
                 {
                     if($scope.isSelected === true){
-                        let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                        let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                         if (!response) { return }
                     }
                     if($scope.form.$dirty)
                     {
                         if(
-                            confirm(
-                                "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
-                            )
+                            confirm($translate.instant("confirm.changesNotSaved"))
                         )
                         {
                             $location.path($scope.returnPath);
@@ -1201,7 +1204,8 @@ adminCatagenDirectives
     .controller("nsDataTableCtrl", [
         "$scope",
         "$filter",
-        function ($scope, $filter)
+        "$translate",
+        function ($scope, $filter, $translate)
         {
             $scope.sort = {
                 type: $scope.config.columns[0].field,
@@ -1335,7 +1339,7 @@ adminCatagenDirectives
             $scope.removeElmt = function (element)
             {
                 if(
-                    confirm("Etes-vous sûr de vouloir supprimer cet élément ?")
+                    confirm($translate.instant("confirm.deleteElement"))
                 )
                 {
                     $scope.config.remove(element).then(function ()

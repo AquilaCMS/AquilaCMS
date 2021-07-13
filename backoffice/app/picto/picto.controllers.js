@@ -115,7 +115,7 @@ PictoControllers.controller('PictoDetailsCtrl', [
          */
         $scope.save = function (back) {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             if (this.form.ruleForm.$invalid) {
@@ -193,7 +193,7 @@ PictoControllers.controller('PictoNewCtrl', [
             }
 
             PictoApi.save({}, $scope.picto, function (response) {
-                toastService.toast('success', $translate.instant("global.savedDone"));
+                toastService.toast('success', $translate.instant("global.saveDone"));
                 if (back) {
                     $location.url('/picto');
                 } else {

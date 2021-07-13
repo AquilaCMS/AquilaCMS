@@ -23,33 +23,48 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        connection = true;
-        await mongoose.connect(global.envFile.db, {
-            useNewUrlParser    : true,
-            useFindAndModify   : false,
-            useCreateIndex     : true,
-            useUnifiedTopology : true
+        connection         = true;
+        const checkConnect = async () => new Promise((resolve, reject) => {
+            mongoose.connect(global.envFile.db, {
+                useNewUrlParser    : true,
+                useFindAndModify   : false,
+                useCreateIndex     : true,
+                useUnifiedTopology : true
+            }, (error) => {
+                if (typeof error === 'undefined' || error === null) {
+                    resolve(true);
+                } else {
+                    reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
+                }
+            });
         });
+        await checkConnect();
         mongoose.set('objectIdGetter', false);
     }
 
     return mongoose;
 };
 
-const testdb = async (uri_database) => {
-    const mongoose = require('mongoose');
-    await mongoose.connect(uri_database, {
+const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
+    mongoose.connection.close(); // need to reset the connection mongo for every try
+    mongoose.connect(uriDatabase, {
         useNewUrlParser    : true,
         useFindAndModify   : false,
         useCreateIndex     : false,
         useUnifiedTopology : true
+    }, (error) => {
+        if (typeof error === 'undefined' || error === null) {
+            resolve(true);
+        } else {
+            reject(new Error(`Unable to connect to" ${uriDatabase}, ${error.toString()}`));
+        }
     });
-};
+});
 
 /**
  * check if the database is a replicaSet, if we can use transactions
  */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars, arrow-body-style */
 const checkIfReplicaSet = async () => {
     return new Promise(async (resolve, reject) => {
         const conn = mongoose.connection;
@@ -109,7 +124,7 @@ const initDBValues = async () => {
         Statics
     } = require('../orm/models');
 
-    console.log('Database init in progress...');
+    console.log('Database init : In progress...');
     const langs     = await Languages.find();
     let defaultLang = langs.find((l) => l.defaultLanguage);
     if (!langs.length) {
@@ -361,6 +376,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Frais supplémentaires'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -462,6 +493,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Additionnal fees'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -569,6 +616,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Code de la promotion'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
 
@@ -671,9 +734,24 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
-
                 }
             }
         },
@@ -1049,6 +1127,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -1146,6 +1240,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -1389,12 +1499,13 @@ const initDBValues = async () => {
     for (const paymentMethod of defaultPaymentMethods) {
         await PaymentMethods.findOneAndUpdate({code: paymentMethod.code}, {$setOnInsert: paymentMethod}, {new: true, upsert: true});
     }
+    console.log('Database init : Done\x1b[32m \u2713 \x1b[0m');
 };
 
 const applyMigrationIfNeeded = async () => {
     try {
         const {migrationScripts} = require('./migration');
-        const config             =  await mongoose.connection
+        const config             = await mongoose.connection
             .collection('configurations')
             .findOne();
         if (config && config.environment) {
