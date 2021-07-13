@@ -31,7 +31,7 @@
         "align-assignments/align-assignments": [
             "error"
         ],
-        "arrow-body-style": "off",
+        "arrow-body-style": "warn",
         "linebreak-style": 0,
         "global-require": "off",
         "lines-between-class-members": "off",
@@ -79,6 +79,7 @@
         "no-mixed-operators": "off",
         "no-duplicate-imports": "error",
         "no-eval": "off",
+        "no-else-return": "off",
         "no-underscore-dangle": "off",
         "no-param-reassign": "off",
         "no-console": "off",
