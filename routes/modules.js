@@ -6,10 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const showdown      = require('showdown');
-const {adminAuth}   = require('../middleware/authentication');
-const serviceModule = require('../services/modules');
-const NSErrors      = require('../utils/errors/NSErrors');
+const showdown           = require('showdown');
+const {middlewareServer} = require('../middleware');
+const {adminAuth}        = require('../middleware/authentication');
+const serviceModule      = require('../services/modules');
+const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
     app.post('/v2/modules',          adminAuth, getAllModules);
@@ -19,7 +20,7 @@ module.exports = function (app) {
     app.post('/v2/modules/md',       adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    adminAuth, removeModule);
     app.get('/v2/modules/check',     adminAuth, checkDependencies);
-  
+
     // Deprecated
     app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuth, getModuleMd);
     app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig

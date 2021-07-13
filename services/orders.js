@@ -111,7 +111,7 @@ const paymentSuccess = async (query, updateObject) => {
 
     try {
         const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
-        const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
+        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
@@ -370,13 +370,13 @@ const rma = async (orderId, returnData) => {
 
         await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
-    return _order
+    return _order;
 };
 
 const infoPayment = async (orderId, returnData, sendMail) => {
     const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-    if(paymentMethod.isDeferred) {
-        returnData.isDeferred = paymentMethod.isDeferred
+    if (paymentMethod.isDeferred) {
+        returnData.isDeferred = paymentMethod.isDeferred;
     }
     returnData.operationDate = Date.now();
     await setStatus(orderId, 'PAID');
@@ -403,7 +403,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
-    return _order
+    return _order;
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {

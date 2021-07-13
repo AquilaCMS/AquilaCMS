@@ -7,6 +7,7 @@
  */
 
 const path                 = require('path');
+const {middlewareServer}   = require('../middleware');
 const {adminAuth}          = require('../middleware/authentication');
 const {extendTimeOut}      = require('../middleware/server');
 const serviceConfig        = require('../services/config');

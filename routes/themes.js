@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}                 = require('../middleware/authentication');
-const themesServices              = require('../services/themes');
-const serviceThemeConfig          = require('../services/themeConfig');
-const ServiceConfig               = require('../services/config');
-const packageManager              = require('../utils/packageManager');
+const {adminAuth}        = require('../middleware/authentication');
+const themesServices     = require('../services/themes');
+const serviceThemeConfig = require('../services/themeConfig');
+const ServiceConfig      = require('../services/config');
+const packageManager     = require('../utils/packageManager');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  adminAuth, listTheme);
