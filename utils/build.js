@@ -21,7 +21,9 @@ const buildOneTheme = async () => {
             // throw new Error(`Can't access to ${pathToTheme}`);
         }
     } else {
-        console.error('No theme specified');
+        console.error('This command is used to build a theme');
+        console.error('> No theme specified in parameter of the command');
+        console.log('Example of use: `npm run build default_theme`');
         // throw new Error();
     }
 };
