@@ -77,10 +77,9 @@ const ProductsSchema = new Schema({
             values : [{
                 name    : {},
                 control : {
-                    checked   : {type: Boolean},
-                    mandatory : {type: Boolean},
-                    min       : {type: Number},
-                    max       : {type: Number}
+                    default : {type: Boolean},
+                    min     : {type: Number},
+                    max     : {type: Number}
                 },
                 modifier : {
                     price : {

@@ -36,11 +36,15 @@ import Error from './_error';
 class PageProduct extends NSPageProduct {
     constructor(props) {
         super(props);
+        const { lang } = this.props;
         this.state = {
             ...this.state,
-            optionsModifier: caculateNewPrice()
+            options: this.setDefaultOptions(this.state.product, lang)
         };
-        this.setDefaultOptions()
+        this.state = {
+            ...this.state,
+            optionsModifier: caculateNewPrice(this.state.product, this.state.options)
+        };
     }
 
     changeOneOptions = (optionsCode, event) => {
@@ -102,8 +106,27 @@ class PageProduct extends NSPageProduct {
         });
     };
 
-    setDefaultOptions = () => {
-
+    setDefaultOptions = (product, lang) => {
+        let options = []
+        if (typeof product !== "undefined" && typeof product.options !== "undefined") {
+            for (const oneOptions of product.options) {
+                if (oneOptions.mandatory === true && oneOptions.type !== "number" || oneOptions.type !== "textfield") {
+                    const defaultValue = oneOptions.values.find(element => element.control.default === true);
+                    if (typeof defaultValue !== "undefined") {
+                        debugger;
+                        options.push({
+                            code: oneOptions.code,
+                            _id: oneOptions._id,
+                            values: [{
+                                _id: defaultValue._id,
+                                values: defaultValue.name[lang]
+                            }]
+                        });
+                    }
+                }
+            }
+        }
+        return options;
     }
 
 
