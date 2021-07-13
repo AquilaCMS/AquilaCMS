@@ -82,6 +82,9 @@ const initFrontFramework = async () => {
     const themeName   = global.envConfig.environment.currentTheme;
     const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, '/');
     const pathToInit  = path.join(pathToTheme, 'themeInit.js');
+    if (!(await fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
+        require('./services/languages').createDynamicLangFile();
+    }
     try {
         const {ThemeConfig} = require('./orm/models');
         if (typeof ThemeConfig !== 'undefined' && ThemeConfig !== null) {
@@ -146,12 +149,8 @@ const initServer = async () => {
         const {currentTheme} = global.envConfig.environment;
         console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
         const themeFolder = path.join(global.appRoot, 'themes', currentTheme);
-        const compile     = typeof global.envFile.devMode !== 'undefined'
-            && typeof global.envFile.devMode.compile !== 'undefined'
-            && !global.envFile.devMode.compile;
-        if (!fs.existsSync(themeFolder) && !compile) {
-            throw new Error(`themes folder ${themeFolder} not found`);
-        }
+        // we check if we compile (default: true)
+        const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
         middlewareServer.initExpress(server, passport);
         await middlewarePassport.init(passport);
@@ -160,9 +159,12 @@ const initServer = async () => {
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
 
         if (compile) {
-            console.log('devMode detected, no compilation');
+            if (!fs.existsSync(themeFolder)) {
+                throw new Error(`themes folder ${themeFolder} not found`);
+            }
+            await initFrontFramework(themeFolder); // we compile the front
         } else {
-            await initFrontFramework();
+            console.log('`compile` value is set to `false`, the front is not accessible');
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation

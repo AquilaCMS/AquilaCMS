@@ -7,6 +7,7 @@
  */
 
 const path                        = require('path');
+const {middlewareServer}          = require('../middleware');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const {extendTimeOut}             = require('../middleware/server');
 const serviceConfig               = require('../services/config');
@@ -21,7 +22,9 @@ module.exports = function (app) {
     app.get('/restart', authentication, adminAuth, restart);
     app.get('/robot', authentication, adminAuth, getRobot);
     app.post('/robot', authentication, adminAuth, setRobot);
-    app.get('/config/data', getConfigTheme);
+
+    // Deprecated
+    app.get('/config/data', middlewareServer.deprecatedRoute, getConfigTheme);
 };
 
 /**

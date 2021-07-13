@@ -505,6 +505,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     }
                 );
             } else {
+                $scope.getCategory($scope.category._id);
                 saveCategory();
             }
             if(typeof isQuit !== "undefined" && isQuit){
@@ -514,6 +515,8 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 // if (!$scope.$$phase) {
                 //     $scope.$apply();
                 // }
+            }else{
+                $scope.getCategory($scope.category._id);
             }
         };
 

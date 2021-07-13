@@ -62,7 +62,6 @@
     "confLiv": " Delivery country",
     "confComp": " Components",
     "confPtsVente": " Points of sale",
-    "catalOpt": " Options",
     "promo": " Promo codes",
     "customer": "Customer card",
     "reset": "Reset",
@@ -73,5 +72,6 @@
     "confVente": " Configuration > Sale",
     "actions": "Actions",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "editHtml": "Edit HTML"
 }

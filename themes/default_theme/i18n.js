@@ -54,10 +54,10 @@ const getInitialProps =  (req, namespaces) => {
 
     let langs = [];
     try {
-        langs = require('../../config/dynamic_langs');
+        langs = require('dynamic_langs');
     } catch(ee) {
         langs = [{code: 'en', defaultLanguage: true}] ;
-        console.error('/config/dynamic_langs is missing ! Rerun installer or manage language in backoffice.');
+        console.error('dynamic_langs is missing ! Rerun installer or manage language in backoffice.');
     }
     let lang = langs.find((element) => element.defaultLanguage === true).code;
     const regex = new RegExp(`^/(${Object.keys(loadAssets.assets).join('|')})/?`, 'i');
