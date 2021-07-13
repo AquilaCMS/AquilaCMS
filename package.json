@@ -18,7 +18,7 @@
     "start:aws": "yarn install --prod && yarn cache clean && pm2-runtime start server.js --env production",
     "aqstart": "yarn install --prod && yarn cache clean && pm2-runtime start server.js --env production",
     "reload": "pm2 reload ecosystem.config.js --update-env && pm2 restart server && pm2 log server",
-    "build:win": "next build .\\themes\\%npm_config_theme%",
+    "build:win": "next build .\\themes\\default_theme",
     "build:linux": "next build ./themes/${npm_config_theme}",
     "lint:check": "eslint --ext js,jsx .",
     "lint:fix": "eslint --fix --ext js,jsx .",
