@@ -19,6 +19,7 @@ let agenda;
  * Connect Agenda to mongodb
  */
 const initAgendaDB = async () => {
+    console.log('Scheduler init : In progress...');
     await new Promise((resolve) => {
         agenda = new Agenda({db: {address: global.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
             let tAgendaJobs;
@@ -95,7 +96,7 @@ const initAgendaDB = async () => {
                 }
             }
 
-            console.log('Scheduler started!');
+            console.log('Scheduler init : Done\x1b[32m \u2713 \x1b[0m');
         });
         agenda.defaultLockLifetime(1000);
         resolve();

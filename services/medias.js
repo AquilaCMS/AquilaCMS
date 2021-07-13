@@ -272,9 +272,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         // resize
             filePath = await utilsModules.modulesLoadFunctions('getFile', {
                 key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
-            }, () => {
-                return filePath;
-            });
+            }, () => filePath);
 
             try {
                 sharpOptions.width  = Number(size.split('x')[0]);
@@ -549,13 +547,9 @@ const uploadFiles = async (body, files) => {
     }
 };
 
-const listMedias = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const listMedias = async (PostBody) => queryBuilder.find(PostBody);
 
-const getMedia = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getMedia = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const saveMedia = async (media) => {
     if (media._id) {

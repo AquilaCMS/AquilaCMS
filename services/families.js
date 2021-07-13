@@ -14,13 +14,9 @@ const restrictedFields = [];
 const defaultFields    = [];
 const queryBuilder     = new QueryBuilder(Families, restrictedFields, defaultFields);
 
-const getFamilies = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getFamilies = async (PostBody) => queryBuilder.find(PostBody);
 
-const getFamily = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getFamily = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const saveFamily = async (family) => {
     if (!family) throw NSErrors.UnprocessableEntity;

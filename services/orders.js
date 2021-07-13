@@ -51,13 +51,9 @@ const getOrders = async (PostBody) => {
     return result;
 };
 
-const getOrder = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getOrder = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const saveOrder = async (order) => {
-    return Orders.updateOne({_id: order._id.toString()}, {$set: order});
-};
+const saveOrder = async (order) => Orders.updateOne({_id: order._id.toString()}, {$set: order});
 
 const getOrderById = async (id, PostBody = null) => {
     let pBody = PostBody;
@@ -110,24 +106,24 @@ const paymentSuccess = async (query, updateObject) => {
     console.log('service order paymentSuccess()');
 
     try {
-        const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
+        const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
+        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
-        const paymentMethod = await PaymentMethods.findOne({code: _order.payment[0].mode.toLowerCase()});
         // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {
             await setStatus(_order._id, 'PAID');
-            try {
-                await ServiceMail.sendMailOrderToCompany(_order._id);
-            } catch (e) {
-                console.error(e);
-            }
-            try {
-                await ServiceMail.sendMailOrderToClient(_order._id);
-            } catch (e) {
-                console.error(e);
-            }
+        }
+        try {
+            await ServiceMail.sendMailOrderToClient(_order._id);
+        } catch (e) {
+            console.error(e);
+        }
+        try {
+            await ServiceMail.sendMailOrderToCompany(_order._id);
+        } catch (e) {
+            console.error(e);
         }
         // We check that the products of the basket are well orderable
         const {bookingStock} = global.envConfig.stockOrder;
@@ -181,9 +177,7 @@ const paymentSuccess = async (query, updateObject) => {
         aquilaEvents.emit('aqPaymentReturn', _order._id);
         return _order;
     } catch (err) {
-        console.error('La commande est introuvable:');
-        console.error('query:', JSON.stringify(query, null, 4));
-        console.error('err: ', err);
+        console.error('La commande est introuvable:', err);
         throw err;
     }
 };
@@ -372,10 +366,14 @@ const rma = async (orderId, returnData) => {
 
         await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
-    return _order
+    return _order;
 };
 
 const infoPayment = async (orderId, returnData, sendMail) => {
+    const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
+    if (paymentMethod.isDeferred) {
+        returnData.isDeferred = paymentMethod.isDeferred;
+    }
     returnData.operationDate = Date.now();
     await setStatus(orderId, 'PAID');
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
@@ -401,7 +399,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
-    return _order
+    return _order;
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {

@@ -90,7 +90,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile();
+        await require('../services/languages').createDynamicLangFile(true);
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');

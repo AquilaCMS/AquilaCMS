@@ -11,46 +11,42 @@ const {isAdmin} = require('../utils/utils');
 /**
  * Add the fields to true to the filter
  */
-const securityForceActif = (arrayFieldsToActivate) => {
-    return (req, res, next) => {
-        // TODO : appeler securityForceFilter() pour factoriser
-        if (!isAdmin(req.info)) {
-            if (!req.body.PostBody) req.body.PostBody = {};
-            const {PostBody} = req.body;
-            if (!PostBody.filter) {
-                PostBody.filter = {};
-            }
-            // Active tous les champs "arrayFieldsToActivate"
-            for (let index = 0; index < arrayFieldsToActivate.length; index++) {
-                PostBody.filter[arrayFieldsToActivate[index]] = true;
-            }
+const securityForceActif = (arrayFieldsToActivate) => (req, res, next) => {
+    // TODO : appeler securityForceFilter() pour factoriser
+    if (!isAdmin(req.info)) {
+        if (!req.body.PostBody) req.body.PostBody = {};
+        const {PostBody} = req.body;
+        if (!PostBody.filter) {
+            PostBody.filter = {};
         }
+        // Active tous les champs "arrayFieldsToActivate"
+        for (let index = 0; index < arrayFieldsToActivate.length; index++) {
+            PostBody.filter[arrayFieldsToActivate[index]] = true;
+        }
+    }
 
-        next();
-    };
+    next();
 };
 
 /**
  * Add the fields to the filter
  */
-const securityForceFilter = (arrayFieldsToActivate) => {
-    return (req, res, next) => {
-        if (!req.info || !req.info.isAdmin) {
-            if (!req.body.PostBody) req.body.PostBody = {};
-            const {PostBody} = req.body;
-            if (!PostBody.filter) {
-                PostBody.filter = {};
-            }
-            // Active tous les champs "arrayFieldsToActivate"
-            for (let index = 0; index < arrayFieldsToActivate.length; index++) {
-                const keyValue       = arrayFieldsToActivate[index];
-                const key            = Object.keys(keyValue)[0];
-                const val            = Object.values(keyValue)[0];
-                PostBody.filter[key] = val;
-            }
+const securityForceFilter = (arrayFieldsToActivate) => (req, res, next) => {
+    if (!req.info || !req.info.isAdmin) {
+        if (!req.body.PostBody) req.body.PostBody = {};
+        const {PostBody} = req.body;
+        if (!PostBody.filter) {
+            PostBody.filter = {};
         }
-        next();
-    };
+        // Active tous les champs "arrayFieldsToActivate"
+        for (let index = 0; index < arrayFieldsToActivate.length; index++) {
+            const keyValue       = arrayFieldsToActivate[index];
+            const key            = Object.keys(keyValue)[0];
+            const val            = Object.values(keyValue)[0];
+            PostBody.filter[key] = val;
+        }
+    }
+    next();
 };
 
 module.exports = {

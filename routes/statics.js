@@ -6,21 +6,21 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const URL                         = require('url');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {securityForceActif}        = require('../middleware/security');
-const {StaticsPreview}            = require('../orm/models');
-const ServiceStatic               = require('../services/statics');
-const ServiceStaticPreview        = require('../services/preview');
-const {isAdmin}                   = require('../utils/utils');
+const URL                  = require('url');
+const {adminAuth}          = require('../middleware/authentication');
+const {securityForceActif} = require('../middleware/security');
+const {StaticsPreview}     = require('../orm/models');
+const ServiceStatic        = require('../services/statics');
+const ServiceStaticPreview = require('../services/preview');
+const {isAdmin}            = require('../utils/utils');
 
 module.exports = function (app) {
     app.post('/v2/statics', securityForceActif(['active']), getStatics);
     app.post('/v2/static', securityForceActif(['active']), getStatic);
-    app.post('/v2/static/preview', authentication, adminAuth, previewStatic);
+    app.post('/v2/static/preview', adminAuth, previewStatic);
     app.post('/v2/static/:id', getStaticById);
-    app.put('/v2/static', authentication, adminAuth, setStatic);
-    app.delete('/v2/static/:id', authentication, adminAuth, deleteStatic);
+    app.put('/v2/static', adminAuth, setStatic);
+    app.delete('/v2/static/:id', adminAuth, deleteStatic);
 };
 
 /**

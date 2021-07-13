@@ -24,13 +24,12 @@ const InitRoutes = (express, server) => {
  * Dynamically load all routes from the routes folder
  */
 const loadDynamicRoutes = (app, adminFront) => {
-    console.log('Loading routes');
+    console.log('Routes : Loading...');
     fs.readdirSync('./routes').forEach((file) => {
         // Do not load the index file or the installer routes
         if (file === path.basename(__filename) || path.extname(file) !== '.js' || file === 'install.js') {
             return;
         }
-
         // Load route files
         if (file === 'admin.js') {
             require(`./${file}`)(app, adminFront);
@@ -38,6 +37,7 @@ const loadDynamicRoutes = (app, adminFront) => {
             require(`./${file}`)(app);
         }
     });
+    console.log('Routes : Loaded\x1b[32m \u2713 \x1b[0m');
 };
 
 /**

@@ -18,16 +18,16 @@ const {isAdmin}                      = require('../utils/utils');
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
-    app.post('/v2/order/rma', authentication, adminAuth, rma);
-    app.post('/v2/order/infoPayment', authentication, adminAuth, infoPayment);
+    app.post('/v2/order/rma', adminAuth, rma);
+    app.post('/v2/order/infoPayment', adminAuth, infoPayment);
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
-    app.post('/v2/order/addpkg', authentication, adminAuth, addPackage);
-    app.post('/v2/order/delpkg', authentication, adminAuth, delPackage);
-    app.put('/v2/order/updateStatus', authentication, adminAuth, updateStatus);
+    app.post('/v2/order/addpkg', adminAuth, addPackage);
+    app.post('/v2/order/delpkg', adminAuth, delPackage);
+    app.put('/v2/order/updateStatus', adminAuth, updateStatus);
     app.post('/v2/order/pay/:orderNumber/:lang?', authentication, payOrder);
-    app.put('/v2/order/updatePayment', authentication, adminAuth, updatePayment);
+    app.put('/v2/order/updatePayment', adminAuth, updatePayment);
     app.post('/v2/order/:id', getOrderById);
-    app.put('/v2/order/cancel/:id', authentication, adminAuth, cancelOrder);
+    app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
     app.put('/v2/order', setOrder);
 
@@ -285,6 +285,7 @@ function createPayment(order, method) {
         operationDate : Date.now(),
         status        : 'TODO',
         mode          : method.code.toUpperCase(),
-        amount        : order.priceTotal.ati
+        amount        : order.priceTotal.ati,
+        isDeferred    : method.isDeferred
     };
 }

@@ -239,9 +239,7 @@ Disallow: /`;
 /*
 * Return true if the site is in demoMode
 */
-const isDemoMode = async () => {
-    return global.envConfig.environment.demoMode;
-};
+const isDemoMode = async () => global.envConfig.environment.demoMode;
 
 module.exports = {
     genSitemap,

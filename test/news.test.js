@@ -35,9 +35,7 @@ describe('News', () => {
                 .set('authorization', credentials.token)
                 .send(news);
             expect(res).to.have.status(200);
-            expect(res.body.url).to.be.a('string').and.satisfy((msg) => {
-                return msg.endsWith(`preview=${news._id}`);
-            });
+            expect(res.body.url).to.be.a('string').and.satisfy((msg) => msg.endsWith(`preview=${news._id}`));
         });
         it('Should create a news and try get it with the id (no authentication)', async () => {
             const news = await createNews();

@@ -16,13 +16,9 @@ const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
-const getLanguages = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getLanguages = async (PostBody) => queryBuilder.find(PostBody);
 
-const getLang = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getLang = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const saveLang = async (lang) => {
     let result = {};
@@ -116,14 +112,14 @@ async function getTranslatePath(lang) {
 /**
  * Create languages in file "config/dynamic_langs.js"
  */
-const createDynamicLangFile = async () => {
+const createDynamicLangFile = async (fromInstaller = false) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
     // Create file
-    await fs.writeFile(path.join('themes', global.envConfig.environment.currentTheme, 'dynamic_langs.js'), contentFile, (err) => {
+    await fs.writeFile(!fromInstaller ? path.join('themes', global.envConfig.environment.currentTheme, 'dynamic_langs.js') : 'themes/default_theme/dynamic_langs.js', contentFile, (err) => {
         if (err) {
-            throw `Error writing file "dynamic_langs.js" at path ${path.join('themes', global.envConfig.environment.currentTheme)}`;
+            throw 'Error writing file "dynamic_langs.js"';
         }
     });
 };

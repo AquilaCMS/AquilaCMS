@@ -18,9 +18,7 @@ const restrictedFields = [];
 const defaultFields    = ['code', 'filename', 'location', 'enabled', 'title', 'usedInFilters', '_id'];
 const queryBuilder     = new QueryBuilder(Pictos, restrictedFields, defaultFields);
 
-const getPictos = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getPictos = async (PostBody) => queryBuilder.find(PostBody);
 
 const savePicto = async (picto) => {
     try {
