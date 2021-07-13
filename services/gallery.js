@@ -22,9 +22,7 @@ const queryBuilder     = new QueryBuilder(Gallery, restrictedFields, defaultFiel
 /**
  * @description Return all galleries
  */
-const getGalleries = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getGalleries = async (PostBody) => queryBuilder.find(PostBody);
 
 /**
  * @description Returns a gallery whose id is passed in parameter

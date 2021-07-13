@@ -15,23 +15,19 @@ const NSErrors    = require('../utils/errors/NSErrors');
  * @param {Object} req request
  * @param {Object} res response
  */
-const IsAuthenticate = async (req, res) => {
-    return res.status(200).send({
-        code           : 'AUTHENTICATED',
-        isAuthenticate : true,
-        user           : req.info,
-        data           : req.headers.authorization
-    });
-};
+const IsAuthenticate = async (req, res) => res.status(200).send({
+    code           : 'AUTHENTICATED',
+    isAuthenticate : true,
+    user           : req.info,
+    data           : req.headers.authorization
+});
 
 /**
  * Return the decoded token
  * @param {String} token
  * @returns user
  */
-const getDecodedToken = (token) => {
-    return jwt.verify(token.substr(token.indexOf(' ') + 1), global.envFile.jwt.secret);
-};
+const getDecodedToken = (token) => jwt.verify(token.substr(token.indexOf(' ') + 1), global.envFile.jwt.secret);
 
 /**
  * Login user or admin

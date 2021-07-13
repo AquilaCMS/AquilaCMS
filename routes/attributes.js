@@ -6,14 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const servicesAttributes          = require('../services/attribute');
-const {authentication, adminAuth} = require('../middleware/authentication');
+const servicesAttributes = require('../services/attribute');
+const {adminAuth}        = require('../middleware/authentication');
 
 module.exports = function (app) {
     app.post('/v2/attributes', getAllAttributes);
     app.post('/v2/attribute', getAttribute);
-    app.put('/v2/attribute', authentication, adminAuth, saveAttribute);
-    app.delete('/v2/attribute/:_id', authentication, adminAuth, deleteAttribute);
+    app.put('/v2/attribute', adminAuth, saveAttribute);
+    app.delete('/v2/attribute/:_id', adminAuth, deleteAttribute);
 };
 
 async function getAllAttributes(req, res, next) {
