@@ -13,8 +13,45 @@ const {ObjectId} = Schema.Types;
 const ItemBundle = new Schema({
     selections : [{
         bundle_section_ref : {type: String, required: true},
-        products           : [{type: ObjectId, ref: 'products'}]
-    }]
+        products           : [
+            {
+                id: {type: ObjectId, ref: 'products'},
+                name         : String,
+                code         : String,
+                image        : String,
+                description1 : {
+                    title : String,
+                    text  : String
+                },
+                description2 : {
+                    title : String,
+                    text  : String
+                },
+                canonical          : String,
+                kind: String
+            }
+        ]
+    }],
+    bundle_sections : [
+        {
+            ref         : {type: String, required: true},
+            title       : {type: String},
+            displayMode : {type: String, enum: ['RADIO_BUTTON', 'SELECT']}, // Ne sert que pour le type 'SINGLE'
+            type        : {type: String, enum: ['SINGLE', 'MULTIPLE']},
+            products    : [{
+                id             : {type: ObjectId, ref: 'products'},
+                isDefault      : Boolean,
+                modifier_price : {
+                    ati : {type: Number},
+                    et  : {type: Number}
+                },
+                modifier_weight : {type: Number}
+            }],
+            isRequired : Boolean,
+            minSelect  : Number,
+            maxSelect  : Number
+        }
+    ]
 }, {
     discriminatorKey : 'type',
     id               : false

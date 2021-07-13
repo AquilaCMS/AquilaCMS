@@ -36,7 +36,7 @@
     "territories": "Territoires",
     "langues": "Langues",
     "modesPaiement": "Modes paiement",
-    "admin": "Administrateurs",
+    "frontSetting": "Boutique",
 
     "pointsVente": "Points de vente",
 
@@ -46,11 +46,12 @@
     "translate": "Traduction",
 
     "settings": "Paramètrages",
-    "environnement": "Paramètres serveur",
-    "stock&commandes": "Param commande",
+    "environnement": "Serveur",
+    "stock&commandes": "Commande",
     "tachesPlanifiees": "Tâches Planifiées",
     "system": "Système",
     "update": "Mise à jour",
+    "admin": "Administrateurs",
 
     "modules": "Modules",
 

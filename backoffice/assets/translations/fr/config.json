@@ -56,6 +56,8 @@
         "demoMode": "Mode démo",
         "siteName": "Nom du site",
         "favicon": "Lien du favicon",
+        "defaultImage": "Image par defaut",
+        "defaultImageTips": "Lorsque l'image n'existe pas, afficher cette image a la place. Saisir un chemin disque (pas d'URL)",
         "billsPattern": "Schéma des codes de facturation",
         "billsVariables": "Variables disponibles : {year} pour l'année en cours et {numAuto} pour un numéro auto incrémenté. Exemple : MONSITE_{year}_{numAuto}",
         "testMailSend": "Mail test envoyé.",
@@ -83,7 +85,8 @@
             "active": "Activée",
             "cert": "certificat",
             "key": "clé privée"
-        }
+        },
+        "titleStoreFront": "Configuration de la boutique"
     },
     "import": {
         "t1": "Imports des produits",

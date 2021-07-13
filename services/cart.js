@@ -189,14 +189,24 @@ const addItem = async (req) => {
         req.body.item.name = _product.translation[_lang.code].name;
     }
     req.body.item.code  = _product.code;
-    req.body.item.image = require('../utils/medias').getProductImageUrl(_product);
+    req.body.item.image = require('../utils/medias').getProductImageId(_product);
     const idGift        = mongoose.Types.ObjectId();
     if (req.body.item.parent) {
         req.body.item._id = idGift;
     }
 
-    const item = {...req.body.item, weight: _product.weight, price: _product.price};
+    const item = {
+        ...req.body.item,
+        weight       : _product.weight,
+        price        : _product.price,
+        description1 : _product.translation[_lang.code].description1,
+        description2 : _product.translation[_lang.code].description2,
+        canonical    : _product.translation[_lang.code].canonical
+    };
+
     if (_product.type !== 'virtual') item.stock = _product.stock;
+    if (_product.type === 'bundle') item.bundle_sections = _product.bundle_sections;
+
     const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400
@@ -232,7 +242,7 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }

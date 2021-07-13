@@ -5,7 +5,6 @@ import {
     NSPageAccountOrders,
     NSContext,
     NSSidebarAccount,
-    imgDefaultBase64,
     statusColor
 } from 'aqlrc';
 import ModalR from 'react-responsive-modal';
@@ -86,7 +85,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                             let descPromoT = '';
                                                                                                             if (order.quantityBreaks && order.quantityBreaks.productsId.length) {
                                                                                                                 // On check si le produit courant a recu une promo
-                                                                                                                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
+                                                                                                                const prdPromoFound = order.quantityBreaks.productsId.find((productId) => productId.productId === item.id);
                                                                                                                 if (prdPromoFound) {
                                                                                                                     basePrice = prdPromoFound[`basePrice${taxDisplay[index].toUpperCase()}`];
                                                                                                                     descPromo = (
@@ -97,31 +96,21 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                     );
                                                                                                                 }
                                                                                                             }
-                                                                                                            let imgDefault = imgDefaultBase64;
+                                                                                                            let imgDefault = `/images/products/260x200/0/${item.slug}.jpg`;
                                                                                                             let imgAlt = 'illustration produit';
-                                                                                                            if (item.id && item.id.images && item.id.images.length) {
-                                                                                                                const foundImg = item.id.images.find((img) => img.default);
-                                                                                                                if (foundImg) {
-                                                                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt = foundImg.alt || imgAlt;
-                                                                                                                } else {
-                                                                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                                                    imgAlt = item.id.images[0].alt || imgAlt;
-                                                                                                                }
-                                                                                                            }
                                                                                                             return (
                                                                                                                 <tr key={item._id}>
                                                                                                                     <td>
                                                                                                                         <div className="product-small">
                                                                                                                             <div className="product__image">
-                                                                                                                                <img src={imgDefault} alt={imgAlt} />
+                                                                                                                                <img src={`/images/products/196x173/${item.image}/${item.code}.jpg` || imgDefault} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
-                                                                                                                                <h6>{item.id && item.id.name || 'NO NAME'} x {item.quantity}</h6>
+                                                                                                                                <h6>{item ? item.name : 'NO NAME'} x {item.quantity}</h6>
                                                                                                                                 <p>
                                                                                                                                     {
-                                                                                                                                        item.id && item.id.description1 && item.id.description1.title
-                                                                                                                                            ? item.id.description1.title
+                                                                                                                                        item.description1 && item.description1.title
+                                                                                                                                            ? item.description1.title
                                                                                                                                             : ''
                                                                                                                                     }
                                                                                                                                 </p>
@@ -129,14 +118,14 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                     {
                                                                                                                                         item.selections.map((section) => (
                                                                                                                                             section.products.map((productSection, indexSel) => (
-                                                                                                                                                <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
-                                                                                                                                                    (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] > 0 ?
+                                                                                                                                                <li key={indexSel}>{productSection.name} {`${(item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]]) ?
+                                                                                                                                                    (item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] > 0 ?
                                                                                                                                                         '+' :
                                                                                                                                                         '') +
-                                                                                                                                                    item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' :
+                                                                                                                                                    item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' :
                                                                                                                                                     ''
                                                                                                                                                     }`}</li>
                                                                                                                                             ))
