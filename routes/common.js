@@ -6,16 +6,16 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {middlewareServer}          = require('../middleware');
-const servicesCommon              = require('../services/common');
+const {adminAuth}        = require('../middleware/authentication');
+const {middlewareServer} = require('../middleware');
+const servicesCommon     = require('../services/common');
 
 module.exports = function (app) {
     app.post('/cookienotice', setCookieNotice);
     app.get('/serverIsUp', serverIsUp);
     app.post('/v2/getBreadcrumb', getBreadcrumb);
-    app.get('/v2/export/csv/:model',  authentication, adminAuth, exportData);
-    app.post('/v2/export/csv/:model', authentication, adminAuth, exportData);
+    app.get('/v2/export/csv/:model',  adminAuth, exportData);
+    app.post('/v2/export/csv/:model', adminAuth, exportData);
 
     // Deprecated
     app.post('/v2/calculStock', middlewareServer.deprecatedRoute, calculStock);

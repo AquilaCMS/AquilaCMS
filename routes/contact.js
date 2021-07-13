@@ -10,10 +10,7 @@ const path                 = require('path');
 const url                  = require('url');
 const ServiceContacts      = require('../services/contacts');
 const {getUploadDirectory} = require('../utils/server');
-const {
-    authentication,
-    adminAuth
-}                          = require('../middleware/authentication');
+const {adminAuth}          = require('../middleware/authentication');
 const {
     fsp,
     captchaValidation,
@@ -21,8 +18,8 @@ const {
 }                          = require('../utils');
 
 module.exports = function (app) {
-    app.post('/v2/contacts', authentication, adminAuth, getContacts);
-    app.delete('/v2/contact/:id', authentication, adminAuth, deleteContact);
+    app.post('/v2/contacts', adminAuth, getContacts);
+    app.delete('/v2/contact/:id', adminAuth, deleteContact);
     app.post('/v2/contact/:mode', captchaValidation, setContact);
 };
 
