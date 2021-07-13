@@ -116,8 +116,13 @@ const createDynamicLangFile = async (fromInstaller = false) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
-    // Create file
-    await fs.writeFile(!fromInstaller ? path.join('themes', global.envConfig.environment.currentTheme, 'dynamic_langs.js') : 'themes/default_theme/dynamic_langs.js', contentFile, (err) => {
+    let themeActual = 'default_theme'; // if installer -> default_theme
+    if (fromInstaller === false) {
+        themeActual = global.envConfig.environment.currentTheme;
+    }
+    const linkToFile = path.join(global.appRoot, 'themes', themeActual, 'dynamic_langs.js');
+    // write file
+    await fs.writeFile(linkToFile, contentFile, (err) => {
         if (err) {
             throw 'Error writing file "dynamic_langs.js"';
         }
