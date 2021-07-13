@@ -15,7 +15,7 @@
         "FINISHED": "Finished",
         "CANCELED": "Cancelled",
         "ASK_CANCEL": "Cancellation requested by the customer",
-        "RETURNED": "Returned"
+        "RETURNED": "Returned & Refound"
     },
     "detail": {
         "t1": "Order detail",
