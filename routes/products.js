@@ -16,15 +16,15 @@ module.exports = function (app) {
     app.post('/v2/products/:withFilters?', securityForceActif(['active']), getProductsListing);
     app.post('/v2/product', securityForceActif(['active']), getProduct);
     app.post('/v2/product/promos', getPromosByProduct);
-    app.post('/v2/product/duplicate', authentication, adminAuth, duplicateProduct);
+    app.post('/v2/product/duplicate', adminAuth, duplicateProduct);
     app.get('/v2/product/download', authentication, downloadProduct);
     app.post('/v2/product/calculStock', calculStock);
-    app.post('/v2/product/preview', authentication, adminAuth, preview);
+    app.post('/v2/product/preview', adminAuth, preview);
     app.post('/v2/product/:id', getProductById);
     app.post('/v2/products/category/:id', getProductsByCategoryId);
-    app.put('/v2/product', authentication, adminAuth, setProduct);
-    app.delete('/v2/product/:id', authentication, adminAuth, deleteProduct);
-    app.get('/v2/product/getCoherence/:id', authentication, adminAuth, getCoherence);
+    app.put('/v2/product', adminAuth, setProduct);
+    app.delete('/v2/product/:id', adminAuth, deleteProduct);
+    app.get('/v2/product/getCoherence/:id', adminAuth, getCoherence);
 };
 
 async function getCoherence(req, res, next) {

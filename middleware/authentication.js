@@ -58,7 +58,7 @@ const adminAuth = async (req, res, next) => {
         return next(err);
     }
 
-    if (!req.info || !!req.info.isAdmin === false) {
+    if (!!req.info.isAdmin === false) {
         return next(NSErrors.Unauthorized);
     }
     next();

@@ -6,14 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServicesFamilies            = require('../services/families');
+const {adminAuth}      = require('../middleware/authentication');
+const ServicesFamilies = require('../services/families');
 
 module.exports = function (app) {
     app.post('/v2/families', getFamilies);
     app.post('/v2/family', getFamily);
-    app.put('/v2/family', authentication, adminAuth, saveFamily);
-    app.delete('/v2/family/:_id', authentication, adminAuth, deleteFamily);
+    app.put('/v2/family', adminAuth, saveFamily);
+    app.delete('/v2/family/:_id', adminAuth, deleteFamily);
 };
 
 async function getFamilies(req, res, next) {

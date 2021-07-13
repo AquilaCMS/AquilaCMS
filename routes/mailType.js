@@ -6,12 +6,12 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceMailType             = require('../services/mailType');
+const {adminAuth}     = require('../middleware/authentication');
+const ServiceMailType = require('../services/mailType');
 
 module.exports = function (app) {
-    app.get('/v2/mail_types', authentication, adminAuth, getMailTypes);
-    app.get('/v2/mail_type/:code', authentication, adminAuth, getMailType);
+    app.get('/v2/mail_types', adminAuth, getMailTypes);
+    app.get('/v2/mail_type/:code', adminAuth, getMailType);
 };
 
 /**
