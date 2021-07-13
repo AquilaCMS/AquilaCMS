@@ -28,13 +28,9 @@ const inSegment = {};
 // colNames name of collections: if the target of a condition starts with 'colNames[i].' then we return false
 const colNames = ['client', 'famille', 'categorie', 'panier'];
 
-const listRules = (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const listRules = (PostBody) => queryBuilder.find(PostBody);
 
-const queryRule = (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const queryRule = (PostBody) => queryBuilder.findOne(PostBody);
 
 /**
  * @function testUser

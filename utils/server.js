@@ -132,9 +132,7 @@ const showAquilaLogo = () => {
 const controlNodeVersion = async () => {
     try {
         const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json'), {encoding: 'utf8'}));
-        const check       = (hilo) => {
-            return outside(process.version, packageJSON.engines.node, hilo);
-        };
+        const check       = (hilo) => outside(process.version, packageJSON.engines.node, hilo);
 
         let errorVersion;
         if (check('>') || check('<')) {

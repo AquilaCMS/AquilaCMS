@@ -53,9 +53,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     }
 };
 
-const getProductImageUrl = (product) => {
-    return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
-};
+const getProductImageUrl = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '');
 
 // Generic file deletion function
 const deleteFile = async (filePath) => {

@@ -79,7 +79,7 @@
         "no-mixed-operators": "off",
         "no-duplicate-imports": "error",
         "no-eval": "off",
-        "no-else-return": "off",
+        "no-else-return": "warn",
         "no-underscore-dangle": "off",
         "no-param-reassign": "off",
         "no-console": "off",

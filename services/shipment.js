@@ -19,13 +19,9 @@ const queryBuilder     = new QueryBuilder(Shipments, restrictedFields, defaultFi
 /**
  * @description Get shipments
  */
-const getShipments = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getShipments = async (PostBody) => queryBuilder.find(PostBody);
 
-const getShipment = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getShipment = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const getShipmentsFilter = async (cart, withCountry = null, PostBody) => {
     let totalWeight = 0;

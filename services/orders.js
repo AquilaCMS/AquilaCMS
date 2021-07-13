@@ -51,13 +51,9 @@ const getOrders = async (PostBody) => {
     return result;
 };
 
-const getOrder = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getOrder = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const saveOrder = async (order) => {
-    return Orders.updateOne({_id: order._id.toString()}, {$set: order});
-};
+const saveOrder = async (order) => Orders.updateOne({_id: order._id.toString()}, {$set: order});
 
 const getOrderById = async (id, PostBody = null) => {
     let pBody = PostBody;

@@ -29,16 +29,12 @@ const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFiel
 /**
  * Get modules
  */
-const getModules = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getModules = async (PostBody) => queryBuilder.find(PostBody);
 
 /**
  * Get one module
  */
-const getModule = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getModule = async (PostBody) => queryBuilder.findOne(PostBody);
 
 /**
  * Set the configuration (conf field) of a module

@@ -24,9 +24,7 @@ const addOldCart = async (cartNb) => {
 /**
  * Get Stats for today
  */
-const getStatstoday = async () => {
-    return StatsToday.findOne({});
-};
+const getStatstoday = async () => StatsToday.findOne({});
 
 /**
  * Add a unique visitor (req) for the traffic stats

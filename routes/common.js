@@ -43,9 +43,7 @@ function setCookieNotice(req, res, next) {
  * GET /api/serverIsUp
  * @summary Check if server is alive
  */
-const serverIsUp = (req, res) => {
-    return res.status(200).end();
-};
+const serverIsUp = (req, res) => res.status(200).end();
 
 /**
  * POST /api/v2/getBreadcrumb

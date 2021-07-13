@@ -11,13 +11,9 @@ const ServiceMail  = require('./mail');
 const QueryBuilder = require('../utils/QueryBuilder');
 const queryBuilder = new QueryBuilder(Contacts, [], []);
 
-const getContacts = async (body) => {
-    return queryBuilder.find(body.PostBody);
-};
+const getContacts = async (body) => queryBuilder.find(body.PostBody);
 
-const deleteContact = async (id) => {
-    return Contacts.deleteOne({_id: id});
-};
+const deleteContact = async (id) => Contacts.deleteOne({_id: id});
 
 const setContact = async (body, mode) => {
     if (body === undefined) {
