@@ -28,6 +28,7 @@ const ServicesProducts = require('./products');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Orders, restrictedFields, defaultFields);
+const orderStatuses    = global.envConfig.stockOrder.orderStatuses;
 
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
@@ -42,7 +43,7 @@ aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = unde
             }
             await Orders.findOneAndUpdate({_id: orderId}, {$push: {historyStatus}}, {upsert: true, new: true});
         }
-        await Orders.updateOne({_id: orderId, status: 'DELIVERY_PROGRESS'}, {$set: {'items.$[].status': 'DELIVERY_PROGRESS'}});
+        await Orders.updateOne({_id: orderId, status: orderStatuses.DELIVERY_PROGRESS}, {$set: {'items.$[].status': orderStatuses.DELIVERY_PROGRESS}});
     }
 });
 
@@ -78,22 +79,22 @@ const setStatus = async (_id, status, sendMail = true) => {
         return;
     }
     const order = await Orders.findOneAndUpdate({_id}, {$set: {status}}, {new: true});
-    if (order.status !== 'PAYMENT_PENDING' && order.status !== 'CANCELED' && order.status !== 'PAYMENT_CONFIRMATION_PENDING') {
+    if (order.status !== orderStatuses.PAYMENT_PENDING && order.status !== orderStatuses.CANCELED && order.status !== orderStatuses.PAYMENT_CONFIRMATION_PENDING) {
         // The cart is deleted unless the order is pending payment or cancelled
         await Orders.updateOne({_id}, {$set: {cartId: null}});
         await Cart.deleteOne({_id: order.cartId});
     }
-    if (status === 'PAID' && global.envConfig.stockOrder.automaticBilling) {
+    if (status === orderStatuses.PAID && global.envConfig.stockOrder.automaticBilling) {
         await require('./bills').orderToBill(order._id.toString());
     }
-    if ((['ASK_CANCEL']).includes(order.status) && sendMail) {
+    if (([orderStatuses.ASK_CANCEL]).includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderRequestCancel(_id);
         } catch (error) {
             console.error(error);
         }
     }
-    if (!['PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAID'].includes(order.status) && sendMail) {
+    if (![orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.PAYMENT_RECEIPT_PENDING, orderStatuses.PAID].includes(order.status) && sendMail) {
         try {
             await ServiceMail.sendMailOrderStatusEdit(_id);
         } catch (error) {
@@ -113,7 +114,7 @@ const paymentSuccess = async (query, updateObject) => {
         }
         // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {
-            await setStatus(_order._id, 'PAID');
+            await setStatus(_order._id, orderStatuses.PAID);
         }
         try {
             await ServiceMail.sendMailOrderToClient(_order._id);
@@ -185,9 +186,9 @@ const paymentSuccess = async (query, updateObject) => {
 const paymentFail = async (query, update) => {
     if (update.status) { delete update.status; }
     if (update.$set && update.$set.status) {
-        update.$set.status = 'PAYMENT_FAILED';
+        update.$set.status = orderStatuses.PAYMENT_FAILED;
     } else {
-        update.$set = {status: 'PAYMENT_FAILED'};
+        update.$set = {status: orderStatuses.PAYMENT_FAILED};
     }
     return Orders.findOneAndUpdate(query, update);
 };
@@ -197,24 +198,24 @@ const cancelOrder = async (orderId) => {
         _id    : orderId,
         status : {
             $in : [
-                'PAYMENT_PENDING',
-                'PAYMENT_RECEIPT_PENDING',
-                'PAYMENT_CONFIRMATION_PENDING',
-                'PAID',
-                'PROCESSING',
-                'PROCESSED',
-                'DELIVERY_PROGRESS',
-                'DELIVERY_PARTIAL_PROGRESS',
-                'FINISHED',
-                'RETURNED',
-                'ASK_CANCEL'
+                orderStatuses.PAYMENT_PENDING,
+                orderStatuses.PAYMENT_RECEIPT_PENDING,
+                orderStatuses.PAYMENT_CONFIRMATION_PENDING,
+                orderStatuses.PAID,
+                orderStatuses.PROCESSING,
+                orderStatuses.PROCESSED,
+                orderStatuses.DELIVERY_PROGRESS,
+                orderStatuses.DELIVERY_PARTIAL_PROGRESS,
+                orderStatuses.FINISHED,
+                orderStatuses.RETURNED,
+                orderStatuses.ASK_CANCEL
             ]
         }
     });
     if (!order) {
         throw NSErrors.OrderNotCancelable;
     }
-    await setStatus(orderId, 'CANCELED', order.status !== 'PAYMENT_PENDING');
+    await setStatus(orderId, orderStatuses.CANCELED, order.status !== orderStatuses.PAYMENT_PENDING);
 
     if (global.envConfig.stockOrder.bookingStock !== 'none') {
         aquilaEvents.emit('aqCancelOrder', order);
@@ -225,7 +226,7 @@ const cancelOrders = () => {
     const dateAgo = new Date();
     dateAgo.setHours(dateAgo.getHours() - global.envConfig.stockOrder.pendingOrderCancelTimeout);
 
-    return Orders.find({status: 'PAYMENT_PENDING', createdAt: {$lt: dateAgo}})
+    return Orders.find({status: orderStatuses.PAYMENT_PENDING, createdAt: {$lt: dateAgo}})
         .select('_id')
         .then(function (_orders) {
             return _orders.forEach(async (_order) => {
@@ -293,9 +294,9 @@ const rma = async (orderId, returnData, lang) => {
 
     const historyStatus  = {};
     historyStatus.date   = new Date();
-    historyStatus.status = 'RETURNED';
+    historyStatus.status = orderStatuses.RETURNED;
     _order.historyStatus.push(historyStatus);
-    _order.status = 'RETURNED';
+    _order.status = orderStatuses.RETURNED;
 
     await _order.save();
 
@@ -381,7 +382,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
     }
     returnData.name          = paymentMethod.translation[lang].name;
     returnData.operationDate = Date.now();
-    await setStatus(orderId, 'PAID');
+    await setStatus(orderId, orderStatuses.PAID);
     const _order = await Orders.findOneAndUpdate({_id: orderId}, {$push: {payment: returnData}}, {new: true});
 
     if (sendMail) {
@@ -537,9 +538,9 @@ const duplicateItemsFromOrderToCart = async (req) => {
 
 const addPackage = async (orderId, pkgData) => {
     moment.locale(global.defaultLang);
-    let status = 'DELIVERY_PROGRESS';
+    let status = orderStatuses.DELIVERY_PROGRESS;
     if (pkgData.status && pkgData.status === 'partial') {
-        status = 'DELIVERY_PARTIAL_PROGRESS';
+        status = orderStatuses.DELIVERY_PARTIAL_PROGRESS;
     }
     const ord = await Orders.findOne({_id: orderId});
     if (ord && ord.delivery && ord.delivery.url) {
@@ -663,8 +664,8 @@ const updateStatus = async (body, params) => {
     if (!order) {
         throw NSErrors.OrderNotFound;
     }
-    const noAccess = ['PAYMENT_CONFIRMATION_PENDING', 'PAID', 'BILLED', 'DELIVERY_PROGRESS', 'DELIVERY_PARTIAL_PROGRESS', 'RETURNED'];
-    if (!noAccess.includes(body.status) && body.status !== order.status && order.status !== 'CANCELED') {
+    const noAccess = [orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.PAID, orderStatuses.BILLED, orderStatuses.DELIVERY_PROGRESS, orderStatuses.DELIVERY_PARTIAL_PROGRESS, orderStatuses.RETURNED];
+    if (!noAccess.includes(body.status) && body.status !== order.status && order.status !== orderStatuses.CANCELED) {
         await setStatus(order._id, body.status);
         return;
     }
@@ -674,8 +675,8 @@ const updateStatus = async (body, params) => {
 const cancelOrderRequest = async (_id, user) => {
     const order = await Orders.findOne({_id, 'customer.email': user.email});
     if (order) {
-        await setStatus(_id, 'ASK_CANCEL');
-        return order.status = 'ASK_CANCEL';
+        await setStatus(_id, orderStatuses.ASK_CANCEL);
+        return order.status = orderStatuses.ASK_CANCEL;
     }
     throw NSErrors.AccessUnauthorized;
 };
