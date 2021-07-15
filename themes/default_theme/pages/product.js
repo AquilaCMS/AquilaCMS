@@ -113,7 +113,6 @@ class PageProduct extends NSPageProduct {
                 if (oneOptions.mandatory === true && oneOptions.type !== "number" || oneOptions.type !== "textfield") {
                     const defaultValue = oneOptions.values.find(element => element.control.default === true);
                     if (typeof defaultValue !== "undefined") {
-                        debugger;
                         options.push({
                             code: oneOptions.code,
                             _id: oneOptions._id,
@@ -854,7 +853,7 @@ class PageProduct extends NSPageProduct {
                                             </div>
                                         </div>
                                         <div className="form-footer">
-                                            <button type="button" className="btn btn--red btn-cart" onClick={this.preAddToCart} aria-label={t('product:ajoutPanier')}>
+                                            <button type="button" className="btn btn--red btn-cart" onClick={this.addToCart} aria-label={t('product:ajoutPanier')}>
                                                 <i className="ico-shopping-cart-white" />
                                                 <span>{t('ajoutPanier')}</span>
                                             </button>
