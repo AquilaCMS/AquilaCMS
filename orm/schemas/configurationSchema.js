@@ -81,7 +81,6 @@ const ConfigurationSchema = new Schema({
             CANCELED                     : {type: String, required: true, default: 'CANCELED'},
             ASK_CANCEL                   : {type: String, required: true, default: 'ASK_CANCEL'},
             RETURNED                     : {type: String, required: true, default: 'RETURNED'}
-
         },
         labels : {
             type    : [{code: {type: String, required: true}, translation: {}}],
