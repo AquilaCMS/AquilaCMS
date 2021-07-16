@@ -7,7 +7,6 @@
  */
 
 const path                        = require('path');
-const {exec}                      = require('child_process');
 const {authentication, adminAuth} = require('../middleware/authentication');
 const ServiceAuth                 = require('../services/auth');
 const rgpdServices                = require('../services/rgpd');
@@ -18,10 +17,10 @@ const appdirname                  = path.dirname(require.main.filename);
 
 module.exports = function (app) {
     app.get('/v2/rgpd/export/:id', authentication, exportData);
-    app.post('/v2/rgpd/copyAndAnonymizeDatabase', authentication, adminAuth, copyAndAnonymizeDatabase);
+    app.post('/v2/rgpd/copyAndAnonymizeDatabase', adminAuth, copyAndAnonymizeDatabase);
     app.delete('/v2/rgpd/deleteUser/:id', authentication, deleteUserDatas);
     app.get('/v2/rgpd/anonymizeUser/:id', authentication, anonymizeUser);
-    app.post('/v2/rgpd/dumpAnonymizedDatabase', authentication, adminAuth, dumpAnonymizedDatabase);
+    app.post('/v2/rgpd/dumpAnonymizedDatabase', adminAuth, dumpAnonymizedDatabase);
 };
 
 /**
@@ -99,41 +98,10 @@ async function copyAndAnonymizeDatabase(req, res, next) {
  */
 async function dumpAnonymizedDatabase(req, res, next) {
     try {
-        res.set({'content-type': 'application/gzip'});
-        await rgpdServices.copyDatabase(async () => {
-            let uri = global.envFile.db;
-            // ReplicaSet management
-            if (uri.includes('replicaSet')) {
-                uri = uri.replace('?', '_anonymized?');
-            } else {
-                uri += '_anonymized';
-            }
-            const pathUpload = require('../utils/server').getUploadDirectory();
-            try {
-                await dump(`mongodump --uri "${uri}" --gzip --archive=./${pathUpload}/temp/database_dump.gz`);
-            } catch (err) {
-                console.error(err);
-            }
-            // Removal of the copy database
-            await rgpdServices.dropDatabase();
-            // Download the dump file
-            return res.download(`./${pathUpload}/temp/database_dump.gz`);
-        });
+        await rgpdServices.dumpAnonymizedDatabase(res);
     } catch (error) {
         return next(error);
     }
-}
-
-function dump(cmd) {
-    return new Promise((resolve, reject) => {
-        exec(cmd, (error, stdout/* , stderr */) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve(stdout);
-        });
-    });
 }
 
 /**

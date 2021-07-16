@@ -177,7 +177,9 @@ const OrdersSchema = new Schema({
             mode          : {type: String, required: true},
             transactionId : String,
             amount        : Number,
-            comment       : String
+            comment       : String,
+            isDeferred    : Boolean,
+            name          : String
         }
     ],
     orderReceipt : {

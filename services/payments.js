@@ -64,16 +64,12 @@ const getOrdersPayments = async (postBody) => {
 /**
  * @description return payment methods
  */
-const getPaymentMethods = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getPaymentMethods = async (PostBody) => queryBuilder.find(PostBody);
 
 /**
  * @description return payment methods
  */
-const getPaymentMethod = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getPaymentMethod = async (PostBody) => queryBuilder.findOne(PostBody);
 
 /**
  * @description save payment method
@@ -87,9 +83,7 @@ const savePaymentMethod = async (pm) => {
     return PaymentMethods.ceate(pm);
 };
 
-const deletePaymentMethod = async (_id) => {
-    return PaymentMethods.findOneAndDelete({_id});
-};
+const deletePaymentMethod = async (_id) => PaymentMethods.findOneAndDelete({_id});
 
 module.exports = {
     getOrdersPayments,

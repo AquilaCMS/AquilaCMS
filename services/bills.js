@@ -172,7 +172,7 @@ const generatePDF = async (PostBody) => {
     };
 
     if (bill.taxes) {
-        const totalTaxes        = bill.taxes ? Object.values(bill.taxes).reduce((val, acc) => {return val + acc;}) : 0;
+        const totalTaxes        = bill.taxes ? Object.values(bill.taxes).reduce((val, acc) => val + acc) : 0;
         datas['{{totalTaxes}}'] = totalTaxes ? parseFloat(totalTaxes).toFixed(2) + currency : '';
 
         let taxString = '';

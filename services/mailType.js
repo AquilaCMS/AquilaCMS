@@ -6,7 +6,10 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const NSErrors = require('../utils/errors/NSErrors');
+const mongoose   = require('mongoose');
+const NSErrors   = require('../utils/errors/NSErrors');
+const {MailType} = require('../orm/models');
+const utils      = require('../utils/utils');
 
 /**
  * Get the emails
@@ -27,6 +30,73 @@ const getMailType = async (code) => {
     return MailType.findOne({code});
 };
 
+/**
+ * @description Modify or create a new mail type in the admin
+ * @param {Object} body datas to set
+ * @param {ObjectId} [_id] if the_id exists then we update otherwise we create (Optional)
+ */
+const setMailType = async (body, _id = null) => {
+    try {
+        let result;
+        if (_id) {
+            // Update
+            if (!mongoose.Types.ObjectId.isValid(_id)) {
+                throw NSErrors.InvalidObjectIdError;
+            }
+            if (body.code !== '') {
+                await checkUniqueCode(body.code);
+            }
+            result = await MailType.findByIdAndUpdate(_id, {$set: body}, {new: true, runValidators: true});
+            if (!result) {
+                throw NSErrors.MailTypeUpdateError;
+            }
+        } else {
+            // Create
+            if (body.code !== '') {
+                await checkUniqueCode(body.code);
+            }
+            body.code = utils.slugify(body.code);
+            result    = await MailType.create(body);
+            if (!result) {
+                throw NSErrors.MailTypeCreateError;
+            }
+        }
+        return result;
+    } catch (error) {
+        if (error.code === 11000) {
+            throw NSErrors.MailTypeCodeAlreadyExists;
+        }
+        if (error.name === 'ValidationError') {
+            throw NSErrors.LoginSubscribeEmailInvalid;
+        }
+        throw error;
+    }
+};
+
+/**
+ * @description An email type has a code (registration, forgotten password, etc.). This code must only belong to one email type
+ * If a new "registration" type mail code is created, the old "registration" type mail code will see its type change to "noType" (corresponding to the code of the mailtypes collection)
+ * @param {string} type: corresponds to the code of email type
+ */
+async function checkUniqueCode(code) {
+    try {
+        const mailTypes = await MailType.find({code});
+        // If there is no mail type with this code then we do nothing
+        if (!mailTypes.length) {
+            return;
+        }
+        // One or more (case: 'several' should never happen) mail type has this code, we assign these mailType.code = ""
+        for (let i = 0; i < mailTypes.length; i++) {
+            const result = await MailType.findByIdAndUpdate({_id: mailTypes[i]._id}, {code: ''}, {new: true, runValidators: true});
+            if (!result) {
+                throw NSErrors.MailTypeUpdateNoCodeError;
+            }
+        }
+    } catch (error) {
+        throw NSErrors.MailTypeCreateError;
+    }
+}
+
 const deleteMailType = async (code) => {
     const {Mail, MailType} = require('../orm/models');
     if (code === '') throw NSErrors.MailTypeCannotDeleteNoType;
@@ -43,5 +113,6 @@ const deleteMailType = async (code) => {
 module.exports = {
     getMailTypes,
     getMailType,
+    setMailType,
     deleteMailType
 };

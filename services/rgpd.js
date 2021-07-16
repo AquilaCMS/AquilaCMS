@@ -15,9 +15,10 @@ const mongoURI     = require('mongodb-uri');
 const bcrypt       = require('bcrypt');
 const rimraf       = require('rimraf');
 const path         = require('path');
-const {exec}       = require('child_process');
 const faker        = require('faker');
 const fs           = require('../utils/fsp');
+const {execCmd}    = require('../utils/packageManager');
+const NSErrors     = require('../utils/errors/NSErrors');
 const {
     Bills,
     Orders,
@@ -48,9 +49,7 @@ RGPD : Example of a function to implement in a module using users data
 //     });
 // });
 
-const getOrdersByUser = async (id) => {
-    return Orders.find({'customer.id': id}, '-__v').lean();
-};
+const getOrdersByUser = async (id) => Orders.find({'customer.id': id}, '-__v').lean();
 
 const anonymizeOrdersByUser = async (id) => {
     const firstName = faker.name.firstName();
@@ -69,9 +68,7 @@ const anonymizeOrdersByUser = async (id) => {
     });
 };
 
-const getCartsByUser = async (id) => {
-    return Cart.find({'customer.id': id}, '-__v').lean();
-};
+const getCartsByUser = async (id) => Cart.find({'customer.id': id}, '-__v').lean();
 
 const getReviewsByUser = async (id) => {
     const products = await Products.find({'reviews.datas.id_client': id}).lean();
@@ -86,22 +83,16 @@ const getReviewsByUser = async (id) => {
     return datas;
 };
 
-const anonymizeCartsByUser = async (id) => {
-    return Cart.updateMany({'customer.id': id}, {
-        $set : {
-            'customer.email' : faker.internet.email(),
-            'customer.phone' : faker.phone.phoneNumber()
-        }
-    });
-};
+const anonymizeCartsByUser = async (id) => Cart.updateMany({'customer.id': id}, {
+    $set : {
+        'customer.email' : faker.internet.email(),
+        'customer.phone' : faker.phone.phoneNumber()
+    }
+});
 
-const getUserById = async (id) => {
-    return Users.findOne({_id: id}).lean();
-};
+const getUserById = async (id) => Users.findOne({_id: id}).lean();
 
-const getBillsByUser = async (id) => {
-    return Bills.find({client: id}, '-__v').lean();
-};
+const getBillsByUser = async (id) => Bills.find({client: id}, '-__v').lean();
 
 const anonymizeModulesByUser = async (user) => {
     const _modules = await Modules.find({active: true});
@@ -119,28 +110,24 @@ const anonymizeModulesByUser = async (user) => {
     }
 };
 
-const anonymizeBillsByUser = async (id) => {
-    return Bills.updateMany({client: id}, {
-        $set : {
-            nom         : faker.name.lastName(),
-            prenom      : faker.name.firstName(),
-            societe     : faker.random.word(),
-            coordonnees : faker.phone.phoneNumber(),
-            email       : faker.internet.email()
-        }
-    });
-};
+const anonymizeBillsByUser = async (id) => Bills.updateMany({client: id}, {
+    $set : {
+        nom         : faker.name.lastName(),
+        prenom      : faker.name.firstName(),
+        societe     : faker.random.word(),
+        coordonnees : faker.phone.phoneNumber(),
+        email       : faker.internet.email()
+    }
+});
 
-const anonymizeReviewsByUser = async (id) => {
-    return Products.updateMany({}, {
-        $set : {
-            'reviews.datas.$[data].ip_client' : faker.internet.ip(),
-            'reviews.datas.$[data].name'      : faker.name.firstName()
-        }
-    }, {
-        arrayFilters : [{'data.id_client': id}]
-    });
-};
+const anonymizeReviewsByUser = async (id) => Products.updateMany({}, {
+    $set : {
+        'reviews.datas.$[data].ip_client' : faker.internet.ip(),
+        'reviews.datas.$[data].name'      : faker.name.firstName()
+    }
+}, {
+    arrayFilters : [{'data.id_client': id}]
+});
 
 const anonymizeUser = async (id) => {
     const firstName = faker.name.firstName();
@@ -170,22 +157,26 @@ const anonymizeUser = async (id) => {
 /*
 * Clone the database passed in parameter then replace the user data by fake data
  */
-const copyDatabase = async (cb) => {
+const copyDatabase = async () => {
     // Connection to the database
     try {
         await new Promise((resolve, reject) => rimraf('dump', (err) => {
             if (err) return reject(err);
             resolve();
         }));
-        await mongodump(global.envFile.db);
-        await mongorestore(global.envFile.db);
+        try {
+            await mongodump(global.envFile.db);
+            await mongorestore(global.envFile.db);
+        } catch (error) {
+            throw NSErrors.CommandsMayNotInPath;
+        }
         await new Promise((resolve, reject) => rimraf('dump', (err) => {
             if (err) return reject(err);
             resolve();
         }));
 
         // Anonymization of the copied database
-        await anonymizeDatabase(cb);
+        await anonymizeDatabase();
     } catch (err) {
         console.error(err);
         throw err;
@@ -198,35 +189,21 @@ async function mongodump(uri) {
     if (data.database) {
         cmd += ` --db ${data.database}`;
     }
-    return new Promise((resolve, reject) => {
-        exec(`mongodump${cmd}`, (error, stdout) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve(stdout);
-        });
-    });
+    const {stdout} = await execCmd(`mongodump${cmd}`);
+    return stdout;
 }
 
 async function mongorestore(uri) {
-    const data = mongoURI.parse(uri);
-    const cmd  = await createConnectionStringMongoose(data);
-    return new Promise((resolve, reject) => {
-        exec(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`, (error, stdout) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve(stdout);
-        });
-    });
+    const data     = mongoURI.parse(uri);
+    const cmd      = await createConnectionStringMongoose(data);
+    const {stdout} = await execCmd(`mongorestore${cmd} --db ${data.database}_anonymized --drop dump/${data.database}`);
+    return stdout;
 }
 
 /*
 * Replaces user data with fake data
  */
-const anonymizeDatabase = async (cb) => {
+const anonymizeDatabase = async () => {
     // Connection to the new database
     const data     = mongoURI.parse(global.envFile.db);
     data.database += '_anonymized';
@@ -344,9 +321,6 @@ const anonymizeDatabase = async (cb) => {
         }
     }
     await client.close();
-    if (cb !== undefined) {
-        cb();
-    }
 };
 
 /*
@@ -468,9 +442,39 @@ const generateFakeAddresses = async (options) => {
     return addr;
 };
 
+const dumpAnonymizedDatabase = async (res) => {
+    try {
+        await copyDatabase();
+        let uri = global.envFile.db;
+        // ReplicaSet management
+        if (uri.includes('replicaSet')) {
+            uri = uri.replace('?', '_anonymized?');
+        } else {
+            uri += '_anonymized';
+        }
+        const pathUpload = require('../utils/server').getUploadDirectory();
+        try {
+            await execCmd(`mongodump --uri "${uri}" --gzip --archive=./${pathUpload}/temp/database_dump.gz`);
+        } catch (err) {
+            console.error(err);
+        }
+        // Removal of the copy database
+        await dropDatabase();
+        // Download the dump file
+        res.set({'content-type': 'application/gzip'});
+        return res.download(`./${pathUpload}/temp/database_dump.gz`);
+    } catch (error) {
+        if (error && error.name && error.name === 'NSError') {
+            throw error;
+        }
+        throw NSErrors.InternalError;
+    }
+};
+
 module.exports = {
     getOrdersByUser,
     anonymizeOrdersByUser,
+    dumpAnonymizedDatabase,
     getCartsByUser,
     getReviewsByUser,
     anonymizeCartsByUser,

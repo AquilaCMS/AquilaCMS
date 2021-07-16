@@ -6,13 +6,13 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const serviceAdminInformation     = require('../services/admin');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const modules                     = require('../services/modules');
+const serviceAdminInformation = require('../services/admin');
+const {adminAuth}             = require('../middleware/authentication');
+const modules                 = require('../services/modules');
 
 module.exports = (router, adminFront) => {
-    router.get('/v2/adminInformation', authentication, adminAuth, getAdminInformation);
-    router.delete('/v2/adminInformation/:code', authentication, adminAuth, deleteAdminInformation);
+    router.get('/v2/adminInformation', adminAuth, getAdminInformation);
+    router.delete('/v2/adminInformation/:code', adminAuth, deleteAdminInformation);
 
     // BackOffice
     adminFront.get('/', getAdminHomepage);

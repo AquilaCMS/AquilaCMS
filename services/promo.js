@@ -13,9 +13,8 @@ const {
     Rules,
     Languages,
     ProductSimple,
-    Orders,
     Cart
-}                          = require('../orm/models');
+}                  = require('../orm/models');
 const ServiceRules = require('./rules');
 const QueryBuilder = require('../utils/QueryBuilder');
 const promoUtils   = require('../utils/promo');
@@ -25,17 +24,11 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Promo, restrictedFields, defaultFields);
 
-const getPromos = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getPromos = async (PostBody) => queryBuilder.find(PostBody);
 
-const getPromo = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getPromo = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getPromoById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getPromoById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const setPromo = async (body, _id = null) => {
     let result;

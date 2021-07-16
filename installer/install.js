@@ -90,7 +90,7 @@ const postConfiguratorDatas = async (req) => {
         await createDefaultCountries();
         console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile();
+        await require('../services/languages').createDynamicLangFile(true);
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -141,7 +141,7 @@ const createConfiguration = async (datas, bOverride) => {
     const {Configuration} = require('../orm/models');
 
     // check if this configuration already exist
-    const existConf = await Configuration.count();
+    const existConf = await Configuration.estimatedDocumentCount();
     if (existConf > 0) {
         if (bOverride) {
             console.log('Configuration already exist, removing...');
@@ -189,7 +189,7 @@ const createUserAdmin = async (userDatas, bOverride) => {
     const {Users} = require('../orm/models');
 
     // check if this admin already exist
-    const existAdmin = await Users.count({email: userDatas.email});
+    const existAdmin = await Users.estimatedDocumentCount({email: userDatas.email});
     if (existAdmin > 0) {
         if (bOverride) {
             console.log('Administrator already exist, removing...');

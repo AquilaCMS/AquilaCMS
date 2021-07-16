@@ -6,8 +6,8 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const fs           = require('../utils/fsp');
 const path         = require('path');
+const fs           = require('../utils/fsp');
 const {Languages}  = require('../orm/models');
 const NSErrors     = require('../utils/errors/NSErrors');
 const QueryBuilder = require('../utils/QueryBuilder');
@@ -16,13 +16,9 @@ const restrictedFields = [];
 const defaultFields    = ['code', 'name', 'defaultLanguage', 'status', 'img'];
 const queryBuilder     = new QueryBuilder(Languages, restrictedFields, defaultFields);
 
-const getLanguages = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getLanguages = async (PostBody) => queryBuilder.find(PostBody);
 
-const getLang = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getLang = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const saveLang = async (lang) => {
     let result = {};
@@ -116,15 +112,19 @@ async function getTranslatePath(lang) {
 /**
  * Create languages in file "config/dynamic_langs.js"
  */
-const createDynamicLangFile = async () => {
+const createDynamicLangFile = async (fromInstaller = false) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
-
-    // Create file
-    await fs.writeFile(path.join(global.envConfig.environment.currentTheme , '/dynamic_langs.js'), contentFile, (err) => {
+    let themeActual = 'default_theme'; // if installer -> default_theme
+    if (fromInstaller === false) {
+        themeActual = global.envConfig.environment.currentTheme;
+    }
+    const linkToFile = path.join(global.appRoot, 'themes', themeActual, 'dynamic_langs.js');
+    // write file
+    await fs.writeFile(linkToFile, contentFile, (err) => {
         if (err) {
-            throw "Error writing file 'dynamic_langs.js'";
+            throw 'Error writing file "dynamic_langs.js"';
         }
     });
 };

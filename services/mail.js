@@ -34,9 +34,7 @@ const queryBuilder     = new QueryBuilder(Mail, restrictedFields, defaultFields)
 /**
  * @description Get the emails
  */
-const getMails = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getMails = async (PostBody) => queryBuilder.find(PostBody);
 /**
  * @description Get the email by _id
  * @param {ObjectId} _id

@@ -114,6 +114,7 @@ var checkAccess = function (route) {
             var deferred = $q.defer();
             $http.get("v2/auth/isauthenticated").then(function (resp)
             {
+                $rootScope.userInfo = {...$rootScope.userInfo, ...resp.data.user};
                 if(resp.data.user.accessList.indexOf(route) === -1 ||
                     resp.data.user.accessList === undefined)
                 {
@@ -136,6 +137,14 @@ var checkAccess = function (route) {
         }
     ];
 };
+
+var delayTimer;
+function input(ele) {
+    clearTimeout(delayTimer);
+    delayTimer = setTimeout(function() {
+       ele.value = parseFloat(ele.value).toFixed(2).toString();
+    }, 800); 
+}
 
 adminCatagenApp.config([
     "$httpProvider", function ($httpProvider)
@@ -281,7 +290,7 @@ adminCatagenApp.config([
     "$translateProvider", function ($translateProvider)
     {
         $translateProvider
-            // .useSanitizeValueStrategy("sanitize") //comment it to allow specials characters in confirm box
+            .useSanitizeValueStrategy(null) //comment it to allow specials characters in confirm box
             .registerAvailableLanguageKeys(["en", "fr"])
             .useLoader("customLoader", {})
             .useMissingTranslationHandler("customMissingTranslationHandler");
