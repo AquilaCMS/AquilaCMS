@@ -11,7 +11,12 @@ const fileSystemBackend = require('i18next-fs-backend');
 
 const initI18n = async (i18nInstance, ns) => {
     const {Languages} = require('../orm/models');
-    const langs       = (await Languages.find({}, {code: 1, _id: 0})).map((elem) => elem.code);
+    const allLangs    = await Languages.find({}, {code: 1, _id: 0});
+    const langs       = allLangs.map((elem) => elem.code);
+    const loadPath    = path.join(
+        global.appRoot,
+        `/themes/${global.envConfig.environment.currentTheme}/assets/i18n/{{lng}}/{{ns}}.json`
+    );
     i18nInstance.use(fileSystemBackend).init({
         languages   : langs,
         preload     : langs,
@@ -24,10 +29,7 @@ const initI18n = async (i18nInstance, ns) => {
             wait : false
         },
         backend : {
-            loadPath : path.join(
-                global.appRoot,
-                `/themes/${global.envConfig.environment.currentTheme}/assets/i18n/{{lng}}/{{ns}}.json`
-            )
+            loadPath
         }
     });
 };

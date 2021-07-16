@@ -6,17 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceJob                  = require('../services/job');
+const {adminAuth} = require('../middleware/authentication');
+const ServiceJob  = require('../services/job');
 
 module.exports = function (app) {
-    app.get('/v2/jobs', authentication, adminAuth, getJobs);
-    app.get('/v2/job/:_id', authentication, adminAuth, getJobById);
-    app.get('/v2/job/play/:_id', authentication, adminAuth, getPlayJob);
-    app.get('/v2/job/play/immediate/:_id', authentication, adminAuth, getPlayImmediateJob);
-    app.get('/v2/job/pause/:_id', authentication, adminAuth, getPauseJob);
-    app.put('/v2/job', authentication, adminAuth, setJob);
-    app.delete('/v2/job/:_id', authentication, adminAuth, deleteJob);
+    app.get('/v2/jobs', adminAuth, getJobs);
+    app.get('/v2/job/:_id', adminAuth, getJobById);
+    app.get('/v2/job/play/:_id', adminAuth, getPlayJob);
+    app.get('/v2/job/play/immediate/:_id', adminAuth, getPlayImmediateJob);
+    app.get('/v2/job/pause/:_id', adminAuth, getPauseJob);
+    app.put('/v2/job', adminAuth, setJob);
+    app.delete('/v2/job/:_id', adminAuth, deleteJob);
 };
 
 /**

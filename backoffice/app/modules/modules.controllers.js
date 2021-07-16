@@ -180,7 +180,7 @@ function ($scope, $http, ConfigV2, $interval, $location, toastService, $modal, $
     }
 
     $scope.remove = function (idModule, nameModule, state) {
-        var check = window.confirm('Êtes-vous sur de vouloir supprimer ce module ?');
+        var check = window.confirm($translate.instant("confirm.deleteModule"));
         if (check) {
             $scope.showModuleLoading = true;
             $http.delete(`/v2/modules/${idModule}`).then(function (response) {

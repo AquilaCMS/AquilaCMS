@@ -1,9 +1,8 @@
 var TranslationControllers = angular.module('aq.translation.controllers', []);
 
 TranslationControllers.controller('LanguagesCtrl',
-    ['$scope', 'LanguagesApiV2', '$modal', 'toastService',
-    function ($scope, LanguagesApiV2, $modal, toastService) {
-        //console.log('test')
+    ['$scope', 'LanguagesApiV2', '$modal', 'toastService','$translate',
+        function ($scope, LanguagesApiV2, $modal, toastService, $translate) {
         $scope.filter = {};
 
         $scope.getLanguages = function() {
@@ -53,7 +52,7 @@ TranslationControllers.controller('LanguagesCtrl',
         };
 
         $scope.removeLang = function (lang) {
-            if (confirm('Etes-vous sûr de vouloir supprimer cet élément ?')) {
+            if (confirm($translate.instant("confirm.deleteLang"))) {
                 if (LanguagesApiV2.delete({ id: lang._id }).$resolved === false){
                     $scope.languages.splice($scope.languages.indexOf(lang), 1);
                     setTimeout(function(){

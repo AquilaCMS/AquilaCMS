@@ -6,17 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const {securityForceActif}        = require('../middleware/security');
-const ServiceShipment             = require('../services/shipment');
-const {middlewareServer}          = require('../middleware');
+const {adminAuth}          = require('../middleware/authentication');
+const {securityForceActif} = require('../middleware/security');
+const ServiceShipment      = require('../services/shipment');
+const {middlewareServer}   = require('../middleware');
 
 module.exports = function (app) {
     app.post('/v2/shipments', securityForceActif(['active']), getShipments);
     app.post('/v2/shipment', securityForceActif(['active']), getShipment);
     app.post('/v2/shipments/filter', getShipmentsFilter);
-    app.put('/v2/shipment', authentication, adminAuth, setShipment);
-    app.delete('/v2/shipment/:id', authentication, adminAuth, deleteShipment);
+    app.put('/v2/shipment', adminAuth, setShipment);
+    app.delete('/v2/shipment/:id', adminAuth, deleteShipment);
 
     // Deprecated
     app.post('/v2/shipments/fee', middlewareServer.deprecatedRoute, getEstimatedFee);

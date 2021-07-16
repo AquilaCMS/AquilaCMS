@@ -55,7 +55,7 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
     try {
-        modules_folder    = `./themes/${theme}/modules`;
+        modules_folder    = path.join(global.appRoot, `themes/${theme}/modules`);
         const fileContent = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
@@ -193,11 +193,12 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
 const modulesLoadInit = async (server) => {
     const Modules  = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
-    loadedModules  = [..._modules].map((lmod) => {return {...lmod, init: true, valid: false};});
+    loadedModules  = [..._modules].map((lmod) => ({...lmod, init: true, valid: false}));
     for (let i = 0; i < loadedModules.length; i++) {
-        if (i === 0) console.log('Required modules :');
+        if (i === 0) {
+            console.log('Required modules :');
+        }
         console.log(`- ${loadedModules[i].name}`);
-        if (i === loadedModules.length - 1) console.log('');
     }
     if (loadedModules.length > 0) {
         console.log('Start init loading modules');
@@ -252,6 +253,8 @@ const modulesLoadInitAfter = async (apiRouter, server, passport) => {
                                 }
                             }
                             require(path.join(global.appRoot, `/modules/${mod.name}/initAfter.js`))(resolve, reject, server, apiRouter, passport);
+                        } else {
+                            process.stdout.write(`- ${mod.name} \x1b[33m (can't access to initAfter.js or no initAfter.js)`);
                         }
                         resolve();
                     } catch (err) {

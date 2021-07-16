@@ -537,7 +537,7 @@
                                         translate>order.detail.cancel</button>
                                 </div>
                             </div>
-                            <p ng-repeat="status in order.historyStatus | orderBy:'date'">
+                            <p ng-repeat="status in order.historyStatus | orderBy:'-date'">
                                 {{status.date | date:"dd/MM/yyyy 'à' H:mm"}} ->
                                 <!-- {{status.status}} -->
                                 <!-- <label translate translate-values="test">order.detail.cancel</label> -->

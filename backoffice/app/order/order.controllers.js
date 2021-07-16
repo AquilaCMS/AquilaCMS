@@ -174,6 +174,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response)
             {
                 $scope.order = response.datas[0];
+                // sort status
                 if($scope.order && $scope.order.customer.id){
                     // we get the client informations to check to email and to check is user exists
                     ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
@@ -347,7 +348,7 @@ OrderControllers.controller("OrderDetailCtrl", [
             return 'order.status.' + status;
         }
         $scope.test = "order.detail.cancel";
-        $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
+        $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]]
 
         $scope.getStatus = function(status){
             if(status !== undefined){
@@ -391,7 +392,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == "RETURNED") {
+                } else if (data == "RETURNED" || data == "CANCELED") {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
@@ -466,14 +467,15 @@ OrderControllers.controller("OrderDetailCtrl", [
 
         $scope.delPkg = function (pkg)
         {
-            Orders.delPkg({order: $scope.order._id, package: pkg}, function (res)
-            {
-                $scope.order = res;
-            }, function (err)
-            {
-                console.error(err.data);
-                toastService.toast("danger", $translate.instant("order.detail.removePackage"));
-            });
+            if (confirm($translate.instant("confirm.deletePackageOrder"))) {
+                Orders.delPkg({ order: $scope.order._id, package: pkg }, function (res) {
+                    $scope.order = res;
+                    toastService.toast("success", $translate.instant("order.detail.removedPackage"));
+                }, function (err) {
+                    console.error(err.data);
+                    toastService.toast("danger", $translate.instant("order.detail.removePackage"));
+                });
+            }
         };
 
         function getQtyShipped(i)
@@ -530,7 +532,6 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
-                $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]];
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
@@ -1030,7 +1031,7 @@ OrderControllers.controller("RMANewCtrl", [
             }
 
             if(returnData.products.length > 0) {
-                Orders.rma({order: $scope.order._id, return: returnData}, function () {
+                Orders.rma({order: $scope.order._id, return: returnData, lang: $scope.defaultLang}, function () {
                     toastService.toast("success", $translate.instant("order.detail.returnAdded"));
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
@@ -1147,7 +1148,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             $scope.error.text = "";
 
             delete returnData.sendMail;
-            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
+            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail, lang: $scope.defaultLang}, function ()
             {
                 toastService.toast("success", $translate.instant("order.detail.paymentInfoAdded"));
                 $scope.close();
@@ -1169,7 +1170,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
 
         $scope.close = function ()
         {
-            $modalInstance.dismiss("cancel");
+            $modalInstance.close("cancel");
         };
     }
 ]);

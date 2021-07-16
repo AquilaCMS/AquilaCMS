@@ -124,7 +124,7 @@ const initDBValues = async () => {
         Statics
     } = require('../orm/models');
 
-    console.log('Database init in progress...');
+    console.log('Database init : In progress...');
     const langs     = await Languages.find();
     let defaultLang = langs.find((l) => l.defaultLanguage);
     if (!langs.length) {
@@ -376,6 +376,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Frais supplémentaires'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -477,6 +493,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Additionnal fees'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -584,6 +616,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Code de la promotion'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
 
@@ -686,9 +734,24 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
-
                 }
             }
         },
@@ -1064,6 +1127,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -1161,6 +1240,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -1404,6 +1499,7 @@ const initDBValues = async () => {
     for (const paymentMethod of defaultPaymentMethods) {
         await PaymentMethods.findOneAndUpdate({code: paymentMethod.code}, {$setOnInsert: paymentMethod}, {new: true, upsert: true});
     }
+    console.log('Database init : Done\x1b[32m \u2713 \x1b[0m');
 };
 
 const applyMigrationIfNeeded = async () => {

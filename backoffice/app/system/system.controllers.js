@@ -4,7 +4,7 @@ SystemControllers.controller("systemGeneralController", [
     "$scope", "ConfigV2", "NSConstants", "System", "$http", "toastService", "Upload", "$interval", "EnvBlocks", "$translate",
     function ($scope, ConfigV2, NSConstants, System, $http, toastService, Upload, $interval, EnvBlocks, $translate) {
         $scope.blocks = EnvBlocks;
-
+        $scope.showModuleLoading = false;
         $scope.log = {
             log: "",
             error: ""
@@ -16,39 +16,51 @@ SystemControllers.controller("systemGeneralController", [
             newPolicy: ""
         };
 
-        $scope.removePolicy = function(value){
+        $scope.switchCsp = function (value) {
+            if (value == true) {
+                if (confirm($translate.instant("confirm.activateCSP"))) {
+                    $scope.system.environment.contentSecurityPolicy.active = true;
+                } else {
+                    $scope.system.environment.contentSecurityPolicy.active = false;
+                }
+            } else {
+                $scope.contentPolicy.content = [];
+            }
+        }
+
+        $scope.removePolicy = function (value) {
             const index = $scope.contentPolicy.content.indexOf(value);
             if (index > -1) {
                 $scope.contentPolicy.content.splice(index, 1);
             }
         };
 
-        $scope.addPolicy = function(value){
-            if(!$scope.contentPolicy.content.includes(value) && value != "" && typeof value !== "undefined"){
+        $scope.addPolicy = function (value) {
+            if (!$scope.contentPolicy.content.includes(value) && value != "" && typeof value !== "undefined") {
                 $scope.contentPolicy.content.push(value);
                 $scope.contentPolicy.newPolicy = "";
             }
         };
 
 
-        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+        ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {
             $scope.system = config;
             $scope.system.environment.logPath = $scope.system.environment.logPath || '';
             $scope.system.environment.errorPath = $scope.system.environment.errorPath || '';
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
-            if($scope.system.environment.contentSecurityPolicy.values){
+            if ($scope.system.environment.contentSecurityPolicy.values) {
                 $scope.contentPolicy.content = $scope.system.environment.contentSecurityPolicy.values;
             }
             $scope.ssl = {
-                cert    : $scope.system.environment.ssl.cert    || '',
-                key     : $scope.system.environment.ssl.key     || '',
-                active  : $scope.system.environment.ssl.active  || false
+                cert: $scope.system.environment.ssl.cert || '',
+                key: $scope.system.environment.ssl.key || '',
+                active: $scope.system.environment.ssl.active || false
             }
             delete $scope.system.$promise;
         });
 
-        $scope.refreshLog = function(){
+        $scope.refreshLog = function () {
             $scope.getFilesLogAndError('log');
             $scope.getFilesLogAndError('error');
         };
@@ -65,21 +77,21 @@ SystemControllers.controller("systemGeneralController", [
             return correctAppUrl + adminPrefix;
         };
 
-        $scope.getFilesLogAndError = function(variable) {
+        $scope.getFilesLogAndError = function (variable) {
             let attribut;
             if (variable === 'log') {
                 attribut = 'logPath';
-            } else if(variable === 'error') {
+            } else if (variable === 'error') {
                 attribut = 'errorPath';
             }
             if (!$scope.system.environment[attribut] || $scope.system.environment[attribut] == '') {
                 $scope.system.environment[attribut] == ''; //if it's undefined
-                $scope.log[variable] = 'No file "'+ variable +'"';
+                $scope.log[variable] = 'No file "' + variable + '"';
             } else {
-                System.getFilesLogAndErrorRoute({name: $scope.system.environment[attribut]}, function (response) {
+                System.getFilesLogAndErrorRoute({ name: $scope.system.environment[attribut] }, function (response) {
                     //here change color of text
                     $scope.log[variable] = response.fileData;
-                }, function(err) {
+                }, function (err) {
                     $scope.log[variable] = '';
                 });
             }
@@ -89,37 +101,35 @@ SystemControllers.controller("systemGeneralController", [
         $scope.newNextVersion = (nextVersion) => {
             if (nextVersion !== $scope.next) {
                 $scope.showThemeLoading = true;
-                System.changeNextVersionRoute({nextVersion}, function(response){
-                    toastService.toast("success", $translate.instant("system.other.restartProgress"));
+                System.changeNextVersionRoute({ nextVersion }, function (response) {
+                    toastService.toast("success", $translate.instant("system.environment.other.restartProgress"));
                     $scope.showThemeLoading = false;
-                    $scope.showLoading = true;
-                    $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                     $http.get("/restart");
                     $interval(() => {
                         $http.get("/serverIsUp").then(() => {
                             location.href = window.location = $scope.urlRedirect;
                         })
                     }, 10000);
-                }, function(error) {
+                }, function (error) {
                     $scope.showThemeLoading = false;
                     console.error(error);
                     toastService.toast("danger", error.message);
                 });
             } else {
-                toastService.toast("danger", $translate.instant("system.other.changeVersion"));
+                toastService.toast("danger", $translate.instant("system.environment.other.changeVersion"));
             }
         };
 
         // Permet de télécharger l'ensemble des documents du serveur au format zip
 
         $scope.downloadDocuments = function () {
-            toastService.toast("info", $translate.instant("system.other.takeTime"));
+            toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
             $scope.disabledButton = true;
 
             $http({
-                method       : "GET",
-                url          : "v2/medias/download/documents",
-                responseType : "blob"
+                method: "GET",
+                url: "v2/medias/download/documents",
+                responseType: "blob"
             }).success(function (data, status, headers) {
                 downloadBlob(data, status, headers, '.zip', 'medias');
             }).error(function (data) {
@@ -128,25 +138,36 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.beforeDocument = function () {
-            toastService.toast("info", $translate.instant("system.other.takeTime"));
+            toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
         };
 
         $scope.uploadedDocument = function () {
-            toastService.toast("success", $translate.instant("system.other.addDoc"));
+            toastService.toast("success", $translate.instant("system.environment.other.addDoc"));
         };
 
         $scope.dumpDatabase = function () {
-            toastService.toast("info", $translate.instant("system.other.takeTime"));
+            toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
             $scope.disabledButton = true;
             $http({
-                method       : "POST",
-                url          : "v2/rgpd/dumpAnonymizedDatabase",
-                params       : {},
-                responseType : "blob"
+                method: "POST",
+                url: "v2/rgpd/dumpAnonymizedDatabase",
+                params: {},
+                responseType: "blob"
             }).success(function (data, status, headers) {
                 downloadBlob(data, status, headers, '.gz', 'database');
             }).error(function (data) {
-                console.error(data);
+                $scope.disabledButton = false;
+                try {
+                    data.text().then(text => {
+                        const parsed = JSON.parse(text);
+                        if (parsed && parsed.message) {
+                            toastService.toast("danger", parsed.message);
+                        }
+                    });
+                } catch (e) {
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                    console.error(data);
+                }
             });
         };
 
@@ -158,16 +179,16 @@ SystemControllers.controller("systemGeneralController", [
 
             const linkElement = document.createElement("a");
             try {
-                const blob = new Blob([data], {type: contentType});
+                const blob = new Blob([data], { type: contentType });
                 const url = window.URL.createObjectURL(blob);
 
                 linkElement.setAttribute("href", url);
                 linkElement.setAttribute("download", filename);
 
                 const clickEvent = new MouseEvent("click", {
-                    view       : window,
-                    bubbles    : true,
-                    cancelable : false
+                    view: window,
+                    bubbles: true,
+                    cancelable: false
                 });
                 $scope.disabledButton = false;
                 linkElement.dispatchEvent(clickEvent);
@@ -177,17 +198,17 @@ SystemControllers.controller("systemGeneralController", [
         };
 
         $scope.next = {
-            actual:"Loading..."
+            actual: "Loading..."
         };
         $scope.nextVersion = "";
         $scope.nextVLoader = true;
 
         const getNextVersions = () => {
-            System.getNextVersionRoute({}, function(response){
+            System.getNextVersionRoute({}, function (response) {
                 $scope.next = response.datas;
                 $scope.nextVersion = response.datas.actual;
                 $scope.nextVLoader = false;
-            }, function(error){
+            }, function (error) {
                 toastService.toast("danger", error.message);
                 $scope.nextVLoader = false;
             });
@@ -196,6 +217,7 @@ SystemControllers.controller("systemGeneralController", [
 
 
         $scope.validate = function () {
+            $scope.showModuleLoading = true;
             if (!$scope.system.environment.adminPrefix) {
                 $scope.system.environment.adminPrefix = "admin";
             }
@@ -215,11 +237,11 @@ SystemControllers.controller("systemGeneralController", [
                     }
                 }
             }
-            if($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)){
+            if ($scope.contentPolicy.newPolicy != "" && typeof $scope.contentPolicy.newPolicy !== "undefined" && !$scope.contentPolicy.content.includes($scope.contentPolicy.newPolicy)) {
                 $scope.contentPolicy.content.push($scope.contentPolicy.newPolicy);
                 $scope.contentPolicy.newPolicy = "";
             }
-            ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
+            ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldAdmin) {
                 $scope.system.environment.cacheTTL = $scope.system.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 $scope.system.environment.contentSecurityPolicy.values = $scope.contentPolicy.content;
@@ -232,24 +254,32 @@ SystemControllers.controller("systemGeneralController", [
                         ...$scope.system
                     }
                 }).then((response) => {
+                    toastService.toast("success", $translate.instant("global.saveDone"));
                     if (response.data.data.needRestart) {
                         $scope.showLoading = true;
+                        $scope.showThemeLoading = false;
                         $interval(() => {
                             $http.get("/serverIsUp").then(() => {
-                                location.href = $scope.urlRedirect;
-                                window.location = $scope.urlRedirect;
+                                if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
+                                    $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
+                                    location.href = $scope.urlRedirect;
+                                    window.location = $scope.urlRedirect;
+                                } else {
+                                    window.location.reload();
+                                }
                             })
                         }, 10000);
-                    }
-                    if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
-                        $scope.showThemeLoading = false;
-                        $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
                     } else {
-                        window.location.reload();
+                        $scope.showThemeLoading = false;
+                        if (oldAdmin.environment.adminPrefix !== $scope.system.environment.adminPrefix) {
+                            $scope.urlRedirect = buildAdminUrl($scope.system.environment.appUrl, $scope.system.environment.adminPrefix);
+                            location.href = $scope.urlRedirect;
+                            window.location = $scope.urlRedirect;
+                        }
                     }
                 }, function (err) {
                     $scope.showThemeLoading = false;
-                    toastService.toast("danger", $translate.instant("system.other.errorOccurred"));
+                    toastService.toast("danger", $translate.instant("global.standardError"));
                     console.error(err);
                 });
             });

@@ -69,7 +69,8 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.productVirtual",
     "aq.newsletter",
     "aq.system",
-    "aq.invoices"
+    "aq.invoices",
+    "aq.adminList"
 ]);
 
 //================================================
@@ -113,6 +114,7 @@ var checkAccess = function (route) {
             var deferred = $q.defer();
             $http.get("v2/auth/isauthenticated").then(function (resp)
             {
+                $rootScope.userInfo = {...$rootScope.userInfo, ...resp.data.user};
                 if(resp.data.user.accessList.indexOf(route) === -1 ||
                     resp.data.user.accessList === undefined)
                 {
@@ -135,6 +137,14 @@ var checkAccess = function (route) {
         }
     ];
 };
+
+var delayTimer;
+function input(ele) {
+    clearTimeout(delayTimer);
+    delayTimer = setTimeout(function() {
+       ele.value = parseFloat(ele.value).toFixed(2).toString();
+    }, 800); 
+}
 
 adminCatagenApp.config([
     "$httpProvider", function ($httpProvider)
@@ -193,30 +203,7 @@ adminCatagenApp.config([
                     loggedin: checkLoggedin
                 }
             })
-            .when("/list", {
-                templateUrl: "views/admin-list.html",
-                controller: "AdminCtrl",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess("admin")
-                }
-            })
-            .when("/list/new", {
-                templateUrl: "views/admin-list-new.html",
-                controller: "AdminNewCtrl",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess("admin")
-                }
-            })
-            .when("/list/detail/:id", {
-                templateUrl: "views/admin-list-detail.html",
-                controller: "AdminDetailCtrl",
-                resolve: {
-                    loggedin: checkLoggedin,
-                    checkAccess: checkAccess("admin")
-                }
-            }) /*.when('/account/:id', {
+             /*.when('/account/:id', {
              resolve: {
              loggedin: checkLoggedin
              }
@@ -230,7 +217,8 @@ adminCatagenApp.config([
 var namespaces = [
     "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules",
     "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
-    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system"
+    "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system",
+    "carrier","confirm"
 ];
 adminCatagenApp
     .factory("customLoader", [
@@ -266,20 +254,20 @@ adminCatagenApp
                     let i = 0;
                     angular.forEach(translationArray, function (element)
                     {
-                        $http.get(element.url).then(function (nsTranslation)
-                        {
+                        $http.get(element.url).then(function (nsTranslation) {
                             translation[element.name] = nsTranslation.data;
-
-                            if(i === translationArray.length-1)
-                            {
+                            if(i === translationArray.length-1) {
                                 deferred.resolve(translation);
                             }
                             i++;
-                        }).catch(function (err)
-                        {
-                            deferred.reject(err);
+                        }).catch(function (err) {
+                            console.error(`Error loading : "${element.name}" at "${element.url}"`);
+                            i++;
+                            // if we defer, that breaks the translation
+                            // deferred.reject(err);
                         });
                     });
+
                 }).catch(function (err)
                 {
                     deferred.reject(err);
@@ -302,7 +290,7 @@ adminCatagenApp.config([
     "$translateProvider", function ($translateProvider)
     {
         $translateProvider
-            .useSanitizeValueStrategy("sanitize")
+            .useSanitizeValueStrategy(null) //comment it to allow specials characters in confirm box
             .registerAvailableLanguageKeys(["en", "fr"])
             .useLoader("customLoader", {})
             .useMissingTranslationHandler("customMissingTranslationHandler");

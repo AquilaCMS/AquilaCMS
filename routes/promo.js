@@ -6,18 +6,18 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServicePromo                = require('../services/promo');
+const {adminAuth}  = require('../middleware/authentication');
+const ServicePromo = require('../services/promo');
 
 module.exports = function (app) {
     app.get('/v2/promo/check/code/:code/:cartId/:lang?', checkCodePromoByCode);
-    app.post('/v2/promos',          authentication, adminAuth, getPromos);
-    app.post('/v2/promo',           authentication, adminAuth, getPromo);
-    app.post('/v2/promo/:_id',      authentication, adminAuth, getPromoById);
-    app.put('/v2/promo/:_id/clone', authentication, adminAuth, clonePromo);
-    app.put('/v2/promo',            authentication, adminAuth, setPromo);
-    app.delete('/v2/promo/:_id',    authentication, adminAuth, deletePromo);
-    app.delete('/v2/promo/:promoId/code/:codeId',    authentication, adminAuth, deletePromoCode);
+    app.post('/v2/promos',          adminAuth, getPromos);
+    app.post('/v2/promo',           adminAuth, getPromo);
+    app.post('/v2/promo/:_id',      adminAuth, getPromoById);
+    app.put('/v2/promo/:_id/clone', adminAuth, clonePromo);
+    app.put('/v2/promo',            adminAuth, setPromo);
+    app.delete('/v2/promo/:_id',    adminAuth, deletePromo);
+    app.delete('/v2/promo/:promoId/code/:codeId',    adminAuth, deletePromoCode);
 };
 
 /**

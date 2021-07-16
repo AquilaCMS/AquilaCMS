@@ -13,9 +13,8 @@ const {
     Rules,
     Languages,
     ProductSimple,
-    Orders,
     Cart
-}                          = require('../orm/models');
+}                  = require('../orm/models');
 const ServiceRules = require('./rules');
 const QueryBuilder = require('../utils/QueryBuilder');
 const promoUtils   = require('../utils/promo');
@@ -25,17 +24,11 @@ const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Promo, restrictedFields, defaultFields);
 
-const getPromos = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getPromos = async (PostBody) => queryBuilder.find(PostBody);
 
-const getPromo = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getPromo = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getPromoById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getPromoById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const setPromo = async (body, _id = null) => {
     let result;
@@ -207,6 +200,7 @@ const checkPromoCatalog = async (products, user = null, lang = null, keepObject 
     // discount is the value of the discount and the discountType is the way
     // in which the discount will be applied (in percentage for "P" or by subtracting for "M")
     for (let i = 0; i < products.length; i++) {
+        if (products[i]._doc) products[i] = products[i].toObject();
         if (products[i].type && products[i].type === 'bundle') continue;
         products[i].relevantDiscount = [];
 
@@ -511,12 +505,9 @@ const checkCodePromoByCode = async (code, idCart, user = null, lang = null) => {
     // We look for the number of orders the customer has placed with a promo code,
     // if the number of orders with this code is >= the promo.codes.limit_client (The number of times a customer can use this code)
     // then he won't be able to use the promo code again
-    if (user) {
-        const orderWithCode = await Orders.find({'customer.id': user._id, 'promos.promoCodeId': newCode[0]._id});
-        if (newCode[0].limit_client !== null && (orderWithCode.length === newCode[0].limit_client || orderWithCode.length >= newCode[0].limit_client)) {
-            await removePromoFromCart(cart);
-            throw NSErrors.PromoCodePromoLimitClientMax;
-        }
+    if (newCode[0].limit_client !== null && newCode[0].client_used >= newCode[0].limit_client) {
+        await removePromoFromCart(cart);
+        throw NSErrors.PromoCodePromoLimitClientMax;
     }
     // -----------------------------------------------------------------------------
     // ----------------------- Apply rules of this discount ------------------------

@@ -84,6 +84,12 @@ ProductControllers.controller("ProductListCtrl", [
             });
         };
 
+        $scope.selectNewLang = function (event){
+            if(event && event.filterLang) {
+                $scope.filterLang = event.filterLang;
+            }
+        }
+
         $scope.getProducts = function (page) {
             $scope.showLoader = true;
             const search = $scope.searchObj;
@@ -104,13 +110,16 @@ ProductControllers.controller("ProductListCtrl", [
 
                 if(pageAdmin.search !== undefined && pageAdmin.search !== null) {
                     $scope.searchObj.translation = pageAdmin.search.translation;
+                    if (pageAdmin.search.active){
+                        $scope.searchObj.active = pageAdmin.search.active;
+                    }
+                    if (pageAdmin.search._visible) {
+                        $scope.searchObj._visible = pageAdmin.search._visible;
+                    }
                 }
-                if (pageAdmin.filters !== undefined && pageAdmin.filters !== null) {
-                    $scope.filtersAttribs = pageAdmin.filters;
+                if(pageAdmin.filter !== undefined && pageAdmin.filter !== null) {
+                    $scope.filter = pageAdmin.filter;
                 }
-                // if(pageAdmin.filter !== undefined && pageAdmin.filter !== null) {
-                //     $scope.filter = pageAdmin.filter;
-                // }
             } else {
                 window.localStorage.setItem("pageAdmin", JSON.stringify({location: "products", page, search, filter}));
                 $scope.page = page;

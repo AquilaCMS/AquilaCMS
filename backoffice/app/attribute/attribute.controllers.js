@@ -85,21 +85,14 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.local = {valuesList: []};
         $scope.selectedSet = "";
         $scope.isEditMode = true;
-        $scope.backUrl = {};
+        $scope.backUrl = "";
         $scope._type = window.location.hash.indexOf('users') > -1 ? 'users' : 'products';
 
-        $scope.getBackUrl = function(type){
-            if ($routeParams.code){
-                return type + "/setAttributes/" + $routeParams.code;
-            }
-            return type + "/attributes/";
-        }
-
         if ($routeParams.jeuAttributeCode){
-            $scope.backUrl = "setAttributes/" + $routeParams.jeuAttributeCode;
-        }else{
-            $scope.backUrl = "attributes"
-        } 
+            $scope.backUrl = `${$scope._type}/setAttributes/${$routeParams.jeuAttributeCode}`;
+        } else {
+            $scope.backUrl = `${$scope._type}/attributes/`;
+        }
 
         $scope.lang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
@@ -286,7 +279,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         };
 
         $scope.removeAttribute = function (attr) {
-            if (confirm("Etes-vous sûr de vouloir supprimer cet attribut ?")) {
+            if (confirm($translate.instant("confirm.removeAttribute"))) {
                 AttributesV2.delete({id: attr._id}, function () {
                     toastService.toast("success", $translate.instant("attribute.detail.deleteAttribute"));
                     $location.path(`/${$scope._type}/attributes`);

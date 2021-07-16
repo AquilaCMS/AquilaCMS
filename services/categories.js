@@ -21,9 +21,7 @@ const restrictedFields = ['clickable'];
 const defaultFields    = ['_id', 'code', 'action', 'translation'];
 const queryBuilder     = new QueryBuilder(Categories, restrictedFields, defaultFields);
 
-const getCategories = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getCategories = async (PostBody) => queryBuilder.find(PostBody);
 
 const generateFilters = async (res, lang = '') => {
     lang = ServiceLanguages.getDefaultLang(lang);
@@ -146,9 +144,7 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const setCategory = async (req) => {
-    return Categories.updateOne({_id: req.body._id}, {$set: req.body});
-};
+const setCategory = async (req) => Categories.updateOne({_id: req.body._id}, {$set: req.body});
 
 const createCategory = async (req) => {
     const newMenu   = new Categories(req.body);
@@ -188,7 +184,7 @@ const deleteCategory = async (id) => {
 
 const getCategoryChild = async (code, childConds, user = null) => {
     const queryCondition = {
-        ancestors : {$size: 0},
+        // ancestors : {$size: 0},
         code
     };
 
@@ -238,9 +234,7 @@ const getCategoryChild = async (code, childConds, user = null) => {
         });
 };
 
-const execRules = async () => {
-    return ServiceRules.execRules('category');
-};
+const execRules = async () => ServiceRules.execRules('category');
 
 /**
  * Allows you to update the canonicals of all products

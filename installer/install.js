@@ -64,7 +64,8 @@ const handleInstaller = async (middlewareServer, middlewarePassport, server, pas
 const postConfiguratorDatas = async (req) => {
     try {
         console.log('Installer : Record datas value');
-        const datas = req.body;
+        const datas     = req.body;
+        const bOverride = datas.override === 'on';
         if (!fs.existsSync(datas.envPath) || path.extname(datas.envPath) !== '.json') {
             throw new Error('envPath is not correct');
         }
@@ -81,19 +82,15 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : finish writing env file');
 
         await require('../utils/database').connect();
-        // We need to override data in database
-        let configuration;
-        if (datas.override === 'on') {
-            console.log('Installer : start default db installation');
-            configuration = await createConfiguration(datas);
-            await createUserAdmin(datas);
-            await createDefaultLanguage(datas.language);
-            await createDefaultCountries();
 
-            console.log('Installer : end default db installation');
-        }
+        console.log('Installer : start default db installation');
+        const configuration = await createConfiguration(datas, bOverride);
+        await createUserAdmin(datas, bOverride);
+        await createDefaultLanguage(datas.language);
+        await createDefaultCountries();
+        console.log('Installer : end default db installation');
 
-        await require('../services/languages').createDynamicLangFile();
+        await require('../services/languages').createDynamicLangFile(true);
 
         if (datas.demoData && datas.override === 'on') {
             console.log('Installer : installation of the default theme datas');
@@ -138,10 +135,25 @@ const recoverConfiguration = async (req) => {
 /**
  * Create configuration in Database
  * @param {Object} datas Datas to insert
+ * @param {Boolean} bOverride Override datas if exist
  */
-const createConfiguration = async (datas) => {
-    datas.appUrl          = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
+const createConfiguration = async (datas, bOverride) => {
     const {Configuration} = require('../orm/models');
+
+    // check if this configuration already exist
+    const existConf = await Configuration.estimatedDocumentCount();
+    if (existConf > 0) {
+        if (bOverride) {
+            console.log('Configuration already exist, removing...');
+            await Configuration.deleteMany({});
+        } else {
+            console.warn('Configuration already exist and was not inserted !');
+            return;
+        }
+    }
+
+    datas.appUrl = datas.appUrl.endsWith('/') ? datas.appUrl : `${datas.appUrl}/`;
+
     return Configuration.create({
         environment : {
             appUrl          : datas.appUrl,
@@ -171,9 +183,23 @@ const createConfiguration = async (datas) => {
 /**
  * Create the admin
  * @param {{password: String, firstname: String, lastname: String, email: String}} userDatas datas to insert
+ * @param {Boolean} bOverride Override datas if exist
  */
-const createUserAdmin = async (userDatas) => {
+const createUserAdmin = async (userDatas, bOverride) => {
     const {Users} = require('../orm/models');
+
+    // check if this admin already exist
+    const existAdmin = await Users.estimatedDocumentCount({email: userDatas.email});
+    if (existAdmin > 0) {
+        if (bOverride) {
+            console.log('Administrator already exist, removing...');
+            await Users.deleteMany({email: userDatas.email});
+        } else {
+            console.warn('Administrator already exist and was not inserted !');
+            return;
+        }
+    }
+
     try {
         await Users.create({
             password  : userDatas.password,

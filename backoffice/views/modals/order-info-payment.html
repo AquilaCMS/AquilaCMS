@@ -41,7 +41,7 @@
                         <div class="col-sm-12">
                             <label class="col-sm-2 control-label" translate>order-info-payment.amount</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="amount" name="amount" ng-model="return.amount">
+                                <input type="number" class="form-control" id="amount" name="amount" ng-model="return.amount" step="0.01"  oninput='input(this)'>
                             </div>
                         </div>
                         <br />
