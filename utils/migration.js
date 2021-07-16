@@ -149,6 +149,11 @@ const migration_7_Job_Translations = async () => {
     }}});
 };
 
+const migration_8_CmsBlocks = async () => {
+    console.log('Applying migration script "migration_8_CmsBlocks"...');
+    await mongoose.connection.collection('cmsblocks').updateMany({}, {$set: {active: true}});
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -157,7 +162,8 @@ const migrationScripts = [
     migration_4_Themes,
     migration_5_isActive,
     migration_6_contentSecurityPolicy,
-    migration_7_Job_Translations
+    migration_7_Job_Translations,
+    migration_8_CmsBlocks
     // sample
 ];
 
