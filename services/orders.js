@@ -28,7 +28,22 @@ const ServicesProducts = require('./products');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Orders, restrictedFields, defaultFields);
-const orderStatuses    = require('../utils/orderStatuses.json');
+
+const orderStatuses = {
+    PAYMENT_PENDING              : 'PAYMENT_PENDING',
+    PAYMENT_RECEIPT_PENDING      : 'PAYMENT_RECEIPT_PENDING',
+    PAYMENT_CONFIRMATION_PENDING : 'PAYMENT_CONFIRMATION_PENDING',
+    PAYMENT_FAILED               : 'PAYMENT_FAILED',
+    PAID                         : 'PAID',
+    PROCESSING                   : 'PROCESSING',
+    PROCESSED                    : 'PROCESSED',
+    DELIVERY_PROGRESS            : 'DELIVERY_PROGRESS',
+    DELIVERY_PARTIAL_PROGRESS    : 'DELIVERY_PARTIAL_PROGRESS',
+    FINISHED                     : 'FINISHED',
+    CANCELED                     : 'CANCELED',
+    ASK_CANCEL                   : 'ASK_CANCEL',
+    RETURNED                     : 'RETURNED'
+};
 
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
@@ -710,5 +725,6 @@ module.exports = {
     delPackage,
     updatePayment,
     updateStatus,
-    cancelOrderRequest
+    cancelOrderRequest,
+    orderStatuses
 };

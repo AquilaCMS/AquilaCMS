@@ -134,7 +134,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
     const sPeriodeStart = periodeStart.toISOString();
     const sPeriodeEnd   = periodeEnd.toISOString();
 
-    const orderStatuses = require('../utils/orderStatuses.json');
+    const {orderStatuses} = require('./orders');
     // --- orders ---
     const allOrders = await Orders.find({
         createdAt : {
