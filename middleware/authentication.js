@@ -40,6 +40,7 @@ const authentication = async (req, res, next) => {
         next();
     } catch (err) {
         res.clearCookie('jwt');
+        if (!next) throw err;
         return next(err);
     }
 };

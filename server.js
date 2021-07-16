@@ -118,6 +118,8 @@ const initServer = async () => {
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
         middlewareServer.initExpress(server, passport);
+        const {startGraphQL} = require('./utils/graphql');
+        await startGraphQL(server);
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
