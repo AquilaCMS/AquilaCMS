@@ -28,7 +28,7 @@ const ServicesProducts = require('./products');
 const restrictedFields = [];
 const defaultFields    = ['*'];
 const queryBuilder     = new QueryBuilder(Orders, restrictedFields, defaultFields);
-const orderStatuses    = require('../orderStatuses.json');
+const orderStatuses    = require('../utils/orderStatuses.json');
 
 aquilaEvents.on('aqUpdateStatusOrder', async (fields, orderId, stringDate = undefined) => {
     if (orderId) {
