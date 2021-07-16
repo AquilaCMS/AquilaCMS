@@ -48,28 +48,17 @@ const serverUseRequest = async (req, res, next) => {
 
         if (json) {
             let lang = global.defaultLang;
-            if (json.active !== undefined && !json.active) {
-                json = undefined;
-            } else if (json.length) {
-                for (let i = 0; i < json.length; i++) {
-                    if (json[i].active !== undefined && !json[i].active) {
-                        json.splice(i, 1);
-                    }
-                }
+            if (req.body && req.body.lang) {
+                lang = req.body.lang;
             }
-            if (json) {
-                if (req.body && req.body.lang) {
-                    lang = req.body.lang;
-                }
-                json = translation.translateDocument(json, lang, keepOriginalAttribs);
-                json = restrictProductFields(json, req.originalUrl);
-                // remove hidden attributes from document
-                if (json._id && json.attributes) {
-                    for (let i = 0; i < json.attributes.length; i++) {
-                        if (!json.attributes[i].visible) {
-                            json.attributes.splice(i, 1);
-                            i--;
-                        }
+            json = translation.translateDocument(json, lang, keepOriginalAttribs);
+            json = restrictProductFields(json, req.originalUrl);
+            // remove hidden attributes from document
+            if (json._id && json.attributes) {
+                for (let i = 0; i < json.attributes.length; i++) {
+                    if (!json.attributes[i].visible) {
+                        json.attributes.splice(i, 1);
+                        i--;
                     }
                 }
             }

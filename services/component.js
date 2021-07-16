@@ -28,8 +28,8 @@ const getComponent = async (componentName, code, user = null) => {
     case 'menu':
         models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
-        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
-        return X;
+        const categorie         = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
+        return categorie;
     case 'cms':
         models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
