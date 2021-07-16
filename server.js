@@ -7,28 +7,24 @@
  */
 
 require('dotenv').config();
-const express                = require('express');
-const passport               = require('passport');
-const path                   = require('path');
-const next                   = require('next').default;
-const i18nextMiddleware      = require('i18next-http-middleware');
-const {makeExecutableSchema} = require('@graphql-tools/schema');
-const {loadFiles}            = require('@graphql-tools/load-files');
-const {ApolloServer}         = require('apollo-server-express');
-const {InMemoryLRUCache}     = require('apollo-server-caching');
-global.envPath               = null;
-global.envFile               = null;
-global.appRoot               = path.resolve(__dirname);
-global.port                  = process.env.PORT || 3010;
-global.defaultLang           = '';
-global.moduleExtend          = {};
-global.translate             = require('./utils/translate');
-const utils                  = require('./utils/utils');
-const fs                     = require('./utils/fsp');
-const translation            = require('./utils/translation');
-const serverUtils            = require('./utils/server');
-const utilsModules           = require('./utils/modules');
-const utilsThemes            = require('./utils/themes');
+const express           = require('express');
+const passport          = require('passport');
+const path              = require('path');
+const next              = require('next').default;
+const i18nextMiddleware = require('i18next-http-middleware');
+global.envPath          = null;
+global.envFile          = null;
+global.appRoot          = path.resolve(__dirname);
+global.port             = process.env.PORT || 3010;
+global.defaultLang      = '';
+global.moduleExtend     = {};
+global.translate        = require('./utils/translate');
+const utils             = require('./utils/utils');
+const fs                = require('./utils/fsp');
+const translation       = require('./utils/translation');
+const serverUtils       = require('./utils/server');
+const utilsModules      = require('./utils/modules');
+const utilsThemes       = require('./utils/themes');
 const {
     middlewarePassport,
     expressErrorHandler,
@@ -122,56 +118,8 @@ const initServer = async () => {
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
         middlewareServer.initExpress(server, passport);
-        const {Modules}       = require('./orm/models');
-        const {buildSchema}   = require('./graphql');
-        const directivesPaths = ['./graphql/directives'];
-        const resolversPaths  = ['./graphql/resolvers'];
-        const schemaPaths     = [path.resolve(global.appRoot, './graphql/schema')];
-
-        const modules = await Modules.find({active: true});
-        for (const gPath of modules.map((m) => `${m.path}graphql`)) {
-            if (await fs.hasAccess(gPath)) {
-                directivesPaths.push(path.resolve(gPath, 'directives'));
-                resolversPaths.push(path.resolve(gPath, 'resolvers'));
-                schemaPaths.push(path.resolve(gPath, 'schema'));
-            }
-        }
-        const typeDefs         = await buildSchema(schemaPaths);
-        const resolvers        = await loadFiles(resolversPaths);
-        const schemaDirectives = await loadFiles(directivesPaths);
-
-        const apolloServer = new ApolloServer({
-            schema : makeExecutableSchema({
-                typeDefs,
-                resolvers,
-                schemaDirectives : schemaDirectives.reduce(function (acc, dir) {
-                    return {
-                        ...acc,
-                        ...dir
-                    };
-                }, {})
-            }),
-            introspection    : !serverUtils.isProd,
-            playground       : !serverUtils.isProd,
-            cacheControl     : true,
-            persistedQueries : {
-                cache : new InMemoryLRUCache(),
-                ttl   : 900
-            },
-            context : async ({req, res}) => {
-                if (!req.headers.authorization) return {};
-                const {getDecodedToken} = require('./services/auth');
-                const {authenticate}    = require('./middleware/passport');
-                const decoded           = getDecodedToken(req.headers.authorization);
-                if (decoded.type === 'USER') {
-                    const user = await authenticate(req, res);
-                    return {user: user.info};
-                }
-                return {};
-            }
-        });
-        apolloServer.applyMiddleware({app: server});
-
+        const {startGraphQL} = require('./utils/graphql');
+        await startGraphQL(server);
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
