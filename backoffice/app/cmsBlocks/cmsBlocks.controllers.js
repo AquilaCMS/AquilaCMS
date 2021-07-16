@@ -207,5 +207,13 @@ CmsBlocksControllers.controller("CmsBlocksDetailCtrl", [
             }
             return tagText;
         };
+
+        $scope.userIsAllowedTo = function (route) {
+            if ($rootScope.userInfo.accessList.indexOf(route) === -1 || $rootScope.userInfo.accessList === undefined) {
+                return true
+            } else {
+                return false
+            }
+        }
     }
 ]);
