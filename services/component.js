@@ -35,7 +35,7 @@ const getComponent = async (componentName, code, user = null) => {
         const cmsBlockServices = require('./cmsBlocks');
         PostBody               = {filter: {code, active: true}, structure: {content: 1, translation: 1}};
         const result           = await cmsBlockServices.getCMSBlock(PostBody);
-        if ((user && !user.isAdmin) && result && result.translation) {
+        if ((!user || !user.isAdmin) && result && result.translation) {
             // Loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];
