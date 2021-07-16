@@ -1041,12 +1041,15 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
             "$scope",
             "$filter",
             "$rootScope",
-            function ($scope, $filter, $rootScope)
+            "NSConstants",
+            function ($scope, $filter, $rootScope, NSConstants)
             {
+                const orderStatuses = {};
+                NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
                 $scope.statusObj = {};
                 if($scope.type === "order")
                 {
-                    const orderStatuses = global.envConfig.statusOrder.orderStatuses;
+                    
                     $scope.statusObj.isSuccess =
                         $scope.status === orderStatuses.PAID ||
                         $scope.status === orderStatuses.PROCESSED ||

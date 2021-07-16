@@ -110,10 +110,11 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2",
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants)
     {
-        const orderStatuses = global.envConfig.statusOrder.orderStatuses;
+        const orderStatuses = {};
+        NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.customer = {};
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
@@ -709,14 +710,15 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate) {
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate", "NSConstants",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate, NSConstants) {
         $scope.typePopUp = "new"; // useful for plugin, they can have one controller and one html for the send and return
         $scope.order = angular.copy(item);
         // the Hook for package module
         // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
         const codeShipment = $scope.order.delivery.code;
-        const orderStatuses = global.envConfig.statusOrder.orderStatuses;
+        const orderStatuses = {};
+        NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.packagePluginHook = [];
         let onePlugin = [];
         if(OrderPackageInPopupHook.length > 0){
@@ -1068,10 +1070,11 @@ OrderControllers.controller("RMANewCtrl", [
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService", "$translate",
-    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService, $translate) {
+    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService", "$translate", "NSConstants",
+    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService, $translate, NSConstants) {
         $scope.order = angular.copy(item);
-        const orderStatuses = global.envConfig.statusOrder.orderStatuses;
+        const orderStatuses = {};
+        NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.error = {
             text: ""
         };

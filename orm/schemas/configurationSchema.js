@@ -66,23 +66,7 @@ const ConfigurationSchema = new Schema({
         pendingOrderCancelTimeout : {type: Number, required: true, default: 48},
         requestMailPendingCarts   : {type: Number, required: true, default: 24},
         bookingStock              : {type: String, required: true, enum: ['commande', 'panier', 'none', 'payment']},
-        orderStatuses             : {
-            PAYMENT_PENDING              : {type: String, required: true, default: 'PAYMENT_PENDING'},
-            PAYMENT_RECEIPT_PENDING      : {type: String, required: true, default: 'PAYMENT_RECEIPT_PENDING'},
-            PAYMENT_CONFIRMATION_PENDING : {type: String, required: true, default: 'PAYMENT_CONFIRMATION_PENDING'},
-            PAYMENT_FAILED               : {type: String, required: true, default: 'PAYMENT_FAILED'},
-            PAID                         : {type: String, required: true, default: 'PAID'},
-            PROCESSING                   : {type: String, required: true, default: 'PROCESSING'},
-            PROCESSED                    : {type: String, required: true, default: 'PROCESSED'},
-            BILLED                       : {type: String, required: true, default: 'BILLED'},
-            DELIVERY_PROGRESS            : {type: String, required: true, default: 'DELIVERY_PROGRESS'},
-            DELIVERY_PARTIAL_PROGRESS    : {type: String, required: true, default: 'DELIVERY_PARTIAL_PROGRESS'},
-            FINISHED                     : {type: String, required: true, default: 'FINISHED'},
-            CANCELED                     : {type: String, required: true, default: 'CANCELED'},
-            ASK_CANCEL                   : {type: String, required: true, default: 'ASK_CANCEL'},
-            RETURNED                     : {type: String, required: true, default: 'RETURNED'}
-        },
-        labels : {
+        labels                    : {
             type    : [{code: {type: String, required: true}, translation: {}}],
             default : [
                 {

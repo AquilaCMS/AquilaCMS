@@ -30,6 +30,7 @@ module.exports = function (app) {
     app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
     app.put('/v2/order', setOrder);
+    app.get('/v2/order/getOrderStatuses', getOrderStatuses);
 
     // Deprecated
     app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
@@ -92,6 +93,17 @@ async function getOrderById(req, res, next) {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'customer.id');
         const result           = await ServiceOrder.getOrderById(req.params.id, PostBodyVerified);
         return res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+function getOrderStatuses(req, res, next) {
+    try {
+        const orderStatuses     = Orders.schema.path('status').enumValues;
+        const enumOrderStatuses = {};
+        orderStatuses.forEach((ele) => enumOrderStatuses[ele] = ele);
+        return res.json(enumOrderStatuses);
     } catch (error) {
         return next(error);
     }
