@@ -17,7 +17,6 @@ const path                            = require('path');
 const {v1: uuidv1}                    = require('uuid');
 const {fsp, translation, serverUtils} = require('../utils');
 const {retrieveUser}                  = require('./authentication');
-// const {isProd}                        = require('../utils/server');
 
 const getUserFromRequest = async (req) => {
     const user = null;
@@ -98,6 +97,7 @@ const useHelmet = async (server) => {
         envContentSecurityPolicy = global.envConfig.environment.contentSecurityPolicy;
     }
 
+    // If security is active
     if (envContentSecurityPolicy.active) {
         // Use own policy
         let contentSecurityPolicyValues = [
