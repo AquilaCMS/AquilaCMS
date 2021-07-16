@@ -32,7 +32,7 @@ const {
     middlewareServer
 }                           = require('./middleware');
 
-const dev    = !serverUtils.isProd;
+const dev    = serverUtils.dev;
 const server = express();
 
 // ATTENTION, do not require services directly on top of this file
@@ -122,6 +122,53 @@ const initServer = async () => {
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
+        if (dev) {
+            const reloadRouter  = express.Router();
+            let apiIndexInStack;
+            const numberOfStack = server._router.stack.length;
+            for (let i = 0; i < numberOfStack; i++) {
+                if (server._router.stack[i].regexp.toString().includes('api')
+        && server._router.stack[i].name === 'router'
+        && server._router.stack[(i + 1)].regexp.toString().includes('api')) {
+                    apiIndexInStack = i;
+                    break;
+                }
+            }
+            reloadRouter.route('/reloadAPI').get(async (req, res) => {
+                try {
+                    // Remove the matched middleware
+                    server._router.stack.splice(apiIndexInStack, 1);
+                    server._router.stack.splice(apiIndexInStack, 1);
+                    server._router.stack.splice(apiIndexInStack, 1);
+                    const newAPIRouter        = express.Router();
+                    const newAdminFrontRouter = express.Router();
+                    server.use('/api', newAPIRouter, reloadRouter, (req, res, next) => next(NSErrors.ApiNotFound));
+                    for (let i = 0; i < 3; i++) {
+                        const lastStack = server._router.stack[server._router.stack.length - 1];
+                        server._router.stack.pop();
+                        server._router.stack.splice(apiIndexInStack, 0, lastStack);
+                    }
+                    // we remove cache of /routes/* and /services/*
+                    for (const oneFolder of ['routes', 'services']) {
+                        const pathToFolder = path.join(global.appRoot, oneFolder);
+                        for (const oneLine in require.cache) {
+                            if (oneLine.startsWith(pathToFolder)) {
+                                delete require.cache[oneLine];
+                            }
+                        }
+                    }
+                    require('./routes').loadDynamicRoutes(newAPIRouter, newAdminFrontRouter);
+                    return res.json('ok');
+                } catch (errorInReload) {
+                    return res.json(errorInReload);
+                }
+            });
+            server.use('/api', reloadRouter);
+            const lastStack = server._router.stack[server._router.stack.length - 1];
+            server._router.stack.pop();
+            server._router.stack.splice(apiIndexInStack, 0, lastStack);
+        }
+
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
 
         if (compile) {
@@ -132,28 +179,6 @@ const initServer = async () => {
         } else {
             console.log('`compile` value is set to `false`, the front is not accessible');
         }
-        /*
-        - Need to be only in dev mode (not done)
-        - need to deplace api route befor nextjs routes (not done)
-        */
-        const reloadRouter = express.Router();
-        reloadRouter.route('/reloadAPI').get(async (req, res) => {
-            if (server._router.stack[23].regexp.toString().includes('api')) {
-                // Remove the matched middleware
-                server._router.stack.splice(23, 1);
-                server._router.stack.splice(23, 1);
-            } else {
-                server._router.stack.pop();
-                server._router.stack.pop();
-            }
-            const apiRouter        = express.Router();
-            const adminFrontRouter = express.Router();
-            server.use('/api', apiRouter, (req, res, next) => next(NSErrors.ApiNotFound));
-            delete require.cache[require.resolve('./routes')];
-            require('./routes').loadDynamicRoutes(apiRouter, adminFrontRouter);
-            return res.json('ok');
-        });
-        server.use('/api', reloadRouter);
     } else {
         // Only for installation purpose, will be inaccessible after first installation
         require('./installer/install').handleInstaller(middlewareServer, middlewarePassport, server, passport, express);
