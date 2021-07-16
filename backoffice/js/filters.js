@@ -136,7 +136,7 @@ adminCatagenFilters.filter('orderStatus', 'NSConstants', function(NSConstants) {
       orderStatuses.PROCESSED,
       orderStatuses.BILLED,
       orderStatuses.DELIVERY_PROGRESS,
-      orderStatuses.DELIVERY_PARTIAL_PROGRES,
+      orderStatuses.DELIVERY_PARTIAL_PROGRESS,
       orderStatuses.FINISHED,
       orderStatuses.CANCELED,
       orderStatuses.ASK_CANCEL,
