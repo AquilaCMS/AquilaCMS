@@ -178,23 +178,47 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        item.price = {
+        const optionsPrice = await this.getOptionsPrice(item.options);
+        item.price         = {
             vat  : {rate: this.price.tax},
             unit : {
-                et  : this.price.et.normal,
-                ati : this.price.ati.normal
+                et  : this.price.et.normal + optionsPrice,
+                ati : this.price.ati.normal + optionsPrice
             }
         };
 
         if (this.price.et.special !== undefined && this.price.et.special !== null) {
             item.price.special = {
-                et  : this.price.et.special,
-                ati : this.price.ati.special
+                et  : this.price.et.special + optionsPrice,
+                ati : this.price.ati.special + optionsPrice
             };
         }
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
     return resp;
+};
+
+ProductsSchema.methods.getOptionsPrice = async function (options) {
+    const productInDB   = await this.model('products').findOne({_id: this._id});
+    let optionsModifier = 0;
+    if (productInDB && productInDB.type === 'simple') {
+        if (options && productInDB && productInDB.options) {
+            for (const oneOptions of options) {
+                for (const oneValue of oneOptions.values) {
+                    const valueTemp1 = productInDB.options.find((element) => element._id.toString() === oneOptions._id);
+                    const valueTemp  = valueTemp1.values.find((element) => element._id.toString() === oneValue._id);
+                    if (typeof valueTemp !== 'undefined' && typeof valueTemp.modifier !== 'undefined' && typeof valueTemp.modifier.price !== 'undefined') {
+                        if (valueTemp.modifier.price.typePrice === 'price') {
+                            optionsModifier += valueTemp.modifier.price.value;
+                        } else {
+                            // need to calculate the percent
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return optionsModifier;
 };
 
 ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {

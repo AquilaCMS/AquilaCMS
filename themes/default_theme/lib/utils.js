@@ -107,7 +107,7 @@ function caculateNewPrice(product, options) {
                     const valueTemp1 = product.options.find(element => element._id === oneOptions._id);
                     const valueTemp = valueTemp1.values.find(element => element._id === oneValue._id);
                     if (typeof valueTemp !== "undefined" && typeof valueTemp.modifier !== "undefined" && typeof valueTemp.modifier.price !== "undefined") {
-                        if (valueTemp.modifier.price.typePrice == "price") {
+                        if (valueTemp.modifier.price.typePrice === "price") {
                             optionsModifier += valueTemp.modifier.price.value;
                         } else {
                             // need to calculate the percent
