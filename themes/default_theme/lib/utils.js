@@ -98,8 +98,16 @@ function getCurrencySymbol() {
  * @param {*} options = options selected by the user
  * @returns {Float} total modifier
  */
-function caculateNewPrice(product, options) {
+function caculateNewPrice(product, options, tax = "ati") {
     let optionsModifier = 0;
+    let productPrix = 0;
+    if (product.price && product.price[tax]) {
+        if (typeof product.price[tax].special !== 'undefined') {
+            productPrix = product.price[tax].special;
+        } else {
+            productPrix = product.price[tax].normal;
+        }
+    }
     if (product && product.type === "simple") {
         if (options && product && product.options) {
             for (const oneOptions of options) {
@@ -111,6 +119,9 @@ function caculateNewPrice(product, options) {
                             optionsModifier += valueTemp.modifier.price.value;
                         } else {
                             // need to calculate the percent
+                            const pourcentage = valueTemp.modifier.price.value;
+                            const finalModifier = pourcentage * productPrix / 100;
+                            optionsModifier += finalModifier;
                         }
                     }
                 }

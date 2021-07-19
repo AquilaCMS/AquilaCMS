@@ -43,7 +43,7 @@ class PageProduct extends NSPageProduct {
         };
         this.state = {
             ...this.state,
-            optionsModifier: caculateNewPrice(this.state.product, this.state.options)
+            optionsModifier: caculateNewPrice(this.state.product, this.state.options, this.state.taxDisplay)
         };
     }
 
@@ -101,8 +101,9 @@ class PageProduct extends NSPageProduct {
         this.setState({
             options,
         });
+        const { taxDisplay } = this.state;
         this.setState({
-            optionsModifier: caculateNewPrice(product, options)
+            optionsModifier: caculateNewPrice(product, options, taxDisplay)
         });
     };
 

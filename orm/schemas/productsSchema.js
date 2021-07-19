@@ -178,7 +178,7 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        const optionsPrice = await this.getOptionsPrice(item.options);
+        const optionsPrice = await this.model('products').getOptionsPrice(item.options, this._id.toString());
         item.price         = {
             vat  : {rate: this.price.tax},
             unit : {
@@ -198,20 +198,31 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
     return resp;
 };
 
-ProductsSchema.methods.getOptionsPrice = async function (options) {
-    const productInDB   = await this.model('products').findOne({_id: this._id});
+ProductsSchema.statics.getOptionsPrice = async function (options, idOfProduct,  tax = 'ati') {
+    const productInDB = await mongoose.model('products').findOne({_id: idOfProduct});
+    let productPrix   = 0;
+    if (productInDB.price && productInDB.price[tax]) {
+        if (typeof productInDB.price[tax].special !== 'undefined') {
+            productPrix = productInDB.price[tax].special;
+        } else {
+            productPrix = productInDB.price[tax].normal;
+        }
+    }
     let optionsModifier = 0;
     if (productInDB && productInDB.type === 'simple') {
         if (options && productInDB && productInDB.options) {
             for (const oneOptions of options) {
+                const valueTemp1 = productInDB.options.find((element) => element._id.toString() === oneOptions._id.toString());
                 for (const oneValue of oneOptions.values) {
-                    const valueTemp1 = productInDB.options.find((element) => element._id.toString() === oneOptions._id);
-                    const valueTemp  = valueTemp1.values.find((element) => element._id.toString() === oneValue._id);
+                    const valueTemp = valueTemp1.values.find((element) => element._id.toString() === oneValue._id.toString());
                     if (typeof valueTemp !== 'undefined' && typeof valueTemp.modifier !== 'undefined' && typeof valueTemp.modifier.price !== 'undefined') {
                         if (valueTemp.modifier.price.typePrice === 'price') {
                             optionsModifier += valueTemp.modifier.price.value;
-                        } else {
+                        } else if (valueTemp.modifier.price.typePrice === 'pourcent') {
                             // need to calculate the percent
+                            const pourcentage   = valueTemp.modifier.price.value;
+                            const finalModifier = pourcentage * productPrix / 100;
+                            optionsModifier    += finalModifier;
                         }
                     }
                 }
