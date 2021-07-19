@@ -292,7 +292,7 @@ adminCatagenApp.config([
     "$translateProvider", function ($translateProvider)
     {
         $translateProvider
-            // .useSanitizeValueStrategy("sanitize") //comment it to allow specials characters in confirm box
+            .useSanitizeValueStrategy(null) //comment it to allow specials characters in confirm box
             .registerAvailableLanguageKeys(["en", "fr"])
             .useLoader("customLoader", {})
             .useMissingTranslationHandler("customMissingTranslationHandler");

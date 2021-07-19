@@ -11,7 +11,7 @@ const QueryBuilder = require('../utils/QueryBuilder');
 const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['group'];
-const defaultFields    = ['_id', 'code'];
+const defaultFields    = ['_id', 'code', 'active'];
 const queryBuilder     = new QueryBuilder(CmsBlocks, restrictedFields, defaultFields);
 
 const getCMSBlocks = async (PostBody) => queryBuilder.find(PostBody);

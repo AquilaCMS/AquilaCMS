@@ -48,7 +48,6 @@ const serverUseRequest = async (req, res, next) => {
 
         if (json) {
             let lang = global.defaultLang;
-
             if (req.body && req.body.lang) {
                 lang = req.body.lang;
             }
