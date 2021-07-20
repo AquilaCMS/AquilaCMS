@@ -170,6 +170,7 @@ const addItem = async (req) => {
             const optionInProduct     = _product.options.find(((oneOptions) => oneOptions.code === oneOptionsInReq.code));
             oneOptionsInReq.mandatory = optionInProduct.mandatory;
             oneOptionsInReq.type      = optionInProduct.type;
+            oneOptionsInReq.name      = optionInProduct.name;
             if (oneOptionsInReq.values.length > 1 &&  optionInProduct.type !== 'checkbox') {
                 // only checkbox has multiple values
                 throw NSErrors.InvalidOptions;
