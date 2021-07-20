@@ -55,7 +55,7 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
     try {
-        modules_folder    = `./themes/${theme}/modules`;
+        modules_folder    = path.join(global.appRoot, `themes/${theme}/modules`);
         const fileContent = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {

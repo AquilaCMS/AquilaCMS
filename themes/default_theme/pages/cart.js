@@ -70,8 +70,8 @@ class PageCart extends NSPageCart {
                                                         {
                                                             cart && cart.items && cart.items.filter(item => !item.typeDisplay).map((item, index) => {
                                                                 let basePriceATI = null;
-                                                                let descPromo    = '';
-                                                                let descPromoT   = '';
+                                                                let descPromo = '';
+                                                                let descPromoT = '';
                                                                 if (cart.quantityBreaks && cart.quantityBreaks.productsId && cart.quantityBreaks.productsId.length) {
                                                                     // On check si le produit courant a recu une promo
                                                                     const prdPromoFound = cart.quantityBreaks.productsId.find((productId) => productId.productId === item.id.id);
@@ -86,18 +86,18 @@ class PageCart extends NSPageCart {
                                                                     }
                                                                 }
                                                                 let imgDefault = imgDefaultBase64;
-                                                                let imgAlt     = 'illustration produit';
+                                                                let imgAlt = 'illustration produit';
                                                                 if (item.id.images && item.id.images.length) {
                                                                     const foundImg = item.id.images.find((img) => img.default);
                                                                     if (foundImg) {
                                                                         imgDefault = foundImg._id !== 'undefined' ? `/images/products/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                        imgAlt     = foundImg.alt || imgAlt;
+                                                                        imgAlt = foundImg.alt || imgAlt;
                                                                     } else {
                                                                         imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                        imgAlt     = item.id.images[0].alt || imgAlt;
+                                                                        imgAlt = item.id.images[0].alt || imgAlt;
                                                                     }
                                                                 }
-                                                                
+
                                                                 return (
                                                                     <div key={item._id} hidden={item.typeDisplay} className="product-cart" style={{ cursor: 'pointer' }} onClick={() => Router.pushRoute(item.id.canonical)}>
                                                                         <div className="product__image">
@@ -121,7 +121,7 @@ class PageCart extends NSPageCart {
                                                                                 <h2 style={{ overflow: 'hidden' }}>
                                                                                     <button
                                                                                         style={{
-                                                                                            border : '0', background : 'transparent', overflow : 'hidden', textAlign : 'left'
+                                                                                            border: '0', background: 'transparent', overflow: 'hidden', textAlign: 'left'
                                                                                         }} type="button"
                                                                                     >
                                                                                         {item.id && item.id.name}
@@ -139,19 +139,51 @@ class PageCart extends NSPageCart {
                                                                                                 {
                                                                                                     item.selections.map((section) => (
                                                                                                         section.products.map((productSection, indexSel) => (
-                                                                                                        <li key={indexSel}>{productSection.name} {`${
-                                                                                                            (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
+                                                                                                            <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
                                                                                                                 (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
-                                                                                                                '+' :
-                                                                                                                '') +
-                                                                                                            item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' : 
-                                                                                                            ''
-                                                                                                        }`}</li>
+                                                                                                                    '+' :
+                                                                                                                    '') +
+                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
+                                                                                                                ''
+                                                                                                                }`}</li>
                                                                                                         ))
                                                                                                     ))
+                                                                                                }
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                    )
+                                                                                }
+                                                                                {
+                                                                                    item.options && item.options.length > 0 && (
+                                                                                        <div className="menu-product">
+                                                                                            {t('cart:page.cart.options')}
+                                                                                            <ul style={{ marginBottom: "10px" }}>
+                                                                                                {
+                                                                                                    item.options.map((oneOptions) => {
+                                                                                                        console.log(oneOptions);
+                                                                                                        const optionsName = oneOptions.name && typeof oneOptions.name[lang] !== "undefined" ? oneOptions.name[lang] : oneOptions.code;
+                                                                                                        if (oneOptions.type === "checkbox") {
+                                                                                                            return (
+                                                                                                                <>
+                                                                                                                    <li key={oneOptions.code}>{optionsName} :
+                                                                                                                        <ul style={{ marginLeft: "20px" }}>
+                                                                                                                            {oneOptions.values.map((element, index) => {
+                                                                                                                                let name = `Value ${index + 1}`;
+                                                                                                                                if (element.name && typeof element.name[lang] !== "undefined") {
+                                                                                                                                    name = element.name[lang];
+                                                                                                                                }
+                                                                                                                                return <li>{`${name} : ${element.values.toString()}`}</li>;
+                                                                                                                            })}
+                                                                                                                        </ul>
+                                                                                                                    </li>
+                                                                                                                </>)
+                                                                                                        } else {
+                                                                                                            return (<li key={oneOptions.code}>{optionsName} : {oneOptions.values.map(element => element.values).toString()}</li>)
+                                                                                                        }
+                                                                                                    })
                                                                                                 }
                                                                                             </ul>
                                                                                         </div>
@@ -306,10 +338,10 @@ class PageCart extends NSPageCart {
                                                                         </div>
                                                                         {/* <!-- /.form__controls --> */}
                                                                         <div style={{
-                                                                            fontSize     : '14px',
-                                                                            height       : '16px',
-                                                                            marginBottom : '10px',
-                                                                            color        : '#576fa1'
+                                                                            fontSize: '14px',
+                                                                            height: '16px',
+                                                                            marginBottom: '10px',
+                                                                            color: '#576fa1'
                                                                         }}
                                                                         >
                                                                             {
@@ -325,18 +357,18 @@ class PageCart extends NSPageCart {
                                                                         </div>
                                                                         {
                                                                             cart.additionnalFees[taxDisplay] > 0
-                                                                                && (
-                                                                                    <div style={{
-                                                                                        fontSize     : '14px',
-                                                                                        height       : '16px',
-                                                                                        marginBottom : '10px',
-                                                                                        color        : '#576fa1'
-                                                                                    }}
-                                                                                    >
-                                                                                        <span style={{ float: 'left' }}>{t('cart:page.cart.additionnal_fees')}</span>
-                                                                                        <span style={{ float: 'right', fontWeight: 'bold' }}>{cart.additionnalFees[taxDisplay].toFixed(2)} €</span>
-                                                                                    </div>
-                                                                                )
+                                                                            && (
+                                                                                <div style={{
+                                                                                    fontSize: '14px',
+                                                                                    height: '16px',
+                                                                                    marginBottom: '10px',
+                                                                                    color: '#576fa1'
+                                                                                }}
+                                                                                >
+                                                                                    <span style={{ float: 'left' }}>{t('cart:page.cart.additionnal_fees')}</span>
+                                                                                    <span style={{ float: 'right', fontWeight: 'bold' }}>{cart.additionnalFees[taxDisplay].toFixed(2)} €</span>
+                                                                                </div>
+                                                                            )
                                                                         }
                                                                     </div>
                                                                     {/* <!-- /.form__row --> */}
@@ -348,7 +380,7 @@ class PageCart extends NSPageCart {
                                                                         cart.quantityBreaks && cart.quantityBreaks.discountATI
                                                                             ? (
                                                                                 <div style={{
-                                                                                    fontSize : '15px', marginBottom : '15px', height : '16px'
+                                                                                    fontSize: '15px', marginBottom: '15px', height: '16px'
                                                                                 }}
                                                                                 >
                                                                                     <span style={{ float: 'left' }}>{t('cart:page.cart.cart_discount')}</span>
@@ -375,7 +407,7 @@ class PageCart extends NSPageCart {
                         </div>
                     </div>
                 </Layout>
-            </NSContext.Provider>
+            </NSContext.Provider >
         );
     }
 }

@@ -31,7 +31,7 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'options'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
@@ -667,7 +667,7 @@ const createProduct = async (req) => {
 };
 
 /**
- * @todo maybe replace map by a for of to fix eslint problem ?
+ * Remove product
  */
 const deleteProduct = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
@@ -684,12 +684,6 @@ const deleteProduct = async (_id) => {
                 section.products.splice(prdIndex, 1);
             }
         }
-        // prd.bundle_sections.map((section) => {
-        //     const prdIndex = section.products.findIndex((sectionPrd) => sectionPrd.id.toString() === _id.toString());
-        //     if (prdIndex > -1) {
-        //         section.products.splice(prdIndex, 1);
-        //     }
-        // });
         prd.save();
     }
     return doc;

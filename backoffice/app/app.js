@@ -56,7 +56,6 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.stock",
     "aq.territories",
     "aq.contact",
-
     /* composant Aquila */
     //"aq.crossSelling",
     "aq.gallery",
@@ -70,7 +69,9 @@ var adminCatagenApp = angular.module("adminCatagenApp", [
     "aq.newsletter",
     "aq.system",
     "aq.invoices",
-    "aq.adminList"
+    "aq.optionsSet",
+    "aq.adminList",
+    "aq.options"
 ]);
 
 //================================================
@@ -214,11 +215,12 @@ adminCatagenApp.config([
     }
 ]);
 
+// here is the list for translations files
 var namespaces = [
     "agenda", "attribute", "tinymce", "bundle", "category", "client", "cmsBlocks", "config", /*"cross-selling", */"design", "translate", "update", "discounts", "family", "gallery", "global", "job", "mail", "medias", "menu", "modules",
     "order", "payment", "paymentMethod", "picto", "product", "productReviews", "promo", "setAttribute", "shipment", "simple", "site", "slider", "static", "stats", "stock", "supplier", "trademark", "translation",
     "admin-delete", "confirm-delete", "invoices-edit", "order-info-payment", "order-packages", "order-rma", "ns", "admin-list", "cartOrderConverter", "home", "invoices-list", "logged", "themes", "territories", "shopping", "contact", "virtual", "system",
-    "carrier","confirm"
+    "carrier", "optionsSet", "options", "confirm"
 ];
 adminCatagenApp
     .factory("customLoader", [
@@ -290,7 +292,7 @@ adminCatagenApp.config([
     "$translateProvider", function ($translateProvider)
     {
         $translateProvider
-            // .useSanitizeValueStrategy("sanitize") //comment it to allow specials characters in confirm box
+            .useSanitizeValueStrategy(null) //comment it to allow specials characters in confirm box
             .registerAvailableLanguageKeys(["en", "fr"])
             .useLoader("customLoader", {})
             .useMissingTranslationHandler("customMissingTranslationHandler");

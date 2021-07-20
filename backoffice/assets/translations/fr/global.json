@@ -8,6 +8,8 @@
     "success": "Succès",
     "accessForbidden": "Accès interdit !",
     "saveDone": "Sauvegarde effectuée",
+    "saved": "Sauvegardé !",
+    "deleted": "Supprimé !",
     "error": "Erreur",
     "apiError": "Erreur API",
     "deleteDone": "Suppression effectuée",
@@ -15,5 +17,7 @@
     "emailType": "Veuillez sélectionner un type de mail",
     "infoSaved": "Informations sauvegardées !",
     "emailSent": "Un email a été envoyé à cette adresse.",
-    "invalidMail": "L'email n'est pas valide"
+    "invalidMail": "L'email n'est pas valide",
+    "cancel": "Annuler",
+    "save": "Sauvergarder"
 }

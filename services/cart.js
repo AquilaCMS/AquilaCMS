@@ -55,7 +55,9 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle') {
+                    cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                }
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -157,26 +159,149 @@ const addItem = async (req) => {
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
+
+    if (typeof req.body.item.options !== 'undefined' && req.body.item.options !== null) {
+        // we set options in the cart !
+        // quick check if all mandatory options are present
+
+        // add to item
+        // add code, add name, add modifier, add control
+        for (const oneOptionsInReq of req.body.item.options) {
+            const optionInProduct     = _product.options.find(((oneOptions) => oneOptions.code === oneOptionsInReq.code));
+            oneOptionsInReq.mandatory = optionInProduct.mandatory;
+            oneOptionsInReq.type      = optionInProduct.type;
+            oneOptionsInReq.name      = optionInProduct.name;
+            if (oneOptionsInReq.values.length > 1 &&  optionInProduct.type !== 'checkbox') {
+                // only checkbox has multiple values
+                throw NSErrors.InvalidOptions;
+            }
+            for (const oneValue of oneOptionsInReq.values) {
+                const valueInProduct = optionInProduct.values.find((element) => element._id.toString() === oneValue._id);
+                if (typeof valueInProduct === 'undefined') {
+                    throw NSErrors.InvalidOptions;
+                }
+                oneValue.control  = valueInProduct.control;
+                oneValue.modifier = valueInProduct.modifier;
+                if (optionInProduct.type === 'textfield' || optionInProduct.type === 'number') {
+                    const valueToCheck = oneValue.values[0];
+                    if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck.length && valueToCheck.length < oneValue.control.max) {
+                        continue;
+                    } else if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck && valueToCheck < oneValue.control.max) {
+                        continue;
+                    } else {
+                        throw NSErrors.InvalidOptions;
+                    }
+                } else if (optionInProduct.type === 'checkbox') {
+                    // multiple value are accepted
+                } else {
+                    const valueToCheck = oneValue.values[0];
+                    let checked        = true;
+                    /* eslint-disable no-labels */
+                    loopOfValue:
+                    for (const oneValueValues of optionInProduct.values) {
+                        for (const oneLang in oneValueValues.name) {
+                            if (valueToCheck === oneValueValues.name[oneLang]) {
+                                checked = true;
+                                break loopOfValue;
+                            }
+                        }
+                    }
+                    /* eslint-enable no-labels */
+                    if (checked !== true) {
+                        throw NSErrors.InvalidOptions;
+                    }
+                }
+            }
+        }
+        // req.body.item.options.mandatory =
+    }
+
     if (cart.items && cart.items.length) {
         // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
-        const indexes = cart.items.toObject()
+        const indexes     = cart.items.toObject()
             .map((val, index) => ({val, index}))
             .filter(({val}) => val.id._id.toString() === _product._id.toString())
             .map(({index}) => index);
+        let isANewProduct = false;
+        /* eslint-disable no-labels */
         for (const index of indexes) {
+            let selections;
+            if (cart.items[index].type === 'bundle') {
+                selections = cart.items[index].selections.toObject().map((elem) => {
+                    const id = elem.products[0]._id.toString();
+                    return {
+                        bundle_section_ref : elem.bundle_section_ref,
+                        products           : [id]
+                    };
+                });
+            }
             if (
                 cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(req.body.item.selections)
-            // eslint-disable-next-line no-empty
+                && JSON.stringify(selections) !== JSON.stringify(req.body.item.selections)
             ) {
                 continue;
             } else {
-                req.body.item._id       = cart.items[index]._id.toString();
-                req.body.item.quantity += cart.items[index].quantity;
-                delete req.body.item.id;
-                delete req.body.item.weight;
-                return updateQty(req);
+                if (typeof req.body.item.options !== 'undefined' && typeof cart.items[index].options !== 'undefined') {
+                    // check if same options
+                    const optionsOfItemInCart = cart.items[index].options;
+                    if (req.body.item.options.length === optionsOfItemInCart.length) {
+                        loopCheckOptions:
+                        for (const oneOptions of req.body.item.options) {
+                            const indexOptions = optionsOfItemInCart.findIndex((element) => element.code === oneOptions.code);
+                            if (indexOptions === -1) {
+                                isANewProduct = true;
+                                break;
+                            } else {
+                                if (optionsOfItemInCart[indexOptions].values.length === oneOptions.values.length) {
+                                    for (const oneOptionsValue of optionsOfItemInCart[indexOptions].values) {
+                                        const valueAlreadyPresent = oneOptionsValue._id.toString();
+                                        const indexInValues       = oneOptions.values.findIndex((element) => element._id === valueAlreadyPresent);
+                                        if (indexInValues > -1) {
+                                            if (oneOptions.values[indexInValues].values === oneOptionsValue.values) {
+                                                isANewProduct = false;
+                                                continue;
+                                            } else {
+                                                isANewProduct = true;
+                                                break loopCheckOptions;
+                                            }
+                                        } else {
+                                            isANewProduct = true;
+                                            break loopCheckOptions;
+                                        }
+                                    }
+                                    // need to check other options
+                                } else {
+                                    isANewProduct = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (typeof isANewProduct === 'boolean' && isANewProduct === false) {
+                            isANewProduct = index;
+                            break;
+                        }
+                    } else {
+                        isANewProduct = true;
+                    }
+                } else {
+                    if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') {
+                        isANewProduct = index;
+                        break;
+                    } else  if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) {
+                        isANewProduct = index;
+                        break;
+                    }
+                }
+                /* eslint-enable no-labels */
             }
+        }
+        if (typeof isANewProduct === 'number') {
+            req.body.item._id       = cart.items[isANewProduct]._id.toString();
+            req.body.item.quantity += cart.items[isANewProduct].quantity;
+
+            delete req.body.item.id;
+            delete req.body.item.weight;
+            return updateQty(req);
         }
     }
     if (_product.translation[_lang.code]) {
@@ -189,8 +314,10 @@ const addItem = async (req) => {
         req.body.item._id = idGift;
     }
 
-    const item = {...req.body.item, weight: _product.weight, price: _product.price};
-    if (_product.type !== 'virtual') item.stock = _product.stock;
+    const item = {...req.body.item, weight: _product.weight, price: _product.price, options: req.body.item.options};
+    if (_product.type !== 'virtual') {
+        item.stock = _product.stock;
+    }
     const data = await _product.addToCart(cart, item, req.info, _lang.code);
     if (data && data.code) {
         return {code: data.code, data: {error: data}}; // res status 400

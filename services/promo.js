@@ -740,14 +740,17 @@ const applyPromoToCartProducts = async (productsCatalog, cart, cartPrdIndex) => 
             await cart.populate('items.id');
         }
         if (!cart.items[cartPrdIndex].noRecalculatePrice) {
+            const options                       = cart.items[cartPrdIndex].options;
+            const idOfProduct                   = cart.items[cartPrdIndex].id._id.toString();
+            const optionsModifier               = await mongoose.model('products').getOptionsPrice(options, idOfProduct);
             cart.items[cartPrdIndex].price.unit = {
-                et  : productsCatalog[prdIndex].price.et.normal,
-                ati : productsCatalog[prdIndex].price.ati.normal
+                et  : productsCatalog[prdIndex].price.et.normal + optionsModifier,
+                ati : productsCatalog[prdIndex].price.ati.normal + optionsModifier
             };
             if (productsCatalog[prdIndex].price.et.special !== undefined) {
                 cart.items[cartPrdIndex].price.special      = {
-                    et  : productsCatalog[prdIndex].price.et.special,
-                    ati : productsCatalog[prdIndex].price.ati.special
+                    et  : productsCatalog[prdIndex].price.et.special + optionsModifier,
+                    ati : productsCatalog[prdIndex].price.ati.special + optionsModifier
                 };
                 cart.items[cartPrdIndex].noRecalculatePrice = true;
             } else if (cart.items[cartPrdIndex].price.special) {

@@ -41,6 +41,7 @@
         "totalTTC": "Total TTC",
         "status": "Statut",
         "opt": "Options :",
+        "options": "Options",
         "dateArr": "Date d'arrivée : {{item.date | date:'dd/MM/yyyy'}}",
         "marque": "Marque : {{item.id.trademark.name}}",
         "fdp": "Frais de port",

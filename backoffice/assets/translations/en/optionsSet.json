@@ -1,0 +1,29 @@
+{
+    "list": {
+        "t1": "Options sets",
+        "attrClasses": "Sorted options",
+        "code": "Code",
+        "nom": "Name",
+        "type": "Type",
+        "attrOrph": "Unbinded options",
+        "jeuxAttrib": "Attribute sets",
+        "afficher": "Display"
+    },
+    "detail": {
+        "t1": "Options sets detail",
+        "code": "Code",
+        "name": "Name",
+        "addOptions": "Add an option",
+        "createOptions": "Create an options",
+        "needSave": "Don't forget to save the set !",
+        "type": "Type",
+        "delete": "Delete the options from the set"
+    },
+    "new": {
+        "code": "Code",
+        "name": "Name",
+        "save": "Save",
+        "cancel": "Cancel",
+        "title": "Create an option set"
+    }
+}

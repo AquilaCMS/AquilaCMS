@@ -14,10 +14,15 @@ import {
     NSProductCardList,
     NSProductStock,
     imgDefaultBase64,
+    NSToast,
     truncate
 } from 'aqlrc';
 import { withI18next } from 'lib/withI18n';
-import { listModulePage } from 'lib/utils';
+import {
+    listModulePage,
+    getCurrencySymbol,
+    caculateNewPrice
+} from 'lib/utils';
 import CMS from 'components/CMS';
 import Layout from 'components/Layout';
 import routes, { Link, Router } from 'routes';
@@ -29,6 +34,238 @@ import Error from './_error';
  */
 
 class PageProduct extends NSPageProduct {
+    constructor(props) {
+        super(props);
+        const { lang } = this.props;
+        this.state = {
+            ...this.state,
+            options: this.setDefaultOptions(this.state.product, lang)
+        };
+        this.state = {
+            ...this.state,
+            optionsModifier: caculateNewPrice(this.state.product, this.state.options, this.state.taxDisplay)
+        };
+    }
+
+    changeOneOptions = (optionsCode, event) => {
+        const { lang } = this.props;
+        let optionsValue = event.target.value;
+        let { options } = this.state;
+        if (!options) {
+            options = [];
+        }
+        const { product } = this.state;
+
+        const index = options.findIndex((element) => {
+            return element.code === optionsCode
+        });
+        let id;
+        const optionsType = product.options.find(element => element.code == optionsCode).type;
+        let name = "";
+        let theValue;
+        if (optionsType === "textfield" || optionsType === "number") {
+            theValue = product.options.find(element => element.code == optionsCode).values[0];
+        } else {
+            theValue = product.options.find(element => element.code == optionsCode).values.find(oneValue => oneValue.name[lang] == optionsValue);
+        }
+        if (optionsType === "checkbox") {
+            optionsValue = event.target.checked.toString();
+        }
+        id = theValue._id;
+        name = theValue.name;
+        if (index > -1) {
+            if (optionsType == "checkbox") {
+                const indexOfValue = options[index].values.findIndex(element => element._id == id);
+                if (indexOfValue > -1) {
+                    options[index].values[indexOfValue] = {
+                        _id: id,
+                        name: name,
+                        values: optionsValue,
+                    };
+                } else {
+                    options[index].values.push({
+                        _id: id,
+                        name: name,
+                        values: optionsValue
+                    });
+                }
+            } else {
+                // only one value
+                options[index].values = [{
+                    _id: id,
+                    name: name,
+                    values: optionsValue
+                }];
+            }
+        } else {
+            options.push({
+                code: optionsCode,
+                _id: product.options.find(element => element.code == optionsCode)._id,
+                values: [{
+                    _id: id,
+                    name: name,
+                    values: optionsValue
+                }]
+            });
+        }
+        this.setState({
+            options,
+        });
+        const { taxDisplay } = this.state;
+        this.setState({
+            optionsModifier: caculateNewPrice(product, options, taxDisplay)
+        });
+    };
+
+    setDefaultOptions = (product, lang) => {
+        let options = []
+        if (typeof product !== "undefined" && typeof product.options !== "undefined") {
+            for (const oneOptions of product.options) {
+                if (oneOptions.mandatory === true && oneOptions.type !== "number" || oneOptions.type !== "textfield") {
+                    const defaultValue = oneOptions.values.find(element => element.control.default === true);
+                    if (typeof defaultValue !== "undefined") {
+                        let valueOfValue = defaultValue.name[lang];
+                        if (oneOptions.type === "checkbox") {
+                            valueOfValue = typeof defaultValue.control.default !== "undefined" ? defaultValue.control.default.toString() : 'false';
+                        }
+                        options.push({
+                            code: oneOptions.code,
+                            _id: oneOptions._id,
+                            values: [{
+                                _id: defaultValue._id,
+                                name: defaultValue.name,
+                                values: valueOfValue
+                            }]
+                        });
+                    }
+                }
+            }
+        }
+        return options;
+    }
+
+
+
+    verifOptions = (options) => {
+        const { product } = this.state;
+        for (const oneOptions of product.options) {
+            const indexOfOptions = options.findIndex((element) => {
+                return element.code == oneOptions.code;
+            });
+            if (indexOfOptions > -1) {
+                // the options is in the product
+                if (oneOptions.mandatory === true && typeof options[indexOfOptions].values !== "undefined" && options[indexOfOptions].values.length > 0) {
+                    // there is an options
+                    // we need to check the oneOptions.control for values
+                }
+            } else {
+                // the options isn't in the product
+                // we check if it's mandatory
+                if (oneOptions.mandatory) {
+                    NSToast.warn('product:mandatoryOptionsNotSelected');
+                    // the options is mandatory but not selected /!\ error
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    preAddToCart = () => {
+        // check options
+        const { lang } = this.props;
+        const { product } = this.state;
+        if (product && product.options) {
+            // there is options in the product
+            let { options } = this.state;
+            if (typeof options === "undefined") {
+                options = [];
+            }
+            if (typeof options === "undefined") {
+                // we add mandatory options
+                options = []
+                for (const oneOptions of product.options) {
+                    if (oneOptions && oneOptions.mandatory === true) {
+                        const indexInOptions = options.findIndex(element => element._id === oneOptions._id);
+                        if (index > -1) {
+                            if (typeof options[indexInOptions].values === "undefined"
+                                || options[indexInOptions].values === null
+                                || options[indexInOptions].values.length == 0) {
+                                NSToast.warn('product:mandatoryOptionsNotSelected');
+                                return false;
+                            }
+                        } else {
+                            NSToast.warn('product:mandatoryOptionsNotSelected');
+                            return false;
+                        }
+                    }
+                }
+            }
+            this.setState({
+                options,
+            });
+            const res = this.verifOptions(options);
+            if (res === true) {
+                this.addToCart();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    renderOptions = (element) => {
+        const { lang } = this.props;
+        if (element.type == "checkbox") {
+            return (element.values.map((elementValue, index) => {
+                if (elementValue.name && elementValue.name[lang]) {
+                    let isDefault = false;
+                    if (elementValue && elementValue.control && typeof elementValue.control.default !== "undefined") {
+                        isDefault = elementValue.control.default;
+                    }
+                    return <div>
+                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <input defaultChecked={isDefault} onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} value={elementValue.name[lang]} key={elementValue._id + index} type="checkbox" />
+                    </div>
+                }
+            }));
+        } else if (element.type == "number") {
+            return (element.values.map((elementValue, index) => {
+                if (elementValue.name && elementValue.name[lang]) {
+                    return <>
+                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="number" />
+                    </>
+                }
+            }));
+        } else if (element.type == "textfield") {
+            return (element.values.map((elementValue, index) => {
+                if (elementValue.name && elementValue.name[lang]) {
+                    return <>
+                        <label key={elementValue._id}>{elementValue.name[lang]}</label>
+                        <input onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} type="text" />
+                    </>
+                }
+            }));
+        } else if (element.type == "list") {
+            return (
+                <select value={element.values.find((elementValue) => {
+                    if (elementValue && element.control) {
+                        return elementValue.control.mandatory === true
+                    }
+                    return false;
+                })} onChange={(event) => { this.changeOneOptions(element.code, event) }}>
+                    {
+                        element.values.map((elementValue, index) => {
+                            if (elementValue.name && elementValue.name[lang]) {
+                                return (<option key={elementValue._id} value={elementValue.name[lang]}>{elementValue.name[lang]}</option>)
+                            }
+                        })
+                    }
+                </select >
+            )
+        }
+    }
+
     render = () => {
         const {
             appurl,
@@ -49,6 +286,19 @@ class PageProduct extends NSPageProduct {
                 </NSContext.Provider>
             );
         }
+        const currencySymbol = getCurrencySymbol();
+        const calcPrice = (price, modifier) => {
+            let priceFinal;
+            if (price[taxDisplay].special && price[taxDisplay].special > 0) {
+                priceFinal = price[taxDisplay].special
+            } else {
+                priceFinal = price[taxDisplay].normal
+            }
+            if (typeof modifier !== "undefined") {
+                priceFinal += modifier;
+            }
+            return priceFinal.toFixed(2);
+        };
         const {
             openModal,
             openComment,
@@ -59,7 +309,8 @@ class PageProduct extends NSPageProduct {
             product,
             allCommentsDisplayed,
             hideReviewsLanguage,
-            taxDisplay
+            taxDisplay,
+            optionsModifier
         } = this.state;
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
@@ -76,7 +327,6 @@ class PageProduct extends NSPageProduct {
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
-
         // Pictos
         const pictos = [];
         if (product.pictos) {
@@ -106,6 +356,14 @@ class PageProduct extends NSPageProduct {
                 }
             });
         }
+
+        let options = [];
+        if (product && product.options) {
+            options = product.options;
+        }
+
+
+
 
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
@@ -217,10 +475,10 @@ class PageProduct extends NSPageProduct {
                                     <div className="product__actions-mobile visible-xs-block">
                                         <NSProductStock stock={product.stock} />
                                         <div className="product-price">
-                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                            <del hidden={!product.price.et.special || product.price.et.special === 0}>{product.price[taxDisplay].normal.toFixed(2)} {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
 
                                             <strong>
-                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>{currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                             </strong>
                                         </div>
 
@@ -230,7 +488,7 @@ class PageProduct extends NSPageProduct {
                                             )
                                         }
 
-                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                        <button type="button" className="btn btn--red btn-cart" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.preAddToCart)} aria-label={t('product:ajoutPanier')}>
                                             <i className="ico-shopping-cart-white" />
                                             <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
                                         </button>
@@ -246,6 +504,17 @@ class PageProduct extends NSPageProduct {
                                             <div dangerouslySetInnerHTML={{ __html: product.description2.text }} />
                                         )
                                     }
+                                    <div className="product-options" style={{ textAlign: "right" }}>
+                                        {options.map((element) => {
+                                            return (
+                                                <>
+                                                    <div>{element.name[lang]}{element.mandatory == true ? <span> ({t('product:mandatory')})</span> : <span> ({t('product:optional')})</span>}</div>
+
+                                                    {this.renderOptions(element)}
+                                                </>
+                                            )
+                                        })}
+                                    </div>
                                     <div className="product-actions">
                                         <div className="product-stock hidden-xs">
                                             <NSProductStock stock={product.stock} />
@@ -279,11 +548,15 @@ class PageProduct extends NSPageProduct {
                                             </div>{/* <!-- /.product-reviews --> */}
                                             <div className="product-price hidden-xs">
                                                 {
-                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)}€ <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
+                                                    product.price.et.special && product.price.et.special > 0 && <del>{product.price[taxDisplay].normal.toFixed(2)} {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub></del>
                                                 }
 
                                                 <strong>
-                                                    <span>{(product.price.et.special && product.price.et.special > 0 ? product.price[taxDisplay].special : product.price[taxDisplay].normal).toFixed(2)}</span>€ <sub>{t(`common:price.${taxDisplay}`)}</sub>
+                                                    <span>
+                                                        {
+                                                            calcPrice(product.price, optionsModifier)
+                                                        }
+                                                    </span> {currencySymbol} <sub>{t(`common:price.${taxDisplay}`)}</sub>
                                                 </strong>
                                             </div>
                                         </div>
@@ -311,7 +584,7 @@ class PageProduct extends NSPageProduct {
                                             {
                                                 (!product.stock || (product.stock && product.stock.status !== 'epu'))
                                                 && (
-                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.addToCart)} aria-label={t('product:ajoutPanier')}>
+                                                    <button type="button" className="btn btn--red btn-cart hidden-xs" onClick={product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? this.downloadVirtual : (product.type === 'bundle' ? this.onOpenModal : this.preAddToCart)} aria-label={t('product:ajoutPanier')}>
                                                         <i className="ico-shopping-cart-white" />
                                                         <span>{product.type === 'virtual' && (product.price[taxDisplay].special === 0 || product.price[taxDisplay].normal === 0) ? t('product:download') : (product.type === 'bundle' ? t('product:composer') : t('product:ajoutPanier'))}</span>
                                                     </button>
@@ -596,7 +869,7 @@ class PageProduct extends NSPageProduct {
                                             <NSBundleProduct product={product} />
 
                                             <div className="product-price">
-                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} €</strong>
+                                                <strong>{((product.price.ati.normal + this.state.bundleGlobalModifierPrice) || 0).toFixed(2)} {currencySymbol} </strong>
                                             </div>
                                         </div>
                                         <div className="form-footer">
@@ -608,31 +881,31 @@ class PageProduct extends NSPageProduct {
                                     </form>
                                 </div>
                             ) : (
-                                    <>
-                                        <h3 className="popup__title">{t('product:productAdded')} :</h3>
-                                        <div className="popup__body">
-                                            <div className="product-simple">
-                                                <figure className="product__image">
-                                                    <img src={imgDefault} alt={imgAlt} width="256" height="197" />
-                                                </figure>
+                                <>
+                                    <h3 className="popup__title">{t('product:productAdded')} :</h3>
+                                    <div className="popup__body">
+                                        <div className="product-simple">
+                                            <figure className="product__image">
+                                                <img src={imgDefault} alt={imgAlt} width="256" height="197" />
+                                            </figure>
 
-                                                <h4 className="product__title">{this.state.selectedQty} x {product.name}</h4>
+                                            <h4 className="product__title">{this.state.selectedQty} x {product.name}</h4>
 
-                                                <div className="product__actions">
-                                                    <button type="button" className="btn btn--with-icon btn--red" onClick={this.onCloseModal}>
-                                                        {t('product:continueShopping')}
-                                                    </button>
+                                            <div className="product__actions">
+                                                <button type="button" className="btn btn--with-icon btn--red" onClick={this.onCloseModal}>
+                                                    {t('product:continueShopping')}
+                                                </button>
 
-                                                    <Link route="cart" params={{ lang: routerLang }}>
-                                                        <a className="btn btn--with-icon btn--red">
-                                                            {t('product:viewCart')}
-                                                        </a>
-                                                    </Link>
-                                                </div>
+                                                <Link route="cart" params={{ lang: routerLang }}>
+                                                    <a className="btn btn--with-icon btn--red">
+                                                        {t('product:viewCart')}
+                                                    </a>
+                                                </Link>
                                             </div>
                                         </div>
-                                    </>
-                                )
+                                    </div>
+                                </>
+                            )
                         }
                     </ModalR>
                     <ModalR open={openComment} onClose={this.onCloseModalComment} delay={0} center>
@@ -722,7 +995,7 @@ class PageProduct extends NSPageProduct {
                         </div>
                     </ModalR>
                 </Layout>
-            </NSContext.Provider>
+            </NSContext.Provider >
         );
     }
 }

@@ -41,6 +41,7 @@
         "totalTTC": "Total ATI",
         "status": "Status",
         "opt": "Options:",
+        "options": "Options",
         "dateArr": "Arriving date: {{item.date | date:'dd/MM/yyyy'}}",
         "marque": "Brand: {{item.id.trademark.name}}",
         "fdp": "Shipping costs",

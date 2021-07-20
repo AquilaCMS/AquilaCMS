@@ -142,5 +142,12 @@
     },
     "toast": {
         "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
+    },
+    "optionsSet": {
+        "title": "Jeu d'options et options du produit",
+        "edit": "Editer le jeu d'options",
+        "optionsSet": "Jeu d'options du produit",
+        "void": "Pas de jeu d'options",
+        "goTo": "Aller aux jeux d'options"
     }
 }

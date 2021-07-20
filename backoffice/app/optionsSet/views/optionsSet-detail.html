@@ -1,0 +1,86 @@
+<ns-box data-title="optionsSet.detail.t1" title-icon="fa fa-align-justify fa-lg" close-href="#/optionsSet">
+    <!--'{{ setAttribute.code }}'-->
+    <form name="form" class="form-horizontal" role="form">
+        <ns-buttons is-edit-mode="true" save-and-quit="save(true)" save="save()" disable-save="disableSave"
+            return-path="/optionsSet" remove="remove(setAttribute._id)" form="form">
+            <div class="scrollmenu">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" target="_self" href="#details"
+                            translate>setAttribute.detail.tab.setAttr</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div id="details" class="tab-pane fade in active">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>optionsSet.detail.code</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="code" ng-model="optionsSet.code" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label" translate>optionsSet.detail.name</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="name" ng-model="optionsSet.name[lang]" required>
+                        </div>
+                    </div>
+                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+                    <button class="btn btn-default" type="button" ng-click="createOptions()"
+                        translate>optionsSet.detail.createOptions</button>
+                    <button class="btn btn-default" type="button" ng-click="addOptions()"
+                        translate>optionsSet.detail.addOptions</button>
+                    <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper form-inline" role="grid"
+                        style="margin-top: 20px;">
+                        <table
+                            class="shortTable table table-striped table-bordered table-hover bootstrap-datatable datatable dataTable"
+                            id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                            <thead>
+                                <tr role="row" class="pointer">
+                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 200px;" aria-sort="ascending" translate>
+                                        optionsSet.detail.code
+                                    </th>
+                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 200px;" aria-sort="ascending">
+                                        <a ng-click="sortType = 'name'; sortReverse = !sortReverse" translate>
+                                            optionsSet.detail.name
+                                            <span ng-show="sortType == 'name' && !sortReverse"
+                                                class="ico-chevron-down"></span>
+                                            <span ng-show="sortType == 'name' && sortReverse"
+                                                class="ico-chevron-up"></span>
+                                        </a>
+                                    </th>
+                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 200px;" aria-sort="ascending" translate>
+                                        optionsSet.detail.type
+                                    </th>
+                                    <th role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 200px;" aria-sort="ascending" translate>
+                                        optionsSet.detail.delete
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody role="alert" aria-live="polite" aria-relevant="all" infinite-scroll="scroller.next()"
+                                infinite-scroll-distance="1" infinite-scroll-immediate-check="true"
+                                infinite-scroll-disabled='scroller.busy'>
+                                <tr class="pointer" ng-class-odd="'odd'" ng-class-even="'even'"
+                                    ng-click="gotToOptionsDetail(oneOptions.code)"
+                                    ng-repeat="oneOptions in optionsSet.options | orderBy:sortType:sortReverse">
+                                    <td data-label="Code :" class="linkToSmthg sorting_1">{{oneOptions.code}}</td>
+                                    <td data-label="Nom :" class="linkToSmthg sorting_1">{{oneOptions.name[lang]}}
+                                    </td>
+                                    <td data-label="Type :" class="sorting_1">{{oneOptions.type}}</td>
+                                    <td data-label="Type :" class="sorting_1">
+                                        <button type="button" class="smallButtonDelete"
+                                            ng-click="removeOptions(oneOptions.code)">-
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </ns-buttons>
+    </form>
+</ns-box>

@@ -28,14 +28,14 @@ const getComponent = async (componentName, code, user = null) => {
     case 'menu':
         models                  = require('../orm/models/categories');// categories/roots
         const categorieServices = require('./categories');// categories/roots
-        const X                 = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
-        return X;
+        const categorie         = await categorieServices.getCategoryChild(code, {active: true, isDisplayed: true}, user);
+        return categorie;
     case 'cms':
         models                 = require('../orm/models/cmsBlocks');
         const cmsBlockServices = require('./cmsBlocks');
-        PostBody               = {filter: {code}, structure: {content: 1, translation: 1}};
+        PostBody               = {filter: {code, active: true}, structure: {content: 1, translation: 1}};
         const result           = await cmsBlockServices.getCMSBlock(PostBody);
-        if ((user && !user.isAdmin) && result && result.translation) {
+        if ((!user || !user.isAdmin) && result && result.translation) {
             // Loop on the languages contained
             for (let k = 0; k < Object.keys(result.translation).length; k++) {
                 const langKey = Object.keys(result.translation)[k];

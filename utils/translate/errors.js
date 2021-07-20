@@ -67,6 +67,10 @@ module.exports = {
         fr : 'ObjectId est invalide',
         en : 'Invalid ObjectId'
     },
+    InvalidOptions : {
+        fr : 'Les options du produits ne sont pas valides',
+        en : "Options of the product arn't valid"
+    },
     InternalError : {
         fr : 'Erreur interne',
         en : 'Internal error'

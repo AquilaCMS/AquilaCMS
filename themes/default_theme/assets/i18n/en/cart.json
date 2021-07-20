@@ -9,6 +9,7 @@
             "products": "Products",
             "description": "Home delivery",
             "quantity": "Quantity",
+            "options": "Options",
             "more_infos": "More info",
             "add": "Add",
             "cancel": "Cancel",
@@ -31,7 +32,7 @@
             "cart_discount": "Cart discount:"
         },
         "delivery": {
-            "question_discount": "Discount code ?", 
+            "question_discount": "Discount code ?",
             "select_delivery": "Select delivery",
             "delivery_fee": "Delivery fee",
             "estimate_fee": {
