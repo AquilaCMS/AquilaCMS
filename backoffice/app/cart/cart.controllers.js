@@ -123,7 +123,8 @@ CartControllers.controller("CartListCtrl", [
 
 
 CartControllers.controller("CartListDetails", [
-    "$scope", "Carts", "$location", "$routeParams", function ($scope, Carts, $location, $routeParams) {
+    "$scope", "$rootScope", "Carts", "$location", "$routeParams",
+    function ($scope, $rootScope, Carts, $location, $routeParams) {
         $scope.lang = $rootScope.languages.find((lang) => lang.defaultLanguage).code;
         $scope.cart = {};
 
