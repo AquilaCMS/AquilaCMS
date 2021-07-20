@@ -91,16 +91,13 @@
                     style="cursor: default; color: #ff0000;">{{valuesError}}</label>
             </div>
         </div>
-        <div class="row form-group" ng-repeat="oneValue in options.values">
-            <div class="form-group blockValue col-sm-12" style="margin: 10px; padding:0px"
-                ondragenter="angular.element(this).scope().switchElement(this, 'in')"
-                ondragleave="angular.element(this).scope().switchElement(this, 'out')">
+        <div class="form-group" style="padding: 10px;margin-bottom:0px"
+            ng-repeat="oneValue in options.values | orderBy: $index">
+            <div class="form-group blockValue col-sm-12" style="margin: 0px; padding:0px" draggable="true"
+                ns-drag="oneValue" ns-drop="oneValue">
                 <input style="visibility: hidden;" value={{$index}} />
                 <div class="col-sm-2" style="float: right;">
-                    <button type="button" class="deplacementButton"
-                        ondragstart="angular.element(this).scope().draggingStart(this.parentElement.parentElement)"
-                        ondragend="angular.element(this).scope().draggingEnd(this.parentElement.parentElement)"
-                        draggable="true" ns-drag="oneValue" ns-drop="oneValue">
+                    <button type="button" class="deplacementButton">
                     </button>
                 </div>
                 <div class=" form-group col-sm-10 flowRoot">

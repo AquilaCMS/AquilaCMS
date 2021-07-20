@@ -234,48 +234,18 @@ OptionsControllers.controller('nsNewOptionsController', [
             }
         };
 
-        var elementOver;
-        var elementStart;
-        var inOther;
-
-        $scope.draggingEnd = function (element, event) {
-            elementStart.className = elementStart.className.replace(" opacity", "");
-            elementOver.className = elementOver.className.replace(' fakeDrop', '');
-            //On switch car on est dans une autre
-            const indexStart = parseInt(elementStart.childNodes[1].value);
-            const indexEnd = parseInt(elementOver.childNodes[1].value);
-            if (indexStart != indexEnd) {
-                //deplacement
-                let arrayTempOfValues = [];
-                angular.copy($scope.options.values, arrayTempOfValues);
-                const tempStart = arrayTempOfValues[indexStart];
-                const tempEnd = arrayTempOfValues[indexEnd];
-                arrayTempOfValues[indexStart] = tempEnd;
-                arrayTempOfValues[indexEnd] = tempStart;
-                $scope.options.values = [];
-                $scope.options.values = arrayTempOfValues;
-                console.log($scope.options.values[0].name, $scope.options.values[1].name);
-                $scope.$apply();
-            }
-        };
-
-        $scope.draggingStart = function (element) {
-            elementStart = element
-            if (element.className.includes(" opacity")) {
-                element.className = element.className.replace(" opacity", "");
-            } else {
-                element.className += " opacity";
-            }
-        };
-
-        $scope.switchElement = function (element, where) {
-            elementOver = element;
-            if (where == 'in') {
-                element.className += ' fakeDrop';
-            } else if (where == 'out') {
-                element.className = element.className.replace(' fakeDrop', '');
-            }
-        };
+        $rootScope.$on("dropEvent", function (evt, dragged, dropped) {
+            const indexStart = $scope.options.values.findIndex(element => element.$$hashKey === dragged.$$hashKey);
+            const indexEnd = $scope.options.values.findIndex(element => element.$$hashKey === dropped.$$hashKey);
+            let arrayTempOfValues = angular.copy($scope.options.values);
+            const tempStart = arrayTempOfValues[indexStart];
+            const tempEnd = arrayTempOfValues[indexEnd];
+            arrayTempOfValues[indexStart] = tempEnd;
+            arrayTempOfValues[indexEnd] = tempStart;
+            $scope.options.values = [];
+            $scope.options.values = arrayTempOfValues;
+            $scope.$apply();
+        });
     }
 ]);
 
