@@ -32,7 +32,8 @@
         "fichierPDF": "PDF File",
         "nombre": "Number",
         "color": "Color",
-        "checkbox": "Checkbox"
+        "checkbox": "Checkbox (multiple)",
+        "radio": "Checkbox"
     },
     "addValue": "Add a value",
     "type": "Type",

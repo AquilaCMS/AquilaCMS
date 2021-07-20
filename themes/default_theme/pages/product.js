@@ -49,35 +49,43 @@ class PageProduct extends NSPageProduct {
 
     changeOneOptions = (optionsCode, event) => {
         const { lang } = this.props;
-        const optionsValue = event.target.value;
+        let optionsValue = event.target.value;
         let { options } = this.state;
         if (!options) {
             options = [];
         }
         const { product } = this.state;
-        const base = product.options;
 
         const index = options.findIndex((element) => {
             return element.code === optionsCode
         });
         let id;
         const optionsType = product.options.find(element => element.code == optionsCode).type;
+        let name = "";
+        let theValue;
         if (optionsType === "textfield" || optionsType === "number") {
-            id = product.options.find(element => element.code == optionsCode).values[0]._id;
+            theValue = product.options.find(element => element.code == optionsCode).values[0];
         } else {
-            id = product.options.find(element => element.code == optionsCode).values.find(oneValue => oneValue.name[lang] == optionsValue)._id;
+            theValue = product.options.find(element => element.code == optionsCode).values.find(oneValue => oneValue.name[lang] == optionsValue);
         }
+        if (optionsType === "checkbox") {
+            optionsValue = event.target.checked.toString();
+        }
+        id = theValue._id;
+        name = theValue.name;
         if (index > -1) {
             if (optionsType == "checkbox") {
                 const indexOfValue = options[index].values.findIndex(element => element._id == id);
                 if (indexOfValue > -1) {
                     options[index].values[indexOfValue] = {
                         _id: id,
-                        values: optionsValue
+                        name: name,
+                        values: optionsValue,
                     };
                 } else {
                     options[index].values.push({
                         _id: id,
+                        name: name,
                         values: optionsValue
                     });
                 }
@@ -85,6 +93,7 @@ class PageProduct extends NSPageProduct {
                 // only one value
                 options[index].values = [{
                     _id: id,
+                    name: name,
                     values: optionsValue
                 }];
             }
@@ -94,6 +103,7 @@ class PageProduct extends NSPageProduct {
                 _id: product.options.find(element => element.code == optionsCode)._id,
                 values: [{
                     _id: id,
+                    name: name,
                     values: optionsValue
                 }]
             });
@@ -114,12 +124,17 @@ class PageProduct extends NSPageProduct {
                 if (oneOptions.mandatory === true && oneOptions.type !== "number" || oneOptions.type !== "textfield") {
                     const defaultValue = oneOptions.values.find(element => element.control.default === true);
                     if (typeof defaultValue !== "undefined") {
+                        let valueOfValue = defaultValue.name[lang];
+                        if (oneOptions.type === "checkbox") {
+                            valueOfValue = typeof defaultValue.control.default !== "undefined" ? defaultValue.control.default.toString() : 'false';
+                        }
                         options.push({
                             code: oneOptions.code,
                             _id: oneOptions._id,
                             values: [{
                                 _id: defaultValue._id,
-                                values: defaultValue.name[lang]
+                                name: defaultValue.name,
+                                values: valueOfValue
                             }]
                         });
                     }
@@ -203,10 +218,14 @@ class PageProduct extends NSPageProduct {
         if (element.type == "checkbox") {
             return (element.values.map((elementValue, index) => {
                 if (elementValue.name && elementValue.name[lang]) {
-                    return <>
+                    let isDefault = false;
+                    if (elementValue && elementValue.control && typeof elementValue.control.default !== "undefined") {
+                        isDefault = elementValue.control.default;
+                    }
+                    return <div>
                         <label key={elementValue._id}>{elementValue.name[lang]}</label>
-                        <input key={elementValue._id + index} type="checkbox" />
-                    </>
+                        <input defaultChecked={isDefault} onChange={(event) => { this.changeOneOptions(element.code, event) }} key={elementValue._id + index} value={elementValue.name[lang]} key={elementValue._id + index} type="checkbox" />
+                    </div>
                 }
             }));
         } else if (element.type == "number") {

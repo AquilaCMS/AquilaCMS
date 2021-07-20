@@ -32,7 +32,8 @@
         "fichierPDF": "Fichier PDF",
         "nombre": "Nombre",
         "color": "Couleur",
-        "checkbox": "Case à cocher"
+        "checkbox": "Cases à cocher (multiple)",
+        "radio": "Case à cocher"
     },
     "addValue": "Ajouter une valeur",
     "type": "Type",

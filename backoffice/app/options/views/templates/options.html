@@ -36,7 +36,6 @@
             <!--<option value="image" translate>options.choice.image</option>-->
             <!--<option value="video" translate>options.choice.video</option>-->
             <!--<option value="doc/pdf" translate>options.choice.fichierPDF</option>-->
-            <option ng-show="_type === 'products'" value="color" translate>options.choice.color</option>
         </select>
     </div>
 </div>
@@ -93,7 +92,8 @@
         </div>
         <div class="form-group" style="padding: 10px;margin-bottom:0px"
             ng-repeat="oneValue in options.values | orderBy: $index">
-            <div class="form-group blockValue col-sm-12" style="margin: 0px; padding:0px" draggable="true"
+            <div class="form-group blockValue col-sm-12" style="margin: 0px; padding:0px"
+                draggable="{{options.type === 'list' || options.type === 'radio' || options.type === 'checkbox' ? true : false}}"
                 ns-drag="oneValue" ns-drop="oneValue">
                 <input style="visibility: hidden;" value={{$index}} />
                 <div class="col-sm-2" style="float: right;">
@@ -114,17 +114,19 @@
                         </ns-switch>
                     </div>
                 </div>
-                <div class="form-group col-sm-10 flowRoot" ng-if="options.type == 'textfield'">
+                <div class="form-group col-sm-10 flowRoot"
+                    ng-if="options.type == 'textfield' || options.type == 'number'">
                     <label for="param" class="col-sm-3 control-label displayTable"
                         translate>options.values.minLen</label>
-                    <input class="form-control col-sm-8 autoWidth" min="0" type="number"
-                        ng-model="oneValue.control.min">
+                    <input class="form-control col-sm-8 autoWidth" min="{{options.type == 'textfield' ? 0 : ''}}"
+                        type="number" ng-model="oneValue.control.min">
                 </div>
-                <div class="form-group col-sm-10 flowRoot" ng-if="options.type == 'textfield'">
+                <div class="form-group col-sm-10 flowRoot"
+                    ng-if="options.type == 'textfield' || options.type == 'number'">
                     <label for="param" class="col-sm-3 control-label displayTable"
                         translate>options.values.maxLen</label>
-                    <input class="form-control col-sm-8 autoWidth" min="0" type="number"
-                        ng-model="oneValue.control.max">
+                    <input class="form-control col-sm-8 autoWidth" min="{{options.type == 'textfield' ? 0 : ''}}"
+                        type="number" ng-model="oneValue.control.max">
                 </div>
                 <div class="form-group col-sm-10 flowRoot">
                     <label for="param" class="col-sm-3 control-label displayTable"

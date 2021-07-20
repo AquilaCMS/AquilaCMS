@@ -164,20 +164,25 @@ class PageCart extends NSPageCart {
                                                                                                 {
                                                                                                     item.options.map((oneOptions) => {
                                                                                                         console.log(oneOptions);
-                                                                                                        return (<li key={oneOptions.code}>{oneOptions.name ? oneOptions.name[lang] : oneOptions.code} : {oneOptions.values.map(element => element.values).toString()}</li>)
-                                                                                                        // section.products.map((productSection, indexSel) => (
-                                                                                                        // <li key={indexSel}>{productSection.name} {`${
-                                                                                                        //     (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                        //     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                        //     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                        //     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                        //         (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
-                                                                                                        //         '+' :
-                                                                                                        //         '') +
-                                                                                                        //     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
-                                                                                                        //     ''
-                                                                                                        // }`}</li>
-                                                                                                        // ))
+                                                                                                        const optionsName = oneOptions.name && typeof oneOptions.name[lang] !== "undefined" ? oneOptions.name[lang] : oneOptions.code;
+                                                                                                        if (oneOptions.type === "checkbox") {
+                                                                                                            return (
+                                                                                                                <>
+                                                                                                                    <li key={oneOptions.code}>{optionsName} :
+                                                                                                                        <ul style={{ marginLeft: "20px" }}>
+                                                                                                                            {oneOptions.values.map((element, index) => {
+                                                                                                                                let name = `Value ${index + 1}`;
+                                                                                                                                if (element.name && typeof element.name[lang] !== "undefined") {
+                                                                                                                                    name = element.name[lang];
+                                                                                                                                }
+                                                                                                                                return <li>{`${name} : ${element.values.toString()}`}</li>;
+                                                                                                                            })}
+                                                                                                                        </ul>
+                                                                                                                    </li>
+                                                                                                                </>)
+                                                                                                        } else {
+                                                                                                            return (<li key={oneOptions.code}>{optionsName} : {oneOptions.values.map(element => element.values).toString()}</li>)
+                                                                                                        }
                                                                                                     })
                                                                                                 }
                                                                                             </ul>
