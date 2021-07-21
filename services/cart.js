@@ -163,7 +163,14 @@ const addItem = async (req) => {
     if (typeof req.body.item.options !== 'undefined' && req.body.item.options !== null) {
         // we set options in the cart !
         // quick check if all mandatory options are present
-
+        for (const oneProductOptions of _product.options) {
+            if (oneProductOptions && oneProductOptions.mandatory === true) {
+                const isPresent = req.body.item.options.findIndex((oneOptionsInBody) => oneOptionsInBody._id.toString() === oneProductOptions._id.toString());
+                if (isPresent === -1 ) {
+                    throw NSErrors.InvalidOptions;
+                }
+            }
+        }
         // add to item
         // add code, add name, add modifier, add control
         for (const oneOptionsInReq of req.body.item.options) {
@@ -186,7 +193,7 @@ const addItem = async (req) => {
                     const valueToCheck = oneValue.values[0];
                     if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck.length && valueToCheck.length < oneValue.control.max) {
                         continue;
-                    } else if (optionInProduct.type === 'textfield' && oneValue.control.min < valueToCheck && valueToCheck < oneValue.control.max) {
+                    } else if (optionInProduct.type === 'number' && oneValue.control.min < valueToCheck && valueToCheck < oneValue.control.max) {
                         continue;
                     } else {
                         throw NSErrors.InvalidOptions;
@@ -213,7 +220,6 @@ const addItem = async (req) => {
                 }
             }
         }
-        // req.body.item.options.mandatory =
     }
 
     if (cart.items && cart.items.length) {
@@ -314,7 +320,11 @@ const addItem = async (req) => {
         req.body.item._id = idGift;
     }
 
-    const item = {...req.body.item, weight: _product.weight, price: _product.price, options: req.body.item.options};
+    const weightOptionsModifier = await mongoose.model('products').getOptionsWeight(req.body.item.options, req.body.item.id);
+
+    const finalPrice = _product.weight + weightOptionsModifier;
+
+    const item = {...req.body.item, weight: finalPrice, price: _product.price, options: req.body.item.options};
     if (_product.type !== 'virtual') {
         item.stock = _product.stock;
     }

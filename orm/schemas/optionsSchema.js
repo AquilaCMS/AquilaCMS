@@ -32,7 +32,7 @@ const OptionsValue  = new Schema({
 });
 
 const OptionsSchema = new Schema({
-    code      : {type: String, required: true, unique: true},
+    code      : {type: String, required: true},
     name      : {},
     mandatory : {type: Boolean, required: true},
     type      : {

@@ -7,7 +7,8 @@
         "errorNoName": "L'option doit avoir un nom",
         "errorNoValueName": "La valeur doit avoir un nom",
         "errorNoCode": "L'option doit avoir un code",
-        "errorNoType": "L'option doit avoir un type"
+        "errorNoType": "L'option doit avoir un type",
+        "errorMinMax": "Le minimum et le maximun ne sont pas cohérent"
     },
     "new": {
         "createOptions": "Créer une nouvelle option"
@@ -45,7 +46,9 @@
         "price": "prix supplémentaire",
         "typePrice": "Type de prix",
         "minLen": "Longueur minimum",
+        "min": "Valeur minimum",
         "maxLen": "Longueur maximum",
+        "max": "Valeur maximum",
         "typePriceChoice": {
             "pourcent": "Pourcentage",
             "price": "Prix"

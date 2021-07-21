@@ -232,6 +232,25 @@ ProductsSchema.statics.getOptionsPrice = async function (options, idOfProduct,  
     return optionsModifier;
 };
 
+ProductsSchema.statics.getOptionsWeight = async function (options, idOfProduct) {
+    const productInDB   = await mongoose.model('products').findOne({_id: idOfProduct.toString()});
+    let optionsModifier = 0;
+    if (productInDB && productInDB.type === 'simple') {
+        if (options && productInDB && productInDB.options) {
+            for (const oneOptions of options) {
+                const valueTemp1 = productInDB.options.find((element) => element._id.toString() === oneOptions._id.toString());
+                for (const oneValue of oneOptions.values) {
+                    const valueTemp = valueTemp1.values.find((element) => element._id.toString() === oneValue._id.toString());
+                    if (typeof valueTemp !== 'undefined' && typeof valueTemp.modifier !== 'undefined' && typeof valueTemp.modifier.weight !== 'undefined') {
+                        optionsModifier += valueTemp.modifier.weight;
+                    }
+                }
+            }
+        }
+    }
+    return optionsModifier;
+};
+
 ProductsSchema.statics.searchBySupplierRef = function (supplier_ref, cb) {
     this.find({supplier_ref}, cb);
 };

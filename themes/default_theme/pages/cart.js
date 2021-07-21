@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { Link, Router } from 'routes';
 import Layout from 'components/Layout';
 import { withI18next } from 'lib/withI18n';
-import { listModulePage } from 'lib/utils';
+import { listModulePage, getCurrencySymbol } from 'lib/utils';
 
 /**
  * PageCart - Page panier (surcharge NSPageCart)
@@ -15,6 +15,7 @@ import { listModulePage } from 'lib/utils';
 
 class PageCart extends NSPageCart {
     render() {
+        const currencySymbol = getCurrencySymbol();
         const {
             lang, oCmsHeader, oCmsFooter, routerLang, sitename, t
         } = this.props;
@@ -160,11 +161,33 @@ class PageCart extends NSPageCart {
                                                                                             <ul style={{ marginBottom: "10px" }}>
                                                                                                 {
                                                                                                     item.options.map((oneOptions) => {
-                                                                                                        console.log(oneOptions);
                                                                                                         const optionsName = oneOptions.name && typeof oneOptions.name[lang] !== "undefined" ? oneOptions.name[lang] : oneOptions.code;
-                                                                                                        if (oneOptions.type === "checkbox") {
-                                                                                                            return (
-                                                                                                                <>
+                                                                                                        let productPrix;
+                                                                                                        if (item.price && item.price[taxDisplay]) {
+                                                                                                            if (typeof item.price[taxDisplay].special !== 'undefined') {
+                                                                                                                productPrix = item.price[taxDisplay].special;
+                                                                                                            } else {
+                                                                                                                productPrix = item.price[taxDisplay].normal;
+                                                                                                            }
+                                                                                                        }
+                                                                                                        const calculatePriceModifier = (priceModifier) => {
+                                                                                                            let modiferText = "";
+                                                                                                            let totalPrice = 0;
+                                                                                                            if (typeof priceModifier !== "undefined" && priceModifier !== null) {
+                                                                                                                if (priceModifier.typePrice === "pourcent") {
+                                                                                                                    totalPrice = priceModifier.value * productPrix / 100;
+                                                                                                                } else if (priceModifier.typePrice === "price") {
+                                                                                                                    totalPrice = priceModifier.value;
+                                                                                                                }
+                                                                                                            }
+                                                                                                            if (totalPrice > 0) {
+                                                                                                                modiferText = `(${totalPrice} ${currencySymbol})`
+                                                                                                            }
+                                                                                                            return modiferText;
+                                                                                                        }
+                                                                                                        if (oneOptions.values && oneOptions.values.length > 0) {
+                                                                                                            if (oneOptions.type === "checkbox") {
+                                                                                                                return (<>
                                                                                                                     <li key={oneOptions.code}>{optionsName} :
                                                                                                                         <ul style={{ marginLeft: "20px" }}>
                                                                                                                             {oneOptions.values && oneOptions.values.length > 0 && oneOptions.values.map((element, index) => {
@@ -172,14 +195,24 @@ class PageCart extends NSPageCart {
                                                                                                                                 if (element.name && typeof element.name[lang] !== "undefined") {
                                                                                                                                     name = element.name[lang];
                                                                                                                                 }
-                                                                                                                                return <li>{`${name} : ${element.values.toString()}`}</li>;
+                                                                                                                                let modiferText = "";
+                                                                                                                                if (element.modifier && element.modifier.price) {
+                                                                                                                                    modiferText = calculatePriceModifier(element.modifier.price);
+                                                                                                                                }
+                                                                                                                                return <li>{`${name} : ${element.values.toString()}`} {modiferText}</li>;
                                                                                                                             })}
-                                                                                                                            {oneOptions.values && oneOptions.values.length === 0 && t('cart:page.cart.optionsNothing')}
                                                                                                                         </ul>
                                                                                                                     </li>
                                                                                                                 </>)
+                                                                                                            } else {
+                                                                                                                let modiferText = "";
+                                                                                                                if (oneOptions.values && oneOptions.values[0].modifier && oneOptions.values[0].modifier.price) {
+                                                                                                                    modiferText = calculatePriceModifier(oneOptions.values[0].modifier.price);
+                                                                                                                }
+                                                                                                                return (<li key={oneOptions.code}>{optionsName} : {oneOptions.values.map(element => element.values).toString()} {modiferText}</li>)
+                                                                                                            }
                                                                                                         } else {
-                                                                                                            return (<li key={oneOptions.code}>{optionsName} : {oneOptions.values.map(element => element.values).toString()}</li>)
+                                                                                                            return '';
                                                                                                         }
                                                                                                     })
                                                                                                 }

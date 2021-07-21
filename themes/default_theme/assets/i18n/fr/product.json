@@ -48,5 +48,6 @@
     "choose_option": "Vous devez séletionner une option à ce produit pour le commander",
     "mandatory": "Obligatoire",
     "optional": "Optionnel",
-    "mandatoryOptionsNotSelected": "Une options obligatoire n'a pas de valeur !"
+    "mandatoryOptionsNotSelected": "Une options obligatoire n'a pas de valeur !",
+    "optionsIncorrectValue": "Une des options n'a pas de valeur correct"
 }

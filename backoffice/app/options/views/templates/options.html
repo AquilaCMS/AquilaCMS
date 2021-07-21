@@ -116,15 +116,19 @@
                 </div>
                 <div class="form-group col-sm-10 flowRoot"
                     ng-if="options.type == 'textfield' || options.type == 'number'">
-                    <label for="param" class="col-sm-3 control-label displayTable"
+                    <label for="param" ng-if="options.type == 'textfield'" class="col-sm-3 control-label displayTable"
                         translate>options.values.minLen</label>
+                    <label for="param" ng-if="options.type == 'number'" class="col-sm-3 control-label displayTable"
+                        translate>options.values.min</label>
                     <input class="form-control col-sm-8 autoWidth" min="{{options.type == 'textfield' ? 0 : ''}}"
                         type="number" ng-model="oneValue.control.min">
                 </div>
                 <div class="form-group col-sm-10 flowRoot"
                     ng-if="options.type == 'textfield' || options.type == 'number'">
-                    <label for="param" class="col-sm-3 control-label displayTable"
+                    <label for="param" ng-if="options.type == 'textfield'" class="col-sm-3 control-label displayTable"
                         translate>options.values.maxLen</label>
+                    <label for="param" ng-if="options.type == 'number'" class="col-sm-3 control-label displayTable"
+                        translate>options.values.max</label>
                     <input class="form-control col-sm-8 autoWidth" min="{{options.type == 'textfield' ? 0 : ''}}"
                         type="number" ng-model="oneValue.control.max">
                 </div>

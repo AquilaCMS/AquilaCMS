@@ -65,6 +65,28 @@ class PageProduct extends NSPageProduct {
         let theValue;
         if (optionsType === "textfield" || optionsType === "number") {
             theValue = product.options.find(element => element.code == optionsCode).values[0];
+            // we control the value
+            if (theValue.control) {
+                if (optionsType === "textfield") {
+                    if (typeof theValue.control.min !== "undefined" && theValue.control.min > optionsValue.length) {
+                        NSToast.warn('product:optionsIncorrectValue');
+                        return
+                    }
+                    if (typeof theValue.control.max !== "undefined" && theValue.control.max < optionsValue.length) {
+                        NSToast.warn('product:optionsIncorrectValue');
+                        return
+                    }
+                } else if (optionsType === "number") {
+                    if (typeof theValue.control.min !== "undefined" && theValue.control.min > optionsValue) {
+                        NSToast.warn('product:optionsIncorrectValue');
+                        return
+                    }
+                    if (typeof theValue.control.max !== "undefined" && theValue.control.max < optionsValue) {
+                        NSToast.warn('product:optionsIncorrectValue');
+                        return
+                    }
+                }
+            }
         } else {
             theValue = product.options.find(element => element.code == optionsCode).values.find(oneValue => oneValue.name[lang] == optionsValue);
         }
@@ -77,17 +99,26 @@ class PageProduct extends NSPageProduct {
             if (optionsType == "checkbox") {
                 const indexOfValue = options[index].values.findIndex(element => element._id == id);
                 if (indexOfValue > -1) {
-                    options[index].values[indexOfValue] = {
-                        _id: id,
-                        name: name,
-                        values: optionsValue,
-                    };
+                    // the value is already present, we nned to check if false
+                    if (optionsValue == "true") {
+                        options[index].values[indexOfValue] = {
+                            _id: id,
+                            name: name,
+                            values: optionsValue,
+                        };
+                    } else if (optionsValue == "false") {
+                        // we remove the false value
+                        options[index].values.splice(indexOfValue, 1);
+                    }
                 } else {
-                    options[index].values.push({
-                        _id: id,
-                        name: name,
-                        values: optionsValue
-                    });
+                    // the value is not present, if false, we don't add
+                    if (optionsValue == "true") {
+                        options[index].values.push({
+                            _id: id,
+                            name: name,
+                            values: optionsValue
+                        });
+                    }
                 }
             } else {
                 // only one value
@@ -98,6 +129,10 @@ class PageProduct extends NSPageProduct {
                 }];
             }
         } else {
+            if (options.type == "checkbox" && optionsValue == "false") {
+                // we don't add false value
+                return
+            }
             options.push({
                 code: optionsCode,
                 _id: product.options.find(element => element.code == optionsCode)._id,

@@ -7,7 +7,8 @@
         "errorNoName": "The options needs a name",
         "errorNoValueName": "The value needs a name",
         "errorNoCode": "The options needs a code",
-        "errorNoType": "The options needs a type"
+        "errorNoType": "The options needs a type",
+        "errorMinMax": "The min and the max are not coherent"
     },
     "new": {
         "createOptions": "Create a new option"
@@ -45,7 +46,9 @@
         "price": "Price modifier",
         "typePrice": "Type of the modifier",
         "minLen": "Minimum length",
+        "min": "Minimum value",
         "maxLen": "Maximum length",
+        "max": "Maximum value",
         "typePriceChoice": {
             "pourcent": "Pourcent",
             "price": "Prix"

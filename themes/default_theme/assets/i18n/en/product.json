@@ -46,5 +46,6 @@
     "choose_option": "You must select an option of this product to order it",
     "mandatory": "Mandatory",
     "optional": "Optional",
-    "mandatoryOptionsNotSelected": "One mandatory option as no value !"
+    "mandatoryOptionsNotSelected": "One mandatory option as no value !",
+    "optionsIncorrectValue": "One of the options doesn't have a correct value"
 }
