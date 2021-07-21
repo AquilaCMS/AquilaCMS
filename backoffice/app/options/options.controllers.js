@@ -155,6 +155,15 @@ OptionsControllers.controller('nsNewOptionsController', [
                 if (res === -1) {
                     return -1;
                 }
+                if (options.type === "textfield" || options.type === "number") {
+                    // we check if min < max
+                    if (oneOptions.control && typeof oneOptions.control.min !== "undefined" && typeof oneOptions.control.max !== "undefined") {
+                        if (oneOptions.control.min > oneOptions.control.max) {
+                            toastService.toast('danger', $translate.instant('options.detail.errorMinMax'));
+                            return -1;
+                        }
+                    }
+                }
             }
         }
 
@@ -167,10 +176,6 @@ OptionsControllers.controller('nsNewOptionsController', [
             $scope.options.values.push({
                 name: {},
                 control: {
-                    mandatory: true,
-                    checked: true,
-                    min: 0,
-                    max: 10
                 },
                 modifier: {
                     price: 0,
