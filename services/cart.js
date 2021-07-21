@@ -55,7 +55,9 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle') {
+                    cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                }
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();

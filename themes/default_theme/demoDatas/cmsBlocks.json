@@ -4,6 +4,7 @@
     {
       "_id": "5b7e857309c72307ffb3c7db",
       "code": "header",
+      "active": true,
       "translation": {
         "en": {
           "content": "<header class=\"header\">\n    <div class=\"shell\">\n        <div class=\"header__inner\">\n            <a href=\"/en\" class=\"logo\">\n                <img src=\"/images/medias/max-70/5d443d76ede1945f66028313/aquila-logo.png\" alt=\"AquilaCMS\">\n            </a>\n            <div class=\"header__inner-aside\">\n                <div class=\"container-nav-lang\"><ns-lang></ns-lang></div>\n                <nav class=\"nav-utilities\">\n                    <ul>\n                        <ns-btn></ns-btn>\n                        <ns-cart-count></ns-cart-count>\n                    </ul>\n                </nav>\n                <a href=\"#\" class=\"btn-menu\">\n                    <span></span>\n                    <span></span>\n                    <span></span>\n                </a>\n            </div>\n        </div>\n        <div class=\"header__bar\">\n            <div>\n                <ns-menu\n                    ns-code=\"menu-header\"\n                    classbtnmobile=\"btn-menu\"\n                    classnav=\"nav\"\n                    classnavactivemobile=\"show\"\n                    classnavui=\"main-navigation\"\n                    levelmax=\"10\"\n                >\n                </ns-menu>\n            </div>\n            <ns-search></ns-search>\n        </div>\n    </div>\n</header>",
@@ -18,6 +19,7 @@
     {
       "_id": "5b7e857309c72307ffb3c7ee",
       "code": "header_cart",
+      "active": true,
       "translation": {
         "en": {
           "content": "<header class=\"header\">\n<div class=\"shell\">\n<div class=\"header__inner\"><a href=\"/en/\" class=\"logo\"> <img src=\"/images/medias/max-70/5d443d76ede1945f66028313/aquila-logo.png\" alt=\"AquilaCMS\" /> </a></div>\n</div>\n</header>",
@@ -32,6 +34,7 @@
     {
       "_id": "5b7e859e09c72307ffb3c7dc",
       "code": "footer",
+      "active": true,
       "translation": {
         "fr": {
           "description": "Pied de page",
@@ -46,6 +49,7 @@
     {
       "_id": "5b7e859e09c72307ffb3c7ee",
       "code": "footer_cart",
+      "active": true,
       "translation": {
         "fr": {
           "description": "Pied de page du panier",
@@ -60,6 +64,7 @@
     {
       "_id": "5b7ea55c09c72307ffb3c7dd",
       "code": "cookie-banner",
+      "active": true,
       "translation": {
         "en": {
           "content": "By continuing your visit to this site, you accept the use of cookies.",
@@ -74,6 +79,7 @@
     {
       "_id": "5ba372cb49ceac42b4a1686c",
       "code": "legalTxt",
+      "active": true,
       "translation": {
         "en": {
           "content": "<div><span style=\"background-color: rgb(255, 255, 255); color: rgb(155, 155, 155); font-size: 12px; font-style: italic;\">\nThe requested information, marked with an asterisk, is mandatory and is intended for TODO, the controller, for processing your orders, managing your customer account, marketing and statistics studies. In accordance with the Data Protection Act of 06/01/1978, you have a right to access, rectify and delete data concerning you and opposition to their treatment. If you wish to exercise it, you can write to us..</span></div>",
@@ -88,6 +94,7 @@
     { 
       "_id" : "5e29a422286b512918a391bb", 
       "code" : "invoice", 
+      "active": false,
       "translation" : {
           "fr" : {
               "description" : "invoice", 
