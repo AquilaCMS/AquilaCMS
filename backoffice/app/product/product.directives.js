@@ -187,9 +187,85 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
             product     : "=", lang        : "=", isEditMode  : "=", form        : "="
         },
         templateUrl : "app/product/views/templates/nsProductDeclinaisons.html",
-        controller  : ['$scope', function($scope) {
-            console.log($scope.product)
+        controller  : ['$scope', 'AttributesV2', '$modal', function($scope, AttributesV2, $modal) {
             $scope.declinaisons = []
+            $scope.selectedVariant = -1;
+            $scope.selectedVariantValue = {}
+
+            AttributesV2.list({PostBody: {
+                filter: {
+                    isVariantable: true
+                },
+                limit: 99
+            }}, function(data) {
+                $scope.declinaisons = data.datas;
+            });
+
+            $scope.toggleVariant = function (e, variant) {
+                e.stopPropagation()
+                if(e.target.checked) {
+                    if(!$scope.product.variants) $scope.product.variants = []
+                    $scope.product.variants.push({
+                        code: variant.code,
+                        type: 'list',
+                        translation: {
+                            [$scope.lang]: {
+                                name: variant.translation[$scope.lang].name
+                            }
+                        },
+                        values: variant.translation[$scope.lang].values.map((val) => {
+                            return {
+                                active: false,
+                                name: val,
+                                code: val,
+                                weight: $scope.product.weight,
+                                default: false,
+                                price: $scope.product.price,
+                                stock: $scope.product.stock,
+                                images: $scope.product.images
+                            }
+                        })
+                    })
+                } else {
+                    $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
+                }
+            }
+
+            $scope.selectVariantValue = function (variantValue) {
+                $scope.selectedVariantValue = variantValue
+                $modal.open({
+                    windowClass: "modal-large",
+                    templateUrl: "app/product/views/modals/modalVariantValue.html",
+                    controller: [
+                        "$scope", "$filter", "$modalInstance",
+                        function ($scope, $filter, $modalInstance) {
+                            $scope.close = function() {
+                                $modalInstance.close()
+                            }
+                        }
+                    ],
+                    scope: $scope
+                })
+            }
+
+            $scope.vartiantDetails = function (variant) {
+                $scope.selectedIndex = $scope.product.variants.findIndex( v => v.code === variant.code)
+            }
+
+            $scope.isVariantSelected = function (variant) {
+                return $scope.product.variants && $scope.product.variants.find(v => v.code === variant.code) ? true : false
+            }
+
+            $scope.setDeclinaisonType = function (code, type) {
+                const index = $scope.product.variants.findIndex(v => v.code === code)
+                if(index > -1) {
+                    $scope.product.variants[index].type = type
+                }
+            }
+
+            $scope.getProductVariantIndex = function (code) {
+                return $scope.product.variants.findIndex(v => v.code === code)
+            }            
         }]
     };
 });

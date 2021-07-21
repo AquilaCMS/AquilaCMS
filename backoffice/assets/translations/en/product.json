@@ -142,5 +142,18 @@
     },
     "toast": {
         "URLcanonical": "Can't generate URL because canonical is empty"
+    },
+    "declinaisons": {
+        "title1": "Used variant",
+        "title2": "List variant",
+        "code": "Code",
+        "name": "Name",
+        "typeDisplay": "Display",
+        "available": "Available",
+        "picture": "Image",
+        "variant": "Variant",
+        "price": "Base ATI price",
+        "quantity": "Qty",
+        "default": "Default"
     }
 }

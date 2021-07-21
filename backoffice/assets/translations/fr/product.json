@@ -148,6 +148,12 @@
         "title2": "Liste des déclinaisons",
         "code": "Code",
         "name": "Nom",
-        "typeDisplay": "Type d'affichage"
+        "typeDisplay": "Type d'affichage",
+        "available": "Disponible",
+        "picture": "Image",
+        "variant": "Declinaison",
+        "price": "Prix base TTC",
+        "quantity": "Quantité",
+        "default": "Defaut"
     }
 }
