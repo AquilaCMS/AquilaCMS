@@ -160,7 +160,7 @@ const initExpress = async (server, passport) => {
     server.use(cors({
         origin         : '*',
         methods        : ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-        allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+        allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'lang']
     }));
     server.use('/api', retrieveUser, serverUseRequest);
     server.get('*', require('../routes/index').manageExceptionsRoutes);

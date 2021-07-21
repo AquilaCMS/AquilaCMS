@@ -138,18 +138,15 @@ class PageCart extends NSPageCart {
                                                                                             <ul>
                                                                                                 {
                                                                                                     item.selections.map((section) => (
-                                                                                                        section.products.map((productSection, indexSel) => (
-                                                                                                            <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                                (item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
-                                                                                                                    '+' :
-                                                                                                                    '') +
-                                                                                                                item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' :
-                                                                                                                ''
-                                                                                                                }`}</li>
-                                                                                                        ))
+                                                                                                        section.products.map((productSection, indexSel) => {
+                                                                                                            const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                                                                                                            const correctProduct = bundleSection ? bundleSection.products.find((product) => product.id === productSection._id) : null;
+                                                                                                            let toDisplay = '';
+                                                                                                            if (bundleSection && correctProduct && correctProduct.modifier_price && correctProduct.modifier_price[taxDisplay]) {
+                                                                                                                toDisplay = (correctProduct.modifier_price[taxDisplay] > 0 ? '+' : '') + correctProduct.modifier_price[taxDisplay] + '€'
+                                                                                                            }
+                                                                                                            return (<li key={indexSel}>{productSection.name} {toDisplay}</li>)
+                                                                                                        })
                                                                                                     ))
                                                                                                 }
                                                                                             </ul>
@@ -170,13 +167,14 @@ class PageCart extends NSPageCart {
                                                                                                                 <>
                                                                                                                     <li key={oneOptions.code}>{optionsName} :
                                                                                                                         <ul style={{ marginLeft: "20px" }}>
-                                                                                                                            {oneOptions.values.map((element, index) => {
+                                                                                                                            {oneOptions.values && oneOptions.values.length > 0 && oneOptions.values.map((element, index) => {
                                                                                                                                 let name = `Value ${index + 1}`;
                                                                                                                                 if (element.name && typeof element.name[lang] !== "undefined") {
                                                                                                                                     name = element.name[lang];
                                                                                                                                 }
                                                                                                                                 return <li>{`${name} : ${element.values.toString()}`}</li>;
                                                                                                                             })}
+                                                                                                                            {oneOptions.values && oneOptions.values.length === 0 && t('cart:page.cart.optionsNothing')}
                                                                                                                         </ul>
                                                                                                                     </li>
                                                                                                                 </>)
