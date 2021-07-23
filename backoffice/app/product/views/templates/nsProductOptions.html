@@ -5,6 +5,7 @@
         <div class="col-sm-6 flowRoot">
             <select id="set_attributes" name="optionsSet" class="form-control" ng-model="optionsSet._id"
                 ng-change="changeOptionsSet()">
+                <option value=""> </option>
                 <option ng-repeat="oneOptionsSet in listOptionsSet" value="{{oneOptionsSet._id}}">
                     {{oneOptionsSet.name[lang]}}
                     ({{oneOptionsSet.code}})

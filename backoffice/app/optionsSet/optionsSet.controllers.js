@@ -80,6 +80,7 @@ OptionsSetControllers.controller('OptionsSetDetailCtrl', [
             }, function (response) {
                 $scope.optionsSet = response;
             }, function (error) {
+                $location.path("/optionsSet");
                 if (error && error.data && error.data.message) {
                     toastService.toast('danger', error.data.message);
                 } else {

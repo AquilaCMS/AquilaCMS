@@ -110,7 +110,12 @@ OptionsControllers.controller('nsNewOptionsController', [
                 $scope.options = response;
                 $scope.options.save = $scope.save;
             }, function (error) {
-                toastService.toast('danger', $translate.instant('global.standardError'));
+                $location.path("/options");
+                if (error && error.data && error.data.message) {
+                    toastService.toast('danger', error.data.message);
+                } else {
+                    toastService.toast('danger', $translate.instant('global.standardError'));
+                }
             });
         }
 
@@ -214,8 +219,8 @@ OptionsControllers.controller('nsNewOptionsController', [
                         name: {},
                         control: {
                             default: false,
-                            min: 10,
-                            max: 0
+                            min: 0,
+                            max: 10
                         },
                         modifier: {
                             price: {
