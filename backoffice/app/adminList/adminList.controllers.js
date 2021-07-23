@@ -145,10 +145,14 @@ AdminListControllers.controller("AdminDeleteCtrl", [
 ]);
 
 AdminListControllers.controller("AdminNewCtrl", [
-    "$scope", "AdminNew", "$location", "toastService", "ClientV2", "$translate",
-    function ($scope, AdminNew, $location, toastService, ClientV2, $translate) {
+    "$scope", "AdminNew", "$location", "toastService", "ClientV2", "$translate", "AdminListApi", "$rootScope",
+    function ($scope, AdminNew, $location, toastService, ClientV2, $translate, AdminListApi, $rootScope) {
         $scope.user = { accessList: [] };
-        $scope.accessList = accessList;
+        $scope.rights = [];
+
+        AdminListApi.list({ PostBody: { filter: {  }, limit: 99, structure: '*' } }, function (data) {
+            $scope.rights = data.datas;
+        });
 
         $scope.toggleSelection = function toggleSelection(access) {
             var idx = $scope.user.accessList.indexOf(access);
@@ -193,11 +197,15 @@ AdminListControllers.controller("AdminNewCtrl", [
 ]);
 
 AdminListControllers.controller("AdminDetailCtrl", [
-    "$scope", "ClientUpdate", "ClientV2", "$location", "$routeParams", "toastService", "$rootScope", "$translate",
-    function ($scope, ClientUpdate, ClientV2, $location, $routeParams, toastService, $rootScope, $translate) {
+    "$scope", "ClientUpdate", "ClientV2", "$location", "$routeParams", "toastService", "$rootScope", "$translate", "AdminListApi",
+    function ($scope, ClientUpdate, ClientV2, $location, $routeParams, toastService, $rootScope, $translate, AdminListApi) {
+        $scope.rights = []
         ClientV2.query({ PostBody: { filter: { _id: $routeParams.id }, limit: 1, structure: '*' } }, function (client) {
             $scope.user = client;
             $scope.user.oldEmail = client.email;
+        });
+        AdminListApi.list({ PostBody: { filter: {  }, limit: 99, structure: '*' } }, function (data) {
+            $scope.rights = data.datas;
         });
 
         $scope.toggleSelection = function toggleSelection(access) {

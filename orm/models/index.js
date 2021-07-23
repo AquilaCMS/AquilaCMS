@@ -7,6 +7,7 @@
  */
 
 const AdminInformation      = require('./adminInformation');
+const AdminRights           = require('./adminrights');
 const Attributes            = require('./attributes');
 const Bills                 = require('./bills');
 const Cart                  = require('./cart');
@@ -56,6 +57,8 @@ const DownloadHistory       = require('./downloadHistory');
 const Shortcodes            = require('./shortcodes');
 
 exports.AdminInformation      = AdminInformation;
+exports.AdminRights           = AdminRights;
+exports.Attributes            = Attributes;
 exports.Attributes            = Attributes;
 exports.Bills                 = Bills;
 exports.Cart                  = Cart;
