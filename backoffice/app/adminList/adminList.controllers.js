@@ -1,56 +1,5 @@
 const AdminListControllers = angular.module("aq.adminList.controllers", []);
 
-const accessList = [
-    { code: "orders", translate: "admin-list.transComm" },
-    { code: "payments", translate: "admin-list.transPay" },
-    { code: "invoices", translate: "admin-list.invoices" },
-    { code: "cart", translate: "admin-list.cart" },
-
-    { code: "products", translate: "admin-list.catalPdts" },
-    { code: "categories", translate: "admin-list.siteCat" },
-    { code: "promos", translate: "admin-list.discount" },
-    { code: "picto", translate: "admin-list.picto" },
-    { code: "attributes", translate: "admin-list.catalAttr" },
-
-    { code: "trademarks", translate: "admin-list.catalMarques" },
-    { code: "suppliers", translate: "admin-list.catalFourn" },
-    { code: "families", translate: "admin-list.families" },
-
-    { code: "staticPage", translate: "admin-list.siteStatic" },
-    { code: "cmsBlocks", translate: "admin-list.siteCMS" },
-    { code: "gallery", translate: "admin-list.gallery" },
-    { code: "slider", translate: "admin-list.slider" },
-    { code: "medias", translate: "admin-list.siteMedias" },
-    { code: "articles", translate: "admin-list.siteArt" },
-
-    { code: "clients", translate: "admin-list.clients" },
-    { code: "reviews", translate: "admin-list.reviews" },
-    { code: "contacts", translate: "admin-list.contact" },
-    { code: "newsletters", translate: "admin-list.newsletters" },
-
-    { code: "mails", translate: "admin-list.mails" },
-    { code: "shipments", translate: "admin-list.shipments" },
-    { code: "territories", translate: "admin-list.territories" },
-    { code: "languages", translate: "admin-list.confLang" },
-    { code: "paymentMethods", translate: "admin-list.paymentModes" },
-    { code: "admin", translate: "admin-list.admin" },
-
-    { code: "themes", translate: "admin-list.themes" },
-    { code: "design", translate: "admin-list.design" },
-    { code: "translate", translate: "admin-list.translate" },
-
-    { code: "config", translate: "admin-list.confEnv" },
-    { code: "stock", translate: "admin-list.stock" },
-    { code: "jobs", translate: "admin-list.confTasks" },
-    { code: "system", translate: "admin-list.system" },
-    { code: "update", translate: "admin-list.update" },
-
-    { code: "modules", translate: "admin-list.modules" },
-
-    { code: "statistics", translate: "admin-list.statistics" },
-    { code: "editHtml", translate: "admin-list.editHtml" },
-];
-
 AdminListControllers.controller("AdminCtrl", [
     "$scope", "AdminScroll", "$modal", "ClientV2", "$location",
     function ($scope, AdminScroll, $modal, ClientV2, $location) {
@@ -228,8 +177,6 @@ AdminListControllers.controller("AdminDetailCtrl", [
                 $scope.user = client;
             });
         };
-
-        $scope.accessList = accessList;
 
         $scope.save = function (quit = false) {
             var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
