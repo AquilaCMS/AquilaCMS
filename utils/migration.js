@@ -162,6 +162,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Transactions > Commandes'
+                },
+                en : {
+                    name : 'Transactions > Orders'
                 }
             }
         },
@@ -170,6 +173,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : "Editer de l'HTML"
+                },
+                en : {
+                    name : 'Edit HTML'
                 }
             }
         },
@@ -178,6 +184,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Statistiques'
+                },
+                en : {
+                    name : 'Statistics'
                 }
             }
         },
@@ -186,6 +195,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Modules'
+                },
+                en : {
+                    name : 'Plugins'
                 }
             }
         },
@@ -194,6 +206,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Paramètres > Mise à jour'
+                },
+                en : {
+                    name : 'Settings > Update'
                 }
             }
         },
@@ -202,6 +217,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Paramètres > Système'
+                },
+                en : {
+                    name : 'Settings > System'
                 }
             }
         },
@@ -210,6 +228,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Paramètres > Tâches planifiées'
+                },
+                en : {
+                    name : 'Settings > Planned tasks'
                 }
             }
         },
@@ -218,6 +239,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Paramètres > Param Commande'
+                },
+                en : {
+                    name : 'Settings > Orders param'
                 }
             }
         },
@@ -226,6 +250,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Paramètres > Paramètre serveur'
+                },
+                en : {
+                    name : 'Settings > Server settings'
                 }
             }
         },
@@ -233,7 +260,10 @@ const migration_9_adminRights = async () => {
             code      : 'translate',
             translate : {
                 fr : {
-                    name : 'Apparence > translation'
+                    name : 'Apparence > Translation'
+                },
+                en : {
+                    name : 'Design > Translation'
                 }
             }
         },
@@ -241,7 +271,10 @@ const migration_9_adminRights = async () => {
             code      : 'design',
             translate : {
                 fr : {
-                    name : 'Apparence > Design'
+                    name : 'Apparence > CSS'
+                },
+                en : {
+                    name : 'Design > CSS'
                 }
             }
         },
@@ -250,6 +283,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Apparence > Thèmes'
+                },
+                en : {
+                    name : 'Design > Themes'
                 }
             }
         },
@@ -257,6 +293,9 @@ const migration_9_adminRights = async () => {
             code      : 'admin',
             translate : {
                 fr : {
+                    name : 'Configuration > Admin'
+                },
+                en : {
                     name : 'Configuration > Admin'
                 }
             }
@@ -266,6 +305,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Configuration > Modes de paiement'
+                },
+                en : {
+                    name : 'Configuration > Payment modes'
                 }
             }
         },
@@ -274,6 +316,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Configuration > Langues'
+                },
+                en : {
+                    name : 'Configuration > Languages'
                 }
             }
         },
@@ -282,6 +327,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Configuration > territoires'
+                },
+                en : {
+                    name : 'Configuration > Territories'
                 }
             }
         },
@@ -289,7 +337,10 @@ const migration_9_adminRights = async () => {
             code      : 'shipments',
             translate : {
                 fr : {
-                    name : 'Configuration > shipments'
+                    name : 'Configuration > Transporteurs'
+                },
+                en : {
+                    name : 'Configuration > Shippings'
                 }
             }
         },
@@ -298,6 +349,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Configuration > Mails'
+                },
+                en : {
+                    name : 'Configuration > Mails'
                 }
             }
         },
@@ -305,7 +359,10 @@ const migration_9_adminRights = async () => {
             code      : 'newsletters',
             translate : {
                 fr : {
-                    name : 'Clients > Newsletters'
+                    name : 'Clients > Newsletter'
+                },
+                en : {
+                    name : 'Customers > Newletter'
                 }
             }
         },
@@ -314,6 +371,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Clients > Contacts'
+                },
+                en : {
+                    name : 'Customers > Contacts'
                 }
             }
         },
@@ -322,6 +382,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Clients > Avis'
+                },
+                en : {
+                    name : 'Customers > Reviews'
                 }
             }
         },
@@ -330,6 +393,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Clients > Clients'
+                },
+                en : {
+                    name : 'Customers > Customers'
                 }
             }
         },
@@ -337,6 +403,9 @@ const migration_9_adminRights = async () => {
             code      : 'articles',
             translate : {
                 fr : {
+                    name : 'Site > Blog'
+                },
+                en : {
                     name : 'Site > Blog'
                 }
             }
@@ -346,6 +415,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Site > Médias'
+                },
+                en : {
+                    name : 'Site > Media'
                 }
             }
         },
@@ -354,6 +426,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Site > Carrousel'
+                },
+                en : {
+                    name : 'Site > Carousel'
                 }
             }
         },
@@ -361,6 +436,9 @@ const migration_9_adminRights = async () => {
             code      : 'gallery',
             translate : {
                 fr : {
+                    name : 'Site > Gallerie'
+                },
+                en : {
                     name : 'Site > Gallery'
                 }
             }
@@ -370,6 +448,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Site > Blocs CMS'
+                },
+                en : {
+                    name : 'Site > CMS Blocks'
                 }
             }
         },
@@ -377,7 +458,10 @@ const migration_9_adminRights = async () => {
             code      : 'staticPage',
             translate : {
                 fr : {
-                    name : 'Site > Pages statiques'
+                    name : 'Site > Pages'
+                },
+                en : {
+                    name : 'Site > Pages'
                 }
             }
         },
@@ -386,6 +470,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Famille'
+                },
+                en : {
+                    name : 'Catalog > Families'
                 }
             }
         },
@@ -394,6 +481,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Fournisseurs'
+                },
+                en : {
+                    name : 'Catalog > Suppliers'
                 }
             }
         },
@@ -402,6 +492,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Marques'
+                },
+                en : {
+                    name : 'Catalog > Brands'
                 }
             }
         },
@@ -409,7 +502,10 @@ const migration_9_adminRights = async () => {
             code      : 'attributes',
             translate : {
                 fr : {
-                    name : 'Catalogue > Attributs'
+                    name : 'Catalogue/Clients > Attributs'
+                },
+                en : {
+                    name : 'Catalog/Customers > Attributes'
                 }
             }
         },
@@ -418,6 +514,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Pictogramme'
+                },
+                en : {
+                    name : 'Catalog > Pictrogram'
                 }
             }
         },
@@ -426,6 +525,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Promotions'
+                },
+                en : {
+                    name : 'Catalog > Discount'
                 }
             }
         },
@@ -434,6 +536,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Catégories'
+                },
+                en : {
+                    name : 'Catalog > Categories'
                 }
             }
         },
@@ -442,6 +547,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Catalogue > Produits'
+                },
+                en : {
+                    name : 'Catalog > Products'
                 }
             }
         },
@@ -450,6 +558,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Transactions > panier'
+                },
+                en : {
+                    name : 'Transactions > Carts'
                 }
             }
         },
@@ -457,7 +568,10 @@ const migration_9_adminRights = async () => {
             code      : 'invoices',
             translate : {
                 fr : {
-                    name : 'Transactions > facture'
+                    name : 'Transactions > Facture'
+                },
+                en : {
+                    name : 'Transactions > Online bills'
                 }
             }
         },
@@ -466,6 +580,9 @@ const migration_9_adminRights = async () => {
             translate : {
                 fr : {
                     name : 'Transactions > Paiements'
+                },
+                en : {
+                    name : 'Transactions > Payments'
                 }
             }
         }];
