@@ -103,9 +103,9 @@ const postConfiguratorDatas = async (req) => {
         console.log('Installer : start default theme compilation');
         const packageJSON = new PackageJSON();
         await packageJSON.read();
-        const currentThemeIndex = packageJSON.workspaces.findIndex(`themes/${global.envConfig.environment.currentTheme}`);
-        if (currentThemeIndex !== -1) packageJSON.workspaces.splice(currentThemeIndex, 1);
-        packageJSON.workspaces.push('themes/default_theme');
+        // const currentThemeIndex = packageJSON.package.workspaces.findIndex(`themes/${global.envConfig.environment.currentTheme}`);
+        // if (currentThemeIndex !== -1) packageJSON.package.workspaces.splice(currentThemeIndex, 1);
+        packageJSON.package.workspaces.push('themes/default_theme');
         await packageJSON.save();
         await themeCompile('default_theme');
         console.log('Installer : end default theme compilation');

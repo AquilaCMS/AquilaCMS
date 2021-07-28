@@ -135,9 +135,9 @@ const initModule = async (files) => {
 
         const myModule  = await Modules.findOne({name: info.name});
         const newModule = await Modules.findOneAndUpdate({name: info.name}, {
-            name                     : packageJSON.name,
-            description              : packageJSON.description,
-            version                  : packageJSON.version,
+            name                     : packageJSON.package.name,
+            description              : packageJSON.package.description,
+            version                  : packageJSON.package.version,
             path                     : extractZipFilePath,
             url                      : info.url,
             cronNames                : info.cronNames,
@@ -256,7 +256,7 @@ const activateModule = async (idModule) => {
 
     const packageJSON = new PackageJSON();
     await packageJSON.read();
-    packageJSON.workspaces.push(`modules/${myModule.name}`);
+    packageJSON.package.workspaces.push(`modules/${myModule.name}`);
     await packageJSON.save();
 
     await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
@@ -315,8 +315,8 @@ const deactivateModule = async (idModule) => {
     console.log('Removing dependencies of the module...');
     const packageJSON = new PackageJSON();
     await packageJSON.read();
-    const workspaceIndex = packageJSON.workspaces.indexOf(`/modules/${_module.name}`);
-    packageJSON.workspaces.splice(workspaceIndex, 1);
+    const workspaceIndex = packageJSON.package.workspaces.indexOf(`/modules/${_module.name}`);
+    packageJSON.package.workspaces.splice(workspaceIndex, 1);
     await packageJSON.save();
     await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
 

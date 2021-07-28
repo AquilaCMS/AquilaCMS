@@ -78,10 +78,8 @@ ModulesControllers.controller('ModulesCtrl', [
                 toastService.toast("danger", $translate.instant("global.standardError"));
             });
         }
-
-    $scope.remove = function (idModule, nameModule, state) {
-        var check = window.confirm($translate.instant("confirm.deleteModule"));
-        if (check) {
+    
+        $scope.toggleActive = function (id, name, state) {
             $scope.showModuleLoading = true;
             ModuleServiceV2.toggle({
                 idModule    : id,
@@ -107,18 +105,12 @@ ModulesControllers.controller('ModulesCtrl', [
                     toastService.toast('danger', err.data.message);
                 }
 
-    $scope.restart = function (nomModule, active, deleteBool) {
-        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
-            $scope.config = config;
-            $scope.showLoading = true;
-            $http.get('/restart').catch(function(error) {
-                console.error(error);
-                toastService.toast("danger", $translate.instant("modules.restartFail"));
+                $scope.getDatas()
             });
         };
 
         $scope.remove = function (idModule, nameModule, state) {
-            var check = window.confirm('Êtes-vous sur de vouloir supprimer ce module ?');
+            var check = window.confirm($translate.instant("confirm.deleteModule"));
             if (check) {
                 $scope.showModuleLoading = true;
                 $http.delete(`/v2/modules/${idModule}`).then(function (resp) {
@@ -153,7 +145,7 @@ ModulesControllers.controller('ModulesCtrl', [
                 $scope.showLoading = true;
                 $http.get('/restart').catch(function(error) {
                     console.error(error);
-                    toastService.toast("danger", $translate.instant("global.restartFail"));
+                    toastService.toast("danger", $translate.instant("modules.restartFail"));
                 });
                 if (active && !deleteBool) {
                     $scope.message = `Activation du module ${nomModule} en cours, merci de patienter ...`;

@@ -19,7 +19,6 @@ module.exports = function (app) {
     app.post('/v2/modules/toggle',   adminAuth, toggleActiveModule);
     app.post('/v2/modules/md',       adminAuth, getModuleMd);
     app.delete('/v2/modules/:id',    adminAuth, removeModule);
-    app.get('/v2/modules/check',     adminAuth, checkDependencies);
     app.post('/v2/module/setConfig', adminAuth, setModuleConfig);
 
     // Deprecated

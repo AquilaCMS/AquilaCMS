@@ -4,7 +4,10 @@
   "description": "CMS e-commerce",
   "main": "server.js",
   "private": true,
-  "workspaces": [],
+  "workspaces": [
+    "themes/default_theme",
+    "modules/apm-aquilav2"
+  ],
   "license": "OSL-3.0",
   "engines": {
     "node": ">=14"

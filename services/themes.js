@@ -39,9 +39,9 @@ const changeTheme = async (selectedTheme) => {
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
             const packageJSON = new PackageJSON();
             await packageJSON.read();
-            const currentThemeIndex = packageJSON.workspaces.findIndex(`themes/${global.envConfig.environment.currentTheme}`);
-            if (currentThemeIndex !== -1) packageJSON.workspaces.splice(currentThemeIndex, 1);
-            packageJSON.workspaces.push(`themes/${selectedTheme}`);
+            const currentThemeIndex = packageJSON.package.workspaces.indexOf(`themes/${global.envConfig.environment.currentTheme}`);
+            if (currentThemeIndex !== -1) packageJSON.package.workspaces.splice(currentThemeIndex, 1);
+            packageJSON.package.workspaces.push(`themes/${selectedTheme}`);
             await packageJSON.save();
             await require('./modules').setFrontModules(selectedTheme);
             await setConfigTheme(selectedTheme);

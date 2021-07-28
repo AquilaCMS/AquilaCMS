@@ -97,7 +97,7 @@ const update = async () => {
         console.error(`Unzip ${filePath} failed`);
     }
     const packageJSON      = JSON.parse(await fs.readFile(packageJSONPath));
-    packageJSON.workspaces = workspaces;
+    packageJSON.package.workspaces = workspaces;
     await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2));
 
     await packageManager.execCmd(`yarn install${isProd ? ' --prod' : ''}`);
