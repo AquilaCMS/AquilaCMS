@@ -590,8 +590,12 @@ const migration_9_adminRights = async () => {
                 }
             }
         }];
-    await mongoose.connection.collection('adminrights').deleteMany({});
-    await mongoose.connection.collection('adminrights').insertMany(rights);
+    for (const oneRight of rights) {
+        const isThere = await mongoose.connection.collection('adminrights').findOne({code: oneRight.code});
+        if (isThere === null) {
+            await mongoose.connection.collection('adminrights').insertMany(oneRight);
+        }
+    }
 };
 
 // Scripts must be in order: put the new scripts at the bottom
