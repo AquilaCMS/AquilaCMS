@@ -457,14 +457,14 @@ PromoControllers.controller("PromoDetailCtrl", [
                 }
 
                 Promise.all(actionPromises).then(function (response) {
-                    toastService.toast("success", $translate.instant("global.actionSaved"));
+                    toastService.toast("success", $translate.instant("promo.detail.actionSaved"));
                     $scope.actions = response;
                     // On enregistre les ids des actions dans la promo
                     $scope.promo.actions = response.map(function (action) {
                         return action._id;
                     });
                 }, function (err) {
-                    toastService.toast("danger", $translate.instant("global.errorSavedRules"));
+                    toastService.toast("danger", $translate.instant("promo.detail.errorSavedRules"));
                 });
             }
         }
@@ -477,7 +477,7 @@ PromoControllers.controller("PromoDetailCtrl", [
 
             $scope.form.nsSubmitted = true;
             if ($scope.form.ruleForm.$invalid) {
-                return toastService.toast("danger", $translate.instant("global.formRulesIncomplete"));
+                return toastService.toast("danger", $translate.instant("promo.detail.formRulesIncomplete"));
             }
             while (actionFormChecked === 0 && i < formKeys.length) {
                 if ($scope.form[`actionForm_${  i}`]) {
@@ -494,7 +494,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                 return toastService.toast("danger", `Le formulaire de l'action ${  i  } est incomplet.`);
             }
             if ($scope.form.$invalid || $scope.dateIsValid === false) {
-                return toastService.toast("danger", $translate.instant("global.enterInvalid"));
+                return toastService.toast("danger", $translate.instant("promo.detail.enterInvalid"));
             }
             // On ajoute les gifts dans promo.gifts en ne gardant que la value des gifts dont la valeur est valide
             processGifts();
@@ -505,12 +505,12 @@ PromoControllers.controller("PromoDetailCtrl", [
                 if ($scope.rule.operand !== undefined && $scope.promo.discountType !== 'QtyB') {
                     // On sauvegarde la régle
                     RulesV2.save($scope.rule, function (response) {
-                        toastService.toast("success", $translate.instant("global.ruleSaved"));
+                        toastService.toast("success", $translate.instant("promo.detail.ruleSaved"));
                         $scope.rule = response;
                         // On enregistre l'id de la régle dans rules_id et de la promo
                         $scope.promo.rules_id = response._id;
                     }, function (err) {
-                        toastService.toast("danger", $translate.instant("global.failSavedRules"));
+                        toastService.toast("danger", $translate.instant("promo.detail.failSavedRules"));
                     });
                 } else {
                     // Si nous n'avons pas de règle nous enregistrons directement les actions et la promo
@@ -521,7 +521,7 @@ PromoControllers.controller("PromoDetailCtrl", [
                 if (isQuit) {
                     $location.path("/promos");
                 } else {
-                    toastService.toast("success", $translate.instant("global.promoSaved"));
+                    toastService.toast("success", $translate.instant("promo.detail.promoSaved"));
                     $location.path(`/promos/${  response._id}`);
                 }
             }, function (error) {
@@ -548,7 +548,7 @@ PromoControllers.controller("PromoDetailCtrl", [
 
                 Promise.all(actionPromises).then(function () {
                     PromosV2.delete({id: _id, type: 'promo'}, function () {
-                        toastService.toast("success", $translate.instant("global.promoDeleted"));
+                        toastService.toast("success", $translate.instant("promo.detail.promoDeleted"));
                         $location.path("/promos");
                     });
                 });
@@ -559,7 +559,7 @@ PromoControllers.controller("PromoDetailCtrl", [
             await $scope.save(false);
             PromoClone.clone({_id: $scope.promo._id}, function (response) {
                 if (response) {
-                    toastService.toast("success", $translate.instant("global.promoCloned"));
+                    toastService.toast("success", $translate.instant("promo.detail.promoCloned"));
                     $location.path(`/promos/${  response.clone_id}`);
                 }
             });
@@ -626,7 +626,7 @@ PromoControllers.controller("PromoDetailAddCodePromoCtrl",
                     return;
                 }
                 if (!checkNumber($scope.codePromo.limit_total) || !checkNumber($scope.codePromo.limit_client)){
-                    toastService.toast("danger", $translate.instant("global.errorQteMaxEnter"));
+                    toastService.toast("danger", $translate.instant("promo.detail.errorQteMaxEnter"));
                     return;
                 }
                 $modalInstance.close($scope.codePromo);

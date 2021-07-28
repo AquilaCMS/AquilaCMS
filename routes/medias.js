@@ -6,22 +6,22 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const path                        = require('path');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const mediasServices              = require('../services/medias');
-const NSErrors                    = require('../utils/errors/NSErrors');
+const path           = require('path');
+const {adminAuth}    = require('../middleware/authentication');
+const mediasServices = require('../services/medias');
+const NSErrors       = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/medias', authentication, adminAuth, listMedias);
+    app.post('/v2/medias', adminAuth, listMedias);
     app.post('/v2/media', getMedia);
-    app.put('/v2/media', authentication, adminAuth, saveMedia);
-    app.delete('/v2/media/:_id', authentication, adminAuth, removeMedia);
-    app.post('/v2/medias/upload', authentication, adminAuth, uploadFiles);
+    app.put('/v2/media', adminAuth, saveMedia);
+    app.delete('/v2/media/:_id', adminAuth, removeMedia);
+    app.post('/v2/medias/upload', adminAuth, uploadFiles);
     app.get('/v2/medias/groups', getMediasGroups);
     app.get('/v2/medias/groupsImg', getMediasGroupsImg);
-    app.get('/v2/medias/download/documents', authentication, adminAuth, downloadAllDocuments);
-    app.post('/v2/medias/download/documents', authentication, adminAuth, uploadAllDocuments);
-    app.post('/v2/medias/download/medias', authentication, adminAuth, uploadAllMedias);
+    app.get('/v2/medias/download/documents', adminAuth, downloadAllDocuments);
+    app.post('/v2/medias/download/documents', adminAuth, uploadAllDocuments);
+    app.post('/v2/medias/download/medias', adminAuth, uploadAllMedias);
 };
 
 /**

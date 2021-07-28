@@ -6,14 +6,14 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {securityForceActif}        = require('../middleware/security');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServicePayment              = require('../services/payments');
+const {securityForceActif} = require('../middleware/security');
+const {adminAuth}          = require('../middleware/authentication');
+const ServicePayment       = require('../services/payments');
 
 module.exports = function (app) {
     app.post('/v2/paymentMethods', securityForceActif(['active']), getPaymentMethods);
     app.post('/v2/paymentMethod', securityForceActif(['active']), getPaymentMethod);
-    app.put('/v2/paymentMethod', authentication, adminAuth, savePaymentMethod);
+    app.put('/v2/paymentMethod', adminAuth, savePaymentMethod);
     app.post('/v2/payments/order', getOrdersPayments);
 };
 

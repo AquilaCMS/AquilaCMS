@@ -281,7 +281,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
         $scope.saveProduct = function (product, isQuit)
         {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             var attrsErrors = false;
@@ -367,7 +367,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                     }
                     else
                     {
-                        toastService.toast("success", $translate.instant("global.productSaved"));
+                        toastService.toast("success", $translate.instant("bundle.product.productSaved"));
                         $scope.product = savedPrd;
                         // if($scope.isEditMode)
                         // {
@@ -406,14 +406,14 @@ BundleProductControllers.controller("BundleProductCtrl", [
 
         $scope.removeProduct = function (_id)
         {
-            if(confirm("Etes-vous sûr de vouloir supprimer ce produit ?"))
+            if (confirm($translate.instant("confirm.deleteProduct")))
             {
                 ProductsV2.delete({id: _id}).$promise.then(function ()
                 {
                     $location.path("/products");
                 }, function ()
                 {
-                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
+                    toastService.toast("danger", $translate.instant("bundle.product.errorDeleting"));
                 });
             }
         };
@@ -469,7 +469,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                         else
                         {
-                            toastService.toast("success", $translate.instant("global.productSaved"));
+                            toastService.toast("success", $translate.instant("bundle.product.productSaved"));
                             if($scope.isEditMode)
                             {
                                 $scope.disableSave = false;
@@ -482,7 +482,7 @@ BundleProductControllers.controller("BundleProductCtrl", [
                         }
                     }, function (err)
                     {
-                        toastService.toast("danger", $translate.instant("global.errorSaving"));
+                        toastService.toast("danger", $translate.instant("bundle.product.errorSaving"));
                         $scope.disableSave = false;
                     });
                 },

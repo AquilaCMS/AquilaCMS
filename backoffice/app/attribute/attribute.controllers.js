@@ -85,21 +85,14 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.local = {valuesList: []};
         $scope.selectedSet = "";
         $scope.isEditMode = true;
-        $scope.backUrl = {};
+        $scope.backUrl = "";
         $scope._type = window.location.hash.indexOf('users') > -1 ? 'users' : 'products';
 
-        $scope.getBackUrl = function(type){
-            if ($routeParams.code){
-                return type + "/setAttributes/" + $routeParams.code;
-            }
-            return type + "/attributes/";
-        }
-
         if ($routeParams.jeuAttributeCode){
-            $scope.backUrl = "setAttributes/" + $routeParams.jeuAttributeCode;
-        }else{
-            $scope.backUrl = "attributes"
-        } 
+            $scope.backUrl = `${$scope._type}/setAttributes/${$routeParams.jeuAttributeCode}`;
+        } else {
+            $scope.backUrl = `${$scope._type}/attributes/`;
+        }
 
         $scope.lang = $rootScope.languages.find(function (lang) {
             return lang.defaultLanguage;
@@ -136,7 +129,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
         $scope.getAttr = function () {
             $scope.attribute = AttributesV2.query({PostBody: {filter: {code: $routeParams.attributeCode, _type: $scope._type}, structure: '*'}}, function (obj) {
                 if (obj.code === undefined) {
-                    toastService.toast("danger", $translate.instant("global.attributeNotExist"));
+                    toastService.toast("danger", $translate.instant("attribute.detail.attributeNotExist"));
                     $location.path(`/${$scope._type}/attributes`);
                 }
 
@@ -256,7 +249,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                 data._type = $scope._type;
                  AttributesV2.save(data, function (res) {
                     if (res._id) {
-                        toastService.toast("success", $translate.instant("global.saveDone"));
+                        toastService.toast("success", $translate.instant("attribute.detail.saveDone"));
                         if (isQuit) {
                             if($routeParams.code) {
                                 return $location.path(`/${$scope._type}/setAttributes/${$routeParams.code}`);
@@ -268,7 +261,7 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                             return $location.path(`/${$scope._type}/attributes/${res.code}`);
                         }
                     } else {
-                        toastService.toast("danger", $translate.instant("global.errorOccurred"));
+                        toastService.toast("danger", $translate.instant("attribute.detail.errorOccurred"));
                         console.error(res);
                     }
                 }, function(error){
@@ -279,16 +272,16 @@ AttributeControllers.controller("AttributeDetailCtrl", [
                     }else if(error && error.code != ""){
                         toastService.toast("danger", error.code);
                     }else{
-                        toastService.toast("danger", $translate.instant("global.error"));
+                        toastService.toast("danger", $translate.instant("attribute.detail.error"));
                     }
                 });
             }
         };
 
         $scope.removeAttribute = function (attr) {
-            if (confirm("Etes-vous sûr de vouloir supprimer cet attribut ?")) {
+            if (confirm($translate.instant("confirm.removeAttribute"))) {
                 AttributesV2.delete({id: attr._id}, function () {
-                    toastService.toast("success", $translate.instant("global.deleteAttribute"));
+                    toastService.toast("success", $translate.instant("attribute.detail.deleteAttribute"));
                     $location.path(`/${$scope._type}/attributes`);
                 }, function (err) {
                     toastService.toast("danger", err.data);

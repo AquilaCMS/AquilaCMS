@@ -12,7 +12,8 @@
             "contentPolicy": {
                 "title": "Politique de contenu",
                 "delAndAdd": "Supprimer/ajouter",
-                "value": "Valeur"
+                "value": "Valeur",
+                "confirm":"Vous allez activer une politique de sécurité stricte pouvant entrainer des dysfonctionnements sur votre site. Pour accéder à du contenu externe, vous devez lister l'ensemble des domaines autorisés"
             }
         },
         "nextjs":{
@@ -38,6 +39,11 @@
             "dlAllDocumentTitle": "Documents",
             "dlAllDocumentInfo": "* Télécharge les documents suivants : produits, medias/galleries/carousel, documents",
             "uploadAllDocument": "Envoyer les documents *",
+            "restartProgress": "Redémarrage en cours...",
+            "changeVersion": "Version de nextjs changé",
+            "addDoc": "Ajout des documents effectué",
+            "takeTime": "Cela peut prendre du temps, merci de patienter ...",
+            "errorOccurred": "Une erreur est survenue",
             "uploadAllDocumentInfo": "* Seul un .zip est accepté, et doit contenir les dossiers adequat (disponible lors du téléchargement). Aucune entrée dans la base de donnée n'est effectuée"
         }
     }

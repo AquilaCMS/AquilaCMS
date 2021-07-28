@@ -1,4 +1,4 @@
-# AquilaCMS ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e711424ea4744515a340c517a8329df9)](https://www.codacy.com/gh/AquilaCMS/AquilaCMS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=master)](https://travis-ci.com/AquilaCMS/AquilaCMS)
+# AquilaCMS ![License Badge](https://img.shields.io/badge/license-OSL3.0-success.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e711424ea4744515a340c517a8329df9)](https://www.codacy.com/gh/AquilaCMS/AquilaCMS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AquilaCMS/AquilaCMS&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.com/AquilaCMS/AquilaCMS.svg?branch=preprod)](https://travis-ci.com/AquilaCMS/AquilaCMS)
 
 The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce solution.
 
@@ -18,7 +18,7 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 
 To install the latest AquilaCMS, you need :
 
-- `node.js 12.19.0+` (tested in v12.22.1)
+- `node.js 14+` (tested in v14.17.1)
 - `mongoDB 4.2.5+`
 - `yarn 1.22.4+` package manager
 
@@ -57,22 +57,29 @@ npm run start:pm2
 - With docker :
 
 ```sh
-docker pull aquilacms/aquilacms
-docker run -p 127.0.0.1:3010:3010/tcp aquilacms/aquilacms
+# create a network to link mongo and Aquila CMS
+docker network create aquila
+# create the mongo instance
+docker run --name mongo -p 27017:27017 --network=aquila mongo
+# pull the latest and run AquilaCMS
+docker run -p 127.0.0.1:3010:3010/tcp --network=aquila --name aquila aquilacms/aquilacms
 ```
+
+> - You can just launch the AquilaCMS image without creating a network if you don't want to connect to a MongoDB launched via Docker
+> - if you change the port of the docker container, remember to use the correct `PORT` env variable.
 
 At the first launch, there is an installation page. It allows you to create an `env.json` file in the config folder.
 
 You can edit this file manually, an example of the different possible properties is in the `config/env.example.json` file.
 You can also found all the properties in the [documentation](https://doc.aquila-cms.com/#/Get_started/Configuration)
 
-> ⚠️Warning : there is not MongoDB in AquilaCMS image
+> ### ⚠️Warning : there is not MongoDB in AquilaCMS image
 >
 > To connect your AquilaCMS website to a Mongo database, you can :
 >
-> - run a MongoDB image next to the AquilaCMS image
+> - run a MongoDB image next to the AquilaCMS image like in the example above (and use this mongodb container as hostname : `mongodb://mongo:27017/`)
 > - use an external link to, for example, an Atlas database
-> - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of 127.0.0.1)
+> - use a localhost link to connect AquilaCMS to a database on your host machine (you have to edit your `mongod.conf` and change your `bindIp` by your network ip instead of `127.0.0.1`)
 
 ### Have the installation page again
 
@@ -96,6 +103,9 @@ npm run build:win --theme=default_theme
 > - Instead of `build:win` you can use `build:linux`
 > - At the variable `--theme` you need to put the name of the theme folder you want to build.
 
+> ⚠️Warning : on Windows, you must use Powershell
+> Otherwise, you may get an error when using the `npm run build:win` command.
+
 ## Documentations
 
 Find some documentation on :
@@ -104,7 +114,7 @@ Find some documentation on :
 - [https://aquila-cms.com/api-docs](https://www.aquila-cms.com/api-docs), the swagger documentation
 - On a local Aquila at **`/api-docs`**
 
-YOu can also check some tutorials on :
+You can also check some tutorials on :
 
 - [Our dedicated page](https://www.aquila-cms.com/resources-documentation)
 - [Our youtube channel](https://www.youtube.com/channel/UCaPllnLkB6V6Jj89i40CrgQ)

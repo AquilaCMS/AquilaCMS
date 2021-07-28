@@ -149,6 +149,329 @@ const migration_7_Job_Translations = async () => {
     }}});
 };
 
+const migration_8_CmsBlocks = async () => {
+    console.log('Applying migration script "migration_8_CmsBlocks"...');
+    await mongoose.connection.collection('cmsblocks').updateMany({}, {$set: {active: true}});
+};
+
+const migration_9_adminRights = async () => {
+    console.log('Applying migration script "migration_9_adminRights"...');
+    const rights = [
+        {
+            code      : 'orders',
+            translate : {
+                fr : {
+                    name : 'Transactions > Commandes'
+                }
+            }
+        },
+        {
+            code      : 'editHtml',
+            translate : {
+                fr : {
+                    name : "Editer de l'HTML"
+                }
+            }
+        },
+        {
+            code      : 'statistics',
+            translate : {
+                fr : {
+                    name : 'Statistiques'
+                }
+            }
+        },
+        {
+            code      : 'modules',
+            translate : {
+                fr : {
+                    name : 'Modules'
+                }
+            }
+        },
+        {
+            code      : 'update',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Mise à jour'
+                }
+            }
+        },
+        {
+            code      : 'system',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Système'
+                }
+            }
+        },
+        {
+            code      : 'jobs',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Tâches planifiées'
+                }
+            }
+        },
+        {
+            code      : 'stock',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Param Commande'
+                }
+            }
+        },
+        {
+            code      : 'config',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Paramètre serveur'
+                }
+            }
+        },
+        {
+            code      : 'translate',
+            translate : {
+                fr : {
+                    name : 'Apparence > translation'
+                }
+            }
+        },
+        {
+            code      : 'design',
+            translate : {
+                fr : {
+                    name : 'Apparence > Design'
+                }
+            }
+        },
+        {
+            code      : 'themes',
+            translate : {
+                fr : {
+                    name : 'Apparence > Thèmes'
+                }
+            }
+        },
+        {
+            code      : 'admin',
+            translate : {
+                fr : {
+                    name : 'Configuration > Admin'
+                }
+            }
+        },
+        {
+            code      : 'paymentMethods',
+            translate : {
+                fr : {
+                    name : 'Configuration > Modes de paiement'
+                }
+            }
+        },
+        {
+            code      : 'languages',
+            translate : {
+                fr : {
+                    name : 'Configuration > Langues'
+                }
+            }
+        },
+        {
+            code      : 'territories',
+            translate : {
+                fr : {
+                    name : 'Configuration > territoires'
+                }
+            }
+        },
+        {
+            code      : 'shipments',
+            translate : {
+                fr : {
+                    name : 'Configuration > shipments'
+                }
+            }
+        },
+        {
+            code      : 'mails',
+            translate : {
+                fr : {
+                    name : 'Configuration > Mails'
+                }
+            }
+        },
+        {
+            code      : 'newsletters',
+            translate : {
+                fr : {
+                    name : 'Clients > Newsletters'
+                }
+            }
+        },
+        {
+            code      : 'contacts',
+            translate : {
+                fr : {
+                    name : 'Clients > Contacts'
+                }
+            }
+        },
+        {
+            code      : 'reviews',
+            translate : {
+                fr : {
+                    name : 'Clients > Avis'
+                }
+            }
+        },
+        {
+            code      : 'clients',
+            translate : {
+                fr : {
+                    name : 'Clients > Clients'
+                }
+            }
+        },
+        {
+            code      : 'articles',
+            translate : {
+                fr : {
+                    name : 'Site > Blog'
+                }
+            }
+        },
+        {
+            code      : 'medias',
+            translate : {
+                fr : {
+                    name : 'Site > Médias'
+                }
+            }
+        },
+        {
+            code      : 'slider',
+            translate : {
+                fr : {
+                    name : 'Site > Carrousel'
+                }
+            }
+        },
+        {
+            code      : 'gallery',
+            translate : {
+                fr : {
+                    name : 'Site > Gallery'
+                }
+            }
+        },
+        {
+            code      : 'cmsBlocks',
+            translate : {
+                fr : {
+                    name : 'Site > Blocs CMS'
+                }
+            }
+        },
+        {
+            code      : 'staticPage',
+            translate : {
+                fr : {
+                    name : 'Site > Pages statiques'
+                }
+            }
+        },
+        {
+            code      : 'families',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Famille'
+                }
+            }
+        },
+        {
+            code      : 'suppliers',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Fournisseurs'
+                }
+            }
+        },
+        {
+            code      : 'trademarks',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Marques'
+                }
+            }
+        },
+        {
+            code      : 'attributes',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Attributs'
+                }
+            }
+        },
+        {
+            code      : 'picto',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Pictogramme'
+                }
+            }
+        },
+        {
+            code      : 'promos',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Promotions'
+                }
+            }
+        },
+        {
+            code      : 'categories',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Catégories'
+                }
+            }
+        },
+        {
+            code      : 'products',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Produits'
+                }
+            }
+        },
+        {
+            code      : 'cart',
+            translate : {
+                fr : {
+                    name : 'Transactions > panier'
+                }
+            }
+        },
+        {
+            code      : 'invoices',
+            translate : {
+                fr : {
+                    name : 'Transactions > facture'
+                }
+            }
+        },
+        {
+            code      : 'payments',
+            translate : {
+                fr : {
+                    name : 'Transactions > Paiements'
+                }
+            }
+        }];
+    await mongoose.connection.collection('adminrights').insertMany(rights);
+};
+
 // Scripts must be in order: put the new scripts at the bottom
 const migrationScripts = [
     migration_1_ModulesNewPackageDependencies,
@@ -157,7 +480,9 @@ const migrationScripts = [
     migration_4_Themes,
     migration_5_isActive,
     migration_6_contentSecurityPolicy,
-    migration_7_Job_Translations
+    migration_7_Job_Translations,
+    migration_8_CmsBlocks,
+    migration_9_adminRights
     // sample
 ];
 

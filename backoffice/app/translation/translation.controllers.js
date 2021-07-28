@@ -1,9 +1,8 @@
 var TranslationControllers = angular.module('aq.translation.controllers', []);
 
 TranslationControllers.controller('LanguagesCtrl',
-    ['$scope', 'LanguagesApiV2', '$modal', 'toastService',
-    function ($scope, LanguagesApiV2, $modal, toastService) {
-        //console.log('test')
+    ['$scope', 'LanguagesApiV2', '$modal', 'toastService','$translate',
+        function ($scope, LanguagesApiV2, $modal, toastService, $translate) {
         $scope.filter = {};
 
         $scope.getLanguages = function() {
@@ -53,7 +52,7 @@ TranslationControllers.controller('LanguagesCtrl',
         };
 
         $scope.removeLang = function (lang) {
-            if (confirm('Etes-vous sûr de vouloir supprimer cet élément ?')) {
+            if (confirm($translate.instant("confirm.deleteLang"))) {
                 if (LanguagesApiV2.delete({ id: lang._id }).$resolved === false){
                     $scope.languages.splice($scope.languages.indexOf(lang), 1);
                     setTimeout(function(){
@@ -77,6 +76,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         $scope.languages = languages.datas;
                     });
                 }
+                const oldLang = angular.copy(lang);
 
                 if (lang) {
                     $scope.lang = angular.copy(lang);
@@ -88,6 +88,12 @@ TranslationControllers.controller('LanguageEditCtrl',
                 else $scope.lang = {defaultLanguage: false, visible: false};
 
                 $scope.save = function (lang) {
+                    if(typeof oldLang !== "undefined" && oldLang !== null) {
+                        if(oldLang.defaultLanguage !== lang.defaultLanguage){
+                            toastService.toast("warning", $translate.instant("translation.toast.defaultLangChang"));
+                            toastService.toast("warning", $translate.instant("translation.toast.needActions"));
+                        }
+                    }
                     LanguagesApiV2.save({lang}, function () {
                         var event = new CustomEvent("getLanguages", {});
                         window.dispatchEvent(event);
@@ -96,7 +102,7 @@ TranslationControllers.controller('LanguageEditCtrl',
                         if(err.data.message){
                             toastService.toast("danger", err.data.message);
                         }else if(err.code === "Conflict" || err.data.code === "Conflict"){
-                            toastService.toast("danger", $translate.instant("global.alreadyExist"));
+                            toastService.toast("danger", $translate.instant("translation.alreadyExist"));
                         }else{
                             toastService.toast("danger", err.data);
                         }

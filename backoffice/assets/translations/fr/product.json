@@ -29,16 +29,18 @@
         "jeuOpt": "Jeu d'options",
         "selectJeuOpt": "Sélectionner le jeu d'options",
         "actif": "Actif",
-        "actifVisible": "Actif & Visible",
         "visible": "Visible",
+        "actifVisible": "Actif & Visible",
         "titleDescLg": "Titre description longue",
         "descLg": "Description longue",
         "titleDescCt": "Titre description courte",
-        "descCt": "Description courte",
         "metaDesc": "Meta description",
+        "descCt": "Description courte",
         "canon": "Canonical",
         "noAttribs": "Pas d'attributs",
         "preview": "Aperçu",
+        "finished": "Terminé",
+        "errorCategorization": "Erreur lors de la categorisation",
         "coherenceTitle": "Cohérence du produit"
     },
     "modal": {
@@ -127,7 +129,8 @@
         "reset_filters": "Réinitialiser les filtres",
         "edit": "Éditer",
         "action": "Action",
-        "productNumber": "Nombre de produits"
+        "productNumber": "Nombre de produits",
+        "searchLang": "Langue de recherche"
     },
     "virtual": {
         "clientEmail": "Email client",

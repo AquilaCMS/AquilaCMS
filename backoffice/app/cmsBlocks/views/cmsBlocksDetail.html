@@ -7,31 +7,15 @@
                     save-and-quit="save(true)"
                     disable-save="disableSave"
                     form="form">
-            <style>
-                .col-sm-4{
-                    width:70%; 
-                }
-                @media (max-width: 768px) {
-                    .col-sm-4{
-                        width:100%;
-                        padding-left: 0px;
-                        padding-right: 0px;
-                    }
-                }
-                .form-goup{
-                    display: inline;
-                }
-            </style>
+            <div class="col-sm-12">
+                <ns-translation ng-model="lang" class="pull-right"></ns-translation>
+            </div>
+            <br><br>
             <div class="form-group">
                 
-            </div>
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <ns-translation ng-model="lang" class="pull-right"></ns-translation>
-                </div>
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.code</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-10">
                         <input type="text" name="code" class="form-control" ng-model="cmsBlock.code" required />
                         <div ng-messages="form.id.$error" role="alert">
                             <div ng-message="required" ng-show="form.id.$dirty" translate>cmsBlocks.detail.champRequis</div>
@@ -39,11 +23,22 @@
                         <div class="label label-info">&lt;ns-cms ns-code="{{cmsBlock.code}}"&gt;&lt;/ns-cms&gt;</ns-cms></div>
                     </div>
                 </div>
+                <div class="form-group" ng-show="_type === 'products'">
+                    <label class="col-sm-3 control-label" translate>attribute.detail.dispoCatAuto</label>
+                    <div class="col-sm-6">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-sm-12">
+                <label class="col-sm-2 control-label" translate>product.general.actif</label>
+                <div class="col-sm-10">
+                    <ns-switch name="active" ng-model="cmsBlock.active"></ns-switch>
+                </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.desc</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-10">
                         <input type="text" name="description" class="form-control" ng-model="cmsBlock.translation[lang].description"/>
                     </div>
                 </div>
@@ -51,7 +46,7 @@
             <div class="form-group">
                 <div class="col-sm-12">
                     <label class="col-sm-2 control-label" translate>cmsBlocks.detail.group</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-10">
                         <input-dropdown input-name="group" input-class-name="form-control"
                             filter-list-method="filterDropdown(userInput)" selected-item="selectedDropdownItem"
                             default-dropdown-items="groups" allow-custom-input="true"
@@ -65,7 +60,7 @@
                 <ul class="nav nav-tabs" >
                     <li class="active" ng-click="generateContent();selectTab('result')"><a data-toggle="tab" href="#result" target="_self" translate>cmsBlocks.detail.result</a></li>
                     <li ng-click="generateVariables();selectTab('variables')"><a data-toggle="tab" href="#variables" target="_self" translate>cmsBlocks.detail.variables</a></li>
-                    <li><a ng-click="selectTab('html')" data-toggle="tab" href="#html" target="_self" translate>cmsBlocks.detail.html</a></li>
+                    <li ng-show="userIsAllowedTo('editHtml')"><a ng-click="selectTab('html')" data-toggle="tab" href="#html" target="_self" translate>cmsBlocks.detail.html</a></li>
                 </ul>
             </div>
             <div class="col-sm-2"></div>
@@ -86,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                    <div ng-show="cmsBlock.translation[lang].variables.length === 0">
+                    <div ng-show="!cmsBlock.translation || cmsBlock.translation[lang].variables.length === 0">
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <label class="control-label" translate>cmsBlocks.detail.noVars</label>
@@ -94,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="html" class="tab-pane">
+                <div  id="html" class="tab-pane" ng-show="userIsAllowedTo('editHtml')">
                     <div class="form-group">
                         <div class="col-sm-12">
                             <ns-tinymce ng-if="selectedTab.active == 'html'" lang="lang" text="cmsBlock.translation[lang].html"></ns-tinymce>

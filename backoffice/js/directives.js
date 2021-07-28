@@ -201,7 +201,8 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
         scope: {
             text: "=",
             lang: "=",
-            mail: "="
+            mail: "=",
+            shortcode: "="
         },
         templateUrl: "views/templates/nsTinymce.html",
         controller: [
@@ -210,6 +211,9 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     let toolbarOption = "customAddShortcode";
                     if($scope.mail){
                         toolbarOption = "customAddMailVar";
+                    }
+                    if($scope.shortcode === false){
+                        toolbarOption = "";
                     }
                     $scope.tinymceOptions = {
                         withConfig :{ 'auto_focus':false },
@@ -269,7 +273,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                     }else{
                         const modalInstance = $modal.open({
                             backdrop: 'static',
-                            keyboard: false,
                             templateUrl: 'views/modals/add-mailvar-tinymce.html',
                             controller: ['$scope', '$modalInstance', '$rootScope', 'MailTypeGet','toastService',
                                 function ($scope, $modalInstance, $rootScope, MailTypeGet, toastService) {
@@ -313,7 +316,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addShortcode = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
+                        closeByEscape: true,
                         templateUrl: 'views/modals/add-shortcode-tinymce.html',
                         controller: ['$scope', '$modalInstance', '$http', '$rootScope',
                             function ($scope, $modalInstance, $http, $rootScope) {
@@ -322,6 +325,7 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                 $scope.selected = false;
                                 $scope.shortcodeSelected = {};
                                 $scope.tag = {};
+                                $scope.search = '';
 
                                 $scope.selectShortcode = function(shortCode){
                                     $scope.selected = true;
@@ -356,8 +360,20 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                                     $modalInstance.close({ string });
                                 }
 
+                                $scope.sortShortCodes = function(string){
+                                    for (const i in $scope.shortcodes) {
+                                        if (string === '' || ($scope.shortcodes[i].translation && $scope.shortcodes[i].translation[$scope.lang].name.toLowerCase().includes(string.toLowerCase()))) {
+                                            $scope.shortcodes[i].sort = true;
+                                        }else{
+                                            $scope.shortcodes[i].sort = false;
+                                        }
+                                    }
+                                    
+                                }
+
                                 $http({ url: `/v2/shortcodes`, method: 'GET' }).then((response) => {
                                     $scope.shortcodes = response.data;
+                                    $scope.sortShortCodes($scope.search);
                                 }, function errorCallback(response) {
                                     console.log(response);
                                 });
@@ -384,7 +400,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addImage = function () {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-image-tinymce.html',
                         controller: ['$scope', '$location', '$modalInstance', "MediaApiV2","toastService",
                             function ($scope, $location, $modalInstance, MediaApiV2, toastService) {
@@ -501,7 +516,6 @@ adminCatagenDirectives.directive("nsTinymce", function ($timeout) {
                 $scope.addLink = function (textSelected, lang) {
                     const modalInstance = $modal.open({
                         backdrop: 'static',
-                        keyboard: false,
                         templateUrl: 'views/modals/add-link-tinymce.html',
                         controller: ['$scope', '$modalInstance', 'StaticV2','CategoryV2','textSelected',
                             function ($scope, $modalInstance, StaticV2, CategoryV2, textSelected) {
@@ -608,20 +622,19 @@ adminCatagenDirectives.directive("nsReturnButton", function ()
         controller: [
             "$scope",
             "$location",
-            function ($scope, $location)
+            "$translate",
+            function ($scope, $location, $translate)
             {
                 $scope.return = function ()
                 {
                     if($scope.isSelected === true){
-                        let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                        let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                         if (!response) { return }
                     }
                     if($scope.form.$dirty)
                     {
                         if(
-                            confirm(
-                                "Les modifications non sauvegardées seront perdues.\nEtes-vous sûr de vouloir quitter cette page ?"
-                            )
+                            confirm($translate.instant("confirm.changesNotSaved"))
                         )
                         {
                             $location.path($scope.returnPath);
@@ -1028,30 +1041,34 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
             "$scope",
             "$filter",
             "$rootScope",
-            function ($scope, $filter, $rootScope)
+            "NSConstants",
+            function ($scope, $filter, $rootScope, NSConstants)
             {
+                const orderStatuses = {};
+                NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
                 $scope.statusObj = {};
                 if($scope.type === "order")
                 {
+                    
                     $scope.statusObj.isSuccess =
-                        $scope.status === "PAID" ||
-                        $scope.status === "PROCESSED" ||
-                        $scope.status === "BILLED" ||
-                        $scope.status === "FINISHED";
+                        $scope.status === orderStatuses.PAID ||
+                        $scope.status === orderStatuses.PROCESSED ||
+                        $scope.status === orderStatuses.BILLED ||
+                        $scope.status === orderStatuses.FINISHED;
                     $scope.statusObj.isWarning =
-                        $scope.status === "PAYMENT_PENDING" ||
-                        $scope.status === "PAYMENT_CONFIRMATION_PENDING" ||
-                        $scope.status === "PROCESSING" ||
-                        $scope.status === "ASK_CANCEL" ||
-                        $scope.status === "DELIVERY_PARTIAL_PROGRESS";
+                        $scope.status === orderStatuses.PAYMENT_PENDING ||
+                        $scope.status === orderStatuses.PAYMENT_CONFIRMATION_PENDING ||
+                        $scope.status === orderStatuses.PROCESSING ||
+                        $scope.status === orderStatuses.ASK_CANCEL ||
+                        $scope.status === orderStatuses.DELIVERY_PARTIAL_PROGRESS;
                     $scope.statusObj.isDanger =
-                        $scope.status === "CANCELED" ||
-                        $scope.status === "PAYMENT_FAILED" ||
-                        $scope.status === "RETURNED";
+                        $scope.status === orderStatuses.CANCELED ||
+                        $scope.status === orderStatuses.PAYMENT_FAILED ||
+                        $scope.status === orderStatuses.RETURNED;
                     $scope.statusObj.isBlue =
-                        $scope.status === "DELIVERY_PROGRESS";
+                        $scope.status === orderStatuses.DELIVERY_PROGRESS;
                     $scope.statusObj.isYellow =
-                        $scope.status === "PAYMENT_RECEIPT_PENDING";
+                        $scope.status === orderStatuses.PAYMENT_RECEIPT_PENDING;
                     $scope.statusObj.name = $filter("orderStatus")($scope.status);
                 }
                 else if($scope.type === "paymentStatus")
@@ -1191,7 +1208,8 @@ adminCatagenDirectives
     .controller("nsDataTableCtrl", [
         "$scope",
         "$filter",
-        function ($scope, $filter)
+        "$translate",
+        function ($scope, $filter, $translate)
         {
             $scope.sort = {
                 type: $scope.config.columns[0].field,
@@ -1325,7 +1343,7 @@ adminCatagenDirectives
             $scope.removeElmt = function (element)
             {
                 if(
-                    confirm("Etes-vous sûr de vouloir supprimer cet élément ?")
+                    confirm($translate.instant("confirm.deleteElement"))
                 )
                 {
                     $scope.config.remove(element).then(function ()

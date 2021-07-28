@@ -27,7 +27,6 @@ const {
     Products,
     ProductsPreview,
     Categories,
-    SetAttributes,
     Attributes
 }                             = require('../orm/models');
 
@@ -244,12 +243,10 @@ const duplicateProduct = async (idProduct, newCode) => {
     return doc;
 };
 
-const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
-    return global.cache.get(
-        `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
-        async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
-    );
-};
+const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => global.cache.get(
+    `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
+    async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
+);
 
 /**
  * We get the products contained in a category
@@ -546,9 +543,7 @@ const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => 
     return tProducts;
 };
 
-const getProductById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const calculateFilters = async (req, result) => {
     // We recover the attributes, the last selected attribute and if the value has been checked or not
@@ -635,8 +630,11 @@ const setProduct = async (req) => {
     // We update the product slug
     if (req.body.autoSlug) req.body._slug = `${utils.slugify(req.body.name)}-${req.body.id}`;
     const result = await product.updateData(req.body);
+    if (result.code === 'SlugAlreadyExist' ) {
+        throw NSErrors.SlugAlreadyExist;
+    }
     await ProductsPreview.deleteOne({code: req.body.code});
-    await Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
+    return Products.findOne({code: result.code}).populate(['bundle_sections.products._id']);
 };
 
 const createProduct = async (req) => {
@@ -657,20 +655,8 @@ const createProduct = async (req) => {
         break;
     }
     if (req.body.set_attributes === undefined) {
-        req.body.attributes          = [];
-        const setAtt                 = await SetAttributes.findOne({code: 'defaut'});
-        req.body.set_attributes_name = setAtt.name;
-        req.body.set_attributes      = setAtt._id;
-        for (const attrs of setAtt.attributes) {
-            const attr = await Attributes.findOne({_id: attrs});
-            if (attr != null) {
-                let arrAttr = [];
-                arrAttr     = JSON.parse(JSON.stringify(attr));
-                arrAttr.id  = attr._id;
-                req.body.attributes.push(arrAttr);
-            }
-        }
-        const result = await Products.create(req.body);
+        const product = await serviceSetAttributs.addAttributesToProduct(req.body);
+        const result  = await Products.create(product);
         aquilaEvents.emit('aqProductCreated', result._id);
         return result;
     }
@@ -681,7 +667,7 @@ const createProduct = async (req) => {
 };
 
 /**
- * @todo maybe replace map by a for of to fix eslint problem ?
+ * Remove product
  */
 const deleteProduct = async (_id) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
@@ -698,12 +684,6 @@ const deleteProduct = async (_id) => {
                 section.products.splice(prdIndex, 1);
             }
         }
-        // prd.bundle_sections.map((section) => {
-        //     const prdIndex = section.products.findIndex((sectionPrd) => sectionPrd.id.toString() === _id.toString());
-        //     if (prdIndex > -1) {
-        //         section.products.splice(prdIndex, 1);
-        //     }
-        // });
         prd.save();
     }
     return doc;

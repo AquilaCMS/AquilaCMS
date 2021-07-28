@@ -14,7 +14,6 @@
         <div class="tab-content">
            <div id="select" class="col-md-8 tab-pane fade in active" ng-if="tab === 'select'" >
                 <!-- <h3 translate>themes.t1</h3> -->
-                <br/>
 
                 <!-- <div class="form-group">
                     <label translate>config.environment.theme</label>
@@ -22,71 +21,82 @@
                 </div> -->
                 <div class="form-group">
                     <h3 style="margin-left:10px;" translate>themes.themeChoice</h3>
-                    <br>
                     <a download class="btn btn-success" style="min-width: 184px;" ng-click="addTheme()" ng-disabled="disabledButton" translate>
                         themes.newtheme
                     </a>
-                    <br>
-                    <br>
-                    <br>
+                    <br />
+                    <br />
                     <select name="themesList" id="themesList" class="form-control" ng-model="config.environment.currentTheme">
                         <!-- <option value="default_theme">Default theme</option> -->
                         <option ng-repeat="oneTheme in themesList" value="{{oneTheme}}">{{oneTheme}}</option>
                     </select>
+                    <br />
+                    <div class="form-group">
+                        <a download class="btn btn-success" style="min-width: 184px;" ng-click="validate(tab)" ng-disabled="disabledButton" translate>
+                            ns.save
+                        </a>
+                        <p style="display:inline;margin-left:20px;" translate>themes.themeSelect</p>
+                    </div>
                 </div>
-
+                <hr style="border-top: 1px solid #576fa1;"/>
                 <div class="form-group">
-                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="validate(tab)" ng-disabled="disabledButton" translate>
-                        ns.save
-                    </a>
-                    <p style="display:inline;margin-left:20px;" translate>themes.themeSelect</p>
-                    <br>
-                    <br>
-                    <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageInstall()" ng-disabled="disabledButton">
-                        yarn install
-                    </a>
-                    <p style="display:inline;margin-left:20px;" translate>themes.themeInstallDependencies</p>
-                    <br>
-                    <br>
+                    <h3 style="margin-left:10px;" translate>themes.themeActions</h3>
+                    <div class="form-group">
+                        <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageInstall(false)" ng-disabled="disabledButton">
+                            yarn install
+                        </a>
+                        <p style="display:inline;margin-left:20px;" translate>themes.themeInstallDependencies</p>
+                    </div>
+                    <div class="form-group">
+                        <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageInstall(true)" ng-disabled="disabledButton">
+                            yarn install (all)
+                        </a>
+                        <p style="display:inline;margin-left:20px;" translate>themes.themeInstallAllDependencies</p>
+                    </div>
+                    <div class="form-group">
                     <a download class="btn btn-success" style="min-width: 184px;" ng-click="packageBuild()" ng-disabled="disabledButton">
                         build theme
                     </a>
                     <p style="display:inline;margin-left:20px;"translate>themes.themeCompile</p>
-                    <br>
-                    <br>
-                    <a download class="btn btn-danger" style="min-width: 184px;" ng-click="removeTheme()" ng-disabled="disabledButton" translate>
-                        themes.remove
-                    </a>
-                    <p style="display:inline;margin-left:20px;" translate>themes.themeDelete</p>
+                    </div>
+                    <div class="form-group">
+                        <a download class="btn btn-danger" style="min-width: 184px;" ng-click="removeTheme()" ng-disabled="disabledButton" translate>
+                            themes.remove
+                        </a>
+                        <p style="display:inline;margin-left:20px;" translate>themes.themeDelete</p>
+                    </div>
                 </div>
-                <br />
-           </div>
-
-           <div id="config" class="col-md-8 tab-pane fade in active" ng-if="tab === 'config'" >
-            <a download class="btn btn-success pull-right" style="min-width: 184px;" ng-click="validate(tab)" ng-disabled="disabledButton" translate>
+            </div>
+            <div id="config" class="col-md-8 tab-pane fade in active" ng-if="tab === 'config'" >
+            <a download class="btn btn-success pull-right" style="min-width: 184px;" ng-click="validate(tab)" ng-disabled="disabledButton" ng-show="theme.currentThemeVar" translate>
                 ns.save
             </a>
                 <br />
                 <div class="form-group">
-                    <h3 ng-if="theme.currentThemeVar" style="margin-left:10px;margin:20px 0" translate>themes.currentThemeVar</h3>
+                    <h3 ng-if="theme.currentThemeVar || themeConfig.config" style="margin-left:10px;margin:20px 0" translate>themes.currentThemeVar</h3>
                 </div>
                 <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
                 <div>
-                    <div ng-repeat = "group in customiseTheme.arrayGroup">
+                    <div ng-if="theme.currentThemeVar" ng-repeat = "group in customiseTheme.arrayGroup">
                         <h4><b>{{group}} </b></h4>
                         <div style="margin-left: 5%;" ng-repeat="var in customiseTheme.keys[lang]" ng-if="group==themeConfig.variables[lang][var].group">
                             <b>{{themeConfig.variables[lang][var].name}} ({{themeConfig.variables[lang][var].key}}) :</b> {{themeConfig.variables[lang][var].description}}
-                            <br>
+                            <br />
                             <input style = "float : right" type="text" class="form-control" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'string'">
+                            <label ng-if="!theme.currentThemeVar" style="color:red;margin:20px 0" translate>themes.noThemeVar</label>
                             <input style = "float : right" type="number" class="form-control" step="0.1" ng-model="themeConfig.variables[lang][var].value" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'number'">
                             <ns-switch style = "float : right" name='{{var}}' ng-model='themeConfig.variables[lang][var].value' ng-if="typeOf(themeConfig.variables[lang][var].value) == 'boolean'"></ns-switch>
                             <color-picker style = "float : right" ng-model="themeConfig.variables[lang][var].value" options="{'format': 'hexString'}" ng-if="typeOf(themeConfig.variables[lang][var].value) == 'color'"></color-picker>
-                            <br>
-                            <br>
-                            <br>
+                            <br />
+                            <br />
+                            <br />
                         </div>
-                        <br>
+                        <br />
                     </div>
+                </div>
+                <div class="form-group" ng-if="themeConfig.config">
+                    <h3 style="margin-left:10px;margin:20px 0" translate>themes.configThemeVar</h3>
+                    <pre ng-disabled="true">{{themeConfig.config}}</pre>
                 </div>
                <!-- <label ng-if="themeConfig.variables.lenght === 0">Pas de variables</label> -->
             </div>
@@ -98,41 +108,32 @@
                 <div >
                     <table>
                         <tbody>
-                            <tr style="height: 50px;" ng-repeat="file in listThemeFiles">
+                            <tr style="height: 50px;" ng-if="listThemeFiles.length > 0" ng-repeat="file in listThemeFiles">
                                 <td style="text-align: right;">
-                                    <label ng-if='file != "noDefaultData"'>{{file.name.substr(0, file.name.length-5)}} : </label>
-                                    <label ng-if='file == "noDefaultData"' translate>themes.noDefaultData</label>
-                                </td>
-                                <td style = "margin-left: 10px;" ng-if = "file.value != undefined" >
-                                    <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model='file.value' ></ns-switch>
-                                    <label style = "margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
-                                </td>
-                            </tr>
-                            <tr style="height: 50px;" ng-repeat="file in otherParams">
-                                <td style="text-align: right;">
-                                    <label>
-                                        <span>{{file.name}}</span> 
-                                        <i ng-if="file.name == 'files'" style="margin-left:10px" class="fa fa-question-circle" popover="{{'themes.filesHelper' | translate}}" popover-trigger="mouseenter" aria-hidden="true"></i>
-                                        <span>:</span>
-                                    </label>
+                                    <label ng-if='file != "noDefaultData"'>{{file.name.endsWith("json") ? file.name.substr(0, file.name.length-5) : file.name}} : </label>
                                 </td>
                                 <td style="margin-left: 10px;">
-                                    <ns-switch style = "margin-left: 10px;" name='{{file.name}}' ng-model='file.value' ></ns-switch>
+                                    <ns-switch style="margin-left: 10px;" name='{{file.name}}' ng-if='file.name !== "themeConfig.json"' ng-model="file.value"></ns-switch>
+                                    <label style="margin-left: 10px;" ng-if='file.name === "themeConfig.json"' translate>themes.required</label>
+                                </td>
+                            </tr>
+                            <tr style="height: 50px;" ng-if="listThemeFiles.length == 0">
+                                <td style="text-align: right;">
+                                    <label translate>themes.noDefaultData</label>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <br>
-                    <br>
+                    <br />
+                    <br />
                 </div>
-
-                <div style="float : right ;" class="form-group">
-                    <a ng-if='listThemeFiles[0] != "noDefaultData"' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
+                <div style="float: right;" class="form-group">
+                    <a ng-if='listThemeFiles.length > 0' download class="btn btn-success" ng-click="copyThemeDatas()" translate>
                         themes.themeDatasLead
                     </a>
                     <br />
-                    <input ng-if='listThemeFiles[0] != "noDefaultData"' type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
-                    <label ng-if='listThemeFiles[0] != "noDefaultData"' class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
+                    <input ng-if='listThemeFiles.length > 0' type="checkbox" class="form-check-input" id="themeDataOverride" ng-model="theme.themeDataOverride" ng-click="toogleOverride()">
+                    <label ng-if='listThemeFiles.length > 0' class="form-check-label" for="themeDataOverride" style="font-weight:normal" translate>themes.themeDatasOverride</label>
                 </div>
             </div>
         </div>

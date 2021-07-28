@@ -39,6 +39,8 @@
         "canon": "Canonical",
         "noAttribs": "No attributes",
         "preview": "Preview",
+        "finished": "Finished",
+        "errorCategorization": "Error during categorization",
         "coherenceTitle": "Coherence of the product"
     },
     "modal": {
@@ -127,7 +129,8 @@
         "reset_filters": "Reinit filters",
         "edit": "Edit",
         "action": "Action",
-        "productNumber": "Number of products"
+        "productNumber": "Number of products",
+        "searchLang": "Search language"
     },
     "virtual": {
         "clientEmail": "Email client",

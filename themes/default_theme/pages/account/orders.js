@@ -200,12 +200,12 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                     {
                                                                                                         order.quantityBreaks && order.quantityBreaks[`discount${taxDisplay[index].toUpperCase()}`]
                                                                                                             ? (
-                                                                                                                <sub>{t('account:orders.page.label.cart_discount')} <strong>-{order.quantityBreaks.discountATI}€</strong><br /></sub>
+                                                                                                                <sub>{t('account:orders.page.label.cart_discount')} <strong>-{order.quantityBreaks.discountATI.toFixed(2)}€</strong><br /></sub>
                                                                                                             ) : ''
                                                                                                     }
                                                                                                     {
                                                                                                         order.promos && order.promos.length && (order.promos[0].productsId.length === 0)
-                                                                                                            ? <sub>{t('account:orders.page.label.discount')}: <strong>-{order.promos[0][`discount${taxDisplay[index].toUpperCase()}`]}€</strong> - {t('account:orders.page.label.discount_code')} : {order.promos[0].code}</sub>
+                                                                                                            ? <sub>{t('account:orders.page.label.discount')}: <strong>-{order.promos[0][`discount${taxDisplay[index].toUpperCase()}`].toFixed(2)}€</strong> - {t('account:orders.page.label.discount_code')} : {order.promos[0].code}</sub>
                                                                                                             : ''
                                                                                                     }
                                                                                                     {
@@ -220,7 +220,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                 <p>
                                                                                                     {t('account:orders.page.label.payment_mode')}<br />
                                                                                                     <em>
-                                                                                                        {order.payment.length > 0 && order.payment[0] && order.payment[0].mode}<br />
+                                                                                                        {order.payment.length > 0 && order.payment[0] && (order.payment[0].name || order.payment[0].mode)}<br />
                                                                                                         {`${t(`account:orders.page.label.paidTax.${taxDisplay[index]}`)}`}
                                                                                                     </em>
                                                                                                 </p>

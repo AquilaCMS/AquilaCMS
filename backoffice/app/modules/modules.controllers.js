@@ -79,7 +79,9 @@ ModulesControllers.controller('ModulesCtrl', [
             });
         }
 
-        $scope.toggleActive = function (id, name, state) {
+    $scope.remove = function (idModule, nameModule, state) {
+        var check = window.confirm($translate.instant("confirm.deleteModule"));
+        if (check) {
             $scope.showModuleLoading = true;
             ModuleServiceV2.toggle({
                 idModule    : id,
@@ -105,7 +107,13 @@ ModulesControllers.controller('ModulesCtrl', [
                     toastService.toast('danger', err.data.message);
                 }
 
-                $scope.getDatas()
+    $scope.restart = function (nomModule, active, deleteBool) {
+        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+            $scope.config = config;
+            $scope.showLoading = true;
+            $http.get('/restart').catch(function(error) {
+                console.error(error);
+                toastService.toast("danger", $translate.instant("modules.restartFail"));
             });
         };
 
@@ -190,11 +198,11 @@ ModulesControllers.controller("PluginsNewCtrl", [
                 }
             }, function (response) {
                 if (module.active) {
-                    toastService.toast('success', $translate.instant("global.addModule"));
+                    toastService.toast('success', $translate.instant("modules.addModule"));
                     toggleActive(module._id, module.name, true);
                 } else {
                     $scope.showModuleLoading = false;
-                    toastService.toast('success', $translate.instant("global.activateModule"));
+                    toastService.toast('success', $translate.instant("modules.activateModule"));
                 }
                 $scope.modules = response.datas;
                 $scope.close("save");
@@ -207,7 +215,7 @@ ModulesControllers.controller("PluginsNewCtrl", [
         $scope.uploadError = function () {
             $scope.getDatas();
             $scope.showModuleLoading = false;
-            toastService.toast('danger', $translate.instant("global.errorActiveModule"));
+            toastService.toast('danger', $translate.instant("modules.errorActiveModule"));
             $scope.close();
         };
 

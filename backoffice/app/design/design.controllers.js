@@ -33,7 +33,7 @@ DesignControllers.controller('DesignHomeCtrl', ['$scope', '$http', 'toastService
             designFactory.saveCss(
                 { currentCss: $scope.local.currentCss }, { datas: $scope.local.customCSS },
                 (response) => {
-                    toastService.toast('success', $translate.instant("global.designSaved"));
+                    toastService.toast('success', $translate.instant("design.designSaved"));
                 },
                 (err) => {
                     toastService.toast('danger', err.data.message);

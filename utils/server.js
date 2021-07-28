@@ -32,6 +32,12 @@ const getEnv = (property) =>  {
  */
 const isProd = getEnv('NODE_ENV') === 'production';
 
+/**
+ * check if in dev or not
+ * @returns {boolean}
+ */
+const dev = getEnv('NODE_ENV') === 'development';
+
 const updateEnv = async () => {
     let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
     envPath       = path.resolve(global.appRoot, envPath);
@@ -132,9 +138,7 @@ const showAquilaLogo = () => {
 const controlNodeVersion = async () => {
     try {
         const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json'), {encoding: 'utf8'}));
-        const check       = (hilo) => {
-            return outside(process.version, packageJSON.engines.node, hilo);
-        };
+        const check       = (hilo) => outside(process.version, packageJSON.engines.node, hilo);
 
         let errorVersion;
         if (check('>') || check('<')) {
@@ -154,7 +158,8 @@ const controlNodeVersion = async () => {
 const logVersion = async () => {
     console.log(`%s@@ Mongoose version : ${mongoose.version}%s`, '\x1b[32m', '\x1b[0m');
     console.log(`%s@@ NodeJS version : ${process.version}%s`, '\x1b[32m', '\x1b[0m');
-    console.log(`%s@@ Environment : ${getEnv('AQUILA_ENV')}%s`, '\x1b[32m', '\x1b[0m');
+    console.log(`%s@@ NODE_ENV : ${getEnv('NODE_ENV')}%s`, '\x1b[32m', '\x1b[0m');
+    console.log(`%s@@ AQUILA_ENV : ${getEnv('AQUILA_ENV')}%s`, '\x1b[32m', '\x1b[0m');
     if (global.envFile.db) {
         console.log(`%s@@ Database : ${global.envFile.db}%s`, '\x1b[32m', '\x1b[0m');
     }
@@ -248,6 +253,7 @@ const deepObjectVerification = (objectToVerify, objectBase) => {
 module.exports = {
     getEnv,
     isProd,
+    dev,
     getOrCreateEnvFile,
     getUploadDirectory,
     showAquilaLogo,

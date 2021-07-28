@@ -25,6 +25,11 @@
         "statusChanged": "Changement de statut de commande :",
         "mailContact": "Mail de contact :",
         "receptRetour": "Réception retour produit :",
+        "fileSaved": "Fichier sauvegardé !",
+        "fileDelete": "Fichier supprimé !",
+        "mailUnsaved": "Mail non sauvegardé !",
+        "mailSaved": "Mail sauvegardé !",
+        "mailDelete": "Mail supprimé",
         "envoiColis": "Envoi de colis :"
     },
     "list": {
@@ -40,6 +45,8 @@
         "envoie": "Envoie Test",
         "back": "Retour",
         "titre" : "Veuillez remplir les informations afin de tester le mail.",
+        "testMailSend": "Mail test envoyé.",
+        "enterRecipient": "Veuillez saisir le destinataire.",
         "null": "Pas de templates existant pour ce type de mail."
     }
 }

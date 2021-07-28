@@ -116,18 +116,18 @@ ProductServices.service("ProductColumns", function () {
                 component_template :  "<span translate>product.list2.picture</span>"
             },
             inter : {component_template: ""},
-            cell  : {label : "IMG :",component_template: "<img ng-src='/{{getImage(product.images)}}' class='no-product-image' style='width:120px;height:90px' />"}
+            cell  : {label : "IMG :",component_template: "<img ng-src='{{getImage(product.images)}}' class='no-product-image' style='min-width: 120px;width:120px;height:90px' />"}
         },
         {
             filter : {
                 component_template : "<a ng-click=\"local.sortType = 'translation.' + defaultLang + '.name'; local.sortReverse = !local.sortReverse; getProducts(1);\">"
-                    + "<span translate>product.list2.name</span>"
+                    + "<span translate>product.list2.name</span><span>({{filterLang}})</span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && !local.sortReverse\" class=\"ico-chevron-down\"></span>"
                     + "<span ng-show=\"local.sortType == 'translation.' + defaultLang + '.name' && local.sortReverse\" class=\"ico-chevron-up\"></span>"
                     + "</a>"
             },
             inter : {component_template: "<input ng-model='searchObj.translation.name' ng-change='getProducts(1)' ng-model-options='{debounce: 500}' translate translate-attr='{placeholder: \"product.list2.name\"}' class='form-control' type='text'>"},
-            cell  : {label : "Name :",component_template: "{{product.translation[defaultLang].name}}"}
+            cell  : {label : "Name :",component_template: "{{product.translation[filterLang].name}}"}
         },
         {
             filter : {

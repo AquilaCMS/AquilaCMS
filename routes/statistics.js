@@ -6,19 +6,19 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const moment                      = require('moment-business-days');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceStatistics           = require('../services/statistics');
+const moment            = require('moment-business-days');
+const {adminAuth}       = require('../middleware/authentication');
+const ServiceStatistics = require('../services/statistics');
 
 module.exports = function (app) {
-    app.get('/v2/statistics/globale',              authentication, adminAuth, getGlobaleStats);
-    app.get('/v2/statistics/sell/canceledCart',    authentication, adminAuth, getCanceledCart);
-    app.get('/v2/statistics/sell/cag',             authentication, adminAuth, getCag);
-    app.get('/v2/statistics/sell/capp',            authentication, adminAuth, getCapp);
-    app.get('/v2/statistics/sell/nbOrder',         authentication, adminAuth, getNbOrder);
-    app.get('/v2/statistics/customer/newCustomer', authentication, adminAuth, getNewCustomer);
-    app.get('/v2/statistics/customer/topCustomer', authentication, adminAuth, getTopCustomer);
-    app.post('/v2/statistics/generate',            authentication, adminAuth, generateStatistics);
+    app.get('/v2/statistics/globale',              adminAuth, getGlobaleStats);
+    app.get('/v2/statistics/sell/canceledCart',    adminAuth, getCanceledCart);
+    app.get('/v2/statistics/sell/cag',             adminAuth, getCag);
+    app.get('/v2/statistics/sell/capp',            adminAuth, getCapp);
+    app.get('/v2/statistics/sell/nbOrder',         adminAuth, getNbOrder);
+    app.get('/v2/statistics/customer/newCustomer', adminAuth, getNewCustomer);
+    app.get('/v2/statistics/customer/topCustomer', adminAuth, getTopCustomer);
+    app.post('/v2/statistics/generate',            adminAuth, generateStatistics);
 };
 
 /**

@@ -8,8 +8,6 @@
 
 const {Cart, Orders, PaymentMethods} = require('../orm/models');
 const orderService                   = require('../services/orders');
-const ServiceMail                    = require('../services/mail');
-const ServiceLanguages               = require('../services/languages');
 const ServiceOrder                   = require('../services/orders');
 const ServiceAuth                    = require('../services/auth');
 const {middlewareServer}             = require('../middleware');
@@ -20,16 +18,16 @@ const {isAdmin}                      = require('../utils/utils');
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
-    app.post('/v2/order/rma', authentication, adminAuth, rma);
-    app.post('/v2/order/infoPayment', authentication, adminAuth, infoPayment);
+    app.post('/v2/order/rma', adminAuth, rma);
+    app.post('/v2/order/infoPayment', adminAuth, infoPayment);
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
-    app.post('/v2/order/addpkg', authentication, adminAuth, addPackage);
-    app.post('/v2/order/delpkg', authentication, adminAuth, delPackage);
-    app.put('/v2/order/updateStatus', authentication, adminAuth, updateStatus);
+    app.post('/v2/order/addpkg', adminAuth, addPackage);
+    app.post('/v2/order/delpkg', adminAuth, delPackage);
+    app.put('/v2/order/updateStatus', adminAuth, updateStatus);
     app.post('/v2/order/pay/:orderNumber/:lang?', authentication, payOrder);
-    app.put('/v2/order/updatePayment', authentication, adminAuth, updatePayment);
+    app.put('/v2/order/updatePayment', adminAuth, updatePayment);
     app.post('/v2/order/:id', getOrderById);
-    app.put('/v2/order/cancel/:id', authentication, adminAuth, cancelOrder);
+    app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
     app.put('/v2/order', setOrder);
 
@@ -107,8 +105,8 @@ async function getOrderById(req, res, next) {
  */
 async function rma(req, res, next) {
     try {
-        await orderService.rma(req.body.order, req.body.return);
-        res.end();
+        const order = await orderService.rma(req.body.order, req.body.return, req.body.lang);
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -122,8 +120,8 @@ async function rma(req, res, next) {
  */
 async function infoPayment(req, res, next) {
     try {
-        await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
-        res.end();
+        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -238,7 +236,6 @@ async function cancelOrderRequest(req, res, next) {
  * @deprecated
  */
 async function payOrder(req, res, next) {
-    const lang  = ServiceLanguages.getDefaultLang(req.params.lang);
     const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
     if (!order) {
         return next(NSErrors.OrderNotFound);
@@ -254,15 +251,15 @@ async function payOrder(req, res, next) {
         if (!method) {
             return next(NSErrors.PaymentModeNotAvailable);
         }
-        await Orders.findOneAndUpdate({
+
+        await orderService.paymentSuccess({
             number        : req.params.orderNumber,
             status        : 'PAYMENT_PENDING',
             'customer.id' : req.info._id
-        },
-        {
+        }, {
             $set : {
                 status  : 'PAYMENT_RECEIPT_PENDING',
-                payment : [createPayment(order, method)]
+                payment : [createPayment(order, method, req.params.lang)]
             }
         });
 
@@ -270,23 +267,7 @@ async function payOrder(req, res, next) {
             await Cart.deleteOne({_id: order.cartId});
         }
 
-        order.payment = [createPayment(order, method)];
-
-        await order.save();
-
-        try {
-            // We send the default language to the company
-            await ServiceMail.sendMailOrderToCompany(order._id);
-        } catch (err) {
-            console.error('payOrder sendMailOrderToCompany ->', err);
-        }
-        try {
-            await ServiceMail.sendMailOrderToClient(order._id, lang);
-        } catch (err) {
-            console.error('payOrder sendMailOrderToClient ->', err);
-        }
-
-        return res.json(order);
+        return res.json(await Orders.findOne({_id: order._id}));
     } catch (err) {
         return next(err);
     }
@@ -298,12 +279,14 @@ async function payOrder(req, res, next) {
  * @param {*} method
  * @deprecated
  */
-function createPayment(order, method) {
+function createPayment(order, method, lang) {
     return {
         type          : 'CREDIT',
         operationDate : Date.now(),
         status        : 'TODO',
         mode          : method.code.toUpperCase(),
-        amount        : order.priceTotal.ati
+        amount        : order.priceTotal.ati,
+        isDeferred    : method.isDeferred,
+        name          : method.translation[lang].name
     };
 }

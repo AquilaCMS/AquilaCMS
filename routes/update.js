@@ -6,12 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const updateService               = require('../services/update');
+const {adminAuth}   = require('../middleware/authentication');
+const updateService = require('../services/update');
 
 module.exports = function (app) {
-    app.get('/v2/update/verifying', authentication, adminAuth, verifyingUpdate);
-    app.get('/v2/update', authentication, adminAuth, update);
+    app.get('/v2/update/verifying', adminAuth, verifyingUpdate);
+    app.get('/v2/update', adminAuth, update);
+    app.get('/v2/checkChanges', adminAuth, checkChanges);
+    app.get('/v2/checkGithub', adminAuth, checkGithub);
+    app.post('/v2/updateGithub', adminAuth, updateGithub);
 };
 
 /*
@@ -26,11 +29,44 @@ async function verifyingUpdate(req, res, next) {
 }
 
 /*
-* Updating Aquila
+* Updating Aquila with Zip
 */
 async function update(req, res, next) {
     try {
         res.send(await updateService.update());
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/*
+* Updating Aquila with Git
+*/
+async function checkChanges(req, res, next) {
+    try {
+        res.send(await updateService.checkChanges());
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/*
+* Check if github connection exist
+*/
+async function checkGithub(req, res, next) {
+    try {
+        res.send(await updateService.checkGithub());
+    } catch (err) {
+        return next(err);
+    }
+}
+
+/*
+* update aquila with Github
+*/
+async function updateGithub(req, res, next) {
+    try {
+        res.send(await updateService.updateGithub(req.body));
     } catch (err) {
         return next(err);
     }

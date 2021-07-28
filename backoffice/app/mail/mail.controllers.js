@@ -59,7 +59,10 @@ MailControllers.controller("MailListCtrl", [
 
         $scope.getMailTypeDesc = function(type){
             if ($scope.mailTypes && $scope.adminLang){
-                type = $scope.mailTypes.find(x => x.code === type).translation[$scope.adminLang].name;
+                const currentType = $scope.mailTypes.find(x => x.code === type);
+                if(currentType) {
+                    type = currentType.translation[$scope.adminLang].name;
+                }
             }
             return type;
         }
@@ -127,11 +130,11 @@ MailControllers.controller("MailDetailCtrl", [
 
         $scope.after = function(){
             $scope.MailGetById();
-            toastService.toast("success", $translate.instant("global.fileSaved"));
+            toastService.toast("success", $translate.instant("mail.detail.fileSaved"));
         }
 
         $scope.uploadError = function(){
-                toastService.toast("danger", $translate.instant("global.fileUnsaved"));
+                toastService.toast("danger", $translate.instant("mail.detail.fileUnsaved"));
         }
 
         $scope.deletePdf = function(position, lang){
@@ -139,11 +142,11 @@ MailControllers.controller("MailDetailCtrl", [
             $scope.mail.translation[lang].attachments.splice(position, 1);
             MailRemovePdf.removePdf({mail:$scope.mail, path}, function (response) {
                 if (response.msg) {
-                    toastService.toast("danger", $translate.instant("global.fileUnsaved"));
+                    toastService.toast("danger", $translate.instant("mail.detail.fileUnsaved"));
                     $scope.MailGetById();
                 }
                 else {
-                    toastService.toast("success", $translate.instant("global.fileDelete"));
+                    toastService.toast("success", $translate.instant("mail.detail.fileDelete"));
                     $scope.MailGetById();
                 }
             }, function (err) {
@@ -159,13 +162,13 @@ MailControllers.controller("MailDetailCtrl", [
         //Ajout ou update d'un mail
         $scope.save = function (isQuit) {
             if ($scope.nsUploadFiles.isSelected) {
-                let response = confirm("La pièce jointe n'est pas sauvegardée, êtes vous sûr de vouloir continuer ?");
+                let response = confirm($translate.instant("confirm.fileAttachedNotSaved"));
                 if (!response) { return }
             }
             $scope.form.nsSubmitted = true;
             if($scope.form.$invalid)
             {
-                toastService.toast("danger", $translate.instant("global.mailUnsaved"));
+                toastService.toast("danger", $translate.instant("mail.detail.mailUnsaved"));
                 return;
             }
             var deferred = $q.defer();
@@ -207,7 +210,7 @@ MailControllers.controller("MailDetailCtrl", [
                 }
                 else
                 {
-                    toastService.toast("success", $translate.instant("global.mailSaved"));
+                    toastService.toast("success", $translate.instant("mail.detail.mailSaved"));
                     $location.path("/mails/" + response._id);
                 }
 
@@ -225,10 +228,10 @@ MailControllers.controller("MailDetailCtrl", [
 
         //Suppression d'un mail
         $scope.remove = function (_id) {
-            if(confirm("Êtes-vous sûr de vouloir supprimer ce mail ?"))
+            if (confirm($translate.instant("confirm.deleteMail")))
             {
                 MailRemove.remove({_id: _id}, function () {
-                    toastService.toast("success", $translate.instant("global.mailDelete"));
+                    toastService.toast("success", $translate.instant("mail.detail.mailDelete"));
                     $location.path("/mails");
                 });
             }
@@ -281,7 +284,7 @@ MailControllers.controller("MailDetailTestCtrl", [
                     };
                 }
                 TestMail.query({ mail: $scope.mail, values: variables, lang: $scope.lang }, function (res) {
-                    toastService.toast("success", $translate.instant("global.testMailSend"));
+                    toastService.toast("success", $translate.instant("mail.test.testMailSend"));
                     $scope.loading = false;
                     $modalInstance.close();
                 }, function (r) {
@@ -290,7 +293,7 @@ MailControllers.controller("MailDetailTestCtrl", [
                 })
             }else{
                 $scope.loading = false;
-                toastService.toast("warning", $translate.instant("global.enterRecipient"));
+                toastService.toast("warning", $translate.instant("mail.test.enterRecipient"));
             }
         }
     }

@@ -22,6 +22,8 @@
         "titre": "Titre",
         "avis": "Avis",
         "gererQuestions": "Vous pouvez gérer vos questionnaires dans les jeux d'attributs",
+        "noticeSaved": "Avis sauvegardée !",
+        "promoDelete": "Promo supprimée",
         "ipClient": "Client's IP"
     }
 }

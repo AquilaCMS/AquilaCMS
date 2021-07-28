@@ -32,6 +32,10 @@
         "actif": "Active",
         "visible": "Visible",
         "champRequis": "This field is required.",
+        "enterInvalid": "The information entered is not valid.",
+        "infoSaved": "Information saved!",
+        "savedError": "An error occurred while saving.",
+        "deleteError": "An error occurred while deleting.",
         "emailInvalide":"Invalid e-mail"
     },
     "list": {
@@ -65,6 +69,9 @@
         "zipCode": "ZIP Code",
         "city": "City",
         "mail": "E-mail",
+        "supplierCreated": "Supplier created",
+        "occurrenceError": "An internal error has occurred.",
+        "enterInvalid": "The information entered is not valid.",
         "phone": "Telephone"
     }
 }

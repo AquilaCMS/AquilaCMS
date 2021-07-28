@@ -29,6 +29,7 @@
                 "send_mail_verif": "Ré-envoyer l'email de vérification de mon compte",
                 "lastname": "Nom",
                 "firstname": "Prénom",
+                "birthDate": "Anniversaire",
                 "company": "Société",
                 "validate": "Valider",
                 "preferredLanguage": "Langue favorite"

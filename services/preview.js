@@ -16,39 +16,23 @@ const defaultFields                 = ['_id', 'code', 'translation'];
 const queryBuilder                  = new QueryBuilder(ModelPreview, restrictedFields, defaultFields);
 const {StaticsPreview, NewsPreview} = require('../orm/models');
 
-const getStaticsPreview = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getStaticsPreview = async (PostBody) => queryBuilder.find(PostBody);
 
-const getStaticPreview = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getStaticPreview = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getStaticPreviewById = async (_id) => {
-    return getStaticPreview({filter: {_id}});
-};
+const getStaticPreviewById = async (_id) => getStaticPreview({filter: {_id}});
 
-const deletePreview = async (code) => {
-    return ModelPreview.deleteOne({code});
-};
+const deletePreview = async (code) => ModelPreview.deleteOne({code});
 
 // Blog preview
 
-const getNewsPreview = async (PostBody) => {
-    return NewsPreview.find(PostBody.filter).populate(PostBody.populate).sort(PostBody.sort).limit(PostBody.limit || 1);
-};
+const getNewsPreview = async (PostBody) => NewsPreview.find(PostBody.filter).populate(PostBody.populate).sort(PostBody.sort).limit(PostBody.limit || 1);
 
-const getNewPreview = async (PostBody) => {
-    return NewsPreview.findOne(PostBody.filter).populate(PostBody.populate);
-};
+const getNewPreview = async (PostBody) => NewsPreview.findOne(PostBody.filter).populate(PostBody.populate);
 
-const getNewPreviewById = async (_id) => {
-    return getNewPreview({filter: {_id}});
-};
+const getNewPreviewById = async (_id) => getNewPreview({filter: {_id}});
 
-const deleteNewPreview = async (code) => {
-    return NewsPreview.deleteOne({code});
-};
+const deleteNewPreview = async (code) => NewsPreview.deleteOne({code});
 
 // productPreview
 

@@ -1,6 +1,6 @@
 <ns-box data-title="territories.details.t1" title-icon="fa fa-globe fa-lg" close-href="#/territories">
-    <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(territory._id, false)">
-        <ns-buttons is-edit-mode="isEditMode" remove="remove(territory._id)" save-and-quit="save()"
+    <form name="form" novalidate class="form-horizontal" role="form" ng-submit="save(false)">
+        <ns-buttons is-edit-mode="isEditMode" remove="remove(territory._id)" save-and-quit="save(true)"
             disable-save="disableSave" return-path="/territories" form="form">
 
                 <br/><br/>

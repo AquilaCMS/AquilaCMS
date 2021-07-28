@@ -272,9 +272,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         // resize
             filePath = await utilsModules.modulesLoadFunctions('getFile', {
                 key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
-            }, () => {
-                return filePath;
-            });
+            }, () => filePath);
 
             try {
                 sharpOptions.width  = Number(size.split('x')[0]);
@@ -370,7 +368,7 @@ const uploadFiles = async (body, files) => {
     case 'product': {
         const image = {
             default  : body.default,
-            position : 0,
+            position : body.position ? body.position : false,
             alt      : body.alt,
             name     : name + extension,
             title    : name,
@@ -434,7 +432,9 @@ const uploadFiles = async (body, files) => {
             item.src      = target_path_full;
             item.alt      = body.alt && body.alt !== '' ? body.alt : item.alt;
             item.srcset   = [target_path_full];
-            await Gallery.updateOne({}, {
+            await Gallery.updateOne({
+                _id : body._id
+            }, {
                 $set : {
                     'items.$[item].src'       : target_path_full,
                     'items.$[item].alt'       : body.alt && body.alt !== '' ? body.alt : item.alt,
@@ -476,12 +476,14 @@ const uploadFiles = async (body, files) => {
             item.src      = target_path_full;
             item.name     = body.alt && body.alt !== '' ? body.alt : item.name;
             item.text     = body.alt && body.alt !== '' ? body.alt : item.text;
-            await Slider.updateOne({}, {
+            await Slider.updateOne({
+                _id : body._id
+            }, {
                 $set : {
-                    'items.$[item].src'  : target_path_full,
-                    'items.$[item].name' : item.name,
-                    'items.$[item].text' : item.text,
-                    extension            : path.extname(target_path_full)
+                    'items.$[item].src'       : target_path_full,
+                    'items.$[item].name'      : item.name,
+                    'items.$[item].text'      : item.text,
+                    'items.$[item].extension' : path.extname(target_path_full)
                 }
             }, {
                 arrayFilters : [{'item._id': body.entity._id}]
@@ -545,13 +547,9 @@ const uploadFiles = async (body, files) => {
     }
 };
 
-const listMedias = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const listMedias = async (PostBody) => queryBuilder.find(PostBody);
 
-const getMedia = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getMedia = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const saveMedia = async (media) => {
     if (media._id) {

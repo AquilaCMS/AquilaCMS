@@ -116,7 +116,7 @@ ContactControllers.controller("ContactDetailsCtrl", [
                 OneContact.delete({id: _id}).$promise.then(function () {
                     $location.path("/contacts");
                 }, function () {
-                    toastService.toast("danger", $translate.instant("global.errorDeleting"));
+                    toastService.toast("danger", $translate.instant("contact.errorDeleting"));
                 });
             }
         }

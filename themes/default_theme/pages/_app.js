@@ -135,7 +135,8 @@ class AquilaApp extends App {
                                 type: 1,
                                 addresses: 1,
                                 delivery_address: 1,
-                                billing_address: 1
+                                billing_address: 1,
+                                birthDate: 1
                             }
                         };
                         user = await getUser(user._id, PostBody, bundle.ctx);
@@ -240,6 +241,7 @@ class AquilaApp extends App {
         return (
             <>
                 <Head>
+                    <meta name="powered-by" content="AquilaCMS"/>
                     <meta property="og:site_name" content={pageProps.sitename} />
                     <meta itemProp="name" content={pageProps.sitename} />
                     {pageProps.favicon && <link rel="shortcut icon" href={pageProps.favicon} />}

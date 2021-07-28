@@ -6,15 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const serviceThemeConfig          = require('../services/themeConfig');
+const {adminAuth}        = require('../middleware/authentication');
+const serviceThemeConfig = require('../services/themeConfig');
 
 // ThemeConfig.json file at the root of the themes
 
 module.exports = function (app) {
     app.post('/v2/themeConfig', getThemeConfig);
     app.get('/v2/themeConfig/:key', getThemeConfigByKey);
-    app.put('/v2/themeConfig', authentication, adminAuth, setThemeConfig);
+    app.put('/v2/themeConfig', adminAuth, setThemeConfig);
 };
 
 /**

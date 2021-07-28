@@ -194,11 +194,15 @@
             let toastContain = document.getElementById("toast-container");
 
             const fieldValue = document.getElementById("databaseAdd").value.replace(/\s/g, "");
-            if(fieldValue === "mongodb://localhost:27017/")
-            {
-                toastContain.style.backgroundColor = "red";
-                toastContain.MaterialSnackbar.showSnackbar({message: "Connection string needs database name"});
-                return;
+
+            const partValue = fieldValue.split("://");
+            if(typeof partValue[1]  !== "undefined"){
+                const secondPart = partValue[1].split("/");
+                if((typeof secondPart[1] !== "undefined" && secondPart[1] === "") || typeof secondPart[1] === "undefined") {
+                    toastContain.style.backgroundColor = "darkorange";
+                    toastContain.MaterialSnackbar.showSnackbar({message: "The connection string needs to have the name of the database, example : 'mongodb://localhost:27017/database'"});
+                    return;
+                }
             }
 
             testDBLoader.style.display = 'block';
@@ -219,7 +223,11 @@
                     testDBLoader.style.display         = 'none';
                     testDBButton.style.display         = 'block';
                     toastContain.style.backgroundColor = "red";
-                    toastContain.MaterialSnackbar.showSnackbar({message: response.responseText});
+                    if(response.responseText){
+                        toastContain.MaterialSnackbar.showSnackbar({message: response.responseText});
+                    } else {
+                        toastContain.MaterialSnackbar.showSnackbar({message: "An error has occurred"});
+                    }
                     console.error(response, status, error);
                 }
             });
@@ -306,14 +314,14 @@
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input class="mdl-textfield__input" type="text" id="envPath" name="envPath" required
                         value="config/env.json">
-                    <label class="mdl-textfield__label" for="envPath">Path for the configuration (must be a .json file)
+                    <label class="mdl-textfield__label" for="envPath">Path for the configuration <span style="color:#AAA">(must be a .json file)</span>
                         <span id="envPathError" style="color: red; display: none;">Not a .json file</span></label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input class="mdl-textfield__input" type="text" id="databaseAdd" name="databaseAdd" required
                         value="mongodb://localhost:27017/">
-                    <label class="mdl-textfield__label" for="databaseAdd">Connection string to MongoDB</label>
+                    <label class="mdl-textfield__label" for="databaseAdd">Connection string to MongoDB <span style="color:#AAA">(if necessary, DB will be created)</span></label>
                 </div>
                 <button type="button" id="testDB" class="testDB mdl-button mdl-js-button mdl-button--primary" style="float: right;margin-top: -15px;">
                     Test connection
@@ -336,7 +344,7 @@
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <input class="mdl-textfield__input" type="text" id="adminPrefix" name="adminPrefix" value="{{adminPrefix}}" required>
-                    <label class="mdl-textfield__label" for="adminPrefix">Administration prefix</label>
+                    <label class="mdl-textfield__label" for="adminPrefix">Administration prefix <span style="color:#AAA">(for the backoffice access)</span></label>
                 </div>
 
                 <!-- <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -346,7 +354,7 @@
 
                 <div>
                     <div class="labelforselect">
-                        Default language
+                        Default language <span style="color:#AAA">(for the store-front)</span></label>
                     </div>
                     <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="language-en">
                         <input type="radio" id="language-en" class="mdl-radio__button" name="language" value="en" checked>

@@ -52,6 +52,8 @@ const changeTheme = async (selectedTheme) => {
         } catch (err) {
             console.error(err);
         }
+    } else {
+        throw NSErrors.SameTheme;
     }
 };
 
@@ -110,6 +112,7 @@ const uploadTheme = async (originalname, filepath) => {
 /**
  * @description setConfigTheme
  * @param theme : String Theme selectionné
+ * @deprecated
  */
 const setConfigTheme = async (theme) => {
     console.log('Setting configuration for the theme...');
@@ -172,10 +175,23 @@ const deleteTheme = async (themePath) => {
 
 const getDemoDatasFilesName = async () => {
     const folder = path.join(global.appRoot, `themes/${global.envConfig.environment.currentTheme}/demoDatas`);
-    if (!fs.existsSync(folder)) return [];
+    if (!fs.existsSync(folder)) {
+        return [];
+    }
     const fileNames = await fs.readdir(folder);
     for ( let i = (fileNames.length - 1); i >= 0; i--) {
         if (fileNames[i].indexOf('json') === -1) {
+            if (fileNames[i] === 'files') {
+                const pathToFile = path.join(folder, fileNames[i]);
+                if (await fs.hasAccess(pathToFile)) {
+                    const listOfFile = await fs.readdir(pathToFile);
+                    if (listOfFile && listOfFile.length !== 0) {
+                        // there are files
+                        fileNames.splice(i, 1, {name: fileNames[i], value: true});
+                        continue;
+                    }
+                }
+            }
             fileNames.splice(i, 1);
         } else {
             fileNames.splice(i, 1, {name: fileNames[i], value: true});
@@ -188,32 +204,39 @@ const getDemoDatasFilesName = async () => {
  * @param {String} themePath : Selected theme
  * @param {Boolean} override : Override datas if exists
  */
-const copyDatas = async (themePath, override = true, configuration = null, fileNames = null, otherParams = null) => {
+const copyDatas = async (themePath, override = true, configuration = null, fileNames = null) => {
     const themeDemoData = path.join(global.appRoot, 'themes', themePath, 'demoDatas');
     const data          = [];
-    const listOfFile    = [];
+    let listOfFile      = [];
     if (!fs.existsSync(themeDemoData)) {
         return {data, noDatas: true};
     }
-    if (!await fs.hasAccess(themeDemoData)) return data;
-    const listOfPath = (await fs.readdir(themeDemoData)).map((value) => path.join(themeDemoData, value));
+    if (!await fs.hasAccess(themeDemoData)) {
+        return data;
+    }
+    const listOfDemoDatasFiles = await fs.readdir(themeDemoData);
+    const listOfPath           = listOfDemoDatasFiles.map((value) => path.join(themeDemoData, value));
     if (!fileNames && listOfPath) {
-        for (let i = 0; i < listOfPath.length; i++) {
-            listOfFile.push(listOfPath[i]);
-        }
+        listOfFile = listOfPath;
     } else {
-        for (let j = 0; j < listOfPath.length; j++) {
-            for (let i = 0; i < fileNames.length; i++) {
-                if ( listOfPath[j].indexOf(fileNames[i].name) !== -1) {
-                    if (fileNames[i].value === true) {
-                        listOfFile.push(listOfPath[j]);
-                    }
-                }
-            }
-        }
+        listOfFile = listOfPath.filter((onePath) => {
+            const index = fileNames.findIndex((elementInFileName) => onePath.includes(elementInFileName.name));
+            return (index > -1 && fileNames[index].value === true);
+        });
+    }
+    const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
+    await fs.mkdir(photoPath, {recursive: true});
+    if (!(await fs.hasAccess(path.join(themeDemoData, 'files')))) {
+        throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
+    }
+    if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
+        throw new Error(`"${photoPath}" is not writable`);
     }
     for (const value of listOfFile) {
         if ((await fs.lstat(value)).isDirectory()) {
+            if (value.endsWith('files') && override) {
+                await fs.copyRecursive(value, photoPath, override);
+            }
             continue;
         }
         let file;
@@ -248,6 +271,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
                         data       : [...result]
                     });
                 } catch (err) {
+                    // error can occur when the "override" is set to false
                     console.error(err);
                 }
             }
@@ -255,23 +279,6 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
     }
     if (configuration === null) {
         configuration = await Configuration.findOne();
-    }
-    const photoPath = path.join(global.appRoot, require('../utils/server').getUploadDirectory());
-    await fs.mkdir(photoPath, {recursive: true});
-    if (!(await fs.hasAccess(path.join(themeDemoData, 'files')))) {
-        throw new Error(`"${path.join(themeDemoData, 'files')}" is not readable`);
-    }
-    if (!(await fs.hasAccess(photoPath, fs.constants.W_OK))) {
-        throw new Error(`"${photoPath}" is not writable`);
-    }
-    if (typeof otherParams !== 'undefined' && otherParams != null && otherParams.length > 0) {
-        if (override) {
-            for (const oneParam of otherParams) {
-                if (oneParam.name === 'files' && oneParam.value === true) {
-                    await fs.copyRecursive(path.join(themeDemoData, 'files'), photoPath, override);
-                }
-            }
-        }
     }
     return data;
 };
@@ -361,7 +368,24 @@ function getThemePath() {
  * @param {String} theme
  */
 async function buildTheme(theme) {
-    await nextBuild(path.resolve(global.appRoot, 'themes', theme));
+    try {
+        // "dynamic_langs.js" is required to build (reactjs) theme
+        if (!(await fs.existsSync(path.join(theme, 'dynamic_langs.js')))) {
+            // Create if not exist
+            await require('./languages').createDynamicLangFile();
+        }
+
+        const returnValues = await nextBuild(path.resolve(global.appRoot, 'themes', theme));
+        return {
+            msg    : 'OK',
+            result : returnValues
+        };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
 }
 
 const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware, ns) => {
@@ -388,6 +412,26 @@ const listTheme = async () => {
     return allTheme;
 };
 
+const installTheme = async (themeName = '', devDependencies = false) => {
+    try {
+        const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+        let command       = 'yarn install --production=true';
+        if (devDependencies === true) {
+            command = 'yarn install --production=false';
+        }
+        const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
+        return {
+            msg    : 'OK',
+            result : returnValues
+        };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
+};
+
 module.exports = {
     changeTheme,
     setConfigTheme,
@@ -402,5 +446,6 @@ module.exports = {
     getThemePath,
     loadTranslation,
     listTheme,
-    getDemoDatasFilesName
+    getDemoDatasFilesName,
+    installTheme
 };

@@ -27,7 +27,7 @@ adminCatagenServices.service("NSConstants", function () {
                         { code: "DELIVERY_PARTIAL_PROGRESS", name: "Expédié partiel" },
                         { code: "FINISHED", name: "Traité" },
                         { code: "CANCELED", name: "Annulé" },
-                        { code: "RETURNED", name: "Retour" },
+                        { code: "RETURNED", name: "Retour et remboursement" },
                         { code: "ASK_CANCEL", name: "Annulation demandé par le client" }
                     ],
                     en:[
@@ -43,7 +43,7 @@ adminCatagenServices.service("NSConstants", function () {
                         { code: "DELIVERY_PARTIAL_PROGRESS", name: "Partially sent" },
                         { code: "FINISHED", name: "Processed" },
                         { code: "CANCELED", name: "Cancelled" },
-                        { code: "RETURNED", name: "Return" },
+                        { code: "RETURNED", name: "Return and refound" },
                         { code: "ASK_CANCEL", name: "Cancel order requested by customer" }
 
                     ]
@@ -171,16 +171,6 @@ adminCatagenServices.factory("Mailer", [
     {
         return $resource("v2/mail/:typeMail", {}, {
             send: {method: "POST", params: {}}
-        });
-    }
-]);
-
-adminCatagenServices.factory("Invoice", [
-    "$resource", function ($resource)
-    {
-        return $resource("v2/bills/:action/:id", {}, {
-            query: {method: "POST", params: {}},
-            orderToBill: {method: "POST", params: {action: 'fromOrder'}}
         });
     }
 ]);
@@ -377,8 +367,3 @@ adminCatagenServices.factory("ConfirmDeleteModal", [
         };
     }
 ]);
-
-adminCatagenServices.service("InvoiceColumns", function ()
-{
-    return [];
-});

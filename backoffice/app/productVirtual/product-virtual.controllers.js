@@ -100,10 +100,10 @@ ProductVirtualController.controller('ProductVirtualCtrl', ['$scope', '$location'
                         delete newPrd._id;
                         const query = ProductsV2.duplicate(newPrd);
                         query.$promise.then(function (savedPrd) {
-                            toastService.toast("success", $translate.instant("global.productDuplicate"));
+                            toastService.toast("success", $translate.instant("simple.productDuplicate"));
                             $location.path(`/products/${savedPrd.type}/${savedPrd.code}`);
                         }).catch(function (e) {
-                            toastService.toast("danger", $translate.instant("global.codeExists"));
+                            toastService.toast("danger", $translate.instant("simple.codeExists"));
                         });
                     }
                 },

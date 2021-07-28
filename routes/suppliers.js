@@ -6,15 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceSuppliers            = require('../services/suppliers');
-const {authentication, adminAuth} = require('../middleware/authentication');
+const ServiceSuppliers = require('../services/suppliers');
+const {adminAuth}      = require('../middleware/authentication');
 
+/* eslint-disable no-use-before-define */
 module.exports = function (app) {
-    app.post('/v2/suppliers', listSuppliers);
-    app.post('/v2/supplier', getSupplier);
-    app.put('/v2/supplier', authentication, adminAuth, saveSupplier);
-    app.delete('/v2/supplier/:id', authentication, adminAuth, deleteSupplier);
+    app.post('/v2/suppliers', adminAuth, listSuppliers);
+    app.post('/v2/supplier', adminAuth, getSupplier);
+    app.put('/v2/supplier', adminAuth, saveSupplier);
+    app.delete('/v2/supplier/:id', adminAuth, deleteSupplier);
 };
+/* eslint-enable no-use-before-define */
 
 const listSuppliers = async (req, res, next) => {
     try {

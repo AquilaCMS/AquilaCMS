@@ -12,7 +12,6 @@ const {
     Cart,
     Orders,
     Products,
-    Promo,
     Languages,
     Configuration
 }                       = require('../orm/models');
@@ -31,17 +30,13 @@ const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
 const queryBuilder     = new QueryBuilder(Cart, restrictedFields, defaultFields);
 
-const getCarts = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getCarts = async (PostBody) => queryBuilder.find(PostBody);
 
 /**
  * Get cart(s) for this client
  * @returns {Promise<mongoose.Document>}
  */
-const getCartforClient = async (idclient) => {
-    return Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
-};
+const getCartforClient = async (idclient) => Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 
 const getCartById = async (id, PostBody = null, user = null, lang = null, req = null) => {
     if (PostBody && PostBody.structure) {
@@ -60,7 +55,9 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle') {
+                    cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                }
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -146,6 +143,8 @@ const deleteCartItem = async (cartId, itemId) => {
 
     ServicePromo.calculDiscount(cart);
     await cart.save();
+    aquilaEvents.emit('aqReturnCart');
+    cart = await Cart.findOne({_id: cart._id});
     return {code: 'CART_ITEM_DELETED', data: {cart}};
 };
 
@@ -169,9 +168,7 @@ const addItem = async (req) => {
         for (const index of indexes) {
             if (
                 cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => {
-                    return {bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]};
-                })) !== JSON.stringify(req.body.item.selections)
+                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(req.body.item.selections)
             // eslint-disable-next-line no-empty
             ) {
                 continue;
@@ -207,6 +204,8 @@ const addItem = async (req) => {
         _newCart.items.find((item) => item._id.toString() === req.body.item.parent).children.push(idGift);
     }
     await _newCart.save();
+    aquilaEvents.emit('aqReturnCart');
+    cart = await Cart.findOne({_id: _newCart._id});
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -267,10 +266,8 @@ const updateQty = async (req) => {
     cart = await ServicePromo.checkForApplyPromo(req.info, cart);
     await cart.save();
     // Event called by the modules to retrieve the modifications in the cart
-    const shouldUpdateCart = aquilaEvents.emit('aqReturnCart');
-    if (shouldUpdateCart) {
-        cart = await Cart.findOne({_id: cart._id});
-    }
+    aquilaEvents.emit('aqReturnCart');
+    cart = await Cart.findOne({_id: cart._id});
     return {code: 'CART_ADD_ITEM_SUCCESS', data: {cart}};
 };
 
@@ -305,6 +302,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         if (!_cart) {
             throw NSErrors.CartInactive;
         }
+        aquilaEvents.emit('cartToOrder', _cart);
         lang = servicesLanguages.getDefaultLang(lang);
         // We validate the basket data
         const result = validateForCheckout(_cart);
@@ -424,30 +422,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         }
 
         const createdOrder = await Orders.create(newOrder);
-        // If the order has a discount of type "promo code"
-        if (createdOrder.promos && createdOrder.promos.length && createdOrder.promos[0].promoCodeId) {
-            try {
-            // then we increase the number of uses of this promo
-                await Promo.updateOne({}, {
-                    $inc : {'codes.$[code].used': 1}
-                }, {
-                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
-                });
-                // then we must also update the number of unique users who have used this "promo code"
-                const result = await Orders.distinct('customer.id', {
-                    'promos.promoCodeId' : createdOrder.promos[0].promoCodeId
-                });
-                await Promo.updateOne({}, {
-                    $set : {'codes.$[code].client_used': result.length}
-                }, {
-                    arrayFilters : [{'code._id': createdOrder.promos[0].promoCodeId}]
-                });
-            // TODO P6 : Decrease the stock of the product offered
-            // if (_cart.promos[0].gifts.length)
-            } catch (err) {
-                console.error(err);
-            }
-        }
 
         return {code: 'ORDER_CREATED', data: createdOrder};
     } catch (err) {
@@ -495,9 +469,7 @@ const removeOldCarts = async () => {
  * @param {Object} stock
  * @param {number} qty
  */
-const checkProductOrderable = (stock, qty) => {
-    return stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
-};
+const checkProductOrderable = (stock, qty) => stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
 
 /**
  * Function to associate a user with a cart

@@ -19,6 +19,7 @@ let agenda;
  * Connect Agenda to mongodb
  */
 const initAgendaDB = async () => {
+    console.log('Scheduler init : In progress...');
     await new Promise((resolve) => {
         agenda = new Agenda({db: {address: global.envFile.db, options: {useUnifiedTopology: true}}}, async () => {
             let tAgendaJobs;
@@ -64,19 +65,19 @@ const initAgendaDB = async () => {
                         } else if (tJobsSystem[i] === 'Remove pending payment orders') {
                             await setJob(undefined, tJobsSystem[5], '0 */4 * * *', '/services/orders/cancelOrders', {fr: 'Annulation des commandes en attente de paiement', en: 'Cancellation of orders awaiting payment'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Cohérence produits') {
-                            await setJob(undefined, tJobsSystem[6], '0 1 * * * *', '/services/products/controlAllProducts', {fr: 'Script de cohérence des produits', en: 'Product consistency script'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[6], '0 1 1 * *', '/services/products/controlAllProducts', {fr: 'Script de cohérence des produits', en: 'Product consistency script'}, 'service', 'system', '', true);
                         /* } else if (tJobsSystem[i] === 'Cohérence données') {
                         await setJob(undefined, tJobsSystem[7], '0 0 * * * *', '/services/admin/controlAllDatas', 'Script de cohérence des données', "service", 'system', '', true);
                     */ } else if (tJobsSystem[i] === 'Build stats') {
                             await setJob(undefined, tJobsSystem[8], '10 0 * * * *', '/services/stats/buildStats', {fr: 'Construction des statistiques de la veille', en: 'Construction of the statistics of the previous day'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Cache requests clean') {
-                            await setJob(undefined, tJobsSystem[9], '0 5 31 2 *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true);
+                            await setJob(undefined, tJobsSystem[9], '0 */6 * * *', '/services/cache/flush', {fr: 'Vide le cache des requêtes', en: 'Clears the requests cache'}, 'service', 'system', '', true);
                         } else if (tJobsSystem[i] === 'Clean cache') {
-                            await setJob(undefined, tJobsSystem[10], '0 0 0 0 0', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[10], '0 */12 * * *', '/services/cache/cleanCache', {fr: 'Vide le cache des images', en: 'Clears the images cache'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove temp file') {
                             await setJob(undefined, tJobsSystem[11], '0 1 * * 3', '/services/files/removeTempFile', {fr: 'Suppression des fichiers temporaires', en: 'Remove temporary files'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Remove previews') {
-                            await setJob(undefined, tJobsSystem[12], '0 0 0 0 0', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
+                            await setJob(undefined, tJobsSystem[12], '0 */4 * * *', '/services/preview/removePreviews', {fr: 'Suppression des aperçus', en: 'Remove previews'}, 'service', 'user', '', true, '');
                         } else if (tJobsSystem[i] === 'Mail to pending carts') {
                             await setJob(undefined, tJobsSystem[13], '0 0 4 * * *', '/services/cart/mailPendingCarts', {fr: 'Relancer par mail les paniers en attente', en: 'Send mail to pending carts'}, 'service', 'system', '', true, '');
                         }
@@ -95,7 +96,7 @@ const initAgendaDB = async () => {
                 }
             }
 
-            console.log('Scheduler started!');
+            console.log('Scheduler init : Done\x1b[32m \u2713 \x1b[0m');
         });
         agenda.defaultLockLifetime(1000);
         resolve();
@@ -323,6 +324,9 @@ const getPlayImmediateJob = async (_id, option) => {
             sError += ` with error ${foundJobs[0].attrs.name} -> ${foundJobs[0].attrs.data.method} -${foundJobs[0].attrs.data.api} `;
         }
         console.error(sError);
+        if (err.error && err.error.code) {
+            console.error(`Error -> ${err.error.code.toString()}`);
+        }
         throw err;
     }
 };

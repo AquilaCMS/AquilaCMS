@@ -143,43 +143,40 @@
             <div class="form-group">
                 <div class="col-sm-11">
                     <label class="col-sm-2 control-label" translate>job.detail.fqDoc</label>
-                    <div>
-                        <pre>
-                            <br>
-                            - <b>00 30 08 10 06 * *</b> : le 10 juin à 08:30 du matin
-                                00 – 0ème seconde (début de la minute)
-                                30 – 30ème minute
-                                08 – 8 heures du matin (cron fonctionne en 24 heures)
-                                10 – 10ème jour
-                                06 – 6ème mois (juin)
-                                * – n’importe quel jour de la semaine
-                                * – n’importe quelle année
-                            - <b>00 00 09-18 * * * *</b> : chaque heure de chaque jour, de 9 à 18h
-                                00 – 0ème seconde (début de la minute)
-                                00 – 0ème minute (début de l’heure)
-                                09-18 – 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 heures
-                                * – chaque jour
-                                * – chaque mois
-                                * – n’importe quel jour de la semaine
-                                * – n’importe quelle année
-                            - <b>* */10 * * * *</b> : Lancer le cron toutes les 10 minutes.
+<pre class="col-sm-7">
+    - <b>00 30 08 10 06 * *</b> : le 10 juin à 08:30 du matin
+        00 – 0ème seconde (début de la minute)
+        30 – 30ème minute
+        08 – 8 heures du matin (cron fonctionne en 24 heures)
+        10 – 10ème jour
+        06 – 6ème mois (juin)
+        * – n’importe quel jour de la semaine
+        * – n’importe quelle année
+    - <b>00 00 09-18 * * * *</b> : chaque heure de chaque jour, de 9 à 18h
+        00 – 0ème seconde (début de la minute)
+        00 – 0ème minute (début de l’heure)
+        09-18 – 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 heures
+        * – chaque jour
+        * – chaque mois
+        * – n’importe quel jour de la semaine
+        * – n’importe quelle année
+    - <b>* */10 * * * *</b> : Lancer le cron toutes les 10 minutes.
 
-                                * * * * * * *
-                                | | | | | | |
-                                | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnel (7 champs)
-                                | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
-                                | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
-                                | | | +-------- Day of the Month  (range: 1-31)
-                                | | +---------- Hour              (range: 0-23)
-                                | +------------ Minute            (range: 0-59)
-                                +-------------- Seconde           (range: 0-59) /!\ Optionnel (6 champs)
+    * * * * * * *
+    | | | | | | |
+    | | | | | | +-- Year              (range: 1900-3000) /!\ Optionnel (7 champs)
+    | | | | | +---- Day of the Week   (range: 1-7, 1 standing for Monday)
+    | | | | +------ Month of the Year (range: 1-12) NOTE: Difference here
+    | | | +-------- Day of the Month  (range: 1-31)
+    | | +---------- Hour              (range: 0-23)
+    | +------------ Minute            (range: 0-59)
+    +-------------- Seconde           (range: 0-59) /!\ Optionnel (6 champs)
 
-                                /!\ L'interval peut être noté sous differents formats:
-                                 - 7 champs: 00 00 08 1-31 * * *  => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine Année
-                                 - 6 champs: 00 00 08 1-31 * *    => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine
-                                 - 5 champs: 00 08 1-31 * *       => Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine
-                        </pre>
-                    </div>
+    /!\ L'interval peut être noté sous differents formats:
+        - 7 champs: 00 00 08 1-31 * * *  => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine Année
+        - 6 champs: 00 00 08 1-31 * *    => Seconde Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine
+        - 5 champs: 00 08 1-31 * *       => Minute Heure JourDuMois MoisDeLAnnée JourDeLaSemaine
+</pre>
                 </div>
             </div>
         </ns-buttons>

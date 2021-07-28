@@ -27,6 +27,11 @@ class PageAccount extends NSPageAccount {
         super(props);
         this.state = {
             ...props,
+            birthDate: {
+                day: '',
+                month: '',
+                year: ''
+            },
             password: {
                 oldPassword: '',
                 newPassword: '',
@@ -52,6 +57,15 @@ class PageAccount extends NSPageAccount {
                 console.error(err);
             }
         }
+        if (user.birthDate) {
+            const date = new Date(user.birthDate);
+            const birthDate = {
+                day: date.getDate(),
+                month: date.getMonth() + 1,
+                year: date.getFullYear()
+            }
+            this.setState({ birthDate });
+        }
     }
 
     onLangChange = async (lang) => {
@@ -70,6 +84,18 @@ class PageAccount extends NSPageAccount {
         }
         return this.setState({ user });
     };
+
+    handleBirthDateChange = (e, type) => {
+        const { birthDate, user } = this.state;
+        birthDate[type] = e.target.value;
+        if (birthDate.day && birthDate.month && birthDate.year) {
+            const date = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+            user['birthDate'] = date;
+        } else {
+            user['birthDate'] = null;
+        }
+        this.setState({ birthDate, user });
+    }
 
     sendMailResetPassword = async (event) => {
         event.preventDefault();
@@ -111,7 +137,6 @@ class PageAccount extends NSPageAccount {
         e.preventDefault();
         const { user, optinNewsletter } = this.state;
 
-
         try {
             // Modification de l'utilisateur
             await createOrUpdateUser(user);
@@ -134,7 +159,21 @@ class PageAccount extends NSPageAccount {
         const {
             langs, oCmsHeader, oCmsFooter, sitename, t
         } = this.props;
-        const { user, optinNewsletter } = this.state;
+        const { birthDate, user, optinNewsletter } = this.state;
+
+        const days = [];
+        for (let i = 1; i <= 31; i++) {
+            days.push(i);
+        }
+
+        const years = [];
+        const now = new Date();
+        const d2 = now.getFullYear();
+        const d1 = d2 - 120;
+        for (let i = d1; i <= d2; i++) {
+            years.push(i);
+        }
+
         return (
             <NSContext.Provider value={{ props: this.props, state: this.state, onLangChange: (l) => this.onLangChange(l) }}>
                 <Layout header={oCmsHeader.content} footer={oCmsFooter.content}>
@@ -222,6 +261,42 @@ class PageAccount extends NSPageAccount {
                                                                 <label htmlFor="field-firstname" className="form__label">{t('account:account.page.label.firstname')}<span>*</span></label>
                                                                 <div className="form__controls" style={{ textAlign: 'end' }}>
                                                                     <input type="text" className="field" name="firstname" id="field-firstname" value={user.firstname} onChange={this.handleFormChange} required />
+                                                                </div>
+                                                            </div>
+                                                            <div className="form__row form__row--flex align-right">
+                                                                <label htmlFor="field-birthDate" className="form__label">{t('account:account.page.label.birthDate')}</label>
+                                                                <div className="form__controls" style={{ textAlign: 'end' }}>
+                                                                    <select name="birthDateDay"  className="field" value={birthDate.day} onChange={(e) => this.handleBirthDateChange(e, 'day')} style={{ width: '33%' }}>
+                                                                        <option value="">{t('common:day')}</option>
+                                                                        {
+                                                                            days.map((i) => (
+                                                                                <option key={i} value={i}>{i}</option>
+                                                                            ))
+                                                                        }
+                                                                    </select>
+                                                                    <select name="birthDateMonth" className="field" value={birthDate.month} onChange={(e) => this.handleBirthDateChange(e, 'month')} style={{ width: '34%' }}>
+                                                                        <option value="">{t('common:month')}</option>
+                                                                        <option value="1">{t('common:months.january')}</option>
+                                                                        <option value="2">{t('common:months.february')}</option>
+                                                                        <option value="3">{t('common:months.march')}</option>
+                                                                        <option value="4">{t('common:months.april')}</option>
+                                                                        <option value="5">{t('common:months.may')}</option>
+                                                                        <option value="6">{t('common:months.june')}</option>
+                                                                        <option value="7">{t('common:months.july')}</option>
+                                                                        <option value="8">{t('common:months.august')}</option>
+                                                                        <option value="9">{t('common:months.september')}</option>
+                                                                        <option value="10">{t('common:months.october')}</option>
+                                                                        <option value="11">{t('common:months.november')}</option>
+                                                                        <option value="12">{t('common:months.december')}</option>
+                                                                    </select>
+                                                                    <select name="birthDateYear" className="field" value={birthDate.year} onChange={(e) => this.handleBirthDateChange(e, 'year')} style={{ width: '33%' }}>
+                                                                        <option value="">{t('common:year')}</option>
+                                                                        {
+                                                                            years.map((i) => (
+                                                                                <option key={i} value={i}>{i}</option>
+                                                                            ))
+                                                                        }
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div className="form__row form__row--flex align-right" style={{ marginTop: '20px' }}>

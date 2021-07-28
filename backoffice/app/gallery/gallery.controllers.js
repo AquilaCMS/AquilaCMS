@@ -127,7 +127,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
                     if(err.data && err.data.message){
                         toastService.toast("danger", err.data.message);
                     }else{
-                        toastService.toast("danger", $translate.instant("global.failSave"));
+                        toastService.toast("danger", $translate.instant("gallery.list.failSave"));
                     }
                 });
         }
@@ -138,7 +138,7 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
                     saveGallery(quit);
                 }, function (err) {
                         console.error(err);
-                        toastService.toast("danger", $translate.instant("global.failSave"));
+                        toastService.toast("danger", $translate.instant("gallery.list.failSave"));
                     });
             }
             else {
@@ -147,13 +147,13 @@ angular.module("aq.gallery.controllers", []).controller("GalleryListCtrl", [
         };
 
         $scope.delete = function () {
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette gallerie ?")) {
+            if (confirm($translate.instant("confirm.deleteGallery"))) {
                 GalleryService.delete({ id: $scope.gallery._id }, function () {
-                    toastService.toast("success", $translate.instant("global.deleteDone"));
+                    toastService.toast("success", $translate.instant("gallery.list.deleteDone"));
                     $location.path("/component/gallery");
                 }, function (err) {
                         console.error(err);
-                        toastService.toast("danger", $translate.instant("global.failDelete"));
+                        toastService.toast("danger", $translate.instant("gallery.list.failDelete"));
                     });
             }
         };

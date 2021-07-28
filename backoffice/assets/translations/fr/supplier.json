@@ -32,7 +32,11 @@
         "actif": "Actif",
         "visible": "Visible",
         "champRequis": "Ce champ est requis.",
-        "emailInvalide":"L'email est invalide."
+        "enterInvalid": "Les informations saisies ne sont pas valides.",
+        "infoSaved": "Informations sauvegardées !",
+        "savedError": "Une erreur est survenue lors de la sauvegarde.",
+        "deleteError": "Une erreur est survenue lors de la suppression.",
+        "emailInvalide": "L'email est invalide"
     },
     "list": {
         "t1": "Fournisseurs",
@@ -65,6 +69,9 @@
         "zipCode": "Code Postal",
         "city": "Ville",
         "mail": "Email",
+        "supplierCreated": "Fournisseur créé",
+        "occurrenceError": "Une erreur interne est survenue.",
+        "enterInvalid": "Les informations saisies ne sont pas valides.",
         "phone": "Téléphone"
     }
 }

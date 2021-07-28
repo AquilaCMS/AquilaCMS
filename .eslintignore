@@ -1,4 +1,5 @@
 node_modules/
+modules/
 /modules/**/app
 /modules/**/translations
 /modules/**/theme_components

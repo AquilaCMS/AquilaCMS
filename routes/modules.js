@@ -6,18 +6,43 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const showdown                    = require('showdown');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const serviceModule               = require('../services/modules');
+const showdown           = require('showdown');
+const {middlewareServer} = require('../middleware');
+const {adminAuth}        = require('../middleware/authentication');
+const serviceModule      = require('../services/modules');
+const NSErrors           = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/modules',          authentication, adminAuth, getAllModules);
-    app.post('/v2/module',           authentication, adminAuth, getModule);
-    app.post('/v2/modules/upload',   authentication, adminAuth, uploadModule);
-    app.post('/v2/modules/toggle',   authentication, adminAuth, toggleActiveModule);
-    app.post('/v2/modules/md',       authentication, adminAuth, getModuleMd);
-    app.delete('/v2/modules/:id',    authentication, adminAuth, removeModule);
-    app.put('/v2/module/config/:id',  authentication, adminAuth, setModuleConfigById);
+    app.post('/v2/modules',          adminAuth, getAllModules);
+    app.post('/v2/module',           adminAuth, getModule);
+    app.post('/v2/modules/upload',   adminAuth, uploadModule);
+    app.post('/v2/modules/toggle',   adminAuth, toggleActiveModule);
+    app.post('/v2/modules/md',       adminAuth, getModuleMd);
+    app.delete('/v2/modules/:id',    adminAuth, removeModule);
+    app.get('/v2/modules/check',     adminAuth, checkDependencies);
+    app.post('/v2/module/setConfig', adminAuth, setModuleConfig);
+
+    // Deprecated
+    app.post('/v2/modules/md',       middlewareServer.deprecatedRoute, adminAuth, getModuleMd);
+    app.put('/v2/module/config/:id', middlewareServer.deprecatedRoute, adminAuth, setModuleConfigById); // deprecated -> use /v2/module/setConfig
+};
+
+/**
+ * Set the config of a module using his name
+ * req.body.name -> the name of the module
+ * req.body.config -> the new config
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {Function} next
+ * @returns {Object} {config : theNewConfig}
+ */
+const setModuleConfig = async (req, res, next) => {
+    try {
+        const newConfig = await serviceModule.setConfig(req.body.name, req.body.config);
+        return res.json({config: newConfig});
+    } catch (err) {
+        next(err);
+    }
 };
 
 /**
@@ -84,6 +109,9 @@ const removeModule = async (req, res, next) => {
     }
 };
 
+/**
+ * @deprecated
+ */
 const getModuleMd = async (req, res, next) => {
     try {
         const result    = await serviceModule.getModuleMd(req.body);
@@ -95,6 +123,7 @@ const getModuleMd = async (req, res, next) => {
 };
 
 /**
+ * @deprecated
  * Used to update the configuration of the module whose id is passed in parameter
  */
 async function setModuleConfigById(req, res, next) {

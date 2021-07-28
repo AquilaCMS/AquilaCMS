@@ -20,6 +20,7 @@ const NSErrors         = require('../utils/errors/NSErrors');
 const {Modules}        = require('../orm/models');
 const themesService    = require('./themes');
 const {PackageJSON}    = require('../utils');
+const aquilaEvents     = require('../utils/aquilaEvents');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -28,22 +29,19 @@ const queryBuilder     = new QueryBuilder(Modules, restrictedFields, defaultFiel
 /**
  * Get modules
  */
-const getModules = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getModules = async (PostBody) => queryBuilder.find(PostBody);
 
 /**
  * Get one module
  */
-const getModule = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getModule = async (PostBody) => queryBuilder.findOne(PostBody);
 
 /**
  * Set the configuration (conf field) of a module
  * @param body : body of the request, it will update the module configuration
  * @param _id : string : ObjectId of the module configuration has changed
  * @returns return configuration's module
+ * @deprecated
  */
 const setModuleConfigById = async (_id, config) => {
     if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
@@ -604,10 +602,13 @@ const getConfig = async (name) => {
  * @param name {string} module name / code
  * @param newConfig {object} the new configuration
  * @returns {Promise<*>} Returns the new module configuration
- * @deprecated
  */
 const setConfig = async (name, newConfig) => {
-    return Modules.updateOne({name}, {$set: {config: newConfig}}, {new: true});
+    const configToSave = {config: newConfig};
+    await aquilaEvents.emit(`changePluginConfig_${name}`, configToSave);
+    const correctConfigToSave = configToSave.config || {};
+    await Modules.updateOne({name}, {$set: {config: correctConfigToSave}}, {new: true});
+    return getConfig(name);
 };
 
 /**
