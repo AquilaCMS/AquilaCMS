@@ -8,6 +8,7 @@
 
 const {AdminRights} = require('../orm/models');
 const QueryBuilder  = require('../utils/QueryBuilder');
+const NSErrors      = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = [];
@@ -15,6 +16,28 @@ const queryBuilder     = new QueryBuilder(AdminRights, restrictedFields, default
 
 const getAdminRights = async (PostBody) => queryBuilder.find(PostBody);
 
+const addAdminRight = async (right) => {
+    if (!right.code || !right.translate) throw NSErrors.InvalidParameters;
+    try {
+        return await AdminRights.create(right);
+    } catch (e) {
+        console.error(e);
+        return e;
+    }
+};
+
+const removeAdminRight = async (code) => {
+    if (!code) throw NSErrors.InvalidParameters;
+    try {
+        return await AdminRights.deleteOne({code});
+    } catch (e) {
+        console.error(e);
+        return e;
+    }
+};
+
 module.exports = {
-    getAdminRights
+    getAdminRights,
+    addAdminRight,
+    removeAdminRight
 };

@@ -9,13 +9,15 @@ ContactRoutes.config(['$routeProvider',
             templateUrl: 'app/contact/views/contact-list.html',
             controller: 'ContactListCtrl',
             resolve: {
-                loggedin: checkLoggedin
+                loggedin: checkLoggedin,
+                checkAccess: 'contacts'
             }
         }).when('/contact/:id', {
             templateUrl: 'app/contact/views/contact-detail.html',
             controller: 'ContactDetailsCtrl',
             resolve: {
-                loggedin: checkLoggedin
+                loggedin: checkLoggedin,
+                checkAccess: 'contacts'
             }
         });
 
