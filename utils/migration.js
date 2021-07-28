@@ -591,7 +591,7 @@ const migration_9_adminRights = async () => {
             }
         }];
     await mongoose.connection.collection('adminrights').deleteMany({});
-    await mongoose.connection.collection('adminrights').insertMany(rights, {ordered: false});
+    await mongoose.connection.collection('adminrights').insertMany(rights);
 };
 
 // Scripts must be in order: put the new scripts at the bottom
