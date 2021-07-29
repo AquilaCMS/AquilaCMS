@@ -41,7 +41,6 @@ const changeTheme = async (selectedTheme) => {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
             await require('./modules').setFrontModules(selectedTheme);
-            // await setConfigTheme(selectedTheme);
             await installDependencies(selectedTheme);
             const buildRes = await buildTheme(selectedTheme);
             if (buildRes.msg === 'KO') {
@@ -110,16 +109,6 @@ const uploadTheme = async (originalname, filepath) => {
         return themeName;
     }
     throw NSErrors.InvalidFile;
-};
-
-/**
- * @description setConfigTheme
- * @param theme : String Theme selectionné
- * @deprecated
- */
-const setConfigTheme = async (theme) => {
-    console.log('Setting configuration for the theme...');
-    await themesUtils.setConfigTheme(theme);
 };
 
 /**
@@ -413,7 +402,6 @@ const installTheme = async (themeName = '', devDependencies = false) => {
 
 module.exports = {
     changeTheme,
-    setConfigTheme,
     installDependencies,
     buildTheme,
     uploadTheme,
