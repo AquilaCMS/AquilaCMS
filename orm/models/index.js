@@ -7,7 +7,7 @@
  */
 
 const AdminInformation      = require('./adminInformation');
-const AdminRights           = require('./adminrights');
+const AdminRights           = require('./adminRights');
 const Attributes            = require('./attributes');
 const Bills                 = require('./bills');
 const Cart                  = require('./cart');
