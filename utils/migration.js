@@ -75,7 +75,11 @@ const migration_4_Themes = async () => {
     console.log('Applying migration script "migration_4_Themes"...');
     const themes = await mongoose.connection.collection('themeConfigs').find({});
     for await (const theme of themes) {
-        for (const lang of Object.keys(theme.config.translation)) {
+        if (!theme.config.translation) {
+            continue;
+        }
+        const transaltionsKeys = Object.keys(theme.config.translation);
+        for (const lang of transaltionsKeys) {
             if (theme && Array.isArray(theme.config.translation[lang].values) === false) {
                 const values           = [];
                 const tabThemeKeyValue = {values};
