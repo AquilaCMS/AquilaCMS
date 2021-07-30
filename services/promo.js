@@ -823,7 +823,7 @@ async function calculateCartTotal(cart) {
 }
 
 const calculDiscount = (myCart) => {
-    if (myCart.discount && myCart.discount.length === 0) {
+    if (typeof myCart.discount === 'undefined' || myCart.discount && myCart.discount.length === 0) {
         return;
     }
 
