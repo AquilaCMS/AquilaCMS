@@ -141,7 +141,6 @@ const deleteCartItem = async (cartId, itemId) => {
         throw NSErrors.CartItemNotFound;
     }
 
-    ServicePromo.calculDiscount(cart);
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
