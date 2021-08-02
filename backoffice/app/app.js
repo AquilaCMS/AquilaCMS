@@ -165,7 +165,6 @@ adminCatagenApp.config([
                         config.url = config.url.replace("/", "");
                     }
                     if(
-                        config.url.indexOf("api.shopping-feed.com") === -1 &&
                         config.url.indexOf(".html") === -1 &&
                         config.url.indexOf(".tpl") === -1 &&
                         config.url.indexOf("assets/") === -1
@@ -290,7 +289,7 @@ adminCatagenApp.config([
     "$translateProvider", function ($translateProvider)
     {
         $translateProvider
-            // .useSanitizeValueStrategy("sanitize") //comment it to allow specials characters in confirm box
+            .useSanitizeValueStrategy(null) //comment it to allow specials characters in confirm box
             .registerAvailableLanguageKeys(["en", "fr"])
             .useLoader("customLoader", {})
             .useMissingTranslationHandler("customMissingTranslationHandler");

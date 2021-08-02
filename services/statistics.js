@@ -134,6 +134,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
     const sPeriodeStart = periodeStart.toISOString();
     const sPeriodeEnd   = periodeEnd.toISOString();
 
+    const {orderStatuses} = require('./orders');
     // --- orders ---
     const allOrders = await Orders.find({
         createdAt : {
@@ -142,18 +143,18 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
         },
         status : {
             $in : [
-                // "PAYMENT_PENDING",
-                'PAYMENT_RECEIPT_PENDING',
-                'PAYMENT_CONFIRMATION_PENDING',
-                'PAID',
-                'PROCESSING',
-                'PROCESSED', // Prepared. Not to be confused with Finished
-                'BILLED',
-                'DELIVERY_PROGRESS',
-                'DELIVERY_PARTIAL_PROGRESS',
-                'FINISHED',
-                // "CANCELED",
-                'RETURNED'
+                // orderStatuses.PAYMENT_PENDING,
+                orderStatuses.PAYMENT_RECEIPT_PENDING,
+                orderStatuses.PAYMENT_CONFIRMATION_PENDING,
+                orderStatuses.PAID,
+                orderStatuses.PROCESSING,
+                orderStatuses.PROCESSED, // Prepared. Not to be confused with Finished
+                orderStatuses.BILLED,
+                orderStatuses.DELIVERY_PROGRESS,
+                orderStatuses.DELIVERY_PARTIAL_PROGRESS,
+                orderStatuses.FINISHED,
+                // orderStatuses.CANCELED,
+                orderStatuses.RETURNED
             ]
         }
     });
@@ -166,7 +167,7 @@ async function getGlobalStat(periode, dateStart, dateEnd) {
 
     for ( let i = 0, _len = allOrders.length; i < _len; i++ ) {
         orderTotalAmount += allOrders[i].priceTotal.ati;
-        if (!['PAYMENT_RECEIPT_PENDING', 'PAYMENT_CONFIRMATION_PENDING', 'RETURNED'].includes(allOrders[i].status)) {
+        if (![orderStatuses.PAYMENT_RECEIPT_PENDING, orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.RETURNED].includes(allOrders[i].status)) {
             nbOrderPaid++;
             orderTotalAmountPaid += allOrders[i].priceTotal.ati;
         } else {

@@ -220,7 +220,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                 <p>
                                                                                                     {t('account:orders.page.label.payment_mode')}<br />
                                                                                                     <em>
-                                                                                                        {order.payment.length > 0 && order.payment[0] && order.payment[0].mode}<br />
+                                                                                                        {order.payment.length > 0 && order.payment[0] && (order.payment[0].name || order.payment[0].mode)}<br />
                                                                                                         {`${t(`account:orders.page.label.paidTax.${taxDisplay[index]}`)}`}
                                                                                                     </em>
                                                                                                 </p>

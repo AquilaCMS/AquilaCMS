@@ -39,7 +39,7 @@ const changeTheme = async (selectedTheme) => {
         };
         try {
             await updateService.setMaintenance(true);
-            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
+            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}}); // TODO : maybe move this call after buildTheme()
             await require('./modules').setFrontModules(selectedTheme);
             await installDependencies(selectedTheme);
             const buildRes = await buildTheme(selectedTheme);
@@ -348,6 +348,12 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
+        // TODO Change place ?
+        // "dynamic_langs.js" is required to build (reactjs) theme
+        if (!(await fs.existsSync(path.join(theme, 'dynamic_langs.js')))) {
+            // Create if not exist
+            await require('./languages').createDynamicLangFile();
+        }
         const returnValues = await themesUtils.yarnBuildCustom(theme);
         return {
             msg    : 'OK',

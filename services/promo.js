@@ -822,41 +822,7 @@ async function calculateCartTotal(cart) {
     return total;
 }
 
-const calculDiscount = (myCart) => {
-    if (myCart.discount && myCart.discount.length === 0) {
-        return;
-    }
-
-    const discount = myCart.discount[0];
-
-    // If the promotion applies to the whole site
-    if (discount.onAllSite) {
-        const total = myCart.priceTotal.ati;
-
-        if (total >= discount.minimumATI) {
-            let discountAmount = 0;
-            switch (discount.type) {
-            case 'PERCENT':
-                discountAmount = (total * discount.value) / 100;
-                break;
-            case 'PRICE':
-                discountAmount = discount.value;
-                break;
-            default:
-                // TODO P6 : Manage free shipping
-            }
-            myCart.discount[0].priceATI = discountAmount;
-        } else {
-            myCart.discount[0].priceATI = 0;
-        }
-    } else {
-        // if the promotion does not apply to the whole site
-        myCart.discount[0].priceATI = 0;
-    }
-};
-
 module.exports = {
-    calculDiscount,
     getPromos,
     getPromo,
     getPromoById,

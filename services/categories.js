@@ -144,7 +144,11 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const setCategory = async (req) => Categories.updateOne({_id: req.body._id}, {$set: req.body});
+const setCategory = async (req) => {
+    await Categories.updateOne({_id: req.body._id}, {$set: req.body});
+    const newCat = await Categories.findOne({_id: req.body._id});
+    return newCat;
+};
 
 const createCategory = async (req) => {
     const newMenu   = new Categories(req.body);
@@ -325,7 +329,7 @@ const getCompleteSlugs = async (categorie_id, tabLang) => {
             const parent_category    = await Categories.findOne({_id: parent_category_id});
 
             // We add it to the slug
-            if (typeof parent_category !== 'undefined' && parent_category.active) { // Usually the root is not taken, so it must be deactivated
+            if (typeof parent_category !== 'undefined' && parent_category?.active) { // Usually the root is not taken, so it must be deactivated
                 // For each of the languages
                 for (let iLang = 0; iLang < tabLang.length; iLang++) {
                     const currentLang = tabLang[iLang];

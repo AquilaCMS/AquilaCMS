@@ -26,9 +26,9 @@ const {
     middlewarePassport,
     expressErrorHandler,
     middlewareServer
-}                           = require('./middleware');
+} = require('./middleware');
 
-const dev    = !serverUtils.isProd;
+const dev    = serverUtils.dev;
 const server = express();
 
 // ATTENTION, do not require services directly on top of this file
@@ -76,37 +76,20 @@ const setEnvConfig = async () => {
     global.envConfig = configuration.toObject();
 };
 
-const initFrontFramework = async () => {
-    let type          = 'custom'; // default type
+const initFrontFramework = async (themeName = null) => {
+    const type = 'custom'; // default type
     let themeConfig;
-    const themeName   = global.envConfig.environment.currentTheme;
-    const pathToTheme = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, '/');
+    if (themeName === null) {
+        themeName =  global.envConfig.environment.currentTheme;
+    }
+    const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
     const pathToInit  = path.join(pathToTheme, 'themeInit.js');
     if (!(await fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
-        require('./services/languages').createDynamicLangFile();
+        await require('./services/languages').createDynamicLangFile();
     }
-    try {
-        const {ThemeConfig} = require('./orm/models');
-        if (typeof ThemeConfig !== 'undefined' && ThemeConfig !== null) {
-            themeConfig = await ThemeConfig.findOne({name: themeName});
-            if (typeof themeConfig === 'undefined' || themeConfig === null) {
-                themeConfig = await utilsThemes.setConfigTheme(themeName);
-            }
-        }
-    } catch (err) {
-        // if error, we do nothing, we use default
-    }
-    if (typeof themeConfig?.config?.type !== 'undefined') {
-        type = themeConfig.config.type;
-    }
-
-    if (typeof themeConfig?.config?.buildAtStart !== 'undefined' && themeConfig.config.buildAtStart === true) {
-        let overrideIsProd = false;
-        if (typeof themeConfig?.config?.needDevDependencies !== 'undefined' && themeConfig.config.needDevDependencies === true) {
-            overrideIsProd = true;
-        }
-        await utilsThemes.yarnInstall(themeName, overrideIsProd);
-        await utilsThemes.yarnBuildCustom(themeName);
+    themeConfig = await utilsThemes.loadThemeConfig(themeName); // TODO
+    if (themeConfig === null) {
+        themeConfig = {};
     }
     server.use('/', middlewareServer.maintenance);
 
@@ -117,19 +100,26 @@ const initFrontFramework = async () => {
                 const process = require('process');
                 process.chdir(pathToTheme); // protect require of the frontFrameWork
                 const initFileOfConfig = require(pathToInit);
-                handler                = await initFileOfConfig.start(server);
+                if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
+                    handler = await initFileOfConfig.start(server);
+                } else {
+                    throw "The 'themeInit.js' needs to export a start() function";
+                }
                 process.chdir(global.appRoot);
                 if (typeof handler !== 'undefined' && handler !== null) {
                     server.use('/', handler);
                 }
+            } else {
+                throw `Your theme (${themeName}) need `;
             }
         } catch (errorInit) {
             console.error(errorInit);
             console.error('Error loading handler of the theme');
             throw '';
         }
-    } else if (type === 'static') {
-        // static type
+    } else if (type === 'normal') {
+        // normal type
+        const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
         if (fs.existsSync(pathToTheme)) {
             let pathToPages = pathToTheme;
             if (typeof themeConfig?.config?.expose !== 'undefined') {
@@ -146,9 +136,6 @@ const initServer = async () => {
     if (global.envFile.db) {
         await setEnvConfig();
         await utils.checkOrCreateAquilaRegistryKey();
-        const {currentTheme} = global.envConfig.environment;
-        console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
-        const themeFolder = path.join(global.appRoot, 'themes', currentTheme);
         // we check if we compile (default: true)
         const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
@@ -157,14 +144,16 @@ const initServer = async () => {
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
-
         if (compile) {
+            const {currentTheme} = global.envConfig.environment;
+            const themeFolder    = path.join(global.appRoot, 'themes', currentTheme, '/');
             if (!fs.existsSync(themeFolder)) {
                 throw new Error(`themes folder ${themeFolder} not found`);
             }
-            await initFrontFramework(themeFolder); // we compile the front
+            console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
+            await initFrontFramework(currentTheme); // we compile the front
         } else {
-            console.log('`compile` value is set to `false`, the front is not accessible');
+            console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation

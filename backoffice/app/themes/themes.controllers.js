@@ -211,8 +211,9 @@ ThemesController.controller("ThemesCtrl", [
                 });
             } else {
                 ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldAdmin) {
-                    $scope.showThemeLoading = true;
                     if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
+                        $scope.showLoading2 = true;
+                        $scope.showThemeLoading = true;
                         if (confirm($translate.instant("confirm.changeTheme"))) {
                             $scope.showLoading2 = true;
                             Themes.save({ environment: $scope.config.environment }, function (response) {
@@ -227,6 +228,7 @@ ThemesController.controller("ThemesCtrl", [
                                         }
                                     }
                                     $scope.showThemeLoading = false;
+                                    $scope.showLoading2 = false;
                                     $scope.showLoading = true;
                                     $scope.progressValue = 0;
                                     $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
@@ -248,6 +250,7 @@ ThemesController.controller("ThemesCtrl", [
                                     window.location.reload(true);
                                 }
                                 $scope.showThemeLoading = false;
+                                $scope.showLoading2 = false;
                             }, function (err) {
                                 console.error(err);
                                 $scope.showLoading2 = false;
@@ -260,6 +263,7 @@ ThemesController.controller("ThemesCtrl", [
                             });
                         } else {
                             $scope.showThemeLoading = false;
+                            $scope.showLoading2 = false;
                         }
                     }
                 });
@@ -290,13 +294,15 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
-                $scope.themeConfig.selected = response.themeConf.name;
+                if (response.themeConf && response.themeConf.name.length > 0) {
+                    $scope.themeConfig.selected = response.themeConf.name;
+                }
                 try {
                     $scope.themeConfig.config = JSON.stringify(response.themeConf.config, null, 4);
                 } catch (err) {
                     $scope.themeConfig.config = "";
                 }
-                if (response.configEnvironment && response.themeConf.config.translation) {
+                if (response.configEnvironment && response.themeConf && response.themeConf.config && response.themeConf.config.translation) {
                     $scope.languages.forEach(element => {
                         $scope.themeConfig.variables[element.code] = response.themeConf.config.translation[element.code].values;
                         delete $scope.themeConfig.variables[element.code].$promise;

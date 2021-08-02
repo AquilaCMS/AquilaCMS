@@ -122,23 +122,25 @@ adminCatagenFilters.filter('btdate', function() {
   }
 });
 
-adminCatagenFilters.filter('orderStatus', function() {
+adminCatagenFilters.filter('orderStatus',[ 'NSConstants', function(NSConstants) {
   return function (item) {
+    const orderStatuses = {};
+    NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
     const arrayOfTranslationWrited = [
-      "PAYMENT_PENDING",
-      "PAYMENT_RECEIPT_PENDING",
-      "PAYMENT_CONFIRMATION_PENDING",
-      "PAYMENT_FAILED",
-      "PAID",
-      "PROCESSING",
-      "PROCESSED",
-      "BILLED",
-      "DELIVERY_PROGRESS",
-      "DELIVERY_PARTIAL_PROGRESS",
-      "FINISHED",
-      "CANCELED",
-      "ASK_CANCEL",
-      "RETURNED"
+      orderStatuses.PAYMENT_PENDING,
+      orderStatuses.PAYMENT_RECEIPT_PENDING,
+      orderStatuses.PAYMENT_CONFIRMATION_PENDING,
+      orderStatuses.PAYMENT_FAILED,
+      orderStatuses.PAID,
+      orderStatuses.PROCESSING,
+      orderStatuses.PROCESSED,
+      orderStatuses.BILLED,
+      orderStatuses.DELIVERY_PROGRESS,
+      orderStatuses.DELIVERY_PARTIAL_PROGRESS,
+      orderStatuses.FINISHED,
+      orderStatuses.CANCELED,
+      orderStatuses.ASK_CANCEL,
+      orderStatuses.RETURNED
     ];
     if(arrayOfTranslationWrited.includes(item)){
       return `order.status.${item}`;
@@ -146,7 +148,7 @@ adminCatagenFilters.filter('orderStatus', function() {
     //translation is undefined
     return item;
   }
-});
+}]);
 
 adminCatagenFilters.filter('paymentType', function() {
   return function (item) {
