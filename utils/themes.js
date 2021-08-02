@@ -76,36 +76,18 @@ const yarnBuild = async (themeName = '') => {
 };
 
 /**
- * @description setConfigTheme
+ * @description loadThemeConfig
  * @param theme : String Theme selectionné
  */
-const setConfigTheme = async (theme) => {
-    const {ThemeConfig} = require('../orm/models');
+const loadThemeConfig = (theme) => {
+    const linkToThemeConfig = path.join(global.appRoot, 'themes', theme, '/', 'themeConfig.json');
     try {
-        const linkToThemeConfig = path.join(global.appRoot, 'themes', theme, '/', 'themeConfig.json');
         if (fs.existsSync(linkToThemeConfig)) {
-            const configFile = require(linkToThemeConfig);
-            const oldConfig  = await ThemeConfig.findOne({name: theme});
-            if (oldConfig) {
-                const mergedConfig = {...configFile, ...oldConfig.config}; // We merge the old and the new configuration to not lose the data
-                await ThemeConfig.updateOne({
-                    name : theme
-                }, {
-                    $set : {
-                        name   : theme,
-                        config : mergedConfig
-                    }
-                });
-                return mergedConfig;
-            }
-            await ThemeConfig.create({
-                name   : theme,
-                config : configFile
-            });
-            return configFile;
+            const config = require(linkToThemeConfig);
+            return config;
         }
-    } catch (err) {
-        // nothing
+    } catch (e) {
+        return null;
     }
 };
 module.exports = {
@@ -113,5 +95,5 @@ module.exports = {
     yarnBuildCustom,
     yarnInstall,
     yarnBuild,
-    setConfigTheme
+    loadThemeConfig
 };

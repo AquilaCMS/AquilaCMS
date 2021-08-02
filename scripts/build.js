@@ -1,6 +1,6 @@
 const path        = require('path');
 const fs          = require('fs');
-const utilsThemes = require('./themes');
+const utilsThemes = require('../utils/themes');
 
 /**
  * ONLY npm run build "theme"
@@ -18,13 +18,13 @@ const buildOneTheme = async () => {
             await utilsThemes.yarnBuildCustom(args[0]);
         } else {
             console.error(`Can't access to ${pathToTheme}`);
-            // throw new Error(`Can't access to ${pathToTheme}`);
+            console.error(`> "${args[0]}" does not seem to be present`);
+            console.log('Example of use: `npm run build default_theme`');
         }
     } else {
         console.error('This command is used to build a theme');
         console.error('> No theme specified in parameter of the command');
         console.log('Example of use: `npm run build default_theme`');
-        // throw new Error();
     }
 };
 
