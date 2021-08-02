@@ -106,19 +106,18 @@ const initFrontFramework = async (themeName = null) => {
                 if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
                     handler = await initFileOfConfig.start(server);
                 } else {
-                    throw "The 'themeInit.js' needs to export a start() function";
+                    throw "The 'themeInit.js' of your theme needs to export a start() function";
                 }
                 process.chdir(global.appRoot);
                 if (typeof handler !== 'undefined' && handler !== null) {
                     server.use('/', handler);
                 }
             } else {
-                throw `Your theme (${themeName}) need `;
+                throw `Your theme (${themeName}) is a custom theme, it needs a 'themeInit.js' file`;
             }
         } catch (errorInit) {
             console.error(errorInit);
-            console.error('Error loading handler of the theme');
-            throw '';
+            throw 'Error loading the theme';
         }
     } else if (type === 'normal') {
         // normal type
