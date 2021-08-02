@@ -475,7 +475,6 @@ ClientControllers.controller("ClientDetailCtrl", [
                 //console.log(datas)
                 $scope.client.attributes = datas.map(function (attr) {
                     attr.id = attr._id;
-                    delete attr._id;
                     return attr;
                 });
             });
@@ -487,7 +486,7 @@ ClientControllers.controller("ClientDetailCtrl", [
 
         function genAttributes() {
             angular.forEach($scope.client.attributes, function (attributeI) {
-                AttributesV2.query({PostBody: {filter: {_id: attributeI.id, _type: 'users'}, structure: '*'}}, function (attribute) {
+                AttributesV2.query({PostBody: {filter: {_id: attributeI._id, _type: 'users'}, structure: '*'}}, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
                     if (attributeI.translation === undefined) {
