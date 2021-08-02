@@ -372,6 +372,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         priceTotal.paidTax  = await checkCountryTax(cartObj, _user);
 
         const newOrder = {
+            ...cartObj,
             items          : cartObj.items.filter((it) => it.quantity > 0),
             promos         : cartObj.promos,
             cartId         : cartObj._id,
@@ -393,9 +394,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
-        if (_cart.schema.path('point_of_sale')) {
-            newOrder.point_of_sale = cartObj.point_of_sale;
-        }
         // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {

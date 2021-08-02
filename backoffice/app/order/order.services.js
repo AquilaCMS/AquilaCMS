@@ -39,6 +39,11 @@ OrderServices.service("OrderFields", function ()
     return [];
 });
 
+OrderServices.service("OrderDeliveryFields", function ()
+{
+    return [];
+});
+
 OrderServices.service("OrderRelayPoint", function ()
 {
     return [];
