@@ -11,8 +11,7 @@ Options are listed here:
 ```json
 {
     "type": "static",
-    "expose": "/dist",
-    "buildAtStart": true
+    "expose": "/dist"
 }
 ```
 
@@ -20,4 +19,3 @@ Options are listed here:
 >
 > - `type`: a type different from `"next"` will not load NextJS
 > - `expose`: the link to public pages
-> - `buildAtStart`: to build the theme when starting the server (even in `production`mode)
