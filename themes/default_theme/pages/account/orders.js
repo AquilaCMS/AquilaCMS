@@ -235,7 +235,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                         : ''
                                                                                                 }
                                                                                                 {
-                                                                                                    ['PENDING', 'PAYMENT_CONFIRMATION_PENDING', 'PAYMENT_RECEIPT_PENDING', 'PAYMENT_PENDING', 'PROCESSED', 'PROCESSING'].includes(order.status) && <li style={{ cursor: 'pointer' }} onClick={() => this.openModalConfirmCancel(order._id)}>{t('account:orders.page.label.cancel_order')}</li>
+                                                                                                    !['BILLED', 'DELIVERY_PROGRESS', 'DELIVERY_PARTIAL_PROGRESS', 'ASK_CANCEL', 'CANCELED', 'RETURNED'].includes(order.status) && <li style={{ cursor: 'pointer' }} onClick={() => this.openModalConfirmCancel(order._id)}>{t('account:orders.page.label.cancel_order')}</li>
                                                                                                 }
                                                                                                 {
                                                                                                     order.bills && order.bills.length > 0 && order.bills.map((i) => (
