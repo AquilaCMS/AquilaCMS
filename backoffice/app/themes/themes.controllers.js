@@ -207,6 +207,7 @@ ThemesController.controller("ThemesCtrl", [
                         }
                     }
                 }, function (err) {
+                    $scope.showLoading2 = false;
                     console.log(err);
                 });
             } else {
@@ -257,6 +258,10 @@ ThemesController.controller("ThemesCtrl", [
                             $scope.showLoading2 = false;
                         }
                     }
+                }, function (error) {
+                    $scope.showThemeLoading = false;
+                    $scope.showLoading2 = false;
+                    console.error(error);
                 });
 
                 function buildAdminUrl(appUrl, adminPrefix) {
