@@ -267,26 +267,22 @@ const sendRegister = async (user_id, lang = '') => {
 };
 
 const sendRegisterForAdmin = async (user_id, lang = '') => {
-    try {
-        const _user = await Users.findById(user_id);
-        if (!_user) {
-            throw NSErrors.AccountUserNotFound;
-        }
-        lang                                                     = determineLanguage(lang, _user.preferredLanguage);
-        const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
-        const oDataMail                                          = {
-            '{{name}}'      : _user.fullname,
-            '{{fullname}}'  : _user.fullname,
-            '{{firstname}}' : _user.firstname,
-            '{{lastname}}'  : _user.lastname,
-            '{{login}}'     : _user.email,
-            '{{company}}'   : _user.company.name
-        };
-        const htmlBody                                           = generateHTML(content, oDataMail);
-        return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
-    } catch (error) {
-        console.error(error);
+    const _user = await Users.findById(user_id);
+    if (!_user) {
+        throw NSErrors.AccountUserNotFound;
     }
+    lang                                                     = determineLanguage(lang, _user.preferredLanguage);
+    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
+    const oDataMail                                          = {
+        '{{name}}'      : _user.fullname,
+        '{{fullname}}'  : _user.fullname,
+        '{{firstname}}' : _user.firstname,
+        '{{lastname}}'  : _user.lastname,
+        '{{login}}'     : _user.email,
+        '{{company}}'   : _user.company.name
+    };
+    const htmlBody                                           = generateHTML(content, oDataMail);
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 };
 
 /**

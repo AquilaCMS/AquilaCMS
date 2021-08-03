@@ -12,6 +12,7 @@ const wkhtmltopdf                = require('wkhtmltopdf');
 const {Bills, Orders, CmsBlocks} = require('../orm/models');
 const QueryBuilder               = require('../utils/QueryBuilder');
 const NSErrors                   = require('../utils/errors/NSErrors');
+const {dev}                      = require('../utils/server');
 const ServiceOrder               = require('./orders');
 const {generateHTML}             = require('./mail');
 const queryBuilder               = new QueryBuilder(Bills, [], []);
@@ -236,10 +237,35 @@ const generatePDF = async (PostBody) => {
         }
         content = content.replace(htmlItem, items);
     }
-    return wkhtmltopdf(content, {
+    let options = {
         encoding : 'utf8'
-    });
+    };
+    if (dev) {
+        console.info('development mode => using wkhtmltopdf with debug options');
+        options = {
+            ...options,
+            debug           : true,
+            debugJavascript : true
+        };
+    }
+    return useWK(content, options);
 };
+
+const useWK = async (content, options) => new Promise((resolve) => {
+    // eslint-disable-next-line
+    const res = wkhtmltopdf(content, options, function (err, stream) {
+        if (err && err.message) {
+            console.error('wkhtmltopdf produced an error');
+            if (dev) {
+                console.error('(already printed in debug)');
+            } else {
+                const textError = `${err.message.replace('\n', '')}\n`;
+                console.error(textError);
+            }
+        }
+    });
+    resolve(res);
+});
 
 function cleanBillObject(bill) {
     const items = [];
