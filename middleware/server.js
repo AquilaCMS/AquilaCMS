@@ -92,6 +92,7 @@ const useHelmet = async (server) => {
         let contentSecurityPolicyValues = [
             "'self'",
             'https://cdnjs.cloudflare.com',
+            'http://cdn.jsdelivr.net/', // needed for graphQL playground
             "'unsafe-inline'",
             "'unsafe-eval'"
         ];
