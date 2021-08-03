@@ -120,16 +120,12 @@ const createUser = async (body, isAdmin = false) => {
         }
         throw err;
     }
-    try {
-        await servicesMail.sendRegister(newUser._id, body.lang);
-    } catch (err) {
+    servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
-    }
-    try {
-        await servicesMail.sendRegisterForAdmin(newUser._id, body.lang);
-    } catch (err) {
-        // No need to catch this error
-    }
+    });
+    await servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
+        console.error(err);
+    });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
 };

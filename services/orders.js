@@ -103,18 +103,14 @@ const setStatus = async (_id, status, sendMail = true) => {
         await require('./bills').orderToBill(order._id.toString());
     }
     if (([orderStatuses.ASK_CANCEL]).includes(order.status) && sendMail) {
-        try {
-            await ServiceMail.sendMailOrderRequestCancel(_id);
-        } catch (error) {
-            console.error(error);
-        }
+        ServiceMail.sendMailOrderRequestCancel(_id).catch((err) => {
+            console.error(err);
+        });
     }
     if (![orderStatuses.PAYMENT_CONFIRMATION_PENDING, orderStatuses.PAYMENT_RECEIPT_PENDING, orderStatuses.PAID].includes(order.status) && sendMail) {
-        try {
-            await ServiceMail.sendMailOrderStatusEdit(_id);
-        } catch (error) {
-            console.error(error);
-        }
+        ServiceMail.sendMailOrderStatusEdit(_id).catch((err) => {
+            console.error(err);
+        });
     }
 };
 
@@ -414,11 +410,9 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
         /**
          * DO NOT DELETE THE COMMENTED CODE BELOW
          */
-        try {
-            await ServiceMail.sendMailOrderToClient(_order._id);
-        } catch (error) {
-            console.error(error);
-        }
+        ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
+            console.error(err);
+        });
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
     return _order;
