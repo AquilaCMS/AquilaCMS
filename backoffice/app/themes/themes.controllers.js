@@ -285,7 +285,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
-                if (response.themeConf && response.themeConf.name.length) {
+                if (response.themeConf && response.themeConf.name && response.themeConf.name.length) {
                     $scope.themeConfig.selected = response.themeConf.name;
                 }
                 try {
