@@ -220,7 +220,6 @@ ThemesController.controller("ThemesCtrl", [
                             Themes.save({ environment: $scope.config.environment }, function (response) {
                                 $scope.showLoading2 = false;
                                 if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
-                                    debugger;
                                     if (response.data.success == true) {
                                         toastService.toast("success", $translate.instant("global.success"));
                                     } else {
