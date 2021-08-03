@@ -187,6 +187,7 @@ ThemesController.controller("ThemesCtrl", [
 
         $scope.validate = function (tab) {
             if (tab == 'config') {
+                $scope.showLoading2 = true;
                 ThemeConfig.update({ config: $scope.themeConfig.variables }, function (response, err) {
                     if (err.errmsg) {
                         $scope.showLoading2 = false;
@@ -294,7 +295,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
-                if (response.themeConf && response.themeConf.name.length > 0) {
+                if (response.themeConf && response.themeConf.name.length) {
                     $scope.themeConfig.selected = response.themeConf.name;
                 }
                 try {
