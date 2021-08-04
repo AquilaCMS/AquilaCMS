@@ -229,7 +229,7 @@ async function cancelOrderRequest(req, res, next) {
  */
 async function payOrder(req, res, next) {
     try {
-        return res.json(await ServiceOrder.payOrder(req.body));
+        return res.json(await ServiceOrder.payOrder(req));
     } catch (e) {
         next(e);
     }

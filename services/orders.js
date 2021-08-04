@@ -7,6 +7,7 @@
  */
 
 const moment           = require('moment');
+const axios            = require('axios');
 const {
     Orders,
     Cart,
@@ -701,27 +702,33 @@ function setItemStatus(order, packages, status1, status2) {
     return order;
 }
 
-async function payOrder(req, res, next) {
-    payDifferedOrder(req, res, next);
-}
-
-async function payDifferedOrder(req, res, next) {
-    const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
-    if (!order) {
-        return next(NSErrors.OrderNotFound);
-    }
-    const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
-    query.active = true;
-    // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
-    // Otherwise, we recover all the active payment methods
+async function payOrder(req) {
     try {
+        const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
+        query.active = true;
+        // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
+        // Otherwise, we recover all the active payment methods
         const paymentMethods = await PaymentMethods.find(query);
         // We check that the desired payment method is available
         const method = paymentMethods.find((method) => method.code === req.body.paymentMethod);
         if (!method) {
-            return next(NSErrors.PaymentModeNotAvailable);
+            throw NSErrors.PaymentModeNotAvailable;
         }
+        if (method.isDeferred) {
+            return payDeferredOrder(req, method);
+        }
+        return immediateCashPayment(req.params.orderNumber, method);
+    } catch (err) {
+        return err;
+    }
+}
 
+async function payDeferredOrder(req, method) {
+    try {
+        const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
+        if (!order) {
+            throw NSErrors.OrderNotFound;
+        }
         await paymentSuccess({
             number        : req.params.orderNumber,
             status        : 'PAYMENT_PENDING',
@@ -729,21 +736,17 @@ async function payDifferedOrder(req, res, next) {
         }, {
             $set : {
                 status  : 'PAYMENT_RECEIPT_PENDING',
-                payment : [createPayment(order, method, req.params.lang)]
+                payment : [createDeferredPayment(order, method, req.params.lang)]
             }
         });
-
-        if (method.isDeferred) {
-            await Cart.deleteOne({_id: order.cartId});
-        }
-
-        return res.json(await Orders.findOne({_id: order._id}));
+        await Cart.deleteOne({_id: order.cartId});
+        return await Orders.findOne({_id: order._id});
     } catch (err) {
-        return next(err);
+        return err;
     }
 }
 
-function createPayment(order, method, lang) {
+function createDeferredPayment(order, method, lang) {
     return {
         type          : 'CREDIT',
         operationDate : Date.now(),
@@ -753,6 +756,12 @@ function createPayment(order, method, lang) {
         isDeferred    : method.isDeferred,
         name          : method.translation[lang].name
     };
+}
+
+async function immediateCashPayment(orderNumber, paymentMethod) {
+    const appUrl = global.envConfig.environment.appUrl;
+    const res    = await axios.get(`${appUrl}${paymentMethod}?orderId=${orderNumber}`);
+    return res.data;
 }
 
 module.exports = {
