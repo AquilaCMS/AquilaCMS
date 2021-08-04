@@ -715,15 +715,15 @@ async function payOrder(req) {
             throw NSErrors.PaymentModeNotAvailable;
         }
         if (method.isDeferred) {
-            return await payDeferredOrder(req, method);
+            return await deferredPayment(req, method);
         }
-        return await immediateCashPayment(req.params.orderNumber, method);
+        return await immediateCashPayment(req.params.orderNumber, method.code);
     } catch (err) {
         return err;
     }
 }
 
-async function payDeferredOrder(req, method) {
+async function deferredPayment(req, method) {
     try {
         const order = await Orders.findOne({number: req.params.orderNumber, status: 'PAYMENT_PENDING', 'customer.id': req.info._id});
         if (!order) {
