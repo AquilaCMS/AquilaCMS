@@ -715,9 +715,9 @@ async function payOrder(req) {
             throw NSErrors.PaymentModeNotAvailable;
         }
         if (method.isDeferred) {
-            return payDeferredOrder(req, method);
+            return await payDeferredOrder(req, method);
         }
-        return immediateCashPayment(req.params.orderNumber, method);
+        return await immediateCashPayment(req.params.orderNumber, method);
     } catch (err) {
         return err;
     }

@@ -125,22 +125,12 @@ class CartPayment extends React.Component {
 
         // Paiement de la commande
         try {
+            const paymentForm = await deferredPaymentOrder(order.number, paymentMethod.code, lang); // /!\ S'APPELLE deffered MAIS RENVOIE EN REALITE VERS LA FONCTION GENERIQUE
+
             if (paymentMethod.isDeferred === true) {
-                // Paiement différé (chèque, espèces...)
-                await deferredPaymentOrder(order.number, paymentMethod.code, lang);
-
-                // On envoie le mail au client pour les paiements différées.
-                // console.log('send mail');
-                // await axios.get(`${getAPIUrl()}v2/mail/confirmation/client/${order._id}`);
-
-                // window.localStorage.removeItem('cart_id');
                 Router.pushRoute('cartSuccess', { lang: routerLang });
             } else {
-                // Paiement immédiat (CB...)
-                const paymentForm = await immediatePaymentOrder(order.number, paymentMethod.makePayment);
-
                 this.setState({ paymentForm }, () => {
-                    // window.localStorage.removeItem('cart_id');
                     document.getElementById('paymentid').submit(); // Redirige sur la page du mode de paiement
                 });
             }
