@@ -486,7 +486,18 @@ ClientControllers.controller("ClientDetailCtrl", [
 
         function genAttributes() {
             angular.forEach($scope.client.attributes, function (attributeI) {
-                AttributesV2.query({PostBody: {filter: {_id: attributeI._id, _type: 'users'}, structure: '*'}}, function (attribute) {
+                if (!attributeI.id){
+                    return;
+                }
+                AttributesV2.query({
+                    PostBody: {
+                        filter: {
+                            _id: attributeI.id,
+                            _type: 'users'
+                        },
+                        structure: '*'
+                    }
+                }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
                     if (attributeI.translation === undefined) {
@@ -513,6 +524,9 @@ ClientControllers.controller("ClientDetailCtrl", [
                     attributeI.code = attribute.code;
                     attributeI.param = attribute.param;
                     attributeI.position = attribute.position;
+                }, function(error){
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                    console.error(error);
                 });
             });
         }
