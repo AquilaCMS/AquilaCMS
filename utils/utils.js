@@ -49,10 +49,11 @@ const checkOrCreateAquilaRegistryKey = async () => {
         const {Configuration, Users} = require('../orm/models');
         const configuration          = await Configuration.findOne({});
         const aquilaVersion          = JSON.parse(await fs.readFile(path.resolve(global.appRoot, 'package.json'))).version;
+        const moment                 = require('moment');
         if (!configuration.licence || !configuration.licence.registryKey) {
             configuration.licence = {
                 registryKey : uuidv4(),
-                lastCheck   : require('moment')().toISOString()
+                lastCheck   : moment().toISOString()
             };
             const firstAdmin      = await Users.findOne({isAdmin: true}, {_id: 1, isAdmin: 1, email: 1, firstname: 1, lastname: 1, fullname: 1});
             await axios.post('https://stats.aquila-cms.com/api/v1/register', {
@@ -62,8 +63,8 @@ const checkOrCreateAquilaRegistryKey = async () => {
             });
             await configuration.save();
         } else {
-            if (require('moment')().toISOString() >= require('moment')(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
-                configuration.licence.lastCheck = require('moment')().toISOString();
+            if (moment().toISOString() >= moment(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
+                configuration.licence.lastCheck = moment().toISOString();
                 await axios.post('https://stats.aquila-cms.com/api/v1/register/check', {
                     registryKey : configuration.licence.registryKey,
                     aquilaVersion,
