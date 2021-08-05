@@ -402,7 +402,7 @@ ClientControllers.controller("ClientDetailCtrl", [
             }, function(err) {
                 console.error(err);
                 $scope.disableSave = false;
-                if(err.data.code === 'login_subscribe_email_existing') {
+                if(err.data && err.data.code === 'login_subscribe_email_existing') {
                     if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
                     toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
                     }else{
