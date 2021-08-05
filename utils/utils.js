@@ -60,6 +60,7 @@ const checkOrCreateAquilaRegistryKey = async () => {
                 aquilaVersion,
                 user        : firstAdmin
             });
+            await configuration.save();
         } else {
             if (require('moment')().toISOString() >= require('moment')(configuration.licence.lastCheck).add(7, 'days').toISOString()) {
                 configuration.licence.lastCheck = require('moment')().toISOString();
@@ -68,9 +69,9 @@ const checkOrCreateAquilaRegistryKey = async () => {
                     aquilaVersion,
                     lastCheck   : configuration.licence.lastCheck
                 });
+                await configuration.save();
             }
         }
-        await configuration.save();
     } catch (err) {
         console.error('Unable to join the Aquila-CMS license server');
     }

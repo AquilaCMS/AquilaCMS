@@ -659,13 +659,12 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             mailHost,
             mailPort,
             mailUser,
+            mailPass,
             mailIsSendmail,
             mailSecure,
             overrideSendTo,
             mailFromContact
         } = global.envConfig.environment;
-        let {mailPass} = global.envConfig.environment;
-        mailPass       = encryption.decipher(mailPass);
 
         // Check that there is no recipient overload in the config
         if (overrideSendTo) {
