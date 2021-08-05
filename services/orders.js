@@ -7,7 +7,7 @@
  */
 
 const moment           = require('moment');
-const axios            = require('axios');
+const path             = require('path');
 const {
     Orders,
     Cart,
@@ -717,7 +717,7 @@ async function payOrder(req) {
         if (method.isDeferred) {
             return await deferredPayment(req, method);
         }
-        return await immediateCashPayment(req.params.orderNumber, method.code);
+        return await immediateCashPayment(req, method.code);
     } catch (err) {
         return err;
     }
@@ -758,10 +758,16 @@ function createDeferredPayment(order, method, lang) {
     };
 }
 
-async function immediateCashPayment(orderNumber, paymentMethod) {
-    const appUrl = global.envConfig.environment.appUrl;
-    const res    = await axios.get(`${appUrl}${paymentMethod}?orderId=${orderNumber}`);
-    return res.data;
+async function immediateCashPayment(req, paymentMethod) {
+    try {
+        const paymentMethodInfos = await PaymentMethods.findOne({makePayment: paymentMethod}, 'moduleFolderName');
+        const modulePath         = path.join(global.appRoot, `modules/${paymentMethodInfos.moduleFolderName}`);
+        const paymentService     = require(`${modulePath}/services/payzen`);
+        const form               = await paymentService.getPaymentForm(req.params.orderNumber || req.params._id, req.info._id, req.body);
+        return form;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 module.exports = {
