@@ -225,14 +225,16 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
                     }
                 } else {
                     let tItems = [];
-                    tItems     = cart.items.filter((product) => {
-                        if (product.id) {
-                            if (mongoose.Types.ObjectId.isValid(product.id)) {
-                                return conditionOperator(condition.operator, product.id, target, value);
+                    if (cart && cart.items) {
+                        tItems = cart.items.filter((product) => {
+                            if (product.id) {
+                                if (mongoose.Types.ObjectId.isValid(product.id)) {
+                                    return conditionOperator(condition.operator, product.id, target, value);
+                                }
                             }
-                        }
-                        return conditionOperator(condition.operator, product, target, value);
-                    });
+                            return conditionOperator(condition.operator, product, target, value);
+                        });
+                    }
                     if (tItems.length) isTrue = true;
                 }
             }
