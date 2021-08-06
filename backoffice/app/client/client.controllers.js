@@ -400,15 +400,20 @@ ClientControllers.controller("ClientDetailCtrl", [
                     $location.path(`/clients/${response.user._id}`);
                 }
             }, function(err) {
-                console.error(err)
-                if(err.data.code === 'login_subscribe_email_existing') {
-                    if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
-                    toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
-                    }else{
-                        toastService.toast('danger', $translate.instant("client.detail.alreadyExistEmail"));
+                console.error(err);
+                $scope.disableSave = false;
+                if(err.data){
+                    if(err.data.code === 'login_subscribe_email_existing') {
+                        if(err.data && err.data.translations && err.data.translations[$rootScope.adminLang]){
+                            toastService.toast('danger', err.data.translations[$rootScope.adminLang]);
+                        }else{
+                            toastService.toast('danger', $translate.instant("client.detail.alreadyExistEmail"));
+                        }
+                    }else if(err.data.message){
+                        toastService.toast('danger', err.data.message);
                     }
                 }else{
-                    toastService.toast('danger', err.data.message);
+                    toastService.toast('danger', $translate.instant("global.standardError"));
                 }
             })
         };
@@ -486,7 +491,18 @@ ClientControllers.controller("ClientDetailCtrl", [
 
         function genAttributes() {
             angular.forEach($scope.client.attributes, function (attributeI) {
-                AttributesV2.query({PostBody: {filter: {_id: attributeI._id, _type: 'users'}, structure: '*'}}, function (attribute) {
+                if (!attributeI.id){
+                    return;
+                }
+                AttributesV2.query({
+                    PostBody: {
+                        filter: {
+                            _id: attributeI.id,
+                            _type: 'users'
+                        },
+                        structure: '*'
+                    }
+                }, function (attribute) {
                     const langKeys = Object.keys(attribute.translation);
 
                     if (attributeI.translation === undefined) {
@@ -513,6 +529,9 @@ ClientControllers.controller("ClientDetailCtrl", [
                     attributeI.code = attribute.code;
                     attributeI.param = attribute.param;
                     attributeI.position = attribute.position;
+                }, function(error){
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                    console.error(error);
                 });
             });
         }

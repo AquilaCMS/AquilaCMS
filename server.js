@@ -74,6 +74,10 @@ const setEnvConfig = async () => {
         throw new Error('Configuration collection is missing');
     }
     global.envConfig = configuration.toObject();
+
+    if ((await Configuration.countDocuments()) > 1) {
+        console.error(`More than 1 configuration found ! _id '${global.envConfig._id}' is use`);
+    }
 };
 
 const initFrontFramework = async (themeName = null) => {
