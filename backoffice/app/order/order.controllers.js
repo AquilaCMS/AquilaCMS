@@ -110,9 +110,11 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2",
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants)
     {
+        const orderStatuses = {};
+        NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.customer = {};
         $scope.fields = OrderFields;
         $scope.orderRelayPoint = OrderRelayPoint;
@@ -165,15 +167,6 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
-        var sortStatus = function (statuses, status) {
-            const currentStatusIndex = statuses.findIndex(s => s.code === status)
-            for(var i = 0; i < currentStatusIndex; i++) {
-                var elem = statuses.shift()
-                statuses.push(elem)
-            }
-            return statuses
-        }
-
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {
@@ -184,7 +177,6 @@ OrderControllers.controller("OrderDetailCtrl", [
             {
                 $scope.order = response.datas[0];
                 // sort status
-                $scope.orderStatus = sortStatus([...NSConstants.orderStatus.translation[$rootScope.adminLang]], $scope.order.status)
                 if($scope.order && $scope.order.customer.id){
                     // we get the client informations to check to email and to check is user exists
                     ClientV2.query({PostBody: {filter: {_id: $scope.order.customer.id}, structure: '*', limit: 1}}, function (responseUserRequest) {
@@ -199,8 +191,8 @@ OrderControllers.controller("OrderDetailCtrl", [
                     });
                 }
                 $scope.status = $scope.order.status;
-                if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', "FINISHED"]).includes($scope.order.status)) {
-                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
+                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === orderStatuses.BILLED);
                     $scope.orderStatus.splice(key, 1);
                 }
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
@@ -391,18 +383,18 @@ OrderControllers.controller("OrderDetailCtrl", [
             {
                 if(data === $scope.order.status){
                     toastService.toast("danger", $translate.instant("order.detail.orderAlreadyState"));
-                }else if(data == "PAID"){
+                }else if(data == orderStatuses.PAID){
                     $scope.editStatus = false;
                     $scope.addInfoPayment("PAID");
-                } else if (data == "DELIVERY_PARTIAL_PROGRESS" || data == "DELIVERY_PROGRESS") {
+                } else if (data == orderStatuses.DELIVERY_PARTIAL_PROGRESS || data == orderStatuses.DELIVERY_PROGRESS) {
                     $scope.editStatus = false;
                     $scope.addPackage(data);
-                } else if (data == "BILLED") {
+                } else if (data == orderStatuses.BILLED) {
                     if ($scope.displayBillButton() === true){
                         $scope.editStatus = false;
                         $scope.orderToBill();
                     }
-                } else if (data == "RETURNED" || data == "CANCELED") {
+                } else if (data == orderStatuses.RETURNED || data == orderStatuses.CANCELED) {
                         $scope.editStatus = false;
                         $scope.returnItem();
                 }else{
@@ -412,8 +404,8 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.order = response.datas[0];
                             $scope.status = $scope.order.status;
                         });
-                        if (!(['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', 'FINISHED']).includes($scope.order.status)) {
-                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === "BILLED");
+                        if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
+                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === orderStatuses.BILLED);
                             $scope.orderStatus.splice(key, 1);
                         }
                         $scope.editStatus = false;
@@ -643,7 +635,7 @@ OrderControllers.controller("OrderDetailCtrl", [
         }
 
         $scope.displayBillButton = function () {
-            return (['PAID', 'PROCESSED', 'PROCESSING', 'DELIVERY_PROGRESS', 'FINISHED']).includes($scope.order.status)
+            return ([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)
         }
 
         $scope.calculateTotalQty = function(items) {
@@ -718,13 +710,15 @@ OrderControllers.controller("HistoryStatusCtrl", [
 ]);
 
 OrderControllers.controller("PackagesNewCtrl", [
-    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate",
-    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate) {
+    "$scope", "$modalInstance", "item", "Orders", "$rootScope", "toastService", "genericTools", "type", "OrderPackageInPopupHook", "Shipment", "$translate", "NSConstants",
+    function ($scope, $modalInstance, item, Orders, $rootScope, toastService, genericTools, type, OrderPackageInPopupHook, Shipment, $translate, NSConstants) {
         $scope.typePopUp = "new"; // useful for plugin, they can have one controller and one html for the send and return
         $scope.order = angular.copy(item);
         // the Hook for package module
         // note if you want your module by defualt in the popUp, you can add the parameters "default" in the hook
         const codeShipment = $scope.order.delivery.code;
+        const orderStatuses = {};
+        NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.packagePluginHook = [];
         let onePlugin = [];
         if(OrderPackageInPopupHook.length > 0){
@@ -778,7 +772,7 @@ OrderControllers.controller("PackagesNewCtrl", [
         $scope.loadImgShipment($scope.order.delivery.name, $scope.order.delivery.code);
 
         $scope.pkg = {tracking: "", products: []};
-        if (type != undefined && type === "DELIVERY_PARTIAL_PROGRESS"){
+        if (type != undefined && type === orderStatuses.DELIVERY_PARTIAL_PROGRESS){
             $scope.partial = true;
         }
 
@@ -1041,7 +1035,7 @@ OrderControllers.controller("RMANewCtrl", [
             }
 
             if(returnData.products.length > 0) {
-                Orders.rma({order: $scope.order._id, return: returnData}, function () {
+                Orders.rma({order: $scope.order._id, return: returnData, lang: $scope.defaultLang}, function () {
                     toastService.toast("success", $translate.instant("order.detail.returnAdded"));
                     $scope.disabledButton = false;
                     $scope.loadingAdd = false;
@@ -1076,9 +1070,11 @@ OrderControllers.controller("RMANewCtrl", [
 ]);
 
 OrderControllers.controller("InfoPaymentNewCtrl", [
-    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService", "$translate",
-    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService, $translate) {
+    "$scope", "$modalInstance", "item", "status", "Orders", "$rootScope", "toastService", "$translate", "NSConstants",
+    function ($scope, $modalInstance, item, status, Orders, $rootScope, toastService, $translate, NSConstants) {
         $scope.order = angular.copy(item);
+        const orderStatuses = {};
+        NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.error = {
             text: ""
         };
@@ -1096,7 +1092,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             disabled: false,
         };
     
-        if(status && status == "PAID"){
+        if(status && status == orderStatuses.PAID){
             $scope.return.type = "CREDIT";
             $scope.pay.disabled = true;
         }
@@ -1158,7 +1154,7 @@ OrderControllers.controller("InfoPaymentNewCtrl", [
             $scope.error.text = "";
 
             delete returnData.sendMail;
-            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail}, function ()
+            Orders.infoPayment({order: $scope.order._id, params: returnData, sendMail: $scope.return.sendMail, lang: $scope.defaultLang}, function ()
             {
                 toastService.toast("success", $translate.instant("order.detail.paymentInfoAdded"));
                 $scope.close();

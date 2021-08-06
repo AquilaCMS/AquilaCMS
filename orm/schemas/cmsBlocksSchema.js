@@ -14,6 +14,7 @@ const utilsDatabase    = require('../../utils/database');
 const CmsBlocksSchema = new Schema({
     code        : {type: String, required: true, unique: true},
     group       : {type: String, default: ''},
+    active      : {type: Boolean, default: false},
     description : String,
     translation : {}
 }, {

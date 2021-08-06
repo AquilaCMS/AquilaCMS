@@ -144,7 +144,11 @@ const getCategory = async (PostBody, withFilter = null, lang = '') => {
     return withFilter ? generateFilters(res, lang) : res;
 };
 
-const setCategory = async (req) => Categories.updateOne({_id: req.body._id}, {$set: req.body});
+const setCategory = async (req) => {
+    await Categories.updateOne({_id: req.body._id}, {$set: req.body});
+    const newCat = await Categories.findOne({_id: req.body._id});
+    return newCat;
+};
 
 const createCategory = async (req) => {
     const newMenu   = new Categories(req.body);

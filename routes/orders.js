@@ -105,7 +105,7 @@ async function getOrderById(req, res, next) {
  */
 async function rma(req, res, next) {
     try {
-        const order = await orderService.rma(req.body.order, req.body.return);
+        const order = await orderService.rma(req.body.order, req.body.return, req.body.lang);
         res.json(order);
     } catch (err) {
         return next(err);
@@ -120,7 +120,7 @@ async function rma(req, res, next) {
  */
 async function infoPayment(req, res, next) {
     try {
-        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
+        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
         res.json(order);
     } catch (err) {
         return next(err);
@@ -259,7 +259,7 @@ async function payOrder(req, res, next) {
         }, {
             $set : {
                 status  : 'PAYMENT_RECEIPT_PENDING',
-                payment : [createPayment(order, method)]
+                payment : [createPayment(order, method, req.params.lang)]
             }
         });
 
@@ -279,13 +279,14 @@ async function payOrder(req, res, next) {
  * @param {*} method
  * @deprecated
  */
-function createPayment(order, method) {
+function createPayment(order, method, lang) {
     return {
         type          : 'CREDIT',
         operationDate : Date.now(),
         status        : 'TODO',
         mode          : method.code.toUpperCase(),
         amount        : order.priceTotal.ati,
-        isDeferred    : method.isDeferred
+        isDeferred    : method.isDeferred,
+        name          : method.translation[lang].name
     };
 }

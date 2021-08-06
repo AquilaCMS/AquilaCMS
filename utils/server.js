@@ -32,6 +32,12 @@ const getEnv = (property) =>  {
  */
 const isProd = getEnv('NODE_ENV') === 'production';
 
+/**
+ * check if in dev or not
+ * @returns {boolean}
+ */
+const dev = getEnv('NODE_ENV') === 'development';
+
 const updateEnv = async () => {
     let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
     envPath       = path.resolve(global.appRoot, envPath);
@@ -247,6 +253,7 @@ const deepObjectVerification = (objectToVerify, objectBase) => {
 module.exports = {
     getEnv,
     isProd,
+    dev,
     getOrCreateEnvFile,
     getUploadDirectory,
     showAquilaLogo,

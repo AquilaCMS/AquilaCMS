@@ -178,7 +178,8 @@ const OrdersSchema = new Schema({
             transactionId : String,
             amount        : Number,
             comment       : String,
-            isDeferred    : Boolean
+            isDeferred    : Boolean,
+            name          : String
         }
     ],
     orderReceipt : {

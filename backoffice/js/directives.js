@@ -1041,30 +1041,34 @@ adminCatagenDirectives.directive("nsStatusLabel", function ()
             "$scope",
             "$filter",
             "$rootScope",
-            function ($scope, $filter, $rootScope)
+            "NSConstants",
+            function ($scope, $filter, $rootScope, NSConstants)
             {
+                const orderStatuses = {};
+                NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
                 $scope.statusObj = {};
                 if($scope.type === "order")
                 {
+                    
                     $scope.statusObj.isSuccess =
-                        $scope.status === "PAID" ||
-                        $scope.status === "PROCESSED" ||
-                        $scope.status === "BILLED" ||
-                        $scope.status === "FINISHED";
+                        $scope.status === orderStatuses.PAID ||
+                        $scope.status === orderStatuses.PROCESSED ||
+                        $scope.status === orderStatuses.BILLED ||
+                        $scope.status === orderStatuses.FINISHED;
                     $scope.statusObj.isWarning =
-                        $scope.status === "PAYMENT_PENDING" ||
-                        $scope.status === "PAYMENT_CONFIRMATION_PENDING" ||
-                        $scope.status === "PROCESSING" ||
-                        $scope.status === "ASK_CANCEL" ||
-                        $scope.status === "DELIVERY_PARTIAL_PROGRESS";
+                        $scope.status === orderStatuses.PAYMENT_PENDING ||
+                        $scope.status === orderStatuses.PAYMENT_CONFIRMATION_PENDING ||
+                        $scope.status === orderStatuses.PROCESSING ||
+                        $scope.status === orderStatuses.ASK_CANCEL ||
+                        $scope.status === orderStatuses.DELIVERY_PARTIAL_PROGRESS;
                     $scope.statusObj.isDanger =
-                        $scope.status === "CANCELED" ||
-                        $scope.status === "PAYMENT_FAILED" ||
-                        $scope.status === "RETURNED";
+                        $scope.status === orderStatuses.CANCELED ||
+                        $scope.status === orderStatuses.PAYMENT_FAILED ||
+                        $scope.status === orderStatuses.RETURNED;
                     $scope.statusObj.isBlue =
-                        $scope.status === "DELIVERY_PROGRESS";
+                        $scope.status === orderStatuses.DELIVERY_PROGRESS;
                     $scope.statusObj.isYellow =
-                        $scope.status === "PAYMENT_RECEIPT_PENDING";
+                        $scope.status === orderStatuses.PAYMENT_RECEIPT_PENDING;
                     $scope.statusObj.name = $filter("orderStatus")($scope.status);
                 }
                 else if($scope.type === "paymentStatus")
