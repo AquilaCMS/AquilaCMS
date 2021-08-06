@@ -740,7 +740,8 @@ async function deferredPayment(req, method) {
             }
         });
         await Cart.deleteOne({_id: order.cartId});
-        return await Orders.findOne({_id: order._id});
+        const form = `'<form method='POST' id='paymentid' action='${req.params.lang}/cart/success'></form>'`;
+        return form;
     } catch (err) {
         return err;
     }
