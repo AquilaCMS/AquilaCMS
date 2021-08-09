@@ -214,7 +214,7 @@ const genSitemap = async () => {
 * Remove sitemap.xml
 */
 const removeSitemap = async () => {
-    const filePath = './sitemap.xml';
+    const filePath = path.join( getUploadDirectory(), 'sitemap.xml');
     if (await fs.hasAccess(filePath)) {
         await fs.unlink(filePath);
     }
@@ -224,13 +224,11 @@ const removeSitemap = async () => {
 * Allow / Disallow seo in robots.txt
 */
 const manageRobotsTxt = async (allow = true) => {
-    const filePath  = './robots.txt';
-    let contentFile = `User-agent: *
-Allow: /`;
+    const filePath  = path.join( getUploadDirectory(), 'robots.txt');
+    let contentFile = 'User-agent: *\nAllow: /';
 
     if (!allow) {
-        contentFile = `User-agent: *
-Disallow: /`;
+        contentFile = 'User-agent: *\nDisallow: /';
     }
 
     await fs.writeFile(filePath, contentFile);
