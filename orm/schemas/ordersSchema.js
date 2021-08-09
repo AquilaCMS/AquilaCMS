@@ -130,8 +130,8 @@ const OrdersSchema = new Schema({
         ati : {default: 0, type: Number, required: true},
         et  : {default: 0, type: Number}
     },
-    comment  : String,
-    items    : [ItemSchema],
+    comment   : String,
+    items     : [ItemSchema],
     addresses : {
         delivery : AddressSchema,
         billing  : AddressSchema
