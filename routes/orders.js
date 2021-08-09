@@ -103,7 +103,7 @@ async function getOrderById(req, res, next) {
 async function rma(req, res, next) {
     try {
         const order = await ServiceOrder.rma(req.body.order, req.body.return, req.body.lang);
-        res.json(order); // TODO : Why no return
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -118,7 +118,7 @@ async function rma(req, res, next) {
 async function infoPayment(req, res, next) {
     try {
         const order = await ServiceOrder.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
-        res.json(order); // TODO : Why no return
+        res.json(order);
     } catch (err) {
         return next(err);
     }
@@ -152,7 +152,7 @@ async function duplicateItemsFromOrderToCart(req, res, next) {
 async function addPackage(req, res, next) {
     try {
         await ServiceOrder.addPackage(req.body.order, req.body.package);
-        res.end(); // TODO : Why no return
+        res.end();
     } catch (err) {
         return next(err);
     }
@@ -222,7 +222,7 @@ async function cancelOrderRequest(req, res, next) {
 }
 
 /**
- *
+ * Create a payment and return a form for front-end redirection
  * @param {Express.Request} req
  * @param {Express.Response} res
  * @param {Function} next

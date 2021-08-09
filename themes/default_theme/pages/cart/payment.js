@@ -9,8 +9,7 @@ import {
     getLangPrefix,
     jwtManager,
     cartToOrder,
-    deferredPaymentOrder,
-    immediatePaymentOrder
+    deferredPaymentOrder
 } from 'aqlrc';
 import PropTypes from 'prop-types'
 import CartStructure from 'components/CartStructure';
@@ -125,9 +124,9 @@ class CartPayment extends React.Component {
 
         // Paiement de la commande
         try {
-            const paymentForm = await deferredPaymentOrder(order.number, paymentMethod.code, lang); // /!\ S'APPELLE deffered MAIS RENVOIE EN REALITE VERS LA FONCTION GENERIQUE
+            const paymentForm = await deferredPaymentOrder(order.number, paymentMethod.code, lang); // /!\ S'APPELLE deffered MAIS RENVOIE BIEN VERS LA FONCTION GENERIQUE
             this.setState({ paymentForm }, () => {
-                document.getElementById('paymentid').submit(); // Redirige sur la page du mode de paiement
+                document.getElementById('paymentid').submit();
             });
         } catch (err) {
             if (err.response && err.response.data && err.response.data.message) {
