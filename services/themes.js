@@ -41,10 +41,11 @@ const changeTheme = async (selectedTheme) => {
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}}); // TODO : maybe move this call after buildTheme()
             await require('./modules').setFrontModules(selectedTheme);
-            await installDependencies(selectedTheme);
+            // eslint-disable-next-line
+            const out      = await installDependencies(selectedTheme);
             const buildRes = await buildTheme(selectedTheme);
             if (buildRes.msg === 'KO') {
-                returnObject.message = 'Theme build fail';
+                returnObject.message = 'Theme is selected but theme build fail';
                 returnObject.success = false;
             }
             await updateService.setMaintenance(false);
@@ -67,8 +68,8 @@ const changeTheme = async (selectedTheme) => {
 const uploadTheme = async (originalname, filepath) => {
     if (path.extname(originalname) === '.zip') {
         const tmp_path         = filepath;
-        const target_path      = './themes/';
-        const target_path_full = path.resolve(target_path, originalname);
+        const target_path      = path.join(global.appRoot, 'themes');
+        const target_path_full = path.join(target_path, originalname);
         console.log(`Uploading theme to : ${target_path_full}`);
 
         // move the file from the temporary location to the intended location
@@ -79,33 +80,26 @@ const uploadTheme = async (originalname, filepath) => {
         console.log('Unziping new theme...');
         const AdmZip       = require('adm-zip');
         const zip          = new AdmZip(target_path_full);
-        const packageTheme = zip.getEntry(`${originalname.replace('.zip', '/')}package.json`);
-        if (!packageTheme) {
-            throw NSErrors.ThemePackageNotFound; // info.json not found in zip
-        }
-        const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
-        if (moduleAquilaVersion) {
-            const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
-            const aquilaVersion = JSON.parse(packageAquila).version;
-            if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
-                throw NSErrors.ThemeAquilaVersionNotSatisfied;
+        const themeName    = originalname.slice(0, -4); // remove ".zip"
+        const packageTheme = zip.getEntry(`${themeName}/package.json`);
+        if (packageTheme) {
+            const moduleAquilaVersion = JSON.parse(packageTheme.getData().toString()).aquilaVersion;
+            if (moduleAquilaVersion) {
+                const packageAquila = (await fs.readFile(path.resolve(global.appRoot, 'package.json'), 'utf8')).toString();
+                const aquilaVersion = JSON.parse(packageAquila).version;
+                if (!require('semver').satisfies(aquilaVersion.replace(/\.0+/g, '.'), moduleAquilaVersion.replace(/\.0+/g, '.'))) {
+                    throw NSErrors.ThemeAquilaVersionNotSatisfied;
+                }
             }
+        } else {
+            console.log('No package.json found in the zip file');
         }
         zip.extractAllTo(target_path, /* overwrite */true);
-        const themeName = originalname.split('.')
-            .slice(0, -1)
-            .join('.');
-        if (await fs.hasAccess(`${target_path_full.replace('.zip', '/')}next.config.js`)) {
-            if (await fs.hasAccess(target_path_full)) {
-                await fs.unlink(target_path_full);
-            }
-            console.log('New theme is ready to be selected (need to build)');
-            await modulesUtils.createListModuleFile(`${themeName}`);
-            return themeName;
+        if (await fs.hasAccess(target_path_full)) {
+            await fs.unlink(target_path_full);
         }
-        console.log(`Remove theme : ${target_path_full}...`);
-        await fs.deleteRecursive(target_path_full.replace('.zip', '/'));
-        console.log('Theme removed !');
+        console.log('New theme is ready to be selected (need to build)');
+        await modulesUtils.createListModuleFile(`${themeName}`);
         return themeName;
     }
     throw NSErrors.InvalidFile;
@@ -129,7 +123,7 @@ async function removeConfigTheme(theme) {
  * @param theme : String Theme selectionné
  */
 const installDependencies = async (theme) => {
-    console.log('Installing new theme\'s dependencies...');
+    console.log("Installing new theme's dependencies...");
     return themesUtils.yarnInstall(theme, false);
 };
 
@@ -349,10 +343,14 @@ function getThemePath() {
 async function buildTheme(theme) {
     try {
         // TODO Change place ?
+        const pathToTheme = path.join(global.appRoot, 'themes', theme);
         // "dynamic_langs.js" is required to build (reactjs) theme
-        if (!(await fs.existsSync(path.join(theme, 'dynamic_langs.js')))) {
-            // Create if not exist
-            await require('./languages').createDynamicLangFile();
+        const pathToDynamicLangs = path.join(pathToTheme, 'dynamic_langs.js');
+        const isExist            = await fs.existsSync(pathToDynamicLangs);
+        if (!isExist) {
+            // Create the file if not exist
+            const {createDynamicLangFile} = require('./languages');
+            await createDynamicLangFile();
         }
         const returnValues = await themesUtils.yarnBuildCustom(theme);
         return {
@@ -381,9 +379,12 @@ const loadTranslation = async (server, express, i18nInstance, i18nextMiddleware,
 };
 
 const listTheme = async () => {
-    const allTheme = [];
-    for (const element of await fs.readdir('./themes/')) {
-        const fileOrFolder = await fs.stat(`./themes/${element}`);
+    const allTheme    = [];
+    const pathToTheme = path.join(global.appRoot, 'themes');
+    const listOfFile  = await fs.readdir(pathToTheme);
+    for (const element of listOfFile) {
+        const pathToFolder = path.join(pathToTheme, element);
+        const fileOrFolder = await fs.stat(pathToFolder);
         if (fileOrFolder.isDirectory()) {
             allTheme.push(element);
         }

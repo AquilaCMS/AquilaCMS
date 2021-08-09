@@ -9,13 +9,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.config = {}
 
         $scope.onTabSelect = function (tabId) {
-            if (tabId == "select") {
-                $scope.tab = "select";
-            } else if (tabId == "config") {
-                $scope.tab = "config";
-            } else {
-                $scope.tab = "data";
-            }
+            $scope.tab = tabId;
         };
 
         $scope.language = $rootScope.languages.find(function (lang) {
@@ -52,6 +46,18 @@ ThemesController.controller("ThemesCtrl", [
             }
 
         };
+
+        function buildAdminUrl(appUrl, adminPrefix) {
+            let correctAppUrl;
+            if (!appUrl) {
+                correctAppUrl = "/";
+            } else if (!appUrl.endsWith("/")) {
+                correctAppUrl = `${appUrl}/`;
+            } else {
+                correctAppUrl = appUrl;
+            }
+            return correctAppUrl + adminPrefix;
+        }
 
         $scope.typeOf = function (value) {
             try {
@@ -108,13 +114,31 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 Themes.packageBuild({ themeName: $scope.config.environment.currentTheme }, function (response) {
-                    if (response && response.result) {
-                        console.log(response.result);
+                    if (response && response.msg == "OK") {
+                        toastService.toast("success", $translate.instant("global.success"));
+                    } else {
+                        toastService.toast("danger", $translate.instant("global.standardError"));
                     }
-                    toastService.toast("success", $translate.instant("global.success"));
                     $scope.isLoading = false;
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
+                    $scope.showLoading = true;
+                    $scope.progressValue = 0;
+                    $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+                    $http.get("/restart");
+                    var timerRestart = $interval(function () {
+                        $scope.progressValue++;
+
+                        if ($scope.progressValue == 100) {
+                            setTimeout(function () {
+                                location.href = window.location = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+                            }, 7000);
+                        }
+
+                        if ($scope.progressValue >= 110) {
+                            $interval.cancel(timerRestart);
+                        }
+                    }, 250);
                 }, function (err) {
                     if (err && err.error) {
                         console.log(error);
@@ -271,21 +295,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.showLoading2 = false;
                     console.error(error);
                 });
-
-                function buildAdminUrl(appUrl, adminPrefix) {
-                    let correctAppUrl;
-                    if (!appUrl) {
-                        correctAppUrl = "/";
-                    } else if (!appUrl.endsWith("/")) {
-                        correctAppUrl = `${appUrl}/`;
-                    } else {
-                        correctAppUrl = appUrl;
-                    }
-                    return correctAppUrl + adminPrefix;
-                }
             };
-
-
         }
 
         $scope.LoadThemeCongig = function () {
@@ -302,9 +312,9 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.themeConfig.selected = response.themeConf.name;
                 }
                 try {
-                    $scope.themeConfig.config = JSON.stringify(response.themeConf.config, null, 4);
+                    $scope.configFile = JSON.stringify(response.configFile, null, 4);
                 } catch (err) {
-                    $scope.themeConfig.config = "";
+                    $scope.configFile = "";
                 }
                 if (response.configEnvironment && response.themeConf && response.themeConf.config && response.themeConf.config.translation) {
                     $scope.languages.forEach(element => {

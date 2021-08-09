@@ -10,7 +10,7 @@ const {adminAuth}        = require('../middleware/authentication');
 const themesServices     = require('../services/themes');
 const serviceThemeConfig = require('../services/themeConfig');
 const ServiceConfig      = require('../services/config');
-const packageManager     = require('../utils/packageManager');
+const utilsThemes        = require('../utils/themes');
 
 module.exports = function (app) {
     app.get('/v2/themes',                  adminAuth, listTheme);
@@ -165,7 +165,6 @@ async function buildTheme(req, res, next) {
         themPath   = themPath.replace('./themes/', '');
         const data = await themesServices.buildTheme(themPath);
         res.send(data);
-        packageManager.restart();
     } catch (error) {
         return next(error);
     }
@@ -173,12 +172,12 @@ async function buildTheme(req, res, next) {
 
 async function getThemeInformations(req, res, next) {
     try {
-        const themeConf = await serviceThemeConfig.getThemeConfig({
+        const themeConf  = await serviceThemeConfig.getThemeConfig({
             filter    : {},
             structure : {},
             limit     : 99
         });
-        const config    = (await ServiceConfig.getConfig({
+        const config     = (await ServiceConfig.getConfig({
             structure : {
                 _id                        : 0,
                 'environment.adminPrefix'  : 1,
@@ -186,9 +185,16 @@ async function getThemeInformations(req, res, next) {
                 'environment.currentTheme' : 1
             }
         }, req.info));
-        const listTheme = await themesServices.listTheme();
-        const listFiles = await themesServices.getDemoDatasFilesName();
-        res.send({themeConf, configEnvironment: config, listTheme, listFiles});
+        const listTheme  = await themesServices.listTheme();
+        const listFiles  = await themesServices.getDemoDatasFilesName();
+        const configFile = await utilsThemes.loadThemeConfig(config.environment.currentTheme) || '';
+        res.send({
+            themeConf,
+            configEnvironment : config,
+            configFile,
+            listTheme,
+            listFiles
+        });
     } catch (error) {
         return next(error);
     }

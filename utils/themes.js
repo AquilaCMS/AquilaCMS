@@ -33,8 +33,16 @@ const themeCompile = async (theme, newIsProd) => {
  * Do a yarn install
  */
 const yarnInstall = async (themeName = '', devDependencies = false) => {
-    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
-    let command       = 'yarn install --production=true';
+    const linkToTheme   = path.join(global.appRoot, 'themes', themeName);
+    const pathToPackage = path.join(linkToTheme, 'package.json');
+    const isExist       = fs.existsSync(pathToPackage);
+    if (!isExist) {
+        return {
+            stdout : "No 'package.json' found - no yarn",
+            stderr : "No 'package.json' found - no yarn"
+        };
+    }
+    let command = 'yarn install --production=true';
     if (devDependencies === true) {
         command = 'yarn install --production=false';
     }
@@ -61,7 +69,16 @@ const yarnBuildCustom = async (themeName = '') => {
             returnValues = await yarnBuild(themeName);
         }
     } else {
-        returnValues = await yarnBuild(themeName);
+        const pathToPackage = path.join(linkToTheme, 'package.json');
+        const isExist       = fs.existsSync(pathToPackage);
+        if (isExist) {
+            returnValues = await yarnBuild(themeName);
+        } else {
+            returnValues = {
+                stdout : "No 'package.json' or 'themeInit.js' found - no build",
+                stderr : "No 'package.json' or 'themeInit.js' found - no build"
+            };
+        }
     }
     return returnValues;
 };

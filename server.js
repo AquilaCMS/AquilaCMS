@@ -117,7 +117,9 @@ const initFrontFramework = async (themeName = null) => {
                     server.use('/', handler);
                 }
             } else {
-                throw `Your theme (${themeName}) is a custom theme, it needs a 'themeInit.js' file`;
+                let msg = `Your theme (${themeName}) is loaded as a custom theme (default), it needs a 'themeInit.js' file\n`;
+                msg    += "You can also change or create a 'themeConfig.json' file in your theme";
+                throw  msg;
             }
         } catch (errorInit) {
             console.error(errorInit);
@@ -134,7 +136,7 @@ const initFrontFramework = async (themeName = null) => {
             server.use('/', express.static(pathToPages));
         }
     } else {
-        console.error('Error with the theme');
+        console.error('Error with the theme, the type of your theme is not correct');
     }
 };
 
@@ -157,7 +159,11 @@ const initServer = async () => {
                 throw new Error(`themes folder ${themeFolder} not found`);
             }
             console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
-            await initFrontFramework(currentTheme); // we compile the front
+            try {
+                await initFrontFramework(currentTheme); // we compile the front
+            } catch (e) {
+                console.error(`Theme start fail : ${e}`);
+            }
         } else {
             console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }

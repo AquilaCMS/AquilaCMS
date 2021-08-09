@@ -34,5 +34,10 @@
     "themeDelete": "Delete the theme",
     "configThemeVar": "Actual configuration",
     "themeInstallAllDependencies": "Install dependencies and devDependencies of the theme",
-    "themeActions": "Themes actions"
+    "themeActions": "Themes actions",
+    "actions": {
+        "install": "yarn install",
+        "installAll": "yarn install (all)",
+        "build": "Build theme"
+    }
 }
