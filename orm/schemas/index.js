@@ -7,6 +7,7 @@
  */
 
 const AdminInformationSchema      = require('./adminInformationSchema');
+const AdminRightsSchema           = require('./adminRightsSchema');
 const AttributesSchema            = require('./attributesSchema');
 const BillsSchema                 = require('./billsSchema');
 const CategoriesSchema            = require('./categoriesSchema');
@@ -59,6 +60,7 @@ const ShortcodesSchema            = require('./shortcodesSchema');
 
 module.exports = {
     AdminInformationSchema,
+    AdminRightsSchema,
     AttributesSchema,
     BillsSchema,
     CategoriesSchema,

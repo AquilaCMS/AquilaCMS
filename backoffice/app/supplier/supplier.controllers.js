@@ -1,19 +1,20 @@
 var SupplierControllers = angular.module("aq.supplier.controllers", []);
 
 SupplierControllers.controller("SupplierListCtrl", [
-    "$scope", "$location", "SuppliersV2", function ($scope, $location, SuppliersV2) {
+    "$scope", "$location", "SuppliersV2",
+    function ($scope, $location, SuppliersV2) {
         $scope.totalItems = 0;
         $scope.nbItemsPerPage = 15;
         $scope.maxSize = 10;
         $scope.page = 1;
-        $scope.filter = {query: ""};
+        $scope.filter = { query: "" };
         //Pagination
         $scope.onPageChange = function (page) {
             let filter = {};
-            if($scope.filter.query != "") {
-                filter["name"] = {$regex: $scope.filter.query, $options: 'i'};
+            if ($scope.filter.query != "") {
+                filter["name"] = { $regex: $scope.filter.query, $options: 'i' };
             }
-            SuppliersV2.list({PostBody: {filter, page, limit: $scope.nbItemsPerPage, structure: '*', limit: 99}}, function (res) {
+            SuppliersV2.list({ PostBody: { filter, page, limit: $scope.nbItemsPerPage, structure: '*', limit: 99 } }, function (res) {
                 $scope.suppliers = res.datas;
                 $scope.totalItems = res.count;
             });
@@ -29,7 +30,8 @@ SupplierControllers.controller("SupplierListCtrl", [
 ]);
 
 SupplierControllers.controller("SupplierNewCtrl", [
-    "$scope", "$location", "SuppliersV2", "toastService","$translate", function ($scope, $location, SuppliersV2, toastService, $translate) {
+    "$scope", "$location", "SuppliersV2", "toastService", "$translate",
+    function ($scope, $location, SuppliersV2, toastService, $translate) {
 
         $scope.supplier = {};
         $scope.form = {};
@@ -40,24 +42,24 @@ SupplierControllers.controller("SupplierNewCtrl", [
                 toastService.toast("danger", $translate.instant("supplier.new.enterInvalid"));
                 return;
             }
-          
-        SuppliersV2.save(data, function (response) {
-            toastService.toast("success", $translate.instant("supplier.new.supplierCreated"));
-            console.log("Supplier Saved!", response);
-            if (isQuit) {
-                $location.path("/suppliers/");
-            } else {
-                $location.path("/suppliers/" + response.code);
 
-            }
+            SuppliersV2.save(data, function (response) {
+                toastService.toast("success", $translate.instant("supplier.new.supplierCreated"));
+                console.log("Supplier Saved!", response);
+                if (isQuit) {
+                    $location.path("/suppliers/");
+                } else {
+                    $location.path("/suppliers/" + response.code);
+
+                }
             }, function (error) {
-                if(error.data){
-                    if(error.data.message && error.data.message != ""){
-                        toastService.toast("danger",  error.data.message);
+                if (error.data) {
+                    if (error.data.message && error.data.message != "") {
+                        toastService.toast("danger", error.data.message);
                     }
-                }else if(error && error.code != ""){
+                } else if (error && error.code != "") {
                     toastService.toast("danger", error.code);
-                }else{
+                } else {
                     console.error(err);
                     toastService.toast("danger", $translate.instant("supplier.new.occurrenceError"));
                 }
@@ -73,16 +75,12 @@ SupplierControllers.controller("SupplierDetailCtrl", [
         $scope.isEditMode = false;
         $scope.form = {};
 
-        if($routeParams.supplierId)
-        {
+        if ($routeParams.supplierId) {
             $scope.isEditMode = true;
-            $scope.supplier = SuppliersV2.query({PostBody: {filter: {code: $routeParams.supplierId}, structure: '*', limit: 99}}, function () {
-                if(!angular.isDefined($scope.supplier.code))
-                {
+            $scope.supplier = SuppliersV2.query({ PostBody: { filter: { code: $routeParams.supplierId }, structure: '*', limit: 99 } }, function () {
+                if (!angular.isDefined($scope.supplier.code)) {
                     $scope.supplier.code = "";
-                }
-                else
-                {
+                } else {
                     $scope.defaultLang = $rootScope.languages.find(function (lang) {
                         return lang.defaultLanguage;
                     }).code;
@@ -93,9 +91,8 @@ SupplierControllers.controller("SupplierDetailCtrl", [
         }
 
         $scope.getProducts = function () {
-            if(angular.isDefined($scope.supplier.code))
-            {
-                ProductsV2.list({PostBody: {filter: {supplier_ref: $scope.supplier._id}, structure: '*', limit: 99}}, function({datas}) {
+            if (angular.isDefined($scope.supplier.code)) {
+                ProductsV2.list({ PostBody: { filter: { supplier_ref: $scope.supplier._id }, structure: '*', limit: 99 } }, function ({ datas }) {
                     $scope.products = datas
                 });
             }
@@ -110,8 +107,7 @@ SupplierControllers.controller("SupplierDetailCtrl", [
             //Utilisé pour afficher les messages d'erreur au moment de la soumission d'un formulaire
             $scope.form.nsSubmitted = true;
 
-            if($scope.form.$invalid)
-            {
+            if ($scope.form.$invalid) {
                 toastService.toast("danger", $translate.instant("supplier.detail.enterInvalid"));
                 return;
             }
@@ -120,19 +116,13 @@ SupplierControllers.controller("SupplierDetailCtrl", [
 
             SuppliersV2.save(supplier, function (response) {
 
-                if(isQuit)
-                {
+                if (isQuit) {
                     $location.path("/suppliers");
-                }
-                else
-                {
+                } else {
                     toastService.toast("success", $translate.instant("supplier.detail.infoSaved"));
-                    if(!$scope.isEditMode)
-                    {
+                    if (!$scope.isEditMode) {
                         $location.path("/suppliers/" + response.supplier.code);
-                    }
-                    else
-                    {
+                    } else {
                         $scope.disableSave = false;
                     }
                 }
@@ -144,9 +134,8 @@ SupplierControllers.controller("SupplierDetailCtrl", [
         };
 
         $scope.remove = function (_id) {
-            if (confirm($translate.instant("confirm.deleteSupplier")))
-            {
-                SuppliersV2.delete({id: _id}, function () {
+            if (confirm($translate.instant("confirm.deleteSupplier"))) {
+                SuppliersV2.delete({ id: _id }, function () {
                     $location.path("/suppliers");
                 }, function () {
                     toastService.toast("danger", $translate.instant("supplier.detail.deleteError"));

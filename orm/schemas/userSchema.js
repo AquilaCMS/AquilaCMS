@@ -24,7 +24,7 @@ const generateUserPassword = () => {
         [true, '0123456789'],
         [true, 'abcdefghijklmnopqrstuvwxyz'],
         [true, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'],
-        [false, '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~']
+        [true, '!#$%()*+,-.:;<=>@[]^_{|}~']
     ];
 
     const charset = [];

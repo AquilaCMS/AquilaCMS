@@ -110,7 +110,7 @@ async function getTranslatePath(lang) {
 }
 
 /**
- * Create languages in file "config/dynamic_langs.js"
+ * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
 const createDynamicLangFile = async (fromInstaller = false) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});

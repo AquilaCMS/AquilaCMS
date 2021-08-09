@@ -54,20 +54,6 @@ const CartSchema = new Schema({
     },
     comment  : String,
     items    : [ItemSchema],
-    // TODO P5 : A supprimer: discount (??)
-    discount : [
-        {
-            code        : {type: String},
-            type        : {type: String, enum: ['PERCENT', 'PRICE', 'FREE_DELIVERY']},
-            value       : {type: Number},
-            description : {type: String},
-            minimumATI  : Number,
-            onAllSite   : Boolean,
-            openDate    : Date,
-            closeDate   : Date,
-            priceATI    : {type: Number, required: true} // TODO P3 : renommer en amountATI - 2X - (y a til une raison de renommer ?)
-        }
-    ],
     delivery : {
         method : {type: ObjectId, ref: 'shipments'},
         value  : {

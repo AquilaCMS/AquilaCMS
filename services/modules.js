@@ -149,6 +149,7 @@ const initModule = async (files) => {
             component_template_front : info.component_template_front || null,
             files                    : info.files || [],
             type                     : info.type,
+            types                    : info.types,
             versionAquila            : info.versionAquila,
             active                   : !!(myModule && myModule.active)
         }, {upsert: true, new: true});
@@ -448,7 +449,7 @@ const activateModule = async (idModule, toBeChanged) => {
         await addOrRemoveThemeFiles(
             path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
             false,
-            myModule.type ? `type: '${myModule.type}'` : ''
+            myModule.types ? myModule.types : (myModule.type ? myModule.type : '')
         );
         await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
@@ -479,7 +480,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             await addOrRemoveThemeFiles(
                 path.resolve(global.appRoot, _module.path, 'theme_components'),
                 true,
-                _module.type ? `type: '${_module.type}'` : ''
+                _module.types ? _module.types : (_module.type ? _module.type : '')
             );
         } catch (error) {
             console.error(error);
@@ -640,13 +641,16 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         if (!file.startsWith('Module') || !file.endsWith('.js')) {
             continue;
         }
-        const info                  = await fs.readFile(path.resolve(savePath, 'info.json'));
-        let type                    = JSON.parse(info).info.type;
-        type                        = type ? `type: '${type}'` : '';
+        const info = await fs.readFile(path.resolve(savePath, 'info.json'));
+        let type   = JSON.parse(info).info.type;
+        if (JSON.parse(info).info.types && Array.isArray(JSON.parse(info).info.types)) {
+            type = JSON.parse(info).info.types.find((t) => t.component === file).type;
+        }
         const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> namecomponent
-        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
-        const pathListModules       = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
-        const result                = await fs.readFile(pathListModules, 'utf8');
+        const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
+        console.log( `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`);
+        const pathListModules = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
+        const result          = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
         if (result.indexOf(fileNameWithoutModule) <= 0) {
@@ -720,8 +724,11 @@ const removeFromListModule = async (file, currentTheme, fileNameWithoutModule, t
     try {
         const pathListModules = path.resolve('themes', currentTheme, 'modules/list_modules.js');
         if (fs.existsSync(pathListModules)) {
-            const result                  = await fs.readFile(pathListModules, 'utf8');
-            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`;
+            const result = await fs.readFile(pathListModules, 'utf8');
+            if (Array.isArray(type)) {
+                type = type.find((t) => t.component === file).type;
+            }
+            const jsxModuleToImport       = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
             const exportDefaultListModule = result.match(new RegExp(/\[(.*?)\]/, 'g'))[0];
             await removeImport(jsxModuleToImport, exportDefaultListModule, pathListModules);
         }
