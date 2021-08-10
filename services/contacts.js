@@ -41,7 +41,7 @@ const setContact = async (body, mode) => {
 async function storeContact(body, _id = undefined) {
     if (_id) {
         delete body._id;
-        await Contacts.update({_id}, {$set: {data: body}});
+        await Contacts.updateOne({_id}, {$set: {data: body}});
         return body;
     }
     const result = await Contacts.create({data: body});

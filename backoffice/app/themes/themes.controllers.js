@@ -188,7 +188,7 @@ ThemesController.controller("ThemesCtrl", [
         $scope.validate = function (tab) {
             if (tab == 'config') {
                 $scope.showLoading2 = true;
-                ThemeConfig.update({ config: $scope.themeConfig.variables }, function (response, err) {
+                ThemeConfig.updateOne({ config: $scope.themeConfig.variables }, function (response, err) {
                     if (err.errmsg) {
                         $scope.showLoading2 = false;
                         toastService.toast("danger", $translate.instant("themes.addedTheme"));
