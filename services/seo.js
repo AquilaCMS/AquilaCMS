@@ -25,7 +25,7 @@ const sitemapConf = {
     home     : {frequency: 'daily', priority: '1.0'},
     product  : {frequency: 'weekly', priority: '0.5'},
     category : {frequency: 'daily', priority: '0.8'},
-    blog     : {frequency: 'weekly', priority: '0.5'},
+    blog     : {frequency: 'weekly', priority: '0.4'},
     other    : {frequency: 'weekly', priority: '0.2'}
 };
 
