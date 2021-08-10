@@ -190,10 +190,17 @@ const genSitemap = async () => {
                             if (languages.length > 1) {
                                 for (let k = 0, lenk = languages.length; k < lenk; k++) {
                                     if (articles[i].translation[languages[k].code] !== undefined) {
-                                        xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}"`);
+                                        const link = `${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}`;
+                                        xhtml.push({
+                                            '@' : {
+                                                rel      : 'alternate',
+                                                hreflang : `${languages[k].code}`,
+                                                href     : link
+                                            }
+                                        });
                                     }
                                 }
-                                url.xhtml = xhtml;
+                                url['xhtml:link'] = xhtml;
                             }
                             sitemap.url.push(url);
                         }
