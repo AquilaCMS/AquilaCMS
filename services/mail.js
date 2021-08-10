@@ -267,26 +267,22 @@ const sendRegister = async (user_id, lang = '') => {
 };
 
 const sendRegisterForAdmin = async (user_id, lang = '') => {
-    try {
-        const _user = await Users.findById(user_id);
-        if (!_user) {
-            throw NSErrors.AccountUserNotFound;
-        }
-        lang                                                     = determineLanguage(lang, _user.preferredLanguage);
-        const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
-        const oDataMail                                          = {
-            '{{name}}'      : _user.fullname,
-            '{{fullname}}'  : _user.fullname,
-            '{{firstname}}' : _user.firstname,
-            '{{lastname}}'  : _user.lastname,
-            '{{login}}'     : _user.email,
-            '{{company}}'   : _user.company.name
-        };
-        const htmlBody                                           = generateHTML(content, oDataMail);
-        return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
-    } catch (error) {
-        console.error(error);
+    const _user = await Users.findById(user_id);
+    if (!_user) {
+        throw NSErrors.AccountUserNotFound;
     }
+    lang                                                     = determineLanguage(lang, _user.preferredLanguage);
+    const {content, subject, from, fromName, pathAttachment} = await getMailDataByTypeAndLang('sendRegisterForAdmin', lang);
+    const oDataMail                                          = {
+        '{{name}}'      : _user.fullname,
+        '{{fullname}}'  : _user.fullname,
+        '{{firstname}}' : _user.firstname,
+        '{{lastname}}'  : _user.lastname,
+        '{{login}}'     : _user.email,
+        '{{company}}'   : _user.company.name
+    };
+    const htmlBody                                           = generateHTML(content, oDataMail);
+    return sendMail({subject, htmlBody, mailTo: from, mailFrom: from, fromName, pathAttachment});
 };
 
 /**
@@ -368,7 +364,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
                 '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : (item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2),
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -567,7 +563,7 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : translation[lang].name,
                 '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : (item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2),
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',
@@ -663,13 +659,12 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
             mailHost,
             mailPort,
             mailUser,
+            mailPass,
             mailIsSendmail,
             mailSecure,
             overrideSendTo,
             mailFromContact
         } = global.envConfig.environment;
-        let {mailPass} = global.envConfig.environment;
-        mailPass       = encryption.decipher(mailPass);
 
         // Check that there is no recipient overload in the config
         if (overrideSendTo) {
@@ -935,7 +930,7 @@ async function sendMailPendingCarts(cart) {
                 '{{product.specialUnitPrice}}' : '',
                 '{{product.bundleName}}'       : item.name,
                 '{{product.unitPrice}}'        : (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
-                '{{product.totalPrice}}'       : item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay]).toFixed(2),
+                '{{product.totalPrice}}'       : (item.quantity * (item.price.special && item.price.special[taxDisplay] ? item.price.special[taxDisplay] : item.price.unit[taxDisplay])).toFixed(2),
                 '{{product.basePrice}}'        : '',
                 '{{product.descPromo}}'        : '',
                 '{{product.descPromoT}}'       : '',

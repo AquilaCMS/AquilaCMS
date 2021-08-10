@@ -110,13 +110,14 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants",
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants", "OrderDeliveryFields",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants, OrderDeliveryFields)
     {
         const orderStatuses = {};
         NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.customer = {};
         $scope.fields = OrderFields;
+        $scope.fieldsOrderDelivery = OrderDeliveryFields;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
         $scope.editableMode = false;
