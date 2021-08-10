@@ -287,7 +287,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 return (await fs.readFile(fullPath)).toString();
@@ -308,7 +308,7 @@ const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
 
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
@@ -330,7 +330,7 @@ const getAllCssComponentName = async () => {
         const cssNames  = [];
         const themePath = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
-            const fullPath = path.join('./themes', themePath, cssFolder);
+            const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder);
             try {
                 if (fs.existsSync(fullPath)) {
                     for (const file of await fs.readdir(fullPath)) {

@@ -462,7 +462,8 @@ const dumpAnonymizedDatabase = async (res) => {
         await dropDatabase();
         // Download the dump file
         res.set({'content-type': 'application/gzip'});
-        return res.download(`./${pathUpload}/temp/database_dump.gz`);
+        const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
+        return res.download(pathToArchive);
     } catch (error) {
         if (error && error.name && error.name === 'NSError') {
             throw error;

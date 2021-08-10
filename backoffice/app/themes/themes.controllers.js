@@ -1,7 +1,7 @@
 const ThemesController = angular.module("aq.themes.controllers", []);
 
 ThemesController.controller("ThemesCtrl", [
-    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig","$rootScope", "$modal", "$translate", "Themes",
+    "$scope", "ConfigV2", "$http", "$interval", "toastService", "ThemeConfig", "$rootScope", "$modal", "$translate", "Themes",
     function ($scope, ConfigV2, $http, $interval, toastService, ThemeConfig, $rootScope, $modal, $translate, Themes) {
 
         $scope.themeConfig = {};
@@ -9,11 +9,11 @@ ThemesController.controller("ThemesCtrl", [
         $scope.config = {}
 
         $scope.onTabSelect = function (tabId) {
-            if(tabId == "select"){
+            if (tabId == "select") {
                 $scope.tab = "select";
-            }else if (tabId == "config"){
+            } else if (tabId == "config") {
                 $scope.tab = "config";
-            }else {
+            } else {
                 $scope.tab = "data";
             }
         };
@@ -33,19 +33,18 @@ ThemesController.controller("ThemesCtrl", [
             });
         };
 
-        $scope.LoadAllThemes = function(){
+        $scope.LoadAllThemes = function () {
             $scope.LoadThemeCongig();
         }
 
-        $scope.langChange = function (lang)
-        {
-            if ($scope.customiseTheme === undefined){
+        $scope.langChange = function (lang) {
+            if ($scope.customiseTheme === undefined) {
                 $scope.LoadThemeCongig();
             };
-            if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined){
+            if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined) {
                 $scope.customiseTheme.arrayGroup = [];
-                for (let i = 0; i < $scope.themeConfig.variables[lang].length ; i++){
-                    if($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1){
+                for (let i = 0; i < $scope.themeConfig.variables[lang].length; i++) {
+                    if ($scope.customiseTheme.arrayGroup.indexOf($scope.themeConfig.variables[lang][i].group) == -1) {
                         $scope.customiseTheme.arrayGroup.push($scope.themeConfig.variables[lang][i].group);
 
                     }
@@ -54,22 +53,22 @@ ThemesController.controller("ThemesCtrl", [
 
         };
 
-        $scope.typeOf = function(value) {
+        $scope.typeOf = function (value) {
             try {
-                if(value == undefined) {
+                if (value == undefined) {
                     return "string";
                 }
 
                 // Couleur
-                if(typeof(value) == "string" && value.indexOf("#") == 0 && value.length == 7) {
+                if (typeof (value) == "string" && value.indexOf("#") == 0 && value.length == 7) {
                     return "color";
                 }
                 // Number
-                if(typeof(value) == "string" && typeof(value.replace('.', ',')) == "number") {
+                if (typeof (value) == "string" && typeof (value.replace('.', ',')) == "number") {
                     return "number";
                 }
-                return typeof(value);
-            }catch(e){
+                return typeof (value);
+            } catch (e) {
                 return "string";
             }
         }
@@ -81,9 +80,9 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showThemeLoading = true;
                 Themes.packageInstall({
                     themeName: $scope.config.environment.currentTheme,
-                    devDependencies : devDependencies
+                    devDependencies: devDependencies
                 }, function (response) {
-                    if(response && response.result){
+                    if (response && response.result) {
                         console.log(response.result);
                     }
                     toastService.toast("success", $translate.instant("global.success"));
@@ -91,7 +90,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                 }, function (err) {
-                    if(err && err.error){
+                    if (err && err.error) {
                         console.log(error);
                     }
                     $scope.isLoading = false;
@@ -109,7 +108,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.showLoading2 = true;
                 $scope.showThemeLoading = true;
                 Themes.packageBuild({ themeName: $scope.config.environment.currentTheme }, function (response) {
-                    if(response && response.result){
+                    if (response && response.result) {
                         console.log(response.result);
                     }
                     toastService.toast("success", $translate.instant("global.success"));
@@ -117,7 +116,7 @@ ThemesController.controller("ThemesCtrl", [
                     $scope.showLoading2 = false;
                     $scope.showThemeLoading = false;
                 }, function (err) {
-                    if(err && err.error){
+                    if (err && err.error) {
                         console.log(error);
                     }
                     $scope.isLoading = false;
@@ -143,18 +142,18 @@ ThemesController.controller("ThemesCtrl", [
 
         $scope.removeTheme = async function () {
             if (confirm($translate.instant("confirm.deleteTheme"))) {
-                Themes.delete({ themeName: $scope.config.environment.currentTheme }, function(response){
+                Themes.delete({ themeName: $scope.config.environment.currentTheme }, function (response) {
                     toastService.toast("success", $translate.instant("themes.deleteTheme"));
                     $scope.LoadAllThemes();
                 }, function (err) {
                     $scope.isLoading = false;
-                    if(err.data) {
-                        if(err.data.message){
+                    if (err.data) {
+                        if (err.data.message) {
                             toastService.toast("danger", err.data.message);
                         }
-                    } else if(err.message) {
+                    } else if (err.message) {
                         toastService.toast("danger", err.message);
-                    }else {
+                    } else {
                         toastService.toast("danger", $translate.instant("global.standardError"));
                     }
                 });
@@ -162,7 +161,7 @@ ThemesController.controller("ThemesCtrl", [
         };
         $scope.theme = {
             themeDataOverride: false,
-            currentThemeVar : false,
+            currentThemeVar: false,
         };
 
         $scope.copyThemeDatas = async function () {
@@ -170,16 +169,16 @@ ThemesController.controller("ThemesCtrl", [
                 Themes.copyData({
                     themeName: $scope.config.environment.currentTheme,
                     override: $scope.theme.themeDataOverride,
-                    configuration : null,
-                    fileNames : $scope.listThemeFiles,
+                    configuration: null,
+                    fileNames: $scope.listThemeFiles,
                     otherParams: $scope.otherParams
-                }, function(response) {
+                }, function (response) {
                     if (response.noDatas) {
                         toastService.toast("success", $translate.instant("themes.themeNoData"));
                     } else {
                         toastService.toast("success", $translate.instant("themes.copyThemeDataDone"));
                     }
-                }, function(err) {
+                }, function (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
                 });
@@ -187,18 +186,18 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.validate = function (tab) {
-            if(tab == 'config'){
+            if (tab == 'config') {
                 $scope.showLoading2 = true;
-                ThemeConfig.update({config : $scope.themeConfig.variables}, function (response,err) {
-                    if(err.errmsg){
+                ThemeConfig.update({ config: $scope.themeConfig.variables }, function (response, err) {
+                    if (err.errmsg) {
                         $scope.showLoading2 = false;
                         toastService.toast("danger", $translate.instant("themes.addedTheme"));
-                    }else{
+                    } else {
                         $scope.showLoading2 = false;
                         toastService.toast("success", $translate.instant("themes.varSaved"));
                         $scope.keys = {};
                         $scope.themeConfig.variables = {};
-                        if(response.datas.translation){
+                        if (response.datas.translation) {
                             $scope.languages.forEach(element => {
                                 $scope.themeConfig.variables[element.code] = response.datas.translation[element.code].values;
                                 delete $scope.themeConfig.variables[element.code].$promise;
@@ -207,18 +206,21 @@ ThemesController.controller("ThemesCtrl", [
                             });
                         }
                     }
-                }, function(err){
+                }, function (err) {
+                    $scope.showLoading2 = false;
                     console.log(err);
                 });
             } else {
-                ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldAdmin) {
-                    $scope.showThemeLoading = true;
+                ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldAdmin) {
                     if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
+                        $scope.showLoading2 = true;
+                        $scope.showThemeLoading = true;
                         if (confirm($translate.instant("confirm.changeTheme"))) {
                             Themes.save({ environment: $scope.config.environment }, function (response) {
                                 if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
                                     toastService.toast("success", $translate.instant("global.success"));
                                     $scope.showThemeLoading = false;
+                                    $scope.showLoading2 = false;
                                     $scope.showLoading = true;
                                     $scope.progressValue = 0;
                                     $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
@@ -240,19 +242,26 @@ ThemesController.controller("ThemesCtrl", [
                                     window.location.reload(true);
                                 }
                                 $scope.showThemeLoading = false;
+                                $scope.showLoading2 = false;
                             }, function (err) {
                                 console.error(err);
                                 $scope.showThemeLoading = false;
-                                if(err && err.data && err.data.message){
+                                $scope.showLoading2 = false;
+                                if (err && err.data && err.data.message) {
                                     toastService.toast("danger", err.data.message);
-                                }else{
+                                } else {
                                     toastService.toast("danger", $translate.instant("global.standardError"));
                                 }
                             });
                         } else {
                             $scope.showThemeLoading = false;
+                            $scope.showLoading2 = false;
                         }
                     }
+                }, function (error) {
+                    $scope.showThemeLoading = false;
+                    $scope.showLoading2 = false;
+                    console.error(error);
                 });
 
                 function buildAdminUrl(appUrl, adminPrefix) {
@@ -281,14 +290,16 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.customiseTheme = {};
                 $scope.customiseTheme.keys = {};
                 $scope.themeConfig.variables = {};
-                $scope.themeConfig.selected = response.themeConf.name;
-                try{
+                if (response.themeConf && response.themeConf.name && response.themeConf.name.length) {
+                    $scope.themeConfig.selected = response.themeConf.name;
+                }
+                try {
                     $scope.themeConfig.config = JSON.stringify(response.themeConf.config, null, 4);
-                }catch(err){
+                } catch (err) {
                     $scope.themeConfig.config = "";
                 }
-                if (response.configEnvironment && response.themeConf.config.translation) {
-                    $scope.languages.forEach(element  => {
+                if (response.configEnvironment && response.themeConf && response.themeConf.config && response.themeConf.config.translation) {
+                    $scope.languages.forEach(element => {
                         $scope.themeConfig.variables[element.code] = response.themeConf.config.translation[element.code].values;
                         delete $scope.themeConfig.variables[element.code].$promise;
                         delete $scope.themeConfig.variables[element.code].$resolved;
@@ -301,7 +312,7 @@ ThemesController.controller("ThemesCtrl", [
                 $scope.isLoading = false;
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(err);
-                if(err && err.data && err.data.message) {
+                if (err && err.data && err.data.message) {
                     toastService.toast("danger", err.data.message);
                 }
             });
@@ -310,7 +321,7 @@ ThemesController.controller("ThemesCtrl", [
 ]);
 
 ThemesController.controller("ThemesNewCtrl", [
-    "$scope", "$modalInstance", "toastService","$translate",
+    "$scope", "$modalInstance", "toastService", "$translate",
     function ($scope, $modalInstance, toastService, $translate) {
 
         $scope.onErrorUploadTheme = function () {
@@ -330,7 +341,7 @@ ThemesController.controller("ThemesNewCtrl", [
         };
 
 
-        $scope.cancel = function (){
+        $scope.cancel = function () {
             $modalInstance.dismiss("cancel");
         };
     }

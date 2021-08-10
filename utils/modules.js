@@ -217,7 +217,7 @@ const modulesLoadInit = async (server) => {
                 process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;
-                process.stdout.write('\x1b[31m \u274C \x1b[0m\n');
+                process.stdout.write('\x1b[31m \u274C An error has occurred \x1b[0m\n');
                 return false;
             }
         }

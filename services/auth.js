@@ -41,6 +41,10 @@ const login = async (req, res, next) => {
         if (!user) throw NSErrors.BadLogin;
         if (req.params.from === 'admin') {
             if (!user.isAdmin) throw NSErrors.Unauthorized;
+        } else {
+            if (user.isAdmin) {
+                throw NSErrors.BadLogin;
+            }
         }
 
         const isMatch = await user.validPassword(password);
