@@ -109,7 +109,7 @@ const orderToBill = async (idOrder, isAvoir = false) => {
     return null;
 };
 
-const generatePDF = async (PostBody) => {
+const generatePDF = async (PostBody, callBackData = null) => {
     let bill = await queryBuilder.findOne(PostBody);
     if (!bill) {
         throw NSErrors.AccessUnauthorized;
@@ -190,8 +190,16 @@ const generatePDF = async (PostBody) => {
     if (!html) {
         throw NSErrors.InvoiceNotFound;
     }
-    let content = generateHTML(html.translation[bill.lang].content, datas);
-    let items   = '';
+    let  overrideData = {};
+    if (typeof callBackData === 'function') {
+        overrideData = await callBackData(datas);
+    }
+    const dataToReplace = {
+        ...datas,
+        ...overrideData
+    };
+    let content         = generateHTML(html.translation[bill.lang].content, dataToReplace);
+    let items           = '';
     // eslint-disable-next-line no-useless-escape
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
     if (itemTemplate && itemTemplate[0]) {
