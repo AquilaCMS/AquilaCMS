@@ -444,7 +444,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
+        datas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
