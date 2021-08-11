@@ -11,8 +11,6 @@ const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const path             = require('path');
 const ServiceLanguages = require('./languages');
-// eslint-disable-next-line
-const encryption       = require('../utils/encryption');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
