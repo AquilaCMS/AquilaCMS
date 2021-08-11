@@ -8,15 +8,10 @@
 
 const serviceAdminInformation = require('../services/admin');
 const {adminAuth}             = require('../middleware/authentication');
-const modules                 = require('../services/modules');
 
-module.exports = (router, adminFront) => {
+module.exports = (router) => {
     router.get('/v2/adminInformation', adminAuth, getAdminInformation);
     router.delete('/v2/adminInformation/:code', adminAuth, deleteAdminInformation);
-
-    // BackOffice
-    adminFront.get('/', getAdminHomepage);
-    adminFront.get('/login', renderLogin);
 };
 
 // GET /api/v2/adminInformation
@@ -42,24 +37,3 @@ function deleteAdminInformation(req, res, next) {
         return next(error);
     }
 }
-
-const getAdminHomepage = async (req, res, next) => {
-    try {
-        const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
-        if (!appUrl || !adminPrefix) return res.status(404).end();
-        const tabM = await modules.loadAdminModules();
-        return res.render('layout', {appUrl, adminPrefix, tabM});
-    } catch (err) {
-        return next(err);
-    }
-};
-
-const renderLogin = async (req, res, next) => {
-    try {
-        const {appUrl, adminPrefix} = await require('../utils/server').getAppUrl(req);
-        if (!appUrl || !adminPrefix) return res.status(404).end();
-        return res.render('login', {appUrl, adminPrefix});
-    } catch (err) {
-        return next(err);
-    }
-};
