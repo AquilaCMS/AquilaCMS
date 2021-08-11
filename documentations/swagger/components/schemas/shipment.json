@@ -3,7 +3,7 @@
         "description": "",
         "properties": {
             "code"        : {"type": "string"},
-            "type"        : {"type": "string", "enum": ["DELIVERY", "RELAY_POINT"]},
+            "type"        : {"type": "string", "enum": ["DELIVERY"]},
             "active"      : {"type": "boolean", "default": true},
             "translation" : {},
             "countries"   : {
