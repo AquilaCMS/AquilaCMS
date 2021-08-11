@@ -102,7 +102,7 @@ TerritoriesControllers.controller("TerritoriesDetailCtrl", [
 		};
 
 		$scope.save = async function (isQuit) {
-			TerritoriesApi.updateOne({ terr: 'territory' }, $scope.territory, function () {
+			TerritoriesApi.update({ terr: 'territory' }, $scope.territory, function () {
 				toastService.toast("success", $translate.instant("global.saveDone"));
 				if (isQuit) {
 					$location.path("/territories");
