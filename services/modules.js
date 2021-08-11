@@ -875,9 +875,14 @@ const setConfig = async (name, newConfig) => {
  * @deprecated
  */
 const getModuleMd = async (body) => {
-    if (!body.moduleName) throw NSErrors.InvalidParameters;
-    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
-    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
+    if (!body.moduleName) {
+        throw NSErrors.InvalidParameters;
+    }
+    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
+    let text       = '';
+    if (fs.existsSync(pathToMd)) {
+        text = await fs.readFileSync(pathToMd, 'utf8');
+    }
     return text;
 };
 
