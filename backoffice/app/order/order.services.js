@@ -44,6 +44,11 @@ OrderServices.service("OrderDeliveryFields", function ()
     return [];
 });
 
+OrderServices.service("OrderDeliveryDate", function ()
+{
+    return [];
+});
+
 OrderServices.service("OrderRelayPoint", function ()
 {
     return [];
