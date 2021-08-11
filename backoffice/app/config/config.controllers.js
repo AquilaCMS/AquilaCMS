@@ -119,15 +119,21 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             $modal.open({
                 templateUrl: 'app/config/modal/testMail.html',
                 controller: function ($scope, $modalInstance, TestMailConfig) {
+                    $scope.equalInputs=false
                     $scope.mail = {};
                     $scope.adminLang = lang;
                     $scope.loading = false;
 
                     $scope.testMail = function () {
+                        if ($scope.mail.from == $scope.mail.to) {
+                            $scope.equalInputs=true
+                            return false
+                        }
+                        $scope.equalInputs=false
                         $scope.loading = true;
 
                         let mailInfo = {}
-                        mailInfo.from = $scope.mail.to;
+                        mailInfo.from = $scope.mail.from;
                         mailInfo.to = $scope.mail.to;
                         if ($scope.mail.to && $scope.mail.to !== "") {
                             TestMailConfig.sendMailConfig({ mail: mailInfo, values: "Email Test", lang: "en" }, function (res) {
