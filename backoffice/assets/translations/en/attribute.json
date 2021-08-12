@@ -35,11 +35,10 @@
         "saveDone": "Backup performed",
         "attributeNotExist": "This attribute does not exist",
         "errorOccurred": "An error has occurred",
-        "error": "Error", 
+        "error": "Error",
         "deleteAttribute": "Attribute deleted",
         "infoDispoFiltres": "Allows an attribute selection category to be visible in filters"
     },
-
     "list": {
         "t1": "Attributes",
         "attrClasses": "Sorted attributes",
@@ -49,5 +48,9 @@
         "attrOrph": "Unbinded attributes",
         "jeuxAttrib": "Attribute sets",
         "afficher": "Display"
+    },
+    "toast": {
+        "invalidPart1": "The minimum of the attribute",
+        "invalidPart2": "is greater than the maximum"
     }
 }

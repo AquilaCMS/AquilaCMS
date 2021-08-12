@@ -42,5 +42,8 @@
         "variables": "Vars",
         "result": "Result",
         "noVars": "No vars"
+    },
+    "toast": {
+        "missingVar": "Warning: Missing variables"
     }
 }
