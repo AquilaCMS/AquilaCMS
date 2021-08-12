@@ -244,7 +244,6 @@ MediasControllers.controller("MediasDetailsCtrl",
                 // do nothing
             });
         };
-        
         setMode($routeParams.id.substring($routeParams.id.length - 4, $routeParams.id.length) == ":new");
     }
 ]);
@@ -253,32 +252,41 @@ MediasControllers.controller("MediasModalCtrl", ["$scope", "toastService", "$mod
     function ($scope, toastService, $modalInstance, media, $translate) {
         $scope.media = media;
         $scope.positions = [
-            { pos: "center",
-              id: "center"
+            {
+                pos: "center",
+                id: "center"
             },
-            { pos: "top",
-              id: "top"
+            {
+                pos: "top",
+                id: "top"
             },
-            { pos: "bottom",
-              id: "bottom"
+            {
+                pos: "bottom",
+                id: "bottom"
             },
-            { pos: "left",
-              id: "left"
+            {
+                pos: "left",
+                id: "left"
             },
-            { pos: "right",
+            {
+                pos: "right",
                 id: "right"
             },
-            { pos: "top-left",
-              id: "topLeft"
+            {
+                pos: "top-left",
+                id: "topLeft"
             },
-            { pos: "top-right",
-              id: "topRight"
+            {
+                pos: "top-right",
+                id: "topRight"
             },
-            { pos: "bottom-left",
-              id: "bottomLeft"
+            {
+                pos: "bottom-left",
+                id: "bottomLeft"
             },
-            { pos: "bottom-right",
-              id: "bottomRight"
+            {
+                pos: "bottom-right",
+                id: "bottomRight"
             }
         ];
 

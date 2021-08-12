@@ -12,6 +12,7 @@ const wkhtmltopdf                = require('wkhtmltopdf');
 const {Bills, Orders, CmsBlocks} = require('../orm/models');
 const QueryBuilder               = require('../utils/QueryBuilder');
 const NSErrors                   = require('../utils/errors/NSErrors');
+const aquilaEvents               = require('../utils/aquilaEvents');
 const {dev}                      = require('../utils/server');
 const ServiceOrder               = require('./orders');
 const {generateHTML}             = require('./mail');
@@ -109,7 +110,7 @@ const orderToBill = async (idOrder, isAvoir = false) => {
     return null;
 };
 
-const generatePDF = async (PostBody) => {
+const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     let bill = await queryBuilder.findOne(PostBody);
     if (!bill) {
         throw NSErrors.AccessUnauthorized;
@@ -125,7 +126,10 @@ const generatePDF = async (PostBody) => {
     }
     const order = await Orders.findById(bill.order_id);
     moment.locale(lang);
-    const html        = await CmsBlocks.findOne({code: 'invoice'});
+    const html = await CmsBlocks.findOne({code: codeCmsBlocks});
+    if (!html) {
+        throw NSErrors.CmsBlockNotFound;
+    }
     const withNoTaxes = lang === 'fr' ? 'HT' : 'ET';
     const withTaxes   = lang === 'fr' ? 'TTC' : 'ATI';
     const unpaid      = lang === 'fr' ? 'Non payé' : 'Unpaid';
@@ -190,8 +194,13 @@ const generatePDF = async (PostBody) => {
     if (!html) {
         throw NSErrors.InvoiceNotFound;
     }
-    let content = generateHTML(html.translation[bill.lang].content, datas);
-    let items   = '';
+    const dataToReplace = {
+        datas
+    };
+    await aquilaEvents.emit('generatePDF_overrideData', dataToReplace);
+    const newData = dataToReplace.datas || {};
+    let content   = generateHTML(html.translation[bill.lang].content, newData);
+    let items     = '';
     // eslint-disable-next-line no-useless-escape
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
     if (itemTemplate && itemTemplate[0]) {

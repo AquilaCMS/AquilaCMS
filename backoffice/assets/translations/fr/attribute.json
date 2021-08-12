@@ -39,7 +39,6 @@
         "deleteAttribute": "Attribut supprimé",
         "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"
     },
-
     "list": {
         "t1": "Attributs",
         "attrClasses": "Attributs classés",
@@ -49,5 +48,9 @@
         "attrOrph": "Attributs orphelins",
         "jeuxAttrib": "Jeux d'attributs",
         "afficher": "Afficher"
+    },
+    "toast": {
+        "invalidPart1": "Le minimum de l'attribut",
+        "invalidPart2": "est plus grand que le maximum"
     }
 }

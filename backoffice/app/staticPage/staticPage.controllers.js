@@ -9,7 +9,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
             $scope.groups = []
             $scope.search = '';
 
-            StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function (staticsList) {
+            StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }, function (staticsList) {
                 $scope.statics = staticsList.datas;
                 $scope.groups = staticsList.datas.getAndSortGroups()
                 $scope.currentTab = $scope.groups[0];
@@ -30,14 +30,14 @@ StaticPageControllers.controller("StaticPageListCtrl", [
         $scope.goToStaticPageDetails = function (staticCode) {
             $location.path(`/staticPage/${staticCode}`);
         };
-        $scope.changeTab = function(group) {
+        $scope.changeTab = function (group) {
             $scope.currentTab = group;
             if (window.localStorage.getItem('pageAdmin')) {
                 const adminStoredDatas = JSON.parse(window.localStorage.getItem('pageAdmin'));
                 adminStoredDatas.staticListTab = group;
                 window.localStorage.setItem('pageAdmin', JSON.stringify(adminStoredDatas))
             } else {
-                const adminStoredDatas = {staticListTab: group};
+                const adminStoredDatas = { staticListTab: group };
                 window.localStorage.setItem('pageAdmin', JSON.stringify(adminStoredDatas))
             }
         }
@@ -46,7 +46,7 @@ StaticPageControllers.controller("StaticPageListCtrl", [
 
 StaticPageControllers.controller("StaticPageNewCtrl", [
     "$scope", "$location", 'StaticV2', "toastService", "$rootScope", "$translate", function ($scope, $location, StaticV2, toastService, $rootScope, $translate) {
-        $scope.static = {type: "page", group: "", translation: {[$rootScope.adminLang]: {variables: [], html: '', content: ''}}};
+        $scope.static = { type: "page", group: "", translation: { [$rootScope.adminLang]: { variables: [], html: '', content: '' } } };
         $scope.groups = [];
         $scope.selectedDropdownItem = "";
         $scope.selectedTab = { active: "result" };
@@ -69,7 +69,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
                 icon: '<i class="fa fa-eye" aria-hidden="true"></i>'
             }
         ];
-        
+
         $scope.langChange = function (lang) {
             $scope.lang = lang;
             $(".defL").css("display", !lang.defaultLanguage ? "none" : "");
@@ -84,18 +84,18 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 
         $scope.generateVariables = function () {
             for (const value of Object.entries($scope.static.translation)) {
-                if($scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
-                    if(!$scope.static.translation[value[0]].variables){
+                if ($scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
+                    if (!$scope.static.translation[value[0]].variables) {
                         $scope.static.translation[value[0]].variables = [];
                     }
                     let originalArray = $scope.static.translation[value[0]].variables;
-                    let founds        = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)];
+                    let founds = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)];
                     $scope.static.translation[value[0]].variables = [];
                     for (var i = 0; i < founds.length; i++) {
-                        if(originalArray.find(_var => _var.label === founds[i][1])) {
+                        if (originalArray.find(_var => _var.label === founds[i][1])) {
                             $scope.static.translation[value[0]].variables.push(originalArray.find(_var => _var.label === founds[i][1]))
                         } else {
-                            $scope.static.translation[value[0]].variables.push({label: founds[i][1], value: ''})
+                            $scope.static.translation[value[0]].variables.push({ label: founds[i][1], value: '' })
                         }
                     }
                 }
@@ -106,28 +106,28 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             $scope.generateVariables();
             for (const value of Object.entries($scope.static.translation)) {
                 if ($scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
-    
+
                     var founds = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)];
-                    
+
                     $scope.static.translation[value[0]].content = $scope.static.translation[value[0]].html;
                     var missingVariables = [];
-                
+
                     for (var i = 0; i < founds.length; i++) {
                         var variable = $scope.static.translation[value[0]].variables.find(_var => _var.label === founds[i][1])
-                        if(variable) {
+                        if (variable) {
                             $scope.static.translation[value[0]].content = $scope.static.translation[value[0]].content.replace(founds[i][0], variable ? variable.value : '')
                         } else {
                             missingVariables.push(founds[i][1])
                         }
                     }
-                    
+
                     if (missingVariables.length) {
                         toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
                     }
                 }
             }
-        } 
-   
+        }
+
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
         };
@@ -136,7 +136,7 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
             if (userInput !== undefined) {
                 $scope.selectedDropdownItem = userInput;
             }
-            return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
+            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }).$promise.then(function (staticsList) {
                 $scope.groups = staticsList.datas.getAndSortGroups($scope.selectedDropdownItem)
                 return staticsList.datas.getAndSortGroups($scope.selectedDropdownItem);
             });
@@ -163,12 +163,12 @@ StaticPageControllers.controller("StaticPageNewCtrl", [
 StaticPageControllers.controller("StaticPageDetailCtrl", [
     "$scope", "$http", "$q", "$routeParams", "$rootScope", "StaticV2", "$location", "toastService", "$rootScope", 'HookPageInfo', "$translate",
     function ($scope, $http, $q, $routeParams, $rootScope, StaticV2, $location, toastService, $rootScope, HookPageInfo, $translate) {
-        $scope.local = {url: ""};
+        $scope.local = { url: "" };
         $scope.modules = [];
         $scope.lang = $rootScope.adminLang;
         $scope.groups = [];
         $scope.hookPageInfo = HookPageInfo;
-        $scope.selectedTab = {active:"result"};
+        $scope.selectedTab = { active: "result" };
         $scope.additionnalButtons = [
             {
                 text: 'product.general.preview',
@@ -185,12 +185,12 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             }
         ]
 
-        $scope.getStaticPage = function(){
-            StaticV2.query({PostBody: {filter: {code: $routeParams.code}, structure: '*', limit: 1}}, function (staticPage) {
+        $scope.getStaticPage = function () {
+            StaticV2.query({ PostBody: { filter: { code: $routeParams.code }, structure: '*', limit: 1 } }, function (staticPage) {
                 $scope.static = staticPage;
                 $scope.local.url = staticPage.code;
                 $scope.selectedDropdownItem = staticPage.group ? staticPage.group : "";
-                if($scope.static && !$scope.static.translation[$scope.lang].html) {
+                if ($scope.static && !$scope.static.translation[$scope.lang].html) {
                     $scope.static.translation[$scope.lang].html = $scope.static.translation[$scope.lang].content
                 }
             });
@@ -198,20 +198,20 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
 
         $scope.getStaticPage();
 
-        $scope.selectTab = function(tab){
+        $scope.selectTab = function (tab) {
             $scope.selectedTab.active = tab;
         }
         $scope.generateVariables = function () {
             for (const value of Object.entries($scope.static.translation)) {
-                if($scope.static && $scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
+                if ($scope.static && $scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
                     var originalArray = $scope.static.translation[value[0]].variables || [],
-                        founds        = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)]
+                        founds = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)]
                     $scope.static.translation[value[0]].variables = [];
                     for (var i = 0; i < founds.length; i++) {
-                        if(originalArray.find(_var => _var.label === founds[i][1])) {
+                        if (originalArray.find(_var => _var.label === founds[i][1])) {
                             $scope.static.translation[value[0]].variables.push(originalArray.find(_var => _var.label === founds[i][1]))
                         } else {
-                            $scope.static.translation[value[0]].variables.push({label: founds[i][1], value: ''})
+                            $scope.static.translation[value[0]].variables.push({ label: founds[i][1], value: '' })
                         }
                     }
                 }
@@ -222,27 +222,28 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
             $scope.generateVariables();
             for (const value of Object.entries($scope.static.translation)) {
                 if ($scope.static && $scope.static.translation[value[0]] && $scope.static.translation[value[0]].html) {
-    
+
                     var founds = [...$scope.static.translation[value[0]].html.matchAll(/{{([^}]*)}}/gm)];
-                    
+
                     $scope.static.translation[value[0]].content = $scope.static.translation[value[0]].html;
                     var missingVariables = [];
-                
+
                     for (var i = 0; i < founds.length; i++) {
                         var variable = $scope.static.translation[value[0]].variables.find(_var => _var.label === founds[i][1])
-                        if(variable) {
+                        if (variable) {
                             $scope.static.translation[value[0]].content = $scope.static.translation[value[0]].content.replace(founds[i][0], variable ? variable.value : '')
                         } else {
                             missingVariables.push(founds[i][1])
                         }
                     }
-                    
+
                     if (missingVariables.length) {
-                        toastService.toast("danger", `Warning: Variables missing (${missingVariables.join(', ')})`);
+                        const text = $translate.instant("static.toast.missingVar");
+                        toastService.toast("danger", `${text} (${missingVariables.join(', ')})`);
                     }
                 }
             }
-        }       
+        }
 
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
@@ -253,7 +254,7 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                 $scope.selectedDropdownItem = userInput;
             }
             $scope.dropdownItems = [];
-            return StaticV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}).$promise.then(function (staticsList) {
+            return StaticV2.list({ PostBody: { filter: {}, structure: '*', limit: 99 } }).$promise.then(function (staticsList) {
                 $scope.groups = staticsList.datas.getAndSortGroups(userInput);
                 return $scope.groups;
             });
@@ -283,17 +284,17 @@ StaticPageControllers.controller("StaticPageDetailCtrl", [
                     $location.path("/staticPage");
                 }
             }, function (err) {
-                    toastService.toast("danger", err.data.message);
+                toastService.toast("danger", err.data.message);
             });
         };
 
-        StaticV2.list({PostBody: {filter: {}, limit: 99}}, function (staticsList) {
+        StaticV2.list({ PostBody: { filter: {}, limit: 99 } }, function (staticsList) {
             $scope.statics = staticsList.datas;
         });
 
         $scope.removePage = function (staticPage) {
             if (confirm($translate.instant("confirm.deletePage"))) {
-                StaticV2.delete({id: $scope.static._id}, function(msg) {
+                StaticV2.delete({ id: $scope.static._id }, function (msg) {
                     if (msg.status) {
                         $scope.statics.splice($scope.statics.indexOf(staticPage), 1);
                         toastService.toast("success", $translate.instant("global.deleteDone"));

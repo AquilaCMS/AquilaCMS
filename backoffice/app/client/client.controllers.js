@@ -366,7 +366,9 @@ ClientControllers.controller("ClientDetailCtrl", [
                                 delete attr.translation[$scope.lang].max;
                             } else if (attr.translation[$scope.lang].min !== undefined && attr.translation[$scope.lang].max !== undefined && attr.translation[$scope.lang].min !== "" && attr.translation[$scope.lang].max !== "") {
                                 attrsErrors = true;
-                                toastService.toast("danger", `Le minimum de l'attribut ${attr.translation[$scope.lang].name}(${lang}) est plus grand que le maximum`);
+                                const text1 = $translate.instant("attriibute.toast.invalidPart1");
+                                const text2 = $translate.instant("attriibute.toast.invalidPart2");
+                                toastService.toast("danger", `${text1} ${attr.translation[$scope.lang].name}(${lang}) ${text2}`);
                             }
                         }
                     } else if ((attr.type === "Couleur" || attr.type === "color") && !(/\#([a-z0-9]{3}|[a-z0-9]{6})$/i).test(attr.translation[$scope.lang].value)) {
