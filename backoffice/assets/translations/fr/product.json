@@ -141,6 +141,7 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical"
+        "URLcanonical": "Impossible de générer l 'URL de test car pas de canonical",
+        "notValid": "Les informations saisies ne sont pas valides"
     }
 }

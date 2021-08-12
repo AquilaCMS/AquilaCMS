@@ -110,14 +110,15 @@ OrderControllers.controller("OrderListCtrl", [
 
 OrderControllers.controller("OrderDetailCtrl", [
     "$scope", "$q", "$routeParams", "$sce", "Orders", "$modal", "NSConstants", "toastService", "OrderFields", "ClientCountry",
-    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants", "OrderDeliveryFields",
-    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants, OrderDeliveryFields)
+    "OrderRelayPoint", "Invoice", "$location", '$anchorScroll', '$rootScope', 'OrderPackagePopup','$translate', "ClientV2", "NSConstants", "OrderDeliveryFields", "OrderDeliveryDate",
+    function ($scope, $q, $routeParams, $sce, Orders, $modal, NSConstants, toastService, OrderFields, ClientCountry, OrderRelayPoint, Invoice, $location, $anchorScroll, $rootScope, OrderPackagePopup, $translate, ClientV2, NSConstants, OrderDeliveryFields, OrderDeliveryDate)
     {
         const orderStatuses = {};
         NSConstants.orderStatus.translation.fr.forEach((ele) => orderStatuses[ele.code] = ele.code)
         $scope.customer = {};
         $scope.fields = OrderFields;
         $scope.fieldsOrderDelivery = OrderDeliveryFields;
+        $scope.dateOrderDelivery = OrderDeliveryDate;
         $scope.orderRelayPoint = OrderRelayPoint;
         $scope.orderPackagePopup = OrderPackagePopup;
         $scope.editableMode = false;
@@ -168,6 +169,15 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
+        function checkOrderSatus() {
+            if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
+                const index = $scope.orderStatus.findIndex(oneStatus => oneStatus.code === orderStatuses.BILLED);
+                if(index > -1){
+                    $scope.orderStatus.splice(index, 1);
+                }
+            }
+        }
+
         $scope.init = function () {
             $scope.defaultLang = $rootScope.languages.find(function (lang)
             {
@@ -192,10 +202,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     });
                 }
                 $scope.status = $scope.order.status;
-                if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
-                    const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === orderStatuses.BILLED);
-                    $scope.orderStatus.splice(key, 1);
-                }
+                checkOrderSatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
                     if(typeof $scope.order.addresses[typeNameAdress].country === "undefined" || $scope.order.addresses[typeNameAdress].country === null) {
                         ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[typeNameAdress].isoCountryCode}}}, function (response) {
@@ -405,10 +412,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                             $scope.order = response.datas[0];
                             $scope.status = $scope.order.status;
                         });
-                        if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
-                            const key = Object.keys($scope.orderStatus).find(key => $scope.orderStatus[key].code === orderStatuses.BILLED);
-                            $scope.orderStatus.splice(key, 1);
-                        }
+                        checkOrderSatus()
                         $scope.editStatus = false;
                         d.resolve();
                     }, function (err)

@@ -11,7 +11,6 @@ const moment           = require('moment-timezone');
 const mongoose         = require('mongoose');
 const path             = require('path');
 const ServiceLanguages = require('./languages');
-const encryption       = require('../utils/encryption');
 const utils            = require('../utils/utils');
 const mediasUtils      = require('../utils/medias');
 const NSErrors         = require('../utils/errors/NSErrors');
@@ -444,7 +443,7 @@ const sendMailOrderToCompany = async (order_id, lang = '') => {
     }
 
     if (order.delivery && order.delivery.price && order.delivery.price[taxDisplay]) {
-        mailDatas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
+        datas['{{delivery.price}}'] = order.delivery.price[taxDisplay].toFixed(2);
     }
 
     if (order.promos && order.promos.length && (order.promos[0].productsId.length === 0)) {
@@ -693,7 +692,16 @@ async function sendMail({subject, htmlBody, mailTo, mailFrom = null, attachments
                 if (!mailOptions.attachments) {
                     mailOptions.attachments = [];
                 }
-                const data = await fs.readFile(path.resolve(utilsServer.getUploadDirectory(), file.path), {encoding: 'base64'});
+                let pathToFile = file.path;
+                if (!path.isAbsolute(pathToFile)) {
+                    pathToFile = path.resolve(utilsServer.getUploadDirectory(), file.path);
+                }
+                const checkAccess = await fs.hasAccess(pathToFile);
+                const isFile      = (await fs.lstat(pathToFile)).isFile();
+                if (!checkAccess || !isFile) {
+                    console.error('Your attachments looks unreachable');
+                }
+                const data = await fs.readFile(pathToFile, {encoding: 'base64'});
                 mailOptions.attachments.push({
                     filename    : `${file.name.originalname}.${file.name.mimetype.split('/')[1]}`,
                     content     : data,

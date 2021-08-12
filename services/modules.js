@@ -449,7 +449,7 @@ const activateModule = async (idModule, toBeChanged) => {
         await addOrRemoveThemeFiles(
             path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
             false,
-            myModule.types ? myModule.types : (myModule.type ? myModule.type : '')
+            myModule.types || myModule.type || ''
         );
         await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
@@ -480,7 +480,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             await addOrRemoveThemeFiles(
                 path.resolve(global.appRoot, _module.path, 'theme_components'),
                 true,
-                _module.types ? _module.types : (_module.type ? _module.type : '')
+                _module.types || _module.type || ''
             );
         } catch (error) {
             console.error(error);
@@ -875,9 +875,14 @@ const setConfig = async (name, newConfig) => {
  * @deprecated
  */
 const getModuleMd = async (body) => {
-    if (!body.moduleName) throw NSErrors.InvalidParameters;
-    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
-    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
+    if (!body.moduleName) {
+        throw NSErrors.InvalidParameters;
+    }
+    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
+    let text       = '';
+    if (fs.existsSync(pathToMd)) {
+        text = await fs.readFileSync(pathToMd, 'utf8');
+    }
     return text;
 };
 
