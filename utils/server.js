@@ -252,6 +252,58 @@ const deepObjectVerification = (objectToVerify, objectBase) => {
     return Object.assign(other, {...objectToVerify});
 };
 
+const hotReloadAPI = async (express, server) => {
+    const reloadRouter  = express.Router();
+    let apiIndexInStack;
+    const numberOfStack = server._router.stack.length;
+    for (let i = 0; i < numberOfStack; i++) {
+        if (server._router.stack[i].name === 'router' && server._router.stack[i].regexp.toString().includes('api')
+        && server._router.stack[(i + 1)].regexp.toString().includes('api')) {
+            apiIndexInStack = i;
+            break;
+        }
+    }
+    reloadRouter.route('/reloadAPI').get(async (req, res) => {
+        try {
+            // Remove the matched middleware
+            server._router.stack.splice(apiIndexInStack, 1);
+            server._router.stack.splice(apiIndexInStack, 1);
+            server._router.stack.splice(apiIndexInStack, 1);
+            const newAPIRouter = express.Router();
+            server.use('/api', newAPIRouter, reloadRouter, (req, res, next) => next(NSErrors.ApiNotFound));
+            for (let i = 0; i < 3; i++) {
+                const lastStack = server._router.stack[server._router.stack.length - 1];
+                server._router.stack.pop();
+                server._router.stack.splice(apiIndexInStack, 0, lastStack);
+            }
+            // we remove cache of /routes/* and /services/*
+            const date = Date.now();
+            for (const oneLine in require.cache) {
+                if (!require.cache[oneLine]) {
+                    continue;
+                }
+                for (const oneFolder of ['routes', 'services']) {
+                    const pathToFolder = path.join(global.appRoot, oneFolder);
+                    if (oneLine.startsWith(pathToFolder)) {
+                        delete require.cache[oneLine];
+                    }
+                }
+            }
+            const time = (Date.now() - date) / 1000;
+            console.log(`reloadAPI : delete require cache in %s${time}%s`, '\x1b[33m', '\x1b[0m');
+            require('../routes').loadDynamicRoutes(newAPIRouter);
+            return res.json('ok');
+        } catch (errorInReload) {
+            return res.json(errorInReload);
+        }
+    });
+    server.use('/api', reloadRouter);
+    // we move the middleware
+    const lastStack = server._router.stack[server._router.stack.length - 1];
+    server._router.stack.pop();
+    server._router.stack.splice(apiIndexInStack, 0, lastStack);
+};
+
 module.exports = {
     getEnv,
     isProd,
@@ -262,5 +314,6 @@ module.exports = {
     logVersion,
     startListening,
     getAppUrl,
-    updateEnv
+    updateEnv,
+    hotReloadAPI
 };
