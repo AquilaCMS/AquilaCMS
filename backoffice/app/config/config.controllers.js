@@ -1,97 +1,14 @@
 const ConfigControllers = angular.module("aq.config.controllers", ["ui.bootstrap"]);
 
-ConfigControllers.controller("ImportConfigCtrl", [
-    "$scope", "ProductObj", "NSConstants", "Config", "$http", "SetAttributesV2", "toastService", "$translate",
-    function ($scope, ProductObj, NSConstants, Config, $http, SetAttributesV2, toastService, $translate) {
-        console.info(">>> ImportConfigCtrl loaded ! <<<");
-
-        $scope.productObj = ProductObj;
-        $scope.productTypes = NSConstants.productTypes;
-        $scope.local = {};
-        $scope.showLoading = false;
-
-        $scope.onTabSelect = function (tabId) {
-            if (tabId != "arbo") {
-                const query = {category: tabId};
-                $http({url: "/config/imports/getColumns", method: "GET", params: query}).then(function (response) {
-                    $scope.csvColumns = response.data;
-                });
-            }
-        };
-
-        $scope.onTabSelect("products");
-
-        $scope.tabs = [
-            {
-                name     : "Produits",
-                id       : "products",
-                isActive : true,
-                fields   : [
-                    {name: "Code", code: "id", isRequired: true}, {name: "Nom", code: "name", isRequired: true}, {
-                        name     : "Code fournisseur", code     : "supplier_ref", refTable : "suppliers", refField : "code"
-                    }, {name: "Image de base", code: "imageUrl", media: {type: "Image", host: null}}
-                ]
-            }, {
-                name   : "Fournisseurs",
-                id     : "suppliers",
-                fields : [{name: "Code", code: "code", isRequired: true}, {name: "Nom", code: "name", isRequired: true}]
-            }, {
-                name   : "Arborescence", id     : "arbo", fields : []
-            }
-        ];
-
-        $scope.setAttributes = [];
-        SetAttributesV2.list({PostBody: {filter: {}, structure: '*', limit: 99}}, function (response) {
-            $scope.setAttributes = response.datas
-        });
-
-        $scope.getAttributes = function (tabId, setAttrCode) {
-            SetAttributesV2.query({PostBody: {filter: {code: setAttrCode}, structure: '*'}}).$promise.then(function (response) {
-                $scope.attributes = repsonse.attributes;
-            });
-        };
-
-        $scope.validate = function (fields, category, setAttrCode, attributes) {
-            $scope.isLoading = true;
-            const setAttr = $scope.setAttributes.find(function (item) {
-                return item.code === setAttrCode;
-            });
-
-            if (category == "arbo") {
-                $http.post("/config/imports/importArbo").then(function () {
-                    $scope.isLoading = false;
-                    toastService.toast("success", $translate.instant("global.success"));
-                }, function (err) {
-                    $scope.isLoading = false;
-                    toastService.toast("danger", err.data);
-                });
-            } else {
-                Config.import({
-                    fields,
-                    category,
-                    setAttributes : setAttr,
-                    attributes
-                }).$promise.then(function () {
-                    $scope.isLoading = false;
-                    toastService.toast("success", $translate.instant("global.success"));
-                }, function (err) {
-                    $scope.isLoading = false;
-                    toastService.toast("danger", err.data);
-                });
-            }
-        };
-    }
-]);
-
 ConfigControllers.controller("EnvironmentConfigCtrl", [
-    "$scope","ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$translate",
+    "$scope", "ConfigV2", "$http", "$interval", "$sce", "toastService", "TerritoryCountries", "$modal", "Upload", "$translate",
     function ($scope, ConfigV2, $http, $interval, $sce, toastService, TerritoryCountries, $modal, Upload, $translate) {
         $scope.disabledButton = false;
         $scope.countries = [];
         $scope.config = {};
         // $scope.themesList = [];
         $scope.timezones = moment.tz.names().filter(n => n.includes("Europe"));
-        ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (config) {
+        ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (config) {
             $scope.config = config;
             if (!$scope.config.environment.adminPrefix) {
                 $scope.config.environment.adminPrefix = "admin";
@@ -100,9 +17,9 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
         });
 
         $scope.local = {
-            themeDataOverride : false
+            themeDataOverride: false
         };
-        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, structure: '*', limit: 99 } }, function ({datas}) {
+        TerritoryCountries.query({ PostBody: { filter: { type: 'country' }, structure: '*', limit: 99 } }, function ({ datas }) {
             $scope.countries = datas;
         });
 
@@ -119,17 +36,17 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             $modal.open({
                 templateUrl: 'app/config/modal/testMail.html',
                 controller: function ($scope, $modalInstance, TestMailConfig) {
-                    $scope.equalInputs=false
+                    $scope.equalInputs = false
                     $scope.mail = {};
                     $scope.adminLang = lang;
                     $scope.loading = false;
 
                     $scope.testMail = function () {
                         if ($scope.mail.from == $scope.mail.to) {
-                            $scope.equalInputs=true
+                            $scope.equalInputs = true
                             return false
                         }
-                        $scope.equalInputs=false
+                        $scope.equalInputs = false
                         $scope.loading = true;
 
                         let mailInfo = {}
@@ -139,11 +56,11 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
                             TestMailConfig.sendMailConfig({ mail: mailInfo, values: "Email Test", lang: "en" }, function (res) {
                                 toastService.toast("success", $translate.instant("config.environment.testMailSend"));
                                 $modalInstance.close();
-                            }, function(r){
-                                if(r.data && r.data.stack){
+                            }, function (r) {
+                                if (r.data && r.data.stack) {
                                     let position = r.data.stack.indexOf(" at ");
-                                    toastService.toast("warning", r.data.stack.slice(0,position));
-                                }else{
+                                    toastService.toast("warning", r.data.stack.slice(0, position));
+                                } else {
                                     toastService.toast("warning", $translate.instant("config.environment.errorCheckInfo"));
                                 }
                                 $scope.loading = false;
@@ -166,11 +83,11 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
         // Ouverture de la modal d'édition du fichier 'robot.txt'
         $scope.editRobot = function () {
             $modal.open({
-                backdrop    : 'static',
-                keyboard    : false,
-                templateUrl : 'app/config/modal/robot.config.html',
-                controller  : 'RobotTxtCtrl',
-                resolve     : {
+                backdrop: 'static',
+                keyboard: false,
+                templateUrl: 'app/config/modal/robot.config.html',
+                controller: 'RobotTxtCtrl',
+                resolve: {
                     // mail: function () {
                     //     return $scope.mail;
                     // },
@@ -183,11 +100,11 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
             if ($scope.config.environment.appUrl && !$scope.config.environment.appUrl.endsWith('/')) {
                 $scope.config.environment.appUrl += "/";
             }
-            if(!$scope.config.environment.favicon){
+            if (!$scope.config.environment.favicon) {
                 $scope.config.environment.favicon = '';
             }
             let file = {};
-            ConfigV2.get({PostBody: {structure: {environment: 1}}}, function (oldConfig) {
+            ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldConfig) {
                 $scope.config.environment.cacheTTL = $scope.config.environment.cacheTTL || "";
                 $scope.showThemeLoading = true;
                 Upload.upload({
@@ -235,23 +152,6 @@ ConfigControllers.controller("EnvironmentConfigCtrl", [
     }
 ]);
 
-ConfigControllers.controller("ImportTmpConfigCtrl", [
-    "$scope", "NSConstants", "Config", "$http", "toastService", "$translate", function ($scope, NSConstants, Config, $http, toastService, $translate) {
-        $scope.startImport = function () {
-            toastService.toast("info", "Import en cours...");
-
-            $http.get("/config/imports/importProcess").then(function (response) {
-                if (response !== null) {
-                    toastService.toast("success", $translate.instant("config.import.importFinish"));
-                }
-            }, function (err) {
-                $scope.isLoading = false;
-                toastService.toast("danger", err.data);
-            });
-        };
-    }
-]);
-
 ConfigControllers.controller("RobotTxtCtrl", [
     "$scope", "$q", "$routeParams", "$location", "toastService", "$modalInstance", "$http", "$translate",
     function ($scope, $q, $routeParams, $location, toastService, $modalInstance, $http, $translate) {
@@ -269,7 +169,7 @@ ConfigControllers.controller("RobotTxtCtrl", [
             if (!text) {
                 text = "";
             }
-            $http.post('/robot', {PostBody: {text}}).then((response) => {
+            $http.post('/robot', { PostBody: { text } }).then((response) => {
                 toastService.toast("success", $translate.instant("config.import.modifyRobot"));
                 $scope.close();
             });
