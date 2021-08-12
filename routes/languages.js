@@ -16,7 +16,7 @@ module.exports = function (app) {
     app.delete('/v2/language/:id', adminAuth, removeLang);
     app.get('/V2/translate', translateList);
     app.get('/V2/translate/:lang/:currentTranslate', translateGet);
-    app.post('/V2/translate/:lang/:currentTranslate', translateSet);
+    app.post('/V2/translate/:lang/:currentTranslate', adminAuth, translateSet);
 };
 
 /**

@@ -7,13 +7,14 @@
  */
 
 const ServiceNewsletter = require('../services/newsletter');
+const {adminAuth}       = require('../middleware/authentication');
 
 module.exports = function (app) {
-    app.post('/v2/newsletters', getNewsletters);
-    app.post('/v2/newsletter', getNewsletter);
-    app.post('/v2/newsletters/distinct', getDistinctNewsletters);
-    app.get('/v2/newsletter/:email', getNewsletterByEmail);
-    app.post('/v2/newsletter/:email', setStatusNewsletterByEmail);
+    app.post('/v2/newsletters', adminAuth, getNewsletters);
+    app.post('/v2/newsletter', adminAuth, getNewsletter);
+    app.post('/v2/newsletters/distinct', adminAuth, getDistinctNewsletters);
+    app.get('/v2/newsletter/:email', adminAuth, getNewsletterByEmail);
+    app.post('/v2/newsletter/:email', adminAuth, setStatusNewsletterByEmail);
 };
 
 async function getNewsletters(req, res, next) {
