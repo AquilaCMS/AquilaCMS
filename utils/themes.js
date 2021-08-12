@@ -57,28 +57,35 @@ const yarnBuildCustom = async (themeName = '') => {
     const linkToTheme = path.join(global.appRoot, 'themes', themeName);
     const pathToInit  = path.join(linkToTheme, 'themeInit.js');
     let returnValues;
-    if (fs.existsSync(pathToInit)) {
-        const process = require('process');
-        process.chdir(linkToTheme); // protect require of the frontFrameWork
-        const initFileOfConfig = require(pathToInit);
-        if (typeof initFileOfConfig.build === 'function') {
-            returnValues = await initFileOfConfig.build();
-            process.chdir(global.appRoot);
+    try {
+        if (fs.existsSync(pathToInit)) {
+            const process = require('process');
+            process.chdir(linkToTheme); // protect require of the frontFrameWork
+            const initFileOfConfig = require(pathToInit);
+            if (typeof initFileOfConfig.build === 'function') {
+                returnValues = await initFileOfConfig.build();
+                process.chdir(global.appRoot);
+            } else {
+                process.chdir(global.appRoot);
+                returnValues = await yarnBuild(themeName);
+            }
         } else {
-            process.chdir(global.appRoot);
-            returnValues = await yarnBuild(themeName);
+            const pathToPackage = path.join(linkToTheme, 'package.json');
+            const isExist       = fs.existsSync(pathToPackage);
+            if (isExist) {
+                returnValues = await yarnBuild(themeName);
+            } else {
+                returnValues = {
+                    stdout : "No 'package.json' or 'themeInit.js' found - no build",
+                    stderr : "No 'package.json' or 'themeInit.js' found - no build"
+                };
+            }
         }
-    } else {
-        const pathToPackage = path.join(linkToTheme, 'package.json');
-        const isExist       = fs.existsSync(pathToPackage);
-        if (isExist) {
-            returnValues = await yarnBuild(themeName);
-        } else {
-            returnValues = {
-                stdout : "No 'package.json' or 'themeInit.js' found - no build",
-                stderr : "No 'package.json' or 'themeInit.js' found - no build"
-            };
-        }
+    } catch (e) {
+        returnValues = {
+            stdout : 'Build failed',
+            stderr : e
+        };
     }
     return returnValues;
 };
@@ -96,21 +103,23 @@ const yarnBuild = async (themeName = '') => {
  * @description loadThemeConfig
  * @param theme : String Theme selectionné
  */
-const loadThemeConfig = (theme) => {
-    const linkToThemeConfig = path.join(global.appRoot, 'themes', theme, '/', 'themeConfig.json');
+const loadInfoTheme = (theme) => {
+    const nameOfFile = 'infoTheme.json';
+    const linkToFile = path.join(global.appRoot, 'themes', theme, nameOfFile);
     try {
-        if (fs.existsSync(linkToThemeConfig)) {
-            const config = require(linkToThemeConfig);
+        if (fs.existsSync(linkToFile)) {
+            const config = require(linkToFile);
             return config;
         }
     } catch (e) {
-        return null;
+        // e;
     }
+    return null;
 };
 module.exports = {
     themeCompile,
     yarnBuildCustom,
     yarnInstall,
     yarnBuild,
-    loadThemeConfig
+    loadInfoTheme
 };

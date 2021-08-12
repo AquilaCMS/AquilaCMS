@@ -187,7 +187,7 @@ async function getThemeInformations(req, res, next) {
         }, req.info));
         const listTheme  = await themesServices.listTheme();
         const listFiles  = await themesServices.getDemoDatasFilesName();
-        const configFile = await utilsThemes.loadThemeConfig(config.environment.currentTheme) || '';
+        const configFile = utilsThemes.loadInfoTheme(config.environment.currentTheme) || '';
         res.send({
             themeConf,
             configEnvironment : config,

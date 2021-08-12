@@ -82,7 +82,7 @@ const setEnvConfig = async () => {
 
 const initFrontFramework = async (themeName = null) => {
     let type = 'custom'; // default type
-    let themeConfig;
+    let themeInfo;
     if (themeName === null) {
         themeName =  global.envConfig.environment.currentTheme;
     }
@@ -91,12 +91,12 @@ const initFrontFramework = async (themeName = null) => {
     if (!(await fs.existsSync(path.join(pathToTheme, 'dynamic_langs.js')))) {
         await require('./services/languages').createDynamicLangFile();
     }
-    themeConfig = utilsThemes.loadThemeConfig(themeName);
-    if (themeConfig === null) {
-        themeConfig = {};
+    themeInfo = utilsThemes.loadInfoTheme(themeName);
+    if (themeInfo === null) {
+        themeInfo = {};
     }
-    if (themeConfig && themeConfig.type) {
-        type = themeConfig.type;
+    if (themeInfo && themeInfo.type) {
+        type = themeInfo.type;
     }
     server.use('/', middlewareServer.maintenance);
 
@@ -130,8 +130,8 @@ const initFrontFramework = async (themeName = null) => {
         const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
         if (fs.existsSync(pathToTheme)) {
             let pathToPages = pathToTheme;
-            if (typeof themeConfig.expose !== 'undefined') {
-                pathToPages = path.join(pathToTheme, themeConfig.expose);
+            if (typeof themeInfo.expose !== 'undefined') {
+                pathToPages = path.join(pathToTheme, themeInfo.expose);
             }
             server.use('/', express.static(pathToPages));
         }
