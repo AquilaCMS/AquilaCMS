@@ -125,7 +125,7 @@ class CartPayment extends React.Component {
         // Paiement de la commande
         try {
             const paymentForm = await deferredPaymentOrder(order.number, paymentMethod.code, lang); // /!\ S'APPELLE deffered MAIS RENVOIE BIEN VERS LA FONCTION GENERIQUE
-            this.setState({ paymentForm }, () => {
+            this.setState({ paymentForm : paymentForm.data }, () => {
                 document.getElementById('paymentid').submit();
             });
         } catch (err) {

@@ -740,8 +740,8 @@ async function deferredPayment(req, method) {
             }
         });
         await Cart.deleteOne({_id: order.cartId});
-        const form = `'<form method='POST' id='paymentid' action='${req.params.lang}/cart/success'></form>'`;
-        return form;
+
+        return `<form method='POST' id='paymentid' action='${req.params.lang ? `/${req.params.lang}` : ''}/cart/success'></form>`;
     } catch (err) {
         return err;
     }
