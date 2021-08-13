@@ -106,19 +106,6 @@ const validateUserAuthWithoutPostBody = async (user, id) => {
 };
 
 /**
- * Validate user is allowed without PostBody for order
- */
-const validateUserOrder = async (user, order) => {
-    if (!user) throw NSErrors.AccessUnauthorized;
-    if (user.isAdmin) return order;
-    if (!order) order = {};
-    if (order.customer.id !== user.id) {
-        throw NSErrors.AccessUnauthorized;
-    }
-    return order;
-};
-
-/**
  * Check if admin
  * @deprecated use `req.info.isAdmin` instead
  */
@@ -136,7 +123,6 @@ module.exports = {
     validateUserIsAllowed,
     validateUserIsAllowedWithoutPostBody,
     validateUserAuthWithoutPostBody,
-    validateUserOrder,
     isAdmin,
     IsAuthenticate,
     getDecodedToken,

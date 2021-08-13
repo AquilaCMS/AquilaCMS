@@ -29,7 +29,7 @@ module.exports = function (app) {
     app.post('/v2/order/:id', getOrderById);
     app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
-    app.put('/v2/order', authentication, setOrder);
+    app.put('/v2/order', adminAuth, setOrder);
 
     // Deprecated
     app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
@@ -61,9 +61,8 @@ async function getOrders(req, res, next) {
 async function setOrder(req, res, next) {
     // We update the order
     try {
-        let order = req.body.order;
-        if (order._id) {
-            order        = await ServiceAuth.validateUserOrder(req.info, req.body.order);
+        if (req.body.order._id) {
+            const order  = req.body.order;
             const result = await ServiceOrder.setOrder(order);
             return res.json(result);
         }
