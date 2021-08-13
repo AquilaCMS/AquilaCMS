@@ -892,14 +892,18 @@ const controlAllProducts = async (option) => {
 
         // AutoFix :
         try {
-            if (fixAttributs) {await require('./devScripts').sortAttribs();}
+            if (fixAttributs) {
+                await require('./devFunctions').sortAttribs();
+            }
         } catch (ee) {
             returnErrors += `sortAttribs : ${ee.toString()}`;
         }
 
         return returnErrors + returnWarning;
     } catch (error) {
-        if (error.message) {return error.message;}
+        if (error.message) {
+            return error.message;
+        }
         return error;
     }
 };
