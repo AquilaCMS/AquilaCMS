@@ -7,7 +7,7 @@ const fileSystemBackend = require('i18next-fs-backend');
 const nextBuild = require('next/dist/build').default;
 const modulesUtils = require('../../utils/modules');
 const serverUtils = require('../../utils/server')
-const dev = !serverUtils.isProd;
+const dev = serverUtils.dev;
 
 const themeName = path.basename(__dirname);
 const pathToTheme = path.join(global.appRoot, "themes", themeName, "/");
