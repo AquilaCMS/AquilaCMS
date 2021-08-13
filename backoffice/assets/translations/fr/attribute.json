@@ -35,6 +35,7 @@
         "attributeNotExist": "Cet attribut n'existe pas",
         "saveDone": "Sauvegarde effectuée",
         "errorOccurred": "Une erreur est survenue",
+        "errorList": "Il y a des valeurs en double dans la liste !",
         "error": "Erreur",
         "deleteAttribute": "Attribut supprimé",
         "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres"

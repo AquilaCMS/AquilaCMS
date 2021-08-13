@@ -35,6 +35,7 @@
         "saveDone": "Backup performed",
         "attributeNotExist": "This attribute does not exist",
         "errorOccurred": "An error has occurred",
+        "errorList": "There are duplicate values in the list!",
         "error": "Error",
         "deleteAttribute": "Attribute deleted",
         "infoDispoFiltres": "Allows an attribute selection category to be visible in filters"
