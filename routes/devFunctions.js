@@ -6,9 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {adminAuth}        = require('../middleware/authentication');
-const servicesDevScripts = require('../services/devScripts');
-const {Configuration}    = require('../orm/models');
+const {adminAuth}          = require('../middleware/authentication');
+const servicesDevFunctions = require('../services/devFunctions');
+const {Configuration}      = require('../orm/models');
 
 module.exports = function (app) {
     app.get('/encryption/cipher', adminAuth, cipherPasswords);
@@ -16,7 +16,7 @@ module.exports = function (app) {
 };
 async function createModelData(req, res, next) {
     try {
-        await servicesDevScripts.createModelData();
+        await servicesDevFunctions.createModelData();
         res.status(200).end();
     } catch (err) {
         return next(err);

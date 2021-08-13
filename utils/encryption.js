@@ -48,7 +48,7 @@ const EncryptionConfigInfo = () => {
         - make an "encryption" object with "method" and "password"
         - method = see encryption list when starting the server
         - password = password used to generate the encryption key
-        If the fields to be encrypted are not, a route is available in "devScripts.js" :
+        If the fields to be encrypted are not, a route is available in "/routes/devFunctions.js" :
         /api/encryption/cipher`);
     console.info('Encryption list : ', crypto.getCiphers());
     // Tested with 'aes-256-cbc' : key/password length must be 32 char

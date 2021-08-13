@@ -125,11 +125,11 @@ const initServer = async () => {
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
-        if (dev) {
-            await serverUtils.hotReloadAPI(express, server);
-        }
-
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        if (dev) {
+            const {hotReloadAPI} = require('./services/devFunctions');
+            await hotReloadAPI(express, server, passport);
+        }
 
         if (compile) {
             if (!fs.existsSync(themeFolder)) {
