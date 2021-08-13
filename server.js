@@ -152,6 +152,11 @@ const initServer = async () => {
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        if (dev) {
+            const {hotReloadAPI} = require('./services/devFunctions');
+            await hotReloadAPI(express, server, passport);
+        }
+
         if (compile) {
             const {currentTheme} = global.envConfig.environment;
             const themeFolder    = path.join(global.appRoot, 'themes', currentTheme, '/');
