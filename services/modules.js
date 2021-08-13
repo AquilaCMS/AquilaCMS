@@ -811,36 +811,37 @@ const loadAdminModules = async () => {
         throw NSErrors.NotFound;
     }
     const tabM = [];
-    for (const module of modules) {
-        const item = {module: module.name, files: []};
+    for (const oneModule of modules) {
+        const item = {module: oneModule.name, files: []};
         try {
-            for (const files of await fs.readdir(path.resolve(`backoffice/app/${module.name}`))) {
+            const pathToModule = path.join(global.appRoot, 'backoffice', 'app', oneModule.name);
+            const listOfFiles  = await fs.readdir(pathToModule);
+            for (const files of listOfFiles) {
                 if (files.endsWith('.js')) {
                     item.files.push(files);
                 }
             }
             tabM.push(item);
         } catch (err) {
-            console.error(`Could not load module ${module.name}`);
+            console.error(`Could not load module ${oneModule.name}`);
             console.error(err);
 
             await require('./admin').insertAdminInformation({
-                code        : `module_${module.name}_missing`,
+                code        : `module_${oneModule.name}_missing`,
                 type        : 'danger',
                 translation : {
                     en : {
                         title : 'Module missing',
-                        text  : `The module <b>${module.name}</b> is installed, but his files are missing`
+                        text  : `The module <b>${oneModule.name}</b> is installed, but his files are missing`
                     },
                     fr : {
                         title : 'Module manquant',
-                        text  : `Le module <b>${module.name}</b> est installé, mais ces fichiers sont manquant`
+                        text  : `Le module <b>${oneModule.name}</b> est installé, mais ces fichiers sont manquant`
                     }
                 }
             });
         }
     }
-
     return tabM;
 };
 
