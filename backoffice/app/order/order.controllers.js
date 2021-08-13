@@ -169,12 +169,16 @@ OrderControllers.controller("OrderDetailCtrl", [
             return displayHtml;
         }
 
-        function checkOrderSatus() {
+        $scope.checkOrderStatus = function () {
             if (!([orderStatuses.PAID, orderStatuses.PROCESSED, orderStatuses.PROCESSING, orderStatuses.DELIVERY_PROGRESS, orderStatuses.FINISHED]).includes($scope.order.status)) {
                 const index = $scope.orderStatus.findIndex(oneStatus => oneStatus.code === orderStatuses.BILLED);
                 if(index > -1){
                     $scope.orderStatus.splice(index, 1);
                 }
+            } else 
+            // we add back the BILLED status into the select box status
+            if (!$scope.orderStatus.find(oneStatus => oneStatus.code === orderStatuses.BILLED)) {
+                $scope.orderStatus = [...NSConstants.orderStatus.translation[$rootScope.adminLang]]
             }
         }
 
@@ -202,7 +206,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                     });
                 }
                 $scope.status = $scope.order.status;
-                checkOrderSatus()
+                $scope.checkOrderStatus()
                 Object.keys($scope.order.addresses).forEach(function (typeNameAdress) {
                     if(typeof $scope.order.addresses[typeNameAdress].country === "undefined" || $scope.order.addresses[typeNameAdress].country === null) {
                         ClientCountry.query({PostBody: {filter: {code: $scope.order.addresses[typeNameAdress].isoCountryCode}}}, function (response) {
@@ -411,8 +415,8 @@ OrderControllers.controller("OrderDetailCtrl", [
                         Orders.list({PostBody: {filter: {_id: $routeParams.orderId}}, limit: 1, structure: '*', populate: ['items.id']}, function (response) {
                             $scope.order = response.datas[0];
                             $scope.status = $scope.order.status;
+                            $scope.checkOrderStatus()
                         });
-                        checkOrderSatus()
                         $scope.editStatus = false;
                         d.resolve();
                     }, function (err)
@@ -539,6 +543,7 @@ OrderControllers.controller("OrderDetailCtrl", [
                 populate: ['items.id']
             }, function (response) {
                 $scope.order = response
+                $scope.checkOrderStatus()
             }, function (error) {
                 toastService.toast("danger", $translate.instant("global.standardError"));
                 console.error(error);
