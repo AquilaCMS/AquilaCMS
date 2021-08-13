@@ -38,8 +38,7 @@ InvoiceController.controller("InvoicesController", [
                 responseType: 'blob'
             }).success(function (data, status, headers) {
                 headers = headers();
-
-                let filename = 'facture.pdf';
+                let filename = `bill-${invoice.facture}.pdf`;
                 let contentType = headers['content-type'];
 
                 let linkElement = document.createElement('a');
