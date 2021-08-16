@@ -136,7 +136,7 @@ const initFrontFramework = async (themeName = null) => {
             server.use('/', express.static(pathToPages));
         }
     } else {
-        console.error('Error with the theme, the type of your theme is not correct');
+        throw 'Error with the theme, the type of your theme is not correct';
     }
 };
 
@@ -167,9 +167,11 @@ const initServer = async () => {
             try {
                 await initFrontFramework(currentTheme); // we compile the front
             } catch (e) {
+                server.use('/', (req, res) => res.end('Theme start fail - Please configure or compile your front-end'));
                 console.error(`Theme start fail : ${e}`);
             }
         } else {
+            server.use('/', (req, res) => res.end('No compilation for the theme'));
             console.log('%s@@ No compilation for the theme %s', '\x1b[32m', '\x1b[0m');
         }
     } else {
