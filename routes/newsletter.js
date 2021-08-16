@@ -51,8 +51,8 @@ async function getDistinctNewsletters(req, res, next) {
  */
 async function getNewsletterByEmail(req, res, next) {
     try {
-        // check if email is the same as the current user
-        if (req.info.email !== req.params.email) {
+        // check if email is the same as the current user or is admin
+        if (req.info.email !== req.params.email && !req.info.isAdmin) {
             throw NSErrors.AccessUnauthorized;
         }
 
