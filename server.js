@@ -52,6 +52,11 @@ process.on('unhandledRejection', (reason, promise) => {
     if (dev) process.exit(1);
 });
 
+process.on('exit', (code) => {
+    console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+    console.trace();
+});
+
 const init = async () => {
     await serverUtils.getOrCreateEnvFile();
     require('./utils/logger')();
