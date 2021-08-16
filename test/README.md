@@ -50,6 +50,8 @@ AQUILA_ENV="test"
 npm run test
 # OR
 yarn test
+# OR
+export NODE_ENV="test" && export AQUILA_ENV="test" && npm run test
 ```
 
 ### Run one test

@@ -53,8 +53,10 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 process.on('exit', (code) => {
-    console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
-    console.trace();
+    if (process.env.AQUILA_ENV !== 'test') { // remove log if in "test"
+        console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+        console.trace();
+    }
 });
 
 const init = async () => {
