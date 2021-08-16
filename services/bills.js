@@ -199,7 +199,7 @@ const generatePDF = async (PostBody, codeCmsBlocks = 'invoice') => {
     };
     await aquilaEvents.emit('generatePDF_overrideData', dataToReplace);
     const newData = dataToReplace.datas || {};
-    let content   = generateHTML(html.translation[bill.lang].content, newData);
+    let content   = generateHTML(html.translation[bill.lang].html, newData);
     let items     = '';
     // eslint-disable-next-line no-useless-escape
     const itemTemplate = content.match(new RegExp(/\<\!\-\-startitems\-\-\>(.|\n)*?\<\!\-\-enditems\-\-\>/, 'g'));
