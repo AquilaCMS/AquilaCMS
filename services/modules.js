@@ -449,7 +449,7 @@ const activateModule = async (idModule, toBeChanged) => {
         await addOrRemoveThemeFiles(
             path.resolve(global.appRoot, 'modules', myModule.name, 'theme_components'),
             false,
-            myModule.types ? myModule.types : (myModule.type ? myModule.type : '')
+            myModule.types || myModule.type || ''
         );
         await myModule.updateOne({$push: {files: copyTab}, active: true});
         console.log('Module activated');
@@ -480,7 +480,7 @@ const deactivateModule = async (idModule, toBeChanged, toBeRemoved) => {
             await addOrRemoveThemeFiles(
                 path.resolve(global.appRoot, _module.path, 'theme_components'),
                 true,
-                _module.types ? _module.types : (_module.type ? _module.type : '')
+                _module.types || _module.type || ''
             );
         } catch (error) {
             console.error(error);
@@ -811,36 +811,37 @@ const loadAdminModules = async () => {
         throw NSErrors.NotFound;
     }
     const tabM = [];
-    for (const module of modules) {
-        const item = {module: module.name, files: []};
+    for (const oneModule of modules) {
+        const item = {module: oneModule.name, files: []};
         try {
-            for (const files of await fs.readdir(path.resolve(`backoffice/app/${module.name}`))) {
+            const pathToModule = path.join(global.appRoot, 'backoffice', 'app', oneModule.name);
+            const listOfFiles  = await fs.readdir(pathToModule);
+            for (const files of listOfFiles) {
                 if (files.endsWith('.js')) {
                     item.files.push(files);
                 }
             }
             tabM.push(item);
         } catch (err) {
-            console.error(`Could not load module ${module.name}`);
+            console.error(`Could not load module ${oneModule.name}`);
             console.error(err);
 
             await require('./admin').insertAdminInformation({
-                code        : `module_${module.name}_missing`,
+                code        : `module_${oneModule.name}_missing`,
                 type        : 'danger',
                 translation : {
                     en : {
                         title : 'Module missing',
-                        text  : `The module <b>${module.name}</b> is installed, but his files are missing`
+                        text  : `The module <b>${oneModule.name}</b> is installed, but his files are missing`
                     },
                     fr : {
                         title : 'Module manquant',
-                        text  : `Le module <b>${module.name}</b> est installé, mais ces fichiers sont manquant`
+                        text  : `Le module <b>${oneModule.name}</b> est installé, mais ces fichiers sont manquant`
                     }
                 }
             });
         }
     }
-
     return tabM;
 };
 
@@ -875,9 +876,14 @@ const setConfig = async (name, newConfig) => {
  * @deprecated
  */
 const getModuleMd = async (body) => {
-    if (!body.moduleName) throw NSErrors.InvalidParameters;
-    if (!fs.existsSync(`modules/${body.moduleName}/README.md`)) return '';
-    const text = await fs.readFileSync(`modules/${body.moduleName}/README.md`, 'utf8');
+    if (!body.moduleName) {
+        throw NSErrors.InvalidParameters;
+    }
+    const pathToMd = path.join(global.appRoot, 'modules', body.moduleName, 'README.md');
+    let text       = '';
+    if (fs.existsSync(pathToMd)) {
+        text = await fs.readFileSync(pathToMd, 'utf8');
+    }
     return text;
 };
 

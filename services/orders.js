@@ -250,9 +250,13 @@ const rma = async (orderId, returnData, lang) => {
     const upd = {rma: returnData};
 
     if (returnData.refund > 0 && returnData.mode !== '') {
-        const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-        if (paymentMethod.isDeferred) {
+        let name            = returnData.mode.toLowerCase(); // if not in PaymentsMethods, we take the name here
+        const paymentMethod = await PaymentMethods.findOne({code: name});
+        if (paymentMethod && paymentMethod.isDeferred) {
             returnData.isDeferred = paymentMethod.isDeferred;
+            if (paymentMethod.translation && paymentMethod.translation[lang]) {
+                name = paymentMethod.translation[lang].name || name;
+            }
         }
         upd.payment = {
             type          : 'DEBIT',
@@ -262,7 +266,7 @@ const rma = async (orderId, returnData, lang) => {
             transactionId : '',
             amount        : returnData.refund,
             comment       : returnData.comment,
-            name          : paymentMethod.translation[lang].name
+            name
         };
     }
 

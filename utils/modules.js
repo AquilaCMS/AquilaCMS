@@ -190,7 +190,7 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
  * Module : Load the init.js files of the modules if necessary
  * @param {any} server
  */
-const modulesLoadInit = async (server) => {
+const modulesLoadInit = async (server, runInit = true) => {
     const Modules  = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
     loadedModules  = [..._modules].map((lmod) => ({...lmod, init: true, valid: false}));
@@ -213,7 +213,9 @@ const modulesLoadInit = async (server) => {
                     throw new Error('Error checking licence');
                 }
                 loadedModules[i].valid = true;
-                require(initModuleFile)(server);
+                if (runInit) {
+                    require(initModuleFile)(server);
+                }
                 process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;

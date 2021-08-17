@@ -37,9 +37,18 @@ InvoiceController.controller("InvoicesController", [
                 headers: { 'Content-Type': 'application/json' },
                 responseType: 'blob'
             }).success(function (data, status, headers) {
+                $scope.disabledButton = false;
+                if (data.size === 0) {
+                    toastService.toast('danger', $translate.instant("global.apiError"));
+                    return;
+                } else if (data.size === 20 || data.size === 28) {
+                    data.text().then(msg => {
+                        toastService.toast('danger', msg);
+                    });
+                    return;
+                }
                 headers = headers();
-
-                let filename = 'facture.pdf';
+                let filename = `bill-${invoice.facture}.pdf`;
                 let contentType = headers['content-type'];
 
                 let linkElement = document.createElement('a');
@@ -55,7 +64,6 @@ InvoiceController.controller("InvoicesController", [
                         "bubbles": true,
                         "cancelable": false
                     });
-                    $scope.disabledButton = false;
                     linkElement.dispatchEvent(clickEvent);
                 } catch (ex) {
                     console.error(ex);

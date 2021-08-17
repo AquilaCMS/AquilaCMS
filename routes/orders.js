@@ -29,7 +29,7 @@ module.exports = function (app) {
     app.post('/v2/order/:id', getOrderById);
     app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
-    app.put('/v2/order', setOrder);
+    app.put('/v2/order', adminAuth, setOrder);
 
     // Deprecated
     app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
@@ -240,7 +240,7 @@ async function payOrder(req, res, next) {
     if (!order) {
         return next(NSErrors.OrderNotFound);
     }
-    const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
+    const query  = {...req.body.filterPayment};
     query.active = true;
     // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
     // Otherwise, we recover all the active payment methods
