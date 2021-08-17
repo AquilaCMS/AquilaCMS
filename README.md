@@ -102,8 +102,8 @@ npm run build:win --theme=default_theme
 
 > - Instead of `build:win` you can use `build:linux`
 > - At the variable `--theme` you need to put the name of the theme folder you want to build.
-> ⚠️Warning : on Windows, you must use not use the default cmd
-> Otherwise, you may get an error when using the `npm run build:win` command.
+> - ⚠️Warning : on Windows, you must **not use** the default cmd
+> - Otherwise, you may get an error when using the `npm run build:win` command.
 
 ## Documentations
 
