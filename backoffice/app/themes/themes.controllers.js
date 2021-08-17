@@ -34,12 +34,12 @@ ThemesController.controller("ThemesCtrl", [
         };
 
         $scope.LoadAllThemes = function () {
-            $scope.LoadThemeCongig();
+            $scope.LoadThemeConfig();
         }
 
         $scope.langChange = function (lang) {
             if ($scope.customiseTheme === undefined) {
-                $scope.LoadThemeCongig();
+                $scope.LoadThemeConfig();
             };
             if ($scope.customiseTheme !== undefined && $scope.themeConfig.variables[lang] !== undefined) {
                 $scope.customiseTheme.arrayGroup = [];
@@ -178,6 +178,7 @@ ThemesController.controller("ThemesCtrl", [
                     } else {
                         toastService.toast("success", $translate.instant("themes.copyThemeDataDone"));
                     }
+                    $scope.LoadThemeConfig(); // we reload config after reload demoData
                 }, function (err) {
                     $scope.isLoading = false;
                     toastService.toast("danger", err.data.message);
@@ -280,7 +281,7 @@ ThemesController.controller("ThemesCtrl", [
 
         }
 
-        $scope.LoadThemeCongig = function () {
+        $scope.LoadThemeConfig = function () {
             Themes.info({}, function (response) {
                 $scope.config = response.configEnvironment;
                 $scope.listThemeFiles = [];
