@@ -18,9 +18,9 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 
 To install the latest AquilaCMS, you need :
 
-- `node.js 14+` (tested in v14.17.1)
-- `mongoDB 4.2.5+`
-- `yarn 1.22.4+` package manager
+- [`node.js 14+`](https://nodejs.org/) (tested in v14.17.1)
+- [`mongoDB 4.2.5+`](https://www.mongodb.com/try/download)
+- [`yarn 1.22.4+`](https://classic.yarnpkg.com/en/docs/install/) package manager
 
 ### System packages
 
@@ -101,7 +101,7 @@ npm run build default_theme
 ```
 
 > - the parameter is the name of the theme folder you want to build
-> ⚠️Warning : on Windows, you must use Powershell
+> ⚠️Warning : on Windows, you must use not use the default cmd
 > Otherwise, you may get an error when using the `npm run build:win` command.
 
 ## Documentations

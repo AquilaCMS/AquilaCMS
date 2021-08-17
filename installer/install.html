@@ -170,6 +170,8 @@
             let form             = $("#secondStep");
             let loader           = document.getElementById("loading");
             let config           = document.getElementById("config");
+            let errorDiv         = document.getElementById("errorRecoverDiv");
+            let errorMsg         = document.getElementById("errorRecover");
             loader.style.display = 'block';
             config.style.display = 'none';
             $.ajax({
@@ -177,9 +179,12 @@
                 type: 'POST',
                 data: form.serialize(),
                 success: (response, status) => {
+                    errorDiv.style.display = "none";
                     window.location.href = `${window.location.origin}/`;
                 },
                 error: (response, status, error) => {
+                    errorDiv.style.display = "block";
+                    errorMsg.innerHTML = response.responseText;
                     loader.style.display = 'none';
                     config.style.display = 'block';
                     console.error(response, status, error);
@@ -451,6 +456,9 @@
                     <input class="mdl-textfield__input" type="text" id="envPath" name="envPath" required>
                     <label class="mdl-textfield__label" for="envPath">Path for the existing configuration</label>
                 </div>
+            </div>
+            <div class="mdl-card__supporting-text" style="display:none; margin:0px" id="errorRecoverDiv">
+                <p id="errorRecover" style="color:red"></p>
             </div>
             <div class="mdl-card__actions mdl-card--border" id="stepConfig">
                 <div class="mdl-layout__header-row" style="padding: 0px 40px 0 40px;">

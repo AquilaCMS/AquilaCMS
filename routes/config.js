@@ -32,7 +32,7 @@ module.exports = function (app) {
  */
 const getConfigTheme = async (req, res, next) => {
     try {
-        const data = serviceConfig.getConfigTheme();
+        const data = await serviceConfig.getConfigTheme();
         return res.json(data);
     } catch (err) {
         return next(err);

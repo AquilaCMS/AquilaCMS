@@ -116,7 +116,7 @@ const recoverConfiguration = async (req) => {
     let {envPath} = req.body;
 
     if (fs.existsSync(envPath)) {
-        throw new Error('env file doesn\'t exist or is not located in this folder');
+        throw new Error('Path is not correct');
     }
 
     if (path.extname(envPath) === '.js') {
