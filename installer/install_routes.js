@@ -32,6 +32,21 @@ const execScript = async (scriptPath) => {
     }
 };
 
+const getErrorText = (err) => {
+    let text = '';
+    if (err instanceof Error) {
+        text = err.toString(); // we can't stringify an error
+    } else {
+        text = 'Error :';
+        try {
+            text += JSON.stringify(err);
+        } catch (e) {
+            text += err.toString();
+        }
+    }
+    return text;
+};
+
 module.exports = (installRouter) => {
     installRouter.get('/', async (req, res, next) => {
         try {
@@ -61,7 +76,7 @@ module.exports = (installRouter) => {
             res.send(result);
         } catch (err) {
             console.error(err);
-            res.status(500).send(`Error : ${JSON.stringify(err)}`);
+            res.status(500).send(getErrorText(err));
 
             // Recreating the env.json 'empty'
             await fs.unlink('./config/env.json');
@@ -78,7 +93,7 @@ module.exports = (installRouter) => {
             res.send(result);
         } catch (err) {
             console.error(err);
-            res.status(500).send(`Error : ${JSON.stringify(err)}`);
+            res.status(500).send(getErrorText(err));
         }
     });
 
