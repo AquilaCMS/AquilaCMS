@@ -815,7 +815,11 @@ const loadAdminModules = async () => {
         const item = {module: oneModule.name, files: []};
         try {
             const pathToModule = path.join(global.appRoot, 'backoffice', 'app', oneModule.name);
-            const listOfFiles  = await fs.readdir(pathToModule);
+            const hasAccess    = await fs.hasAccess(pathToModule);
+            if (!hasAccess) {
+                throw `Can't access to ${pathToModule}`;
+            }
+            const listOfFiles = await fs.readdir(pathToModule);
             for (const files of listOfFiles) {
                 if (files.endsWith('.js')) {
                     item.files.push(files);
