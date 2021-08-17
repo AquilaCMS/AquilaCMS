@@ -106,16 +106,20 @@ const initFrontFramework = async (themeName = null) => {
         type = themeInfo.type;
     }
     server.use('/', middlewareServer.maintenance);
-
+    const color = '\x1b[36m'; // https://stackoverflow.com/a/41407246
     if (type === 'custom') {
+        console.log(`%s@@ ${themeName} is a custom theme (default type) %s`, color, '\x1b[0m');
         let handler;
         try {
             if (fs.existsSync(pathToInit)) {
                 const process = require('process');
                 process.chdir(pathToTheme); // protect require of the frontFrameWork
+                console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js %s`, color, '\x1b[0m');
                 const initFileOfConfig = require(pathToInit);
                 if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
+                    console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js => start() %s`, color, '\x1b[0m');
                     handler = await initFileOfConfig.start(server);
+                    console.log('%s@@ Theme started %s', color, '\x1b[0m');
                 } else {
                     throw "The 'themeInit.js' of your theme needs to export a start() function";
                 }
@@ -133,6 +137,7 @@ const initFrontFramework = async (themeName = null) => {
             throw 'Error loading the theme';
         }
     } else if (type === 'normal') {
+        console.log(`%s@@ ${themeName} is a normal theme %s`, color, '\x1b[0m');
         // normal type
         const pathToTheme = path.join(global.appRoot, 'themes', themeName, '/');
         if (fs.existsSync(pathToTheme)) {
