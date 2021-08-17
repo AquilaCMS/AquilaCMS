@@ -52,6 +52,13 @@ process.on('unhandledRejection', (reason, promise) => {
     if (dev) process.exit(1);
 });
 
+process.on('exit', (code) => {
+    if (process.env.AQUILA_ENV !== 'test') { // remove log if in "test"
+        console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+        console.trace();
+    }
+});
+
 const init = async () => {
     await serverUtils.getOrCreateEnvFile();
     require('./utils/logger')();
@@ -126,6 +133,10 @@ const initServer = async () => {
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        if (dev) {
+            const {hotReloadAPI} = require('./services/devFunctions');
+            await hotReloadAPI(express, server, passport);
+        }
 
         if (compile) {
             if (!fs.existsSync(themeFolder)) {

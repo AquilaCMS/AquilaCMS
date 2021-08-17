@@ -6,13 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceNewsletter = require('../services/newsletter');
+const ServiceNewsletter           = require('../services/newsletter');
+const {adminAuth, authentication} = require('../middleware/authentication');
+const NSErrors                    = require('../utils/errors/NSErrors');
 
 module.exports = function (app) {
-    app.post('/v2/newsletters', getNewsletters);
-    app.post('/v2/newsletter', getNewsletter);
-    app.post('/v2/newsletters/distinct', getDistinctNewsletters);
-    app.get('/v2/newsletter/:email', getNewsletterByEmail);
+    app.post('/v2/newsletters', adminAuth, getNewsletters);
+    app.post('/v2/newsletter', adminAuth, getNewsletter);
+    app.post('/v2/newsletters/distinct', adminAuth, getDistinctNewsletters);
+    app.get('/v2/newsletter/:email', authentication, getNewsletterByEmail);
     app.post('/v2/newsletter/:email', setStatusNewsletterByEmail);
 };
 
@@ -49,6 +51,11 @@ async function getDistinctNewsletters(req, res, next) {
  */
 async function getNewsletterByEmail(req, res, next) {
     try {
+        // check if email is the same as the current user or is admin
+        if (req.info.email !== req.params.email && !req.info.isAdmin) {
+            throw NSErrors.AccessUnauthorized;
+        }
+
         const result = await ServiceNewsletter.getNewsletterByEmail(req.params.email);
         return res.json(result);
     } catch (error) {

@@ -322,7 +322,8 @@ BundleProductControllers.controller("BundleProductCtrl", [
                 strInvalidFields = strInvalidFields.substring(0, strInvalidFields.length-2)
             }
             if(strInvalidFields != ""){
-                toastService.toast("danger", `Les informations saisies ne sont pas valides : ${strInvalidFields}`);
+                const text = $translate.instant("product.toast.notValid");
+                toastService.toast("danger", `${text} : ${strInvalidFields}`);
                 return;
             }
 
