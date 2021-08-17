@@ -129,7 +129,7 @@ const initFrontFramework = async (themeName = null) => {
                 }
             } else {
                 let msg = `Your theme (${themeName}) is loaded as a custom theme (default), it needs a 'themeInit.js' file\n`;
-                msg    += "You can also change or create a 'themeConfig.json' file in your theme";
+                msg    += "You can also change or create a 'infoTheme.json' file in your theme";
                 throw  msg;
             }
         } catch (errorInit) {
