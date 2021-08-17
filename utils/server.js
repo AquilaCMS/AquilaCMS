@@ -77,7 +77,10 @@ const getOrCreateEnvFile = async () => {
                     envFile = JSON.parse(envFile);
                 } catch (error) {
                     console.error('Access to the env file is possible but the file is invalid');
-                    throw new Error('Cannot read env.json');
+                    const newPathTemp = `${global.envPath}.temp`;
+                    await fs.writeFile(newPathTemp, envFile);
+                    console.error(`The content of ${global.envPath} has been copied to ${newPathTemp}`);
+                    envFile = {};
                 }
             }
             if (!envFile[getEnv('AQUILA_ENV')]) {
