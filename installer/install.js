@@ -49,7 +49,7 @@ const handleInstaller = async (middlewareServer, middlewarePassport, server, pas
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
-    require('../routes/install')(installRouter);
+    require('./install_routes')(installRouter);
     server.use('/', installRouter, (req, res, next) => {
         if (req.originalUrl !== '/' && req.originalUrl !== '/favicon.ico') {
             return res.status(301).redirect('/');
