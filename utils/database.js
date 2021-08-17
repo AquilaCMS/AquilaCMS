@@ -11,6 +11,13 @@ mongoose.set('debug', false);
 const NSErrors = require('./errors/NSErrors');
 let connection = false;
 
+const mongooseOptions = {
+    useNewUrlParser    : true,
+    useFindAndModify   : false,
+    useCreateIndex     : true,
+    useUnifiedTopology : true
+};
+
 const connect = async () => {
     if (!global.envFile || !global.envFile.db) {
         return mongoose;
@@ -25,12 +32,7 @@ const connect = async () => {
     if (!isConnected && !connection) {
         connection         = true;
         const checkConnect = async () => new Promise((resolve, reject) => {
-            mongoose.connect(global.envFile.db, {
-                useNewUrlParser    : true,
-                useFindAndModify   : false,
-                useCreateIndex     : true,
-                useUnifiedTopology : true
-            }, (error) => {
+            mongoose.connect(global.envFile.db, mongooseOptions, (error) => {
                 if (typeof error === 'undefined' || error === null) {
                     resolve(true);
                 } else {
@@ -47,12 +49,7 @@ const connect = async () => {
 
 const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
     mongoose.connection.close(); // need to reset the connection mongo for every try
-    mongoose.connect(uriDatabase, {
-        useNewUrlParser    : true,
-        useFindAndModify   : false,
-        useCreateIndex     : false,
-        useUnifiedTopology : true
-    }, (error) => {
+    mongoose.connect(uriDatabase, mongooseOptions, (error) => {
         if (typeof error === 'undefined' || error === null) {
             resolve(true);
         } else {
