@@ -140,8 +140,9 @@ const deleteTheme = async (themePath) => {
     await removeConfigTheme(themePath);
     const complete_Path = `themes/${themePath}`;
     console.log(`Remove theme : ${complete_Path}...`);
-    if (await fs.hasAccess(path.join(global.appRoot, complete_Path))) {
-        await fs.deleteRecursive(path.join(global.appRoot, complete_Path));
+    const pathToTheme = path.join(global.appRoot, complete_Path);
+    if (await fs.hasAccess(pathToTheme)) {
+        await fs.deleteRecursive(pathToTheme);
     }
     console.log('Theme removed !');
 };
