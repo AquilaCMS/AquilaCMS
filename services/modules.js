@@ -596,7 +596,7 @@ const removeModule = async (idModule) => {
  * Module : Before loading front's module, need to create '\themes\ {theme_name}\modules\list_modules.js'and populate it
  */
 const setFrontModules = async (theme) => {
-    console.log('Set module\'s front files...');
+    console.log("Set module's front files : Loading ...");
     // Create the file if it does not exist, or reinit of the file
     await modulesUtils.createListModuleFile(theme || global.envConfig.environment.currentTheme);
 
@@ -612,6 +612,7 @@ const setFrontModules = async (theme) => {
             await setFrontModuleInTheme(oneModule.path, theme || global.envConfig.environment.currentTheme);
         }
     }
+    console.log("Set module's front files : Done");
 };
 
 /**
@@ -641,15 +642,16 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         if (!file.startsWith('Module') || !file.endsWith('.js')) {
             continue;
         }
-        const info = await fs.readFile(path.resolve(savePath, 'info.json'));
-        let type   = JSON.parse(info).info.type;
-        if (JSON.parse(info).info.types && Array.isArray(JSON.parse(info).info.types)) {
-            type = JSON.parse(info).info.types.find((t) => t.component === file).type;
+        const info       = await fs.readFile(path.join(savePath, 'info.json'));
+        const parsedInfo = JSON.parse(info);
+        let type         = parsedInfo?.info?.type ? parsedInfo.info.type : 'global'; // global is the default type
+        if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
+            type = parsedInfo.info.types.find((t) => t.component === file).type;
         }
-        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> namecomponent
+        const fileNameWithoutModule = file.replace('Module', '').replace('.js', '').toLowerCase(); // ModuleComponentName.js -> componentname
         const jsxModuleToImport     = `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', type: '${type}' },`;
-        console.log( `{ jsx: require('./${file}'), code: 'aq-${fileNameWithoutModule}', ${type} },`);
-        const pathListModules = path.resolve(`themes/${currentTheme}/modules/list_modules.js`);
+        console.log(jsxModuleToImport);
+        const pathListModules = path.join(global.appRoot, 'themes', currentTheme, 'modules', 'list_modules.js');
         const result          = await fs.readFile(pathListModules, 'utf8');
 
         // file don't contain module name
