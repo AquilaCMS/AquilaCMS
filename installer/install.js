@@ -49,7 +49,7 @@ const handleInstaller = async (middlewareServer, middlewarePassport, server, pas
     middlewareServer.initExpress(server, passport);
     await middlewarePassport.init(passport);
     const installRouter = express.Router();
-    require('../routes/install')(installRouter);
+    require('./routes')(installRouter);
     server.use('/', installRouter, (req, res, next) => {
         if (req.originalUrl !== '/' && req.originalUrl !== '/favicon.ico') {
             return res.status(301).redirect('/');
@@ -126,7 +126,8 @@ const recoverConfiguration = async (req) => {
         await fs.unlink(envPath);
         envPath = `${envPath}on`;
     }
-    await fs.writeFile('./config/envPath', envPath);
+    const envPathFile = path.join(global.appRoot, 'config', 'envPath');
+    await fs.writeFile(envPathFile, envPath);
     global.envPath = envPath;
     global.envFile = JSON.parse(await fs.readFile(envPath))[serverUtils.getEnv('AQUILA_ENV')];
     console.log('Installer : finish fetching new env path');
