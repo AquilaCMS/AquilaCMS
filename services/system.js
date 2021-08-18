@@ -37,15 +37,16 @@ const getLogsContent = async (fileName) => {
 };
 
 const getNextVersion = async () => {
-    const datas = {};
-    if (fs.existsSync(path.join(global.appRoot, 'yarn.lock'))) {
-        const result = await packageManager.execSh('yarn', ['info', 'next', 'versions', '--json']);
+    const datas       = {};
+    const pathToTheme = path.join(global.appRoot, 'themes', global?.envConfig?.environment?.currentTheme);
+    if (fs.existsSync(path.join(pathToTheme, 'yarn.lock'))) {
+        const result = await execCommand('yarn', ['info', 'next', 'versions', '--json']);
         let data     = result.stdout.split('}\n{');
         data         = data[data.length - 1];
         if (!data.startsWith('{')) {
             data = `{${data}`;
         }
-        let currentVersion = await packageManager.execSh('yarn', ['list', '--pattern', 'next', '--json']);
+        let currentVersion = await execCommand('yarn', ['list', '--pattern', 'next', '--json']);
         currentVersion     = JSON.parse(currentVersion.stdout).data.trees;
         for (const elem of currentVersion) {
             if (elem.name.startsWith('next@')) {
@@ -57,8 +58,8 @@ const getNextVersion = async () => {
         datas.actual   = currentVersion.slice(5);
         datas.versions = JSON.parse(data).data;
     } else {
-        const nextInstalledVersion = await packageManager.execSh('npm', ['ls', 'next', '--json']);
-        const listNextVersion      = await packageManager.execSh('npm', ['view', 'next', '--json']);
+        const nextInstalledVersion = await execCommand('npm', ['ls', 'next', '--json']);
+        const listNextVersion      = await execCommand('npm', ['view', 'next', '--json']);
         datas.actual               = JSON.parse(nextInstalledVersion.stdout).dependencies.next.version;
         datas.versions             = JSON.parse(listNextVersion.stdout).versions;
     }
@@ -69,12 +70,19 @@ const changeNextVersion = async (body) => {
     const {nextVersion} = body;
     if (!nextVersion) throw NSErrors.UnprocessableEntity;
     let result;
-    if (fs.existsSync(path.join(global.appRoot, 'yarn.lock'))) {
-        result = await packageManager.execSh('yarn', ['add', `next@${nextVersion}`]);
+    const pathToTheme = path.join(global.appRoot, 'themes', global?.envConfig?.environment?.currentTheme, '/');
+    if (fs.existsSync(path.join(pathToTheme, 'yarn.lock'))) {
+        result = await execCommand('yarn', ['add', `next@${nextVersion}`]);
     } else {
-        result = await packageManager.execSh('npm', ['install', `next@${nextVersion}`]);
+        result = await execCommand('npm', ['install', `next@${nextVersion}`]);
     }
     if (result.code !== 0) throw NSErrors.InvalidRequest;
+};
+
+const execCommand = async (cmd, args) => {
+    const pathToTheme = path.join(global.appRoot, 'themes', global?.envConfig?.environment?.currentTheme, '/');
+    const res         = await packageManager.execSh(cmd, args, pathToTheme);
+    return res;
 };
 
 module.exports = {
