@@ -102,7 +102,7 @@ npm run build default_theme
 
 > - the parameter is the name of the theme folder you want to build
 > ⚠️Warning : on Windows, you must **not use** the default cmd
-> Otherwise, you may get an error when using the `npm run build:win` command.
+> Otherwise, you may get an error when using the `npm run build` command.
 
 ## Documentations
 
