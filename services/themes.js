@@ -354,6 +354,12 @@ async function buildTheme(theme) {
             await createDynamicLangFile();
         }
         const returnValues = await themesUtils.yarnBuildCustom(theme);
+        if (returnValues?.stdout === 'Build failed') {
+            return {
+                msg    : 'KO',
+                result : returnValues
+            };
+        }
         return {
             msg    : 'OK',
             result : returnValues
