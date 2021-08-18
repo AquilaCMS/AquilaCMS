@@ -27,34 +27,29 @@ const CSS_FOLDERS = [
  * Set theme
  * @param {string} selectedTheme Name of the selected theme
  */
-const changeTheme = async (selectedTheme) => {
+const changeTheme = async (selectedTheme, type) => {
     const oldConfig = await Configuration.findOne({});
-
     // If the theme has changed
-    if (oldConfig.environment.currentTheme !== selectedTheme) {
-        console.log(`Setup selected theme: ${selectedTheme}`);
-        const returnObject = {
-            message : '',
-            success : true
-        };
-        try {
+    const returnObject = {
+        message : '',
+        success : true
+    };
+    try {
+        if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
+            console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
             await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}}); // TODO : maybe move this call after buildTheme()
             await require('./modules').setFrontModules(selectedTheme);
-            // eslint-disable-next-line
-            const out      = await installDependencies(selectedTheme);
-            const buildRes = await buildTheme(selectedTheme);
-            if (buildRes.msg === 'KO') {
-                returnObject.message = 'Theme is selected but theme build fail';
-                returnObject.success = false;
-            }
+            return returnObject;
+        } if (type === 'after') {
             await updateService.setMaintenance(false);
-        } catch (err) {
-            console.error(err);
-            returnObject.message = err;
-            returnObject.success = false;
+            returnObject.msg = 'OK';
             return returnObject;
         }
+    } catch (err) {
+        console.error(err);
+        returnObject.message = err;
+        returnObject.success = false;
         return returnObject;
     }
     throw NSErrors.SameTheme;

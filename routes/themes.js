@@ -20,7 +20,7 @@ module.exports = function (app) {
     app.get('/v2/themes/css/:cssName',     adminAuth, getCustomCss);
     app.post('/v2/themes/css/:cssName',    adminAuth, postCustomCss);
     app.get('/v2/themes/css',              adminAuth, getAllCssComponentName);
-    app.post('/v2/themes/save',            adminAuth, save);
+    app.post('/v2/themes/save/:type',      adminAuth, save);
     app.post('/v2/themes/package/install', adminAuth, packageInstall);
     app.post('/v2/themes/package/build',   adminAuth, buildTheme);
     app.get('/v2/themes/informations',     adminAuth, getThemeInformations);
@@ -32,7 +32,8 @@ module.exports = function (app) {
 async function save(req, res, next) {
     req.setTimeout(300000);
     try {
-        const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme);
+        const type       = req.params.type;
+        const sauvegarde = await themesServices.changeTheme(req.body.environment.currentTheme, type);
         res.send({data: sauvegarde});
     } catch (err) {
         next(err);

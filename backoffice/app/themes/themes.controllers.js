@@ -236,67 +236,91 @@ ThemesController.controller("ThemesCtrl", [
                     console.log(err);
                 });
             } else {
-                ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldAdmin) {
-                    if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
+                $scope.saveTheme();
+            }
+        }
+
+        $scope.saveTheme = function () {
+            ConfigV2.get({ PostBody: { structure: { environment: 1 } } }, function (oldAdmin) {
+                if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
+                    $scope.showLoading2 = true;
+                    $scope.showThemeLoading = true;
+                    if (confirm($translate.instant("confirm.changeTheme"))) {
                         $scope.showLoading2 = true;
-                        $scope.showThemeLoading = true;
-                        if (confirm($translate.instant("confirm.changeTheme"))) {
-                            $scope.showLoading2 = true;
-                            Themes.save({ environment: $scope.config.environment }, function (response) {
-                                $scope.showLoading2 = false;
-                                if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
-                                    if (response.data.success == true) {
-                                        toastService.toast("success", $translate.instant("global.success"));
-                                    } else {
-                                        if (response.data.message) {
-                                            toastService.toast("warning", response.data.message);
-                                        }
+                        Themes.save({ environment: $scope.config.environment }, function () {
+                            // yarn install
+                            Themes.packageInstall({
+                                themeName: $scope.config.environment.currentTheme,
+                                devDependencies: false
+                            }, function () {
+                                // we build the theme
+                                Themes.packageBuild({ themeName: $scope.config.environment.currentTheme }, function (rep) {
+                                    // build done;
+                                    if (rep.msg === "KO") {
+                                        toastService.toast("danger", $translate.instant("global.standardError"));
                                     }
-                                    $scope.showThemeLoading = false;
-                                    $scope.showLoading2 = false;
-                                    $scope.showLoading = true;
-                                    $scope.progressValue = 0;
-                                    $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
-                                    $http.get("/restart");
-                                    var timerRestart = $interval(function () {
-                                        $scope.progressValue++;
-
-                                        if ($scope.progressValue == 100) {
-                                            setTimeout(function () {
-                                                location.href = window.location = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
-                                            }, 7000);
+                                    Themes.saveAfter({ environment: $scope.config.environment }, function (response) {
+                                        if (oldAdmin.currentTheme !== $scope.config.environment.currentTheme) {
+                                            if (response.data.success == true) {
+                                                toastService.toast("success", $translate.instant("global.success"));
+                                            } else {
+                                                if (response.data.message) {
+                                                    toastService.toast("warning", response.data.message);
+                                                }
+                                            }
+                                            handleError() // to remove loadings
+                                            reloadServer();
+                                        } else {
+                                            window.location.reload(true);
                                         }
-
-                                        if ($scope.progressValue >= 110) {
-                                            $interval.cancel(timerRestart);
-                                        }
-                                    }, 250);
-                                } else {
-                                    window.location.reload(true);
-                                }
-                                $scope.showThemeLoading = false;
-                                $scope.showLoading2 = false;
-                            }, function (err) {
-                                console.error(err);
-                                $scope.showLoading2 = false;
-                                $scope.showThemeLoading = false;
-                                if (err && err.data && err.data.message) {
-                                    toastService.toast("danger", err.data.message);
-                                } else {
-                                    toastService.toast("danger", $translate.instant("global.standardError"));
-                                }
-                            });
-                        } else {
-                            $scope.showThemeLoading = false;
-                            $scope.showLoading2 = false;
-                        }
+                                    }, handleError);
+                                }, function (error) {
+                                    handleError(error);
+                                    // obligate to remove maintenance mode
+                                    Themes.saveAfter({ environment: $scope.config.environment }, function () {
+                                    }, handleError);
+                                });
+                            }, handleError);
+                        }, handleError);
+                    } else {
+                        handleError();
                     }
-                }, function (error) {
-                    $scope.showThemeLoading = false;
-                    $scope.showLoading2 = false;
-                    console.error(error);
-                });
-            };
+                }
+            }, handleError);
+        }
+
+        function handleError(error) {
+            $scope.isLoading = false;
+            $scope.showLoading2 = false;
+            $scope.showThemeLoading = false;
+            if (error) {
+                console.error(error);
+                if (error && error.data && error.data.message) {
+                    toastService.toast("danger", error.data.message);
+                } else {
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                }
+            }
+        }
+
+        function reloadServer() {
+            $scope.showLoading = true;
+            $scope.progressValue = 0;
+            $scope.urlRedirect = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+            $http.get("/restart");
+            var timerRestart = $interval(function () {
+                $scope.progressValue++;
+
+                if ($scope.progressValue == 100) {
+                    setTimeout(function () {
+                        location.href = window.location = buildAdminUrl($scope.config.environment.appUrl, $scope.config.environment.adminPrefix);
+                    }, 7000);
+                }
+
+                if ($scope.progressValue >= 110) {
+                    $interval.cancel(timerRestart);
+                }
+            }, 250);
         }
 
         $scope.LoadThemeConfig = function () {
