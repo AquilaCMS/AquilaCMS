@@ -19,7 +19,7 @@ const MailTypeSchema = new Schema({
 });
 
 MailTypeSchema.pre('validate', function (next) {
-    if (this.code === undefined || this.code == null || (this.code === '' && this.translation.fr.name !== 'Aucun type')) {
+    if (this.code === undefined || this.code == null) {
         next(new Error('mailtype.code is empty'));
     }
     next();
