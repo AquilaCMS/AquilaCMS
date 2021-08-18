@@ -50,7 +50,12 @@ ProductSimpleSchema.methods.updateData = async function (data) {
             }
         }
     }
-
+    if (!data.set_options || data.set_options === '') {
+        data.set_options = null;
+    }
+    if (!data.options) {
+        data.options = [];
+    }
     reviewService.computeAverageRateAndCountReviews(data);
     if (!data._id) {
         data._id = this._id;

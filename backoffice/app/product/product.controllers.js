@@ -460,7 +460,7 @@ ProductControllers.controller("nsProductOptions", [
                 if (typeof $scope.product.options === "undefined" || $scope.product.options === null) {
                     $scope.product.options = [];
                 }
-                $scope.product.options = $scope.optionsSet.options;
+                $scope.product.options = $scope.optionsSet.options || [];
             }
         };
 

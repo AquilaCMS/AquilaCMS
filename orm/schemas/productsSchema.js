@@ -67,7 +67,7 @@ const ProductsSchema = new Schema({
     options     : [
         {
             id        : {type: ObjectId, ref: 'options', index: true},
-            code      : {type: String, required: true, unique: true},
+            code      : {type: String, required: true},
             mandatory : {type: Boolean},
             name      : {},
             type      : {

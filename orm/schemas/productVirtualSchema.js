@@ -28,6 +28,12 @@ ProductVirtualSchema.methods.updateData = async function (data) {
     };
     reviewService.computeAverageRateAndCountReviews(data);
     try {
+        if (!data.set_options || data.set_options === '') {
+            data.set_options = null;
+        }
+        if (!data.options) {
+            data.options = [];
+        }
         const updPrd = await this.model('VirtualProduct').findOneAndUpdate({_id: this._id}, {$set: data}, {new: true});
         return updPrd;
     } catch (error) {

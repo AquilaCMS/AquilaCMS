@@ -34,7 +34,16 @@ const setOptionsSet = async function (optionsSet) {
         throw NSErrors.UnprocessableEntity;
     }
     if (typeof optionsSet._id !== 'undefined') {
-        return OptionsSet.findOneAndUpdate({_id: optionsSet._id}, optionsSet);
+        const savedSet           = await OptionsSet.findOneAndUpdate({_id: optionsSet._id}, optionsSet);
+        const optionsSetPopulate = await getOptionsSet({
+            PostBody : {
+                _id       : savedSet._id,
+                structure : '*',
+                populate  : ['options']
+            }
+        });
+        await Products.updateMany({set_options: savedSet._id}, {$set: {set_options: savedSet._id, options: optionsSetPopulate.options}});
+        return optionsSetPopulate;
     }
     return OptionsSet.create(optionsSet);
 };
