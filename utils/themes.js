@@ -61,6 +61,13 @@ const yarnBuildCustom = async (themeName = '') => {
         if (fs.existsSync(pathToInit)) {
             const process = require('process');
             process.chdir(linkToTheme); // protect require of the frontFrameWork
+            // remove cache of themes...
+            const pathToAllThemes = path.join(global.appRoot, 'themes');
+            Object.keys(require.cache).forEach(function (cachedPath) {
+                if (cachedPath.startsWith(pathToAllThemes)) {
+                    delete require.cache[cachedPath];
+                }
+            });
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
                 returnValues = await initFileOfConfig.build();
