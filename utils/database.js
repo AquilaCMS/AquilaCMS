@@ -30,10 +30,10 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        connection         = true;
         const checkConnect = async () => new Promise((resolve, reject) => {
             mongoose.connect(global.envFile.db, mongooseOptions, (error) => {
                 if (typeof error === 'undefined' || error === null) {
+                    connection = true;
                     resolve(true);
                 } else {
                     reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
