@@ -108,6 +108,43 @@ const yarnBuild = async (themeName = '') => {
 };
 
 /**
+ * Create a .yarnclean file to delete the contents of a node_modules folder
+ */
+const yarnDeleteNodeModulesContent = async (themeName = '') => {
+    let returnValues;
+    const linkToTheme = path.join(global.appRoot, 'themes', themeName);
+    const themePath   = path.join(linkToTheme, '/');
+    try {
+        const createYarnCleanFile = await packageManager.execCmd('yarn autoclean --init', themePath);
+        if (createYarnCleanFile) {
+            const yarnCleanFilePath = path.join(themePath, '.yarnclean');
+            fs.truncateSync(yarnCleanFilePath, 0);
+            fs.writeFileSync(yarnCleanFilePath, '*');
+            const deleteNodeModulesContent = await packageManager.execCmd('yarn autoclean --force', themePath);
+            if (deleteNodeModulesContent) {
+                returnValues = {stdout: `The contents of the ${themeName} node_modules folder has been deleted`};
+            } else {
+                returnValues = {
+                    stdout : `Error when deleting the contents of the node_modules folder from ${themeName}`,
+                    stderr : `Error when deleting the contents of the node_modules folder from ${themeName}`
+                };
+            }
+        } else {
+            returnValues = {
+                stdout : 'Yarn autoclean --init command failed',
+                stderr : 'Yarn autoclean --init command failed'
+            };
+        }
+    } catch (e) {
+        returnValues = {
+            stdout : 'Node modules deletion failed',
+            stderr : e
+        };
+    }
+    return returnValues;
+};
+
+/**
  * @description loadThemeConfig
  * @param theme : String Theme selectionné
  */
@@ -129,5 +166,6 @@ module.exports = {
     yarnBuildCustom,
     yarnInstall,
     yarnBuild,
+    yarnDeleteNodeModulesContent,
     loadInfoTheme
 };

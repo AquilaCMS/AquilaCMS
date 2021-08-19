@@ -137,6 +137,8 @@ const deleteTheme = async (themePath) => {
     console.log(`Remove theme : ${complete_Path}...`);
     const pathToTheme = path.join(global.appRoot, complete_Path);
     if (await fs.hasAccess(pathToTheme)) {
+        const nodeModulesContent = await themesUtils.yarnDeleteNodeModulesContent(themePath);
+        console.log(nodeModulesContent.stdout);
         await fs.deleteRecursive(pathToTheme);
     }
     console.log('Theme removed !');
