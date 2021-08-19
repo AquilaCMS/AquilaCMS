@@ -64,6 +64,7 @@
     {
       "_id": "5b7ea55c09c72307ffb3c7dd",
       "code": "cookie-banner",
+      "group": "legal",
       "active": true,
       "translation": {
         "en": {
@@ -79,6 +80,7 @@
     {
       "_id": "5ba372cb49ceac42b4a1686c",
       "code": "legalTxt",
+      "group": "legal",
       "active": true,
       "translation": {
         "en": {
@@ -94,6 +96,7 @@
     {
       "_id": "5e29a422286b512918a391bb",
       "code": "invoice",
+      "group": "invoice",
       "active": false,
       "translation": {
         "fr": {
