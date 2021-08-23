@@ -70,6 +70,8 @@
                                            translate>category.detail.catalogue</label>
                                     <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'page'"
                                            translate>category.detail.page</label>
+                                    <label class="btn btn-primary" ng-model="category.action" style="margin-top:0px" btn-radio="'url'"
+                                           translate>category.detail.url</label>
                                 </div>
                             </td>
                         </tr>
@@ -79,17 +81,16 @@
                                 <input ng-model="category.translation[lang].name" class="form-control" />
                             </td>
                         </tr>
-                        <tr>
-                            <td ng-if="category.action != 'page'" translate>category.detail.metaDesc</td>
-                            <td ng-if="category.action != 'page'">
+                        <tr  ng-if="category.action == 'catalog'">
+                            <td translate>category.detail.metaDesc</td>
+                            <td>
                                 <input ng-model="category.translation[lang].metaDescription" class="form-control" />
                             </td>
                         </tr>
-                        <tr id="slug" ng-if="category.action != 'page'">
+                        <tr id="slug" ng-if="category.action == 'catalog'">
                             <td translate>category.detail.slugCat</td>
                             <td>
-                                <input ng-model="category.translation[lang].slug" class="form-control" pattern=".{3,}"
-                                       title="category.detail.t1" required />
+                                <input ng-model="category.translation[lang].slug" class="form-control" required/>
                             </td>
                         </tr>
                         <tr ng-if="category.action == 'page'">
@@ -101,6 +102,12 @@
                                     ng-options="page.translation[lang].slug as (page.translation[lang].title + ' (' + page.translation[lang].slug +')') group by getOptGroup(page.group) for page in pages | filter:exist"
                                     ng-model="category.translation[lang].pageSlug">
                                 </select>
+                            </td>
+                        </tr>
+                        <tr id="url" ng-if="category.action == 'url'">
+                            <td>URL</td>
+                            <td>
+                                <input ng-model="category.url" class="form-control" title="category.detail.t1" required />
                             </td>
                         </tr>
                         <tr>
