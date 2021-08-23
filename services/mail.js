@@ -594,6 +594,13 @@ const sendMailOrderToClient = async (order_id, lang = '') => {
         }
         content = content.replace(htmlItem, templateItems);
     }
+    const discountTemplate = content.match(new RegExp(/<!--startshowpromo-->(.|\n)*?<!--endshowpromo-->/, 'g'));
+    if (discountTemplate && discountTemplate[0]) {
+        const htmlDiscount = discountTemplate[0].replace('<!--startshowpromo-->', '').replace('<!--endshowpromo-->', '');
+        if (order.promos.length === 0) {
+            content = content.replace(htmlDiscount, '');
+        }
+    }
 
     const htmlBody = await generateHTML(content, mailDatas);
     return sendMail({subject, htmlBody, mailTo: order.customer.email, mailFrom: from, fromName, attachments});
