@@ -25,6 +25,7 @@
         "type": "Type",
         "catalogue": "Catalogue",
         "page": "Page",
+        "url": "URL",
         "slugPageCible": "Slug de la page cible",
         "vignette": "Vignette",
         "libelleSupp": "Libellé supplémentaire (obsolète)",
