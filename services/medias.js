@@ -187,7 +187,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         fileNameOption = '';
     }
     try {
-        //if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
+        // if (!ObjectID.isValid(_id)) {throw new Error('No image found');}
         switch (type) {
         // if a product image is requested
         case 'products':
@@ -258,7 +258,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         // if the cache folder does not exist, we create it
         await fsp.mkdir(cacheFolder, {recursive: true});
     } catch (err) {
-        fileName = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
+        fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
         filePath      = global.envConfig.environment.defaultImage; // global.envConfig.environment.defaultImage;
         filePathCache = path.join(cacheFolder, fileName);
     }
@@ -268,7 +268,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
         return filePathCache;
     }
     if (!(await utilsMedias.existsFile(filePath)) && global.envConfig.environment.defaultImage) {
-        fileName = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
+        fileName      = `default_image_cache_${size}${path.extname(global.envConfig.environment.defaultImage)}`;
         filePath      = global.envConfig.environment.defaultImage;
         filePathCache = path.join(cacheFolder, fileName);
     }
@@ -284,9 +284,7 @@ const getImagePathCache = async (type, _id, size, extension, quality = 80, optio
     // resize
         filePath = await utilsModules.modulesLoadFunctions('getFile', {
             key : filePath.substr(_path.length + 1).replace(/\\/g, '/')
-        }, () => {
-            return filePath;
-        });
+        }, () => filePath);
 
         try {
             sharpOptions.width  = Number(size.split('x')[0]);
@@ -674,9 +672,13 @@ const getImageStream = async (req, res) => {
             res.status(404);
             res.set('Content-Type', `image/${imagePath.split('.').pop()}`);
         }
-        if (await fsp.existsSync(imagePath) && !(await fsp.lstatSync(imagePath).isDirectory())) {
+        if (await fsp.existsSync(imagePath) && (await fsp.lstat(imagePath)).isFile()) {
             fsp.createReadStream(imagePath, {autoClose: true}).pipe(res);
+        } else {
+            res.status(404).send('Not found');
         }
+    } else {
+        res.status(404).send('Not found');
     }
 };
 
