@@ -472,6 +472,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 oneProduct.id = oneProduct.id._id;
             }
             CategoryV2.save(newCat, function (res) {
+                $scope.category = res;
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
                 toastService.toast("success", $translate.instant("category.detail.categorySaved"));
 

@@ -71,6 +71,10 @@ module.exports = {
         fr : 'Erreur interne',
         en : 'Internal error'
     },
+    CommandsMayNotInPath : {
+        fr : "La commande a échouée, cela peut arriver si la commande n'est pas dans la variable d'environnement (PATH)",
+        en : 'The command fails, this can happen if the command is not in the environment variable (PATH)'
+    },
     ServiceUnavailable : {
         fr : 'Le service est actuellement indisponible',
         en : 'Service is currently unavailable'

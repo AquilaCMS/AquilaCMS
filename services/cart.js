@@ -30,17 +30,13 @@ const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
 const queryBuilder     = new QueryBuilder(Cart, restrictedFields, defaultFields);
 
-const getCarts = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getCarts = async (PostBody) => queryBuilder.find(PostBody);
 
 /**
  * Get cart(s) for this client
  * @returns {Promise<mongoose.Document>}
  */
-const getCartforClient = async (idclient) => {
-    return Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
-};
+const getCartforClient = async (idclient) => Cart.find({'customer.id': mongoose.Types.ObjectId(idclient)});
 
 const getCartById = async (id, PostBody = null, user = null, lang = null, req = null) => {
     if (PostBody && PostBody.structure) {
@@ -59,7 +55,9 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle') {
+                    cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                }
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -143,7 +141,6 @@ const deleteCartItem = async (cartId, itemId) => {
         throw NSErrors.CartItemNotFound;
     }
 
-    ServicePromo.calculDiscount(cart);
     await cart.save();
     aquilaEvents.emit('aqReturnCart');
     cart = await Cart.findOne({_id: cart._id});
@@ -170,9 +167,7 @@ const addItem = async (req) => {
         for (const index of indexes) {
             if (
                 cart.items[index].type === 'bundle'
-                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => {
-                    return {bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]};
-                })) !== JSON.stringify(req.body.item.selections)
+                && JSON.stringify(cart.items[index].selections.toObject().map((elem) => ({bundle_section_ref: elem.bundle_section_ref, products: [elem.products[0]._id.toString()]}))) !== JSON.stringify(req.body.item.selections)
             // eslint-disable-next-line no-empty
             ) {
                 continue;
@@ -387,6 +382,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
         priceTotal.paidTax  = await checkCountryTax(cartObj, _user);
 
         const newOrder = {
+            ...cartObj,
             items          : cartObj.items.filter((it) => it.quantity > 0),
             promos         : cartObj.promos,
             cartId         : cartObj._id,
@@ -408,9 +404,6 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             orderReceipt    : cartObj.orderReceipt,
             additionnalFees : cartObj.additionnalFees
         };
-        if (_cart.schema.path('point_of_sale')) {
-            newOrder.point_of_sale = cartObj.point_of_sale;
-        }
         // If the method of receipt of the order is delivery...
         if (newOrder.orderReceipt.method === 'delivery') {
             if (!newOrder.addresses.billing) {
@@ -483,9 +476,7 @@ const removeOldCarts = async () => {
  * @param {Object} stock
  * @param {number} qty
  */
-const checkProductOrderable = (stock, qty) => {
-    return stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
-};
+const checkProductOrderable = (stock, qty) => stock.orderable && (stock.qty - stock.qty_booked - qty) >= 0;
 
 /**
  * Function to associate a user with a cart

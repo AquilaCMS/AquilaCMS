@@ -34,6 +34,7 @@ const CategoriesSchema = new Schema({
     // headerUrl    : {type: String},
     img          : {type: String},
     alt          : {type: String},
+    url          : {type: String},
     displayOrder : {type: Number, default: 99}, // Revoir la valeur par défaut
     filters      : {
         attributes : [
@@ -106,6 +107,45 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
         }
         if (updateQuery) {
             updateQuery.updateOne(self);
+        }
+    } else {
+        while (self.translation === undefined) {
+            self.translation = {};
+        }
+        let translationKeys = Object.keys(updateQuery.translation);
+        if (translationKeys.length === 0) {
+            self.translation[global.defaultLang] = {};
+            translationKeys                      = Object.keys(self.translation);
+        }
+        for (let i = 0; i < translationKeys.length; i++) {
+            const lang = updateQuery.translation[translationKeys[i]];
+
+            if (Object.keys(lang).length > 0) {
+                if (lang.slug === undefined || lang.slug === '') {
+                    lang.slug = utils.slugify(lang.name);
+                } else {
+                    lang.slug = utils.slugify(lang.slug);
+                }
+                if (lang.slug.length <= 2) {
+                    errors.push('slug trop court');
+                    return errors;
+                }
+                if (updateQuery) {
+                    updateQuery.translation[translationKeys[i]] = Object.assign(updateQuery.translation[translationKeys[i]], lang);
+                }
+                if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                    lang.slug = `${utils.slugify(lang.name)}_${Date.now()}`;
+                    if (await mongoose.model('categories').countDocuments({_id: {$ne: updateQuery._id}, [`translation.${translationKeys[i]}.slug`]: lang.slug}) > 0) {
+                        errors.push('slug déjà existant');
+                    }
+                }
+                errors = errors.concat(translationUtils.checkCustomFields(lang, `translation.${translationKeys[i]}`, [
+                    {key: 'slug'}, {key: 'pageSlug'}, {key: 'name'}, {key: 'extraLib'}, {key: 'extraText'}, {key: 'extraText2'}, {key: 'extraText3'}
+                ]));
+            }
+        }
+        if (self) {
+            self.updateOne(self);
         }
     }
 

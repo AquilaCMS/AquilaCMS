@@ -128,19 +128,15 @@ class PageCart extends NSPageCart {
                                                                                             <ul>
                                                                                                 {
                                                                                                     item.selections.map((section) => (
-                                                                                                        section.products.map((productSection, indexSel) => (
-                                                                                                        <li key={indexSel}>{productSection.name} {`${
-                                                                                                            (item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
-                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
-                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
-                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay]) ?
-                                                                                                                (item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] > 0 ?
-                                                                                                                '+' :
-                                                                                                                '') +
-                                                                                                            item.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay] + '€' : 
-                                                                                                            ''
-                                                                                                        }`}</li>
-                                                                                                        ))
+                                                                                                        section.products.map((productSection, indexSel) => {
+                                                                                                            const bundleSection = item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref);
+                                                                                                            const correctProduct = bundleSection ? bundleSection.products.find((product) => product.id === productSection._id) : null;
+                                                                                                            let toDisplay = '';
+                                                                                                            if (bundleSection && correctProduct && correctProduct.modifier_price && correctProduct.modifier_price[taxDisplay]) {
+                                                                                                                toDisplay = (correctProduct.modifier_price[taxDisplay] > 0 ? '+' : '') + correctProduct.modifier_price[taxDisplay] + '€'
+                                                                                                            }
+                                                                                                            return (<li key={indexSel}>{productSection.name} {toDisplay}</li>)
+                                                                                                        })
                                                                                                     ))
                                                                                                 }
                                                                                             </ul>

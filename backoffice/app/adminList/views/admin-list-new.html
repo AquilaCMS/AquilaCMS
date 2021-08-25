@@ -44,11 +44,11 @@
                 <br /><br />
                 <div style="display: flex;flex-wrap: wrap;flex-direction: row;">
 
-                    <div ng-repeat="oneItem in accessList" style="width: 300px">
+                    <div ng-repeat="oneItem in rights" style="width: 300px">
                         <label>
                             <input type="checkbox" value="{{oneItem.code}}"
                                 ng-checked="user.accessList.indexOf(oneItem.code) == -1"
-                                ng-click="toggleSelection(oneItem.code)"><span translate>{{oneItem.translate}}</span>
+                                ng-click="toggleSelection(oneItem.code)"><span>{{' ' + oneItem.translate[adminLang].name}}</span>
                         </label><br />
                     </div>
 

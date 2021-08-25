@@ -28,13 +28,9 @@ const inSegment = {};
 // colNames name of collections: if the target of a condition starts with 'colNames[i].' then we return false
 const colNames = ['client', 'famille', 'categorie', 'panier'];
 
-const listRules = (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const listRules = (PostBody) => queryBuilder.find(PostBody);
 
-const queryRule = (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const queryRule = (PostBody) => queryBuilder.findOne(PostBody);
 
 /**
  * @function testUser
@@ -229,14 +225,16 @@ async function applyRecursiveRulesDiscount(rule, user, cart) {
                     }
                 } else {
                     let tItems = [];
-                    tItems     = cart.items.filter((product) => {
-                        if (product.id) {
-                            if (mongoose.Types.ObjectId.isValid(product.id)) {
-                                return conditionOperator(condition.operator, product.id, target, value);
+                    if (cart && cart.items) {
+                        tItems = cart.items.filter((product) => {
+                            if (product.id) {
+                                if (mongoose.Types.ObjectId.isValid(product.id)) {
+                                    return conditionOperator(condition.operator, product.id, target, value);
+                                }
                             }
-                        }
-                        return conditionOperator(condition.operator, product, target, value);
-                    });
+                            return conditionOperator(condition.operator, product, target, value);
+                        });
+                    }
                     if (tItems.length) isTrue = true;
                 }
             }

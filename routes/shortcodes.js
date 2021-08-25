@@ -6,11 +6,11 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceShortcodes           = require('../services/shortcodes');
+const {adminAuth}       = require('../middleware/authentication');
+const ServiceShortcodes = require('../services/shortcodes');
 
 module.exports = function (app) {
-    app.get('/v2/shortcodes', authentication, adminAuth, getShortcodes);
+    app.get('/v2/shortcodes', adminAuth, getShortcodes);
 };
 
 /**

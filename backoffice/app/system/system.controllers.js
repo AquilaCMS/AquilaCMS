@@ -157,8 +157,17 @@ SystemControllers.controller("systemGeneralController", [
                 downloadBlob(data, status, headers, '.gz', 'database');
             }).error(function (data) {
                 $scope.disabledButton = false;
-                toastService.toast("danger", $translate.instant("global.standardError"));
-                console.error(data);
+                try {
+                    data.text().then(text => {
+                        const parsed = JSON.parse(text);
+                        if (parsed && parsed.message) {
+                            toastService.toast("danger", parsed.message);
+                        }
+                    });
+                } catch (e) {
+                    toastService.toast("danger", $translate.instant("global.standardError"));
+                    console.error(data);
+                }
             });
         };
 

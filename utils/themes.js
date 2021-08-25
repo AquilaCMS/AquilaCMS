@@ -40,16 +40,16 @@ const themeCompile = async (theme, type, newIsProd) => {
  */
 const loadTheme = async () => {
     await modulesUtils.createListModuleFile();
-    await require('../services/languages').createDynamicLangFile();
     await modulesUtils.displayListModule();
 
     // Language with i18n
     let i18nInstance = null;
     let ns           = null;
     try {
-        const oI18n  = require(path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n'));
-        i18nInstance = oI18n.i18nInstance;
-        ns           = oI18n.ns;
+        const pathToI18n = path.join(global.appRoot, 'themes', global.envConfig.environment.currentTheme, 'i18n');
+        const oI18n      = require(pathToI18n);
+        i18nInstance     = oI18n.i18nInstance;
+        ns               = oI18n.ns;
     } catch (error) {
         console.error(error);
     }

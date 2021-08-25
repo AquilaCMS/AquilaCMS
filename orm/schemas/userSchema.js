@@ -24,7 +24,7 @@ const generateUserPassword = () => {
         [true, '0123456789'],
         [true, 'abcdefghijklmnopqrstuvwxyz'],
         [true, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'],
-        [false, '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~']
+        [true, '!#$%()*+,-.:;<=>@[]^_{|}~']
     ];
 
     const charset = [];
@@ -187,9 +187,11 @@ UserSchema.pre('save', function (next) {
 });
 
 UserSchema.pre('findOneAndUpdate', async function (next) {
-    const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
-    if (users > 0) {
-        throw NSErrors.LoginSubscribeEmailExisting;
+    if (this._update && this._update.email && this._update._id) {
+        const users = await mongoose.model('users').countDocuments({email: this._update.email, _id: {$nin: [this._update._id]}});
+        if (users > 0) {
+            throw NSErrors.LoginSubscribeEmailExisting;
+        }
     }
     next();
 });

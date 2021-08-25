@@ -53,9 +53,7 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
     }
 };
 
-const getProductImageUrl = (product) => {
-    return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
-};
+const getProductImageUrl = (product) => (product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '');
 
 const getProductImageId = (product) => {
     return product.images.find((i) => i.default) ? product.images.find((i) => i.default)._id : '';
@@ -63,7 +61,7 @@ const getProductImageId = (product) => {
 
 // Generic file deletion function
 const deleteFile = async (filePath) => {
-    if (filePath) {
+    if (filePath && typeof filePath === 'string') {
         await utilsModules.modulesLoadFunctions('removeFile', {key: filePath}, async () => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload   = require('./server').getUploadDirectory();
@@ -77,12 +75,14 @@ const deleteFile = async (filePath) => {
                 }
             }
         });
+    } else {
+        console.error('The function deleteFile has been used but the parameter is not a string');
     }
 };
 
 // Generic folder deletion function
 const deleteFolder = async (folderPath) => {
-    if (folderPath) {
+    if (folderPath && typeof folderPath === 'string') {
         await utilsModules.modulesLoadFunctions('removeFolder', {folder: folderPath}, async () => {
             // Since the execution context is different, we can't use the imports at the top
             const pathUpload   = require('./server').getUploadDirectory();
@@ -91,6 +91,8 @@ const deleteFolder = async (folderPath) => {
                 await fsp.deleteRecursive(pathToRemove);
             }
         });
+    } else {
+        console.error('The function deleteFolder has been used but the parameter is not a string');
     }
 };
 

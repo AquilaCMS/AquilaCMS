@@ -7,12 +7,12 @@
       "code": "FR",
       "name": "France",
       "type": "country",
-      "translation" : {
-        "fr" : {
-            "name" : "France"
+      "translation": {
+        "fr": {
+          "name": "France"
         },
-        "en" : {
-          "name" : "France"
+        "en": {
+          "name": "France"
         }
       }
     },
@@ -22,12 +22,12 @@
       "code": "GB",
       "name": "United Kingdom",
       "type": "country",
-      "translation" : {
-        "fr" : {
-            "name" : "Royaume-uni"
+      "translation": {
+        "fr": {
+          "name": "Royaume-uni"
         },
-        "en" : {
-          "name" : "United Kingdom"
+        "en": {
+          "name": "United Kingdom"
         }
       }
     }

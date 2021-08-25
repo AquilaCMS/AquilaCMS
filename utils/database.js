@@ -11,6 +11,13 @@ mongoose.set('debug', false);
 const NSErrors = require('./errors/NSErrors');
 let connection = false;
 
+const mongooseOptions = {
+    useNewUrlParser    : true,
+    useFindAndModify   : false,
+    useCreateIndex     : true,
+    useUnifiedTopology : true
+};
+
 const connect = async () => {
     if (!global.envFile || !global.envFile.db) {
         return mongoose;
@@ -23,15 +30,10 @@ const connect = async () => {
 
     const isConnected = connectedState.indexOf(mongoose.connection.readyState) !== -1;
     if (!isConnected && !connection) {
-        connection         = true;
         const checkConnect = async () => new Promise((resolve, reject) => {
-            mongoose.connect(global.envFile.db, {
-                useNewUrlParser    : true,
-                useFindAndModify   : false,
-                useCreateIndex     : true,
-                useUnifiedTopology : true
-            }, (error) => {
+            mongoose.connect(global.envFile.db, mongooseOptions, (error) => {
                 if (typeof error === 'undefined' || error === null) {
+                    connection = true;
                     resolve(true);
                 } else {
                     reject(new Error(`Unable to connect to" ${global.envFile.db}, ${error.toString()}`));
@@ -47,12 +49,7 @@ const connect = async () => {
 
 const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
     mongoose.connection.close(); // need to reset the connection mongo for every try
-    mongoose.connect(uriDatabase, {
-        useNewUrlParser    : true,
-        useFindAndModify   : false,
-        useCreateIndex     : false,
-        useUnifiedTopology : true
-    }, (error) => {
+    mongoose.connect(uriDatabase, mongooseOptions, (error) => {
         if (typeof error === 'undefined' || error === null) {
             resolve(true);
         } else {
@@ -63,6 +60,7 @@ const testdb = async (uriDatabase) => new Promise((resolve, reject) => {
 
 /**
  * check if the database is a replicaSet, if we can use transactions
+ * @deprecated
  */
 /* eslint-disable-next-line no-unused-vars, arrow-body-style */
 const checkIfReplicaSet = async () => {
@@ -121,10 +119,13 @@ const initDBValues = async () => {
         MailType,
         Languages,
         PaymentMethods,
-        Statics
+        Statics,
+        AdminRights
     } = require('../orm/models');
 
-    console.log('Database init in progress...');
+    console.log('Database init : In progress...');
+
+    /* ********** Languages ********** */
     const langs     = await Languages.find();
     let defaultLang = langs.find((l) => l.defaultLanguage);
     if (!langs.length) {
@@ -138,11 +139,14 @@ const initDBValues = async () => {
     }
     global.defaultLang = defaultLang.code;
 
+    /* ********** Attributes ********** */
     await SetAttributes.findOneAndUpdate(
         {code: 'defaut'},
         {$setOnInsert: {code: 'defaut', name: 'Défaut', type: 'products', attributes: []}},
         {new: true, upsert: true}
     );
+
+    /* ********** Default staticPage ********** */
     await Statics.findOneAndUpdate({code: 'home'}, {
         $setOnInsert : {
             code        : 'home',
@@ -152,6 +156,7 @@ const initDBValues = async () => {
         }
     }, {new: true, upsert: true});
 
+    /* ********** Mails types ********** */
     const mailTypes = [
         {
             code        : '',
@@ -376,6 +381,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Frais supplémentaires'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -477,6 +498,22 @@ const initDBValues = async () => {
                         {
                             value       : 'additionnalFees',
                             description : 'Additionnal fees'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -584,6 +621,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Code de la promotion'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
 
@@ -686,9 +739,24 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
-
                 }
             }
         },
@@ -1064,6 +1132,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Nom du produit'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Quantité du produit'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Prix unitaire du produit'
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Prix total du produit'
                         }
                     ]
                 },
@@ -1161,6 +1245,22 @@ const initDBValues = async () => {
                         {
                             value       : 'promo.code',
                             description : 'Promotion code'
+                        },
+                        {
+                            value       : 'product.name',
+                            description : 'Product name'
+                        },
+                        {
+                            value       : 'product.quantity',
+                            description : 'Product quantity'
+                        },
+                        {
+                            value       : 'product.unitPrice',
+                            description : 'Product unitary price '
+                        },
+                        {
+                            value       : 'product.totalPrice',
+                            description : 'Product total price'
                         }
                     ]
                 }
@@ -1370,6 +1470,7 @@ const initDBValues = async () => {
         await MailType.findOneAndUpdate({code: mailType.code}, {$set: mailType}, {new: true, upsert: true});
     }
 
+    /* ********** Payment methods ********** */
     const imgTrans              = '/medias/paiement-virement-logo.png';
     const imgCheck              = '/medias/paiement-cheque-logo.png ';
     const defaultPaymentMethods = [
@@ -1404,6 +1505,443 @@ const initDBValues = async () => {
     for (const paymentMethod of defaultPaymentMethods) {
         await PaymentMethods.findOneAndUpdate({code: paymentMethod.code}, {$setOnInsert: paymentMethod}, {new: true, upsert: true});
     }
+
+    /* ********** Admin acces rights ********** */
+    const allRights = [
+        {
+            code      : 'orders',
+            translate : {
+                fr : {
+                    name : 'Transactions > Commandes'
+                },
+                en : {
+                    name : 'Transactions > Orders'
+                }
+            }
+        },
+        {
+            code      : 'editHtml',
+            translate : {
+                fr : {
+                    name : "Editer de l'HTML"
+                },
+                en : {
+                    name : 'Edit HTML'
+                }
+            }
+        },
+        {
+            code      : 'statistics',
+            translate : {
+                fr : {
+                    name : 'Statistiques'
+                },
+                en : {
+                    name : 'Statistics'
+                }
+            }
+        },
+        {
+            code      : 'modules',
+            translate : {
+                fr : {
+                    name : 'Modules'
+                },
+                en : {
+                    name : 'Plugins'
+                }
+            }
+        },
+        {
+            code      : 'update',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Mise à jour'
+                },
+                en : {
+                    name : 'Settings > Update'
+                }
+            }
+        },
+        {
+            code      : 'system',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Système'
+                },
+                en : {
+                    name : 'Settings > System'
+                }
+            }
+        },
+        {
+            code      : 'jobs',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Tâches planifiées'
+                },
+                en : {
+                    name : 'Settings > Planned tasks'
+                }
+            }
+        },
+        {
+            code      : 'stock',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Param Commande'
+                },
+                en : {
+                    name : 'Settings > Orders param'
+                }
+            }
+        },
+        {
+            code      : 'config',
+            translate : {
+                fr : {
+                    name : 'Paramètres > Paramètre serveur'
+                },
+                en : {
+                    name : 'Settings > Server settings'
+                }
+            }
+        },
+        {
+            code      : 'translate',
+            translate : {
+                fr : {
+                    name : 'Apparence > Translation'
+                },
+                en : {
+                    name : 'Design > Translation'
+                }
+            }
+        },
+        {
+            code      : 'design',
+            translate : {
+                fr : {
+                    name : 'Apparence > CSS'
+                },
+                en : {
+                    name : 'Design > CSS'
+                }
+            }
+        },
+        {
+            code      : 'themes',
+            translate : {
+                fr : {
+                    name : 'Apparence > Thèmes'
+                },
+                en : {
+                    name : 'Design > Themes'
+                }
+            }
+        },
+        {
+            code      : 'admin',
+            translate : {
+                fr : {
+                    name : 'Configuration > Admin'
+                },
+                en : {
+                    name : 'Configuration > Admin'
+                }
+            }
+        },
+        {
+            code      : 'paymentMethods',
+            translate : {
+                fr : {
+                    name : 'Configuration > Modes de paiement'
+                },
+                en : {
+                    name : 'Configuration > Payment modes'
+                }
+            }
+        },
+        {
+            code      : 'languages',
+            translate : {
+                fr : {
+                    name : 'Configuration > Langues'
+                },
+                en : {
+                    name : 'Configuration > Languages'
+                }
+            }
+        },
+        {
+            code      : 'territories',
+            translate : {
+                fr : {
+                    name : 'Configuration > territoires'
+                },
+                en : {
+                    name : 'Configuration > Territories'
+                }
+            }
+        },
+        {
+            code      : 'shipments',
+            translate : {
+                fr : {
+                    name : 'Configuration > Transporteurs'
+                },
+                en : {
+                    name : 'Configuration > Shippings'
+                }
+            }
+        },
+        {
+            code      : 'mails',
+            translate : {
+                fr : {
+                    name : 'Configuration > Mails'
+                },
+                en : {
+                    name : 'Configuration > Mails'
+                }
+            }
+        },
+        {
+            code      : 'newsletters',
+            translate : {
+                fr : {
+                    name : 'Clients > Newsletter'
+                },
+                en : {
+                    name : 'Customers > Newletter'
+                }
+            }
+        },
+        {
+            code      : 'contacts',
+            translate : {
+                fr : {
+                    name : 'Clients > Contacts'
+                },
+                en : {
+                    name : 'Customers > Contacts'
+                }
+            }
+        },
+        {
+            code      : 'reviews',
+            translate : {
+                fr : {
+                    name : 'Clients > Avis'
+                },
+                en : {
+                    name : 'Customers > Reviews'
+                }
+            }
+        },
+        {
+            code      : 'clients',
+            translate : {
+                fr : {
+                    name : 'Clients > Clients'
+                },
+                en : {
+                    name : 'Customers > Customers'
+                }
+            }
+        },
+        {
+            code      : 'articles',
+            translate : {
+                fr : {
+                    name : 'Site > Blog'
+                },
+                en : {
+                    name : 'Site > Blog'
+                }
+            }
+        },
+        {
+            code      : 'medias',
+            translate : {
+                fr : {
+                    name : 'Site > Médias'
+                },
+                en : {
+                    name : 'Site > Media'
+                }
+            }
+        },
+        {
+            code      : 'slider',
+            translate : {
+                fr : {
+                    name : 'Site > Carrousel'
+                },
+                en : {
+                    name : 'Site > Carousel'
+                }
+            }
+        },
+        {
+            code      : 'gallery',
+            translate : {
+                fr : {
+                    name : 'Site > Gallerie'
+                },
+                en : {
+                    name : 'Site > Gallery'
+                }
+            }
+        },
+        {
+            code      : 'cmsBlocks',
+            translate : {
+                fr : {
+                    name : 'Site > Blocs CMS'
+                },
+                en : {
+                    name : 'Site > CMS Blocks'
+                }
+            }
+        },
+        {
+            code      : 'staticPage',
+            translate : {
+                fr : {
+                    name : 'Site > Pages'
+                },
+                en : {
+                    name : 'Site > Pages'
+                }
+            }
+        },
+        {
+            code      : 'families',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Famille'
+                },
+                en : {
+                    name : 'Catalog > Families'
+                }
+            }
+        },
+        {
+            code      : 'suppliers',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Fournisseurs'
+                },
+                en : {
+                    name : 'Catalog > Suppliers'
+                }
+            }
+        },
+        {
+            code      : 'trademarks',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Marques'
+                },
+                en : {
+                    name : 'Catalog > Brands'
+                }
+            }
+        },
+        {
+            code      : 'attributes',
+            translate : {
+                fr : {
+                    name : 'Catalogue/Clients > Attributs'
+                },
+                en : {
+                    name : 'Catalog/Customers > Attributes'
+                }
+            }
+        },
+        {
+            code      : 'picto',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Pictogramme'
+                },
+                en : {
+                    name : 'Catalog > Pictrogram'
+                }
+            }
+        },
+        {
+            code      : 'promos',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Promotions'
+                },
+                en : {
+                    name : 'Catalog > Discount'
+                }
+            }
+        },
+        {
+            code      : 'categories',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Catégories'
+                },
+                en : {
+                    name : 'Catalog > Categories'
+                }
+            }
+        },
+        {
+            code      : 'products',
+            translate : {
+                fr : {
+                    name : 'Catalogue > Produits'
+                },
+                en : {
+                    name : 'Catalog > Products'
+                }
+            }
+        },
+        {
+            code      : 'cart',
+            translate : {
+                fr : {
+                    name : 'Transactions > panier'
+                },
+                en : {
+                    name : 'Transactions > Carts'
+                }
+            }
+        },
+        {
+            code      : 'invoices',
+            translate : {
+                fr : {
+                    name : 'Transactions > Facture'
+                },
+                en : {
+                    name : 'Transactions > Online bills'
+                }
+            }
+        },
+        {
+            code      : 'payments',
+            translate : {
+                fr : {
+                    name : 'Transactions > Paiements'
+                },
+                en : {
+                    name : 'Transactions > Payments'
+                }
+            }
+        }];
+    for (const right of allRights) {
+        await AdminRights.findOneAndUpdate({code: right.code}, {$set: right}, {new: true, upsert: true});
+    }
+
+    console.log('Database init : Done\x1b[32m \u2713 \x1b[0m');
 };
 
 const applyMigrationIfNeeded = async () => {

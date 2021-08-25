@@ -27,7 +27,11 @@ const ModulesSchema = new Schema({
         theme : {type: {}, default: {}},
         api   : {type: {}, default: {}}
     },
-    type                     : {type: String},
+    type  : {type: String},
+    types : [{
+        component : {type: String},
+        type      : {type: String}
+    }],
     moduleDependencies       : {type: [String], default: []},
     component_template_front : {type: String, default: null}
 }, {

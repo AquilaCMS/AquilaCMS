@@ -31,7 +31,7 @@ const {
     middlewareServer
 }                           = require('./middleware');
 
-const dev    = !serverUtils.isProd;
+const dev    = serverUtils.dev;
 const server = express();
 
 // ATTENTION, do not require services directly on top of this file
@@ -50,6 +50,13 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('/!\\ Unhandled rejection promise /!\\', promise);
     console.error('/!\\ Unhandled rejection reason /!\\', reason);
     if (dev) process.exit(1);
+});
+
+process.on('exit', (code) => {
+    if (process.env.AQUILA_ENV !== 'test') { // remove log if in "test"
+        console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+        console.trace();
+    }
 });
 
 const init = async () => {
@@ -77,10 +84,16 @@ const setEnvConfig = async () => {
         throw new Error('Configuration collection is missing');
     }
     global.envConfig = configuration.toObject();
+
+    if ((await Configuration.countDocuments()) > 1) {
+        console.error(`More than 1 configuration found ! _id '${global.envConfig._id}' is use`);
+    }
 };
 
 const initFrontFramework = async (themeFolder) => {
-    if (dev) await utilsThemes.themeCompile();
+    if (!(await fs.existsSync(path.join(themeFolder, 'dynamic_langs.js')))) {
+        await require('./services/languages').createDynamicLangFile();
+    }
 
     const app = next({dev, dir: themeFolder});
     let handler;
@@ -112,23 +125,26 @@ const initServer = async () => {
         const {currentTheme} = global.envConfig.environment;
         console.log(`%s@@ Current theme : ${currentTheme}%s`, '\x1b[32m', '\x1b[0m');
         const themeFolder = path.join(global.appRoot, 'themes', currentTheme);
-        const compile     = typeof global.envFile.devMode !== 'undefined'
-            && typeof global.envFile.devMode.compile !== 'undefined'
-            && !global.envFile.devMode.compile;
-        if (!fs.existsSync(themeFolder) && !compile) {
-            throw new Error(`themes folder ${themeFolder} not found`);
-        }
+        // we check if we compile (default: true)
+        const compile = (typeof global?.envFile?.devMode?.compile === 'undefined' || (typeof global?.envFile?.devMode?.compile !== 'undefined' && global.envFile.devMode.compile === true));
 
         middlewareServer.initExpress(server, passport);
         await middlewarePassport.init(passport);
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        if (dev) {
+            const {hotReloadAPI} = require('./services/devFunctions');
+            await hotReloadAPI(express, server, passport);
+        }
 
         if (compile) {
-            console.log('devMode detected, no compilation');
+            if (!fs.existsSync(themeFolder)) {
+                throw new Error(`themes folder ${themeFolder} not found`);
+            }
+            await initFrontFramework(themeFolder); // we compile the front
         } else {
-            await initFrontFramework(themeFolder);
+            console.log('`compile` value is set to `false`, the front is not accessible');
         }
     } else {
         // Only for installation purpose, will be inaccessible after first installation

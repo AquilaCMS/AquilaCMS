@@ -111,15 +111,22 @@ const ConfigurationSchema = new Schema({
 });
 /* eslint-enable array-element-newline */
 
-ConfigurationSchema.post('updateOne', async function () {
+ConfigurationSchema.pre('updateOne', async function () {
     const update = this.getUpdate().$set;
     if (update.environment && update.environment.mailPass) {
+        const databaseConfig       = (await this.findOne({})).toObject();
+        const oldPasswordDecrypted = databaseConfig?.environment?.mailPass;
         try {
-            update.environment.mailPass = encryption.cipher(update.environment.mailPass);
+            if (update.environment.mailPass !== oldPasswordDecrypted) {
+                update.environment.mailPass = encryption.cipher(update.environment.mailPass);
+            }
         } catch (err) {
             console.error(err);
         }
     }
+});
+
+ConfigurationSchema.post('updateOne', async function () {
     global.envConfig = (await this.findOne({})).toObject();
 });
 

@@ -55,7 +55,7 @@ const createListModuleFile = async (theme = global.envConfig.environment.current
 const displayListModule = async (theme = global.envConfig.environment.currentTheme) => {
     let modules_folder = '';
     try {
-        modules_folder    = `./themes/${theme}/modules`;
+        modules_folder    = path.join(global.appRoot, `themes/${theme}/modules`);
         const fileContent = await fs.readFile(`${modules_folder}/list_modules.js`);
         console.log(`%s@@ Theme's module (list_modules.js) : ${fileContent.toString()}%s`, '\x1b[32m', '\x1b[0m');
     } catch (e) {
@@ -190,14 +190,15 @@ const checkModuleDepencendiesAtUninstallation = async (myModule) => {
  * Module : Load the init.js files of the modules if necessary
  * @param {any} server
  */
-const modulesLoadInit = async (server) => {
+const modulesLoadInit = async (server, runInit = true) => {
     const Modules  = require('../orm/models/modules');
     const _modules = await Modules.find({active: true}, {name: 1, _id: 0}).lean();
-    loadedModules  = [..._modules].map((lmod) => {return {...lmod, init: true, valid: false};});
+    loadedModules  = [..._modules].map((lmod) => ({...lmod, init: true, valid: false}));
     for (let i = 0; i < loadedModules.length; i++) {
-        if (i === 0) console.log('Required modules :');
+        if (i === 0) {
+            console.log('Required modules :');
+        }
         console.log(`- ${loadedModules[i].name}`);
-        if (i === loadedModules.length - 1) console.log('');
     }
     if (loadedModules.length > 0) {
         console.log('Start init loading modules');
@@ -212,11 +213,13 @@ const modulesLoadInit = async (server) => {
                     throw new Error('Error checking licence');
                 }
                 loadedModules[i].valid = true;
-                require(initModuleFile)(server);
+                if (runInit) {
+                    require(initModuleFile)(server);
+                }
                 process.stdout.write('\x1b[32m \u2713 \x1b[0m\n');
             } catch (err) {
                 loadedModules[i].init = false;
-                process.stdout.write('\x1b[31m \u274C \x1b[0m\n');
+                process.stdout.write('\x1b[31m \u274C An error has occurred \x1b[0m\n');
                 return false;
             }
         }

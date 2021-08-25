@@ -35,10 +35,7 @@ exports.deleteTerritory = async function (_id) {
  * Save or edit Territory
  */
 exports.setTerritory = async function (territory) {
-    const _id = territory._id;
-    if (territory._id) {
-        delete territory._id;
-    }
+    const _id          = territory._id;
     territory.type     = 'country';
     territory.children = [];
 

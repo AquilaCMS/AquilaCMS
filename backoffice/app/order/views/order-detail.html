@@ -65,7 +65,7 @@
 
     <div class="row order-header order-emphase">
         <div class="col-md-12">
-                <div style="margin-bottom: 5px" ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
+            <div style="margin-bottom: 5px" ng-repeat="field in fields" bind-html-compile="field.component_template"></div>
         </div>
     </div>
     <div class="row">
@@ -164,37 +164,20 @@
                     <span editable-text="order.addresses.delivery.city" onbeforesave="updateOrder('addresses.delivery.city', $data)">{{ order.addresses.delivery.city || '&nbsp;' }}</span><br />
                     <span editable-text="order.addresses.delivery.country" onbeforesave="updateOrder('addresses.delivery.country', $data)">{{ order.addresses.delivery.country || '&nbsp;' }}</span>
                 </div>
-                <div ng-hide="editableMode" class="box-content textInBox">
-                    <div ng-show="order.orderReceipt.method === 'delivery'">
-                        <span translate>{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
-                        <span>
-                            {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
-                            {{order.addresses.delivery.line1}}<br />
-                            {{order.addresses.delivery.line2}}<br />
-                            {{order.addresses.delivery.phone}}<br />
-                            {{order.addresses.delivery.phone_mobile}}<br />
-                            {{order.addresses.delivery.zipcode}}&nbsp;{{order.addresses.delivery.city}}<br />
-                            {{order.addresses.delivery.country}}
-                        </span>
-                    </div>
-                    <div ng-show="order.orderReceipt.method === 'withdrawal' && order.point_of_sale">
-                        <strong translate>order.detail.relayPoint</strong><br />
-                        {{order.point_of_sale.name}}<br />
-                        {{order.point_of_sale.address.line1}}<br />
-                        {{order.point_of_sale.address.city}}<br />
-                        {{order.point_of_sale.address.zipcode}}<br />
-                        {{order.point_of_sale.address._country}}
-                    </div>
-                    <div ng-show="order.orderReceipt.method === 'withdrawal' && !order.point_of_sale">
-                        {{order.addresses.billing.firstname}}&nbsp;{{order.addresses.billing.lastname}}<br />
+
+                <div class="box-content" style="padding: 0 10px;" ng-show="order.orderReceipt.method === 'delivery'">
+                    <span translate>{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
+                    <span>
+                        {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
                         {{order.addresses.delivery.line1}}<br />
                         {{order.addresses.delivery.line2}}<br />
                         {{order.addresses.delivery.phone}}<br />
                         {{order.addresses.delivery.phone_mobile}}<br />
                         {{order.addresses.delivery.zipcode}}&nbsp;{{order.addresses.delivery.city}}<br />
                         {{order.addresses.delivery.country}}
-                    </div>
+                    </span>
                 </div>
+                <div class="box-content" ng-repeat="field in fieldsOrderDelivery" bind-html-compile="field.component_template"></div>
             </div>
         </div>
     </div>
@@ -379,10 +362,8 @@
                                             <b translate>order.detail.trans</b> : {{order.delivery.name ? order.delivery.name : "N/A"}}<br />
                                             <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : getDeliveryDate()}}
                                         </p>
-                                        <p ng-show="order.orderReceipt.method === 'withdrawal'">
-                                            <b translate>order.detail.relayPoint</b> : {{order.point_of_sale.name}}<br />
-                                            <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : ''}}
-                                        </p>
+                                        <p ng-repeat="orderDelDate in dateOrderDelivery" bind-html-compile="orderDelDate.component_template"></p>
+                                        
                                         <p>
                                             <b translate>order.detail.pdsTotal</b>
                                             <span>:</span>
@@ -445,8 +426,8 @@
                                 <td data-label="Date :">
                                     {{payment.operationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
-                                <td data-label="Mode :" translate>
-                                    {{payment.mode | paymentMode}}
+                                <td data-label="Mode :">
+                                    {{payment.mode}}
                                 </td>
                                 <td data-label="Montant :">
                                     {{payment.amount | number: 2}} €
@@ -537,7 +518,7 @@
                                         translate>order.detail.cancel</button>
                                 </div>
                             </div>
-                            <p ng-repeat="status in order.historyStatus | orderBy:'date'">
+                            <p ng-repeat="status in order.historyStatus | orderBy:'-date'">
                                 {{status.date | date:"dd/MM/yyyy 'à' H:mm"}} ->
                                 <!-- {{status.status}} -->
                                 <!-- <label translate translate-values="test">order.detail.cancel</label> -->
