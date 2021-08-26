@@ -165,8 +165,9 @@
                     <span editable-text="order.addresses.delivery.country" onbeforesave="updateOrder('addresses.delivery.country', $data)">{{ order.addresses.delivery.country || '&nbsp;' }}</span>
                 </div>
 
-                <div class="box-content" style="padding: 0 10px;" ng-show="order.orderReceipt.method === 'delivery'">
-                    <span translate>{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
+                <div class="box-content" style="padding: 0 10px;" ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
+                    {{order.addresses.delivery.companyName}}
+                    <span translate ng-show="order.addresses.delivery.firstname">{{"order.detail.civility."+ order.addresses.delivery.civility.toString()}}</span><br />
                     <span>
                         {{order.addresses.delivery.firstname}}&nbsp;{{order.addresses.delivery.lastname}}<br />
                         {{order.addresses.delivery.line1}}<br />
@@ -358,7 +359,7 @@
                             <tbody class="box-content">
                                 <tr>
                                     <td class="col-md-12">
-                                        <p ng-hide="!order.delivery.name && order.orderReceipt.method === 'withdrawal'">
+                                        <p ng-show="order.orderReceipt.method !== 'withdrawal' || (!fieldsOrderDelivery || fieldsOrderDelivery.length === 0)">
                                             <b translate>order.detail.trans</b> : {{order.delivery.name ? order.delivery.name : "N/A"}}<br />
                                             <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : getDeliveryDate()}}
                                         </p>
