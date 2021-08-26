@@ -307,13 +307,13 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             return `/images/blog/100x100/${$scope.articles._id}/${filename}`;
         }
 
-        $scope.addCategory = function (lang) {
+        $scope.addTag = function (lang) {
             var modalInstance = $modal.open({
-                templateUrl: "app/site/views/modals/articles-new-cat.html",
-                controller: "ArticlesNewCatCtrl",
+                templateUrl: "app/site/views/modals/articles-new-tag.html",
+                controller: "ArticlesNewTagCtrl",
                 resolve: {
-                    Categories: function() {
-                        return $scope.articles.translation[lang].categories
+                    Tags: function() {
+                        return $scope.articles.translation[lang].tags
                     },
                     Language: function() {
                         return lang
@@ -321,26 +321,26 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
                 }
             });
 
-            modalInstance.result.then(function (newCat) {
-                if ($scope.articles.translation[lang].categories) {
-                    $scope.articles.translation[lang].categories.push(newCat)
+            modalInstance.result.then(function (newTag) {
+                if ($scope.articles.translation[lang].tags) {
+                    $scope.articles.translation[lang].tags.push(newTag)
                 } else {
-                    $scope.articles.translation[lang].categories = [newCat];
+                    $scope.articles.translation[lang].tags = [newTag];
                 }
                 
             });
         };
 
-        $scope.removeCat = function(category, lang) {
-            const index = $scope.articles.translation[lang].categories.indexOf(category)
-            $scope.articles.translation[lang].categories.splice(index, 1)
+        $scope.removeTag = function(tag, lang) {
+            const index = $scope.articles.translation[lang].tags.indexOf(tag)
+            $scope.articles.translation[lang].tags.splice(index, 1)
         }
     }
 ]);
 
-SiteControllers.controller("ArticlesNewCatCtrl", [
-    "$scope", "$modalInstance", "ArticlesV2", "Categories", "Language", "toastService", "$translate",
-    function ($scope, $modalInstance, ArticlesV2, Categories, Language, toastService, $translate) {
+SiteControllers.controller("ArticlesNewTagCtrl", [
+    "$scope", "$modalInstance", "ArticlesV2", "Tags", "Language", "toastService", "$translate",
+    function ($scope, $modalInstance, ArticlesV2, Tags, Language, toastService, $translate) {
         $scope.itemObjectSelected = function (item) {
             $scope.selectedDropdownItem = item;
         };
@@ -350,7 +350,7 @@ SiteControllers.controller("ArticlesNewCatCtrl", [
                 $scope.selectedDropdownItem = userInput;
             }
             $scope.dropdownItems = [];
-            return ArticlesV2.getNewsCategories({query: userInput || "", lang: Language}).$promise.then(function (response) {
+            return ArticlesV2.getNewsTags({query: userInput || "", lang: Language}).$promise.then(function (response) {
                 $scope.dropdownItems = response.map(function (item) {
                     const dropdownObject = angular.copy(item);
                     dropdownObject.readableName = item;
@@ -363,7 +363,7 @@ SiteControllers.controller("ArticlesNewCatCtrl", [
         $scope.filterDropdown();
 
         $scope.save = function() {
-            if (!$scope.selectedDropdownItem || (Categories && Categories.includes($scope.selectedDropdownItem))) {
+            if (!$scope.selectedDropdownItem || (Tags && Tags.includes($scope.selectedDropdownItem))) {
                 toastService.toast("danger", $translate.instant("global.error"))
             } else {
                 $modalInstance.close($scope.selectedDropdownItem)

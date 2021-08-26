@@ -18,19 +18,19 @@ const getNews = async (PostBody) => queryBuilder.find(PostBody);
 
 const getNew = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getNewsCategories = async (query, lang) => {
-    let categories                                   = [];
+const getNewsTags = async (query, lang) => {
+    let tags                                         = [];
     const mongoMatch                                 = {$match: {}};
     const mongoProject                               = {$project: {_id: 0}};
-    const nestedField                                = `translation.${lang}.categories`;
+    const nestedField                                = `translation.${lang}.tags`;
     mongoMatch.$match[nestedField]                   = {$regex: query};
     mongoProject.$project[nestedField]               = {
         $filter : {
             input : '',
-            as    : 'category',
+            as    : 'tag',
             cond  : {
                 $regexMatch : {
-                    input   : '$$category',
+                    input   : '$$tag',
                     regex   : query,
                     options : 'i'
                 }
@@ -40,8 +40,8 @@ const getNewsCategories = async (query, lang) => {
     mongoProject.$project[nestedField].$filter.input = `$${nestedField}`;
     const result                                     = await News.aggregate([mongoMatch, mongoProject]);
     if (!result) throw NSErrors.NotFound;
-    result.forEach((ele) => categories = [...categories, ...ele.translation[lang].categories]); // create array of every category that appeared in result
-    return categories.filter((obj, pos, arr) => arr.map((mapObj) => mapObj).indexOf(obj) === pos); // make each category appear once
+    result.forEach((ele) => tags = [...tags, ...ele.translation[lang].tags]); // create array of every tag that appeared in result
+    return tags.filter((obj, pos, arr) => arr.map((mapObj) => mapObj).indexOf(obj) === pos); // make each tag appear once
 };
 
 const saveNew = async (_new) => {
@@ -61,7 +61,7 @@ const deleteNew = async (_id) => {
 module.exports = {
     getNews,
     getNew,
-    getNewsCategories,
+    getNewsTags,
     saveNew,
     deleteNew
 };

@@ -7,8 +7,8 @@
         "title": "Title",
         "visible": "Visible",
         "img": "Picture",
-        "categories": "Categories",
-        "addCategory": "Add category",
+        "tags": "Tags",
+        "addTag": "Add tag",
         "add": "Add",
         "invalidEntry": "The information entered is not valid.",
         "slugEverUsed": "This slug is already in use, please choose another one",
@@ -24,7 +24,7 @@
         "t1": "New item",
         "ph1": "Will be automatically generated if empty",
         "ph2": "Title",
-        "phCat": "Enter category",
+        "phTag": "Enter tag",
         "urlKey": "URL Key",
         "title": "Title",
         "visible": "Visible",
@@ -44,10 +44,10 @@
         "itemDelete": "Item deleted",
         "creaDate": "Creation date"
     },
-    "newCat": {
+    "newTag": {
         "save": "Save",
         "cancel": "Cancel",
-        "newCat": "New category",
+        "newTag": "New tag",
         "name": "Name"
     }
 }

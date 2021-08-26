@@ -16,17 +16,17 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="categories" class="col-sm-1 control-label" translate>site.detail.categories</label>
-                <div style="display: inline-block;" ng-repeat="category in articles.translation[lang].categories">
-                    <div class="chip" id="categories">
-                        {{category}}
-                        <span class="closebtn" ng-click="removeCat(category, lang)">&times;</span>
+                <label for="tags" class="col-sm-1 control-label" translate>site.detail.tags</label>
+                <div style="display: inline-block;" ng-repeat="tag in articles.translation[lang].tags">
+                    <div class="chip" id="tags">
+                        {{tag}}
+                        <span class="closebtn" ng-click="removeTag(tag, lang)">&times;</span>
                     </div> 
                 </div>
             </div>
             <div class="row">
-                <a class="btn btn-success" ng-click="addCategory(lang)" id="addCategory" translate>
-                    site.detail.addCategory
+                <a class="btn btn-success" ng-click="addTag(lang)" id="addTag" translate>
+                    site.detail.addTag
                 </a>
             </div>
             </br>
