@@ -7,6 +7,8 @@
         "title": "Titre",
         "visible": "Visible",
         "img": "Image",
+        "categories": "Catégories",
+        "addCategory": "Nouvelle catégorie",
         "add": "Ajouter",
         "invalidEntry": "Les informations saisies ne sont pas valides.",
         "slugEverUsed": "Ce slug est déjà utilisée, merci d'en choisir une autre",
@@ -22,6 +24,7 @@
         "t1": "Nouvel article",
         "ph1": "Si vous ne remplissez pas ce champ, il sera genere automatiquement",
         "ph2": "Titre",
+        "phCat": "Catégorie",
         "urlKey": "Slug",
         "title": "Titre",
         "visible": "Visible",
@@ -40,5 +43,11 @@
         "indiff": "Indifferent",
         "itemDelete": "Article supprimé",
         "creaDate": "Date de création"
+    },
+    "newCat": {
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "newCat": "Nouvelle catégorie",
+        "name": "Nom"
     }
 }

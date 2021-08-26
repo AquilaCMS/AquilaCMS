@@ -18,6 +18,32 @@ const getNews = async (PostBody) => queryBuilder.find(PostBody);
 
 const getNew = async (PostBody) => queryBuilder.findOne(PostBody);
 
+const getNewsCategories = async (query, lang) => {
+    let categories                                   = [];
+    const mongoMatch                                 = {$match: {}};
+    const mongoProject                               = {$project: {_id: 0}};
+    const nestedField                                = `translation.${lang}.categories`;
+    mongoMatch.$match[nestedField]                   = {$regex: query};
+    mongoProject.$project[nestedField]               = {
+        $filter : {
+            input : '',
+            as    : 'category',
+            cond  : {
+                $regexMatch : {
+                    input   : '$$category',
+                    regex   : query,
+                    options : 'i'
+                }
+            }
+        }
+    };
+    mongoProject.$project[nestedField].$filter.input = `$${nestedField}`;
+    const result                                     = await News.aggregate([mongoMatch, mongoProject]);
+    if (!result) throw NSErrors.NotFound;
+    result.forEach((ele) => categories = [...categories, ...ele.translation[lang].categories]); // create array of every category that appeared in result
+    return categories.filter((obj, pos, arr) => arr.map((mapObj) => mapObj).indexOf(obj) === pos); // make each category appear once
+};
+
 const saveNew = async (_new) => {
     if (!_new) throw NSErrors.UnprocessableEntity;
     if (_new._id) {
@@ -35,6 +61,7 @@ const deleteNew = async (_id) => {
 module.exports = {
     getNews,
     getNew,
+    getNewsCategories,
     saveNew,
     deleteNew
 };

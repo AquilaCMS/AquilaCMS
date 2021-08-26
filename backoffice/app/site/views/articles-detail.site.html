@@ -16,6 +16,21 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="categories" class="col-sm-1 control-label" translate>site.detail.categories</label>
+                <div style="display: inline-block;" ng-repeat="category in articles.translation[lang].categories">
+                    <div class="chip" id="categories">
+                        {{category}}
+                        <span class="closebtn" ng-click="removeCat(category, lang)">&times;</span>
+                    </div> 
+                </div>
+            </div>
+            <div class="row">
+                <a class="btn btn-success" ng-click="addCategory(lang)" id="addCategory" translate>
+                    site.detail.addCategory
+                </a>
+            </div>
+            </br>
+            <div class="form-group">
                 <label class="col-sm-1 control-label" translate>site.detail.visible</label>
                 <div class="col-sm-11">
                     <ns-switch ng-model="articles.isVisible" name="visible"></ns-switch>
@@ -24,7 +39,7 @@
             <div class="form-group">
                 <label class="control-label col-sm-1" translate>site.detail.img</label>
                 <div ng-show="articles.img" class="col-sm-5 img-responsive" style="width: fit-content; position: relative;">
-                    <span ng-click="removeImage(articles)" class="upload-delete-image">X</span>
+                    <span ng-click="removeImage(articles)" class="upload-delete-image">&times;</span>
                     <img ng-if="articles.img" ng-src="{{getImage(articles.img)}}" width="200" height="200" />
                 </div>
                 <div class="col-sm-6">
@@ -45,3 +60,30 @@
         </ns-buttons>
     </ns-box>
 </form>
+<style>
+.chip {
+  display: inline-block;
+  padding: 0 25px;
+  height: 35px;
+  font-size: 13px;
+  color: #fff;
+  line-height: 35px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 2px;
+  background-color: #576fa1;
+}
+.closebtn {
+  padding-left: 10px;
+  color: #fff;
+  font-weight: bold;
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.closebtn:hover {
+  color: #000;
+}
+</style>

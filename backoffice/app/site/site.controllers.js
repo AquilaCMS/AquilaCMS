@@ -150,8 +150,8 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
 
 // Edition d'article
 SiteControllers.controller("ArticlesDetailSiteCtrl", [
-    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope", "$translate",
-    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope, $translate)
+    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope", "$modal", "$translate",
+    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope, $modal, $translate)
     {
         var selectedLang = "";
         $scope.isEditMode = false;
@@ -306,5 +306,72 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             const filename = img.split('/')[img.split('/').length -1]
             return `/images/blog/100x100/${$scope.articles._id}/${filename}`;
         }
+
+        $scope.addCategory = function (lang) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/site/views/modals/articles-new-cat.html",
+                controller: "ArticlesNewCatCtrl",
+                resolve: {
+                    Categories: function() {
+                        return $scope.articles.translation[lang].categories
+                    },
+                    Language: function() {
+                        return lang
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (newCat) {
+                if ($scope.articles.translation[lang].categories) {
+                    $scope.articles.translation[lang].categories.push(newCat)
+                } else {
+                    $scope.articles.translation[lang].categories = [newCat];
+                }
+                
+            });
+        };
+
+        $scope.removeCat = function(category, lang) {
+            const index = $scope.articles.translation[lang].categories.indexOf(category)
+            $scope.articles.translation[lang].categories.splice(index, 1)
+        }
+    }
+]);
+
+SiteControllers.controller("ArticlesNewCatCtrl", [
+    "$scope", "$modalInstance", "ArticlesV2", "Categories", "Language", "toastService", "$translate",
+    function ($scope, $modalInstance, ArticlesV2, Categories, Language, toastService, $translate) {
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+        };
+
+        $scope.filterDropdown = function (userInput) {
+            if (userInput !== undefined) {
+                $scope.selectedDropdownItem = userInput;
+            }
+            $scope.dropdownItems = [];
+            return ArticlesV2.getNewsCategories({query: userInput || "", lang: Language}).$promise.then(function (response) {
+                $scope.dropdownItems = response.map(function (item) {
+                    const dropdownObject = angular.copy(item);
+                    dropdownObject.readableName = item;
+                    return dropdownObject;
+                });
+                return $scope.dropdownItems;
+            });
+        };
+
+        $scope.filterDropdown();
+
+        $scope.save = function() {
+            if (!$scope.selectedDropdownItem || (Categories && Categories.includes($scope.selectedDropdownItem))) {
+                toastService.toast("danger", $translate.instant("global.error"))
+            } else {
+                $modalInstance.close($scope.selectedDropdownItem)
+            }
+        }
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss("cancel");
+        };
     }
 ]);
