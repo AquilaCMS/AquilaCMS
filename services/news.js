@@ -6,9 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {News}       = require('../orm/models');
-const QueryBuilder = require('../utils/QueryBuilder');
-const NSErrors     = require('../utils/errors/NSErrors');
+const {News, Languages} = require('../orm/models');
+const QueryBuilder      = require('../utils/QueryBuilder');
+const NSErrors          = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -19,6 +19,9 @@ const getNews = async (PostBody) => queryBuilder.find(PostBody);
 const getNew = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const getNewsTags = async (query, lang) => {
+    if (!lang) {
+        lang = await Languages.findOne({defaultLanguage: true});
+    }
     let tags                                         = [];
     const mongoMatch                                 = {$match: {}};
     const mongoProject                               = {$project: {_id: 0}};

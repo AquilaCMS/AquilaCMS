@@ -84,12 +84,12 @@ SiteControllers.controller("ArticlesSiteCtrl", [
 
 // Création d'article
 SiteControllers.controller("ArticlesNewSiteCtrl", [
-    "$scope", "$location", "ArticlesV2", "toastService", "$translate",
-    function ($scope, $location, ArticlesV2, toastService, $translate)
+    "$scope", "$location", "ArticlesV2", "toastService", "$modal", "$translate",
+    function ($scope, $location, ArticlesV2, toastService, $modal, $translate)
     {
         var selectedLang = "";
 
-        $scope.articles = {};
+        $scope.articles = {translation: {}};
         $scope.file = null;
         $scope.isEditMode = false;
 
@@ -145,6 +145,39 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
                 }
             });
         };
+
+        $scope.addTag = function (lang) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/site/views/modals/articles-new-tag.html",
+                controller: "ArticlesNewTagCtrl",
+                resolve: {
+                    Tags: function() {
+                        if (!$scope.articles.translation[lang]) {
+                            return []
+                        } else {
+                            return $scope.articles.translation[lang].tags
+                        }  
+                    },
+                    Language: function() {
+                        return lang
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (newTag) {
+                if ($scope.articles.translation[lang] && $scope.articles.translation[lang].tags) {
+                    $scope.articles.translation[lang].tags.push(newTag)
+                } else {
+                    $scope.articles.translation[lang] = {tags: [newTag]};
+                }
+                
+            });
+        };
+
+        $scope.removeTag = function(tag, lang) {
+            const index = $scope.articles.translation[lang].tags.indexOf(tag)
+            $scope.articles.translation[lang].tags.splice(index, 1)
+        }
     }
 ]);
 
@@ -350,8 +383,9 @@ SiteControllers.controller("ArticlesNewTagCtrl", [
                 $scope.selectedDropdownItem = userInput;
             }
             $scope.dropdownItems = [];
-            return ArticlesV2.getNewsTags({query: userInput || "", lang: Language}).$promise.then(function (response) {
-                $scope.dropdownItems = response.map(function (item) {
+            return ArticlesV2.getNewsTags({PostBody: {filter: {tags: userInput || "", lang: Language}}}).$promise.then(function (response) {
+                const dataTags = response.datas;
+                $scope.dropdownItems = dataTags.map(function (item) {
                     const dropdownObject = angular.copy(item);
                     dropdownObject.readableName = item;
                     return dropdownObject;
