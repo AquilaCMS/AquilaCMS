@@ -340,6 +340,15 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             return `/images/blog/100x100/${$scope.articles._id}/${filename}`;
         }
 
+        $scope.additionnalButtons = [
+            {
+                text: 'site.detail.addTag',
+                onClick: function () {
+                    $scope.addTag(selectedLang);
+                }
+            }
+        ];
+
         $scope.addTag = function (lang) {
             var modalInstance = $modal.open({
                 templateUrl: "app/site/views/modals/articles-new-tag.html",
