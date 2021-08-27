@@ -16,7 +16,7 @@ const {NewsPreview}         = require('../orm/models');
 module.exports = function (app) {
     app.post('/v2/site/news', securityForceFilter([{isVisible: true}]), getNews);
     app.post('/v2/site/new', securityForceFilter([{isVisible: true}]), getNew);
-    app.post('/v2/site/tags', securityForceFilter([{isVisible: true}]), getNewsTags);
+    app.post('/v2/site/news/tags', securityForceFilter([{isVisible: true}]), getNewsTags);
     app.put('/v2/site/new', adminAuth, saveNew);
     app.post('/v2/site/preview', adminAuth, previewNew);
     app.delete('/v2/site/new/:_id', adminAuth, deleteNew);

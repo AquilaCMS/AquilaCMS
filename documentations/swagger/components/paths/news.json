@@ -37,9 +37,9 @@
                                 "value": {"PostBody":{"filter":{"translation.fr.slug": "THE_SLUG"},"limit":1}}
                             },
                             "example3": {
-                                "summary": "Get all news with tag",
-                                "description": "Get 10 news with a specific tag",
-                                "value": {"PostBody": {"limit": 10, "filter": {"translation.fr.tags": {"$in": ["YOUR_TAG"]}}}}
+                                "summary": "Get all news with tags",
+                                "description": "Get 10 news with a certain tag",
+                                "value": {"PostBody": {"limit": 10, "filter": {"translation.fr.tags": {"$in": ["mytag"]}}}}
                             }
                         }
                     }
@@ -120,7 +120,7 @@
             }
         }
     },
-    "/api/v2/site/tags": {
+    "/api/v2/site/news/tags": {
         "post": {
             "deprecated": false,
             "security": [],
@@ -133,7 +133,7 @@
                                 "datas": {
                                     "type": "array",
                                     "items": {
-                                        "tags": "string"
+                                        "tag": {"type": "string"}
                                     }
                                 }
                             }
@@ -155,7 +155,7 @@
                             "example1": {
                                 "summary": "Get tags",
                                 "description": "Get a list of tags that contain the query",
-                                "value": {"lang":"fr", "query": "mytag"}
+                                "value": {"PostBody": {"filter": {"lang": "fr", "tags": "query"}}}
                             }
                         }
                     }
