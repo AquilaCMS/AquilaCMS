@@ -65,6 +65,7 @@ const getBreadcrumb = async (url) => {
         parts = await parseUrlPrdCat(parts, url, keepL, lang);
     } else if (url.includes('blog')) { // Blog
         const index = url.indexOf('blog');
+        console.log(url);
         if (index > -1) {
             url.splice(index, 1);
         }
@@ -80,7 +81,7 @@ const getBreadcrumb = async (url) => {
             if (result !== null) {
                 parts.push({
                     text   : result.translation[lang].title,
-                    link   : keepL + url.slice(0, 1).join('/'),
+                    link   : url.slice(0, 1).join('/'),
                     isHome : false
                 });
             }
