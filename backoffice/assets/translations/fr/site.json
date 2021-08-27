@@ -18,7 +18,8 @@
         "articleNotExist": "Cet attribut n'existe pas",
         "slugEmpty": "Le slug ne doit pas être vide",
         "infoSaved": "Informations sauvegardées !",
-        "content": "Contenu"
+        "content": "Contenu",
+        "newError": "ERROR: Le tag est vide ou existe déjà"
     },
     "new": {
         "t1": "Nouvel article",

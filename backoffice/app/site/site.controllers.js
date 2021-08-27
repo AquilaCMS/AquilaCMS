@@ -364,7 +364,7 @@ SiteControllers.controller("ArticlesNewTagCtrl", [
 
         $scope.save = function() {
             if (!$scope.selectedDropdownItem || (Tags && Tags.includes($scope.selectedDropdownItem))) {
-                toastService.toast("danger", $translate.instant("global.error"))
+                toastService.toast("danger", $translate.instant("site.detail.newError"))
             } else {
                 $modalInstance.close($scope.selectedDropdownItem)
             }
