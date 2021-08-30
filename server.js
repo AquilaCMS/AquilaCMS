@@ -114,7 +114,7 @@ const initFrontFramework = async (themeName = null) => {
             if (fs.existsSync(pathToInit)) {
                 const process = require('process');
                 process.chdir(pathToTheme); // protect require of the frontFrameWork
-                console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js %s`, color, '\x1b[0m');
+                console.log(`%s@@ Initializing the theme with ${themeName}/themeInit.js %s`, color, '\x1b[0m');
                 const initFileOfConfig = require(pathToInit);
                 if (initFileOfConfig && typeof initFileOfConfig.start === 'function') {
                     console.log(`%s@@ Starting the theme with ${themeName}/themeInit.js => start() %s`, color, '\x1b[0m');
