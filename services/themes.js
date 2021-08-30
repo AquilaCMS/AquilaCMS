@@ -38,10 +38,10 @@ const changeTheme = async (selectedTheme, type) => {
         if (type === 'before' && oldConfig.environment.currentTheme !== selectedTheme) {
             console.log(`Setup selected theme: ${selectedTheme}`);
             await updateService.setMaintenance(true);
-            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}}); // TODO : maybe move this call after buildTheme()
             await require('./modules').setFrontModules(selectedTheme);
             return returnObject;
         } if (type === 'after') {
+            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
             await updateService.setMaintenance(false);
             returnObject.msg = 'OK';
             return returnObject;
