@@ -6,9 +6,9 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {News}       = require('../orm/models');
-const QueryBuilder = require('../utils/QueryBuilder');
-const NSErrors     = require('../utils/errors/NSErrors');
+const {News, Languages} = require('../orm/models');
+const QueryBuilder      = require('../utils/QueryBuilder');
+const NSErrors          = require('../utils/errors/NSErrors');
 
 const restrictedFields = [];
 const defaultFields    = ['*'];
@@ -17,6 +17,35 @@ const queryBuilder     = new QueryBuilder(News, restrictedFields, defaultFields)
 const getNews = async (PostBody) => queryBuilder.find(PostBody);
 
 const getNew = async (PostBody) => queryBuilder.findOne(PostBody);
+
+const getNewsTags = async (query, lang) => {
+    if (!lang) {
+        lang = await Languages.findOne({defaultLanguage: true});
+    }
+    let tags                                         = [];
+    const mongoMatch                                 = {$match: {}};
+    const mongoProject                               = {$project: {_id: 0}};
+    const nestedField                                = `translation.${lang}.tags`;
+    mongoMatch.$match[nestedField]                   = {$regex: query};
+    mongoProject.$project[nestedField]               = {
+        $filter : {
+            input : '',
+            as    : 'tag',
+            cond  : {
+                $regexMatch : {
+                    input   : '$$tag',
+                    regex   : query,
+                    options : 'i'
+                }
+            }
+        }
+    };
+    mongoProject.$project[nestedField].$filter.input = `$${nestedField}`;
+    const result                                     = await News.aggregate([mongoMatch, mongoProject]);
+    if (!result) throw NSErrors.NotFound;
+    result.forEach((ele) => tags = [...tags, ...ele.translation[lang].tags]); // create array of every tag that appeared in result
+    return tags.filter((obj, pos, arr) => arr.map((mapObj) => mapObj).indexOf(obj) === pos); // make each tag appear once
+};
 
 const saveNew = async (_new) => {
     if (!_new) throw NSErrors.UnprocessableEntity;
@@ -35,6 +64,7 @@ const deleteNew = async (_id) => {
 module.exports = {
     getNews,
     getNew,
+    getNewsTags,
     saveNew,
     deleteNew
 };
