@@ -723,7 +723,7 @@ function setItemStatus(order, packages, status1, status2) {
 
 async function payOrder(req) {
     try {
-        const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
+        const query  = {...req.body.filterPayment};
         query.active = true;
         // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
         // Otherwise, we recover all the active payment methods
