@@ -152,6 +152,7 @@
         "available": "Disponible",
         "picture": "Image",
         "variant": "Declinaison",
+        "variants": "Declinaisons",
         "price": "Prix base TTC",
         "quantity": "Quantité",
         "default": "Defaut"

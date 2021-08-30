@@ -4,7 +4,7 @@
     </div>
 </div>
 <div class="modal-body">
-    <div ng-if="selectedVariantValue._id">
+    <div ng-if="selectedVariantValue.code">
         <div class="scrollmenu">
             <ul class="nav nav-tabs" >
                 <li class='active' ><a data-toggle="tab" href="#vMarketing" target="_self" translate>simple.gen</a></li>
@@ -19,7 +19,7 @@
                         <div class="col-sm-11">
                             <label for="vName" class="col-sm-2 control-label" translate>product.general.nom</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="vName" name="vName" ng-model="selectedVariantValue.name" disabled>
+                                <input type="text" class="form-control" id="vName" name="vName" ng-model="selectedVariantValue.name" required>
                                 <div class="ns-error-message">
                                     <div ng-show="(form.vName.$dirty || form.nsSubmitted) && form.vName.$error.required" translate>product.general.fieldReq</div>
                                 </div>
@@ -32,7 +32,7 @@
                         <div class="col-sm-11">
                             <label for="vCode" class="col-sm-2 control-label" translate>product.general.code</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="vCode" name="vCode" ng-model="selectedVariantValue.code" required>
+                                <input type="text" class="form-control" id="vCode" name="vCode" ng-model="selectedVariantValue.code" disabled>
                                 <div class="ns-error-message">
                                     <div ng-show="(form.vCode.$dirty || form.nsSubmitted) && form.vCode.$error.required" translate>product.general.fieldReq</div>
                                 </div>
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div id="vPictures" class="tab-pane">
-                <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="selectedVariantValue" ></ns-product-photo>
+                <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="selectedVariantValue" is-variant="true" ></ns-product-photo>
             </div>
         </div>
     </div>

@@ -152,6 +152,7 @@
         "available": "Available",
         "picture": "Image",
         "variant": "Variant",
+        "variants": "Variants",
         "price": "Base ATI price",
         "quantity": "Qty",
         "default": "Default"

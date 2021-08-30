@@ -34,11 +34,17 @@
                 </thead>
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
                     <tr class="pointer" ng-repeat="declinaison in declinaisons track by declinaison.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="vartiantDetails(declinaison)">
-                        <td><input type="checkbox" ng-click="toggleVariant($event, declinaison)" ng-checked="isVariantSelected(declinaison)"></td>
+                        <td><input type="checkbox" class="form-control" ng-click="toggleVariant($event, declinaison)" ng-checked="isVariantSelected(declinaison)"></td>
                         <td>{{declinaison.translation[lang].name}}</td>
                         <td>{{declinaison.code}}</td>
                         <td>
-                            <select ng-if="isVariantSelected(declinaison)" name="type_{{$index}}" id="type_{{$index}}" ng-model="product.variants[getProductVariantIndex(declinaison.code)].type">
+                            <select 
+                                class="form-control"
+                                ng-if="isVariantSelected(declinaison)" 
+                                name="type_{{$index}}" id="type_{{$index}}" 
+                                ng-model="product.variants[getProductVariantIndex(declinaison.code)].type" 
+                                ng-click="$event.stopPropagation()"
+                            >
                                 <option value="list">Liste</option>
                                 <option value="checkbox">Checkbox</option>
                                 <option value="radio">Radio buttons</option>
@@ -73,7 +79,7 @@
                                 </a>
                             </th>
                             <th class="sorting" role="columnheader" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 200px;">
-                                <a ng-click="sort.type = 'code'; sort.reverse = !sort.reverse; getVariantableAttributes(1);">
+                                <a ng-click="sort.type = 'code'; sort.reverse = !sort.reverse; getVariantableAttributes(1);" translate>
                                     product.declinaisons.variant
                                     <span ng-show="sort.type == 'code' && !sort.reverse" class="ico-chevron-down"></span>
                                     <span ng-show="sort.type == 'code' && sort.reverse" class="ico-chevron-up"></span>
@@ -103,13 +109,13 @@
                         </tr>
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
-                        <tr class="pointer" ng-repeat="variant in product.variants[selectedIndex].values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant)">
-                            <td><ns-switch name="{{variant.code}}_active" ng-model="variant.active"></ns-switch></td>
+                        <tr class="pointer" ng-repeat="variant in product.variants[selectedIndex].translation[lang].values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant)">
+                            <td><ns-switch name="{{variant.code}}_active" ng-model="variant.active" ng-click="$event.stopPropagation()"></ns-switch></td>
                             <td>{{variant.code}}</td>
                             <td>{{variant.name}}</td>
-                            <td>{{(variant.price.ati.special ? variant.price.ati.special : variant.price.ati.normal).toFixed(2)}}€</td>
+                            <td>{{(variant.price.ati.special >= 0 ? variant.price.ati.special : variant.price.ati.normal).toFixed(2)}}€</td>
                             <td>{{variant.stock.qty}}</td>
-                            <td><ns-switch name="{{variant.code}}_default" ng-model="variant.default"></ns-switch></td>
+                            <td><ns-switch name="{{variant.code}}_default" ng-model="variant.default" ng-click="setDefaultVariantValue(product.variants[selectedIndex], variant, $event)"></ns-switch></td>
                         </tr>
                     </tbody>
                 </table>

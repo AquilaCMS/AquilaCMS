@@ -10,6 +10,7 @@ const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const mongoose             = require('mongoose');
 const reviewService        = require('../../services/reviews');
 const Schema               = mongoose.Schema;
+const {ObjectId}           = Schema.Types;
 const NSErrors             = require('../../utils/errors/NSErrors');
 
 const ProductSimpleSchema = new Schema({
@@ -27,14 +28,60 @@ const ProductSimpleSchema = new Schema({
         code        : {type: String},
         type        : {type: String, enum: ['list', 'radio', 'checkbox']},
         sort        : {type: Number},
+        id          : {type: ObjectId, ref: 'attributes', index: true},
         translation : {
             /**
              *  lang: {
-             *      name: String
-             *  }
+             *      name: String,
+             *  values : [{
+                    active  : {type: Boolean},
+                    name    : {type: String},
+                    default : {type: Boolean},
+                    code    : {type: String},
+                    qty     : Number,
+                    price   : {
+                        purchase : Number,
+                        tax      : Number,
+                        et       : {
+                            normal  : Number,
+                            special : Number
+                        },
+                        ati : {
+                            normal  : Number,
+                            special : Number
+                        },
+                        priceSort : {
+                            et  : {type: Number, default: 0},
+                            ati : {type: Number, default: 0}
+                        }
+                    },
+                    images : [
+                        {
+                            url              : String,
+                            name             : String,
+                            title            : String,
+                            alt              : String,
+                            position         : Number,
+                            modificationDate : String,
+                            default          : {type: Boolean, default: false},
+                            extension        : {type: String, default: '.jpg'}
+                        }
+                    ],
+                    stock : {
+                        qty          : {type: Number, default: 0},
+                        qty_booked   : {type: Number, default: 0},
+                        date_selling : Date,
+                        date_supply  : Date,
+                        orderable    : {type: Boolean, default: false},
+                        status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
+                        label        : String,
+                        translation  : {}
+                    },
+                    weight : Number
+                }]
              */
-        },
-        values : [{
+        }
+        /* values : [{
             active  : {type: Boolean},
             name    : {type: String},
             default : {type: Boolean},
@@ -79,7 +126,7 @@ const ProductSimpleSchema = new Schema({
                 translation  : {}
             },
             weight : Number
-        }]
+        }] */
     }]
 }, {
     discriminatorKey : 'kind',
@@ -119,12 +166,20 @@ ProductSimpleSchema.methods.updateData = async function (data) {
 
 ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) {
     const prdServices = require('../../services/products');
+
+    if (item.selected_variants && item.selected_variants.length === 1) {
+        item = {
+            ...item,
+            ...item.selected_variants[0].value
+        };
+    }
     // On gère le stock
     // Commandable et on gère la reservation du stock
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
+        console.log(this);
         if (!(await prdServices.checkProductOrderable(this.stock, item.quantity)).ordering.orderable) throw NSErrors.ProductNotInStock;
         // Reza de la qte
-        await prdServices.updateStock(this._id, -item.quantity);
+        await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variants);
     }
     item.type   = 'simple';
     const _cart = await this.basicAddToCart(cart, item, user, lang);

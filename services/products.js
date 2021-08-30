@@ -1064,29 +1064,65 @@ const getProductsListing = async (req, res) => {
     return result;
 };
 
-const updateStock = async (productId, qty1 = 0, qty2 = undefined) => {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variants) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
-    if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
-        throw NSErrors.ProductNotSalable;
-    }
-    // if qty2 exists, it is either a product return or a shipment
-    if (qty2 !== undefined) {
-        // if qty2 === 0, it is a product return, sino, it is a shipment
-        if (qty2 === 0) {
-            // qty1 = the quantity to return
-            const qtyToReturn = qty1;
-            prd.stock.qty    += qtyToReturn;
-        } else if (qty1 === 0) {
-            const qtyToSend       = qty2;
-            prd.stock.qty        += qtyToSend;
-            prd.stock.qty_booked += qtyToSend;
-        }
+
+    if (selected_variants && selected_variants.length) {
+        updateVariantsStock(prd, qty1, qty2, selected_variants);
     } else {
-        // in the case of an addition to the cart, qty change or deletion of an item in a cart
-        const qtyToAddOrRemove = qty1;
-        prd.stock.qty_booked  -= qtyToAddOrRemove;
+        if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
+            throw NSErrors.ProductNotSalable;
+        }
+        // if qty2 exists, it is either a product return or a shipment
+        if (qty2 !== undefined) {
+            // if qty2 === 0, it is a product return, sino, it is a shipment
+            if (qty2 === 0) {
+                // qty1 = the quantity to return
+                const qtyToReturn = qty1;
+                prd.stock.qty    += qtyToReturn;
+            } else if (qty1 === 0) {
+                const qtyToSend       = qty2;
+                prd.stock.qty        += qtyToSend;
+                prd.stock.qty_booked += qtyToSend;
+            }
+        } else {
+            // in the case of an addition to the cart, qty change or deletion of an item in a cart
+            const qtyToAddOrRemove = qty1;
+            prd.stock.qty_booked  -= qtyToAddOrRemove;
+        }
     }
     await prd.save();
+};
+
+const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variants) => {
+    for (const selected_variant of selected_variants) {
+        const selectedVariantIndex = prd.variants.findIndex((prdVariant) => prdVariant.id === selected_variant.id);
+        if (selectedVariantIndex) {
+            const selectedVariantValueIndex = prd.variants[selectedVariantIndex].values.findIndex((prdVariantValue) => prdVariantValue.code === selected_variant.value.code);
+            if (selectedVariantValueIndex) {
+                if (prd.variants[selectedVariantIndex].values[selectedVariantValueIndex].stock.date_selling > new Date() && prd.variants[selectedVariantIndex].values[selectedVariantValueIndex].stock.status !== 'dif') {
+                    throw NSErrors.ProductNotSalable;
+                }
+                // if qty2 exists, it is either a product return or a shipment
+                if (qty2 !== undefined) {
+                    // if qty2 === 0, it is a product return, sino, it is a shipment
+                    if (qty2 === 0) {
+                        // qty1 = the quantity to return
+                        const qtyToReturn                                                               = qty1;
+                        prd.variants[selectedVariantIndex].values[selectedVariantValueIndex].stock.qty += qtyToReturn;
+                    } else if (qty1 === 0) {
+                        const qtyToSend                                                                        = qty2;
+                        prd.variants[selectedVariantIndex].values[selectedVariantValueIndex].stock.qty        += qtyToSend;
+                        prd.variants[selectedVariantIndex].values[selectedVariantValueIndex].stock.qty_booked += qtyToSend;
+                    }
+                } else {
+                    // in the case of an addition to the cart, qty change or deletion of an item in a cart
+                    const qtyToAddOrRemove                                                                 = qty1;
+                    prd.variants[selectedVariantIndex].values[selectedVariantValueIndex].stock.qty_booked -= qtyToAddOrRemove;
+                }
+            }
+        }
+    }
 };
 
 const handleStock = async (item, _product, inStockQty) => {

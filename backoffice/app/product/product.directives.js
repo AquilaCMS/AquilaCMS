@@ -207,24 +207,25 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                     if(!$scope.product.variants) $scope.product.variants = []
                     $scope.product.variants.push({
                         code: variant.code,
+                        id: variant._id,
                         type: 'list',
                         translation: {
                             [$scope.lang]: {
-                                name: variant.translation[$scope.lang].name
+                                name: variant.translation[$scope.lang].name,
+                                values: variant.translation[$scope.lang].values.map((val) => {
+                                    return {
+                                        active: false,
+                                        name: val,
+                                        code: val,
+                                        weight: $scope.product.weight,
+                                        default: false,
+                                        price: $scope.product.price,
+                                        stock: $scope.product.stock,
+                                        images: $scope.product.images
+                                    }
+                                })
                             }
                         },
-                        values: variant.translation[$scope.lang].values.map((val) => {
-                            return {
-                                active: false,
-                                name: val,
-                                code: val,
-                                weight: $scope.product.weight,
-                                default: false,
-                                price: $scope.product.price,
-                                stock: $scope.product.stock,
-                                images: $scope.product.images
-                            }
-                        })
                     })
                 } else {
                     $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
@@ -263,9 +264,18 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 }
             }
 
+            $scope.setDefaultVariantValue = function (variant, value, e) {
+                e.stopPropagation()
+                variant.translation[$scope.lang].values.map((val) => {
+                    val.default = false
+                    return val
+                })
+                value.default = true;
+            }
+
             $scope.getProductVariantIndex = function (code) {
                 return $scope.product.variants.findIndex(v => v.code === code)
-            }            
+            }     
         }]
     };
 });
@@ -433,7 +443,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
         restrict : "E",
         scope    : {
             form : "=",
-            isSelected: "="
+            isSelected: "=", isVariant: "="
         },
         require     : "ngModel",
         templateUrl : "app/product/views/templates/nsProductPhoto.html",
@@ -478,6 +488,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 $scope.getImageUrl = function (image) {
                     return `images/products/300x300-50/${image._id}/${image.title}${image.extension}`;
                 };
+                console.log($scope)
             }
         ]
     };

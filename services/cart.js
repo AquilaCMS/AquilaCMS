@@ -155,18 +155,33 @@ const addItem = async (req) => {
     if (!cart) {
         cart = await Cart.create({status: 'IN_PROGRESS'});
     }
+
     const _product = await Products.findOne({_id: req.body.item.id});
     await linkCustomerToCart(cart, req);
     if (!_product) {
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
+
+    if (typeof req.body.item.selected_variants !== 'undefined' && req.body.item.selected_variants.length) {
+        // we set variant in the cart !
+        // quick check if all mandatory options are present
+        for (const oneVariant of _product.selected_variants) {
+            if (oneVariant && oneVariant.active === true) {
+                const isPresent = req.body.item.variants.findIndex((oneVariantsInBody) => oneVariantsInBody.id.toString() === oneVariant.id.toString());
+                if (isPresent === -1 ) {
+                    throw NSErrors.InvalidOptions;
+                }
+            }
+        }
+    }
     if (cart.items && cart.items.length) {
         // const index = cart.items.findIndex((item) => item.id._id.toString() === _product._id.toString());
-        const indexes = cart.items.toObject()
+        const indexes     = cart.items.toObject()
             .map((val, index) => ({val, index}))
             .filter(({val}) => val.id._id.toString() === _product._id.toString())
             .map(({index}) => index);
+        let isANewProduct = false;
         for (const index of indexes) {
             if (
                 cart.items[index].type === 'bundle'
@@ -177,12 +192,45 @@ const addItem = async (req) => {
             ) {
                 continue;
             } else {
-                req.body.item._id       = cart.items[index]._id.toString();
-                req.body.item.quantity += cart.items[index].quantity;
-                delete req.body.item.id;
-                delete req.body.item.weight;
-                return updateQty(req);
+                if (typeof req.body.item.selected_variants !== 'undefined' && typeof cart.items[index].selected_variants !== 'undefined') {
+                    // check if same variant
+                    const variantsOfItemInCart = cart.items[index].selected_variants;
+                    if (req.body.item.selected_variants.length === variantsOfItemInCart.length) {
+                        // check if variants are the same
+                        for (const onevariantsOfItemInCart of variantsOfItemInCart) {
+                            if (req.body.item.selected_variants.findIndex((reqItemVariant) => onevariantsOfItemInCart.value.code === reqItemVariant.value.code) < 0) {
+                                isANewProduct = false;
+                                break;
+                            }
+                        }
+                        if (typeof isANewProduct === 'boolean' && isANewProduct === false) {
+                            isANewProduct = index;
+                            break;
+                        }
+                    } else {
+                        isANewProduct = true;
+                    }
+                } else {
+                    if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') {
+                        isANewProduct = index;
+                        break;
+                    } else  if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) {
+                        isANewProduct = index;
+                        break;
+                    }
+                }
             }
+        }
+        if (typeof isANewProduct === 'number') {
+            req.body.item._id = cart.items[isANewProduct]._id.toString();
+
+            req.body.item.quantity += cart.items[isANewProduct].quantity;
+
+            delete req.body.item.id;
+
+            delete req.body.item.weight;
+
+            return updateQty(req);
         }
     }
     if (_product.translation[_lang.code]) {

@@ -1,9 +1,9 @@
 <h3 style="display: inline" translate>simple.pics</h3>
-<span ng-hide="product.code && product._id" style="color: red;" translate>
+<span ng-hide="product.code && (product._id || isVariant)" style="color: red;" translate>
     <br /><br />
     simple.beforeConfigImages
 </span>
-<div class="row col-sm-12" style="margin-top: 15px" ng-show="product.code && product._id">
+<div class="row col-sm-12" style="margin-top: 15px" ng-show="product.code && (product._id || isVariant)">
     <ns-upload-files is-selected="isSelected" accepttype="image/*" multiple="true" type="product" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
 </div>
 <hr />
