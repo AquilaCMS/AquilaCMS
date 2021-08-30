@@ -61,17 +61,14 @@ const yarnBuildCustom = async (themeName = '') => {
         if (fs.existsSync(pathToInit)) {
             const process = require('process');
             process.chdir(linkToTheme); // protect require of the frontFrameWork
-            // remove cache of themes...
-            // const pathToAllThemes = path.join(global.appRoot, 'themes');
-            // Object.keys(require.cache).forEach(function (cachedPath) {
-            //     if (cachedPath.startsWith(pathToAllThemes)) {
-            //         delete require.cache[cachedPath];
-            //     }
-            // });
-            process.env.NODE_PATH  = linkToTheme; // not working
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
-                returnValues = await initFileOfConfig.build();
+                returnValues = await packageManager.execCmd(`node -e 'global.appRoot = "${global.appRoot}"; require("${pathToInit}").build()'`, path.join(linkToTheme, '/'));
+                if (returnValues.stderr === '') {
+                    console.log('Build command log : ', returnValues.stdout);
+                } else {
+                    console.error('Build command error : ', returnValues.stderr);
+                }
                 process.chdir(global.appRoot);
             } else {
                 process.chdir(global.appRoot);

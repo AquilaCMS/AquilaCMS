@@ -4,9 +4,9 @@ const next = require('next').default;
 const express = require('express');
 const i18nextMiddleware = require('i18next-http-middleware');
 const fileSystemBackend = require('i18next-fs-backend');
-const nextBuild = require('next/dist/build').default;
 const modulesUtils = require('../../utils/modules');
-const serverUtils = require('../../utils/server')
+const serverUtils = require('../../utils/server');
+const packageManager = require('../../utils/packageManager');
 const dev = serverUtils.dev;
 
 const themeName = path.basename(__dirname);
@@ -76,8 +76,7 @@ const start = async (server) => {
 
 
 const build = async () => {
-    // do yarn if you want using ../../utils/themes
-    await nextBuild(pathToTheme);
+    await packageManager.execCmd(`yarn build`, pathToTheme);
 }
 
 module.exports = {
