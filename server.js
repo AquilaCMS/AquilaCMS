@@ -52,6 +52,13 @@ process.on('unhandledRejection', (reason, promise) => {
     if (dev) process.exit(1);
 });
 
+process.on('exit', (code) => {
+    if (process.env.AQUILA_ENV !== 'test') { // remove log if in "test"
+        console.error(`/!\\ process exited with process.exit(${code}) /!\\`);
+        console.trace();
+    }
+});
+
 const init = async () => {
     await serverUtils.getOrCreateEnvFile();
     require('./utils/logger')();
@@ -77,6 +84,10 @@ const setEnvConfig = async () => {
         throw new Error('Configuration collection is missing');
     }
     global.envConfig = configuration.toObject();
+
+    if ((await Configuration.countDocuments()) > 1) {
+        console.error(`More than 1 configuration found ! _id '${global.envConfig._id}' is use`);
+    }
 };
 
 const initFrontFramework = async (themeFolder) => {
@@ -122,6 +133,10 @@ const initServer = async () => {
         require('./services/cache').cacheSetting();
         const apiRouter = require('./routes').InitRoutes(express, server);
         await utilsModules.modulesLoadInitAfter(apiRouter, server, passport);
+        if (dev) {
+            const {hotReloadAPI} = require('./services/devFunctions');
+            await hotReloadAPI(express, server, passport);
+        }
 
         if (compile) {
             if (!fs.existsSync(themeFolder)) {

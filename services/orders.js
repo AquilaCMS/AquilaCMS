@@ -115,11 +115,26 @@ const setStatus = async (_id, status, sendMail = true) => {
     }
 };
 
-const paymentSuccess = async (query, updateObject) => {
+const paymentSuccess = async (query, updateObject, paymentCode = '') => {
     console.log('service order paymentSuccess()');
 
     try {
-        const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
+        let filterCode = paymentCode;
+        if (filterCode === '') {
+            if (updateObject.$set) {
+                filterCode = updateObject.$set.payment[0].mode;
+            } else if (updateObject.$push) {
+                filterCode = updateObject.$push.payment.mode;
+            } else if (updateObject.payment) {
+                filterCode = updateObject.payment[0].mode;
+            } else {
+                console.error('paymentSuccess() : no payment in object');
+                return;
+            }
+        }
+        filterCode = filterCode.toLocaleLowerCase();
+
+        const paymentMethod = await PaymentMethods.findOne({code: filterCode});
         const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
@@ -251,9 +266,13 @@ const rma = async (orderId, returnData, lang) => {
     const upd = {rma: returnData};
 
     if (returnData.refund > 0 && returnData.mode !== '') {
-        const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-        if (paymentMethod.isDeferred) {
+        let name            = returnData.mode.toLowerCase(); // if not in PaymentsMethods, we take the name here
+        const paymentMethod = await PaymentMethods.findOne({code: name});
+        if (paymentMethod && paymentMethod.isDeferred) {
             returnData.isDeferred = paymentMethod.isDeferred;
+            if (paymentMethod.translation && paymentMethod.translation[lang]) {
+                name = paymentMethod.translation[lang].name || name;
+            }
         }
         upd.payment = {
             type          : 'DEBIT',
@@ -263,7 +282,7 @@ const rma = async (orderId, returnData, lang) => {
             transactionId : '',
             amount        : returnData.refund,
             comment       : returnData.comment,
-            name          : paymentMethod.translation[lang].name
+            name
         };
     }
 

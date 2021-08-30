@@ -362,10 +362,8 @@
                                             <b translate>order.detail.trans</b> : {{order.delivery.name ? order.delivery.name : "N/A"}}<br />
                                             <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : getDeliveryDate()}}
                                         </p>
-                                        <p ng-show="order.orderReceipt.method === 'withdrawal'">
-                                            <b translate>order.detail.relayPoint</b> : {{order.point_of_sale.name}}<br />
-                                            <b translate>order.detail.dateLivr</b> : {{order.orderReceipt ? getOrderReceiptDate() : ''}}
-                                        </p>
+                                        <p ng-repeat="orderDelDate in dateOrderDelivery" bind-html-compile="orderDelDate.component_template"></p>
+                                        
                                         <p>
                                             <b translate>order.detail.pdsTotal</b>
                                             <span>:</span>
@@ -428,8 +426,8 @@
                                 <td data-label="Date :">
                                     {{payment.operationDate | date:'dd/MM/yyyy HH:mm'}}
                                 </td>
-                                <td data-label="Mode :" translate>
-                                    {{payment.mode | paymentMode}}
+                                <td data-label="Mode :">
+                                    {{payment.mode}}
                                 </td>
                                 <td data-label="Montant :">
                                     {{payment.amount | number: 2}} €

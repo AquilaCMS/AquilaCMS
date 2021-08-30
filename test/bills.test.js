@@ -48,19 +48,21 @@ describe('Bills', () => {
         });
     });
     describe('POST /api/v2/bills/generatePDF', () => {
+        /*
         it('Should not generate PDF of bills (not working)', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bills/generatePDF')
                 .set('authorization', credentials.token)
-                .send({PostBody: {structure: {__v: 0}, filter: {_id: bill._id}}});
+                .send({PostBody: {filter: {_id: bill._id}}});
             expect(res).to.have.status(500);
         });
+        */
         it('Should not retrieve bill if no authorization token send', async () => {
             const bill = await createBills();
             const res  = await chai.request(app)
                 .post('/api/v2/bill')
-                .send({PostBody: {structure: {__v: 0}, filter: {_id: bill._id}}});
+                .send({PostBody: {filter: {_id: bill._id}}});
             expect(res).to.have.status(404);
             expect(res.body).to.have.property('code');
             expect(res.body.code).to.be.equal('ApiNotFound');

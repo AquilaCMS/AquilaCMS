@@ -5,11 +5,18 @@
         <span translate>config.environment.sendMailTest</span>
     </div>
     <div class="modal-body">
+        <label translate>config.environment.informationsSenderAndReceipe</label>
+        <div class="form-group" style="margin:0 auto">
+            <label translate>config.environment.addressSender</label>
+            <input type="email" class="form-control" ng-model="mail.from" required />
+        </div>
+        <br/>
         <div class="form-group" style="margin:0 auto">
             <label translate>config.environment.addressReceipe</label>
             <input type="email" class="form-control" ng-model="mail.to" required />
         </div>
-        
+        <br/>
+        <label style="color:red;" ng-show="equalInputs" translate>config.environment.alertSenderAndReceipe</label>
     </div>
     <div class="modal-footer">
         <a download class="btn btn-success" ng-click="cancel()" translate>

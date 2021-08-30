@@ -26,13 +26,13 @@
           "type": "select",
           "value": "sweats-sweats",
           "operator": "eq"
-        }, 
+        },
         {
-            "_id" : "5fbe5d1cb739d135f4fcdf3a", 
-            "target" : "code", 
-            "type" : "text", 
-            "value" : "allProducts", 
-            "operator" : "neq"
+          "_id": "5fbe5d1cb739d135f4fcdf3a",
+          "target": "code",
+          "type": "text",
+          "value": "allProducts",
+          "operator": "neq"
         }
       ],
       "other_rules": [],
@@ -103,18 +103,18 @@
           "operator": "eq"
         },
         {
-            "_id": "5ecad620eef484275889366d",
-            "target": "attr.translation.fr.loveit",
-            "type": "bool",
-            "value": "true",
-            "operator": "eq"
+          "_id": "5ecad620eef484275889366d",
+          "target": "attr.translation.fr.loveit",
+          "type": "bool",
+          "value": "true",
+          "operator": "eq"
         },
         {
-            "_id": "5ecad620eef484275889366e",
-            "target": "attr.translation.en.loveit",
-            "type": "bool",
-            "value": "true",
-            "operator": "eq"
+          "_id": "5ecad620eef484275889366e",
+          "target": "attr.translation.en.loveit",
+          "type": "bool",
+          "value": "true",
+          "operator": "eq"
         }
       ],
       "other_rules": [],

@@ -21,7 +21,7 @@ const createUserAdminAndLogin = async (email = null, password = null) => {
     await user.save();
 
     const res = await chai.request(app)
-        .post('/api/v2/auth/login')
+        .post('/api/v2/auth/login/admin')
         .send({username: doc.email, password: doc.password});
 
     expect(res.body).to.have.property('code').to.eq('LOGIN_SUCCESS');

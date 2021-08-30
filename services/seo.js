@@ -25,7 +25,7 @@ const sitemapConf = {
     home     : {frequency: 'daily', priority: '1.0'},
     product  : {frequency: 'weekly', priority: '0.5'},
     category : {frequency: 'daily', priority: '0.8'},
-    blog     : {frequency: 'weekly', priority: '0.5'},
+    blog     : {frequency: 'weekly', priority: '0.4'},
     other    : {frequency: 'weekly', priority: '0.2'}
 };
 
@@ -50,7 +50,10 @@ const genSitemap = async () => {
             }
 
             const sitemap = {
-                '@' : {xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9'},
+                '@' : {
+                    xmlns         : 'http://www.sitemaps.org/schemas/sitemap/0.9',
+                    'xmlns:xhtml' : 'https://www.w3.org/2002/08/xhtml/xhtml1-strict.xsd'
+                },
                 url : []
             };
 
@@ -79,10 +82,17 @@ const genSitemap = async () => {
                         if (languages.length > 1) {
                             for (let k = 0, lenk = languages.length; k < lenk; k++) {
                                 if (languages[k] && statics[i] && statics[i].translation[languages[k].code] && statics[i].translation[languages[k].code].slug) {
-                                    xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}${page === 'home' ? '' : statics[i].translation[languages[k].code].slug}"`);
+                                    const link = `${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}${page === 'home' ? '' : statics[i].translation[languages[k].code].slug}`;
+                                    xhtml.push({
+                                        '@' : {
+                                            rel      : 'alternate',
+                                            hreflang : `${languages[k].code}`,
+                                            href     : link
+                                        }
+                                    });
                                 }
                             }
-                            url.xhtml = xhtml;
+                            url['xhtml:link'] = xhtml;
                         }
                         sitemap.url.push(url);
                     }
@@ -99,7 +109,7 @@ const genSitemap = async () => {
                     if (_category !== undefined && _category.slug) {
                         const xhtml = [];
                         const url   = {
-                            loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/` : 'c/') + _category.slug,
+                            loc        : appUrl + (lang && lang.defaultLanguage === false ? `${lang.code}/c/` : 'c/') + _category.slug,
                             lastmod    : moment().format('YYYY-MM-DD'),
                             changefreq : sitemapConf.category.frequency,
                             priority   : sitemapConf.category.priority
@@ -107,10 +117,17 @@ const genSitemap = async () => {
                         if (languages.length > 1) {
                             for (let k = 0, lenk = languages.length; k < lenk; k++) {
                                 if (categories[i].translation[languages[k].code] !== undefined && categories[i].translation[languages[k].code].slug !== undefined) {
-                                    xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : 'c/'}${categories[i].translation[languages[k].code].slug}"`);
+                                    const link = `${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/c/` : 'c/'}${categories[i].translation[languages[k].code].slug}`;
+                                    xhtml.push({
+                                        '@' : {
+                                            rel      : 'alternate',
+                                            hreflang : `${languages[k].code}`,
+                                            href     : link
+                                        }
+                                    });
                                 }
                             }
-                            url.xhtml = xhtml;
+                            url['xhtml:link'] = xhtml;
                         }
                         sitemap.url.push(url);
                     }
@@ -137,11 +154,18 @@ const genSitemap = async () => {
                             for (let k = 0, lenk = languages.length; k < lenk; k++) {
                                 let canonical = '';
                                 if (products[i].translation[languages[k].code] !== undefined && products[i].translation[languages[k].code].canonical !== undefined) {
-                                    canonical = products[i].translation[languages[k].code].canonical[0] === '/' ? products[i].translation[languages[k].code].canonical.slice(1) : products[i].translation[languages[k].code].canonical;
-                                    xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? '' : ''}${canonical}"`);
-                                    url.xhtml = xhtml;
+                                    canonical  = products[i].translation[languages[k].code].canonical[0] === '/' ? products[i].translation[languages[k].code].canonical.slice(1) : products[i].translation[languages[k].code].canonical;
+                                    const link = `${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? '' : ''}${canonical}`;
+                                    xhtml.push({
+                                        '@' : {
+                                            rel      : 'alternate',
+                                            hreflang : `${languages[k].code}`,
+                                            href     : link
+                                        }
+                                    });
                                 }
                             }
+                            url['xhtml:link'] = xhtml;
                         }
                         sitemap.url.push(url);
                     }
@@ -166,10 +190,17 @@ const genSitemap = async () => {
                             if (languages.length > 1) {
                                 for (let k = 0, lenk = languages.length; k < lenk; k++) {
                                     if (articles[i].translation[languages[k].code] !== undefined) {
-                                        xhtml.push(`rel="alternate" hreflang="${languages[k].code}" href="${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}"`);
+                                        const link = `${appUrl}${_languages && _languages[languages[k].code].defaultLanguage === false ? `${languages[k].code}/` : ''}blog/${articles[i].translation[languages[k].code].slug}`;
+                                        xhtml.push({
+                                            '@' : {
+                                                rel      : 'alternate',
+                                                hreflang : `${languages[k].code}`,
+                                                href     : link
+                                            }
+                                        });
                                     }
                                 }
-                                url.xhtml = xhtml;
+                                url['xhtml:link'] = xhtml;
                             }
                             sitemap.url.push(url);
                         }
@@ -177,27 +208,8 @@ const genSitemap = async () => {
                 }
             }
 
-            let sitemapString;
-
-            if (languages.length > 1) {
-                sitemap['@'].xmlnsxhtml = 'http://www.w3.org/1999/xhtml';
-                sitemapString           = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
-
-                let find      = '<xhtml>';
-                let re        = new RegExp(find, 'g');
-                sitemapString = sitemapString.replace(re, '<xhtml:link ');
-
-                find          = '</xhtml>';
-                re            = new RegExp(find, 'g');
-                sitemapString = sitemapString.replace(re, '/>');
-
-                find          = 'xmlnsxhtml';
-                re            = new RegExp(find, 'g');
-                sitemapString = sitemapString.replace(re, 'xmlns:xhtml');
-            } else {
-                sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
-            }
-            const sitemapPath = path.resolve(getUploadDirectory(), 'sitemap.xml');
+            const sitemapString = js2xmlparser.parse('urlset', sitemap, {declaration: {version: '1.0', encoding: 'utf-8', standalone: 'yes'}});
+            const sitemapPath   = path.resolve(getUploadDirectory(), 'sitemap.xml');
             await fs.writeFile(sitemapPath, sitemapString);
             inCrawl = false;
             console.log(`\x1b[5m\x1b[32m ${new Date()} End of the sitemap generation\x1b[0m`);
@@ -214,7 +226,7 @@ const genSitemap = async () => {
 * Remove sitemap.xml
 */
 const removeSitemap = async () => {
-    const filePath = './sitemap.xml';
+    const filePath = path.join( getUploadDirectory(), 'sitemap.xml');
     if (await fs.hasAccess(filePath)) {
         await fs.unlink(filePath);
     }
@@ -224,13 +236,11 @@ const removeSitemap = async () => {
 * Allow / Disallow seo in robots.txt
 */
 const manageRobotsTxt = async (allow = true) => {
-    const filePath  = './robots.txt';
-    let contentFile = `User-agent: *
-Allow: /`;
+    const filePath  = path.join( getUploadDirectory(), 'robots.txt');
+    let contentFile = 'User-agent: *\nAllow: /';
 
     if (!allow) {
-        contentFile = `User-agent: *
-Disallow: /`;
+        contentFile = 'User-agent: *\nDisallow: /';
     }
 
     await fs.writeFile(filePath, contentFile);
