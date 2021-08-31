@@ -340,16 +340,7 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        // TODO Change place ?
-        const pathToTheme = path.join(global.appRoot, 'themes', theme);
-        // "dynamic_langs.js" is required to build (reactjs) theme
-        const pathToDynamicLangs = path.join(pathToTheme, 'dynamic_langs.js');
-        const isExist            = await fs.existsSync(pathToDynamicLangs);
-        if (!isExist) {
-            // Create the file if not exist
-            const {createDynamicLangFile} = require('./languages');
-            await createDynamicLangFile();
-        }
+        await generateDynamicLangFile(theme);
         const returnValues = await themesUtils.yarnBuildCustom(theme);
         if (returnValues?.stdout === 'Build failed') {
             return {
@@ -361,6 +352,26 @@ async function buildTheme(theme) {
             msg    : 'OK',
             result : returnValues
         };
+    } catch (err) {
+        return {
+            msg   : 'KO',
+            error : err
+        };
+    }
+}
+
+async function generateDynamicLangFile(theme) {
+    try {
+        const pathToTheme = path.join(global.appRoot, 'themes', theme);
+        // "dynamic_langs.js" is required to build (reactjs) theme
+        const pathToDynamicLangs = path.join(pathToTheme, 'dynamic_langs.js');
+        const isExist            = await fs.existsSync(pathToDynamicLangs);
+        if (!isExist) {
+            // Create the file if not exist
+            const {createDynamicLangFile} = require('./languages');
+            await createDynamicLangFile();
+        }
+        return 'OK';
     } catch (err) {
         return {
             msg   : 'KO',

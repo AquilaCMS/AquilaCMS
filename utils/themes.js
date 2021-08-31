@@ -67,7 +67,7 @@ const yarnBuildCustom = async (themeName = '') => {
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);
                 } else {
-                    console.error('Build command error : ', returnValues.stderr);
+                    returnValues.stdout = 'Build failed';
                 }
                 process.chdir(global.appRoot);
             } else {
