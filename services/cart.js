@@ -17,6 +17,7 @@ const {
 }                       = require('../orm/models');
 const aquilaEvents      = require('../utils/aquilaEvents');
 const QueryBuilder      = require('../utils/QueryBuilder');
+const utilsDatabase     = require('../utils/database');
 const NSErrors          = require('../utils/errors/NSErrors');
 const servicesLanguages = require('./languages');
 const ServicePromo      = require('./promo');
@@ -93,8 +94,10 @@ const setCartAddresses = async (cartId, addresses) => {
         resp = await Cart.findOneAndUpdate({_id: cartId}, {$set: {...update}}, {new: true});
         if (!resp) {
             const newCart = await Cart.create(update);
+            await utilsDatabase.populateItems(newCart.items);
             return {code: 'CART_CREATED', data: {cart: newCart}};
         }
+        await utilsDatabase.populateItems(resp.items);
         return {code: 'CART_UPDATED', data: {cart: resp}};
     } catch (err) {
         console.log(err);
