@@ -239,7 +239,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                 }
                                                                                                 {
                                                                                                     order.bills && order.bills.length > 0 && order.bills.map((i) => (
-                                                                                                        <li key={i._id} style={{ cursor: 'pointer' }} onClick={() => this.downloadBill(i)}>
+                                                                                                        <li key={i._id} style={{ cursor: 'pointer' }} onClick={() => this.downloadBill(i, order.number)}>
                                                                                                             {t(`account:orders.page.label.download_${i.avoir === false ? 'bill' : 'asset'}`)}
                                                                                                         </li>
                                                                                                     ))
