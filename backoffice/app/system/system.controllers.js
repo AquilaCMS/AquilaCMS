@@ -97,30 +97,7 @@ SystemControllers.controller("systemGeneralController", [
             }
         }
 
-
-        $scope.newNextVersion = (nextVersion) => {
-            if (nextVersion !== $scope.next) {
-                $scope.showThemeLoading = true;
-                System.changeNextVersionRoute({ nextVersion }, function (response) {
-                    toastService.toast("success", $translate.instant("system.environment.other.restartProgress"));
-                    $scope.showThemeLoading = false;
-                    $http.get("/restart");
-                    $interval(() => {
-                        $http.get("/serverIsUp").then(() => {
-                            location.href = window.location = $scope.urlRedirect;
-                        })
-                    }, 10000);
-                }, function (error) {
-                    $scope.showThemeLoading = false;
-                    console.error(error);
-                    toastService.toast("danger", error.message);
-                });
-            } else {
-                toastService.toast("danger", $translate.instant("system.environment.other.changeVersion"));
-            }
-        };
-
-        // Permet de télécharger l'ensemble des documents du serveur au format zip
+        // Allows you to download all documents from the server in zip format
 
         $scope.downloadDocuments = function () {
             toastService.toast("info", $translate.instant("system.environment.other.takeTime"));
@@ -196,25 +173,6 @@ SystemControllers.controller("systemGeneralController", [
                 console.error(ex);
             }
         };
-
-        $scope.next = {
-            actual: "Loading..."
-        };
-        $scope.nextVersion = "";
-        $scope.nextVLoader = true;
-
-        const getNextVersions = () => {
-            System.getNextVersionRoute({}, function (response) {
-                $scope.next = response.datas;
-                $scope.nextVersion = response.datas.actual;
-                $scope.nextVLoader = false;
-            }, function (error) {
-                toastService.toast("danger", error.message);
-                $scope.nextVLoader = false;
-            });
-        };
-        getNextVersions();
-
 
         $scope.validate = function () {
             $scope.showModuleLoading = true;
