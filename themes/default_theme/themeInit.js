@@ -76,7 +76,7 @@ const start = async (server) => {
 
 
 const build = async () => {
-    await packageManager.execCmd(`yarn build`, pathToTheme);
+    await packageManager.execCmd(`npx next build`, pathToTheme);
 }
 
 module.exports = {

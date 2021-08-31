@@ -7,6 +7,7 @@
  */
 
 const path           = require('path');
+const slash          = require('slash');
 const fs             = require('fs');
 const packageManager = require('./packageManager');
 const {isProd}       = require('./server');
@@ -63,11 +64,13 @@ const yarnBuildCustom = async (themeName = '') => {
             process.chdir(linkToTheme); // protect require of the frontFrameWork
             const initFileOfConfig = require(pathToInit);
             if (typeof initFileOfConfig.build === 'function') {
-                returnValues = await packageManager.execCmd(`node -e 'global.appRoot = "${global.appRoot}"; require("${pathToInit}").build()'`, path.join(linkToTheme, '/'));
+                const appRoot = slash(global.appRoot);
+                returnValues  = await packageManager.execCmd(`node -e "global.appRoot = '${appRoot}'; require('${slash(pathToInit)}').build()"`, slash(path.join(linkToTheme, '/')));
                 if (returnValues.stderr === '') {
                     console.log('Build command log : ', returnValues.stdout);
                 } else {
                     returnValues.stdout = 'Build failed';
+                    console.error(returnValues.stderr);
                 }
                 process.chdir(global.appRoot);
             } else {
