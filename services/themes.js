@@ -340,17 +340,23 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
-        await generateDynamicLangFile(theme);
-        const returnValues = await themesUtils.yarnBuildCustom(theme);
-        if (returnValues?.stdout === 'Build failed') {
+        const isDynamicFileHere = await generateDynamicLangFile(theme);
+        if (isDynamicFileHere === 'OK') {
+            const returnValues = await themesUtils.yarnBuildCustom(theme);
+            if (returnValues?.stdout === 'Build failed') {
+                return {
+                    msg    : 'KO',
+                    result : returnValues
+                };
+            }
             return {
-                msg    : 'KO',
+                msg    : 'OK',
                 result : returnValues
             };
         }
         return {
-            msg    : 'OK',
-            result : returnValues
+            msg    : 'KO',
+            result : 'No dynamic lang file'
         };
     } catch (err) {
         return {
