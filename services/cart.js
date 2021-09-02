@@ -25,6 +25,7 @@ const ServicesProducts  = require('./products');
 const servicesTerritory = require('./territory');
 const servicesMail      = require('./mail');
 const ServiceJob        = require('./job');
+const cart              = require('../orm/models/cart');
 
 const restrictedFields = [];
 const defaultFields    = ['_id', 'delivery', 'status', 'items', 'promos', 'orderReceipt'];
@@ -59,7 +60,7 @@ const getCartById = async (id, PostBody = null, user = null, lang = null, req = 
         const productsCatalog = await ServicePromo.checkPromoCatalog(products, user, lang, false);
         if (productsCatalog) {
             for (let i = 0, leni = cart.items.length; i < leni; i++) {
-                if (cart.items[i].type !== 'bundle') cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
+                if (cart.items[i].type !== 'bundle' && !cart.items[i].selected_variants) cart = await ServicePromo.applyPromoToCartProducts(productsCatalog, cart, i);
             }
             cart = await ServicePromo.checkQuantityBreakPromo(cart, user, lang, false);
             await cart.save();
@@ -120,7 +121,7 @@ const deleteCartItem = async (cartId, itemId) => {
             const ServicesProducts = require('./products');
             const cartItem         = cart.items[itemIndex];
             if (cartItem.type === 'simple') {
-                await ServicesProducts.updateStock(cartItem.id._id, cartItem.quantity);
+                await ServicesProducts.updateStock(cartItem.id._id, cartItem.quantity, undefined, cartItem.selected_variants, cartItem.lang);
             } else if (cartItem.type === 'bundle') {
                 for (let i = 0; i < cartItem.selections.length; i++) {
                     const selectionProducts = cartItem.selections[i].products;
@@ -163,12 +164,14 @@ const addItem = async (req) => {
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
 
-    if (typeof req.body.item.selected_variants !== 'undefined' && req.body.item.selected_variants.length) {
+    if (_product.variants && (typeof req.body.item.selected_variants === 'undefined' || req.body.item.selected_variants.length === 0)) {
+        throw NSErrors.InvalidOptions;
+    } else if (_product.variants) {
         // we set variant in the cart !
         // quick check if all mandatory options are present
-        for (const oneVariant of _product.selected_variants) {
+        for (const oneVariant of _product.variants) {
             if (oneVariant && oneVariant.active === true) {
-                const isPresent = req.body.item.variants.findIndex((oneVariantsInBody) => oneVariantsInBody.id.toString() === oneVariant.id.toString());
+                const isPresent = req.body.item.selected_variants.findIndex((oneVariantsInBody) => oneVariantsInBody.code.toString() === oneVariant.code.toString());
                 if (isPresent === -1 ) {
                     throw NSErrors.InvalidOptions;
                 }
@@ -211,10 +214,10 @@ const addItem = async (req) => {
                         isANewProduct = true;
                     }
                 } else {
-                    if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options === 'undefined') {
+                    if (typeof req.body.item.selected_variants === 'undefined' && typeof cart.items[index].selected_variants === 'undefined') {
                         isANewProduct = index;
                         break;
-                    } else  if (typeof req.body.item.options === 'undefined' && typeof cart.items[index].options.length !== 'undefined' && cart.items[index].options.length === 0) {
+                    } else  if (typeof req.body.item.selected_variants === 'undefined' && typeof cart.items[index].selected_variants.length !== 'undefined' && cart.items[index].selected_variants.length === 0) {
                         isANewProduct = index;
                         break;
                     }
@@ -280,12 +283,12 @@ const updateQty = async (req) => {
         if (_product.type === 'simple') {
             if (
                 quantityToAdd > 0
-                && !ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd).ordering.orderable
+                && !(await ServicesProducts.checkProductOrderable(_product.stock, quantityToAdd)).ordering.orderable
             ) {
                 throw NSErrors.ProductNotInStock;
             }
             // quantity reservation
-            await ServicesProducts.updateStock(_product._id, -quantityToAdd);
+            await ServicesProducts.updateStock(_product._id, -quantityToAdd, undefined, item.selected_variants, item.lang);
         } else if (_product.type === 'bundle') {
             for (let i = 0; i < item.selections.length; i++) {
                 const selectionProducts = item.selections[i].products;
@@ -401,7 +404,7 @@ const cartToOrder = async (cartId, _user, lang = '') => {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -cartItem.quantity);
+                    await ServicesProducts.updateStock(_product._id, -cartItem.quantity, undefined, cartItem.selected_variants, cartItem.lang);
                 } else if (_product.kind === 'BundleProduct') {
                     for (let j = 0; j < cartItem.selections.length; j++) {
                         const section = cartItem.selections[j];
@@ -495,7 +498,7 @@ const removeOldCarts = async () => {
                 const ServicesProducts = require('./products');
                 const cartItem         = carts[cartIndex].items[cartItemIndex];
                 if (cartItem.type === 'simple') {
-                    await ServicesProducts.updateStock(cartItem.id, cartItem.quantity);
+                    await ServicesProducts.updateStock(cartItem.id, cartItem.quantity, undefined, cartItem.selected_variants, cartItem.lang);
                 } else if (cartItem.type === 'bundle') {
                     for (let selectionIndex = 0; selectionIndex < cartItem.selections.length; selectionIndex++) {
                         const selectionProducts = cartItem.selections[selectionIndex].products;

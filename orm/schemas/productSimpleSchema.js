@@ -170,16 +170,17 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
     if (item.selected_variants && item.selected_variants.length === 1) {
         item = {
             ...item,
-            ...item.selected_variants[0].value
+            ...item.selected_variants[0].value,
+            id : item.id,
+            lang
         };
     }
     // On gère le stock
     // Commandable et on gère la reservation du stock
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
-        console.log(this);
         if (!(await prdServices.checkProductOrderable(this.stock, item.quantity)).ordering.orderable) throw NSErrors.ProductNotInStock;
         // Reza de la qte
-        await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variants);
+        await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variants, item.lang);
     }
     item.type   = 'simple';
     const _cart = await this.basicAddToCart(cart, item, user, lang);

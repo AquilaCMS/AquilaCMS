@@ -111,7 +111,7 @@ const paymentSuccess = async (query, updateObject) => {
 
     try {
         const paymentMethod = await PaymentMethods.findOne({code: updateObject.$set ? updateObject.$set.payment[0].mode.toLowerCase() : updateObject.payment[0].mode.toLowerCase()});
-        const _order = await Orders.findOneAndUpdate(query, updateObject, {new: true});
+        const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
             throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
         }
@@ -140,7 +140,7 @@ const paymentSuccess = async (query, updateObject) => {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity);
+                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity, undefined, orderItem.selected_variants, _order.lang);
                 } else if (_product.kind === 'BundleProduct') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
@@ -271,7 +271,7 @@ const rma = async (orderId, returnData) => {
                 const _product = await Products.findOne({_id: rmaProduct.product_id});
                 if (_product.type === 'simple') {
                     // The quantity is incremented
-                    await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0);
+                    await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0, rmaProduct.selected_variants, _order.lang);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < rmaProduct.selections.length; i++) {
                         const selectionProducts = rmaProduct.selections[i].products;
@@ -370,13 +370,13 @@ const rma = async (orderId, returnData) => {
 
         await ServiceMail.sendGeneric('rmaOrder', _order.customer.email, {...datas, refund: returnData.refund, date: data.paymentDate});
     }
-    return _order
+    return _order;
 };
 
 const infoPayment = async (orderId, returnData, sendMail) => {
     const paymentMethod = await PaymentMethods.findOne({code: returnData.mode.toLowerCase()});
-    if(paymentMethod.isDeferred) {
-        returnData.isDeferred = paymentMethod.isDeferred
+    if (paymentMethod.isDeferred) {
+        returnData.isDeferred = paymentMethod.isDeferred;
     }
     returnData.operationDate = Date.now();
     await setStatus(orderId, 'PAID');
@@ -403,7 +403,7 @@ const infoPayment = async (orderId, returnData, sendMail) => {
         }
     }
     aquilaEvents.emit('aqPaymentReturn', _order._id);
-    return _order
+    return _order;
 };
 
 const duplicateItemsFromOrderToCart = async (req) => {
@@ -566,7 +566,7 @@ const addPackage = async (orderId, pkgData) => {
                 const _product = await Products.findOne({_id: pkgProduct.product_id});
                 if (_product.type === 'simple') {
                     // Decrement the quantity
-                    await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped);
+                    await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped, pkgProduct.selected_variants, _order.lang);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < pkgProduct.selections.length; i++) {
                         const selectionProducts = pkgProduct.selections[i].products;

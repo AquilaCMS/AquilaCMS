@@ -147,19 +147,29 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        item.price = {
-            vat  : {rate: this.price.tax},
-            unit : {
-                et  : this.price.et.normal,
-                ati : this.price.ati.normal
-            }
-        };
-
-        if (this.price.et.special !== undefined && this.price.et.special !== null) {
-            item.price.special = {
-                et  : this.price.et.special,
-                ati : this.price.ati.special
+        if (item.selected_variants) {
+            item.price = {
+                unit : {
+                    ati : item.selected_variants[0].value.price.ati.special > 0 ? item.selected_variants[0].value.price.ati.special : item.selected_variants[0].value.price.ati.normal,
+                    et  : item.selected_variants[0].value.price.et.special > 0 ? item.selected_variants[0].value.price.et.special : item.selected_variants[0].value.price.et.normal
+                },
+                vat : {rate: item.selected_variants[0].value.price.tax}
             };
+        } else {
+            item.price = {
+                vat  : {rate: this.price.tax},
+                unit : {
+                    et  : this.price.et.normal,
+                    ati : this.price.ati.normal
+                }
+            };
+
+            if (this.price.et.special !== undefined && this.price.et.special !== null) {
+                item.price.special = {
+                    et  : this.price.et.special,
+                    ati : this.price.ati.special
+                };
+            }
         }
     }
     const resp = await this.model('cart').findOneAndUpdate({_id: cart._id}, {$push: {items: item}}, {new: true});
