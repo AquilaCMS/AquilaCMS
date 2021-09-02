@@ -90,6 +90,7 @@ const yarnBuildCustom = async (themeName = '') => {
             }
         }
     } catch (e) {
+        console.error(e);
         returnValues = {
             stdout : 'Build failed',
             stderr : e
