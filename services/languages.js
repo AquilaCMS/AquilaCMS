@@ -114,16 +114,11 @@ async function getTranslatePath(lang) {
 /**
  * Create languages in file "dynamic_langs.js" in the root's theme (for reactjs)
  */
-const createDynamicLangFile = async (fromInstaller = false) => {
+const createDynamicLangFile = async (selectedTheme = global.envConfig.environment.currentTheme) => {
     const _languages  = await Languages.find({status: 'visible'}).select({code: 1, defaultLanguage: 1, _id: 0});
     const contentFile = `module.exports = [${_languages}];`;
 
-    let themeActual = 'default_theme'; // if installer -> default_theme
-    if (fromInstaller === false) {
-        themeActual = global.envConfig.environment.currentTheme;
-    }
-    const linkToFile = path.join(global.appRoot, 'themes', themeActual, 'dynamic_langs.js');
-    // write file
+    const linkToFile = path.join(global.appRoot, 'themes', selectedTheme, 'dynamic_langs.js');
     try {
         await fs.writeFile(linkToFile, contentFile);
     } catch (e) {

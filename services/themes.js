@@ -375,7 +375,7 @@ async function generateDynamicLangFile(theme) {
         if (!isExist) {
             // Create the file if not exist
             const {createDynamicLangFile} = require('./languages');
-            await createDynamicLangFile();
+            await createDynamicLangFile(theme);
         }
         return 'OK';
     } catch (err) {
