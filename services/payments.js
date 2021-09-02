@@ -93,8 +93,8 @@ const deletePaymentMethod = async (_id) => PaymentMethods.findOneAndDelete({_id}
 
 // --------------------------------------------------- POST REFACTOR
 
-const paymentSuccess = async (query, updateObject, paymentCode = '') => {
-    console.log('service order paymentSuccess()');
+const successfulPayment = async (query, updateObject, paymentCode = '') => {
+    console.log('service order successfulPayment()');
 
     try {
         let filterCode = paymentCode;
@@ -106,7 +106,7 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
             } else if (updateObject.payment) {
                 filterCode = updateObject.payment[0].mode;
             } else {
-                console.error('paymentSuccess() : no payment in object');
+                console.error('successfulPayment() : no payment in object');
                 return;
             }
         }
@@ -115,7 +115,7 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
         const paymentMethod = await PaymentMethods.findOne({code: filterCode});
         const _order        = await Orders.findOneAndUpdate(query, updateObject, {new: true});
         if (!_order) {
-            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.');
+            throw new Error('La commande est introuvable ou n\'est pas en attente de paiement.'); // TODO Englais
         }
         // Immediate payment method (e.g. credit card)
         if (!paymentMethod.isDeferred) {
@@ -188,7 +188,7 @@ const paymentSuccess = async (query, updateObject, paymentCode = '') => {
     }
 };
 
-const paymentFail = async (query, update) => {
+const failedPayment = async (query, update) => {
     if (update.status) { delete update.status; }
     if (update.$set && update.$set.status) {
         update.$set.status = ServiceOrders.orderStatuses.PAYMENT_FAILED;
@@ -220,7 +220,7 @@ const infoPayment = async (orderId, returnData, sendMail, lang) => {
 
         // datas.orderdata = orderdata.join(", ");
         /**
-         * DO NOT DELETE THE COMMENTED CODE BELOW
+         * DO NOT DELETE THE COMMENTED CODE ABOVE
          */
         ServiceMail.sendMailOrderToClient(_order._id).catch((err) => {
             console.error(err);
@@ -254,7 +254,7 @@ const updatePayment = async (body) => {
     }
 };
 
-async function payOrder(req) {
+async function orderPayment(req) {
     try {
         const query  = {...req.body.filterPayment};
         query.active = true;
@@ -281,7 +281,7 @@ async function deferredPayment(req, method) {
         if (!order) {
             throw NSErrors.OrderNotFound;
         }
-        await paymentSuccess({
+        await successfulPayment({
             number        : req.params.orderNumber,
             status        : 'PAYMENT_PENDING',
             'customer.id' : req.info._id
@@ -329,9 +329,9 @@ module.exports = {
     getPaymentMethod,
     savePaymentMethod,
     deletePaymentMethod,
-    paymentSuccess,
-    paymentFail,
+    successfulPayment,
+    failedPayment,
     infoPayment,
     updatePayment,
-    payOrder
+    orderPayment
 };
