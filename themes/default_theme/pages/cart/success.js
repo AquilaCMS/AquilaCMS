@@ -279,6 +279,19 @@ class CartSuccess extends React.Component {
                                                                                                             }
                                                                                                         </ul>
                                                                                                     }
+                                                                                                    {
+                                                                                                        item.selected_variants && item.selected_variants.length > 0 && (
+                                                                                                            <div className="variants__container">
+                                                                                                                <ul className="variants__list">
+                                                                                                                    {
+                                                                                                                        item.selected_variants.map((variant) => (
+                                                                                                                            <li className="variant"><p>{variant.name}: {variant.value.name}</p></li>
+                                                                                                                        ))
+                                                                                                                    }
+                                                                                                                </ul>
+                                                                                                            </div>
+                                                                                                        )
+                                                                                                    }
                                                                                                     <span
                                                                                                         className="cart__qty visible-sm-inline"
                                                                                                     > x {item.quantity}</span>

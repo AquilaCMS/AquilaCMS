@@ -125,7 +125,8 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                             : ''
                                                                                                                                     }
                                                                                                                                 </p>
-                                                                                                                                {item.type === 'bundle' && <ul style={{ listStyle: 'none' }}>
+                                                                                                                                {
+                                                                                                                                item.type === 'bundle' && <ul style={{ listStyle: 'none' }}>
                                                                                                                                     {
                                                                                                                                         item.selections.map((section) => (
                                                                                                                                             section.products.map((productSection, indexSel) => (
@@ -142,7 +143,21 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                             ))
                                                                                                                                         ))
                                                                                                                                     }
-                                                                                                                                </ul>}
+                                                                                                                                </ul>
+                                                                                                                                }
+                                                                                                                                {
+                                                                                                                                    item.selected_variants && item.selected_variants.length > 0 && (
+                                                                                                                                        <div className="variants__container">
+                                                                                                                                            <ul className="variants__list">
+                                                                                                                                                {
+                                                                                                                                                    item.selected_variants.map((variant) => (
+                                                                                                                                                        <li className="variant"><p>{variant.name}: {variant.value.name}</p></li>
+                                                                                                                                                    ))
+                                                                                                                                                }
+                                                                                                                                            </ul>
+                                                                                                                                        </div>
+                                                                                                                                    )
+                                                                                                                                }
                                                                                                                             </div>
                                                                                                                         </div>
                                                                                                                     </td>
@@ -280,6 +295,10 @@ class PageAccountOrders extends NSPageAccountOrders {
                     }
                     .accordion__body{
                         cursor: auto;
+                    }
+                    .variant p {
+                        font-size: 14px;
+                        color: gray;
                     }
                 `}
                     </style>

@@ -66,6 +66,23 @@ const setAttribute = async (body) => {
         // update
         const attribute = await Attributes.findOne({code: body.code});
         if (attribute) {
+            // edit variants
+            const prdListVariants = await Products.find({'variants.id': attribute._id});
+            for (let j = 0; j < prdListVariants.length; j++) {
+                const variantIndex                             = prdListVariants[j].variants.findIndex((variant) => variant.id.toString() === attribute._id.toString());
+                prdListVariants[j].variants[variantIndex].code = body.code;
+                for (let k = 0; k < Object.keys(body.translation).length; k++) {
+                    const lng = Object.keys(body.translation)[k];
+                    prdListVariants[j].variants[variantIndex].translation[lng].values.map((val, index) => {
+                        val.code = body.translation[lng].values[index];
+                        return val;
+                    });
+                    console.log(prdListVariants[j].variants[0].translation.fr.values[1]);
+                    await Products.updateOne({_id: prdListVariants[j]._id}, {$unset: {variants: ''}});
+                    // console.log(await Products.findOneAndUpdate({_id: prdListVariants[j]._id}, {$set: {variants: prdListVariants[j].variants}}, {new: true}));
+                    console.log(prdListVariants[j].variants[0].translation.fr.values[1]);
+                }
+            }
             if (updateF) {
             // If the usedInFilters is changed from true to false
                 if (attribute.usedInFilters !== body.usedInFilters && body.usedInFilters === false) {

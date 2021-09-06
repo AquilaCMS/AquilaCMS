@@ -157,6 +157,19 @@ class PageCart extends NSPageCart {
                                                                                         </div>
                                                                                     )
                                                                                 }
+                                                                                {
+                                                                                    item.selected_variants && item.selected_variants.length > 0 && (
+                                                                                        <div className="variants__container">
+                                                                                            <ul className="variants__list">
+                                                                                                {
+                                                                                                    item.selected_variants.map((variant) => (
+                                                                                                        <li className="variant">{variant.name}: {variant.value.name}</li>
+                                                                                                    ))
+                                                                                                }
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                    )
+                                                                                }
 
                                                                                 <NSProductStock stock={item.id.stock} />
                                                                             </div>

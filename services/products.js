@@ -31,7 +31,7 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
@@ -1120,7 +1120,7 @@ const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_var
                     const qtyToAddOrRemove                                                                                   = qty1;
                     prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.qty_booked -= qtyToAddOrRemove;
                 }
-                await Products.updateOne({_id: prd._id}, {$set: {variants: prd.variants}});
+                await prd.updateData(prd);
             }
         }
     }

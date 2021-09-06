@@ -212,13 +212,13 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                         translation: {
                             [$scope.lang]: {
                                 name: variant.translation[$scope.lang].name,
-                                values: variant.translation[$scope.lang].values.map((val) => {
+                                values: variant.translation[$scope.lang].values.map((val, index) => {
                                     return {
                                         active: false,
                                         name: val,
                                         code: val,
                                         weight: $scope.product.weight,
-                                        default: false,
+                                        default: index === 0 ? true : false,
                                         price: $scope.product.price,
                                         stock: $scope.product.stock,
                                         images: $scope.product.images
@@ -488,7 +488,6 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 $scope.getImageUrl = function (image) {
                     return `images/products/300x300-50/${image._id}/${image.title}${image.extension}`;
                 };
-                console.log($scope)
             }
         ]
     };

@@ -48,6 +48,34 @@
     color: #000;
 }
 
+.variants__container {
+    padding: 20px 0;
+    box-sizing: content-box;
+}
+
+.variants__container li {
+    list-style: none;
+}
+
+.variant-value {
+    padding: 5px;
+    display: inline-block;
+    margin: 0 10px;
+    border: 1px solid black;
+}
+
+.variant-value:hover {
+    background-color: #576fa1;
+}
+
+.variant-value img {
+    width: 40px;
+    height: 40px;
+}
+
+.variant-value.selected {
+    background-color: #576fa1;
+}
 
 /* === ProductCard-Modal === */
 

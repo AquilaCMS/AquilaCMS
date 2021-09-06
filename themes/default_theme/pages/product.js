@@ -29,6 +29,25 @@ import Error from './_error';
  */
 
 class PageProduct extends NSPageProduct {
+    selectVariantValue = (variant, variantValue) => {
+        let product = this.state.product;
+        product.images = variantValue.images,
+        product.name = variantValue.name,
+        product.description1 = variantValue.description1,
+        product.description2 = variantValue.description2,
+        product.stock = variantValue.stock,
+        product.price = variantValue.price
+        product.selected_variants = [{
+            code: variant.code,
+            name: variant.name,
+            id: variant.id,
+            _id: variant._id,
+            type: variant.type,
+            sort: variant.sort,
+            value: variantValue,
+        }]
+        this.setState({variant, variantValue, product});
+    }
     render = () => {
         const {
             appurl,
@@ -61,6 +80,7 @@ class PageProduct extends NSPageProduct {
             hideReviewsLanguage,
             taxDisplay
         } = this.state;
+        console.log(product)
         const canonical = product.canonical ? `${appurl}${product.canonical.substr(1)}` : '';
         const imgStar = '/static/images/sprite/ico-star-full@2x.png';
         // Chemin de l'image non trouvé
@@ -212,7 +232,6 @@ class PageProduct extends NSPageProduct {
                                         </ul>
                                     </div>
                                 </div>
-
                                 <div className="section__content">
                                     <div className="product__actions-mobile visible-xs-block">
                                         <NSProductStock stock={product.stock} />
@@ -245,6 +264,28 @@ class PageProduct extends NSPageProduct {
                                         product.description2 && product.description2.text && (
                                             <div dangerouslySetInnerHTML={{ __html: product.description2.text }} />
                                         )
+                                    }
+                                    {
+                                        product.variants && product.variants.length > 0 && 
+                                            <div className="variants__container">
+                                                <ul className="variants__list">
+                                                {
+                                                    product.variants.map((variant, indexVariant) => (
+                                                        <li key={variant.id} className="variant">
+                                                            <ul className="variant-values__list">
+                                                            {
+                                                                variant.values.filter(variantValue => variantValue.active).map((variantValue, indexVariantValue) => (
+                                                                    <li key={variant.id + '_' + variantValue.code} className={"variant-value " + ((this.state.variant && this.state.variantValue && this.state.variant.id === variant.id && this.state.variantValue.code === variantValue.code) ? "selected" : "")} onClick={() => this.selectVariantValue(variant, variantValue)}>
+                                                                        <img src={'/' + variantValue.images[0].url} alt={variantValue.name}/>
+                                                                    </li>
+                                                                ))
+                                                            }
+                                                            </ul>
+                                                        </li>
+                                                    ))
+                                                }
+                                                </ul>
+                                            </div>
                                     }
                                     <div className="product-actions">
                                         <div className="product-stock hidden-xs">

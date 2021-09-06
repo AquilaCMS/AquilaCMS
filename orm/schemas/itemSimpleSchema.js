@@ -14,6 +14,7 @@ const ItemSimple = new Schema({
     selected_variants : [{
         code  : {type: String},
         type  : {type: String, enum: ['list', 'radio', 'checkbox']},
+        name  : {type: String},
         sort  : {type: Number},
         id    : {type: ObjectId, ref: 'attributes', index: true},
         value : {
@@ -67,6 +68,7 @@ const ItemSimple = new Schema({
         code        : {type: String},
         type        : {type: String, enum: ['list', 'radio', 'checkbox']},
         sort        : {type: Number},
+        name        : {type: String},
         id          : {type: ObjectId, ref: 'attributes', index: true},
         translation : {
         }
