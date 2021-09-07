@@ -2223,6 +2223,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                 lang: '=',
                 isSelected: '=',
                 uploadUrl: '=',
+                isVariant: '=',
             },
             templateUrl: "views/templates/nsUploadFiles.html",
             controller: [
@@ -2257,6 +2258,7 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                     });
 
                     $scope.upload = function (files) {
+                        if($scope.isVariant) $scope.type = 'productVariant'
                         $scope.disableUpload = true;
                         $scope.progress = [];
                         if (files && files.length) {
@@ -2342,6 +2344,10 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         $scope.files.splice(index, 1);
                                         switch ($scope.type) {
                                             case 'product': {
+                                                $scope.images.push(response.data);
+                                                break;
+                                            }
+                                            case 'productVariant': {
                                                 $scope.images.push(response.data);
                                                 break;
                                             }

@@ -9,7 +9,7 @@
             <ul class="nav nav-tabs" >
                 <li class='active' ><a data-toggle="tab" href="#vMarketing" target="_self" translate>simple.gen</a></li>
                 <li><a data-toggle="tab" href="#vPriceStock" target="_self" translate>simple.mark</a></li>
-                <li><a data-toggle="tab" href="#vPictures" target="_self" translate>simple.pics</a></li>
+                <li ng-show="selectedVariantValue._id"><a data-toggle="tab" href="#vPictures" target="_self" translate>simple.pics</a></li>
             </ul>
         </div>
         <div  class="tab-content">
@@ -59,8 +59,8 @@
                     <ns-product-price ng-model="selectedVariantValue"></ns-product-price>
                 </div>
             </div>
-            <div id="vPictures" class="tab-pane">
-                <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="selectedVariantValue" is-variant="true" ></ns-product-photo>
+            <div id="vPictures" class="tab-pane" ng-show="selectedVariantValue._id">
+                <ns-product-photo is-selected="nsUploadFiles.isSelected" ng-model="selectedVariantValue" variant-id="selectedVariantValue._id" ></ns-product-photo>
             </div>
         </div>
     </div>

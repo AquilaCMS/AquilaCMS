@@ -100,12 +100,12 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                             let imgDefault = imgDefaultBase64;
                                                                                                             let imgAlt = 'illustration produit';
                                                                                                             if (item.id && item.id.images && item.id.images.length) {
-                                                                                                                const foundImg = item.id.images.find((img) => img.default);
+                                                                                                                const foundImg = item.image
                                                                                                                 if (foundImg) {
-                                                                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
                                                                                                                     imgAlt = foundImg.alt || imgAlt;
                                                                                                                 } else {
-                                                                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
                                                                                                                     imgAlt = item.id.images[0].alt || imgAlt;
                                                                                                                 }
                                                                                                             }
@@ -117,7 +117,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                 <img src={imgDefault} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
-                                                                                                                                <h6>{(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id && item.id.name || 'NO NAME')} x {item.quantity}</h6>
+                                                                                                                                <h6>{(item.name || 'NO NAME')} x {item.quantity}</h6>
                                                                                                                                 <p>
                                                                                                                                     {
                                                                                                                                         item.id && item.id.description1 && item.id.description1.title

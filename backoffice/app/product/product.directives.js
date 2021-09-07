@@ -300,6 +300,12 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
             $scope.getProductVariantIndex = function (code) {
                 return $scope.product.variants.findIndex(v => v.code === code)
             }     
+
+            $scope.getImageUrl = function (images) {
+                let defaultImage = images.find(img => img.default)
+                if(!defaultImage) defaultImage = images[0] || {}
+                return `images/productVariant/150x150-50/${defaultImage._id}/${defaultImage.title}${defaultImage.extension}`;
+            };
         }]
     };
 });
@@ -467,7 +473,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
         restrict : "E",
         scope    : {
             form : "=",
-            isSelected: "=", isVariant: "="
+            isSelected: "=", variantId: "="
         },
         require     : "ngModel",
         templateUrl : "app/product/views/templates/nsProductPhoto.html",
@@ -509,8 +515,8 @@ ProductDirectives.directive("nsProductPhoto", function () {
                     }
                 };
 
-                $scope.getImageUrl = function (image) {
-                    return `images/products/300x300-50/${image._id}/${image.title}${image.extension}`;
+                $scope.getImageUrl = function (image, variantImageId) {
+                    return `images/${variantImageId ? 'products' : 'productVariant'}/300x300-50/${variantImageId ? variantImageId : image._id}/${image.title}${image.extension}`;
                 };
             }
         ]

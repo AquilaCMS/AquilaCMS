@@ -78,10 +78,10 @@ class PageProduct extends NSPageProduct {
         if (product && product.images && product.images.length) {
             const foundImg = product.images.find((img) => img.default);
             if (foundImg) {
-                imgDefault = foundImg._id !== 'undefined' ? `/images/products/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/products/516x400/${product.images[0]._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${product.images[0]._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }
@@ -205,7 +205,7 @@ class PageProduct extends NSPageProduct {
                                                 />
                                             )}
                                         <ul className="list-images">
-                                            {
+                                            {/*
                                                 product.images && product.images.filter((img) => !img.default) ? product.images.filter((img) => !img.default).map((img, index) => (
                                                     <li key={img.url}>
                                                         <a onClick={() => this.openLightBox(product.images.findIndex((im) => im._id === img._id))}>
@@ -217,7 +217,7 @@ class PageProduct extends NSPageProduct {
                                                         </a>
                                                     </li>
                                                 )) : ''
-                                            }
+                                                */}
                                         </ul>
                                     </div>
                                 </div>
@@ -259,11 +259,14 @@ class PageProduct extends NSPageProduct {
                                             <div className="variants__container">
                                                 <ul className="variants-values__list">
                                                 {
-                                                    product.variants_values.map((variant) => (
-                                                        <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(variant)}>
-                                                            <img src={'/' + variant.images[0].url} alt={variant.name}/>
-                                                        </li>
-                                                    ))
+                                                    product.variants_values.map((variant) => {
+                                                        const vImage = variant.images.find(img => img.default) || {}
+                                                        return (
+                                                            <li key={variant._id} className={"variant-value " + ((this.state.variant && this.state.variant._id === variant._id) ? "selected" : "")} onClick={() => this.selectVariant(variant)}>
+                                                                <img src={'/images/productVariant/50x50-50/' + vImage._id + '/' + vImage.name} alt={variant.name}/>
+                                                            </li>
+                                                        )
+                                                    })
                                                 }
                                                 </ul>
                                             </div>

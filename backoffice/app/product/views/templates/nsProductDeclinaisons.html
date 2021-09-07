@@ -111,7 +111,7 @@
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
                         <tr class="pointer" ng-repeat="variant in product.variants_values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant)">
                             <td><ns-switch name="{{variant.code}}_active" ng-model="variant.active" ng-click="$event.stopPropagation()"></ns-switch></td>
-                            <td>{{variant.code}}</td>
+                            <td><img ng-src="/{{getImageUrl(variant.images)}}" alt="{{variant.code}}"></td>
                             <td>{{variant.translation[lang].name}}</td>
                             <td>{{(variant.price.ati.special >= 0 ? variant.price.ati.special : variant.price.ati.normal).toFixed(2)}}€</td>
                             <td>{{variant.stock.qty}}</td>

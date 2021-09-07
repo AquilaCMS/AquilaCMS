@@ -54,6 +54,9 @@ const compressImg = async (pathIn, pathOut, filename, quality = 80) => {
 };
 
 const getProductImageUrl = (product) => {
+    if (product.selected_variant && product.selected_variant.images) {
+        return product.selected_variant.images.find((img) => img.default) ? product.selected_variant.images.find((img) => img.default).url : '';
+    }
     return product.images.find((i) => i.default) ? product.images.find((i) => i.default).url : '';
 };
 

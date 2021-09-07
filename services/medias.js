@@ -13,6 +13,7 @@ const mongoose     = require('mongoose');
 const {
     Medias,
     Products,
+    ProductSimple,
     Categories,
     Pictos,
     Languages,
@@ -187,6 +188,7 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
     }
     switch (type) {
     // if a product image is requested
+    case 'product':
     case 'products':
         const product = await Products.findOne({'images._id': _id});
         imageObj      = product.images.find((img) => img._id.toString() === _id.toString());
@@ -197,6 +199,25 @@ const downloadImage = async (type, _id, size, extension, quality = 80, options =
         fileName      = `${product.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
         filePathCache = path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1), fileName);
         await fsp.mkdir(path.join(cacheFolder, 'products', getChar(product.code, 0), getChar(product.code, 1)), {recursive: true});
+        break;
+    // if a product image is requested
+    case 'productsVariant':
+    case 'productVariant':
+        const prd = await ProductSimple.findOne({'variants_values.images._id': _id});
+        let variant;
+        for (let i = 0; i < prd.variants_values.length; i++) {
+            if (prd.variants_values[i].images.findIndex((img) => img._id.toString() === _id) > -1) {
+                imageObj = prd.variants_values[i].images.find((img) => img._id.toString() === _id);
+                variant  = prd.variants_values[i];
+            }
+        }
+        // we get the name of the file
+        fileName      = path.basename(imageObj.url);
+        relativePath  = imageObj.url;
+        filePath      = path.join(_path, imageObj.url);
+        fileName      = `${variant.code}_${imageObj._id}_${size}_${quality}_${fileNameOption}${path.extname(fileName)}`;
+        filePathCache = path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1), fileName);
+        await fsp.mkdir(path.join(cacheFolder, 'products', getChar(prd.code, 0), getChar(prd.code, 1)), {recursive: true});
         break;
         // if a media is requested
     case 'medias':
@@ -311,6 +332,11 @@ const uploadFiles = async (body, files) => {
         target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
         break;
     }
+    case 'productVariant': {
+        const code  = body.code.substring(0, 2);
+        target_path = `photos/${body.type}/${code[0]}/${code[1]}/`;
+        break;
+    }
     case 'article': {
         const date  = moment().format('YYYYMMDD');
         target_path = `photos/${body.type}/${date}/`;
@@ -380,6 +406,21 @@ const uploadFiles = async (body, files) => {
         await Products.updateOne({_id: body._id}, {$push: {images: image}});
         const product = await Products.findOne({_id: body._id});
         image._id     = product.images.find((img) => img.name === name + extension)._id;
+        return image;
+    }
+    case 'productVariant': {
+        const image = {
+            default  : body.default,
+            position : body.position ? body.position : false,
+            alt      : body.alt,
+            name     : name + extension,
+            title    : name,
+            url      : target_path_full,
+            extension
+        };
+        await ProductSimple.updateMany({variants_values: {$exists: true}}, {$push: {'variants_values.$[vv].images': image}}, {arrayFilters: [{'vv._id': body._id}]});
+        const product = await ProductSimple.findOne({variants_values: {$exists: true}, 'variants_values._id': body._id});
+        image._id     = product.variants_values.find((vv) => vv._id.toString() === body._id).images.find((img) => img.name === name + extension)._id;
         return image;
     }
     case 'mail': {

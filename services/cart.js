@@ -158,6 +158,7 @@ const addItem = async (req) => {
     }
 
     const _product = await Products.findOne({_id: req.body.item.id});
+    let variant;
     await linkCustomerToCart(cart, req);
     if (!_product) {
         return {code: 'NOTFOUND_PRODUCT', message: 'Le produit est indisponible.'}; // res status 400
@@ -174,6 +175,7 @@ const addItem = async (req) => {
             throw NSErrors.InvalidParameters;
         } else {
             req.body.item.selected_variant.id = req.body.item.selected_variant._id;
+            variant                           = _product.variants_values[isPresent];
         }
     }
     if (cart.items && cart.items.length) {
@@ -229,7 +231,7 @@ const addItem = async (req) => {
         req.body.item.name = _product.translation[_lang.code].name;
     }
     req.body.item.code  = _product.code;
-    req.body.item.image = require('../utils/medias').getProductImageUrl(_product);
+    req.body.item.image = require('../utils/medias').getProductImageUrl(variant || _product);
     const idGift        = mongoose.Types.ObjectId();
     if (req.body.item.parent) {
         req.body.item._id = idGift;
