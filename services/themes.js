@@ -217,7 +217,9 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
         listOfFile = listOfPath;
     } else {
         listOfFile = listOfPath.filter((onePath) => {
-            const index = fileNames.findIndex((elementInFileName) => onePath.includes(elementInFileName.name));
+            if (fs.lstatSync(onePath).isDirectory()) return false;
+            const fileName = path.basename(onePath);
+            const index    = fileNames.findIndex((elementInFileName) => fileName === elementInFileName.name);
             return (index > -1 && fileNames[index].value === true);
         });
     }
