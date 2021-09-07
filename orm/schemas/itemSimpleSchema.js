@@ -12,9 +12,11 @@ const {ObjectId} = Schema.Types;
 
 const ItemSimple = new Schema({
     selected_variant : {
+        id      : {type: ObjectId},
         active  : {type: Boolean},
         default : {type: Boolean},
         code    : {type: String},
+        name    : {type: String},
         qty     : Number,
         price   : {
             purchase : Number,
@@ -54,8 +56,7 @@ const ItemSimple = new Schema({
             label        : String,
             translation  : {}
         },
-        translation : {},
-        weight      : Number
+        weight : Number
     }
 },
 {

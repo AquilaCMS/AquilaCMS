@@ -96,7 +96,7 @@ ProductBundleSchema.methods.addToCart = async function (cart, item, user, lang) 
                         !(await ServicesProducts.checkProductOrderable(selectionProducts[j], item.quantity)).ordering.orderable
                         || !(await ServicesProducts.checkProductOrderable(item.stock, null))
                     ) throw NSErrors.ProductNotOrderable;
-                    await ServicesProducts.updateStock(selectionProducts[j], -item.quantity, undefined, item.selected_items, item.lang);
+                    await ServicesProducts.updateStock(selectionProducts[j], -item.quantity, undefined, item.selected_items);
                 }
             }
         }

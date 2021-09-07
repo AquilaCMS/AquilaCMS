@@ -140,7 +140,7 @@ const paymentSuccess = async (query, updateObject) => {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
-                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity, undefined, orderItem.selected_variants, _order.lang);
+                    await ServicesProducts.updateStock(_product._id, -orderItem.quantity, undefined, orderItem.selected_variant);
                 } else if (_product.kind === 'BundleProduct') {
                     for (let j = 0; j < orderItem.selections.length; j++) {
                         const section = orderItem.selections[j];
@@ -271,7 +271,7 @@ const rma = async (orderId, returnData) => {
                 const _product = await Products.findOne({_id: rmaProduct.product_id});
                 if (_product.type === 'simple') {
                     // The quantity is incremented
-                    await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0, rmaProduct.selected_variants, _order.lang);
+                    await ServicesProducts.updateStock(_product._id, rmaProduct.qty_returned, 0, rmaProduct.selected_variant);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < rmaProduct.selections.length; i++) {
                         const selectionProducts = rmaProduct.selections[i].products;
@@ -566,7 +566,7 @@ const addPackage = async (orderId, pkgData) => {
                 const _product = await Products.findOne({_id: pkgProduct.product_id});
                 if (_product.type === 'simple') {
                     // Decrement the quantity
-                    await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped, pkgProduct.selected_variants, _order.lang);
+                    await ServicesProducts.updateStock(_product._id, 0, -pkgProduct.qty_shipped, pkgProduct.selected_variant);
                 } else if (_product.type === 'bundle') {
                     for (let i = 0; i < pkgProduct.selections.length; i++) {
                         const selectionProducts = pkgProduct.selections[i].products;

@@ -234,13 +234,12 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                             images: $scope.product.images,
                             translation: {
                                 [$scope.lang]: {
-                                    name: $scope.product.translation[$scope.lang].name + ' ' + val,
+                                    name: $scope.product.translation[$scope.lang].name + ' - ' + val,
                                 }
                             }
                         }
                     })
                 }
-                console.log($scope.product.variants_values)
             }
 
             $scope.toggleVariant = function (e, variant) {

@@ -124,7 +124,7 @@ class PageCart extends NSPageCart {
                                                                                             border : '0', background : 'transparent', overflow : 'hidden', textAlign : 'left'
                                                                                         }} type="button"
                                                                                     >
-                                                                                        {item.id && item.id.name}
+                                                                                        {(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id && item.id.name)}
                                                                                     </button>
                                                                                 </h2>
 
@@ -151,19 +151,6 @@ class PageCart extends NSPageCart {
                                                                                                             ''
                                                                                                         }`}</li>
                                                                                                         ))
-                                                                                                    ))
-                                                                                                }
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    )
-                                                                                }
-                                                                                {
-                                                                                    item.selected_variants && item.selected_variants.length > 0 && (
-                                                                                        <div className="variants__container">
-                                                                                            <ul className="variants__list">
-                                                                                                {
-                                                                                                    item.selected_variants.map((variant) => (
-                                                                                                        <li className="variant">{variant.name}: {variant.value.name}</li>
                                                                                                     ))
                                                                                                 }
                                                                                             </ul>

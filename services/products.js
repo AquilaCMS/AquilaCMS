@@ -31,7 +31,7 @@ const {
 }                             = require('../orm/models');
 
 let restrictedFields = ['price.purchase', 'downloadLink'];
-const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants'];
+const defaultFields  = ['_id', 'type', 'name', 'price', 'images', 'pictos', 'translation', 'variants', 'variants_values'];
 
 const queryBuilder        = new QueryBuilder(Products, restrictedFields, defaultFields);
 const queryBuilderPreview = new QueryBuilder(ProductsPreview, restrictedFields, defaultFields);
@@ -1064,11 +1064,11 @@ const getProductsListing = async (req, res) => {
     return result;
 };
 
-const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variants, lang) => {
+const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_variant) => {
     const prd = await Products.findOne({_id: productId, type: 'simple'});
 
-    if (selected_variants && selected_variants.length) {
-        await updateVariantsStock(prd, qty1, qty2, selected_variants, lang);
+    if (selected_variant && selected_variant.id) {
+        await updateVariantsStock(prd, qty1, qty2, selected_variant);
     } else {
         if (prd.stock.date_selling > new Date() && prd.stock.status !== 'dif') {
             throw NSErrors.ProductNotSalable;
@@ -1094,35 +1094,30 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_varia
     }
 };
 
-const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variants, lang) => {
-    for (const selected_variant of selected_variants) {
-        const selectedVariantIndex = prd.variants.findIndex((prdVariant) => prdVariant.code === selected_variant.code);
-        if (selectedVariantIndex > -1) {
-            const selectedVariantValueIndex = prd.variants[selectedVariantIndex].translation[lang].values.findIndex((prdVariantValue) => prdVariantValue.code === selected_variant.value.code);
-            if (selectedVariantValueIndex > -1) {
-                if (prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.date_selling > new Date() && prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.status !== 'dif') {
-                    throw NSErrors.ProductNotSalable;
-                }
-                // if qty2 exists, it is either a product return or a shipment
-                if (qty2 !== undefined) {
-                    // if qty2 === 0, it is a product return, sino, it is a shipment
-                    if (qty2 === 0) {
-                        // qty1 = the quantity to return
-                        const qtyToReturn                                                                                 = qty1;
-                        prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.qty += qtyToReturn;
-                    } else if (qty1 === 0) {
-                        const qtyToSend                                                                                          = qty2;
-                        prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.qty        += qtyToSend;
-                        prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.qty_booked += qtyToSend;
-                    }
-                } else {
-                    // in the case of an addition to the cart, qty change or deletion of an item in a cart
-                    const qtyToAddOrRemove                                                                                   = qty1;
-                    prd.variants[selectedVariantIndex].translation[lang].values[selectedVariantValueIndex].stock.qty_booked -= qtyToAddOrRemove;
-                }
-                await prd.updateData(prd);
-            }
+const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variant) => {
+    const selectedVariantIndex = prd.variants.findIndex((prdVariant) => prdVariant._id === selected_variant._id);
+    if (selectedVariantIndex > -1) {
+        if (prd.variants[selectedVariantIndex].stock.date_selling > new Date() && prd.variants[selectedVariantIndex].stock.status !== 'dif') {
+            throw NSErrors.ProductNotSalable;
         }
+        // if qty2 exists, it is either a product return or a shipment
+        if (qty2 !== undefined) {
+            // if qty2 === 0, it is a product return, sino, it is a shipment
+            if (qty2 === 0) {
+                // qty1 = the quantity to return
+                const qtyToReturn                             = qty1;
+                prd.variants[selectedVariantIndex].stock.qty += qtyToReturn;
+            } else if (qty1 === 0) {
+                const qtyToSend                                      = qty2;
+                prd.variants[selectedVariantIndex].stock.qty        += qtyToSend;
+                prd.variants[selectedVariantIndex].stock.qty_booked += qtyToSend;
+            }
+        } else {
+            // in the case of an addition to the cart, qty change or deletion of an item in a cart
+            const qtyToAddOrRemove                               = qty1;
+            prd.variants[selectedVariantIndex].stock.qty_booked -= qtyToAddOrRemove;
+        }
+        await prd.updateData(prd);
     }
 };
 

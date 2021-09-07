@@ -117,7 +117,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                 <img src={imgDefault} alt={imgAlt} />
                                                                                                                             </div>{/* <!-- /.product__image --> */}
                                                                                                                             <div className="product__content">
-                                                                                                                                <h6>{item.id && item.id.name || 'NO NAME'} x {item.quantity}</h6>
+                                                                                                                                <h6>{(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id && item.id.name || 'NO NAME')} x {item.quantity}</h6>
                                                                                                                                 <p>
                                                                                                                                     {
                                                                                                                                         item.id && item.id.description1 && item.id.description1.title
@@ -144,19 +144,6 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                         ))
                                                                                                                                     }
                                                                                                                                 </ul>
-                                                                                                                                }
-                                                                                                                                {
-                                                                                                                                    item.selected_variants && item.selected_variants.length > 0 && (
-                                                                                                                                        <div className="variants__container">
-                                                                                                                                            <ul className="variants__list">
-                                                                                                                                                {
-                                                                                                                                                    item.selected_variants.map((variant) => (
-                                                                                                                                                        <li className="variant"><p>{variant.name}: {variant.value.name}</p></li>
-                                                                                                                                                    ))
-                                                                                                                                                }
-                                                                                                                                            </ul>
-                                                                                                                                        </div>
-                                                                                                                                    )
                                                                                                                                 }
                                                                                                                             </div>
                                                                                                                         </div>

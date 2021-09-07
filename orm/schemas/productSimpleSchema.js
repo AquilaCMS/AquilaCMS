@@ -136,7 +136,7 @@ ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) 
     if (global.envConfig.stockOrder.bookingStock === 'panier') {
         if (!(await prdServices.checkProductOrderable(this.stock, item.quantity)).ordering.orderable) throw NSErrors.ProductNotInStock;
         // Reza de la qte
-        await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variants, item.lang);
+        await prdServices.updateStock(this._id, -item.quantity, undefined, item.selected_variant);
     }
     item.type   = 'simple';
     const _cart = await this.basicAddToCart(cart, item, user, lang);

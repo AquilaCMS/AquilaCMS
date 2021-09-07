@@ -258,7 +258,7 @@ class CartSuccess extends React.Component {
                                                                                                 </figure>
 
                                                                                                 <h5 className="cart__title">
-                                                                                                    {item.id.name}
+                                                                                                    {(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id.name)}
                                                                                                     {
                                                                                                         item.selections && <ul style={{ fontSize: '13px' }}>
                                                                                                             {
@@ -278,19 +278,6 @@ class CartSuccess extends React.Component {
                                                                                                                 ))
                                                                                                             }
                                                                                                         </ul>
-                                                                                                    }
-                                                                                                    {
-                                                                                                        item.selected_variants && item.selected_variants.length > 0 && (
-                                                                                                            <div className="variants__container">
-                                                                                                                <ul className="variants__list">
-                                                                                                                    {
-                                                                                                                        item.selected_variants.map((variant) => (
-                                                                                                                            <li className="variant"><p>{variant.name}: {variant.value.name}</p></li>
-                                                                                                                        ))
-                                                                                                                    }
-                                                                                                                </ul>
-                                                                                                            </div>
-                                                                                                        )
                                                                                                     }
                                                                                                     <span
                                                                                                         className="cart__qty visible-sm-inline"

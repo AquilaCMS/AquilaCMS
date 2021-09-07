@@ -147,13 +147,13 @@ ProductsSchema.methods.basicAddToCart = async function (cart, item, user, lang) 
                 this.price.ati.special = prd[0].price.ati.special;
             }
         }
-        if (item.selected_variants) {
+        if (item.selected_variant) {
             item.price = {
                 unit : {
-                    ati : item.selected_variants[0].value.price.ati.special > 0 ? item.selected_variants[0].value.price.ati.special : item.selected_variants[0].value.price.ati.normal,
-                    et  : item.selected_variants[0].value.price.et.special > 0 ? item.selected_variants[0].value.price.et.special : item.selected_variants[0].value.price.et.normal
+                    ati : item.selected_variant.price.ati.special > 0 ? item.selected_variant.price.ati.special : item.selected_variant.price.ati.normal,
+                    et  : item.selected_variant.price.et.special > 0 ? item.selected_variant.price.et.special : item.selected_variant.price.et.normal
                 },
-                vat : {rate: item.selected_variants[0].value.price.tax}
+                vat : {rate: item.selected_variant.price.tax}
             };
         } else {
             item.price = {
