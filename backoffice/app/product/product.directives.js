@@ -201,35 +201,60 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 $scope.declinaisons = data.datas;
             });
 
+            $scope.createPrds = function () {
+                $scope.product.variants_values = []
+                if ($scope.product.variants.length > 1) {
+                    for (var indexValueLine1 = 0; indexValueLine1 < $scope.product.variants[0].translation[$scope.lang].values.length; indexValueLine1++) {
+                        for (var indexValueLine2 = 0; indexValueLine2 < $scope.product.variants[1].translation[$scope.lang].values.length; indexValueLine2++) {
+                            $scope.product.variants_values.push({
+                                code: $scope.product.code + '-' + $scope.product.variants[0].translation[$scope.lang].values[indexValueLine1] + '-' + $scope.product.variants[1].translation[$scope.lang].values[indexValueLine2],
+                                active: false,
+                                weight: $scope.product.weight,
+                                default: indexValueLine1 === 0 && indexValueLine2 === 0 ? true : false,
+                                price: $scope.product.price,
+                                stock: $scope.product.stock,
+                                images: $scope.product.images,
+                                translation: {
+                                    [$scope.lang]: {
+                                        name: $scope.product.translation[$scope.lang].name + ' - ' + $scope.product.variants[0].translation[$scope.lang].values[indexValueLine1] + '/' + $scope.product.variants[1].translation[$scope.lang].values[indexValueLine2],
+                                    }
+                                }
+                            })
+                        }
+                    }
+                } else if ($scope.product.variants.length === 1) {
+                    $scope.product.variants_values = $scope.product.variants[0].translation[$scope.lang].values.map((val, index) => {
+                        return {
+                            code: $scope.product.code + '-' + val,
+                            active: false,
+                            weight: $scope.product.weight,
+                            default: index === 0 ? true : false,
+                            price: $scope.product.price,
+                            stock: $scope.product.stock,
+                            images: $scope.product.images,
+                            translation: {
+                                [$scope.lang]: {
+                                    name: $scope.product.translation[$scope.lang].name + ' ' + val,
+                                }
+                            }
+                        }
+                    })
+                }
+                console.log($scope.product.variants_values)
+            }
+
             $scope.toggleVariant = function (e, variant) {
                 e.stopPropagation()
                 if(e.target.checked) {
                     if(!$scope.product.variants) $scope.product.variants = []
                     $scope.product.variants.push({
-                        code: variant.code,
-                        id: variant._id,
-                        type: 'list',
-                        translation: {
-                            [$scope.lang]: {
-                                name: variant.translation[$scope.lang].name,
-                                values: variant.translation[$scope.lang].values.map((val, index) => {
-                                    return {
-                                        active: false,
-                                        name: val,
-                                        code: val,
-                                        weight: $scope.product.weight,
-                                        default: index === 0 ? true : false,
-                                        price: $scope.product.price,
-                                        stock: $scope.product.stock,
-                                        images: $scope.product.images
-                                    }
-                                })
-                            }
-                        },
+                        ...variant,
+                        type: 'list'
                     })
                 } else {
                     $scope.product.variants = $scope.product.variants.filter(v => v.code !== variant.code)
                 }
+                $scope.createPrds()
             }
 
             $scope.selectVariantValue = function (variantValue) {
@@ -249,7 +274,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 })
             }
 
-            $scope.vartiantDetails = function (variant) {
+            $scope.vartiantValueDetails = function (variant) {
                 $scope.selectedIndex = $scope.product.variants.findIndex( v => v.code === variant.code)
             }
 
@@ -264,9 +289,9 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 }
             }
 
-            $scope.setDefaultVariantValue = function (variant, value, e) {
+            $scope.setDefaultVariantValue = function (value, e) {
                 e.stopPropagation()
-                variant.translation[$scope.lang].values.map((val) => {
+                $scope.product.variants_values.map((val) => {
                     val.default = false
                     return val
                 })

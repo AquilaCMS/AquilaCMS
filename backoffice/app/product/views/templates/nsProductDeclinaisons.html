@@ -33,7 +33,7 @@
                     </tr>
                 </thead>
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
-                    <tr class="pointer" ng-repeat="declinaison in declinaisons track by declinaison.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="vartiantDetails(declinaison)">
+                    <tr class="pointer" ng-repeat="declinaison in declinaisons track by declinaison.code" ng-class-odd="'odd'" ng-class-even="'even'">
                         <td><input type="checkbox" class="form-control" ng-click="toggleVariant($event, declinaison)" ng-checked="isVariantSelected(declinaison)"></td>
                         <td>{{declinaison.translation[lang].name}}</td>
                         <td>{{declinaison.code}}</td>
@@ -56,7 +56,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12" ng-show="selectedIndex > -1">
+        <div class="col-sm-12">
             <div style="margin: 20px 0; font-weight: bold; width: 100%;">
                 <p translate>product.declinaisons.title2</p>
             </div>    
@@ -109,13 +109,13 @@
                         </tr>
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
-                        <tr class="pointer" ng-repeat="variant in product.variants[selectedIndex].translation[lang].values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant)">
+                        <tr class="pointer" ng-repeat="variant in product.variants_values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant)">
                             <td><ns-switch name="{{variant.code}}_active" ng-model="variant.active" ng-click="$event.stopPropagation()"></ns-switch></td>
                             <td>{{variant.code}}</td>
-                            <td>{{variant.name}}</td>
+                            <td>{{variant.translation[lang].name}}</td>
                             <td>{{(variant.price.ati.special >= 0 ? variant.price.ati.special : variant.price.ati.normal).toFixed(2)}}€</td>
                             <td>{{variant.stock.qty}}</td>
-                            <td><ns-switch name="{{variant.code}}_default" ng-model="variant.default" ng-click="setDefaultVariantValue(product.variants[selectedIndex], variant, $event)"></ns-switch></td>
+                            <td><ns-switch name="{{variant.code}}_default" ng-model="variant.default" ng-click="setDefaultVariantValue(variant, $event)"></ns-switch></td>
                         </tr>
                     </tbody>
                 </table>

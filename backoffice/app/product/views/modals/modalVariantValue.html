@@ -19,7 +19,7 @@
                         <div class="col-sm-11">
                             <label for="vName" class="col-sm-2 control-label" translate>product.general.nom</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="vName" name="vName" ng-model="selectedVariantValue.name" required>
+                                <input type="text" class="form-control" id="vName" name="vName" ng-model="selectedVariantValue.translation[lang].name" required>
                                 <div class="ns-error-message">
                                     <div ng-show="(form.vName.$dirty || form.nsSubmitted) && form.vName.$error.required" translate>product.general.fieldReq</div>
                                 </div>

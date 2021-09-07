@@ -32,101 +32,57 @@ const ProductSimpleSchema = new Schema({
         translation : {
             /**
              *  lang: {
-             *      name: String,
-             *  values : [{
-                    active  : {type: Boolean},
-                    name    : {type: String},
-                    default : {type: Boolean},
-                    code    : {type: String},
-                    qty     : Number,
-                    price   : {
-                        purchase : Number,
-                        tax      : Number,
-                        et       : {
-                            normal  : Number,
-                            special : Number
-                        },
-                        ati : {
-                            normal  : Number,
-                            special : Number
-                        },
-                        priceSort : {
-                            et  : {type: Number, default: 0},
-                            ati : {type: Number, default: 0}
-                        }
-                    },
-                    images : [
-                        {
-                            url              : String,
-                            name             : String,
-                            title            : String,
-                            alt              : String,
-                            position         : Number,
-                            modificationDate : String,
-                            default          : {type: Boolean, default: false},
-                            extension        : {type: String, default: '.jpg'}
-                        }
-                    ],
-                    stock : {
-                        qty          : {type: Number, default: 0},
-                        qty_booked   : {type: Number, default: 0},
-                        date_selling : Date,
-                        date_supply  : Date,
-                        orderable    : {type: Boolean, default: false},
-                        status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
-                        label        : String,
-                        translation  : {}
-                    },
-                    weight : Number
-                }]
+             *      values: Array,
+             *      name: String
+             *
              */
         }
-        /* values : [{
-            active  : {type: Boolean},
-            name    : {type: String},
-            default : {type: Boolean},
-            code    : {type: String},
-            qty     : Number,
-            price   : {
-                purchase : Number,
-                tax      : Number,
-                et       : {
-                    normal  : Number,
-                    special : Number
-                },
-                ati : {
-                    normal  : Number,
-                    special : Number
-                },
-                priceSort : {
-                    et  : {type: Number, default: 0},
-                    ati : {type: Number, default: 0}
-                }
+    }],
+    variants_values : [{
+        active  : {type: Boolean},
+        default : {type: Boolean},
+        code    : {type: String},
+        qty     : Number,
+        price   : {
+            purchase : Number,
+            tax      : Number,
+            et       : {
+                normal  : Number,
+                special : Number
             },
-            images : [
-                {
-                    url              : String,
-                    name             : String,
-                    title            : String,
-                    alt              : String,
-                    position         : Number,
-                    modificationDate : String,
-                    default          : {type: Boolean, default: false},
-                    extension        : {type: String, default: '.jpg'}
-                }
-            ],
-            stock : {
-                qty          : {type: Number, default: 0},
-                qty_booked   : {type: Number, default: 0},
-                date_selling : Date,
-                date_supply  : Date,
-                orderable    : {type: Boolean, default: false},
-                status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
-                label        : String,
-                translation  : {}
+            ati : {
+                normal  : Number,
+                special : Number
             },
-            weight : Number
-        }] */
+            priceSort : {
+                et  : {type: Number, default: 0},
+                ati : {type: Number, default: 0}
+            }
+        },
+        images : [
+            {
+                url              : String,
+                name             : String,
+                title            : String,
+                alt              : String,
+                position         : Number,
+                modificationDate : String,
+                default          : {type: Boolean, default: false},
+                extension        : {type: String, default: '.jpg'}
+            }
+        ],
+        stock : {
+            qty          : {type: Number, default: 0},
+            qty_booked   : {type: Number, default: 0},
+            date_selling : Date,
+            date_supply  : Date,
+            orderable    : {type: Boolean, default: false},
+            status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
+            label        : String,
+            translation  : {}
+        },
+        translation : {},
+        weight      : Number
     }]
 }, {
     discriminatorKey : 'kind',
@@ -167,10 +123,10 @@ ProductSimpleSchema.methods.updateData = async function (data) {
 ProductSimpleSchema.methods.addToCart = async function (cart, item, user, lang) {
     const prdServices = require('../../services/products');
 
-    if (item.selected_variants && item.selected_variants.length === 1) {
+    if (item.selected_variant && item.selected_variant._id) {
         item = {
             ...item,
-            ...item.selected_variants[0].value,
+            ...item.selected_variant,
             id : item.id,
             lang
         };

@@ -11,69 +11,54 @@ const Schema     = mongoose.Schema;
 const {ObjectId} = Schema.Types;
 
 const ItemSimple = new Schema({
-    selected_variants : [{
-        code  : {type: String},
-        type  : {type: String, enum: ['list', 'radio', 'checkbox']},
-        name  : {type: String},
-        sort  : {type: Number},
-        id    : {type: ObjectId, ref: 'attributes', index: true},
-        value : {
-            active  : {type: Boolean},
-            name    : {type: String},
-            default : {type: Boolean},
-            code    : {type: String},
-            qty     : Number,
-            price   : {
-                purchase : Number,
-                tax      : Number,
-                et       : {
-                    normal  : Number,
-                    special : Number
-                },
-                ati : {
-                    normal  : Number,
-                    special : Number
-                },
-                priceSort : {
-                    et  : {type: Number, default: 0},
-                    ati : {type: Number, default: 0}
-                }
+    selected_variant : {
+        active  : {type: Boolean},
+        default : {type: Boolean},
+        code    : {type: String},
+        qty     : Number,
+        price   : {
+            purchase : Number,
+            tax      : Number,
+            et       : {
+                normal  : Number,
+                special : Number
             },
-            images : [
-                {
-                    url              : String,
-                    name             : String,
-                    title            : String,
-                    alt              : String,
-                    position         : Number,
-                    modificationDate : String,
-                    default          : {type: Boolean, default: false},
-                    extension        : {type: String, default: '.jpg'}
-                }
-            ],
-            stock : {
-                qty          : {type: Number, default: 0},
-                qty_booked   : {type: Number, default: 0},
-                date_selling : Date,
-                date_supply  : Date,
-                orderable    : {type: Boolean, default: false},
-                status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
-                label        : String,
-                translation  : {}
+            ati : {
+                normal  : Number,
+                special : Number
             },
-            weight : Number
-        }
-    }],
-    variants : [{
-        code        : {type: String},
-        type        : {type: String, enum: ['list', 'radio', 'checkbox']},
-        sort        : {type: Number},
-        name        : {type: String},
-        id          : {type: ObjectId, ref: 'attributes', index: true},
-        translation : {
-        }
-    }]
-}, {
+            priceSort : {
+                et  : {type: Number, default: 0},
+                ati : {type: Number, default: 0}
+            }
+        },
+        images : [
+            {
+                url              : String,
+                name             : String,
+                title            : String,
+                alt              : String,
+                position         : Number,
+                modificationDate : String,
+                default          : {type: Boolean, default: false},
+                extension        : {type: String, default: '.jpg'}
+            }
+        ],
+        stock : {
+            qty          : {type: Number, default: 0},
+            qty_booked   : {type: Number, default: 0},
+            date_selling : Date,
+            date_supply  : Date,
+            orderable    : {type: Boolean, default: false},
+            status       : {type: String, default: 'liv', enum: ['liv', 'dif', 'epu']},
+            label        : String,
+            translation  : {}
+        },
+        translation : {},
+        weight      : Number
+    }
+},
+{
     discriminatorKey : 'type',
     id               : false
 });
