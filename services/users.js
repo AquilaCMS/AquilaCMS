@@ -28,13 +28,9 @@ const queryBuilder     = new QueryBuilder(Users, restrictedFields, defaultFields
  * @param {Object} [PostBody.sort] sort
  * @param {Object} [PostBody.structure] structure
  */
-const getUsers = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getUsers = async (PostBody) => queryBuilder.find(PostBody);
 
-const getUser = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getUser = async (PostBody) => queryBuilder.findOne(PostBody);
 
 const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     if (PostBody !== null) {
@@ -43,9 +39,7 @@ const getUserById = async (id, PostBody = {filter: {_id: id}}) => {
     return queryBuilder.findOne(PostBody);
 };
 
-const getUserByAccountToken = async (activateAccountToken) => {
-    return Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
-};
+const getUserByAccountToken = async (activateAccountToken) => Users.findOneAndUpdate({activateAccountToken}, {$set: {isActiveAccount: true}}, {new: true});
 
 const setUser = async (id, info, isAdmin = false) => {
     try {
@@ -126,16 +120,12 @@ const createUser = async (body, isAdmin = false) => {
         }
         throw err;
     }
-    try {
-        await servicesMail.sendRegister(newUser._id, body.lang);
-    } catch (err) {
+    servicesMail.sendRegister(newUser._id, body.lang).catch((err) => {
         console.error(err);
-    }
-    try {
-        await servicesMail.sendRegisterForAdmin(newUser._id, body.lang);
-    } catch (err) {
-        // No need to catch this error
-    }
+    });
+    await servicesMail.sendRegisterForAdmin(newUser._id, body.lang).catch((err) => {
+        console.error(err);
+    });
     aquilaEvents.emit('aqUserCreated', newUser);
     return newUser;
 };

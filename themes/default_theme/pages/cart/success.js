@@ -185,12 +185,11 @@ class CartSuccess extends React.Component {
                                                             </h5>
                                                             <h6>
                                                                 {
-                                                                    order.orderReceipt
-                                                                    && order.orderReceipt.date
-                                                                    && <strong>
-                                                                        {moment(order.orderReceipt.date).format('DD/MM/YYYY')}</strong>}
-                                                                {order.orderReceipt && order.orderReceipt.date && moment(order.orderReceipt.date).format('HH[h]mm')}
-                                                                {order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>}
+                                                                    order.orderReceipt && order.orderReceipt.date && <strong>{moment(order.orderReceipt.date).format('DD/MM/YYYY HH[h]mm')}</strong>
+                                                                }
+                                                                {
+                                                                    order.delivery && order.delivery.date && <strong>{this.checkDate(order.delivery.date)}</strong>
+                                                                }
                                                             </h6>
                                                         </div>
                                                     )
@@ -357,7 +356,7 @@ class CartSuccess extends React.Component {
                                                                                     <dl>
                                                                                         <dt>{t('success:page.payment_method')}</dt>
                                                                                         {/* <dd><strong>{order.payment[0].mode === 'CB' ? t('success:page.credit_card') : t('success:page.transfert')}</strong></dd> */}
-                                                                                        <dd><strong>{order.payment[0].mode}</strong></dd>
+                                                                                        <dd><strong>{order.payment[0].name}</strong></dd>
                                                                                     </dl>
                                                                                 ) : ''
                                                                             }

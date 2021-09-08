@@ -35,12 +35,12 @@
         "attributeNotExist": "Cet attribut n'existe pas",
         "saveDone": "Sauvegarde effectuée",
         "errorOccurred": "Une erreur est survenue",
+        "errorList": "Il y a des valeurs en double dans la liste !",
         "error": "Erreur",
         "deleteAttribute": "Attribut supprimé",
         "infoDispoFiltres": "Permet a une categories de selectionner l'attribut pour qu'il soit visible dans les filtres",
         "allowDeclinaison": "Utiliser comme declinaisons de produit"
     },
-
     "list": {
         "t1": "Attributs",
         "attrClasses": "Attributs classés",
@@ -50,5 +50,9 @@
         "attrOrph": "Attributs orphelins",
         "jeuxAttrib": "Jeux d'attributs",
         "afficher": "Afficher"
+    },
+    "toast": {
+        "invalidPart1": "Le minimum de l'attribut",
+        "invalidPart2": "est plus grand que le maximum"
     }
 }

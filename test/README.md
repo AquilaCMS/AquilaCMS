@@ -50,6 +50,8 @@ AQUILA_ENV="test"
 npm run test
 # OR
 yarn test
+# OR
+export NODE_ENV="test" && export AQUILA_ENV="test" && npm run test
 ```
 
 ### Run one test
@@ -99,3 +101,7 @@ You can debug tests, with VSCode using a configuration like that (to add in `.vs
 ```
 
 As you can see we set env variable to a special Aquila config, so you need to have a `test` configuration (in `config/env.json`)
+
+## Test File
+
+The file `/test/data/test/archive` is an Mongo Archive for automated testing

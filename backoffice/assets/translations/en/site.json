@@ -7,6 +7,8 @@
         "title": "Title",
         "visible": "Visible",
         "img": "Picture",
+        "tags": "Tags",
+        "addTag": "Add tag",
         "add": "Add",
         "invalidEntry": "The information entered is not valid.",
         "slugEverUsed": "This slug is already in use, please choose another one",
@@ -16,12 +18,14 @@
         "articleNotExist": "This attribute does not exist",
         "slugEmpty": "The slug must not be empty",
         "infoSaved": "Information saved!",
-        "content": "Content"
+        "content": "Content",
+        "newError": "ERROR: Tag is empty or already exists"
     },
     "new": {
         "t1": "New item",
         "ph1": "Will be automatically generated if empty",
         "ph2": "Title",
+        "phTag": "Enter tag",
         "urlKey": "URL Key",
         "title": "Title",
         "visible": "Visible",
@@ -40,5 +44,11 @@
         "indiff": "Indifferent",
         "itemDelete": "Item deleted",
         "creaDate": "Creation date"
+    },
+    "newTag": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "newTag": "New tag",
+        "name": "Name"
     }
 }

@@ -141,7 +141,8 @@
         "email": "Email"
     },
     "toast": {
-        "URLcanonical": "Can't generate URL because canonical is empty"
+        "notValid": "Informations entered are not valid"
+        "URLcanonical": "Can't generate URL because canonical is empty",
     },
     "declinaisons": {
         "title1": "Used variant",

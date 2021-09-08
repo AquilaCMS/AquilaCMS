@@ -6,18 +6,17 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const {authentication, adminAuth} = require('../middleware/authentication');
-const encryption                  = require('../utils/encryption');
-const servicesDevScripts          = require('../services/devScripts');
-const {Configuration}             = require('../orm/models');
+const {adminAuth}          = require('../middleware/authentication');
+const servicesDevFunctions = require('../services/devFunctions');
+const {Configuration}      = require('../orm/models');
 
 module.exports = function (app) {
-    app.get('/encryption/cipher', authentication, adminAuth, cipherPasswords);
-    app.get('/createModelData', authentication, adminAuth, createModelData);
+    app.get('/encryption/cipher', adminAuth, cipherPasswords);
+    app.get('/createModelData', adminAuth, createModelData);
 };
 async function createModelData(req, res, next) {
     try {
-        await servicesDevScripts.createModelData();
+        await servicesDevFunctions.createModelData();
         res.status(200).end();
     } catch (err) {
         return next(err);
@@ -25,15 +24,19 @@ async function createModelData(req, res, next) {
 }
 
 async function cipherPasswords(req, res, next) {
-    console.log(new Date(), 'Chiffrement en cours');
+    console.log(new Date(), 'Encryption in progress');
     try {
         const _config = global.envConfig;
 
         if (_config.environment && _config.environment.mailPass !== undefined && _config.environment.mailPass !== '') {
-            _config.environment.mailPass = encryption.cipher(_config.environment.mailPass);
-
+            const goodPassword = _config.environment.mailPass;
+            // Temporary change password (to bad password for encryption requirement)
+            _config.environment.mailPass = `${_config.environment.mailPass}_BAD`;
             await Configuration.updateOne({_id: _config._id}, {$set: {environment: _config.environment}});
-            console.log(new Date(), 'Chiffrement terminé');
+
+            _config.environment.mailPass = goodPassword;
+            await Configuration.updateOne({_id: _config._id}, {$set: {environment: _config.environment}});
+            console.log(new Date(), 'Encryption complete');
             return res.send(true);
         }
         return res.send(false);

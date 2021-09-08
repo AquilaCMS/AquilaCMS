@@ -22,17 +22,11 @@ const defaultFields    = [
 const queryBuilder     = new QueryBuilder(Slider, restrictedFields, defaultFields);
 
 // See more information on react slick: https://react-slick.neostack.com/
-const getSliders = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getSliders = async (PostBody) => queryBuilder.find(PostBody);
 
-const getSlider = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getSlider = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getSliderById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getSliderById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const setSlider = async (req) => {
     const result = await Slider.findByIdAndUpdate(req.body._id, req.body, {new: true});

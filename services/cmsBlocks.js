@@ -11,20 +11,14 @@ const QueryBuilder = require('../utils/QueryBuilder');
 const NSErrors     = require('../utils/errors/NSErrors');
 
 const restrictedFields = ['group'];
-const defaultFields    = ['_id', 'code'];
+const defaultFields    = ['_id', 'code', 'active'];
 const queryBuilder     = new QueryBuilder(CmsBlocks, restrictedFields, defaultFields);
 
-const getCMSBlocks = async (PostBody) => {
-    return queryBuilder.find(PostBody);
-};
+const getCMSBlocks = async (PostBody) => queryBuilder.find(PostBody);
 
-const getCMSBlock = async (PostBody) => {
-    return queryBuilder.findOne(PostBody);
-};
+const getCMSBlock = async (PostBody) => queryBuilder.findOne(PostBody);
 
-const getCMSBlockById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getCMSBlockById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const setCMSBlock = async (body) => {
     if (body._id) return CmsBlocks.updateOne({_id: body._id}, {$set: body});

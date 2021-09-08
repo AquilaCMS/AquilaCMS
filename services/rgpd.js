@@ -49,9 +49,7 @@ RGPD : Example of a function to implement in a module using users data
 //     });
 // });
 
-const getOrdersByUser = async (id) => {
-    return Orders.find({'customer.id': id}, '-__v').lean();
-};
+const getOrdersByUser = async (id) => Orders.find({'customer.id': id}, '-__v').lean();
 
 const anonymizeOrdersByUser = async (id) => {
     const firstName = faker.name.firstName();
@@ -70,9 +68,7 @@ const anonymizeOrdersByUser = async (id) => {
     });
 };
 
-const getCartsByUser = async (id) => {
-    return Cart.find({'customer.id': id}, '-__v').lean();
-};
+const getCartsByUser = async (id) => Cart.find({'customer.id': id}, '-__v').lean();
 
 const getReviewsByUser = async (id) => {
     const products = await Products.find({'reviews.datas.id_client': id}).lean();
@@ -87,22 +83,16 @@ const getReviewsByUser = async (id) => {
     return datas;
 };
 
-const anonymizeCartsByUser = async (id) => {
-    return Cart.updateMany({'customer.id': id}, {
-        $set : {
-            'customer.email' : faker.internet.email(),
-            'customer.phone' : faker.phone.phoneNumber()
-        }
-    });
-};
+const anonymizeCartsByUser = async (id) => Cart.updateMany({'customer.id': id}, {
+    $set : {
+        'customer.email' : faker.internet.email(),
+        'customer.phone' : faker.phone.phoneNumber()
+    }
+});
 
-const getUserById = async (id) => {
-    return Users.findOne({_id: id}).lean();
-};
+const getUserById = async (id) => Users.findOne({_id: id}).lean();
 
-const getBillsByUser = async (id) => {
-    return Bills.find({client: id}, '-__v').lean();
-};
+const getBillsByUser = async (id) => Bills.find({client: id}, '-__v').lean();
 
 const anonymizeModulesByUser = async (user) => {
     const _modules = await Modules.find({active: true});
@@ -120,28 +110,24 @@ const anonymizeModulesByUser = async (user) => {
     }
 };
 
-const anonymizeBillsByUser = async (id) => {
-    return Bills.updateMany({client: id}, {
-        $set : {
-            nom         : faker.name.lastName(),
-            prenom      : faker.name.firstName(),
-            societe     : faker.random.word(),
-            coordonnees : faker.phone.phoneNumber(),
-            email       : faker.internet.email()
-        }
-    });
-};
+const anonymizeBillsByUser = async (id) => Bills.updateMany({client: id}, {
+    $set : {
+        nom         : faker.name.lastName(),
+        prenom      : faker.name.firstName(),
+        societe     : faker.random.word(),
+        coordonnees : faker.phone.phoneNumber(),
+        email       : faker.internet.email()
+    }
+});
 
-const anonymizeReviewsByUser = async (id) => {
-    return Products.updateMany({}, {
-        $set : {
-            'reviews.datas.$[data].ip_client' : faker.internet.ip(),
-            'reviews.datas.$[data].name'      : faker.name.firstName()
-        }
-    }, {
-        arrayFilters : [{'data.id_client': id}]
-    });
-};
+const anonymizeReviewsByUser = async (id) => Products.updateMany({}, {
+    $set : {
+        'reviews.datas.$[data].ip_client' : faker.internet.ip(),
+        'reviews.datas.$[data].name'      : faker.name.firstName()
+    }
+}, {
+    arrayFilters : [{'data.id_client': id}]
+});
 
 const anonymizeUser = async (id) => {
     const firstName = faker.name.firstName();
@@ -476,7 +462,8 @@ const dumpAnonymizedDatabase = async (res) => {
         await dropDatabase();
         // Download the dump file
         res.set({'content-type': 'application/gzip'});
-        return res.download(`./${pathUpload}/temp/database_dump.gz`);
+        const pathToArchive = path.join(global.appRoot, pathUpload, 'temp', 'database_dump.gz');
+        return res.download(pathToArchive);
     } catch (error) {
         if (error && error.name && error.name === 'NSError') {
             throw error;

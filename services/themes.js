@@ -37,7 +37,7 @@ const changeTheme = async (selectedTheme) => {
         console.log(`Setup selected theme: ${selectedTheme}...`);
         try {
             await updateService.setMaintenance(true);
-            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}});
+            await Configuration.updateOne({}, {$set: {'environment.currentTheme': selectedTheme}}); // TODO : maybe move this call after buildTheme()
 
             await require('./modules').setFrontModules(selectedTheme);
             // await setConfigTheme(selectedTheme);
@@ -212,16 +212,14 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
         return data;
     }
     const listOfDemoDatasFiles = await fs.readdir(themeDemoData);
-    const listOfPath           = listOfDemoDatasFiles.map((value) => {
-        return path.join(themeDemoData, value);
-    });
+    const listOfPath           = listOfDemoDatasFiles.map((value) => path.join(themeDemoData, value));
     if (!fileNames && listOfPath) {
         listOfFile = listOfPath;
     } else {
         listOfFile = listOfPath.filter((onePath) => {
-            const index = fileNames.findIndex((elementInFileName) => {
-                return onePath.includes(elementInFileName.name);
-            });
+            if (fs.lstatSync(onePath).isDirectory()) return false;
+            const fileName = path.basename(onePath);
+            const index    = fileNames.findIndex((elementInFileName) => fileName === elementInFileName.name);
             return (index > -1 && fileNames[index].value === true);
         });
     }
@@ -291,7 +289,7 @@ const copyDatas = async (themePath, override = true, configuration = null, fileN
 const getCustomCss = async (cssName) => {
     const themePath = getThemePath();
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 return (await fs.readFile(fullPath)).toString();
@@ -312,7 +310,7 @@ const setCustomCss = async (cssName, cssValue) => {
     const themePath = getThemePath();
 
     for (const cssFolder of CSS_FOLDERS) {
-        const fullPath = path.join('./themes', themePath, cssFolder, `${cssName}.css`);
+        const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder, `${cssName}.css`);
         try {
             if (fs.existsSync(fullPath)) {
                 await fs.writeFile(fullPath, cssValue);
@@ -334,7 +332,7 @@ const getAllCssComponentName = async () => {
         const cssNames  = [];
         const themePath = getThemePath();
         for (const cssFolder of CSS_FOLDERS) {
-            const fullPath = path.join('./themes', themePath, cssFolder);
+            const fullPath = path.join(global.appRoot, 'themes', themePath, cssFolder);
             try {
                 if (fs.existsSync(fullPath)) {
                     for (const file of await fs.readdir(fullPath)) {
@@ -370,6 +368,12 @@ function getThemePath() {
  */
 async function buildTheme(theme) {
     try {
+        // "dynamic_langs.js" is required to build (reactjs) theme
+        if (!(await fs.existsSync(path.join(theme, 'dynamic_langs.js')))) {
+            // Create if not exist
+            await require('./languages').createDynamicLangFile();
+        }
+
         const returnValues = await nextBuild(path.resolve(global.appRoot, 'themes', theme));
         return {
             msg    : 'OK',

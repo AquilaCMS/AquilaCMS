@@ -54,7 +54,7 @@ const getInitialProps =  (req, namespaces) => {
 
     let langs = [];
     try {
-        langs = require('dynamic_langs');
+        langs = require('./dynamic_langs.js');
     } catch(ee) {
         langs = [{code: 'en', defaultLanguage: true}] ;
         console.error('dynamic_langs is missing ! Rerun installer or manage language in backoffice.');

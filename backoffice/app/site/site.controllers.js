@@ -84,12 +84,12 @@ SiteControllers.controller("ArticlesSiteCtrl", [
 
 // Création d'article
 SiteControllers.controller("ArticlesNewSiteCtrl", [
-    "$scope", "$location", "ArticlesV2", "toastService", "$translate",
-    function ($scope, $location, ArticlesV2, toastService, $translate)
+    "$scope", "$location", "ArticlesV2", "toastService", "$modal", "$translate",
+    function ($scope, $location, ArticlesV2, toastService, $modal, $translate)
     {
         var selectedLang = "";
 
-        $scope.articles = {};
+        $scope.articles = {translation: {}};
         $scope.file = null;
         $scope.isEditMode = false;
 
@@ -145,13 +145,46 @@ SiteControllers.controller("ArticlesNewSiteCtrl", [
                 }
             });
         };
+
+        $scope.addTag = function (lang) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/site/views/modals/articles-new-tag.html",
+                controller: "ArticlesNewTagCtrl",
+                resolve: {
+                    Tags: function() {
+                        if (!$scope.articles.translation[lang]) {
+                            return []
+                        } else {
+                            return $scope.articles.translation[lang].tags
+                        }  
+                    },
+                    Language: function() {
+                        return lang
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (newTag) {
+                if ($scope.articles.translation[lang] && $scope.articles.translation[lang].tags) {
+                    $scope.articles.translation[lang].tags.push(newTag)
+                } else {
+                    $scope.articles.translation[lang] = {tags: [newTag]};
+                }
+                
+            });
+        };
+
+        $scope.removeTag = function(tag, lang) {
+            const index = $scope.articles.translation[lang].tags.indexOf(tag)
+            $scope.articles.translation[lang].tags.splice(index, 1)
+        }
     }
 ]);
 
 // Edition d'article
 SiteControllers.controller("ArticlesDetailSiteCtrl", [
-    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope", "$translate",
-    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope, $translate)
+    "$scope", "$routeParams", "$location", "ArticlesV2", "SiteDeleteImage", "toastService", "$timeout", "$rootScope", "$modal", "$translate",
+    function ($scope, $routeParams, $location, ArticlesV2, SiteDeleteImage, toastService, $timeout, $rootScope, $modal, $translate)
     {
         var selectedLang = "";
         $scope.isEditMode = false;
@@ -306,5 +339,82 @@ SiteControllers.controller("ArticlesDetailSiteCtrl", [
             const filename = img.split('/')[img.split('/').length -1]
             return `/images/blog/100x100/${$scope.articles._id}/${filename}`;
         }
+
+        $scope.additionnalButtons = [
+            {
+                text: 'site.detail.addTag',
+                onClick: function () {
+                    $scope.addTag(selectedLang);
+                }
+            }
+        ];
+
+        $scope.addTag = function (lang) {
+            var modalInstance = $modal.open({
+                templateUrl: "app/site/views/modals/articles-new-tag.html",
+                controller: "ArticlesNewTagCtrl",
+                resolve: {
+                    Tags: function() {
+                        return $scope.articles.translation[lang].tags
+                    },
+                    Language: function() {
+                        return lang
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (newTag) {
+                if ($scope.articles.translation[lang].tags) {
+                    $scope.articles.translation[lang].tags.push(newTag)
+                } else {
+                    $scope.articles.translation[lang].tags = [newTag];
+                }
+                
+            });
+        };
+
+        $scope.removeTag = function(tag, lang) {
+            const index = $scope.articles.translation[lang].tags.indexOf(tag)
+            $scope.articles.translation[lang].tags.splice(index, 1)
+        }
+    }
+]);
+
+SiteControllers.controller("ArticlesNewTagCtrl", [
+    "$scope", "$modalInstance", "ArticlesV2", "Tags", "Language", "toastService", "$translate",
+    function ($scope, $modalInstance, ArticlesV2, Tags, Language, toastService, $translate) {
+        $scope.itemObjectSelected = function (item) {
+            $scope.selectedDropdownItem = item;
+        };
+
+        $scope.filterDropdown = function (userInput) {
+            if (userInput !== undefined) {
+                $scope.selectedDropdownItem = userInput;
+            }
+            $scope.dropdownItems = [];
+            return ArticlesV2.getNewsTags({PostBody: {filter: {tags: userInput || "", lang: Language}}}).$promise.then(function (response) {
+                const dataTags = response.datas;
+                $scope.dropdownItems = dataTags.map(function (item) {
+                    const dropdownObject = angular.copy(item);
+                    dropdownObject.readableName = item;
+                    return dropdownObject;
+                });
+                return $scope.dropdownItems;
+            });
+        };
+
+        $scope.filterDropdown();
+
+        $scope.save = function() {
+            if (!$scope.selectedDropdownItem || (Tags && Tags.includes($scope.selectedDropdownItem))) {
+                toastService.toast("danger", $translate.instant("site.detail.newError"))
+            } else {
+                $modalInstance.close($scope.selectedDropdownItem)
+            }
+        }
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss("cancel");
+        };
     }
 ]);

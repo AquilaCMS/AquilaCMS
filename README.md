@@ -18,9 +18,9 @@ The ***Open Source***, ***100% JavaScript*** and ***"all in one"*** ecommerce so
 
 To install the latest AquilaCMS, you need :
 
-- `node.js 14+` (tested in v14.17.1)
-- `mongoDB 4.2.5+`
-- `yarn 1.22.4+` package manager
+- [`node.js 14+`](https://nodejs.org/) (tested in v14.17.1)
+- [`mongoDB 4.2.5+`](https://www.mongodb.com/try/download)
+- [`yarn 1.22.4+`](https://classic.yarnpkg.com/en/docs/install/) package manager
 
 ### System packages
 
@@ -90,7 +90,7 @@ If you want to have the installation page again, you can remove the `env.json` f
 You can define two environment variables inside AquilaCMS.
 
 - `NODE_ENV` : you should only limit values to `production`, `development` or `test` ([See 'Non standard node env'](https://github.com/vercel/next.js/blob/canary/errors/non-standard-node-env.md))
-- `AQUILA_ENV` : define the environment values in `/config/env.json` to be loaded
+- `AQUILA_ENV` : define the environment values in `/config/env.json` to be loaded ([See our documentation](https://doc.aquila-cms.com/#/Get_started/Configuration))
 
 ### Manually build the theme
 
@@ -102,9 +102,8 @@ npm run build:win --theme=default_theme
 
 > - Instead of `build:win` you can use `build:linux`
 > - At the variable `--theme` you need to put the name of the theme folder you want to build.
-
-> ⚠️Warning : on Windows, you must use Powershell
-> Otherwise, you may get an error when using the `npm run build:win` command.
+> - ⚠️Warning : on Windows, you must **not use** the default cmd
+> - Otherwise, you may get an error when using the `npm run build:win` command.
 
 ## Documentations
 

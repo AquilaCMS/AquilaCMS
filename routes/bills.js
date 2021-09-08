@@ -6,14 +6,15 @@
  * Disclaimer : Do not edit or add to this file if you wish to upgrade AQUILA CMS to newer versions in the future.
  */
 
-const ServiceBills                = require('../services/bills');
-const {authentication, adminAuth} = require('../middleware/authentication');
-const ServiceAuth                 = require('../services/auth');
+const stream       = require('stream');
+const ServiceBills = require('../services/bills');
+const {adminAuth}  = require('../middleware/authentication');
+const ServiceAuth  = require('../services/auth');
 
 module.exports = function (app) {
     app.post('/v2/bills', getBills);
     app.post('/v2/bills/generatePDF', generatePDF);
-    app.post('/v2/bills/fromOrder', authentication, adminAuth, orderToBill);
+    app.post('/v2/bills/fromOrder', adminAuth, orderToBill);
 };
 
 /**
@@ -80,7 +81,12 @@ async function generatePDF(req, res, next) {
     try {
         const PostBodyVerified = await ServiceAuth.validateUserIsAllowed(req.info, req.body.PostBody, 'client');
         const response         = await ServiceBills.generatePDF(PostBodyVerified);
-        return response.pipe(res);
+        if (response instanceof stream.Readable) {
+            return response.pipe(res);
+        } if (Buffer.isBuffer(response) || typeof response === 'string') {
+            return res.end(response);
+        }
+        return res.end('ERROR_WK-HTML-TO-PDF');
     } catch (error) {
         return next(error);
     }

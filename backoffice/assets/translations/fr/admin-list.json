@@ -10,69 +10,13 @@
     "username": "Nom d'utilisateur",
     "mail": "E-mail",
     "cocher": "Accès à des fonctionnalités d'Aquila :",
-
-    "transComm": " Transactions > Commandes",
-    "transPay": " Transactions > Paiements",
-    "invoices": " Transactions > facture",
-    "cart": " Transactions > panier",
-
-    "catalPdts": " Catalogue > Produits",
-    "siteCat": " Catalogue > Catégories",
-    "discount": " Catalogue > Promotions",
-    "picto": " Catalogue > Pictogramme",
-    "catalAttr": " Catalogue > Attributs",
-
-    "catalMarques": " Catalogue > Marques",
-    "catalFourn": " Catalogue > Fournisseurs",
-    "families": " Catalogue > Famille",
-
-    "siteStatic": " Site > Pages statiques",
-    "siteCMS": " Site > Blocs CMS",
-    "gallery": " Site > Gallery",
-    "slider": " Site > Carrousel",
-    "siteMedias": " Site > Médias",
-    "siteArt": " Site > Blog",
-
-    "clients": " Clients > Clients",
-    "reviews": " Clients > Avis",
-    "contact": " Clients > Contacts",
-    "newsletters": " Clients > Newsletters",
-
-    "mails": " Configuration > Mails",
-    "shipments": " Configuration > shipments",
-    "territories": " Configuration > territoires",
-    "confLang": " Configuration > Langues",
-    "paymentModes": " Configuration > Modes de paiement",
-    "admin": " Configuration > Admin",
-
-    "themes": " Apparence > Thèmes",
-    "design": " Apparence > Design",
-    "translate": " Apparence > translation",
-
-    "confEnv": " Paramètres > Paramètre serveur",
-    "stock": " Paramètres > Param Commande",
-    "confTasks": " Paramètres > Tâches planifiées",
-    "system": " Paramètres > Système",
-    "update": " Paramètres > Mise à jour",
-
-    "modules": " Modules",
-
-    "statistics": " Statistiques",
-    
-    "confLiv": " Pays de livraison",
-    "confComp": " Composants",
-    "confPtsVente": " Points de vente",
-    "promo": " Codes promo",
     "customer": "Fiche client",
     "reset": "Réinitialiser",
     "cancel": "Annuler",
     "save": "Enregistrer",
 
     "mdp": "Mot de passe",
-    "confVente": " Configuration > Vente",
     "actions": "Actions",
     "edit": "Modifier",
-    "delete": "Supprimer",
-
-    "editHtml": "Editer de l'HTML"
+    "delete": "Supprimer"
 }

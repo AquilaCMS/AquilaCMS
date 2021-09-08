@@ -472,6 +472,7 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 oneProduct.id = oneProduct.id._id;
             }
             CategoryV2.save(newCat, function (res) {
+                $scope.category = res;
                 CategoryV2.applyTranslatedAttribs({filter: {_id: res._id}})
                 toastService.toast("success", $translate.instant("category.detail.categorySaved"));
 
@@ -505,7 +506,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                     }
                 );
             } else {
-                $scope.getCategory($scope.category._id);
                 saveCategory();
             }
             if(typeof isQuit !== "undefined" && isQuit){
@@ -515,8 +515,6 @@ CategoryControllers.controller("CategoryDetailCtrl", [
                 // if (!$scope.$$phase) {
                 //     $scope.$apply();
                 // }
-            }else{
-                $scope.getCategory($scope.category._id);
             }
         };
 

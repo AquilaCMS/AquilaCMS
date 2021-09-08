@@ -18,18 +18,18 @@ const {isAdmin}                      = require('../utils/utils');
 module.exports = function (app) {
     app.post('/v2/orders', getOrders);
     app.post('/v2/order', getOrder);
-    app.post('/v2/order/rma', authentication, adminAuth, rma);
-    app.post('/v2/order/infoPayment', authentication, adminAuth, infoPayment);
+    app.post('/v2/order/rma', adminAuth, rma);
+    app.post('/v2/order/infoPayment', adminAuth, infoPayment);
     app.post('/v2/order/duplicateItemsFromOrderToCart', authentication, duplicateItemsFromOrderToCart);
-    app.post('/v2/order/addpkg', authentication, adminAuth, addPackage);
-    app.post('/v2/order/delpkg', authentication, adminAuth, delPackage);
-    app.put('/v2/order/updateStatus', authentication, adminAuth, updateStatus);
+    app.post('/v2/order/addpkg', adminAuth, addPackage);
+    app.post('/v2/order/delpkg', adminAuth, delPackage);
+    app.put('/v2/order/updateStatus', adminAuth, updateStatus);
     app.post('/v2/order/pay/:orderNumber/:lang?', authentication, payOrder);
-    app.put('/v2/order/updatePayment', authentication, adminAuth, updatePayment);
+    app.put('/v2/order/updatePayment', adminAuth, updatePayment);
     app.post('/v2/order/:id', getOrderById);
-    app.put('/v2/order/cancel/:id', authentication, adminAuth, cancelOrder);
+    app.put('/v2/order/cancel/:id', adminAuth, cancelOrder);
     app.put('/v2/order/requestCancel/:id', authentication, cancelOrderRequest);
-    app.put('/v2/order', setOrder);
+    app.put('/v2/order', adminAuth, setOrder);
 
     // Deprecated
     app.post('/orders/pay/:orderNumber/:lang?', middlewareServer.deprecatedRoute, authentication, payOrder);
@@ -105,7 +105,7 @@ async function getOrderById(req, res, next) {
  */
 async function rma(req, res, next) {
     try {
-        const order = await orderService.rma(req.body.order, req.body.return);
+        const order = await orderService.rma(req.body.order, req.body.return, req.body.lang);
         res.json(order);
     } catch (err) {
         return next(err);
@@ -120,7 +120,7 @@ async function rma(req, res, next) {
  */
 async function infoPayment(req, res, next) {
     try {
-        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail);
+        const order = await orderService.infoPayment(req.body.order, req.body.params, req.body.sendMail, req.body.lang);
         res.json(order);
     } catch (err) {
         return next(err);
@@ -240,7 +240,7 @@ async function payOrder(req, res, next) {
     if (!order) {
         return next(NSErrors.OrderNotFound);
     }
-    const query  = {...req.body.filterPayment}; // this line bypass this old line => query.$or = [{all_points_of_sale: true}, {points_of_sale: order.point_of_sale}];
+    const query  = {...req.body.filterPayment};
     query.active = true;
     // If the order is associated with a point of sale, then we retrieve the payment methods of this point of sale
     // Otherwise, we recover all the active payment methods
@@ -259,7 +259,7 @@ async function payOrder(req, res, next) {
         }, {
             $set : {
                 status  : 'PAYMENT_RECEIPT_PENDING',
-                payment : [createPayment(order, method)]
+                payment : [createPayment(order, method, req.params.lang)]
             }
         });
 
@@ -279,13 +279,14 @@ async function payOrder(req, res, next) {
  * @param {*} method
  * @deprecated
  */
-function createPayment(order, method) {
+function createPayment(order, method, lang) {
     return {
         type          : 'CREDIT',
         operationDate : Date.now(),
         status        : 'TODO',
         mode          : method.code.toUpperCase(),
         amount        : order.priceTotal.ati,
-        isDeferred    : method.isDeferred
+        isDeferred    : method.isDeferred,
+        name          : method.translation[lang].name
     };
 }

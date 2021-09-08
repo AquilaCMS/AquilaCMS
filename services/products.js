@@ -243,12 +243,10 @@ const duplicateProduct = async (idProduct, newCode) => {
     return doc;
 };
 
-const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => {
-    return global.cache.get(
-        `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
-        async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
-    );
-};
+const _getProductsByCategoryId = async (id, PostBody = {}, lang, isAdmin = false, user, reqRes = undefined) => global.cache.get(
+    `${id}_${lang || ''}_${isAdmin}_${JSON.stringify(PostBody)}_${user ? user._id : ''}`,
+    async () => getProductsByCategoryId(id, PostBody, lang, isAdmin, user, reqRes)
+);
 
 /**
  * We get the products contained in a category
@@ -545,9 +543,7 @@ const orderByPriceSort = (tProducts, PostBody, param = 'price.priceSort.et') => 
     return tProducts;
 };
 
-const getProductById = async (id, PostBody = null) => {
-    return queryBuilder.findById(id, PostBody);
-};
+const getProductById = async (id, PostBody = null) => queryBuilder.findById(id, PostBody);
 
 const calculateFilters = async (req, result) => {
     // We recover the attributes, the last selected attribute and if the value has been checked or not
@@ -658,25 +654,27 @@ const createProduct = async (req) => {
     default:
         break;
     }
+    let body = req.body;
     if (req.body.set_attributes === undefined) {
-        const product = await serviceSetAttributs.addAttributesToProduct(req.body);
-        const result  = await Products.create(product);
-        aquilaEvents.emit('aqProductCreated', result._id);
-        return result;
+        body = await serviceSetAttributs.addAttributesToProduct(req.body);
     }
     req.body.code = utils.slugify(req.body.code);
-    const res     = await Products.create(req.body);
+    const res     = await Products.create(body);
     aquilaEvents.emit('aqProductCreated', res._id);
     return res;
 };
 
 /**
- * @todo maybe replace map by a for of to fix eslint problem ?
+ * Remove product
  */
 const deleteProduct = async (_id) => {
-    if (!mongoose.Types.ObjectId.isValid(_id)) throw NSErrors.InvalidObjectIdError;
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+        throw NSErrors.InvalidObjectIdError;
+    }
     const doc = await Products.findOneAndRemove({_id});
-    if (!doc) throw NSErrors.ProductNotFound;
+    if (!doc) {
+        throw NSErrors.ProductNotFound;
+    }
     await Categories.updateMany({}, {$pull: {productsList: {id: _id}}});
     await Products.updateMany({}, {$pull: {associated_prds: _id}});
     const products = await Products.find({type: 'bundle'});
@@ -688,12 +686,6 @@ const deleteProduct = async (_id) => {
                 section.products.splice(prdIndex, 1);
             }
         }
-        // prd.bundle_sections.map((section) => {
-        //     const prdIndex = section.products.findIndex((sectionPrd) => sectionPrd.id.toString() === _id.toString());
-        //     if (prdIndex > -1) {
-        //         section.products.splice(prdIndex, 1);
-        //     }
-        // });
         prd.save();
     }
     return doc;
@@ -900,14 +892,18 @@ const controlAllProducts = async (option) => {
 
         // AutoFix :
         try {
-            if (fixAttributs) {await require('./devScripts').sortAttribs();}
+            if (fixAttributs) {
+                await require('./devFunctions').sortAttribs();
+            }
         } catch (ee) {
             returnErrors += `sortAttribs : ${ee.toString()}`;
         }
 
         return returnErrors + returnWarning;
     } catch (error) {
-        if (error.message) {return error.message;}
+        if (error.message) {
+            return error.message;
+        }
         return error;
     }
 };

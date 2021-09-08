@@ -32,9 +32,20 @@ const getEnv = (property) =>  {
  */
 const isProd = getEnv('NODE_ENV') === 'production';
 
+/**
+ * check if in dev or not
+ * @returns {boolean}
+ */
+const dev = getEnv('NODE_ENV') === 'development';
+
 const updateEnv = async () => {
-    let envPath   = (await fs.readFile(path.resolve(global.appRoot, 'config/envPath'))).toString();
-    envPath       = path.resolve(global.appRoot, envPath);
+    const pathToEnvPath = path.join(global.appRoot, 'config', 'envPath');
+    const file          = await fs.readFile(pathToEnvPath);
+    let envPath         = file.toString();
+    envPath             = path.join(global.appRoot, envPath);
+    if (!(await fs.hasAccess(envPath))) {
+        console.error(`Cannot access to ${envPath}`);
+    }
     const envFile = JSON.parse(await fs.readFile(envPath, {encoding: 'utf8'}));
     await fs.writeFile(envPath, JSON.stringify(envFile, null, 2));
     global.envFile = envFile[getEnv('AQUILA_ENV')];
@@ -66,11 +77,14 @@ const getOrCreateEnvFile = async () => {
                     envFile = JSON.parse(envFile);
                 } catch (error) {
                     console.error('Access to the env file is possible but the file is invalid');
-                    throw new Error('Cannot read env.json');
+                    const newPathTemp = `${global.envPath}.temp`;
+                    await fs.writeFile(newPathTemp, envFile);
+                    console.error(`The content of ${global.envPath} has been copied to ${newPathTemp}`);
+                    envFile = {};
                 }
             }
             if (!envFile[getEnv('AQUILA_ENV')]) {
-                console.error('no correct NODE_ENV specified, generating new env in env.json');
+                console.error('no correct AQUILA_ENV specified, generating new env in env.json');
                 const newEnv                  = generateNewEnv(envExample);
                 envFile[getEnv('AQUILA_ENV')] = newEnv[getEnv('AQUILA_ENV')];
             }
@@ -132,9 +146,7 @@ const showAquilaLogo = () => {
 const controlNodeVersion = async () => {
     try {
         const packageJSON = JSON.parse(await fs.readFile(path.join(global.appRoot, 'package.json'), {encoding: 'utf8'}));
-        const check       = (hilo) => {
-            return outside(process.version, packageJSON.engines.node, hilo);
-        };
+        const check       = (hilo) => outside(process.version, packageJSON.engines.node, hilo);
 
         let errorVersion;
         if (check('>') || check('<')) {
@@ -229,7 +241,9 @@ const getAppUrl = async (req) => {
 const getUploadDirectory = () => {
     if (global.envConfig && global.envConfig.environment) {
         const {photoPath} = global.envConfig.environment;
-        if (photoPath) return photoPath;
+        if (photoPath) {
+            return photoPath;
+        }
     }
     return 'uploads';
 };
@@ -249,6 +263,7 @@ const deepObjectVerification = (objectToVerify, objectBase) => {
 module.exports = {
     getEnv,
     isProd,
+    dev,
     getOrCreateEnvFile,
     getUploadDirectory,
     showAquilaLogo,
