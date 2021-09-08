@@ -516,7 +516,7 @@ ProductDirectives.directive("nsProductPhoto", function () {
                 };
 
                 $scope.getImageUrl = function (image, variantImageId) {
-                    return `images/${variantImageId ? 'products' : 'productVariant'}/300x300-50/${variantImageId ? variantImageId : image._id}/${image.title}${image.extension}`;
+                    return `images/${variantImageId ? 'productsVariant' : 'product'}/300x300-50/${variantImageId ? variantImageId : image._id}/${image.title}${image.extension}`;
                 };
             }
         ]

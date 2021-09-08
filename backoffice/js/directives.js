@@ -2347,11 +2347,8 @@ adminCatagenDirectives.directive("nsUploadFiles", [
                                         }).indexOf(response.data.name);
                                         $scope.files.splice(index, 1);
                                         switch ($scope.type) {
+                                            case 'productVariant':
                                             case 'product': {
-                                                $scope.images.push(response.data);
-                                                break;
-                                            }
-                                            case 'productVariant': {
                                                 $scope.images.push(response.data);
                                                 break;
                                             }

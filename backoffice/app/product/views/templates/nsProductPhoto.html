@@ -4,7 +4,8 @@
     simple.beforeConfigImages
 </span>
 <div class="row col-sm-12" style="margin-top: 15px" ng-show="product.code && (product._id || isVariant)">
-    <ns-upload-files is-selected="isSelected" accepttype="image/*" multiple="true" type="isVariant ? 'productVariant' : 'product'" code="product.code" id="product._id" images="product.images" showalt="true" is-variant="variantId !== undefined"></ns-upload-files>
+    <ns-upload-files ng-if="variantId === undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="product" code="product.code" id="product._id" images="product.images" showalt="true"></ns-upload-files>
+    <ns-upload-files ng-if="variantId !== undefined" is-selected="isSelected" accepttype="image/*" multiple="true" type="productVariant" code="product.code" id="product._id" images="product.images" showalt="true" is-variant="variantId !== undefined"></ns-upload-files>
 </div>
 <hr />
 <div class="row col-sm-12" style="margin-top: 10px">
@@ -24,7 +25,7 @@
                 <span class="helperImg"/>
                 <div ng-show="image.component_template" bind-html-compile="image.component_template"></div>
                 <div ng-hide="image.component_template">
-                    <img ng-src="/{{getImageUrl(image, isVariant ? image._id : undefined)}}" />
+                    <img ng-src="/{{getImageUrl(image, variantId ? image._id : undefined)}}" />
                 </div>
             </div>
             <div class="col-sm-7">
