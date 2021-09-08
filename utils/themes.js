@@ -13,16 +13,12 @@ const packageManager = require('./packageManager');
 const {isProd}       = require('./server');
 
 /**
- * Compile the current theme
+ * Do a yarn install and compile the theme passed as a parameter or the current theme
  */
-const themeCompile = async (theme, newIsProd) => {
+const themeInstallAndCompile = async (theme) => {
     try {
-        const themeName            = theme || global.envConfig.environment.currentTheme;
-        let installDevDependencies = !isProd;
-        if (typeof newIsProd !== 'undefined' && newIsProd !== null && newIsProd === true) {
-            installDevDependencies = true; // we force overriding
-        }
-        await yarnInstall(themeName, installDevDependencies);
+        const themeName = theme || global.envConfig.environment.currentTheme;
+        await yarnInstall(themeName);
         await yarnBuildCustom(themeName);
     } catch (err) {
         console.error(err);
@@ -44,7 +40,8 @@ const yarnInstall = async (themeName = '', devDependencies = false) => {
         };
     }
     let command = 'yarn install --production=true';
-    if (devDependencies === true) {
+    // If the NODE_ENV variable is not equal to 'production', yarn install will always install the devDependencies
+    if (devDependencies === true || !isProd) {
         command = 'yarn install --production=false';
     }
     const returnValues = await packageManager.execCmd(command, path.join(linkToTheme, '/'));
@@ -163,7 +160,7 @@ const loadInfoTheme = (theme) => {
     return null;
 };
 module.exports = {
-    themeCompile,
+    themeInstallAndCompile,
     yarnBuildCustom,
     yarnInstall,
     yarnBuild,
