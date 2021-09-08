@@ -33,7 +33,7 @@
     "addedTheme": "Thème ajouté ! Pour l'utiliser, il suffit de le selectionner",
     "themeDelete": "Supprimer le thème",
     "configThemeVar": "Configuration actuelle",
-    "themeInstallAllDependencies": "Installer les dépendances et les dépendances de développement de ce thème",
+    "themeInstallAllDependencies": "Installer les dépendances et les dépendances de développement de ce thème (redémarrage necessaire).",
     "themeActions": "Actions du thème",
     "actions": {
         "install": "yarn install",
