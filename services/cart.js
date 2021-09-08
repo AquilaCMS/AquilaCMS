@@ -165,9 +165,9 @@ const addItem = async (req) => {
     }
     const _lang = await Languages.findOne({defaultLanguage: true});
 
-    if (_product.variants_values && typeof req.body.item.selected_variant === 'undefined') {
+    if (_product.variants_values && _product.variants_values.length && typeof req.body.item.selected_variant === 'undefined') {
         throw NSErrors.InvalidParameters;
-    } else if (_product.variants) {
+    } else if (_product.variants_values && _product.variants_values.length && req.body.item.selected_variant) {
         // we set variant in the cart !
         // quick check if all mandatory options are present
         const isPresent = _product.variants_values.findIndex((oneVariant) => req.body.item.selected_variant._id.toString() === oneVariant._id.toString());
@@ -198,7 +198,7 @@ const addItem = async (req) => {
                 if (typeof req.body.item.selected_variant !== 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
                     // check if same variant
                     const variantOfItemInCart = cart.items[index].selected_variant;
-                    if (req.body.item.selected_variant._id === variantOfItemInCart._id) {
+                    if (req.body.item.selected_variant._id === variantOfItemInCart.id.toString()) {
                         isANewProduct = index;
                         break;
                     } else {
@@ -208,7 +208,7 @@ const addItem = async (req) => {
                     if (typeof req.body.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant === 'undefined') {
                         isANewProduct = index;
                         break;
-                    } else  if (typeof req.body.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant.length !== 'undefined' && cart.items[index].selected_variant.length === 0) {
+                    } else  if (typeof req.body.item.selected_variant === 'undefined' && typeof cart.items[index].selected_variant !== 'undefined') {
                         isANewProduct = index;
                         break;
                     }

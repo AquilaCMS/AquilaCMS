@@ -87,15 +87,17 @@ class PageCart extends NSPageCart {
                                                                 }
                                                                 let imgDefault = imgDefaultBase64;
                                                                 let imgAlt     = 'illustration produit';
-                                                                let foundImg;
-                                                                foundImg = item.id.images.find(img => img.default)
-                                                                if(item.selected_variant) foundImg = item.selected_variant.images.find(img => img.default)
-                                                                if (foundImg) {
-                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                    imgAlt     = foundImg.alt || imgAlt;
-                                                                } else if(item.id && item.id.images) {
-                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                    imgAlt     = item.id.images[0].alt || imgAlt;
+                                                                if (item.id && item.id.images && item.id.images.length) {
+                                                                    let foundImg;
+                                                                    foundImg = item.id.images.find(img => img.default)
+                                                                    if(item.selected_variant) foundImg = item.selected_variant.images.find(img => img.default)
+                                                                    if (foundImg) {
+                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                        imgAlt     = foundImg.alt || imgAlt;
+                                                                    } else if(item.id && item.id.images) {
+                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                        imgAlt     = item.id.images[0].alt || imgAlt;
+                                                                    }
                                                                 }
                                                                 
                                                                 return (

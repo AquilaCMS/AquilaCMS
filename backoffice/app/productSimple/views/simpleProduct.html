@@ -18,11 +18,11 @@
                     <li><a data-toggle="tab" href="#marketing" target="_self" translate>simple.mark</a></li>
                     <li><a data-toggle="tab" href="#prix" target="_self" translate>simple.prixStock</a></li>
                     <li><a data-toggle="tab" href="#photos" target="_self" translate>simple.pics</a></li>
+                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
+                    <li ng-show="product.type === 'simple'"><a data-toggle="tab" href="#declinaisons" target="_self" translate>product.declinaisons.variants</a></li>
                     <li><a data-toggle="tab" href="#cross_selling" target="_self" translate>simple.cs</a></li>
                     <li><a data-toggle="tab" href="#promos" target="_self">Promos</a></li>
-                    <li><a data-toggle="tab" href="#attributes" target="_self" translate>simple.specAttr</a></li>
                     <li><a data-toggle="tab" href="#categoriesLink" target="_self" translate>simple.linkedCat</a></li>
-                    <li ng-show="product.type === 'simple'"><a data-toggle="tab" href="#declinaisons" target="_self" translate>product.declinaisons.variants</a></li>
                     <li ng-repeat="tab in additionnalTabs">
                         <a data-toggle="tab" href="{{tab.href}}" target="_self" translate="{{tab.title}}"></a>
                     </li>

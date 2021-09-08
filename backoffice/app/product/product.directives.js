@@ -203,7 +203,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
 
             $scope.createPrds = function () {
                 $scope.product.variants_values = []
-                if ($scope.product.variants.length > 1) {
+                if ($scope.product.variants && $scope.product.variants.length > 1) {
                     for (var indexValueLine1 = 0; indexValueLine1 < $scope.product.variants[0].translation[$scope.lang].values.length; indexValueLine1++) {
                         for (var indexValueLine2 = 0; indexValueLine2 < $scope.product.variants[1].translation[$scope.lang].values.length; indexValueLine2++) {
                             $scope.product.variants_values.push({
@@ -222,7 +222,7 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                             })
                         }
                     }
-                } else if ($scope.product.variants.length === 1) {
+                } else if ($scope.product.variants && $scope.product.variants.length === 1) {
                     $scope.product.variants_values = $scope.product.variants[0].translation[$scope.lang].values.map((val, index) => {
                         return {
                             code: $scope.product.code + '-' + val,

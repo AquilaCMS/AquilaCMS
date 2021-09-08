@@ -239,14 +239,16 @@ class CartSuccess extends React.Component {
                                                                                 }
                                                                                 let imgDefault = imgDefaultBase64;
                                                                                 let imgAlt = 'illustration produit';
-                                                                                if (item.id.images && item.id.images.length) {
-                                                                                    const foundImg = item.id.images.find((img) => img.default);
+                                                                                if (item.id && item.id.images && item.id.images.length) {
+                                                                                    let foundImg;
+                                                                                    foundImg = item.id.images.find(img => img.default)
+                                                                                    if(item.selected_variant) foundImg = item.selected_variant.images.find(img => img.default)
                                                                                     if (foundImg) {
-                                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/products/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                        imgAlt = foundImg.alt || imgAlt;
-                                                                                    } else {
-                                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/products/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
-                                                                                        imgAlt = item.id.images[0].alt || imgAlt;
+                                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                        imgAlt     = foundImg.alt || imgAlt;
+                                                                                    } else if(item.id && item.id.images) {
+                                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                        imgAlt     = item.id.images[0].alt || imgAlt;
                                                                                     }
                                                                                 }
                                                                                 return (

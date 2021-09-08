@@ -155,6 +155,7 @@
         "variants": "Variants",
         "price": "Base ATI price",
         "quantity": "Qty",
-        "default": "Default"
+        "default": "Default",
+        "createAttribs": "You need to create at least one attribut flagged as product variant <a style='text-decoration: underline;' href='#/products/attributes'>here</a>"
     }
 }
