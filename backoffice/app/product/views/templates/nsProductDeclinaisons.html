@@ -110,7 +110,7 @@
                         </tr>
                     </thead>
                     <tbody role="alert" aria-live="polite" aria-relevant="all">
-                        <tr class="pointer" ng-repeat="variant in product.variants_values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant)">
+                        <tr class="pointer" ng-repeat="variant in product.variants_values track by variant.code" ng-class-odd="'odd'" ng-class-even="'even'" ng-click="selectVariantValue(variant, $index)">
                             <td><ns-switch name="{{variant.code}}_active" ng-model="variant.active" ng-click="$event.stopPropagation()"></ns-switch></td>
                             <td><img ng-src="/{{getImageUrl(variant.images)}}" alt="{{variant.code}}"></td>
                             <td>{{variant.translation[lang].name}}</td>

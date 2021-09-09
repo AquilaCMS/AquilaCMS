@@ -22,18 +22,18 @@
                 <div class="col-sm-6">
                     <select class="form-control" name="type" id="type" ng-model="attribute.type" ng-disabled="isEditMode" ng-selected="attribute.type" required>
                         <option value="" translate>attribute.detail.choixTypeAttribut</option>
-                        <option value="textfield" translate>attribute.detail.champTexte</option>
-                        <option value="textarea" translate>attribute.detail.zoneTexte</option>
-                        <option value="date" translate>attribute.detail.date</option>
-                        <option value="bool" translate>attribute.detail.booleen</option>
+                        <option value="textfield" ng-show="!attribute.isVariantable" translate>attribute.detail.champTexte</option>
+                        <option value="textarea" ng-show="!attribute.isVariantable" translate>attribute.detail.zoneTexte</option>
+                        <option value="date" ng-show="!attribute.isVariantable" translate>attribute.detail.date</option>
+                        <option value="bool" ng-show="!attribute.isVariantable" translate>attribute.detail.booleen</option>
                         <option value="list" translate>attribute.detail.listeDeroulante</option>
                         <option value="multiselect" translate>attribute.detail.selectionMultiple</option>
-                        <option value="interval" translate>attribute.detail.intervalle</option>
-                        <option value="image" translate>attribute.detail.image</option>
-                        <option value="video" translate>attribute.detail.video</option>
-                        <option value="doc/pdf" translate>attribute.detail.fichierPDF</option>
-                        <option value="number" translate>attribute.detail.nombre</option>
-                        <option ng-show="_type === 'products'" value="color" translate>attribute.detail.color</option>
+                        <option value="interval" ng-show="!attribute.isVariantable" translate>attribute.detail.intervalle</option>
+                        <option value="image" ng-show="!attribute.isVariantable" translate>attribute.detail.image</option>
+                        <option value="video" ng-show="!attribute.isVariantable" translate>attribute.detail.video</option>
+                        <option value="doc/pdf" ng-show="!attribute.isVariantable" translate>attribute.detail.fichierPDF</option>
+                        <option value="number" ng-show="!attribute.isVariantable" translate>attribute.detail.nombre</option>
+                        <option ng-show="_type === 'products'" value="color" ng-hide="attribute.isVariantable" translate>attribute.detail.color</option>
                     </select>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     <ns-switch name="visible" ng-model="attribute.visible"></ns-switch>
                 </div>
             </div>
-            <div class="form-group" ng-show="_type === 'products'">
+            <div class="form-group" ng-if="_type === 'products' && (['list', 'multiselect']).includes(attribute.type)">
                 <label class="col-sm-3 control-label" translate>attribute.detail.allowDeclinaison</label>
                 <div class="col-sm-6">
                     <ns-switch name="isVariantable" ng-model="attribute.isVariantable"></ns-switch>

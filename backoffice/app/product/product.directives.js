@@ -256,8 +256,9 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                 $scope.createPrds()
             }
 
-            $scope.selectVariantValue = function (variantValue) {
+            $scope.selectVariantValue = function (variantValue, index) {
                 $scope.selectedVariantValue = variantValue
+                const ogSelectedVariantValue = angular.copy(variantValue)
                 $modal.open({
                     windowClass: "modal-large",
                     templateUrl: "app/product/views/modals/modalVariantValue.html",
@@ -266,6 +267,10 @@ ProductDirectives.directive("nsProductDeclinaisons", function () {
                         function ($scope, $filter, $modalInstance) {
                             $scope.close = function() {
                                 $modalInstance.close()
+                            }
+                            $scope.cancel = function() {
+                                $scope.product.variants_values[index] = ogSelectedVariantValue
+                                $scope.close();
                             }
                         }
                     ],

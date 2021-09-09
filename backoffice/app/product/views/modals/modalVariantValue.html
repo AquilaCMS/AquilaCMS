@@ -1,7 +1,5 @@
 <div class="modal-header">
-    <div style="position: relative;">Variant Edition 
-        <span style="position: absolute; top: 0; right: 0;cursor: pointer;" ng-click="close()" translate>product.modal.close</span></div>
-    </div>
+    <h3>Variant Edition</h3>
 </div>
 <div class="modal-body">
     <div ng-if="selectedVariantValue.code">
@@ -66,6 +64,8 @@
     </div>
 </div>
 <div class="modal-footer">
+    <button class="btn btn-success" ng-click="close()" translate>product.select.valider</button>
+    <button class="btn btn-default" ng-click="cancel()" translate>product.select.cancel</button>
     <style>
         .col-sm-3, .col-sm-4 {
             margin: 15px auto;
