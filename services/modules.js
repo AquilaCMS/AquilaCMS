@@ -644,7 +644,7 @@ const setFrontModuleInTheme = async (pathModule, theme) => {
         }
         const info       = await fs.readFile(path.join(savePath, 'info.json'));
         const parsedInfo = JSON.parse(info);
-        let type         = parsedInfo?.info?.type ? parsedInfo.info.type : 'global'; // global is the default type
+        let type         = parsedInfo?.info?.type ? parsedInfo.info.type : undefined; // global is the default type
         if (parsedInfo.info.types && Array.isArray(parsedInfo.info.types)) {
             type = parsedInfo.info.types.find((t) => t.component === file).type;
         }
