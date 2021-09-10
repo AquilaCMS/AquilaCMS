@@ -346,13 +346,14 @@ const cartToOrder = async (cartId, _user, lang = '') => {
             for (let i = 0; i < _cart.items.length; i++) {
                 const cartItem = _cart.items[i];
                 const _product = await Products.findOne({_id: cartItem.id});
-                if (_product.kind === 'SimpleProduct') {
+                console.log('_product.type', _product.type);
+                if (_product.type === 'simple') {
                     if ((_product.stock.orderable) === false) {
                         throw NSErrors.ProductNotOrderable;
                     }
                     // we book the stock
                     await ServicesProducts.updateStock(_product._id, -cartItem.quantity);
-                } else if (_product.kind === 'BundleProduct') {
+                } else if (_product.type === 'bundle') {
                     for (let j = 0; j < cartItem.selections.length; j++) {
                         const section = cartItem.selections[j];
                         for (let k = 0; k < section.products.length; k++) {

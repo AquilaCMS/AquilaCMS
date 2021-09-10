@@ -641,19 +641,19 @@ const createProduct = async (req) => {
     // We check that the id is not already taken
     const product = await Products.findOne({_id: req.body._id});
     if (product) throw NSErrors.ProductIdExisting;
-    switch (req.body.type) {
-    case 'simple':
-        req.body.kind = 'SimpleProduct';
-        break;
-    case 'virtual':
-        req.body.kind = 'VirtualProduct';
-        break;
-    case 'bundle':
-        req.body.kind = 'BundleProduct';
-        break;
-    default:
-        break;
-    }
+    // switch (req.body.type) {
+    // case 'simple':
+    //     req.body.kind = 'SimpleProduct';
+    //     break;
+    // case 'virtual':
+    //     req.body.kind = 'VirtualProduct';
+    //     break;
+    // case 'bundle':
+    //     req.body.kind = 'BundleProduct';
+    //     break;
+    // default:
+    //     break;
+    // }
     let body = req.body;
     if (req.body.set_attributes === undefined) {
         body = await serviceSetAttributs.addAttributesToProduct(req.body);
@@ -968,7 +968,7 @@ const downloadProduct = async (req, res) => {
     } else if (req.query.p_id) {
         prd = await getProduct({filter: {_id: req.query.p_id}, structure: '*'}, {req, res}, undefined);
         // we check that it is virtual, and that its price is equal to 0
-        if (!prd || prd.kind !== 'VirtualProduct') {
+        if (!prd || prd.type !== 'virtual') {
             throw NSErrors.ProductNotFound;
         } else if (prd.price.ati.special !== undefined) {
             if (prd.price.ati.special > 0) {
