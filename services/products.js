@@ -705,7 +705,6 @@ const checkProductOrderable = async (objstock, qtecdé = 0, selected_variant  = 
             ...selected_variant.stock,
             qty_real : Number(selected_variant.stock.qty) - Number(selected_variant.stock.qty_booked)
         };
-        console.log('PRD STOCK  =>  ', prdStock);
     } else if (typeof objstock === 'string') {
         prdStock = (await Products.findById(objstock)).stock;
     } else {
@@ -760,7 +759,6 @@ const checkProductOrderable = async (objstock, qtecdé = 0, selected_variant  = 
             datas.ordering.orderable = true;
         }
     }
-    console.log(datas);
     return datas;
 };
 
