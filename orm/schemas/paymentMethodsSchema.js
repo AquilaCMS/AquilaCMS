@@ -42,9 +42,7 @@ const PaymentMethodsSchema = new Schema({
 PaymentMethodsSchema.statics.translationValidation = async function (query, self) {
     let errors = [];
 
-    while (self.translation === undefined) {
-        self.translation = {};
-    }
+    if (self.translation === undefined) return errors; // No translation
 
     let translationKeys = Object.keys(self.translation);
 

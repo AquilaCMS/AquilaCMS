@@ -70,9 +70,8 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
     let errors = [];
 
     if (self && updateQuery === undefined || self.code !== undefined) {
-        while (self.translation === undefined) {
-            self.translation = {};
-        }
+        if (self.translation === undefined) return errors; // No translation
+
         let translationKeys = Object.keys(self.translation);
         if (translationKeys.length === 0) {
             self.translation[global.defaultLang] = {};
@@ -109,9 +108,8 @@ CategoriesSchema.statics.translationValidation = async function (updateQuery, se
             updateQuery.updateOne(self);
         }
     } else {
-        while (self.translation === undefined) {
-            self.translation = {};
-        }
+        if (updateQuery.translation === undefined) return errors; // No translation
+
         let translationKeys = Object.keys(updateQuery.translation);
         if (translationKeys.length === 0) {
             self.translation[global.defaultLang] = {};
