@@ -1091,9 +1091,9 @@ const updateStock = async (productId, qty1 = 0, qty2 = undefined, selected_varia
 };
 
 const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_variant) => {
-    const selectedVariantIndex = prd.variants.findIndex((prdVariant) => prdVariant._id === selected_variant._id);
+    const selectedVariantIndex = prd.variants_values.findIndex((prdVariant) => prdVariant._id.toString() === selected_variant.id);
     if (selectedVariantIndex > -1) {
-        if (prd.variants[selectedVariantIndex].stock.date_selling > new Date() && prd.variants[selectedVariantIndex].stock.status !== 'dif') {
+        if (prd.variants_values[selectedVariantIndex].stock.date_selling > new Date() && prd.variants_values[selectedVariantIndex].stock.status !== 'dif') {
             throw NSErrors.ProductNotSalable;
         }
         // if qty2 exists, it is either a product return or a shipment
@@ -1101,17 +1101,17 @@ const updateVariantsStock = async (prd, qty1 = 0, qty2 = undefined, selected_var
             // if qty2 === 0, it is a product return, sino, it is a shipment
             if (qty2 === 0) {
                 // qty1 = the quantity to return
-                const qtyToReturn                             = qty1;
-                prd.variants[selectedVariantIndex].stock.qty += qtyToReturn;
+                const qtyToReturn                                    = qty1;
+                prd.variants_values[selectedVariantIndex].stock.qty += qtyToReturn;
             } else if (qty1 === 0) {
-                const qtyToSend                                      = qty2;
-                prd.variants[selectedVariantIndex].stock.qty        += qtyToSend;
-                prd.variants[selectedVariantIndex].stock.qty_booked += qtyToSend;
+                const qtyToSend                                             = qty2;
+                prd.variants_values[selectedVariantIndex].stock.qty        += qtyToSend;
+                prd.variants_values[selectedVariantIndex].stock.qty_booked += qtyToSend;
             }
         } else {
             // in the case of an addition to the cart, qty change or deletion of an item in a cart
-            const qtyToAddOrRemove                               = qty1;
-            prd.variants[selectedVariantIndex].stock.qty_booked -= qtyToAddOrRemove;
+            const qtyToAddOrRemove                                      = qty1;
+            prd.variants_values[selectedVariantIndex].stock.qty_booked -= qtyToAddOrRemove;
         }
         await prd.updateData(prd);
     }
