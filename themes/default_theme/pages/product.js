@@ -81,7 +81,7 @@ class PageProduct extends NSPageProduct {
                 imgDefault = foundImg._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${foundImg._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
                 imgAlt = foundImg.alt || imgAlt;
             } else {
-                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${product.images[0]._id}/${product.slug[lang]}${foundImg.extension}` : imgDefault;
+                imgDefault = product.images[0]._id !== 'undefined' ? `/images/${this.state.variant ? 'productVariant' : 'product'}/516x400/${product.images[0]._id}/${product.slug[lang]}${product.images[0].extension}` : imgDefault;
                 imgAlt = product.images[0].alt || imgAlt;
             }
         }

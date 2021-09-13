@@ -243,10 +243,10 @@ class CartSuccess extends React.Component {
                                                                                     foundImg = item.id.images.find(img => img.default)
                                                                                     if(item.selected_variant) foundImg = item.selected_variant.images.find(img => img.default)
                                                                                     if (foundImg) {
-                                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                        imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
                                                                                         imgAlt     = foundImg.alt || imgAlt;
                                                                                     } else if(item.id && item.id.images) {
-                                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${item.id.images[0].extension}` : imgDefault;
                                                                                         imgAlt     = item.id.images[0].alt || imgAlt;
                                                                                     }
                                                                                 }
@@ -257,7 +257,6 @@ class CartSuccess extends React.Component {
                                                                                                 <figure className="cart__image" style={{ width: '82px' }}>
                                                                                                     <img src={imgDefault} alt={imgAlt} />
                                                                                                 </figure>
-
                                                                                                 <h5 className="cart__title">
                                                                                                     {(item.selected_variant && item.selected_variant.id) ? item.selected_variant.name : (item.id.name)}
                                                                                                     {
@@ -302,11 +301,9 @@ class CartSuccess extends React.Component {
                                                                                                 </h5>
                                                                                             </div>
                                                                                         </td>
-
                                                                                         <td>
                                                                                             <span className="cart__qty">{item.quantity}</span>
                                                                                         </td>
-
                                                                                         <td className="hidden-sm">
                                                                                             <span className="price cart__price-single">
                                                                                                 {

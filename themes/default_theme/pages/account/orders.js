@@ -104,10 +104,10 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                 foundImg = item.id.images.find(img => img.default)
                                                                                                                 if(item.selected_variant) foundImg = item.selected_variant.images.find(img => img.default)
                                                                                                                 if (foundImg) {
-                                                                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                                                    imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/82x82/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
                                                                                                                     imgAlt     = foundImg.alt || imgAlt;
                                                                                                                 } else if(item.id && item.id.images) {
-                                                                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                                                                    imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/82x82/${item.id.images[0]._id}/${item.id.slug[lang]}${item.id.images[0].extension}` : imgDefault;
                                                                                                                     imgAlt     = item.id.images[0].alt || imgAlt;
                                                                                                                 }
                                                                                                             }
@@ -131,7 +131,8 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                 item.type === 'bundle' && <ul style={{ listStyle: 'none' }}>
                                                                                                                                     {
                                                                                                                                         item.selections.map((section) => (
-                                                                                                                                            section.products.map((productSection, indexSel) => (
+                                                                                                                                            section.products.map((productSection, indexSel) => {
+                                                                                                                                                return (
                                                                                                                                                 <li key={indexSel}>{productSection.name} {`${(item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref) &&
                                                                                                                                                     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id) &&
                                                                                                                                                     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price &&
@@ -142,7 +143,7 @@ class PageAccountOrders extends NSPageAccountOrders {
                                                                                                                                                     item.id.bundle_sections.find((bundle_section) => bundle_section.ref === section.bundle_section_ref).products.find((product) => product.id === productSection.id).modifier_price[taxDisplay[index]] + '€' :
                                                                                                                                                     ''
                                                                                                                                                     }`}</li>
-                                                                                                                                            ))
+                                                                                                                                            )})
                                                                                                                                         ))
                                                                                                                                     }
                                                                                                                                 </ul>

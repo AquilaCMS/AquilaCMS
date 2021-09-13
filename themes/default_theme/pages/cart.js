@@ -95,7 +95,7 @@ class PageCart extends NSPageCart {
                                                                         imgDefault = foundImg._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${foundImg._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
                                                                         imgAlt     = foundImg.alt || imgAlt;
                                                                     } else if(item.id && item.id.images) {
-                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${foundImg.extension}` : imgDefault;
+                                                                        imgDefault = item.id.images[0]._id !== 'undefined' ? `/images/${item.selected_variant ? 'productVariant' : 'product'}/196x173/${item.id.images[0]._id}/${item.id.slug[lang]}${item.id.images[0].extension}` : imgDefault;
                                                                         imgAlt     = item.id.images[0].alt || imgAlt;
                                                                     }
                                                                 }
